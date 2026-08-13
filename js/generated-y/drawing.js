@@ -181,6 +181,13 @@ const __s_trapped_chest = cptr.lit("trapped chest");
 const __s_poison_cloud = cptr.lit("poison cloud");
 const __s_valid_position = cptr.lit("valid position");
 
+/* Relevant header information in rm.h, objclass.h, sym.h, defsym.h. */
+
+/* Default object class symbols.  See objclass.h.
+ * {symbol, name, explain}
+ *     name:    used in object_detect().
+ *     explain: used in do_look().
+ */
 /** C ref: drawing.c:24 — struct class_sym[18] */
 export const def_oc_syms = cptr.alloc(18 * $sizeof_class_sym);
 cptr.st1o(def_oc_syms, 0, 0);
@@ -238,6 +245,7 @@ cptr.st1o(def_oc_syms, 408, NHC.VENOM_SYM);
 cptr.stPtro(def_oc_syms, 408 + $class_sym_name, __s_venoms);
 cptr.stPtro(def_oc_syms, 408 + $class_sym_explain, __s_splash_of_venom);
 
+/* Default monster class symbols.  See sym.h and defsym.h. */
 /** C ref: drawing.c:32 — struct class_sym[61] */
 export const def_monsyms = cptr.alloc(61 * $sizeof_class_sym);
 cptr.st1o(def_monsyms, 0, 0);
@@ -445,6 +453,16 @@ cptr.st1o(def_warnsyms, 120, 53);
 cptr.stPtro(def_warnsyms, 120 + $symdef_explanation, __s_unknown_creature_causing_you_dread);
 cptr.st1o(def_warnsyms, 120 + $symdef_color, NHM.CLR_BRIGHT_MAGENTA);
 
+/*
+ *  Default screen symbols with explanations and colors.
+ *
+ *  If adding to or removing from this list, please note that,
+ *  for builds with tile support, there is an array called altlabels[] in
+ *  win/share/tilemap.c that requires the same number of elements as
+ *  this, in the same order. It is used for tile name matching when
+ *  parsing other.txt because some of the useful tile names don't exist
+ *  within NetHack itself.
+ */
 /** C ref: drawing.c:64 — struct symdef[106] */
 export const defsyms = cptr.alloc(106 * $sizeof_symdef);
 cptr.st1o(defsyms, 0, 32);
@@ -766,27 +784,43 @@ cptr.st1o(defsyms, 2520, 0);
 cptr.stPtro(defsyms, 2520 + $symdef_explanation, null);
 cptr.st1o(defsyms, 2520 + $symdef_color, NHM.NO_COLOR);
 
+/* default rogue level symbols */
 /** C ref: drawing.c:72 — unsigned char[18] */
 export const def_r_oc_syms = [0, NHC.ILLOBJ_SYM, NHC.WEAPON_SYM, 93, NHC.RING_SYM, 44, NHC.TOOL_SYM, 58, NHC.POTION_SYM, NHC.SCROLL_SYM, NHC.SPBOOK_SYM, NHC.WAND_SYM, NHC.GEM_SYM, NHC.GEM_SYM, NHC.ROCK_SYM, NHC.BALL_SYM, NHC.CHAIN_SYM, NHC.VENOM_SYM];
 
+/*
+ * Convert the given character to an object class.  If the character is not
+ * recognized, then MAXOCLASSES is returned.  Used in detect.c, drawing.c,
+ * invent.c, o_init.c, objnam.c, options.c, pickup.c, sp_lev.c, and
+ * windows.c.
+ */
 /** C ref: drawing.c:91 — @param {CInt} ch @returns {CInt} */
 export function def_char_to_objclass(ch) {
     let i;
+
     for (i = 1; i < NHC.MAXOCLASSES; i++)
         if (ch == cptr.ld1so(def_oc_syms, i, $sizeof_class_sym))
             break;
     return i;
 }
 
+/*
+ * Convert a character into a monster class.  This returns the _first_
+ * match made.  If there are no matches, return MAXMCLASSES.
+ * Used in detect.c, drawing.c, mondata.c, options.c, pickup.c,
+ * sp_lev.c, and windows.c.
+ */
 /** C ref: drawing.c:108 — @param {CInt} ch @returns {CInt} */
 export function def_char_to_monclass(ch) {
     let i;
+
     for (i = 1; i < NHC.MAXMCLASSES; i++)
         if (ch == cptr.ld1so(def_monsyms, i, $sizeof_class_sym))
             break;
     return i;
 }
 
+/* does 'ch' represent a furniture character?  returns index into defsyms[] */
 const __static_def_char_is_furniture_first_furniture = cptr.bytes("stair"); /** C ref: drawing.c:124 — char[6] (function-static) */
 const __static_def_char_is_furniture_last_furniture = cptr.bytes("fountain"); /** C ref: drawing.c:125 — char[9] (function-static) */
 
@@ -794,6 +828,7 @@ const __static_def_char_is_furniture_last_furniture = cptr.bytes("fountain"); /*
 export function def_char_is_furniture(ch) {
     let i;
     let furniture = 0;
+
     for (i = 0; i < NHC.MAXPCHARS; ++i) {
         if (!furniture) {
             if (!cptr.strncmp(cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
@@ -803,7 +838,7 @@ export function def_char_is_furniture(ch) {
             if (cptr.ld1uo(defsyms, i, $sizeof_symdef) == uchar(ch))
                 return i;
             if (!strcmp(cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_last_furniture)))
-                break;
+                break;  /* reached last furniture */
         }
     }
     return -1;

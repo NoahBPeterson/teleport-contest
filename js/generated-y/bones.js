@@ -153,14 +153,22 @@ const __s_left = cptr.lit("left");
 /** C ref: bones.c:18 — @param {CPtr<d_level>} lev @returns {CInt} */
 function no_bones_level(lev) {
     let sptr;
+
     if (ledger_no(cptr.add(gs, $instance_globals_s_save_dlevel)))
         assign_level(lev, cptr.add(gs, $instance_globals_s_save_dlevel));
+
     return schar((((sptr = Is_special(lev)) !== null && !cptr.ld1so(sptr, $s_level_boneid)) || !cptr.ld1so2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_boneid) || Is_botlevel(lev) || (Is_branchlev(lev) && cptr.ldI16o(lev, $d_level_dlevel) > 1) || (In_hell(lev) && cptr.ldI16o(lev, $d_level_dlevel) == ((dunlevs_in_dungeon(lev) - 1) | 0)) ? 1 : 0));
 }
 
+/* Call this function for each fruit object saved in the bones level: it marks
+ * that particular type of fruit as existing (the marker is that that type's
+ * ID is positive instead of negative).  This way, when we later save the
+ * chain of fruit types, we know to only save the types that exist.
+ */
 /** C ref: bones.c:42 — @param {CInt} id */
 function goodfruit(id) {
     let f = fruit_from_indx(-id);
+
     if (f)
         cptr.stI32o(f, $fruit_fid, id);
 }
@@ -169,6 +177,7 @@ function goodfruit(id) {
 function* resetobjs(ochain, restore) {
     let otmp;
     let nobj;
+
     for (otmp = ochain; otmp; otmp = nobj) {
         nobj = cptr.ldPtr(otmp);
         if (cptr.ldPtro(otmp, $obj_cobj))
@@ -178,9 +187,13 @@ function* resetobjs(ochain, restore) {
             (yield* dealloc_obj(otmp));
             continue;
         }
+
         if (restore) {
+            /* artifact bookkeeping needs to be done during
+               restore; other fixups are done while saving */
             if (cptr.ld1so(otmp, $obj_oartifact)) {
                 if (exist_artifact(cptr.ldI16o(otmp, $obj_otyp), safe_oname(otmp)) || is_quest_artifact(otmp)) {
+                    /* prevent duplicate--revert to ordinary obj */
                     cptr.st1o(otmp, $obj_oartifact, 0);
                     if (has_oname(otmp))
                         free_oname(otmp);
@@ -190,16 +203,21 @@ function* resetobjs(ochain, restore) {
             } else if (has_oname(otmp)) {
                 sanitize_name((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))));
             }
+            /* 3.6.3: set no_charge for partly eaten food in shop;
+               all other items become goods for sale if in a shop */
             if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS && cptr.ldI32o(otmp, $obj_oeaten)) {
                 let top;
                 let p;
                 let ox = cptr.box(0);
                 let oy = cptr.box(0);
+
                 for (top = otmp; cptr.ld1so(top, $obj_where) == NHM.OBJ_CONTAINED; top = cptr.ldPtro(top, $obj_v))
                     continue;
                 cptr.stI32o(otmp, $obj_no_charge, (cptr.ld1so(top, $obj_where) == NHM.OBJ_FLOOR && get_obj_location(top, ox, oy, 0) && inside_shop(ox.v, oy.v) && cptr.ld1s((p = (yield* in_rooms(ox.v, oy.v, NHC.SHOPBASE)))) && (yield* tended_shop(cptr.add(svr, (cptr.ld1s(p) - NHM.ROOMOFFSET) | 0, $sizeof_mkroom))) ? 1 : 0) >>> 0);
             }
         } else {
+            /* do not zero out o_ids for ghost levels anymore */
+
             if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_uses_known) & 1))
                 cptr.stI32o(otmp, $obj_known, 0);
             cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, 0));
@@ -210,36 +228,64 @@ function* resetobjs(ochain, restore) {
             cptr.st1o(otmp, $obj_invlet, 0);
             cptr.stI32o(otmp, $obj_no_charge, 0);
             cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_NONE);
+
+            /* strip user-supplied names */
+            /* Statue and some corpse names are left intact,
+               presumably in case they came from score file.
+               [TODO: this ought to be done differently--names
+               which came from such a source or came from any
+               stoned or killed monster should be flagged in
+               some manner; then we could just check the flag
+               here and keep "real" names (dead pets, &c) while
+               discarding player notes attached to statues.] */
             if (has_oname(otmp) && !(cptr.ld1so(otmp, $obj_oartifact) || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_NOVEL || (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.SPECIAL_PM))) {
                 free_oname(otmp);
             }
+
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD) {
                 goodfruit(cptr.ld1so(otmp, $obj_spe));
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SCR_MAIL) {
+                /* 0: delivered in-game via external event;
+                   1: from bones or wishing; 2: written with marker */
                 if (cptr.ld1so(otmp, $obj_spe) == 0)
                     cptr.st1o(otmp, $obj_spe, 1);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG) {
-                cptr.st1o(otmp, $obj_spe, 0);
+                cptr.st1o(otmp, $obj_spe, 0);  /* not "laid by you" in next game */
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN) {
+                /* make tins of unique monster's meat be empty */
                 if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && ((cptr.ldU16o((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)), $permonst_geno) & NHM.G_UNIQ) != 0))
                     cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
                 let mnum = cptr.box(cptr.ldI32o(otmp, $obj_corpsenm));
+
+                /* Discard incarnation details of unique monsters
+                   (by passing null instead of otmp for object),
+                   shopkeepers (by passing false for revival flag),
+                   temple priests, and vault guards in order to
+                   prevent corpse revival or statue reanimation. */
                 if (has_omonst(otmp) && cant_revive(mnum, 0, null)) {
                     free_omonst(otmp);
+                    /* mnum is now either human_zombie or doppelganger;
+                       for corpses of uniques, we need to force the
+                       transformation now rather than wait until a
+                       revival attempt, otherwise eating this corpse
+                       would behave as if it remains unique */
                     if (mnum.v == NHC.PM_DOPPELGANGER && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
                         (yield* set_corpsenm(otmp, mnum.v));
                 }
             } else if ((cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) || (cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid))) {
+                /* achievement tracking; in case prize was moved off its
+                   original level (which is always a no-bones level) */
                 cptr.stI32o(otmp, $obj_nomerge, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
+                /* no longer the real Amulet */
                 cptr.stI16o(otmp, $obj_otyp, NHC.FAKE_AMULET_OF_YENDOR);
                 (yield* curse(otmp));
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
                 if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                     (yield* end_burn(otmp, 1));
                 cptr.stI16o(otmp, $obj_otyp, NHC.WAX_CANDLE);
-                cptr.stI64o(otmp, $obj_age, 50n);
+                cptr.stI64o(otmp, $obj_age, 50n);  /* assume used */
                 if (cptr.ld1so(otmp, $obj_spe) > 0)
                     cptr.stI64o(otmp, $obj_quan, BigInt(cptr.ld1so(otmp, $obj_spe)));
                 cptr.st1o(otmp, $obj_spe, 0);
@@ -256,15 +302,24 @@ function* resetobjs(ochain, restore) {
     }
 }
 
+/* while loading bones, strip out text possibly supplied by old player
+   that might accidentally or maliciously disrupt new player's display */
 /** C ref: bones.c:198 — @param {CPtr<char>} namebuf */
 export function sanitize_name(namebuf) {
     let c;
     let strip_8th_bit = schar(((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && !cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 1 : 0));
+
+    /* it's tempting to skip this for single-user platforms, since
+       only the current player could have left these bones--except
+       things like "hearse" and other bones exchange schemes make
+       that assumption false */
     while (cptr.ld1s(namebuf)) {
         c = cptr.ld1s(namebuf) & 127;
         if (c < 32 || c == 127) {
+            /* non-printable or undesirable */
             cptr.st1(namebuf, 46);
         } else if (c != cptr.ld1s(namebuf)) {
+            /* expected to be printable if user wants such things */
             if (strip_8th_bit)
                 cptr.st1(namebuf, 95);
         }
@@ -272,6 +327,9 @@ export function sanitize_name(namebuf) {
     }
 }
 
+/* Give object to a random object-liking monster on or adjacent to x,y
+   but skipping hero's location.
+   If no such monster, place object on floor at x,y. */
 /** C ref: bones.c:226 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y */
 function* give_to_nearby_mon(otmp, x, y) {
     let mtmp;
@@ -279,6 +337,7 @@ function* give_to_nearby_mon(otmp, x, y) {
     let nmon = 0;
     let xx;
     let yy;
+
     for (xx = (x - 1) | 0; xx <= ((x + 1) | 0); ++xx) {
         for (yy = (y - 1) | 0; yy <= ((y + 1) | 0); ++yy) {
             if (!isok(i16(xx), i16(yy)))
@@ -287,6 +346,9 @@ function* give_to_nearby_mon(otmp, x, y) {
                 continue;
             if (!(mtmp = (cptr.ldPtro3(svl, xx, 168, yy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))))
                 continue;
+            /* This doesn't do any checks on otmp to see that it matches the
+             * likes_* property, intentionally. Assume that the monster is
+             * rifling through and taking things that look interesting. */
             if (!(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2147483648n) != 0n)))
                 continue;
             nmon++;
@@ -300,19 +362,35 @@ function* give_to_nearby_mon(otmp, x, y) {
         (yield* place_object(otmp, x, y));
 }
 
+/* called by savebones(); also by finish_paybill(shk.c) */
 /** C ref: bones.c:259 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} cont @param {CInt} x @param {CInt} y */
 export function* drop_upon_death(mtmp, cont, x, y) {
     let otmp;
-    cptr.st1o(u, $you_twoweap, 0);
+
+    /* when dual-wielding, the second weapon gets dropped rather than
+       welded if it becomes cursed; ensure that that won't happen here
+       by ending dual-wield */
+    cptr.st1o(u, $you_twoweap, 0);  /* bypass set_twoweap() */
+
+    /* all inventory is dropped (for the normal case), even non-droppable
+       things like worn armor and accessories, welded weapon, or cursed
+       loadstones */
     while ((otmp = cptr.ldPtro(gi, $instance_globals_i_invent)) !== null) {
         (yield* obj_extract_self(otmp));
+        /* when turning into green slime, all gear remains held;
+           other types "arise from the dead" do aren't holding
+           equipment during their brief interval as a corpse */
         if (!mtmp || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n))
             (yield* obj_no_longer_held(otmp));
+
+        /* lamps don't go out when dropped */
         if ((cont || artifact_light(otmp)) && obj_is_burning(otmp))
-            (yield* end_burn(otmp, 1));
+            (yield* end_burn(otmp, 1));  /* smother in statue */
         cptr.stI64o(otmp, $obj_owornmask, 0n);
+
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD)
             goodfruit(cptr.ld1so(otmp, $obj_spe));
+
         if (rn2_at(__s_bones_c, 290, __s_drop_upon_death, 5))
             (yield* curse(otmp));
         if (mtmp)
@@ -328,64 +406,96 @@ export function* drop_upon_death(mtmp, cont, x, y) {
         cptr.stI32o(cont, $obj_owt, (yield* weight(cont)) >>> 0);
 }
 
+/* possibly restore oracle's room and/or put her back inside it; returns
+   False if she's on the wrong level and should be removed, True otherwise */
 /** C ref: bones.c:308 — @param {CPtr<struct monst>} oracle @returns {CInt} */
 function* fixuporacle(oracle) {
     let cc = cptr.alloc(4);
     let ridx;
     let o_ridx;
+
+    /* oracle doesn't move, but knight's joust or monk's staggering blow
+       could push her onto a hole in the floor; at present, traps don't
+       activate in such situation hence she won't fall to another level;
+       however, that could change so be prepared to cope with such things */
     if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))))
         return 0;
-    cptr.stI32o(oracle, $monst_mpeaceful, 1);
+
+    cptr.stI32o(oracle, $monst_mpeaceful, 1);  /* for behavior toward next character */
     o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(oracle, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
     if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.DELPHI)
-        return 1;
+        return 1;  /* no fixup needed */
+
+    /*
+     * The Oracle isn't in DELPHI room.  Either hero entered her chamber
+     * and got the one-time welcome message, converting it into an
+     * ordinary room, or she got teleported out, or both.  Try to put
+     * her back inside her room, if necessary, and restore its type.
+     */
+
+    /* find original delphi chamber; should always succeed */
     for (ridx = 0; ridx < Number(BigInt.asIntN(32, (18368n / 224n))); ++ridx)
         if (cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_orig_rtype) == NHC.DELPHI)
             break;
+
     if (o_ridx != ridx && ridx < Number(BigInt.asIntN(32, (18368n / 224n)))) {
+        /* room found and she's not in it, so try to move her there */
         cptr.stI16(cc, i16(((((cptr.ldI16o(svr, ridx, $sizeof_mkroom) + cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hx)) | 0) / 2) | 0)));
         cptr.stI16o(cc, $nhcoord_y, i16(((((cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_ly) + cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hy)) | 0) / 2) | 0)));
         if ((yield* enexto(cc, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.ldPtro(oracle, $monst_data)))) {
             (yield* rloc_to(oracle, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
             o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(oracle, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
         }
+        /* [if her room is already full, she might end up outside;
+           that's ok, next hero just won't get any welcome message,
+           same as used to happen before this fixup was introduced] */
     }
     if (ridx == o_ridx)
         cptr.st1o2(svr, ridx, $sizeof_mkroom, $mkroom_rtype, NHC.DELPHI);
-    return 1;
+    return 1;  /* keep oracle in new bones file */
 }
 
+/* check whether bones are feasible */
 /** C ref: bones.c:356 @returns {CInt} */
 export function can_make_bones() {
     let ttmp;
+
     if (!cptr.ld1so(flags, $flag_bones))
         return 0;
     if (ledger_no(cptr.add(u, $you_uz)) <= 0 || ledger_no(cptr.add(u, $you_uz)) > maxledgerno())
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
-        return 0;
+        return 0;  /* no bones for specific levels */
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        return 0;
+        return 0;  /* no bones when swallowed */
     }
     if (!Is_branchlev(cptr.add(u, $you_uz))) {
+        /* no bones on non-branches with portals */
         for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp))
             if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 return 0;
     }
+
     if (depth(cptr.add(u, $you_uz)) <= 0 || (!rn2_at(__s_bones_c, 377, __s_can_make_bones, (1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0) && !wizard()))
         return 0;
+    /* don't let multiple restarts generate multiple copies of objects
+       in bones files */
     if (discover())
         return 0;
     return 1;
 }
 
+/* monster might need to be removed before saving a bones file,
+   in case these characters are not in their home bases */
 /** C ref: bones.c:390 — @param {CPtr<struct monst>} mtmp */
 function* remove_mon_from_bones(mtmp) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
+
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER || is_Vlad(mtmp) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ORACLE, $sizeof_permonst)) && !(yield* fixuporacle(mtmp))))
         (yield* mongone(mtmp));
 }
 
+/* save bones and possessions of a deceased adventurer */
 /** C ref: bones.c:403 — @param {CInt} how @param {CLongLong} when @param {CPtr<struct obj>} corpse */
 export function* savebones(how, when, corpse) {
     let x;
@@ -399,6 +509,9 @@ export function* savebones(how, when, corpse) {
     let whynot = new Uint8Array(256);
     let nhfp;
     __lbl_make_bones: {
+
+        /* caller has already checked `can_make_bones()' */
+
         clear_bypasses();
         nhfp = (yield* open_bonesfile(cptr.add(u, $you_uz), bonesid));
         if (nhfp) {
@@ -411,46 +524,72 @@ export function* savebones(how, when, corpse) {
                         (yield* pline(__s_cannot_unlink_old_bones));
                 }
             }
+            /* compression can change the file's name, so must
+               wait until after any attempt to delete this file */
             (yield* compress_bonesfile());
             return;
         }
     }
     unleash_all();
+    /* new ghost or other undead isn't punished even if hero was;
+       end-of-game disclosure has already had a chance to report the
+       Punished status so we don't need to preserve it any further */
     if (Punished())
-        (yield* unpunish());
+        (yield* unpunish());  /* unwear uball, destroy uchain */
+    /* in case dismounting kills steed [is that even possible?], do so
+       before cleaning up dead monsters */
     if (cptr.ldPtro(u, $you_usteed))
         (yield* dismount_steed(NHC.DISMOUNT_BONES));
-    (yield* iter_mons(remove_mon_from_bones));
-    (yield* dmonsfree());
-    forget_engravings();
+
+    (yield* iter_mons(remove_mon_from_bones));  /* send various unique monsters away, */
+    (yield* dmonsfree());  /* then discard dead or gone monsters */
+
+    forget_engravings();  /* next hero won't have read any engravings yet */
+    /* mark all named fruits as nonexistent; if/when we come to instances
+       of any of them we'll mark those as existing (using goodfruit()) */
     for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf))
         cptr.stI32o(f, $fruit_fid, -cptr.ldI32o(f, $fruit_fid));
+
     set_ghostly_objlist(cptr.ldPtro(gi, $instance_globals_i_invent));
+    /* dispose of your possessions, usually cursed */
     if (ismnum(cptr.ldI32o(u, $you_ugrave_arise))) {
-        cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
+        /* give your possessions to the monster you become */
+        cptr.st1o(gi, $instance_globals_i_in_mklev, 1);  /* use <u.ux,u.uy> as-is */
         mtmp = (yield* makemon(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT));
         cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
         if (!mtmp) {
             (yield* drop_upon_death(null, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);
+            cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);  /* in case caller cares */
             return;
         }
         give_u_to_m_resistances(mtmp);
         mtmp = (yield* christen_monst(mtmp, svp));
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        /* ["Your body rises from the dead as an <mname>..." used
+           to be given here, but it has been moved to done() so that
+           it gets delivered even when savebones() isn't called] */
         (yield* drop_upon_death(mtmp, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        /* 'mtmp' now has hero's inventory; if 'mtmp' is a mummy, give it
+           a wrapping unless already carrying one */
         if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MUMMY && !m_carrying(mtmp, NHC.MUMMY_WRAPPING))
             void (yield* mongets(mtmp, NHC.MUMMY_WRAPPING));
         (yield* m_dowear(mtmp, 1));
     } else if (cptr.ldI32o(u, $you_ugrave_arise) == NHC.LEAVESTATUE) {
         let otmp;
+
+        /* embed your possessions in your statue */
         otmp = (yield* mk_named_object(NHC.STATUE, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp));
+
         (yield* drop_upon_death(null, otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         if (!otmp)
-            return;
+            return;  /* couldn't make statue */
         mtmp = null;
     } else {
+        /* drop everything */
         (yield* drop_upon_death(null, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        /* trick makemon() into allowing monster creation
+         * on your location
+         */
         cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
         mtmp = (yield* makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NONAME));
         cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
@@ -462,10 +601,12 @@ export function* savebones(how, when, corpse) {
     }
     if (mtmp) {
         let i;
+
         cptr.st1o(mtmp, $monst_m_lev, uchar((cptr.ldI32o(u, $you_ulevel) ? cptr.ldI32o(u, $you_ulevel) : 1)));
         cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, cptr.ldI32o(u, $you_uhpmax)));
         cptr.stI32o(mtmp, $monst_female, cptr.ld1so(flags, $flag_female));
         cptr.stI32o(mtmp, $monst_msleeping, 1);
+
         if (!has_ebones(mtmp))
             (yield* newebones(mtmp));
         if (has_ebones(mtmp)) {
@@ -474,16 +615,20 @@ export function* savebones(how, when, corpse) {
                     cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_role, uchar(i));
                     break;
                 }
+                /* impossible("savebones: bad gu.urole.name.m \"%s\"",
+                              gu.urole.name.m); */
             }
             for (i = 0; i <= NHM.NUM_RACES; ++i) {
                 if (!strcmp(cptr.ldPtro(gu, $instance_globals_u_urace), cptr.ldPtro(races, i, $sizeof_Race))) {
                     cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_race, uchar(i));
                     break;
                 }
+                /* impossible("savebones: bad gu.urace.noun \"%s\"",
+                              gu.urace.noun); */
             }
             cptr.memcpy(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_oldalign), cptr.add(u, $you_ualign), 12);
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_deathlevel, uchar(cptr.ldI32o(u, $you_ulevel)));
-            cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_luck, cptr.ld1so(u, $you_uluck));
+            cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_luck, cptr.ld1so(u, $you_uluck));  /* moreluck not included */
             cptr.stI16o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_mnum, Role_switch());
             cptr.stI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_female, cptr.ld1so(flags, $flag_female));
             cptr.stI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_demigod, (cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1));
@@ -493,9 +638,11 @@ export function* savebones(how, when, corpse) {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         set_ghostly_objlist(cptr.ldPtro(mtmp, $monst_minvent));
         (yield* resetobjs(cptr.ldPtro(mtmp, $monst_minvent), 0));
+        /* do not zero out m_ids for bones levels any more */
         cptr.stI64o(mtmp, $monst_mlstmv, 0n);
         if (cptr.ld1so(mtmp, $monst_mtame))
             cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)));
+        /* observations about the current hero won't apply to future game */
         cptr.stU64o(mtmp, $monst_seen_resistance, 0n);
     }
     for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp)) {
@@ -506,8 +653,12 @@ export function* savebones(how, when, corpse) {
     (yield* resetobjs(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist), 0));
     set_ghostly_objlist(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist));
     (yield* resetobjs(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist), 0));
+
+    /* Hero is no longer on the map. */
     cptr.stI16o(u, $you_ux0, cptr.ldI16(u)), cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
     cptr.stI16(u, cptr.stI16o(u, $you_uy, 0));
+
+    /* Clear all memory from the level. */
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
             cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 0);
@@ -515,32 +666,52 @@ export function* savebones(how, when, corpse) {
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, NHC.GLYPH_UNEXPLORED_OFF);
             cptr.st1o3(svl, x, 21, y, 1, 0, 0);
         }
+
+    /* Attach bones info to the current level before saving. */
     newbones = (yield* alloc(184));
+    /* entries are '\0' terminated but have fixed length allocations,
+       so pre-fill with spaces to initialize any excess room */
     void __builtin___memset_chk(newbones, 32, 184n, __builtin_object_size(newbones, 0));
+    /* format name+role,&c, death reason, and date+time;
+       gender and alignment reflect final values rather than what the
+       character started out as, same as topten and logfile entries */
     void cptr.sprintf(cptr.add(newbones, $cemetery_who), __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, $sizeof_Align, $Align_filecode));
     (yield* formatkiller(cptr.add(newbones, $cemetery_how), 101, how, 1));
     void cptr.strcpy(cptr.add(newbones, $cemetery_when), (yield* yyyymmddhhmmss(when)));
+    /* final resting place, used to decide when bones are discovered */
     cptr.stI16o(newbones, $cemetery_frpx, cptr.ldI16o(u, $you_ux0)), cptr.stI16o(newbones, $cemetery_frpy, cptr.ldI16o(u, $you_uy0));
     cptr.st1o(newbones, $cemetery_bonesknown, 0);
+    /* if current character died on a bones level, the cemetery list
+       will have multiple entries, most recent (this dead hero) first */
     cptr.stPtr(newbones, cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo));
     cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo, newbones);
+    /* flag these bones if they are being created in wizard mode;
+       they might already be flagged as such, even when we're playing
+       in normal mode, if this level came from a previous bones file */
     if (wizard())
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_wizard_bones, 1);
+
     nhfp = (yield* create_bonesfile(cptr.add(u, $you_uz), bonesid, cptr.decay(whynot)));
     if (!nhfp) {
         if (wizard())
             (yield* pline(__s_pct_s, cptr.decay(whynot)));
+        /* bones file creation problems are silent to the player.
+         * Keep it that way, but place a clue into the paniclog.
+         */
         (yield* paniclog(__s_savebones, cptr.decay(whynot)));
         return;
     }
     c.v = Number(BigInt.asIntN(8, (BigInt.asUintN(64, cptr.strlen(bonesid.v) + 1n))));
+
     cptr.stI32o(nhfp, $NHFILE_mode, NHM.WRITING);
     (yield* store_version(nhfp));
     (yield* sfo_char(nhfp, cptr.add(cptr.add(svn, $instance_globals_saved_n_nhuuid), 0, 1), __s_ancestor_nhuuid, 37));
+    /* if a bones pool digit is in use, it precedes the bonesid
+       string and isn't recorded in the file */
     (yield* sfo_char(nhfp, c, __s_bones_count, 1));
-    (yield* sfo_char(nhfp, bonesid.v, __s_bonesid, c.v));
+    (yield* sfo_char(nhfp, bonesid.v, __s_bonesid, c.v));  /* DD.nnn */
     (yield* savefruitchn(nhfp));
-    (yield* update_mlstmv());
+    (yield* update_mlstmv());  /* update monsters for eventual restoration */
     (yield* savelev(nhfp, schar(ledger_no(cptr.add(u, $you_uz)))));
     (yield* close_nhfile(nhfp));
     (yield* commit_bonesfile(cptr.add(u, $you_uz)));
@@ -553,16 +724,19 @@ export function* getbones() {
     let nhfp = null;
     let c = cptr.box(0);
     let bonesid = cptr.box(0);
-    let oldbonesid = [0];
+    let oldbonesid = [0];  /* was [10]; more should be safer */
     let ancestor_nhuuid = new Uint8Array(37);
     if (discover())
         return 0;
+
     if (!cptr.ld1so(flags, $flag_bones))
         return 0;
+    /* wizard check added by GAN 02/05/87 */
     if (rn2_at(__s_bones_c, 645, __s_getbones, 3) && !wizard())
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;
+
     nhfp = (yield* open_bonesfile(cptr.add(u, $you_uz), bonesid));
     if (!nhfp)
         return 0;
@@ -572,6 +746,7 @@ export function* getbones() {
         if (cptr.ld1so(nhfp, $NHFILE_style) && !cptr.ldPtro(nhfp, $NHFILE_fpdef))
             return 0;
     }
+
     cptr.stI32o(program_state, $sinfo_reading_bonesfile, 1);
     if ((yield* validate(nhfp, cptr.add(gb, $instance_globals_b_bones), 0)) != NHM.SF_UPTODATE) {
         if (!wizard())
@@ -589,7 +764,7 @@ export function* getbones() {
             }
         }
         (yield* sfi_char(nhfp, cptr.add(cptr.decay(ancestor_nhuuid), 0, 1), __s_ancestor_nhuuid, 37));
-        (yield* sfi_char(nhfp, c, __s_bones_count, 1));
+        (yield* sfi_char(nhfp, c, __s_bones_count, 1));  /* length incl. '\0' */
         if (BigInt(c.v >>> 0) <= 40n) {
             (yield* sfi_char(nhfp, cptr.decay(oldbonesid), __s_bonesid, c.v));
         } else {
@@ -603,21 +778,32 @@ export function* getbones() {
                 }
             (yield* close_nhfile(nhfp));
             (yield* compress_bonesfile());
+            /* ToDo: maybe unlink these problematic bones? */
             cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
             return 0;
         }
         if (strcmp(bonesid.v, cptr.decay(oldbonesid)) != 0) {
             let errbuf = new Uint8Array(256);
+
             void cptr.sprintf(cptr.decay(errbuf), __s_this_is_bones_level_s_not_s, cptr.decay(oldbonesid), bonesid.v);
             if (wizard()) {
                 (yield* pline(__s_pct_s, cptr.decay(errbuf)));
-                ok = 0;
+                ok = 0;  /* won't die of trickery */
             }
             cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
             (yield* trickery(cptr.decay(errbuf)));
         } else {
             let mtmp;
+
             (yield* getlev(nhfp, 0, 0));
+
+            /* Note that getlev() now keeps tabs on unique
+             * monsters such as demon lords, and tracks the
+             * birth counts of all species just as makemon()
+             * does.  If a bones monster is extinct or has been
+             * subject to genocide, their mhpmax will be
+             * set to the magic DEFUNCT_MONSTER cookie value.
+             */
             for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
                 if (has_mgivenname(mtmp))
                     sanitize_name((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
@@ -633,6 +819,7 @@ export function* getbones() {
                     }
                     (yield* mongone(mtmp));
                 } else
+                    /* to correctly reset named artifacts on the level */
                     (yield* resetobjs(cptr.ldPtro(mtmp, $monst_minvent), 1));
             }
             (yield* resetobjs(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist), 1));
@@ -644,6 +831,7 @@ export function* getbones() {
     cptr.stI32o(program_state, $sinfo_reading_bonesfile, 0);
     sanitize_engravings();
     (cptr.stI64o(u, $you_uroleplay + $u_roleplay_numbones, cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones) + 1n)) - (1n);
+
     if (wizard()) {
         if ((yield* yn_function(__s_unlink_bones, cptr.decay(ynchars), 110, 1)) == 110) {
             (yield* compress_bonesfile());
@@ -651,26 +839,40 @@ export function* getbones() {
         }
     }
     if (!(yield* delete_bonesfile(cptr.add(u, $you_uz)))) {
+        /* When N games try to simultaneously restore the same
+         * bones file, N-1 of them will fail to delete it
+         * (the first N-1 under AmigaDOS, the last N-1 under UNIX).
+         * So no point in a mysterious message for a normal event
+         * -- just generate a new level for those N-1 games.
+         */
+        /* pline("Cannot unlink bones."); */
         return 0;
     }
     return ok;
 }
 
+/* check whether current level contains bones from a particular player */
 /** C ref: bones.c:762 — @param {CPtr<char>} name @returns {CInt} */
 export function bones_include_name(name) {
     let bp;
     let len;
     let buf = new Uint8Array(256);
+
+    /* prepare buffer by appending terminal hyphen to name, to avoid partial
+     * matches producing false positives */
     void cptr.strcpy(cptr.decay(buf), name);
     void cptr.strcat(cptr.decay(buf), __s_dash);
     len = cptr.strlen(cptr.decay(buf));
+
     for (bp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo); bp; bp = cptr.ldPtr(bp)) {
         if (!cptr.strncmp(cptr.add(bp, $cemetery_who), cptr.decay(buf), len))
             return 1;
     }
+
     return 0;
 }
 
+/* set the ghostly bit in a list of objects */
 /** C ref: bones.c:784 — @param {CPtr<struct obj>} objchain */
 function set_ghostly_objlist(objchain) {
     while (objchain) {
@@ -679,6 +881,9 @@ function set_ghostly_objlist(objchain) {
     }
 }
 
+/* This is called when a marked object from a bones file is picked-up.
+   Some could result in a message, and the obj->ghostly flag is always
+   cleared. obj->ghostly has no other usage at this time. */
 /** C ref: bones.c:796 — @param {CPtr<struct obj>} obj */
 export function* fix_ghostly_obj(obj) {
     if (!(cptr.ldI32o(obj, $obj_ghostly) & 1))
@@ -708,6 +913,7 @@ export function* newebones(mtmp) {
     }
 }
 
+/* this is not currently used */
 /** C ref: bones.c:833 — @param {CPtr<struct monst>} mtmp */
 export function free_ebones(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones))) {

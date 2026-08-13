@@ -104,27 +104,42 @@ function getgclist(o) {
 
 /** C ref: lgc.c:148 — @param {CPtr<GCObject>} o @param {CPtr<GCObject *>} pnext @param {CPtr<GCObject *>} list */
 function linkgclist_(o, pnext, list) {
-    (void 0);
+    (void 0);  /* cannot be in a gray list */
     cptr.stPtr(pnext, cptr.ldPtr(list));
     cptr.stPtr(list, o);
-    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
+    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));  /* now it is */
 }
 
+/*
+** Clear keys for empty entries in tables. If entry is empty, mark its
+** entry as dead. This allows the collection of the key, but keeps its
+** entry in the table: its removal could break a chain and could break
+** a table traversal.  Other places never manipulate dead keys, because
+** its associated empty value is enough to signal that the entry is
+** logically empty.
+*/
 /** C ref: lgc.c:171 — @param {CPtr<Node>} n */
 function clearkey(n) {
     (void 0);
     if (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64))
-        (cptr.st1o((n), $NodeKey_key_tt, 11));
+        (cptr.st1o((n), $NodeKey_key_tt, 11));  /* unused key; remove it */
 }
 
+/*
+** tells whether a key or value can be cleared from a weak
+** table. Non-collectable objects are never removed from weak
+** tables. Strings behave as 'values', so are never removed too. for
+** other objects: if really collected, cannot keep them; for objects
+** being finalized, keep them in keys, but not in values
+*/
 /** C ref: lgc.c:185 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o @returns {CInt} */
 function iscleared(g, o) {
     if (cptr.eq(o, (null)))
-        return 0;
+        return 0;  /* non-collectable value */
     else if (((cptr.ld1uo(o, $GCObject_tt)) & 15) == 4) {
         {
             if (((cptr.ld1uo((o), $GCObject_marked)) & 24))
-                reallymarkobject(g, ((((o)))));
+                reallymarkobject(g, ((((o)))));  /* strings are 'values', so are never weak */
         }
         ;
         return 0;
@@ -132,47 +147,68 @@ function iscleared(g, o) {
         return ((cptr.ld1uo((o), $GCObject_marked)) & 24);
 }
 
+/*
+** Barrier that moves collector forward, that is, marks the white object
+** 'v' being pointed by the black object 'o'.  In the generational
+** mode, 'v' must also become old, if 'o' is old; however, it cannot
+** be changed directly to OLD, because it may still point to non-old
+** objects. So, it is marked as OLD0. In the next cycle it will become
+** OLD1, and in the next it will finally become OLD (regular old). By
+** then, any object it points to will also be old.  If called in the
+** incremental sweep phase, it clears the black object to white (sweep
+** it) to avoid other barrier calls for this same object. (That cannot
+** be done is generational mode, as its sweep does not distinguish
+** whites from deads.)
+*/
 /** C ref: lgc.c:208 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o @param {CPtr<GCObject>} v */
 export function luaC_barrier_(L, o, v) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
     if ((cptr.ld1uo((g), $global_State_gcstate) <= 2)) {
-        reallymarkobject(g, v);
+        reallymarkobject(g, v);  /* restore invariant */
         if (((cptr.ld1uo((o), $GCObject_marked) & 7) > 1)) {
-            (void 0);
-            (cptr.st1o((v), $GCObject_marked, (uchar((((cptr.ld1uo((v), $GCObject_marked) & -8) | 2))))));
+            (void 0);  /* white object could not be old */
+            (cptr.st1o((v), $GCObject_marked, (uchar((((cptr.ld1uo((v), $GCObject_marked) & -8) | 2))))));  /* restore generational invariant */
         }
     } else {
         (void 0);
         if (cptr.ld1uo(g, $global_State_gckind) == 0)
-            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));
+            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));  /* mark 'o' as white to avoid other barriers */
     }
 }
 
+/*
+** barrier that moves collector backward, that is, mark the black object
+** pointing to a white object as gray again.
+*/
 /** C ref: lgc.c:230 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o */
 export function luaC_barrierback_(L, o) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
     (void 0);
     if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 6)
-        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
+        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));  /* make it gray to become touched1 */
     else
         linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));
     if (((cptr.ld1uo((o), $GCObject_marked) & 7) > 1))
-        (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 5))))));
+        (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 5))))));  /* touched in current cycle */
 }
 
 /** C ref: lgc.c:243 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o */
 export function luaC_fix(L, o) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
-    (void 0);
-    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
-    (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 4))))));
-    cptr.stPtro(g, $global_State_allgc, cptr.ldPtr(o));
-    cptr.stPtr(o, cptr.ldPtro(g, $global_State_fixedgc));
+    (void 0);  /* object must be 1st in 'allgc' list! */
+    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));  /* they will be gray forever */
+    (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 4))))));  /* and old forever */
+    cptr.stPtro(g, $global_State_allgc, cptr.ldPtr(o));  /* remove object from 'allgc' list */
+    cptr.stPtr(o, cptr.ldPtro(g, $global_State_fixedgc));  /* link it to 'fixedgc' list */
     cptr.stPtro(g, $global_State_fixedgc, o);
 }
 
+/*
+** create a new collectable object (with given type, size, and offset)
+** and link it to 'allgc' list.
+*/
 /** C ref: lgc.c:258 — @param {CPtr<lua_State>} L @param {CInt} tt @param {CLongLong} sz @param {CLongLong} offset @returns {CPtr<GCObject>} */
 export function* luaC_newobjdt(L, tt, sz, offset) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -190,24 +226,44 @@ export function* luaC_newobj(L, tt, sz) {
     return (yield* luaC_newobjdt(L, tt, sz, 0n));
 }
 
+/* }====================================================== */
+
+/*
+** {======================================================
+** Mark functions
+** =======================================================
+*/
+
+/*
+** Mark an object.  Userdata with no user values, strings, and closed
+** upvalues are visited and turned black here.  Open upvalues are
+** already indirectly linked through their respective threads in the
+** 'twups' list, so they don't go to the gray list; nevertheless, they
+** are kept gray to avoid barriers, as their values will be revisited
+** by the thread or by 'remarkupvals'.  Other objects are added to the
+** gray list to be visited (and turned black) later.  Both userdata and
+** upvalues can call this function recursively, but this recursion goes
+** for at most two levels: An upvalue cannot refer to another upvalue
+** (only closures can), and a userdata's metatable must be a table.
+*/
 /** C ref: lgc.c:297 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o */
 function reallymarkobject(g, o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 4:
         case 20:
         {
-            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -25) | 32))))));
+            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -25) | 32))))));  /* nothing to visit */
             break;
         }
         case 9:
         {
             let uv = (((((o)))));
             if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
-                (cptr.st1o(uv, $UpVal_marked, cptr.ld1uo(uv, $UpVal_marked) & 199));
+                (cptr.st1o(uv, $UpVal_marked, cptr.ld1uo(uv, $UpVal_marked) & 199));  /* open upvalues are kept gray */
             else
-                (cptr.st1o(uv, $UpVal_marked, (uchar((((cptr.ld1uo(uv, $UpVal_marked) & -25) | 32))))));
+                (cptr.st1o(uv, $UpVal_marked, (uchar((((cptr.ld1uo(uv, $UpVal_marked) & -25) | 32))))));  /* closed upvalues are visited here */
             {
-                (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+                (void cptr.ldPtro(g, $global_State_mainthread), (void 0));  /* mark its content */
                 if ((((cptr.ld1uo((cptr.ldPtro(uv, $UpVal_v)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v)))))), $GCObject_marked)) & 24)))
                     reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v))))));
             }
@@ -221,22 +277,23 @@ function reallymarkobject(g, o) {
                 {
                     if (cptr.ldPtro(u, $Udata_metatable)) {
                         if (((cptr.ld1uo((cptr.ldPtro(u, $Udata_metatable)), $Table_marked)) & 24))
-                            reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));
+                            reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));  /* mark its metatable */
                     }
                     ;
                 }
                 ;
-                (cptr.st1o(u, $Udata_marked, (uchar((((cptr.ld1uo(u, $Udata_marked) & -25) | 32))))));
+                (cptr.st1o(u, $Udata_marked, (uchar((((cptr.ld1uo(u, $Udata_marked) & -25) | 32))))));  /* nothing else to mark */
                 break;
             }
-        }
+            /* else... */
+        }  /* FALLTHROUGH */
         case 6:
         case 38:
         case 5:
         case 8:
         case 10:
         {
-            linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_gray));
+            linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_gray));  /* to be visited later */
             break;
         }
         default:
@@ -245,6 +302,9 @@ function reallymarkobject(g, o) {
     }
 }
 
+/*
+** mark metamethods for basic types
+*/
 /** C ref: lgc.c:335 — @param {CPtr<global_State>} g */
 function markmt(g) {
     let i;
@@ -258,6 +318,9 @@ function markmt(g) {
     ;
 }
 
+/*
+** mark all objects in list of being-finalized
+*/
 /** C ref: lgc.c:345 — @param {CPtr<global_State>} g @returns {*} */
 function markbeingfnz(g) {
     let o;
@@ -273,27 +336,38 @@ function markbeingfnz(g) {
     return count;
 }
 
+/*
+** For each non-marked thread, simulates a barrier between each open
+** upvalue and its value. (If the thread is collected, the value will be
+** assigned to the upvalue, but then it can be too late for the barrier
+** to act. The "barrier" does not need to check colors: A non-marked
+** thread must be young; upvalues cannot be older than their threads; so
+** any visited upvalue must be young too.) Also removes the thread from
+** the list, as it was already visited. Removes also threads with no
+** upvalues, as they have nothing to be checked. (If the thread gets an
+** upvalue later, it will be linked in the list again.)
+*/
 /** C ref: lgc.c:367 — @param {CPtr<global_State>} g @returns {CInt} */
 function remarkupvals(g) {
     let thread;
     let p = cptr.add(g, $global_State_twups);
-    let work = 0;
+    let work = 0;  /* estimate of how much work was done here */
     while (!cptr.eq((thread = cptr.ldPtr(p)), (null))) {
         work++;
         if (!((cptr.ld1uo((thread), $lua_State_marked)) & 24) && !cptr.eq(cptr.ldPtro(thread, $lua_State_openupval), (null)))
-            p = cptr.add(thread, $lua_State_twups);
+            p = cptr.add(thread, $lua_State_twups);  /* keep marked thread with upvalues in the list */
         else {
             let uv;
             (void 0);
-            cptr.stPtr(p, cptr.ldPtro(thread, $lua_State_twups));
-            cptr.stPtro(thread, $lua_State_twups, thread);
+            cptr.stPtr(p, cptr.ldPtro(thread, $lua_State_twups));  /* remove thread from the list */
+            cptr.stPtro(thread, $lua_State_twups, thread);  /* mark that it is out of list */
             for (uv = cptr.ldPtro(thread, $lua_State_openupval); !cptr.eq(uv, (null)); uv = cptr.ldPtro(uv, $UpVal_u)) {
                 (void 0);
                 work++;
                 if (!((cptr.ld1uo((uv), $UpVal_marked)) & 24)) {
                     (void 0);
                     {
-                        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
+                        (void cptr.ldPtro(g, $global_State_mainthread), (void 0));  /* mark its value */
                         if ((((cptr.ld1uo((cptr.ldPtro(uv, $UpVal_v)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v)))))), $GCObject_marked)) & 24)))
                             reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v))))));
                     }
@@ -311,6 +385,9 @@ function cleargraylists(g) {
     cptr.stPtro(g, $global_State_weak, cptr.stPtro(g, $global_State_allweak, cptr.stPtro(g, $global_State_ephemeron, null)));
 }
 
+/*
+** mark root set and reset all gray lists, to start a new collection
+*/
 /** C ref: lgc.c:403 — @param {CPtr<global_State>} g */
 function restartcollection(g) {
     cleargraylists(g);
@@ -326,26 +403,51 @@ function restartcollection(g) {
     }
     ;
     markmt(g);
-    markbeingfnz(g);
+    markbeingfnz(g);  /* mark any finalizing object left from previous cycle */
 }
 
+/* }====================================================== */
+
+/*
+** {======================================================
+** Traverse functions
+** =======================================================
+*/
+
+/*
+** Check whether object 'o' should be kept in the 'grayagain' list for
+** post-processing by 'correctgraylist'. (It could put all old objects
+** in the list and leave all the work to 'correctgraylist', but it is
+** more efficient to avoid adding elements that will be removed.) Only
+** TOUCHED1 objects need to be in the list. TOUCHED2 doesn't need to go
+** back to a gray list, but then it must become OLD. (That is what
+** 'correctgraylist' does when it finds a TOUCHED2 object.)
+*/
 /** C ref: lgc.c:430 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o */
 function genlink(g, o) {
     (void 0);
     if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 5) {
-        linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));
+        linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));  /* link it back in 'grayagain' */
     } else if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 6)
-        (cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) ^ 2));
+        (cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) ^ 2));  /* advance age */
 }
 
+/*
+** Traverse a table with weak values and link it to proper list. During
+** propagate phase, keep it in 'grayagain' list, to be revisited in the
+** atomic phase. In the atomic phase, if table has any white value,
+** put it in 'weak' list, to be cleared.
+*/
 /** C ref: lgc.c:446 — @param {CPtr<global_State>} g @param {CPtr<Table>} h */
 function traverseweakvalue(g, h) {
     let n;
     let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), $sizeof_Node));
+    /* if there is array part, assume it may have white values (it is not
+       worth traversing it now just to check) */
     let hasclears = (cptr.ldI32o(h, $Table_alimit) > 0);
     for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
-            clearkey(n);
+            clearkey(n);  /* clear its key */
         else {
             (void 0);
             {
@@ -354,50 +456,66 @@ function traverseweakvalue(g, h) {
             }
             ;
             if (!hasclears && iscleared(g, (((cptr.ld1uo((((n))), $TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
-                hasclears = 1;
+                hasclears = 1;  /* table will have to be cleared */
         }
     }
     if (cptr.ld1uo(g, $global_State_gcstate) == 2 && hasclears)
-        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_weak));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_weak));  /* has to be cleared later */
     else
-        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));  /* must retraverse it in atomic phase */
 }
 
+/*
+** Traverse an ephemeron table and link it to proper list. Returns true
+** iff any object was marked during this traversal (which implies that
+** convergence has to continue). During propagation phase, keep table
+** in 'grayagain' list, to be visited again in the atomic phase. In
+** the atomic phase, if table has any white->white entry, it has to
+** be revisited during ephemeron convergence (as that key may turn
+** black). Otherwise, if it has any white key, table has to be cleared
+** (in the atomic phase). In generational mode, some tables
+** must be kept in some gray list for post-processing; this is done
+** by 'genlink'.
+*/
 /** C ref: lgc.c:480 — @param {CPtr<global_State>} g @param {CPtr<Table>} h @param {CInt} inv @returns {CInt} */
 function traverseephemeron(g, h, inv) {
-    let marked = 0;
-    let hasclears = 0;
-    let hasww = 0;
+    let marked = 0;  /* true if an object is marked in this traversal */
+    let hasclears = 0;  /* true if table has white keys */
+    let hasww = 0;  /* true if table has entry "white-key -> white-value" */
     let i;
     let asize = luaH_realasize(h);
     let nsize = ((1 << (cptr.ld1uo((h), $Table_lsizenode)))) >>> 0;
+    /* traverse array part */
     for (i = 0; i < asize; i++) {
         if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)))))), $GCObject_marked)) & 24))) {
             marked = 1;
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue))))));
         }
     }
+    /* traverse hash part; if 'inv', traverse descending
+       (see 'convergeephemerons') */
     for (i = 0; i < nsize; i++) {
         let n = inv ? (cptr.add(cptr.ldPtro((h), $Table_node), (((nsize - 1) >>> 0) - i) >>> 0, $sizeof_Node)) : (cptr.add(cptr.ldPtro((h), $Table_node), i, $sizeof_Node));
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
-            clearkey(n);
+            clearkey(n);  /* clear its key */
         else if (iscleared(g, (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))) : null))) {
-            hasclears = 1;
+            hasclears = 1;  /* table must be cleared */
             if ((((cptr.ld1uo((((n))), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), $GCObject_marked)) & 24)))
-                hasww = 1;
+                hasww = 1;  /* white-white entry */
         } else if ((((cptr.ld1uo((((n))), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((((n))))))), $GCObject_marked)) & 24))) {
             marked = 1;
-            reallymarkobject(g, (cptr.ldPtr(((((n)))))));
+            reallymarkobject(g, (cptr.ldPtr(((((n)))))));  /* mark it now */
         }
     }
+    /* link table into proper list */
     if (cptr.ld1uo(g, $global_State_gcstate) == 0)
-        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));  /* must retraverse it in atomic phase */
     else if (hasww)
-        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_ephemeron));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_ephemeron));  /* have to propagate again */
     else if (hasclears)
-        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_allweak));
+        linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_allweak));  /* may have to clean white keys */
     else
-        genlink(g, ((((h)))));
+        genlink(g, ((((h)))));  /* check whether collector still needs to see it */
     return marked;
 }
 
@@ -415,7 +533,7 @@ function traversestrongtable(g, h) {
     ;
     for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
-            clearkey(n);
+            clearkey(n);  /* clear its key */
         else {
             (void 0);
             {
@@ -454,7 +572,7 @@ function traversetable(g, h) {
         else if (!weakvalue)
             traverseephemeron(g, h, 0);
         else
-            linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_allweak));
+            linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_allweak));  /* nothing to traverse now */
     } else
         traversestrongtable(g, h);
     return BigInt(((((1 + cptr.ldI32o(h, $Table_alimit)) >>> 0) + (Math.imul(2, ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null))) ? 0 : ((1 << (cptr.ld1uo((h), $Table_lsizenode)))))) >>> 0)) >>> 0) >>> 0);
@@ -466,7 +584,7 @@ function traverseudata(g, u) {
     {
         if (cptr.ldPtro(u, $Udata_metatable)) {
             if (((cptr.ld1uo((cptr.ldPtro(u, $Udata_metatable)), $Table_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));
+                reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));  /* mark its metatable */
         }
         ;
     }
@@ -481,6 +599,11 @@ function traverseudata(g, u) {
     return (1 + cptr.ldU16o(u, $Udata_nuvalue)) | 0;
 }
 
+/*
+** Traverse a prototype. (While a prototype is being build, its
+** arrays can be larger than needed; the extra slots are filled with
+** NULL, so the use of 'markobjectN')
+*/
 /** C ref: lgc.c:580 — @param {CPtr<global_State>} g @param {CPtr<Proto>} f @returns {CInt} */
 function traverseproto(g, f) {
     let i;
@@ -537,13 +660,17 @@ function traverseCclosure(g, cl) {
     return (1 + cptr.ld1uo(cl, $CClosure_nupvalues)) | 0;
 }
 
+/*
+** Traverse a Lua closure, marking its prototype and its upvalues.
+** (Both can be NULL while closure is being created.)
+*/
 /** C ref: lgc.c:606 — @param {CPtr<global_State>} g @param {CPtr<LClosure>} cl @returns {CInt} */
 function traverseLclosure(g, cl) {
     let i;
     {
         if (cptr.ldPtro(cl, $LClosure_p)) {
             if (((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cl, $LClosure_p))))));
+                reallymarkobject(g, ((((cptr.ldPtro(cl, $LClosure_p))))));  /* mark its prototype */
         }
         ;
     }
@@ -553,7 +680,7 @@ function traverseLclosure(g, cl) {
         {
             if (uv) {
                 if (((cptr.ld1uo((uv), $UpVal_marked)) & 24))
-                    reallymarkobject(g, ((((uv)))));
+                    reallymarkobject(g, ((((uv)))));  /* mark upvalue */
             }
             ;
         }
@@ -562,14 +689,26 @@ function traverseLclosure(g, cl) {
     return (1 + cptr.ld1uo(cl, $LClosure_nupvalues)) | 0;
 }
 
+/*
+** Traverse a thread, marking the elements in the stack up to its top
+** and cleaning the rest of the stack in the final traversal. That
+** ensures that the entire stack have valid (non-dead) objects.
+** Threads have no barriers. In gen. mode, old threads must be visited
+** at every cycle, because they might point to young objects.  In inc.
+** mode, the thread can still be modified before the end of the cycle,
+** and therefore it must be visited again in the atomic phase. To ensure
+** these visits, threads must return to a gray list if they are not new
+** (which can only happen in generational mode) or if the traverse is in
+** the propagate phase (which can only happen in incremental mode).
+*/
 /** C ref: lgc.c:629 — @param {CPtr<global_State>} g @param {CPtr<lua_State>} th @returns {CInt} */
 function* traversethread(g, th) {
     let uv;
     let o = cptr.ldPtro(th, $lua_State_stack);
     if (((cptr.ld1uo((th), $lua_State_marked) & 7) > 1) || cptr.ld1uo(g, $global_State_gcstate) == 0)
-        linkgclist_(((((th)))), cptr.add((th), $lua_State_gclist), cptr.add(g, $global_State_grayagain));
+        linkgclist_(((((th)))), cptr.add((th), $lua_State_gclist), cptr.add(g, $global_State_grayagain));  /* insert into 'grayagain' list */
     if (cptr.eq(o, (null)))
-        return 1;
+        return 1;  /* stack not completely built yet */
     (void 0);
     for (; cptr.cmp(o, cptr.ldPtro(th, $lua_State_top)) < 0; o = cptr.add(o, 1, 16)) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
@@ -579,27 +718,31 @@ function* traversethread(g, th) {
     ;
     for (uv = cptr.ldPtro(th, $lua_State_openupval); !cptr.eq(uv, (null)); uv = cptr.ldPtro(uv, $UpVal_u)) {
         if (((cptr.ld1uo((uv), $UpVal_marked)) & 24))
-            reallymarkobject(g, ((((uv)))));
+            reallymarkobject(g, ((((uv)))));  /* open upvalues cannot be collected */
     }
     ;
     if (cptr.ld1uo(g, $global_State_gcstate) == 2) {
         if (!cptr.ld1uo(g, $global_State_gcemergency))
-            (yield* luaD_shrinkstack(th));
+            (yield* luaD_shrinkstack(th));  /* do not change stack in emergency cycle */
         for (o = cptr.ldPtro(th, $lua_State_top); cptr.cmp(o, cptr.add(cptr.ldPtro(th, $lua_State_stack_last), 5, 16)) < 0; o = cptr.add(o, 1, 16))
-            (cptr.st1o((((o))), $TValue_tt_, 0));
+            (cptr.st1o((((o))), $TValue_tt_, 0));  /* clear dead stack slice */
+        /* 'remarkupvals' may have removed thread from 'twups' list */
         if (!(!cptr.eq(cptr.ldPtro(th, $lua_State_twups), th)) && !cptr.eq(cptr.ldPtro(th, $lua_State_openupval), (null))) {
-            cptr.stPtro(th, $lua_State_twups, cptr.ldPtro(g, $global_State_twups));
+            cptr.stPtro(th, $lua_State_twups, cptr.ldPtro(g, $global_State_twups));  /* link it back to the list */
             cptr.stPtro(g, $global_State_twups, th);
         }
     }
     return (1 + (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((th), $lua_State_stack_last), cptr.ldPtro((th), $lua_State_stack)) / 16n)))))) | 0;
 }
 
+/*
+** traverse one gray object, turning it to black.
+*/
 /** C ref: lgc.c:660 — @param {CPtr<global_State>} g @returns {*} */
 function* propagatemark(g) {
     let o = cptr.ldPtro(g, $global_State_gray);
     ((cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) | 32)));
-    cptr.stPtro(g, $global_State_gray, cptr.ldPtr(getgclist(o)));
+    cptr.stPtro(g, $global_State_gray, cptr.ldPtr(getgclist(o)));  /* remove from 'gray' list */
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
         return traversetable(g, (((((o))))));
@@ -627,28 +770,46 @@ function* propagateall(g) {
     return tot;
 }
 
+/*
+** Traverse all ephemeron tables propagating marks from keys to values.
+** Repeat until it converges, that is, nothing new is marked. 'dir'
+** inverts the direction of the traversals, trying to speed up
+** convergence on chains in the same table.
+**
+*/
 /** C ref: lgc.c:691 — @param {CPtr<global_State>} g */
 function* convergeephemerons(g) {
     let changed;
     let dir = 0;
     do {
         let w;
-        let next = cptr.ldPtro(g, $global_State_ephemeron);
-        cptr.stPtro(g, $global_State_ephemeron, null);
+        let next = cptr.ldPtro(g, $global_State_ephemeron);  /* get ephemeron list */
+        cptr.stPtro(g, $global_State_ephemeron, null);  /* tables may return to this list when traversed */
         changed = 0;
         while (!cptr.eq((w = next), (null))) {
             let h = (((((w)))));
-            next = cptr.ldPtro(h, $Table_gclist);
-            ((cptr.st1o((h), $Table_marked, cptr.ld1uo((h), $Table_marked) | 32)));
+            next = cptr.ldPtro(h, $Table_gclist);  /* list is rebuilt during loop */
+            ((cptr.st1o((h), $Table_marked, cptr.ld1uo((h), $Table_marked) | 32)));  /* out of the list (for now) */
             if (traverseephemeron(g, h, dir)) {
-                (yield* propagateall(g));
-                changed = 1;
+                (yield* propagateall(g));  /* propagate changes */
+                changed = 1;  /* will have to revisit all ephemeron tables */
             }
         }
-        dir = !dir;
-    } while (changed);
+        dir = !dir;  /* invert direction next time */
+    } while (changed);  /* repeat until no more changes */
 }
 
+/* }====================================================== */
+
+/*
+** {======================================================
+** Sweep Functions
+** =======================================================
+*/
+
+/*
+** clear entries with unmarked keys from all weaktables in list 'l'
+*/
 /** C ref: lgc.c:725 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} l */
 function clearbykeys(g, l) {
     for (; l; l = cptr.ldPtro((((((l))))), $Table_gclist)) {
@@ -657,13 +818,17 @@ function clearbykeys(g, l) {
         let n;
         for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
             if (iscleared(g, (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))) : null)))
-                (cptr.st1o((((n))), $TValue_tt_, 16));
+                (cptr.st1o((((n))), $TValue_tt_, 16));  /* remove entry */
             if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
-                clearkey(n);
+                clearkey(n);  /* clear its key */
         }
     }
 }
 
+/*
+** clear entries with unmarked values from all weaktables in list 'l' up
+** to element 'f'
+*/
 /** C ref: lgc.c:744 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} l @param {CPtr<GCObject>} f */
 function clearbyvalues(g, l, f) {
     for (; !cptr.eq(l, f); l = cptr.ldPtro((((((l))))), $Table_gclist)) {
@@ -675,13 +840,13 @@ function clearbyvalues(g, l, f) {
         for (i = 0; i < asize; i++) {
             let o = cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue);
             if (iscleared(g, (((cptr.ld1uo((o), $TValue_tt_)) & 64) ? (cptr.ldPtr(((o)))) : null)))
-                (cptr.st1o((o), $TValue_tt_, 16));
+                (cptr.st1o((o), $TValue_tt_, 16));  /* remove entry */
         }
         for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
             if (iscleared(g, (((cptr.ld1uo((((n))), $TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
-                (cptr.st1o((((n))), $TValue_tt_, 16));
+                (cptr.st1o((((n))), $TValue_tt_, 16));  /* remove entry */
             if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
-                clearkey(n);
+                clearkey(n);  /* clear its key */
         }
     }
 }
@@ -729,7 +894,7 @@ function* freeobj(L, o) {
         case 4:
         {
             let ts = (((((o)))));
-            luaS_remove(L, ts);
+            luaS_remove(L, ts);  /* remove it from hash table */
             (yield* luaM_free_(L, (ts), ((BigInt.asUintN(64, 24n + BigInt.asUintN(64, BigInt.asUintN(64, BigInt((((cptr.ld1uo(ts, $TString_shrlen)) + 1) | 0))) * 1n))))));
             break;
         }
@@ -744,28 +909,38 @@ function* freeobj(L, o) {
     }
 }
 
+/*
+** sweep at most 'countin' elements from a list of GCObjects erasing dead
+** objects, where a dead object is one marked with the old (non current)
+** white; change all non-dead objects back to white, preparing for next
+** collection cycle. Return where to continue the traversal or NULL if
+** list is finished. ('*countout' gets the number of elements traversed.)
+*/
 /** C ref: lgc.c:824 — @param {CPtr<lua_State>} L @param {CPtr<GCObject *>} p @param {CInt} countin @param {CPtr<int>} countout @returns {CPtr<GCObject *>} */
 function* sweeplist(L, p, countin, countout) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let ow = (cptr.ld1uo((g), $global_State_currentwhite) ^ 24);
     let i;
-    let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
+    let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));  /* current white */
     for (i = 0; !cptr.eq(cptr.ldPtr(p), (null)) && i < countin; i++) {
         let curr = cptr.ldPtr(p);
         let marked = cptr.ld1uo(curr, $GCObject_marked);
         if (((marked) & (ow))) {
-            cptr.stPtr(p, cptr.ldPtr(curr));
-            (yield* freeobj(L, curr));
+            cptr.stPtr(p, cptr.ldPtr(curr));  /* remove 'curr' from list */
+            (yield* freeobj(L, curr));  /* erase 'curr' */
         } else {
             cptr.st1o(curr, $GCObject_marked, (uchar((((marked & -64) | white)))));
-            p = curr;
+            p = curr;  /* go to next element */
         }
     }
     if (countout)
-        cptr.stI32(countout, i);
+        cptr.stI32(countout, i);  /* number of elements traversed */
     return (cptr.eq(cptr.ldPtr(p), (null))) ? null : p;
 }
 
+/*
+** sweep a list until a live object (or end of list)
+*/
 /** C ref: lgc.c:851 — @param {CPtr<lua_State>} L @param {CPtr<GCObject *>} p @returns {CPtr<GCObject *>} */
 function* sweeptolive(L, p) {
     let old = p;
@@ -775,29 +950,44 @@ function* sweeptolive(L, p) {
     return p;
 }
 
+/* }====================================================== */
+
+/*
+** {======================================================
+** Finalization
+** =======================================================
+*/
+
+/*
+** If possible, shrink string table.
+*/
 /** C ref: lgc.c:871 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* checkSizes(L, g) {
     if (!cptr.ld1uo(g, $global_State_gcemergency)) {
         if (cptr.ldI32o(g, $global_State_strt + $stringtable_nuse) < ((cptr.ldI32o(g, $global_State_strt + $stringtable_size) / 4) | 0)) {
             let olddebt = cptr.ldI64o(g, $global_State_GCdebt);
             (yield* luaS_resize(L, (cptr.ldI32o(g, $global_State_strt + $stringtable_size) / 2) | 0));
-            cptr.stU64o(g, $global_State_GCestimate, cptr.ldU64o(g, $global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)));
+            cptr.stU64o(g, $global_State_GCestimate, cptr.ldU64o(g, $global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)));  /* correct estimate */
         }
     }
 }
 
+/*
+** Get the next udata to be finalized from the 'tobefnz' list, and
+** link it back into the 'allgc' list.
+*/
 /** C ref: lgc.c:886 — @param {CPtr<global_State>} g @returns {CPtr<GCObject>} */
 function udata2finalize(g) {
-    let o = cptr.ldPtro(g, $global_State_tobefnz);
+    let o = cptr.ldPtro(g, $global_State_tobefnz);  /* get first element */
     (void 0);
-    cptr.stPtro(g, $global_State_tobefnz, cptr.ldPtr(o));
-    cptr.stPtr(o, cptr.ldPtro(g, $global_State_allgc));
+    cptr.stPtro(g, $global_State_tobefnz, cptr.ldPtr(o));  /* remove it from 'tobefnz' list */
+    cptr.stPtr(o, cptr.ldPtro(g, $global_State_allgc));  /* return it to 'allgc' list */
     cptr.stPtro(g, $global_State_allgc, o);
-    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 191));
+    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 191));  /* object is "normal" again */
     if ((3 <= cptr.ld1uo((g), $global_State_gcstate) && cptr.ld1uo((g), $global_State_gcstate) <= 6))
-        (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));
+        (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));  /* "sweep" object */
     else if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 3)
-        cptr.stPtro(g, $global_State_firstold1, o);
+        cptr.stPtro(g, $global_State_firstold1, o);  /* it is the first OLD1 object in the list */
     return o;
 }
 
@@ -825,10 +1015,10 @@ function* GCTM(L) {
         let status;
         let oldah = cptr.ld1uo(L, $lua_State_allowhook);
         let oldgcstp = cptr.ld1uo(g, $global_State_gcstp);
-        cptr.st1o(g, $global_State_gcstp, cptr.ld1uo(g, $global_State_gcstp) | 2);
-        cptr.st1o(L, $lua_State_allowhook, 0);
+        cptr.st1o(g, $global_State_gcstp, cptr.ld1uo(g, $global_State_gcstp) | 2);  /* avoid GC steps */
+        cptr.st1o(L, $lua_State_allowhook, 0);  /* stop debug hooks during GC metamethod */
         {
-            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
+            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));  /* push finalizer... */
             let io2 = (tm);
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -837,7 +1027,7 @@ function* GCTM(L) {
         }
         ;
         {
-            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
+            let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));  /* ... and its argument */
             let io2 = (v);
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -845,27 +1035,33 @@ function* GCTM(L) {
             (void 0);
         }
         ;
-        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 128);
+        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 128);  /* will run a finalizer */
         status = (yield* luaD_pcall(L, dothecall, (null), (cptr.diff((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16)))), (((cptr.ldPtro(L, $lua_State_stack)))))), 0n));
-        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) & -129);
-        cptr.st1o(L, $lua_State_allowhook, oldah);
-        cptr.st1o(g, $global_State_gcstp, uchar(oldgcstp));
+        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) & -129);  /* not running a finalizer anymore */
+        cptr.st1o(L, $lua_State_allowhook, oldah);  /* restore hooks */
+        cptr.st1o(g, $global_State_gcstp, uchar(oldgcstp));  /* restore state */
         if ((__builtin_expect(BigInt(((status != 0) != 0)), 0n))) {
             (yield* luaE_warnerror(L, __s_gc));
-            cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+            cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pops error object */
         }
     }
 }
 
+/*
+** Call a few finalizers
+*/
 /** C ref: lgc.c:938 — @param {CPtr<lua_State>} L @param {CInt} n @returns {CInt} */
 function* runafewfinalizers(L, n) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let i;
     for (i = 0; i < n && cptr.ldPtro(g, $global_State_tobefnz); i++)
-        (yield* GCTM(L));
+        (yield* GCTM(L));  /* call one finalizer */
     return i;
 }
 
+/*
+** call all pending finalizers
+*/
 /** C ref: lgc.c:950 — @param {CPtr<lua_State>} L */
 function* callallpendingfinalizers(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -873,6 +1069,9 @@ function* callallpendingfinalizers(L) {
         (yield* GCTM(L));
 }
 
+/*
+** find last 'next' field in list 'p' list (to add elements in its end)
+*/
 /** C ref: lgc.c:960 — @param {CPtr<GCObject *>} p @returns {CPtr<GCObject *>} */
 function findlast(p) {
     while (!cptr.eq(cptr.ldPtr(p), (null)))
@@ -880,6 +1079,13 @@ function findlast(p) {
     return p;
 }
 
+/*
+** Move all unreachable objects (or 'all' objects) that need
+** finalization from list 'finobj' to list 'tobefnz' (to be finalized).
+** (Note that objects after 'finobjold1' cannot be white, so they
+** don't need to be traversed. In incremental mode, 'finobjold1' is NULL,
+** so the whole list is traversed.)
+*/
 /** C ref: lgc.c:974 — @param {CPtr<global_State>} g @param {CInt} all */
 function separatetobefnz(g, all) {
     let curr;
@@ -888,24 +1094,31 @@ function separatetobefnz(g, all) {
     while (!cptr.eq((curr = cptr.ldPtr(p)), cptr.ldPtro(g, $global_State_finobjold1))) {
         (void 0);
         if (!(((cptr.ld1uo((curr), $GCObject_marked)) & 24) || all))
-            p = curr;
+            p = curr;  /* don't bother with it */
         else {
             if (cptr.eq(curr, cptr.ldPtro(g, $global_State_finobjsur)))
-                cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtr(curr));
-            cptr.stPtr(p, cptr.ldPtr(curr));
-            cptr.stPtr(curr, cptr.ldPtr(lastnext));
+                cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtr(curr));  /* correct it */
+            cptr.stPtr(p, cptr.ldPtr(curr));  /* remove 'curr' from 'finobj' list */
+            cptr.stPtr(curr, cptr.ldPtr(lastnext));  /* link at the end of 'tobefnz' list */
             cptr.stPtr(lastnext, curr);
             lastnext = curr;
         }
     }
 }
 
+/*
+** If pointer 'p' points to 'o', move it to the next element.
+*/
 /** C ref: lgc.c:997 — @param {CPtr<GCObject *>} p @param {CPtr<GCObject>} o */
 function checkpointer(p, o) {
     if (cptr.eq(o, cptr.ldPtr(p)))
         cptr.stPtr(p, cptr.ldPtr(o));
 }
 
+/*
+** Correct pointers to objects inside 'allgc' list when
+** object 'o' is being removed from the list.
+*/
 /** C ref: lgc.c:1007 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o */
 function correctpointers(g, o) {
     checkpointer(cptr.add(g, $global_State_survival), o);
@@ -914,42 +1127,67 @@ function correctpointers(g, o) {
     checkpointer(cptr.add(g, $global_State_firstold1), o);
 }
 
+/*
+** if object 'o' has a finalizer, remove it from 'allgc' list (must
+** search the list to find it) and link it in 'finobj' list.
+*/
 /** C ref: lgc.c:1019 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o @param {CPtr<Table>} mt */
 export function* luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (((cptr.ld1uo((o), $GCObject_marked)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), $Table_flags) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, $global_State_tmname)))), (null)) || (cptr.ld1uo(g, $global_State_gcstp) & 4))
-        return;
+        return;  /* nothing to be done */
     else {
         let p;
         if ((3 <= cptr.ld1uo((g), $global_State_gcstate) && cptr.ld1uo((g), $global_State_gcstate) <= 6)) {
-            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));
+            (cptr.st1o(o, $GCObject_marked, (uchar((((cptr.ld1uo(o, $GCObject_marked) & -57) | (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))))))))));  /* "sweep" object 'o' */
             if (cptr.eq(cptr.ldPtro(g, $global_State_sweepgc), o))
-                cptr.stPtro(g, $global_State_sweepgc, (yield* sweeptolive(L, cptr.ldPtro(g, $global_State_sweepgc))));
+                cptr.stPtro(g, $global_State_sweepgc, (yield* sweeptolive(L, cptr.ldPtro(g, $global_State_sweepgc))));  /* change 'sweepgc' */
         } else
             correctpointers(g, o);
         for (p = cptr.add(g, $global_State_allgc); !cptr.eq(cptr.ldPtr(p), o); p = (cptr.ldPtr(p))) {
+            /* search for pointer pointing to 'o' */
         }
-        cptr.stPtr(p, cptr.ldPtr(o));
-        cptr.stPtr(o, cptr.ldPtro(g, $global_State_finobj));
+        cptr.stPtr(p, cptr.ldPtr(o));  /* remove 'o' from 'allgc' list */
+        cptr.stPtr(o, cptr.ldPtro(g, $global_State_finobj));  /* link it in 'finobj' list */
         cptr.stPtro(g, $global_State_finobj, o);
-        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) | 64));
+        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) | 64));  /* mark it as such */
     }
 }
 
+/* }====================================================== */
+
+/*
+** {======================================================
+** Generational Collector
+** =======================================================
+*/
+
+/*
+** Set the "time" to wait before starting a new GC cycle; cycle will
+** start when memory use hits the threshold of ('estimate' * pause /
+** PAUSEADJ). (Division by 'estimate' should be OK: it cannot be zero,
+** because Lua cannot even start with less than PAUSEADJ bytes).
+*/
 /** C ref: lgc.c:1059 — @param {CPtr<global_State>} g */
 function setpause(g) {
     let threshold;
     let debt;
     let pause = (Math.imul((cptr.ld1uo(g, $global_State_gcpause)), 4));
-    let estimate = BigInt.asIntN(64, (cptr.ldU64o(g, $global_State_GCestimate) / 100n));
+    let estimate = BigInt.asIntN(64, (cptr.ldU64o(g, $global_State_GCestimate) / 100n));  /* adjust 'estimate' */
     (void 0);
-    threshold = (BigInt(pause) < 9223372036854775807n / estimate) ? BigInt.asIntN(64, estimate * BigInt(pause)) : 9223372036854775807n;
+    threshold = (BigInt(pause) < 9223372036854775807n / estimate) ? BigInt.asIntN(64, estimate * BigInt(pause)) : 9223372036854775807n;  /* overflow; truncate to maximum */
     debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) - BigInt.asUintN(64, threshold)));
     if (debt > 0n)
         debt = 0n;
     luaE_setdebt(g, debt);
 }
 
+/*
+** Sweep a list of objects to enter generational mode.  Deletes dead
+** objects and turns the non dead to old. All non-dead threads---which
+** are now old---must be in a gray list. Everything else is not in a
+** gray list. Open upvalues are also kept gray.
+*/
 /** C ref: lgc.c:1079 — @param {CPtr<lua_State>} L @param {CPtr<GCObject *>} p */
 function* sweep2old(L, p) {
     let curr;
@@ -957,22 +1195,33 @@ function* sweep2old(L, p) {
     while (!cptr.eq((curr = cptr.ldPtr(p)), (null))) {
         if (((cptr.ld1uo((curr), $GCObject_marked)) & 24)) {
             (void 0);
-            cptr.stPtr(p, cptr.ldPtr(curr));
-            (yield* freeobj(L, curr));
+            cptr.stPtr(p, cptr.ldPtr(curr));  /* remove 'curr' from list */
+            (yield* freeobj(L, curr));  /* erase 'curr' */
         } else {
             (cptr.st1o((curr), $GCObject_marked, (uchar((((cptr.ld1uo((curr), $GCObject_marked) & -8) | 4))))));
             if (cptr.ld1uo(curr, $GCObject_tt) == 8) {
                 let th = (((((curr)))));
-                linkgclist_(((((th)))), cptr.add((th), $lua_State_gclist), cptr.add(g, $global_State_grayagain));
+                linkgclist_(((((th)))), cptr.add((th), $lua_State_gclist), cptr.add(g, $global_State_grayagain));  /* insert into 'grayagain' list */
             } else if (cptr.ld1uo(curr, $GCObject_tt) == 9 && (!cptr.eq(cptr.ldPtro(((((((curr)))))), $UpVal_v), cptr.add(((((((curr)))))), $UpVal_u))))
-                (cptr.st1o(curr, $GCObject_marked, cptr.ld1uo(curr, $GCObject_marked) & 199));
+                (cptr.st1o(curr, $GCObject_marked, cptr.ld1uo(curr, $GCObject_marked) & 199));  /* open upvalues are always gray */
             else
                 ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
-            p = curr;
+            p = curr;  /* go to next element */
         }
     }
 }
 
+/*
+** Sweep for generational mode. Delete dead objects. (Because the
+** collection is not incremental, there are no "new white" objects
+** during the sweep. So, any white object must be dead.) For
+** non-dead objects, advance their ages and clear the color of
+** new objects. (Old objects keep their colors.)
+** The ages of G_TOUCHED1 and G_TOUCHED2 objects cannot be advanced
+** here, because these old-generation objects are usually not swept
+** here.  They will all be advanced in 'correctgraylist'. That function
+** will also remove objects turned white here from any gray list.
+*/
 const __static_sweepgen_nextage = [1, 3, 3, 4, 4, 5, 6]; /** C ref: lgc.c:1117 — unsigned char[7] (function-static) */
 
 /** C ref: lgc.c:1115 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @param {CPtr<GCObject *>} p @param {CPtr<GCObject>} limit @param {CPtr<GCObject *>} pfirstold1 @returns {CPtr<GCObject *>} */
@@ -982,23 +1231,28 @@ function* sweepgen(L, g, p, limit, pfirstold1) {
     while (!cptr.eq((curr = cptr.ldPtr(p)), limit)) {
         if (((cptr.ld1uo((curr), $GCObject_marked)) & 24)) {
             (void 0);
-            cptr.stPtr(p, cptr.ldPtr(curr));
-            (yield* freeobj(L, curr));
+            cptr.stPtr(p, cptr.ldPtr(curr));  /* remove 'curr' from list */
+            (yield* freeobj(L, curr));  /* erase 'curr' */
         } else {
             if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 0) {
-                let marked = cptr.ld1uo(curr, $GCObject_marked) & -64;
+                let marked = cptr.ld1uo(curr, $GCObject_marked) & -64;  /* erase GC bits */
                 cptr.st1o(curr, $GCObject_marked, (uchar(((marked | 1 | white)))));
             } else {
                 (cptr.st1o((curr), $GCObject_marked, (uchar((((cptr.ld1uo((curr), $GCObject_marked) & -8) | cptr.ld1uo(cptr.decay(__static_sweepgen_nextage), (cptr.ld1uo((curr), $GCObject_marked) & 7), 1)))))));
                 if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 3 && cptr.eq(cptr.ldPtr(pfirstold1), (null)))
-                    cptr.stPtr(pfirstold1, curr);
+                    cptr.stPtr(pfirstold1, curr);  /* first OLD1 object in the list */
             }
-            p = curr;
+            p = curr;  /* go to next element */
         }
     }
     return p;
 }
 
+/*
+** Traverse a list making all its elements white and clearing their
+** age. In incremental mode, all objects are 'new' all the time,
+** except for fixed strings (which are always old).
+*/
 /** C ref: lgc.c:1156 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} p */
 function whitelist(g, p) {
     let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
@@ -1006,6 +1260,15 @@ function whitelist(g, p) {
         cptr.st1o(p, $GCObject_marked, (uchar((((cptr.ld1uo(p, $GCObject_marked) & -64) | white)))));
 }
 
+/*
+** Correct a list of gray objects. Return pointer to where rest of the
+** list should be linked.
+** Because this correction is done after sweeping, young objects might
+** be turned white and still be in the list. They are only removed.
+** 'TOUCHED1' objects are advanced to 'TOUCHED2' and remain on the list;
+** Non-white threads also remain on the list; 'TOUCHED2' objects become
+** regular old; they and anything else are removed from the list.
+*/
 /** C ref: lgc.c:1172 — @param {CPtr<GCObject *>} p @returns {CPtr<GCObject *>} */
 function correctgraylist(p) {
     let curr;
@@ -1014,20 +1277,20 @@ function correctgraylist(p) {
         __lbl_remain: {
         __lbl_remove: {
             if (((cptr.ld1uo((curr), $GCObject_marked)) & 24))
-                break __lbl_remove;
+                break __lbl_remove;  /* remove all white objects */
             else if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 5) {
                 (void 0);
-                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
+                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));  /* make it black, for next barrier */
                 (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 3));
-                break __lbl_remain;
+                break __lbl_remain;  /* keep it in the list and go to next element */
             } else if (cptr.ld1uo(curr, $GCObject_tt) == 8) {
                 (void 0);
-                break __lbl_remain;
+                break __lbl_remain;  /* keep non-white threads on the list */
             } else {
-                (void 0);
+                (void 0);  /* young objects should be white here */
                 if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 6)
-                    (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 2));
-                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
+                    (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 2));  /* ... to OLD */
+                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));  /* make object black (to be removed) */
                 break __lbl_remove;
             }
         }
@@ -1040,6 +1303,9 @@ function correctgraylist(p) {
     return p;
 }
 
+/*
+** Correct all gray lists, coalescing them into 'grayagain'.
+*/
 /** C ref: lgc.c:1205 — @param {CPtr<global_State>} g */
 function correctgraylists(g) {
     let list = correctgraylist(cptr.add(g, $global_State_grayagain));
@@ -1054,88 +1320,135 @@ function correctgraylists(g) {
     correctgraylist(list);
 }
 
+/*
+** Mark black 'OLD1' objects when starting a new young collection.
+** Gray objects are already in some gray list, and so will be visited
+** in the atomic step.
+*/
 /** C ref: lgc.c:1221 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} from @param {CPtr<GCObject>} to */
 function markold(g, from, to) {
     let p;
     for (p = from; !cptr.eq(p, to); p = cptr.ldPtr(p)) {
         if ((cptr.ld1uo((p), $GCObject_marked) & 7) == 3) {
             (void 0);
-            (cptr.st1o((p), $GCObject_marked, cptr.ld1uo((p), $GCObject_marked) ^ 7));
+            (cptr.st1o((p), $GCObject_marked, cptr.ld1uo((p), $GCObject_marked) ^ 7));  /* now they are old */
             if (((cptr.ld1uo((p), $GCObject_marked)) & 32))
                 reallymarkobject(g, p);
         }
     }
 }
 
+/*
+** Finish a young-generation collection.
+*/
 /** C ref: lgc.c:1237 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* finishgencycle(L, g) {
     correctgraylists(g);
     (yield* checkSizes(L, g));
-    cptr.st1o(g, $global_State_gcstate, 0);
+    cptr.st1o(g, $global_State_gcstate, 0);  /* skip restart */
     if (!cptr.ld1uo(g, $global_State_gcemergency))
         (yield* callallpendingfinalizers(L));
 }
 
+/*
+** Does a young collection. First, mark 'OLD1' objects. Then does the
+** atomic step. Then, sweep all lists and advance pointers. Finally,
+** finish the collection.
+*/
 /** C ref: lgc.c:1251 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* youngcollection(L, g) {
-    let psurvival;
-    let dummy = cptr.box(0);
+    let psurvival;  /* to point to first non-dead survival object */
+    let dummy = cptr.box(0);  /* dummy out parameter to 'sweepgen' */
     (void 0);
     if (cptr.ldPtro(g, $global_State_firstold1)) {
-        markold(g, cptr.ldPtro(g, $global_State_firstold1), cptr.ldPtro(g, $global_State_reallyold));
-        cptr.stPtro(g, $global_State_firstold1, null);
+        markold(g, cptr.ldPtro(g, $global_State_firstold1), cptr.ldPtro(g, $global_State_reallyold));  /* mark them */
+        cptr.stPtro(g, $global_State_firstold1, null);  /* no more OLD1 objects (for now) */
     }
     markold(g, cptr.ldPtro(g, $global_State_finobj), cptr.ldPtro(g, $global_State_finobjrold));
     markold(g, cptr.ldPtro(g, $global_State_tobefnz), null);
     (yield* atomic(L));
+
+    /* sweep nursery and get a pointer to its last live element */
     cptr.st1o(g, $global_State_gcstate, 3);
     psurvival = (yield* sweepgen(L, g, cptr.add(g, $global_State_allgc), cptr.ldPtro(g, $global_State_survival), cptr.add(g, $global_State_firstold1)));
+    /* sweep 'survival' */
     (yield* sweepgen(L, g, psurvival, cptr.ldPtro(g, $global_State_old1), cptr.add(g, $global_State_firstold1)));
     cptr.stPtro(g, $global_State_reallyold, cptr.ldPtro(g, $global_State_old1));
-    cptr.stPtro(g, $global_State_old1, cptr.ldPtr(psurvival));
-    cptr.stPtro(g, $global_State_survival, cptr.ldPtro(g, $global_State_allgc));
-    dummy.v = null;
+    cptr.stPtro(g, $global_State_old1, cptr.ldPtr(psurvival));  /* 'survival' survivals are old now */
+    cptr.stPtro(g, $global_State_survival, cptr.ldPtro(g, $global_State_allgc));  /* all news are survivals */
+
+    /* repeat for 'finobj' lists */
+    dummy.v = null;  /* no 'firstold1' optimization for 'finobj' lists */
     psurvival = (yield* sweepgen(L, g, cptr.add(g, $global_State_finobj), cptr.ldPtro(g, $global_State_finobjsur), dummy));
+    /* sweep 'survival' */
     (yield* sweepgen(L, g, psurvival, cptr.ldPtro(g, $global_State_finobjold1), dummy));
     cptr.stPtro(g, $global_State_finobjrold, cptr.ldPtro(g, $global_State_finobjold1));
-    cptr.stPtro(g, $global_State_finobjold1, cptr.ldPtr(psurvival));
-    cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtro(g, $global_State_finobj));
+    cptr.stPtro(g, $global_State_finobjold1, cptr.ldPtr(psurvival));  /* 'survival' survivals are old now */
+    cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtro(g, $global_State_finobj));  /* all news are survivals */
+
     (yield* sweepgen(L, g, cptr.add(g, $global_State_tobefnz), null, dummy));
     (yield* finishgencycle(L, g));
 }
 
+/*
+** Clears all gray lists, sweeps objects, and prepare sublists to enter
+** generational mode. The sweeps remove dead objects and turn all
+** surviving objects to old. Threads go back to 'grayagain'; everything
+** else is turned black (not in any gray list).
+*/
 /** C ref: lgc.c:1292 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* atomic2gen(L, g) {
     cleargraylists(g);
+    /* sweep all elements making them old */
     cptr.st1o(g, $global_State_gcstate, 3);
     (yield* sweep2old(L, cptr.add(g, $global_State_allgc)));
+    /* everything alive now is old */
     cptr.stPtro(g, $global_State_reallyold, cptr.stPtro(g, $global_State_old1, cptr.stPtro(g, $global_State_survival, cptr.ldPtro(g, $global_State_allgc))));
-    cptr.stPtro(g, $global_State_firstold1, null);
+    cptr.stPtro(g, $global_State_firstold1, null);  /* there are no OLD1 objects anywhere */
+
+    /* repeat for 'finobj' lists */
     (yield* sweep2old(L, cptr.add(g, $global_State_finobj)));
     cptr.stPtro(g, $global_State_finobjrold, cptr.stPtro(g, $global_State_finobjold1, cptr.stPtro(g, $global_State_finobjsur, cptr.ldPtro(g, $global_State_finobj))));
+
     (yield* sweep2old(L, cptr.add(g, $global_State_tobefnz)));
+
     cptr.st1o(g, $global_State_gckind, 1);
     cptr.stU64o(g, $global_State_lastatomic, 0n);
-    cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
+    cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));  /* base for memory control */
     (yield* finishgencycle(L, g));
 }
 
+/*
+** Set debt for the next minor collection, which will happen when
+** memory grows 'genminormul'%.
+*/
 /** C ref: lgc.c:1318 — @param {CPtr<global_State>} g */
 function setminordebt(g) {
     luaE_setdebt(g, -(BigInt.asIntN(64, (BigInt.asIntN(64, (((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) / 100n)))) * BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0))));
 }
 
+/*
+** Enter generational mode. Must go until the end of an atomic cycle
+** to ensure that all objects are correctly marked and weak tables
+** are cleared. Then, turn all objects into old and finishes the
+** collection.
+*/
 /** C ref: lgc.c:1329 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @returns {*} */
 function* entergen(L, g) {
     let numobjs;
-    (yield* luaC_runtilstate(L, 256));
-    (yield* luaC_runtilstate(L, 1));
-    numobjs = (yield* atomic(L));
+    (yield* luaC_runtilstate(L, 256));  /* prepare to start a new cycle */
+    (yield* luaC_runtilstate(L, 1));  /* start new cycle */
+    numobjs = (yield* atomic(L));  /* propagates all and then do the atomic stuff */
     (yield* atomic2gen(L, g));
-    setminordebt(g);
+    setminordebt(g);  /* set debt assuming next cycle will be minor */
     return numobjs;
 }
 
+/*
+** Enter incremental mode. Turn all objects white, make all
+** intermediate lists point to NULL (to avoid invalid pointers),
+** and go to the pause state.
+*/
 /** C ref: lgc.c:1345 — @param {CPtr<global_State>} g */
 function enterinc(g) {
     whitelist(g, cptr.ldPtro(g, $global_State_allgc));
@@ -1148,6 +1461,9 @@ function enterinc(g) {
     cptr.stU64o(g, $global_State_lastatomic, 0n);
 }
 
+/*
+** Change collector mode to 'newmode'.
+*/
 /** C ref: lgc.c:1360 — @param {CPtr<lua_State>} L @param {CInt} newmode */
 export function* luaC_changemode(L, newmode) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -1155,61 +1471,121 @@ export function* luaC_changemode(L, newmode) {
         if (newmode == 1)
             (yield* entergen(L, g));
         else
-            enterinc(g);
+            enterinc(g);  /* entering incremental mode */
     }
     cptr.stU64o(g, $global_State_lastatomic, 0n);
 }
 
+/*
+** Does a full collection in generational mode.
+*/
 /** C ref: lgc.c:1375 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @returns {*} */
 function* fullgen(L, g) {
     enterinc(g);
     return (yield* entergen(L, g));
 }
 
+/*
+** Does a major collection after last collection was a "bad collection".
+**
+** When the program is building a big structure, it allocates lots of
+** memory but generates very little garbage. In those scenarios,
+** the generational mode just wastes time doing small collections, and
+** major collections are frequently what we call a "bad collection", a
+** collection that frees too few objects. To avoid the cost of switching
+** between generational mode and the incremental mode needed for full
+** (major) collections, the collector tries to stay in incremental mode
+** after a bad collection, and to switch back to generational mode only
+** after a "good" collection (one that traverses less than 9/8 objects
+** of the previous one).
+** The collector must choose whether to stay in incremental mode or to
+** switch back to generational mode before sweeping. At this point, it
+** does not know the real memory in use, so it cannot use memory to
+** decide whether to return to generational mode. Instead, it uses the
+** number of objects traversed (returned by 'atomic') as a proxy. The
+** field 'g->lastatomic' keeps this count from the last collection.
+** ('g->lastatomic != 0' also means that the last collection was bad.)
+*/
 /** C ref: lgc.c:1402 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* stepgenfull(L, g) {
-    let newatomic;
-    let lastatomic = cptr.ldU64o(g, $global_State_lastatomic);
+    let newatomic;  /* count of traversed objects */
+    let lastatomic = cptr.ldU64o(g, $global_State_lastatomic);  /* count from last collection */
     if (cptr.ld1uo(g, $global_State_gckind) == 1)
-        enterinc(g);
-    (yield* luaC_runtilstate(L, 1));
-    newatomic = (yield* atomic(L));
+        enterinc(g);  /* enter incremental mode */
+    (yield* luaC_runtilstate(L, 1));  /* start new cycle */
+    newatomic = (yield* atomic(L));  /* mark everybody */
     if (newatomic < BigInt.asUintN(64, lastatomic + (lastatomic >> 3n))) {
-        (yield* atomic2gen(L, g));
+        (yield* atomic2gen(L, g));  /* return to generational mode */
         setminordebt(g);
     } else {
-        cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
+        cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));  /* first estimate */
         (yield* entersweep(L));
-        (yield* luaC_runtilstate(L, 256));
+        (yield* luaC_runtilstate(L, 256));  /* finish collection */
         setpause(g);
         cptr.stU64o(g, $global_State_lastatomic, newatomic);
     }
 }
 
+/*
+** Does a generational "step".
+** Usually, this means doing a minor collection and setting the debt to
+** make another collection when memory grows 'genminormul'% larger.
+**
+** However, there are exceptions.  If memory grows 'genmajormul'%
+** larger than it was at the end of the last major collection (kept
+** in 'g->GCestimate'), the function does a major collection. At the
+** end, it checks whether the major collection was able to free a
+** decent amount of memory (at least half the growth in memory since
+** previous major collection). If so, the collector keeps its state,
+** and the next collection will probably be minor again. Otherwise,
+** we have what we call a "bad collection". In that case, set the field
+** 'g->lastatomic' to signal that fact, so that the next collection will
+** go to 'stepgenfull'.
+**
+** 'GCdebt <= 0' means an explicit call to GC step with "size" zero;
+** in that case, do a minor collection.
+*/
 /** C ref: lgc.c:1442 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* genstep(L, g) {
     if (cptr.ldU64o(g, $global_State_lastatomic) != 0n)
-        (yield* stepgenfull(L, g));
+        (yield* stepgenfull(L, g));  /* do a full step */
     else {
-        let majorbase = cptr.ldU64o(g, $global_State_GCestimate);
+        let majorbase = cptr.ldU64o(g, $global_State_GCestimate);  /* memory after last major collection */
         let majorinc = BigInt.asUintN(64, (majorbase / 100n) * BigInt.asUintN(64, BigInt((Math.imul((cptr.ld1uo(g, $global_State_genmajormul)), 4)))));
         if (cptr.ldI64o(g, $global_State_GCdebt) > 0n && (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) > BigInt.asUintN(64, majorbase + majorinc)) {
-            let numobjs = (yield* fullgen(L, g));
+            let numobjs = (yield* fullgen(L, g));  /* do a major collection */
             if ((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) < BigInt.asUintN(64, majorbase + (majorinc / 2n))) {
+                /* collected at least half of memory growth since last major
+                   collection; keep doing minor collections. */
                 (void 0);
             } else {
-                cptr.stU64o(g, $global_State_lastatomic, numobjs);
-                setpause(g);
+                cptr.stU64o(g, $global_State_lastatomic, numobjs);  /* signal that last collection was bad */
+                setpause(g);  /* do a long wait for next (major) collection */
             }
         } else {
             (yield* youngcollection(L, g));
             setminordebt(g);
-            cptr.stU64o(g, $global_State_GCestimate, majorbase);
+            cptr.stU64o(g, $global_State_GCestimate, majorbase);  /* preserve base value */
         }
     }
     (void 0);
 }
 
+/* }====================================================== */
+
+/*
+** {======================================================
+** GC control
+** =======================================================
+*/
+
+/*
+** Enter first sweep phase.
+** The call to 'sweeptolive' makes the pointer point to an object
+** inside the list (instead of to the header), so that the real sweep do
+** not need to skip objects created between "now" and the start of the
+** real sweep.
+*/
 /** C ref: lgc.c:1486 — @param {CPtr<lua_State>} L */
 function* entersweep(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -1218,6 +1594,10 @@ function* entersweep(L) {
     cptr.stPtro(g, $global_State_sweepgc, (yield* sweeptolive(L, cptr.add(g, $global_State_allgc))));
 }
 
+/*
+** Delete all objects in list 'p' until (but not including) object
+** 'limit'.
+*/
 /** C ref: lgc.c:1498 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} p @param {CPtr<GCObject>} limit */
 function* deletelist(L, p, limit) {
     while (!cptr.eq(p, limit)) {
@@ -1227,17 +1607,21 @@ function* deletelist(L, p, limit) {
     }
 }
 
+/*
+** Call all finalizers of the objects in the given Lua state, and
+** then free all objects, except for the main thread.
+*/
 /** C ref: lgc.c:1511 — @param {CPtr<lua_State>} L */
 export function* luaC_freeallobjects(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
-    cptr.st1o(g, $global_State_gcstp, 4);
+    cptr.st1o(g, $global_State_gcstp, 4);  /* no extra finalizers after here */
     (yield* luaC_changemode(L, 0));
-    separatetobefnz(g, 1);
+    separatetobefnz(g, 1);  /* separate all objects with finalizers */
     (void 0);
     (yield* callallpendingfinalizers(L));
     (yield* deletelist(L, cptr.ldPtro(g, $global_State_allgc), ((((cptr.ldPtro(g, $global_State_mainthread)))))));
-    (void 0);
-    (yield* deletelist(L, cptr.ldPtro(g, $global_State_fixedgc), null));
+    (void 0);  /* no new finalizers */
+    (yield* deletelist(L, cptr.ldPtro(g, $global_State_fixedgc), null));  /* collect fixed objects */
     (void 0);
 }
 
@@ -1247,45 +1631,52 @@ function* atomic(L) {
     let work = 0n;
     let origweak;
     let origall;
-    let grayagain = cptr.ldPtro(g, $global_State_grayagain);
+    let grayagain = cptr.ldPtro(g, $global_State_grayagain);  /* save original list */
     cptr.stPtro(g, $global_State_grayagain, null);
     (void 0);
     (void 0);
     cptr.st1o(g, $global_State_gcstate, 2);
     {
         if (((cptr.ld1uo((L), $lua_State_marked)) & 24))
-            reallymarkobject(g, ((((L)))));
+            reallymarkobject(g, ((((L)))));  /* mark running thread */
     }
     ;
     {
+        /* registry and global metatables may be changed by API */
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
         if ((((cptr.ld1uo((cptr.add(g, $global_State_l_registry)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(g, $global_State_l_registry)))))), $GCObject_marked)) & 24)))
             reallymarkobject(g, (cptr.ldPtr(((cptr.add(g, $global_State_l_registry))))));
     }
     ;
-    markmt(g);
-    work += (yield* propagateall(g));
+    markmt(g);  /* mark global metatables */
+    work += (yield* propagateall(g));  /* empties 'gray' list */
+    /* remark occasional upvalues of (maybe) dead threads */
     work += BigInt.asUintN(64, BigInt(remarkupvals(g)));
-    work += (yield* propagateall(g));
+    work += (yield* propagateall(g));  /* propagate changes */
     cptr.stPtro(g, $global_State_gray, grayagain);
-    work += (yield* propagateall(g));
+    work += (yield* propagateall(g));  /* traverse 'grayagain' list */
     (yield* convergeephemerons(g));
+    /* at this point, all strongly accessible objects are marked. */
+    /* Clear values from weak tables, before checking finalizers */
     clearbyvalues(g, cptr.ldPtro(g, $global_State_weak), null);
     clearbyvalues(g, cptr.ldPtro(g, $global_State_allweak), null);
     origweak = cptr.ldPtro(g, $global_State_weak);
     origall = cptr.ldPtro(g, $global_State_allweak);
-    separatetobefnz(g, 0);
-    work += markbeingfnz(g);
-    work += (yield* propagateall(g));
+    separatetobefnz(g, 0);  /* separate objects to be finalized */
+    work += markbeingfnz(g);  /* mark objects that will be finalized */
+    work += (yield* propagateall(g));  /* remark, to propagate 'resurrection' */
     (yield* convergeephemerons(g));
-    clearbykeys(g, cptr.ldPtro(g, $global_State_ephemeron));
-    clearbykeys(g, cptr.ldPtro(g, $global_State_allweak));
+    /* at this point, all resurrected objects are marked. */
+    /* remove dead objects from weak tables */
+    clearbykeys(g, cptr.ldPtro(g, $global_State_ephemeron));  /* clear keys from all ephemeron tables */
+    clearbykeys(g, cptr.ldPtro(g, $global_State_allweak));  /* clear keys from all 'allweak' tables */
+    /* clear values from resurrected weak tables */
     clearbyvalues(g, cptr.ldPtro(g, $global_State_weak), origweak);
     clearbyvalues(g, cptr.ldPtro(g, $global_State_allweak), origall);
     luaS_clearcache(g);
-    cptr.st1o(g, $global_State_currentwhite, (uchar((((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))));
+    cptr.st1o(g, $global_State_currentwhite, (uchar((((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))));  /* flip current white */
     (void 0);
-    return work;
+    return work;  /* estimate of slots marked by 'atomic' */
 }
 
 /** C ref: lgc.c:1568 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @param {CInt} nextstate @param {CPtr<GCObject *>} nextlist @returns {CInt} */
@@ -1294,12 +1685,12 @@ function* sweepstep(L, g, nextstate, nextlist) {
         let olddebt = cptr.ldI64o(g, $global_State_GCdebt);
         let count = cptr.box(0);
         cptr.stPtro(g, $global_State_sweepgc, (yield* sweeplist(L, cptr.ldPtro(g, $global_State_sweepgc), 100, count)));
-        cptr.stU64o(g, $global_State_GCestimate, cptr.ldU64o(g, $global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)));
+        cptr.stU64o(g, $global_State_GCestimate, cptr.ldU64o(g, $global_State_GCestimate) + BigInt.asUintN(64, BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)));  /* update estimate */
         return count.v;
     } else {
         cptr.st1o(g, $global_State_gcstate, uchar(nextstate));
         cptr.stPtro(g, $global_State_sweepgc, nextlist);
-        return 0;
+        return 0;  /* no work done */
     }
 }
 
@@ -1307,8 +1698,8 @@ function* sweepstep(L, g, nextstate, nextlist) {
 function* singlestep(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let work;
-    (void 0);
-    cptr.st1o(g, $global_State_gcstopem, 1);
+    (void 0);  /* collector is not reentrant */
+    cptr.st1o(g, $global_State_gcstopem, 1);  /* no emergency collections while collecting */
     switch (cptr.ld1uo(g, $global_State_gcstate)) {
         case 8:
         {
@@ -1320,17 +1711,17 @@ function* singlestep(L) {
         case 0:
         {
             if (cptr.eq(cptr.ldPtro(g, $global_State_gray), (null))) {
-                cptr.st1o(g, $global_State_gcstate, 1);
+                cptr.st1o(g, $global_State_gcstate, 1);  /* finish propagate phase */
                 work = 0n;
             } else
-                work = (yield* propagatemark(g));
+                work = (yield* propagatemark(g));  /* traverse one gray object */
             break;
         }
         case 1:
         {
-            work = (yield* atomic(L));
+            work = (yield* atomic(L));  /* work is what was traversed by 'atomic' */
             (yield* entersweep(L));
-            cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
+            cptr.stU64o(g, $global_State_GCestimate, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));  /* first estimate */
             break;
         }
         case 3:
@@ -1358,10 +1749,10 @@ function* singlestep(L) {
         case 7:
         {
             if (cptr.ldPtro(g, $global_State_tobefnz) && !cptr.ld1uo(g, $global_State_gcemergency)) {
-                cptr.st1o(g, $global_State_gcstopem, 0);
+                cptr.st1o(g, $global_State_gcstopem, 0);  /* ok collections during finalizers */
                 work = BigInt.asUintN(64, BigInt(Math.imul((yield* runafewfinalizers(L, 10)), 50)));
             } else {
-                cptr.st1o(g, $global_State_gcstate, 8);
+                cptr.st1o(g, $global_State_gcstate, 8);  /* finish collection */
                 work = 0n;
             }
             break;
@@ -1374,6 +1765,10 @@ function* singlestep(L) {
     return work;
 }
 
+/*
+** advances the garbage collector until it reaches a state allowed
+** by 'statemask'
+*/
 /** C ref: lgc.c:1652 — @param {CPtr<lua_State>} L @param {CInt} statesmask */
 export function* luaC_runtilstate(L, statesmask) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -1381,23 +1776,35 @@ export function* luaC_runtilstate(L, statesmask) {
         (yield* singlestep(L));
 }
 
+/*
+** Performs a basic incremental step. The debt and step size are
+** converted from bytes to "units of work"; then the function loops
+** running single steps until adding that many units of work or
+** finishing a cycle (pause state). Finally, it sets the debt that
+** controls when next step will be performed.
+*/
 /** C ref: lgc.c:1667 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* incstep(L, g) {
-    let stepmul = ((Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4)) | 1);
+    let stepmul = ((Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4)) | 1);  /* avoid division by 0 */
     let debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) * BigInt.asUintN(64, BigInt(stepmul))));
-    let stepsize = BigInt.asIntN(64, ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n) ? BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))) : 9223372036854775807n));
+    let stepsize = BigInt.asIntN(64, ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n) ? BigInt.asUintN(64, (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) / 16n) * BigInt.asUintN(64, BigInt(stepmul))) : 9223372036854775807n));  /* overflow; keep maximum value */
     do {
-        let work = (yield* singlestep(L));
+        let work = (yield* singlestep(L));  /* perform one single step */
         debt -= BigInt.asIntN(64, work);
     } while (debt > -stepsize && cptr.ld1uo(g, $global_State_gcstate) != 8);
     if (cptr.ld1uo(g, $global_State_gcstate) == 8)
-        setpause(g);
+        setpause(g);  /* pause until next cycle */
     else {
-        debt = BigInt.asIntN(64, BigInt.asUintN(64, BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n));
+        debt = BigInt.asIntN(64, BigInt.asUintN(64, BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n));  /* convert 'work units' to bytes */
         luaE_setdebt(g, debt);
     }
 }
 
+/*
+** Performs a basic GC step if collector is running. (If collector is
+** not running, set a reasonable debt to avoid it being called at
+** every single check.)
+*/
 /** C ref: lgc.c:1690 — @param {CPtr<lua_State>} L */
 export function* luaC_step(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -1411,24 +1818,38 @@ export function* luaC_step(L) {
     }
 }
 
+/*
+** Perform a full collection in incremental mode.
+** Before running the collection, check 'keepinvariant'; if it is true,
+** there may be some objects marked as black, so the collector has
+** to sweep all objects to turn them back to white (as white has not
+** changed, nothing will be collected).
+*/
 /** C ref: lgc.c:1710 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* fullinc(L, g) {
     if ((cptr.ld1uo((g), $global_State_gcstate) <= 2))
-        (yield* entersweep(L));
+        (yield* entersweep(L));  /* sweep everything to turn them back to white */
+    /* finish any pending sweep phase to start a new cycle */
     (yield* luaC_runtilstate(L, 256));
-    (yield* luaC_runtilstate(L, 1));
-    cptr.st1o(g, $global_State_gcstate, 1);
-    (yield* luaC_runtilstate(L, 128));
+    (yield* luaC_runtilstate(L, 1));  /* start new cycle */
+    cptr.st1o(g, $global_State_gcstate, 1);  /* go straight to atomic phase */
+    (yield* luaC_runtilstate(L, 128));  /* run up to finalizers */
+    /* estimate must be correct after a full GC cycle */
     (void 0);
-    (yield* luaC_runtilstate(L, 256));
+    (yield* luaC_runtilstate(L, 256));  /* finish collection */
     setpause(g);
 }
 
+/*
+** Performs a full GC cycle; if 'isemergency', set a flag to avoid
+** some operations which could change the interpreter state in some
+** unexpected ways (running finalizers and shrinking some structures).
+*/
 /** C ref: lgc.c:1730 — @param {CPtr<lua_State>} L @param {CInt} isemergency */
 export function* luaC_fullgc(L, isemergency) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
-    cptr.st1o(g, $global_State_gcemergency, uchar(isemergency));
+    cptr.st1o(g, $global_State_gcemergency, uchar(isemergency));  /* set flag */
     if (cptr.ld1uo(g, $global_State_gckind) == 0)
         (yield* fullinc(L, g));
     else

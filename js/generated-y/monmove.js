@@ -227,6 +227,7 @@ const __s_m_move_aggress = cptr.lit("m_move_aggress");
 const __s_set_apparxy = cptr.lit("set_apparxy");
 const __s_undesirable_disp = cptr.lit("undesirable_disp");
 
+/* a11y: give a message when monster moved */
 /** C ref: monmove.c:33 — @param {CPtr<struct monst>} mtmp @param {CInt} omx @param {CInt} omy */
 function* msg_mon_movement(mtmp, omx, omy) {
     if (cptr.ld1so(a11y, $accessibility_data_mon_movement) && canspotmon(mtmp) && (cptr.ldI32o(mtmp, $monst_mspotted) & 1) | 0) {
@@ -235,10 +236,14 @@ function* msg_mon_movement(mtmp, omx, omy) {
         let n2u = schar((dist2(((nix)), ((niy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2));
         let close = schar((!n2u && (dist2((nix), (niy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 64) ? 1 : 0));
         let closer = schar((!n2u && (dist2((nix), (niy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= dist2((omx), (omy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) ? 1 : 0));
+
         (yield* pline_xy(nix, niy, __s_s_s_s, (yield* Monnam(mtmp)), (yield* vtense(null, locomotion(cptr.ldPtro(mtmp, $monst_data), __s_move))), n2u ? __s_next_to_you : ((close && closer) ? __s_closer : ((close && !closer) ? __s_further_away : __s_in_the_distance))));
     }
 }
 
+/* monster has triggered trapped door lock or was present when it got
+   triggered remotely (at door spot, door hit by zap);
+   returns True if mtmp dies */
 /** C ref: monmove.c:54 — @param {CPtr<struct monst>} mtmp @param {CInt} canseeit @returns {CInt} */
 export function* mb_trapped(mtmp, canseeit) {
     if (cptr.ld1so(flags, $flag_verbose)) {
@@ -254,14 +259,17 @@ export function* mb_trapped(mtmp, canseeit) {
         (yield* mondied(mtmp));
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             return 1;
+        /* will get here if lifesaved */
     }
     mon_learns_traps(mtmp, NHC.TRAPPED_DOOR);
     return 0;
 }
 
+/* push coordinate x,y to mtrack, making monster remember where it was */
 /** C ref: monmove.c:78 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
 export function mon_track_add(mtmp, x, y) {
     let j;
+
     for (j = 3; j > 0; j--)
         cptr.memcpy(cptr.add(cptr.add(mtmp, $monst_mtrack), j, $sizeof_coord), cptr.add(cptr.add(mtmp, $monst_mtrack), (j - 1) | 0, $sizeof_coord), 4);
     cptr.stI16o2(mtmp, 0, $sizeof_coord, $monst_mtrack, x);
@@ -273,6 +281,7 @@ export function mon_track_clear(mtmp) {
     __builtin___memset_chk(cptr.add(mtmp, $monst_mtrack), 0, 16n, __builtin_object_size(cptr.add(mtmp, $monst_mtrack), 0));
 }
 
+/* check whether a monster is carrying a locking/unlocking tool */
 /** C ref: monmove.c:96 — @param {CPtr<struct monst>} mon @param {CInt} for_unlocking @returns {CInt} */
 export function monhaskey(mon, for_unlocking) {
     if (for_unlocking && m_carrying(mon, NHC.CREDIT_CARD))
@@ -284,11 +293,15 @@ export function monhaskey(mon, for_unlocking) {
 export function* mon_yells(mon, shout) {
     if (Deaf()) {
         if (canspotmon(mon))
+            /* Sidenote on "A watchman angrily waves her arms!"
+             * Female being called watchman is correct (career name).
+             */
             (yield* pline_mon(mon, __s_s_angrily_s_s_s, (yield* Amonnam(mon)), ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? __s_shakes : __s_waves, (cptr.ldPtro2(genders, pronoun_gender(mon, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? (yield* mbodypart(mon, NHC.HEAD)) : (yield* makeplural((yield* mbodypart(mon, NHC.ARM))))));
     } else {
         if (canspotmon(mon)) {
             (yield* pline_mon(mon, __s_s_yells, (yield* Amonnam(mon))));
         } else {
+            /* Soundeffect(se_someone_yells, 75); */
             (yield* You_hear(__s_someone_yell));
         }
         ;
@@ -296,14 +309,17 @@ export function* mon_yells(mon, shout) {
     }
 }
 
+/* can monster mtmp break boulders? */
 /** C ref: monmove.c:133 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function m_can_break_boulder(mtmp) {
     return schar((is_rider(cptr.ldPtro(mtmp, $monst_data)) || (!cptr.ldI32o(mtmp, $monst_mspec_used) && ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_LEADER))) ? 1 : 0));
 }
 
+/* monster mtmp breaks boulder at x,y */
 /** C ref: monmove.c:143 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
 export function* m_break_boulder(mtmp, x, y) {
     let otmp;
+
     if (m_can_break_boulder(mtmp) && ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null)) {
         if (!is_rider(cptr.ldPtro(mtmp, $monst_data))) {
             if (!Deaf() && (dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 16)) {
@@ -317,9 +333,15 @@ export function* m_break_boulder(mtmp, x, y) {
             set_msg_xy(x, y);
             (yield* pline_The(__s_boulder_falls_apart));
         }
+
+        /* boulders pushed onto shop's boundary or free spot are cases where
+           an item not in hero's inventory can have its unpaid flag set;
+           if the boulder isn't already on the bill, don't charge for it */
         if ((cptr.ldI32o(otmp, $obj_unpaid) & 1)) {
+            /* remove original from bill + add cloned copy to used-up bill */
             (yield* bill_dummy_object(otmp));
         }
+        /* fracturing keeps otmp, changing its otyp from BOULDER to ROCK */
         (yield* fracture_rock(otmp));
     }
 }
@@ -328,6 +350,7 @@ export function* m_break_boulder(mtmp, x, y) {
 function* watch_on_duty(mtmp) {
     let x = cptr.box(0);
     let y = cptr.box(0);
+
     if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && in_town(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.COULD_SEE) != 0)) && !rn2_at(__s_monmove_c, 181, __s_watch_on_duty, 3)) {
         if (picking_lock(x, y) && ((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED)) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) {
@@ -341,42 +364,88 @@ function* watch_on_duty(mtmp) {
                 (yield* stop_occupation());
             }
         } else if (is_digging()) {
+            /* chewing, wand/spell of digging are checked elsewhere */
             (yield* watch_dig(mtmp, cptr.ldI16o(svc, $context_info_digging + $dig_info_pos), cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y), 0));
         }
     }
 }
 
+/* move a monster; if a threat to busy hero, stop doing whatever it is */
 /** C ref: monmove.c:204 — @param {CPtr<struct monst>} mtmp @param {CInt} chug @returns {CInt} */
 export function* dochugw(mtmp, chug) {
     let x = cptr.ldI16o(mtmp, $monst_mx);
-    let y = cptr.ldI16o(mtmp, $monst_my);
+    let y = cptr.ldI16o(mtmp, $monst_my);  /* 'mtmp's location before dochug() */
+    /* skip canspotmon() if occupation is Null */
     let already_saw_mon = schar(((chug && cptr.ldPtro(go, $instance_globals_o_occupation)) ? canspotmon(mtmp) : 0));
     let rd = chug ? (yield* dochug(mtmp)) : 0;
+
+    /*
+     * A similar check is in monster_nearby() in hack.c.
+     * [The two checks have a lot of differences and chances are high
+     * that some of those are unintentional.]
+     */
+
+    /* check whether hero notices monster and stops current activity */
     if (cptr.ldPtro(go, $instance_globals_o_occupation) && !rd && (Hallucination() || (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && !noattacks(cptr.ldPtro(mtmp, $monst_data)))) && dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 81 && (!already_saw_mon || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) || dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 81) && canspotmon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 && !(yield* onscary(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), mtmp)))
         (yield* stop_occupation());
+
     return rd;
 }
 
 /** C ref: monmove.c:241 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function* onscary(x, y, mtmp) {
     let ep;
+    /* <0,0> is used by musical scaring;
+     * it doesn't care about scrolls or engravings or dungeon branch */
     let auditory_scare = schar((x == 0 && y == 0 ? 1 : 0));
     let magical_scare = schar((!auditory_scare));
+
+    /* creatures who are directly resistant to any type of scaring:
+     * Rodney, lawful minions, Angels, the Riders */
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || is_lminion(mtmp) || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ANGEL, $sizeof_permonst)) || is_rider(cptr.ldPtro(mtmp, $monst_data)))
         return 0;
+
+    /* creatures who are directly resistant to magical scaring
+     * based on the mere presence of something at a location:
+     * humans etc.
+     * uniques have ascended their base monster instincts */
     if (magical_scare && (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_HUMAN || ((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0)))
         return 0;
+
+    /* creatues who resist scaring under particular circumstances:
+     * shopkeepers inside their own shop
+     * priests inside their own temple */
     if (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (yield* inhishop(mtmp))) || ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && (yield* inhistemple(mtmp))))
         return 0;
+
     if (auditory_scare)
         return 1;
+
+    /* should this still be true for defiled/molochian altars? */
     if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_VAMPIRE || is_vampshifter(mtmp)))
         return 1;
+
+    /* the scare monster scroll doesn't have any of the below
+     * restrictions, being its own source of power */
     if (sobj_at(NHC.SCR_SCARE_MONSTER, x, y))
         return 1;
+
+    /*
+     * Creatures who don't (or can't) fear a written Elbereth:
+     * all the above plus shopkeepers (even if poly'd into non-human),
+     * vault guards (also even if poly'd), blind or peaceful monsters,
+     * humans and elves, and minotaurs.
+     *
+     * If the player isn't actually on the square OR the player's image
+     * isn't displaced to the square, no protection is being granted.
+     *
+     * Elbereth doesn't work in Gehennom, the Elemental Planes, or the
+     * Astral Plane; the influence of the Valar only reaches so far.
+     */
     return schar(((ep = (yield* sengr_at(__s_elbereth, x, y, 1))) !== null && (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || (Displaced() && cptr.ldI16o(mtmp, $monst_mux) == x && cptr.ldI16o(mtmp, $monst_muy) == y) || ((cptr.ldI32o(ep, $engr_guardobjects) & 1) | 0 && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)))) && !((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst)) || In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) ? 1 : 0));
 }
 
+/* regenerate lost hit points */
 /** C ref: monmove.c:307 — @param {CPtr<struct monst>} mon @param {CInt} digest_meal */
 export function* mon_regen(mon, digest_meal) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 20n == 0n || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8388608n) != 0n))
@@ -392,8 +461,24 @@ export function* mon_regen(mon, digest_meal) {
     }
 }
 
+/*
+ * Possibly awaken the given monster.  Return a 1 if the monster has been
+ * jolted awake.
+ */
 /** C ref: monmove.c:327 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* disturb(mtmp) {
+    /*
+     * + Ettins are hard to surprise.
+     * + Nymphs, jabberwocks, and leprechauns do not easily wake up.
+     *
+     * Wake up if:
+     *  in direct LOS                                           AND
+     *  within 10 squares                                       AND
+     *  not stealthy or (mon is an ettin and 9/10)              AND
+     *  (mon is not a nymph, jabberwock, or leprechaun) or 1/50 AND
+     *  Aggravate or mon is (dog or human) or
+     *      (1/7 and mon is not mimicking furniture or object)
+     */
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 100 && (!Stealth() || (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ETTIN, $sizeof_permonst)) && rn2_at(__s_monmove_c, 342, __s_disturb, 10))) && (!(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_JABBERWOCK, $sizeof_permonst)) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_LEPRECHAUN) || !rn2_at(__s_monmove_c, 348, __s_disturb, 50)) && (Aggravate_monster() || (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_DOG || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_HUMAN) || (!rn2_at(__s_monmove_c, 351, __s_disturb, 7) && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT))) {
         (yield* wake_msg(mtmp, schar((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)))));
         cptr.stI32o(mtmp, $monst_msleeping, 0);
@@ -402,13 +487,14 @@ function* disturb(mtmp) {
     return 0;
 }
 
+/* ungrab/expel held/swallowed hero */
 /** C ref: monmove.c:362 — @param {CPtr<struct monst>} mon */
 function* release_hero(mon) {
     if (cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             (yield* expels(mon, cptr.ldPtro(mon, $monst_data), 1));
         } else if (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            (yield* unstuck(mon));
+            (yield* unstuck(mon));  /* let go */
             (yield* You(__s_get_released));
         }
     }
@@ -417,6 +503,7 @@ function* release_hero(mon) {
 /** C ref: monmove.c:375 — @param {CInt} pm @returns {CPtr<struct monst>} */
 export function find_pmmonst(pm) {
     let mtmp = null;
+
     if ((cptr.ld1uo2(svm, pm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) == 0)
         for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
@@ -424,13 +511,19 @@ export function find_pmmonst(pm) {
             if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, pm, $sizeof_permonst)))
                 break;
         }
+
     return mtmp;
 }
 
+/* killer bee 'mon' is on a spot containing lump of royal jelly 'obj' and
+   will eat it if there is no queen bee on the level; return 1: mon died,
+   0: mon ate jelly and lived; -1: mon didn't eat jelly to use its move */
 /** C ref: monmove.c:394 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* bee_eat_jelly(mon, obj) {
     let m_delay;
     let mtmp = find_pmmonst(NHC.PM_QUEEN_BEE);
+
+    /* if there's no queen on the level, eat the royal jelly and become one */
     if (!mtmp) {
         m_delay = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 5 : 7);
         if (cptr.ldI64o(obj, $obj_quan) > 1n)
@@ -438,58 +531,86 @@ export function* bee_eat_jelly(mon, obj) {
         if (canseemon(mon))
             (yield* pline_mon(mon, __s_s_eats_s, (yield* Monnam(mon)), (yield* an((yield* xname(obj))))));
         (yield* delobj(obj));
+
         if (cptr.ld1uo(mon, $monst_m_lev) < ((cptr.ld1so2(mons, NHC.PM_QUEEN_BEE, $sizeof_permonst, $permonst_mlevel) - 1) | 0))
             cptr.st1o(mon, $monst_m_lev, uchar(((cptr.ld1so2(mons, NHC.PM_QUEEN_BEE, $sizeof_permonst, $permonst_mlevel) - 1) | 0)));
+        /* there should be delay after eating, but that's too much
+           hassle; transform immediately, then have a short delay */
         void (yield* grow_up(mon, null));
+
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
-            return 1;
+            return 1;  /* dead; apparently queen bees have been genocided */
         cptr.stI32o(mon, $monst_mfrozen, m_delay >>> 0), cptr.stI32o(mon, $monst_mcanmove, 0);
-        return 0;
+        return 0;  /* bee used its move */
     }
-    return -1;
+    return -1;  /* a queen is already present; ordinary bee hasn't moved yet */
 }
 
+/* gelatinous cube eats something from its inventory */
 /** C ref: monmove.c:424 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* gelcube_digests(mtmp) {
     let otmp = cptr.ldPtro(mtmp, $monst_minvent);
+
     if (cptr.ldI32o(mtmp, $monst_meating) || !cptr.ldPtro(mtmp, $monst_minvent))
         return -1;
+
     while (otmp) {
         if ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) <= NHC.WOOD) && !cptr.ld1so(otmp, $obj_oartifact) && !(cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) && !(cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid)))
             break;
         otmp = cptr.ldPtr(otmp);
     }
+
     if (!otmp)
         return -1;
+
     cptr.stI32o(mtmp, $monst_meating, (yield* eaten_stat(cptr.ldI32o(mtmp, $monst_meating), otmp)));
     (yield* extract_from_minvent(mtmp, otmp, 1, 1));
     (yield* m_consume_obj(mtmp, otmp));
-    return 0;
+    return 0;  /* used a move */
 }
 
+/* doesn't matter if hero is invisible--light being emitted isn't */
+
+/* monster begins fleeing for the specified time, 0 means untimed flee
+ * if first, only adds fleetime if monster isn't already fleeing
+ * if fleemsg, prints a message about new flight, otherwise, caller should */
 /** C ref: monmove.c:462 — @param {CPtr<struct monst>} mtmp @param {CInt} fleetime @param {CInt} first @param {CInt} fleemsg */
 export function* monflee(mtmp, fleetime, first, fleemsg) {
+    /* shouldn't happen; maybe warrants impossible()? */
     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return;
+
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
-        (yield* release_hero(mtmp));
+        (yield* release_hero(mtmp));  /* expels/unstuck */
+
     if (!first || !(cptr.ldI32o(mtmp, $monst_mflee) & 1)) {
+        /* don't lose untimed scare */
         if (!fleetime)
             cptr.stI32o(mtmp, $monst_mfleetim, 0);
         else if (!(cptr.ldI32o(mtmp, $monst_mflee) & 1) || (cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0) {
             fleetime = (fleetime + ((cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0)) | 0;
+            /* ensure monster flees long enough to visibly stop fighting */
             if (fleetime == 1)
                 fleetime++;
             cptr.stI32o(mtmp, $monst_mfleetim, ((fleetime) < 127 ? (fleetime) : 127) >>> 0);
         }
         if (!(cptr.ldI32o(mtmp, $monst_mflee) & 1) && fleemsg && canseemon(mtmp) && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT) {
+            /* unfortunately we can't distinguish between temporary
+               sleep and temporary paralysis, so both conditions
+               receive the same alternate message */
             if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) || !cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mmove)) {
                 (yield* pline_mon(mtmp, __s_s_seems_to_flinch, (yield* Adjmonnam(mtmp, __s_immobile))));
             } else if ((cptr.eq(cptr.ldPtro((mtmp), $monst_data), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst)) && ((uwep.v && (cptr.ldI32o(uwep.v, $obj_lamplit) & 1) | 0 && artifact_light(uwep.v)) || (uarm.v && (cptr.ldI32o(uarm.v, $obj_lamplit) & 1) | 0 && artifact_light(uarm.v))) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0))) {
                 if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
+                    /* tell the player even if the hero is unconscious */
                     (yield* pline_mon(mtmp, __s_s_is_frightened, (yield* Monnam(mtmp))));
                 } else if (rn2_at(__s_monmove_c, 499, __s_monflee, 10) || Deaf()) {
+                    /* via flees_light(), will always be either via uwep
+                       (Sunsword) or uarm (gold dragon scales/mail) or both;
+                       TODO? check for both and describe the one which is
+                       emitting light with a bigger radius */
                     let lsrc = (uwep.v && artifact_light(uwep.v)) ? (yield* bare_artifactname(uwep.v)) : ((uarm.v && artifact_light(uarm.v)) ? (yield* yname(uarm.v)) : __s_its_imagination);
+
                     (yield* pline_mon(mtmp, __s_s_flees_from_the_painful_light_of_s, (yield* Monnam(mtmp)), lsrc));
                 } else {
                     ;
@@ -499,12 +620,15 @@ export function* monflee(mtmp, fleetime, first, fleemsg) {
                 (yield* pline_mon(mtmp, __s_s_turns_to_flee, (yield* Monnam(mtmp))));
             }
         }
+
         if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_VROCK, $sizeof_permonst)) && !cptr.ldI32o(mtmp, $monst_mspec_used)) {
             cptr.stI32o(mtmp, $monst_mspec_used, (75 + rn2_at(__s_monmove_c, 522, __s_monflee, 25)) | 0);
             void (yield* create_gas_cloud(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 5, 8));
         }
+
         cptr.stI32o(mtmp, $monst_mflee, 1);
     }
+    /* ignore recently-stepped spaces when made to flee */
     mon_track_clear(mtmp);
 }
 
@@ -514,8 +638,17 @@ function* distfleeck(mtmp, inrange, nearby, scared) {
     let seescaryy;
     let sawscary = 0;
     let bravegremlin = schar((rn2_at(__s_monmove_c, 538, __s_distfleeck, 5) == 0));
+
     cptr.stI32(inrange, (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= 64));
     cptr.stI32(nearby, cptr.ldI32(inrange) && monnear(mtmp, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) ? 1 : 0);
+
+    /* Note: if your image is displaced, the monster sees the Elbereth
+     * at your displaced position, thus never attacking your displaced
+     * position, but possibly attacking you by accident.  If you are
+     * invisible, it sees the Elbereth at your real position, thus never
+     * running into you by accident but possibly attacking the spot
+     * where it guesses you are.
+     */
     if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n))) {
         seescaryx = cptr.ldI16o(mtmp, $monst_mux);
         seescaryy = cptr.ldI16o(mtmp, $monst_muy);
@@ -523,6 +656,7 @@ function* distfleeck(mtmp, inrange, nearby, scared) {
         seescaryx = cptr.ldI16(u);
         seescaryy = cptr.ldI16o(u, $you_uy);
     }
+
     sawscary = (yield* onscary(i16(seescaryx), i16(seescaryy), mtmp));
     if (cptr.ldI32(nearby) && (sawscary || ((cptr.eq(cptr.ldPtro((mtmp), $monst_data), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst)) && ((uwep.v && (cptr.ldI32o(uwep.v, $obj_lamplit) & 1) | 0 && artifact_light(uwep.v)) || (uarm.v && (cptr.ldI32o(uarm.v, $obj_lamplit) & 1) | 0 && artifact_light(uarm.v))) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) && !bravegremlin) || (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && (yield* in_your_sanctuary(mtmp, 0, 0))))) {
         cptr.stI32(scared, 1);
@@ -531,16 +665,21 @@ function* distfleeck(mtmp, inrange, nearby, scared) {
         cptr.stI32(scared, 0);
 }
 
+/* perform a special one-time action for a monster; returns -1 if nothing
+   special happened, 0 if monster uses up its turn, 1 if monster is killed */
 /** C ref: monmove.c:574 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function m_arrival(mon) {
-    cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744072635809791n);
+    cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744072635809791n);  /* always reset */
+
     return -1;
 }
 
+/* a mind flayer unleashes a mind blast  */
 /** C ref: monmove.c:583 — @param {CPtr<struct monst>} mtmp */
 function* mind_blast(mtmp) {
     let m2;
     let nmon = null;
+
     if (canseemon(mtmp))
         (yield* pline_mon(mtmp, __s_s_concentrates, (yield* Monnam(mtmp))));
     if (dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 64) {
@@ -553,7 +692,10 @@ function* mind_blast(mtmp) {
     } else if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
         let dmg;
         let m_sen = schar(sensemon(mtmp));
+
         if (m_sen || (Blind_telepat() && rn2_at(__s_monmove_c, 601, __s_mind_blast, 2)) || !rn2_at(__s_monmove_c, 601, __s_mind_blast, 10)) {
+            /* hiding monsters are brought out of hiding when hit by
+                a psychic blast, so do the same for hiding poly'd hero */
             if ((cptr.ldI32o(u, $you_uundetected) & 1)) {
                 cptr.stI32o(u, $you_uundetected, 0);
                 (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -562,7 +704,7 @@ function* mind_blast(mtmp) {
                 cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
                 (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             }
-            (yield* pline(__s_it_locks_on_to_your_s, m_sen ? __s_telepathy : (Blind_telepat() ? __s_latent_telepathy : __s_mind)));
+            (yield* pline(__s_it_locks_on_to_your_s, m_sen ? __s_telepathy : (Blind_telepat() ? __s_latent_telepathy : __s_mind)));  /* note: hero is never mindless */
             dmg = rnd_at(__s_monmove_c, 619, __s_mind_blast, 15);
             if (Half_spell_damage())
                 dmg = (((dmg + 1) | 0) / 2) | 0;
@@ -580,6 +722,7 @@ function* mind_blast(mtmp) {
         if (cptr.eq(m2, mtmp))
             continue;
         if ((telepathic(cptr.ldPtro(m2, $monst_data)) && (rn2_at(__s_monmove_c, 635, __s_mind_blast, 2) || (cptr.ldI32o(m2, $monst_mblinded) & 127) | 0)) || !rn2_at(__s_monmove_c, 635, __s_mind_blast, 10)) {
+            /* wake it up first, to bring hidden monster out of hiding */
             (yield* wakeup(m2, 0));
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(m2, $monst_my), 8), cptr.ldI16o(m2, $monst_mx)) & NHM.IN_SIGHT) != 0))
                 (yield* pline(__s_it_locks_on_to_s, (yield* mon_nam(m2))));
@@ -590,28 +733,46 @@ function* mind_blast(mtmp) {
     }
 }
 
+/* called every turn for each living monster on the map, and the hero;
+   caller makes sure that we're not called for DEADMONSTER() */
 /** C ref: monmove.c:650 — @param {CPtr<struct monst>} mtmp */
 export function* m_everyturn_effect(mtmp) {
     let is_u = schar(((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? 1 : 0));
     let x = i16((is_u ? cptr.ldI16(u) : cptr.ldI16o(mtmp, $monst_mx)));
     let y = i16((is_u ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mtmp, $monst_my)));
+
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst))) {
+        /* don't leave a vapor cloud if some other gas cloud is already
+           present, or when flowing under closed doors so that visibility
+           changes aren't mixed with messages about doing such */
         if (!closed_door(x, y) && !visible_region_at(x, y))
-            (yield* create_gas_cloud(x, y, 1, 0));
+            (yield* create_gas_cloud(x, y, 1, 0));  /* harmless vapor */
     }
 }
 
+/* do whatever effects monster has after moving.
+   called for both monsters and polyed hero.
+   for hero, called after location changes,
+   to prevent spam messages for hero getting enveloped in a cloud.
+   for monsters, called before location changes,
+   because monsters don't have "previous location" field */
 /** C ref: monmove.c:672 — @param {CPtr<struct monst>} mtmp */
 export function* m_postmove_effect(mtmp) {
     let is_u = schar(((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? 1 : 0));
     let x = i16((is_u ? cptr.ldI16o(u, $you_ux0) : cptr.ldI16o(mtmp, $monst_mx)));
     let y = i16((is_u ? cptr.ldI16o(u, $you_uy0) : cptr.ldI16o(mtmp, $monst_my)));
+
+    /* Hezrous create clouds of stench. This does not cost a move. */
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_HEZROU, $sizeof_permonst)))
         (yield* create_gas_cloud(x, y, 1, 8));
     else if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_STEAM_VORTEX, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1))
-        (yield* create_gas_cloud(x, y, 1, 0));
+        (yield* create_gas_cloud(x, y, 1, 0));  /* harmless vapor */
 }
 
+/* returns 1 if monster died moving, 0 otherwise */
+/* The whole dochugw/m_move/distfleeck/mfndpos section is serious spaghetti
+ * code. --KAA
+ */
 /** C ref: monmove.c:690 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function* dochug(mtmp) {
     let mdat;
@@ -622,54 +783,99 @@ export function* dochug(mtmp) {
     let res;
     let otmp;
     let panicattk = 0;
+
+    /*
+     * PHASE ONE: Pre-movement adjustments
+     */
+
     mdat = cptr.ldPtro(mtmp, $monst_data);
+
     if (cptr.ldU64o(mtmp, $monst_mstrategy) & 1073741824n) {
         res = m_arrival(mtmp);
         if (res >= 0)
             return res;
     }
+    /* check for waitmask status change */
     if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 536870912n) && (((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.COULD_SEE) != 0)) || cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax)))
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744073172680703n);
+
+    /* update quest status flags */
     quest_stat_check(mtmp);
+
     if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) || (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
         if (Hallucination())
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         if ((cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 && (cptr.ldU64o(mtmp, $monst_mstrategy) & 268435456n) && !(cptr.ldI32o(mtmp, $monst_msleeping) & 1) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-            (yield* quest_talk(mtmp));
-        return 0;
+            (yield* quest_talk(mtmp));  /* give the leaders a chance to speak */
+        return 0;  /* other frozen monsters can't do anything */
     }
+
+    /* there is a chance we will wake it */
     if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && !(yield* disturb(mtmp))) {
         if (Hallucination())
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         return 0;
     }
+
+    /* not frozen or sleeping: wipe out texts written in the dust */
     (yield* wipe_engr_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 1, 0));
+
+    /* confused monsters get unconfused with small probability */
     if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && !rn2_at(__s_monmove_c, 737, __s_dochug, 50))
         cptr.stI32o(mtmp, $monst_mconf, 0);
+
+    /* stunned monsters get un-stunned with larger probability */
     if ((cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 && !rn2_at(__s_monmove_c, 741, __s_dochug, 10))
         cptr.stI32o(mtmp, $monst_mstun, 0);
+
+    /* Some monsters teleport. Teleportation costs a turn. */
     if ((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 && !rn2_at(__s_monmove_c, 745, __s_dochug, 40) && ((cptr.ldU64o((mdat), $permonst_mflags1) & 33554432n) != 0n) && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1) && !(yield* noteleport_level(mtmp))) {
         if ((yield* rloc(mtmp, NHM.RLOC_MSG)))
             (yield* leppie_stash(mtmp));
         return 0;
     }
+
+    /* some monsters have special abilities */
     (yield* m_respond(mtmp));
     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
-        return 1;
+        return 1;  /* m_respond gaze can kill medusa */
+
+    /* fleeing monsters might regain courage */
     if ((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_mfleetim) & 127) && cptr.ldI32o(mtmp, $monst_mhp) == cptr.ldI32o(mtmp, $monst_mhpmax) && !rn2_at(__s_monmove_c, 759, __s_dochug, 25))
         cptr.stI32o(mtmp, $monst_mflee, 0);
+
+    /* Cease conflict-induced swallow/grab if conflict has ended. Releasing
+       the hero in this way uses up the monster's turn. */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_mconf) & 1) && !Conflict()) {
         (yield* release_hero(mtmp));
         return 0;
     }
+
+    /*
+     * PHASE TWO: Special Movements and Actions
+     */
+
+    /* The monster decides where it thinks you are. This call to set_apparxy()
+       must be done after you move and before the monster does. The
+       set_apparxy() call in m_move() doesn't suffice since the variables
+       inrange, etc. all depend on stuff set by set_apparxy().
+     */
     set_apparxy(mtmp);
+
+    /* Monsters that want to acquire things may teleport, so do it before
+       inrange is set. This costs a turn only if mstate is set.  */
     if (((cptr.ldU16o((mdat), $permonst_mflags3) & NHM.M3_COVETOUS))) {
         void (yield* tactics(mtmp));
+        /* tactics -> mnexto -> deal_with_overcrowding */
         if (cptr.ldI64o(mtmp, $monst_mstate))
             return 0;
         set_apparxy(mtmp);
     }
+
+    /* check distance and scariness of attacks */
     (yield* distfleeck(mtmp, inrange, nearby, scared));
+
+    /* search for and potentially use defensive or miscellaneous items. */
     if ((yield* find_defensive(mtmp, 0))) {
         if ((yield* use_defensive(mtmp)) != 0)
             return 1;
@@ -677,32 +883,53 @@ export function* dochug(mtmp) {
         if ((yield* use_misc(mtmp)) != 0)
             return 1;
     }
+
+    /* Demonic Blackmail! */
     if (nearby.v && cptr.ld1uo(mdat, $permonst_msound) == NHC.MS_BRIBE && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) || cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy)) {
             (yield* pline(__s_s_whispers_at_thin_air, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_muy), 8), cptr.ldI16o(mtmp, $monst_mux)) & NHM.IN_SIGHT) != 0) ? (yield* Monnam(mtmp)) : __s_it));
+
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
+                /* "Good hunting, brother" */
                 if (!(yield* tele_restrict(mtmp)))
                     void (yield* rloc(mtmp, NHM.RLOC_MSG));
             } else {
                 cptr.stI32o(mtmp, $monst_minvis, cptr.stI32o(mtmp, $monst_perminvis, 0));
+                /* Why?  For the same reason in real demon talk */
                 if (canseemon(mtmp))
                     set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
                 (yield* pline(__s_s_gets_angry, (yield* Amonnam(mtmp))));
                 cptr.stI32o(mtmp, $monst_mpeaceful, 0);
                 set_malign(mtmp);
+                /* since no way is an image going to pay it off */
             }
         } else if ((yield* demon_talk(mtmp)))
-            return 1;
+            return 1;  /* you paid it off */
     }
+
+    /* the watch will look around and see if you are up to no good :-) */
     if (is_watch(mdat)) {
         (yield* watch_on_duty(mtmp));
+        /* mind flayers can make psychic attacks! */
     } else if (is_mind_flayer(mdat) && !rn2_at(__s_monmove_c, 831, __s_dochug, 20)) {
         (yield* mind_blast(mtmp));
         set_apparxy(mtmp);
         (yield* distfleeck(mtmp, inrange, nearby, scared));
     }
+
+    /* If monster is nearby you, and has to wield a weapon, do so.  This
+     * costs the monster a move, of course.
+     */
     if ((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || Conflict()) && inrange.v && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= 8 && attacktype(mdat, NHM.AT_WEAP)) {
         let mw_tmp;
+
+        /* The scared check is necessary.  Otherwise a monster that is
+         * one square near the player but fleeing into a wall would keep
+         * switching between pick-axe and weapon.  If monster is stuck
+         * in a trap, prefer ranged weapon (wielding is done in thrwmu).
+         * This may cost the monster an attack, but keeps the monster
+         * from switching back and forth if carrying both.
+         */
         mw_tmp = (cptr.ldPtro((mtmp), $monst_mw));
         if (!(scared.v && mw_tmp && is_pick(mw_tmp)) && cptr.ldI16o(mtmp, $monst_weapon_check) == NHC.NEED_WEAPON && !((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && !nearby.v && (yield* select_rwep(mtmp)))) {
             cptr.stI16o(mtmp, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
@@ -710,28 +937,49 @@ export function* dochug(mtmp) {
                 return 0;
         }
     }
+
+    /*
+     * PHASE THREE: Now the actual movement phase
+     */
+
+    /* A killer bee may eat honey in order to turn into a queen bee,
+       costing it a move. */
     if (cptr.eq(mdat, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) && (otmp = sobj_at(NHC.LUMP_OF_ROYAL_JELLY, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) !== null && (res = (yield* bee_eat_jelly(mtmp, otmp))) >= 0)
         return res;
+
     if (cptr.eq(mdat, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) && (res = (yield* gelcube_digests(mtmp))) >= 0)
         return res;
+
+    /* A monster that passes the following checks has the opportunity
+       to move. Movement itself is handled by the m_move() function. */
     if (!nearby.v || (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 || scared.v || (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 || ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !rn2_at(__s_monmove_c, 883, __s_dochug, 3)) || (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_LEPRECHAUN && !findgold(cptr.ldPtro(gi, $instance_globals_i_invent)) && (findgold(cptr.ldPtro(mtmp, $monst_minvent)) || rn2_at(__s_monmove_c, 885, __s_dochug, 2))) || (((cptr.ldU64o((mdat), $permonst_mflags2) & 8388608n) != 0n) && !rn2_at(__s_monmove_c, 886, __s_dochug, 4)) || (Conflict() && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1)) || (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) && !rn2_at(__s_monmove_c, 887, __s_dochug, 4)) || (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
+
+        /* Possibly cast an undirected spell if not attacking you */
+        /* note that most of the time castmu() will pick a directed
+           spell and do nothing, so the monster moves normally */
+        /* arbitrary distance restriction to keep monster far away
+           from you from having cast dozens of sticks-to-snakes
+           or similar spells by the time you reach it */
         if (!cptr.ldI32o(mtmp, $monst_mspec_used) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 49) {
             let a;
+
             for (a = cptr.add(cptr.add(mdat, $permonst_mattk), 0, $sizeof_attack); cptr.cmp(a, cptr.add(cptr.add(mdat, $permonst_mattk), NHM.NATTK, $sizeof_attack)) < 0; a = cptr.add(a, 1, 4)) {
                 if (cptr.ld1u(a) == NHM.AT_MAGC && (cptr.ld1uo(a, $attack_adtyp) == NHM.AD_SPEL || cptr.ld1uo(a, $attack_adtyp) == NHM.AD_CLRC)) {
                     if (((yield* castmu(mtmp, a, 0, 0)) & NHM.M_ATTK_HIT)) {
-                        status = NHM.MMOVE_DONE;
+                        status = NHM.MMOVE_DONE;  /* bypass m_move() */
                         break;
                     }
                 }
             }
         }
+
         if (!status)
             status = (yield* m_move(mtmp, 0));
         if ((cptr.ldI64o((mtmp), $monst_mstate) != 0n))
             return 1;
         if (status != NHM.MMOVE_DIED)
-            (yield* distfleeck(mtmp, inrange, nearby, scared));
+            (yield* distfleeck(mtmp, inrange, nearby, scared));  /* recalc */
+
         switch (status) {
             case NHM.MMOVE_NOMOVES:
             if (scared.v)
@@ -740,20 +988,31 @@ export function* dochug(mtmp) {
             ;
             case NHM.MMOVE_NOTHING:
             case NHM.MMOVE_DONE:
+            /* vault guard might have vanished */
             if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || cptr.ldI16o(mtmp, $monst_mx) == 0))
-                return 1;
+                return 1;  /* behave as if it died */
+            /* During hallucination, monster appearance should
+             * still change - even if it doesn't move.
+             */
             if (Hallucination())
                 (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
             break;
             case NHM.MMOVE_MOVED:
+            /* if confused grabber has wandered off, let go */
             if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) && !m_next2u(mtmp))
                 (yield* unstuck(mtmp));
             if (grounded(mdat))
                 (yield* disturb_buried_zombies(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
+            /* Maybe it stepped on a trap and fell asleep... */
             if (helpless(mtmp))
                 return 0;
+            /* Monsters can move and then shoot on same turn;
+               our hero can't.  Is that fair? */
             if (!nearby.v && (ranged_attk_available(mtmp) || attacktype(mdat, NHM.AT_WEAP) || (yield* find_offensive(mtmp))))
                 break;
+            /* a monster that's digesting you can move at the
+             * same time -dlc
+             */
             if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
                 return (yield* mattacku(mtmp));
             return 0;
@@ -761,20 +1020,30 @@ export function* dochug(mtmp) {
             return 1;
         }
     }
+
+    /*
+     * PHASE FOUR: Standard Attacks
+     */
+
+    /* Now, attack the player if possible - one attack set per monst */
     if (status != NHM.MMOVE_DONE && (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || (Conflict() && !resist_conflict(mtmp)))) {
         if (((inrange.v && !scared.v) || panicattk) && !noattacks(mdat) && (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)) > 0) {
             if ((yield* mattacku(mtmp)))
-                return 1;
+                return 1;  /* monster died (e.g. exploded) */
         }
         if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
             if ((yield* wormhitu(mtmp)))
-                return 1;
+                return 1;  /* worm died (poly'd hero passive counter-attack) */
         }
     }
+    /* special speeches for quest monsters */
     if (!helpless(mtmp) && nearby.v)
         (yield* quest_talk(mtmp));
+    /* extra emotional attack for vile monsters */
     if (inrange.v && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_CUSS && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && !(cptr.ldI32o(mtmp, $monst_minvis) & 1) && !rn2_at(__s_monmove_c, 984, __s_dochug, 5))
         (yield* cuss(mtmp));
+
+    /* note: can't get here when monster is dead, so this always returns 0 */
     return (status == NHM.MMOVE_DIED);
 }
 
@@ -784,13 +1053,15 @@ const practical = [NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.GEM_CLASS, NHC.FOOD_CL
 /** C ref: monmove.c:993 — char[7] */
 const magical = [NHC.AMULET_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.WAND_CLASS, NHC.RING_CLASS, NHC.SPBOOK_CLASS, 0];
 
+/* monster mtmp would love to take object otmp? */
 /** C ref: monmove.c:999 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function* mon_would_take_item(mtmp, otmp) {
     let pctload = ((Math.imul(curr_mon_load(mtmp), 100)) / max_mon_load(mtmp)) | 0;
+
     if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v))
         return 0;
     if (cptr.ld1so(mtmp, $monst_mtame) && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
-        return 0;
+        return 0;  /* note: will get overridden if mtmp will eat otmp */
     if (is_unicorn(cptr.ldPtro(mtmp, $monst_data)) && ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) != NHC.GEMSTONE)
         return 0;
     if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) && pctload < 75 && (yield* searches_for_item(mtmp, otmp)))
@@ -807,16 +1078,21 @@ export function* mon_would_take_item(mtmp, otmp) {
         return 1;
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) && cptr.ld1so(otmp, $obj_oclass) != NHC.ROCK_CLASS && cptr.ld1so(otmp, $obj_oclass) != NHC.BALL_CLASS && !(cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))))
         return 1;
+
     return 0;
 }
 
+/* monster mtmp would love to consume object otmp, without picking it up */
 /** C ref: monmove.c:1036 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function* mon_would_consume_item(mtmp, otmp) {
     let ftyp;
+
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && !touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)) && corpse_eater(cptr.ldPtro(mtmp, $monst_data)))
         return 1;
+
     if (cptr.ld1so(mtmp, $monst_mtame) && has_edog(mtmp) && (ftyp = (yield* dogfood(mtmp, otmp))) < NHC.MANFOOD && (ftyp < NHC.ACCFOOD || cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime) <= cptr.ldI64o(svm, $instance_globals_saved_m_moves)))
         return 1;
+
     return 0;
 }
 
@@ -829,6 +1105,13 @@ export function* itsstuck(mtmp) {
     return 0;
 }
 
+/*
+ * should_displace()
+ *
+ * Displacement of another monster is a last resort and only
+ * used on approach. If there are better ways to get to target,
+ * those should be used instead. This function does that evaluation.
+ */
 /** C ref: monmove.c:1070 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct mfndposdata>} data @param {CInt} ggx @param {CInt} ggy @returns {CInt} */
 export function should_displace(mtmp, data, ggx, ggy) {
     let shortest_with_displacing = -1;
@@ -838,6 +1121,7 @@ export function should_displace(mtmp, data, ggx, ggy) {
     let nx;
     let ny;
     let ndist;
+
     for (i = 0; i < cptr.ldI32(data); i++) {
         nx = cptr.ldI16o2(data, i, $sizeof_coord, $mfndposdata_poss);
         ny = cptr.ldI16o2(data, i, $sizeof_coord, $mfndposdata_poss + $nhcoord_y);
@@ -856,13 +1140,18 @@ export function should_displace(mtmp, data, ggx, ggy) {
     return 0;
 }
 
+/* have monster wield a pick-axe if it wants to dig and it has one;
+   return True if it spends this move wielding one, False otherwise */
 /** C ref: monmove.c:1108 — @param {CPtr<struct monst>} mtmp @param {CInt} nix @param {CInt} niy @returns {CInt} */
 export function* m_digweapon_check(mtmp, nix, niy) {
     let can_tunnel = 0;
     let mw_tmp = (cptr.ldPtro((mtmp), $monst_mw));
+
     if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
         can_tunnel = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32n) != 0n));
+
     if (can_tunnel && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 64n) != 0n) && !mwelded(mw_tmp) && (may_dig(nix, niy) || closed_door(nix, niy))) {
+        /* may_dig() is either IS_STWALL or IS_TREE */
         if (closed_door(nix, niy)) {
             if (!mw_tmp || !is_pick(mw_tmp) || !is_axe(mw_tmp))
                 cptr.stI16o(mtmp, $monst_weapon_check, NHC.NEED_PICK_OR_AXE);
@@ -879,18 +1168,23 @@ export function* m_digweapon_check(mtmp, nix, niy) {
     return 0;
 }
 
+/* does leprechaun want to avoid the hero? */
 /** C ref: monmove.c:1139 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function leppie_avoidance(mtmp) {
     let lepgold;
     let ygold;
+
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LEPRECHAUN, $sizeof_permonst)) && ((lepgold = findgold(cptr.ldPtro(mtmp, $monst_minvent))) && (cptr.ldI64o(lepgold, $obj_quan) > ((ygold = findgold(cptr.ldPtro(gi, $instance_globals_i_invent))) ? cptr.ldI64o(ygold, $obj_quan) : 0n))))
         return 1;
+
     return 0;
 }
 
+/* unseen leprechaun with gold might stash it */
 /** C ref: monmove.c:1154 — @param {CPtr<struct monst>} mtmp */
 function* leppie_stash(mtmp) {
     let gold;
+
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LEPRECHAUN, $sizeof_permonst)) && !(cptr.ldI32o((mtmp), $monst_mhp) < 1) && !((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.COULD_SEE) != 0)) && !cptr.ld1s((yield* in_rooms(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), NHC.SHOPBASE))) && cptr.ld1so3(svl, cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mtmp, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM && !t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && rn2_at(__s_monmove_c, 1164, __s_leppie_stash, 4) && (gold = findgold(cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
         (yield* mdrop_obj(mtmp, gold, 0));
         gold = g_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
@@ -899,6 +1193,13 @@ function* leppie_stash(mtmp) {
     }
 }
 
+/* does monster want to avoid you?
+ *  returns the original value of appr if not.
+ *  returns -1 if so.
+ *  returns -2 if monster wants to adhere to a particular range,
+ *             which may actually be further away,
+ *             and sets *pdistmin and *pdistmax to describe that range
+ */
 /** C ref: monmove.c:1181 — @param {CInt} oldappr @param {CPtr<struct monst>} mtmp @param {CPtr<int>} pdistmin @param {CPtr<int>} pdistmax @returns {CInt} */
 function m_balks_at_approaching(oldappr, mtmp, pdistmin, pdistmax) {
     let mwep = (cptr.ldPtro((mtmp), $monst_mw));
@@ -908,16 +1209,26 @@ function m_balks_at_approaching(oldappr, mtmp, pdistmin, pdistmax) {
     let uy = cptr.ldI16o(mtmp, $monst_muy);
     let edist = dist2(x, y, ux, uy);
     let arw;
+
     if (pdistmin)
         cptr.stI32(pdistmin, 0);
     if (pdistmax)
         cptr.stI32(pdistmax, 0);
+
+    /* peaceful, far away, or can't see you */
     if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || (edist >= 25) || !((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.COULD_SEE) != 0)))
         return oldappr;
+
+    /* has ammo+launcher */
     if (m_has_launcher_and_ammo(mtmp))
         return -1;
+
+    /* is using a polearm and in range */
     if ((cptr.ldPtro((mtmp), $monst_mw)) && ((cptr.ld1so((cptr.ldPtro((mtmp), $monst_mw)), $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so((cptr.ldPtro((mtmp), $monst_mw)), $obj_oclass) == NHC.TOOL_CLASS) && (cptr.ld1so2(objects, cptr.ldI16o((cptr.ldPtro((mtmp), $monst_mw)), $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_POLEARMS || cptr.ld1so2(objects, cptr.ldI16o((cptr.ldPtro((mtmp), $monst_mw)), $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_LANCE || is_art((cptr.ldPtro((mtmp), $monst_mw)), NHC.ART_SNICKERSNEE))) && edist <= NHM.MON_POLE_DIST)
         return -1;
+
+    /* is using a throw-and-return weapon; provide min and max preferred range
+     */
     if (mwep && (arw = autoreturn_weapon(mwep)) !== null) {
         if (pdistmin)
             cptr.stI32(pdistmin, 4);
@@ -925,44 +1236,59 @@ function m_balks_at_approaching(oldappr, mtmp, pdistmin, pdistmax) {
             cptr.stI32(pdistmax, cptr.ldI32o(arw, $throw_and_return_weapon_range));
         return -2;
     }
+
+    /* can attack from distance, and hp loss or attack not used */
     if (ranged_attk_available(mtmp) && ((cptr.ldI32o(mtmp, $monst_mhp) < ((((cptr.ldI32o(mtmp, $monst_mhpmax) + 1) | 0) / 3) | 0)) || !cptr.ldI32o(mtmp, $monst_mspec_used)))
         return -1;
-    return oldappr;
+
+    return oldappr;  /* leaves appr unchanged */
 }
 
 /** C ref: monmove.c:1227 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function holds_up_web(x, y) {
     let sway;
+
     if (!isok(x, y) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LADDER) && (sway = stairway_at(x, y)) !== null && cptr.ld1so(sway, $stairway_up)) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS)
         return 1;
+
     return 0;
 }
 
+/* returns the number of walls in the four cardinal directions that could
+   hold up a web */
 /** C ref: monmove.c:1244 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function count_webbing_walls(x, y) {
     return ((((((holds_up_web(x, i16(((y - 1) | 0))) + holds_up_web(i16(((x + 1) | 0)), y)) | 0) + holds_up_web(x, i16(((y + 1) | 0)))) | 0) + holds_up_web(i16(((x - 1) | 0)), y)) | 0);
 }
 
+/* reject webs which interfere with solving Sokoban */
 /** C ref: monmove.c:1252 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function soko_allow_web(mon) {
     let stway;
+
+    /* for a non-Sokoban level or a solved Sokoban level, no restriction */
     if (!Sokoban())
         return 1;
-    stway = stairway_find_dir(1);
+    /* not-yet-solved Sokoban level:  allow web only when spinner can see
+       the stairs up [we really want 'is in same chamber as stairs up'] */
+    stway = stairway_find_dir(1);  /* stairs up */
     if (stway && m_cansee(mon, cptr.ldI16(stway), cptr.ldI16o(stway, $stairway_sy)))
         return 1;
     return 0;
 }
 
+/* monster might spin a web */
 /** C ref: monmove.c:1269 — @param {CPtr<struct monst>} mtmp */
 function* maybe_spin_web(mtmp) {
     if (webmaker(cptr.ldPtro(mtmp, $monst_data)) && !helpless(mtmp) && !cptr.ldI32o(mtmp, $monst_mspec_used) && !t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && soko_allow_web(mtmp)) {
         let trap;
         let prob = (((Math.imul(((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GIANT_SPIDER, $sizeof_permonst))) ? 15 : 5), ((count_webbing_walls(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) + 1) | 0))) - (Math.imul(3, count_traps(NHC.WEB)))) | 0);
+
         if (rn2_at(__s_monmove_c, 1279, __s_maybe_spin_web, 1000) < prob && (trap = (yield* maketrap(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), NHC.WEB))) !== null) {
-            cptr.stI32o(mtmp, $monst_mspec_used, d_at(__s_monmove_c, 1281, __s_maybe_spin_web, 4, 4));
+            cptr.stI32o(mtmp, $monst_mspec_used, d_at(__s_monmove_c, 1281, __s_maybe_spin_web, 4, 4));  /* 4..16 */
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
                 let mbuf = new Uint8Array(256);
+
                 void cptr.strcpy(cptr.decay(mbuf), canspotmon(mtmp) ? (yield* y_monnam(mtmp)) : cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
                 (yield* pline_mon(mtmp, __s_s_spins_a_web, upstart(cptr.decay(mbuf))));
                 cptr.stI32o(trap, $trap_tseen, 1);
@@ -973,6 +1299,7 @@ function* maybe_spin_web(mtmp) {
     }
 }
 
+/* monster avoids a location nx, ny, if hero kicked that location */
 /** C ref: monmove.c:1297 — @param {CPtr<struct monst>} mtmp @param {CInt} nx @param {CInt} ny @returns {CInt} */
 export function m_avoid_kicked_loc(mtmp, nx, ny) {
     if (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame)) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_mconf) & 1) && !(cptr.ldI32o(mtmp, $monst_mstun) & 1) && !Conflict() && isok(cptr.ldI16(gk), cptr.ldI16o(gk, $nhcoord_y)) && nx == cptr.ldI16(gk) && ny == cptr.ldI16o(gk, $nhcoord_y) && (dist2(((nx)), ((ny)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
@@ -980,6 +1307,8 @@ export function m_avoid_kicked_loc(mtmp, nx, ny) {
     return 0;
 }
 
+/* monster avoids a location nx, ny, if we're in sokoban, and
+   there's a boulder between the location and hero */
 /** C ref: monmove.c:1313 — @param {CPtr<struct monst>} mtmp @param {CInt} nx @param {CInt} ny @returns {CInt} */
 export function m_avoid_soko_push_loc(mtmp, nx, ny) {
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0 && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame)) && !(cptr.ldI32o(mtmp, $monst_mconf) & 1) && !(cptr.ldI32o(mtmp, $monst_mstun) & 1) && !Conflict() && (dist2(nx, ny, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == 4) && sobj_at(NHC.BOULDER, i16(((nx + sgn((cptr.ldI16(u) - nx) | 0)) | 0)), i16(((ny + sgn((cptr.ldI16o(u, $you_uy) - ny) | 0)) | 0))))
@@ -987,9 +1316,10 @@ export function m_avoid_soko_push_loc(mtmp, nx, ny) {
     return 0;
 }
 
+/* monster looks for items it wants nearby */
 /** C ref: monmove.c:1330 — @param {CPtr<struct monst>} mtmp @param {CPtr<coordxy>} ggx @param {CPtr<coordxy>} ggy @param {CPtr<int>} mmoved @param {CPtr<int>} appr @returns {CInt} */
 function* m_search_items(mtmp, ggx, ggy, mmoved, appr) {
-    let minr = 5;
+    let minr = 5;  /* not too far away */
     let otmp;
     let xx;
     let yy;
@@ -1004,30 +1334,50 @@ function* m_search_items(mtmp, ggx, ggy, mmoved, appr) {
     let mtoo;
     let costly;
     __lbl_finish_search: {
+
+        /* cut down the search radius if it thinks character is closer. */
         if (distmin(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy), omx, omy) < 5 && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             minr--;
+        /* guards shouldn't get too distracted */
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && ((cptr.ldU64o((ptr), $permonst_mflags2) & 512n) != 0n))
             minr = 1;
+
+        /* in shop, usually skip */
         if (cptr.ld1s((yield* in_rooms(omx, omy, NHC.SHOPBASE))) && (rn2_at(__s_monmove_c, 1355, __s_m_search_items, 25) || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0))
             break __lbl_finish_search;
+
+        /* distmin() gives a rectangular area */
         hmx = i16((79 < ((omx + minr) | 0) ? 79 : ((omx + minr) | 0)));
         hmy = i16((20 < ((omy + minr) | 0) ? 20 : ((omy + minr) | 0)));
         lmx = i16((1 > ((omx - minr) | 0) ? 1 : ((omx - minr) | 0)));
         lmy = i16((0 > ((omy - minr) | 0) ? 0 : ((omy - minr) | 0)));
+
         for (xx = lmx; xx <= hmx; xx++) {
             for (yy = lmy; yy <= hmy; yy++) {
+                /* no object here */
                 if (!(cptr.ldPtro3(svl, xx, 168, yy, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null))
                     continue;
+                /* found an object closer already */
                 if (minr < distmin(omx, omy, xx, yy))
                     continue;
+                /* the mfndpos() test for whether to allow a move to a
+                   water location accepts flyers, but they can't reach
+                   underwater objects, so being able to move to a spot
+                   is insufficient for deciding whether to do so */
                 if (!could_reach_item(mtmp, xx, yy))
                     continue;
+                /* hiders avoid hero's line of sight */
                 if (((cptr.ldU64o((ptr), $permonst_mflags1) & 128n) != 0n) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), yy, 8), xx) & NHM.IN_SIGHT) != 0))
                     continue;
+                /* don't get stuck circling around object that's
+                   underneath an immobile or hidden monster;
+                   paralysis victims excluded */
                 if ((mtoo = (cptr.ldPtro3(svl, xx, 168, yy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && (helpless(mtoo) || (cptr.ldI32o(mtoo, $monst_mundetected) & 1) | 0 || (cptr.ldI32o(mtoo, $monst_mappearance) && !(cptr.ldI32o(mtoo, $monst_iswiz) & 1)) || !cptr.ld1so(cptr.ldPtro(mtoo, $monst_data), $permonst_mmove)))
                     continue;
+                /* Don't get stuck circling an Elbereth */
                 if ((yield* onscary(xx, yy, mtmp)))
                     continue;
+                /* ignore obj if there's a trap and monster knows it */
                 if ((ttmp = t_at(xx, yy)) !== null && mon_knows_traps(mtmp, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0)) {
                     if (cptr.ldI16(ggx) == xx && cptr.ldI16(ggy) == yy) {
                         cptr.stI16(ggx, cptr.ldI16o(mtmp, $monst_mux));
@@ -1035,24 +1385,36 @@ function* m_search_items(mtmp, ggx, ggy, mmoved, appr) {
                     }
                     continue;
                 }
+                /* avoid getting stuck on eg. items in niches */
                 if (!m_cansee(mtmp, xx, yy))
                     continue;
+
                 costly = (yield* costly_spot(xx, yy));
+
+                /* look through the items on this location */
                 for (otmp = cptr.ldPtro3(svl, xx, 168, yy, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
+                    /* monsters may pick rocks up, but won't go out of their way
+                       to grab them; this might hamper sling wielders, but it cuts
+                       down on move overhead by filtering out most common item */
                     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK)
                         continue;
+                    /* avoid special items; once hero picks them up, they'll
+                       cease being special */
                     if ((cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) || (cptr.ldI32o((otmp), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid)))
                         continue;
+                    /* skip shop merchandise */
                     if (costly && !(cptr.ldI32o(otmp, $obj_no_charge) & 1))
                         continue;
+
                     if ((((yield* mon_would_take_item(mtmp, otmp)) && ((yield* can_carry(mtmp, otmp)) > 0)) || (yield* mon_would_consume_item(mtmp, otmp))) && (yield* can_touch_safely(mtmp, otmp))) {
                         minr = distmin(omx, omy, xx, yy);
                         cptr.stI16(ggx, cptr.ldI16o(otmp, $obj_ox));
                         cptr.stI16(ggy, cptr.ldI16o(otmp, $obj_oy));
                         if (cptr.ldI16(ggx) == omx && cptr.ldI16(ggy) == omy) {
-                            cptr.stI32(mmoved, NHM.MMOVE_DONE);
+                            cptr.stI32(mmoved, NHM.MMOVE_DONE);  /* actually unnecessary */
                             return 1;
                         }
+                        /* found an item of interest; skip the rest of the pile */
                         break;
                     }
                 }
@@ -1077,17 +1439,32 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
     let trapret;
     let canseeit = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0));
     let didseeit = canseeit;
+
     (yield* notice_mon(mtmp));
+
     if (mmoved == NHM.MMOVE_MOVED) {
         nix = cptr.ldI16o(mtmp, $monst_mx), niy = cptr.ldI16o(mtmp, $monst_my);
+        /* sequencing issue:  when monster movement decides that a
+           monster can move to a door location, it moves the monster
+           there before dealing with the door rather than after;
+           so a vampire/bat that is going to shift to fog cloud and
+           pass under the door is already there but transformation
+           into fog form--and its message, when in sight--has not
+           happened yet; we have to move monster back to previous
+           location before performing the vamp_shift() to make the
+           message happen at right time, then back to the door again
+           [if we did the shift sooner, before moving the monster,
+           we would need to duplicate it in dog_move()...] */
         if (is_vampshifter(mtmp) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) && ((cptr.ld1so3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && ((((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12) != 0) && can_fog(mtmp)) {
+            /* note: remove_monster()+place_monster is not right for
+               long worms but they won't reach here */
             if (seenflgs) {
                 cptr.stPtro3(svl, nix, 168, niy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
                 (yield* place_monster(mtmp, omx, omy));
                 (yield* newsym(nix, niy)), (yield* newsym(omx, omy));
             }
             if ((yield* vamp_shift(mtmp, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst), schar(((((seenflgs & 1) >>> 0) != 0) ? 1 : 0))))) {
-                ptr = cptr.ldPtro(mtmp, $monst_data);
+                ptr = cptr.ldPtro(mtmp, $monst_data);  /* update cached value */
                 (void (ptr));
             }
             if (seenflgs) {
@@ -1096,20 +1473,30 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
                 (yield* newsym(omx, omy)), (yield* newsym(nix, niy));
             }
         }
-        (yield* newsym(omx, omy));
+
+        (yield* newsym(omx, omy));  /* update the old position */
         trapret = (yield* mintrap(mtmp, NHM.NO_TRAP_FLAGS));
         if (trapret == NHC.Trap_Killed_Mon || trapret == NHC.Trap_Moved_Mon) {
             if (cptr.ldI16o(mtmp, $monst_mx))
                 (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-            return NHM.MMOVE_DIED;
+            return NHM.MMOVE_DIED;  /* it died */
         } else if ((cptr.ldI64o((mtmp), $monst_mstate) != 0n)) {
             return NHM.MMOVE_DONE;
         }
-        ptr = cptr.ldPtro(mtmp, $monst_data);
+        ptr = cptr.ldPtro(mtmp, $monst_data);  /* in case mintrap() caused polymorph */
+
+        /* open a door, or crash through it, if 'mtmp' can */
         if (((cptr.ld1so3(svl, cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mtmp, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 8n) != 0n) && !can_tunnel) {
             let here = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21), cptr.ldI16o(mtmp, $monst_my), $sizeof_rm);
             let btrapped = schar(((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0));
+
+            /* if mon has MKoT, disarm door trap; no message given */
             if (btrapped && has_magic_key(mtmp)) {
+                /* BUG: this lets a vampire or blob or a doorbuster
+                   holding the Key disarm the trap even though it isn't
+                   using that Key when squeezing under or smashing the
+                   door.  Not significant enough to worry about; perhaps
+                   the Key's magic is more powerful for monsters? */
                 cptr.stI32o(here, $rm_flags, cptr.ldI32o(here, $rm_flags) & -17);
                 btrapped = 0;
             }
@@ -1118,6 +1505,10 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
                     (yield* pline_mon(mtmp, __s_s_s_under_the_door, (yield* YMonnam(mtmp)), (cptr.eq(ptr, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_LIGHT) ? __s_flows : __s_oozes));
             } else if ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & NHM.D_LOCKED) != 0 && can_unlock) {
                 {
+                    /* like the vampshift hack, there are sequencing
+                       issues when the monster is moved to the door's spot
+                       first then door handling plus feedback comes after */
+
                     cptr.stI32o((here), $rm_flags, (!btrapped ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
                     (yield* newsym(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my)));
                     (yield* recalc_block_point(cptr.ldI16o((mtmp), $monst_mx), cptr.ldI16o((mtmp), $monst_my)));
@@ -1163,7 +1554,9 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
                     }
                 }
             } else if ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & 12) != 0) {
+                /* mfndpos guarantees this must be a doorbuster */
                 let mask;
+
                 mask = ((btrapped || ((((cptr.ldI32o(here, $rm_flags) & 31) | 0) & NHM.D_LOCKED) != 0 && !rn2_at(__s_monmove_c, 1598, __s_postmov, 2))) ? NHM.D_NODOOR : NHM.D_BROKEN) >>> 0;
                 {
                     cptr.stI32o((here), $rm_flags, (mask));
@@ -1187,10 +1580,15 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
                         }
                     }
                 }
+                /* if it's a shop door, schedule repair */
                 if (cptr.ld1s((yield* in_rooms(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), NHC.SHOPBASE))))
                     (yield* add_damage(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 0n));
             }
+
         } else if (cptr.ld1so3(svl, cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mtmp, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS) {
+            /* 3.6.2: was using may_dig() but that doesn't handle bars;
+               AD_RUST catches rust monsters but metallivorous() is
+                   needed for xorns and rock moles */
             if (!(((cptr.ldI32o3(svl, cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mtmp, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) && (dmgtype(ptr, NHM.AD_RUST) || dmgtype(ptr, NHM.AD_CORR) || ((cptr.ldU64o((ptr), $permonst_mflags1) & 2147483648n) != 0n))) {
                 if (canseemon(mtmp))
                     (yield* pline_mon(mtmp, __s_s_eats_through_the_iron_bars, (yield* Monnam(mtmp))));
@@ -1198,10 +1596,15 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
                 return NHM.MMOVE_DONE;
             } else if (cptr.ld1so(flags, $flag_verbose) && canseemon(mtmp))
                 (yield* Norep(__s_s_s_s_the_iron_bars, (yield* Monnam(mtmp)), (yield* makeplural(locomotion(ptr, __s_pass))), ((cptr.ldU64o((ptr), $permonst_mflags1) & 8n) != 0n) ? __s_through : __s_between));
-        }
+        }  /* doors and bars */
+
+        /* possibly dig */
         if (can_tunnel && may_dig(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && (yield* mdig_tunnel(mtmp)))
-            return NHM.MMOVE_DIED;
+            return NHM.MMOVE_DIED;  /* mon died (position already updated) */
+
+        /* set also in domove(), hack.c */
         if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) && (cptr.ldI16o(mtmp, $monst_mx) != omx || cptr.ldI16o(mtmp, $monst_my) != omy)) {
+            /* If the monster moved, then update */
             cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
             cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
             (yield* u_on_newpos(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
@@ -1209,31 +1612,44 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
         } else {
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         }
-    }
+    }  /* mmoved==MMOVE_MOVED */
+
     if (mmoved == NHM.MMOVE_MOVED || mmoved == NHM.MMOVE_DONE) {
         if ((cptr.ldPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0) {
+
+            /* Maybe a rock mole just ate some metal object */
             if (((cptr.ldU64o((ptr), $permonst_mflags1) & 2147483648n) != 0n)) {
                 if ((yield* meatmetal(mtmp)) == 2)
-                    return NHM.MMOVE_DIED;
+                    return NHM.MMOVE_DIED;  /* it died */
             }
+
+            /* Maybe a cube ate just about anything */
             if (cptr.eq(ptr, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst))) {
                 if ((etmp = (yield* meatobj(mtmp))) >= 2)
-                    return etmp;
+                    return etmp;  /* it died or got forced off the level */
             }
+            /* Maybe a purple worm ate a corpse */
             if (corpse_eater(ptr)) {
                 if ((etmp = (yield* meatcorpse(mtmp))) >= 2)
-                    return etmp;
+                    return etmp;  /* it died or got forced off the level */
             }
+
             if ((yield* mpickstuff(mtmp)))
                 mmoved = NHM.MMOVE_DONE;
+
             if ((cptr.ldI32o(mtmp, $monst_minvis) & 1)) {
                 (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
                 if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
                     (yield* see_wsegs(mtmp));
             }
         }
+
         (yield* maybe_spin_web(mtmp));
+
         if (((cptr.ldU64o((ptr), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL) {
+            /* Always set--or reset--mundetected if it's already hidden
+               (just in case the object it was hiding under went away);
+               usually set mundetected unless monster can't move. */
             if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || (!helpless(mtmp) && rn2_at(__s_monmove_c, 1696, __s_postmov, 5)))
                 void (yield* hideunder(mtmp));
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
@@ -1245,6 +1661,13 @@ function* postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock,
     return mmoved;
 }
 
+/* Handles the movement of a standard monster.
+ * Return values:
+ * 0: did not move, but can still attack and do other stuff;
+ * 1: moved, possibly can attack;
+ * 2: monster died;
+ * 3: did not move, and can't do anything else either.
+ */
 /** C ref: monmove.c:1715 — @param {CPtr<struct monst>} mtmp @param {CInt} after @returns {CInt} */
 export function* m_move(mtmp, after) {
     let appr = cptr.box(0);
@@ -1270,57 +1693,79 @@ export function* m_move(mtmp, after) {
     let omx = cptr.ldI16o(mtmp, $monst_mx);
     let omy = cptr.ldI16o(mtmp, $monst_my);
     __lbl_not_special: {
+
         if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
             let i = (yield* mintrap(mtmp, NHM.NO_TRAP_FLAGS));
+
             if (i == NHC.Trap_Killed_Mon) {
                 (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
                 return NHM.MMOVE_DIED;
-            }
+            }  /* it died */
             if (i == NHC.Trap_Caught_Mon)
-                return NHM.MMOVE_NOTHING;
+                return NHM.MMOVE_NOTHING;  /* still in trap, so didn't move */
         }
-        ptr = cptr.ldPtro(mtmp, $monst_data);
+        ptr = cptr.ldPtro(mtmp, $monst_data);  /* mintrap() can change mtmp->data -dlc */
+
         if (cptr.ldI32o(mtmp, $monst_meating)) {
             (cptr.stI32o(mtmp, $monst_meating, cptr.ldI32o(mtmp, $monst_meating) + -1)) - (-1);
             if (cptr.ldI32o(mtmp, $monst_meating) <= 0)
                 (yield* finish_meating(mtmp));
-            return NHM.MMOVE_DONE;
+            return NHM.MMOVE_DONE;  /* still eating */
         }
         if (((cptr.ldU64o((ptr), $permonst_mflags1) & 128n) != 0n) && (cptr.ldPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && can_hide_under_obj(cptr.ldPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_objects)) && rn2_at(__s_monmove_c, 1753, __s_m_move, 10))
-            return NHM.MMOVE_NOTHING;
+            return NHM.MMOVE_NOTHING;  /* do not leave hiding place */
+
+        /* set up pre-move visibility flags */
         seenflgs = ((canseemon(mtmp) ? 1 : 0) | (canspotmon(mtmp) ? 2 : 0)) >>> 0;
-        set_apparxy(mtmp);
+
+        /* Where does 'mtmp' think you are?  Not necessary if m_move() called
+           from this file, but needed for other calls of m_move(). */
+        set_apparxy(mtmp);  /* set mtmp->mux, mtmp->muy */
+
         if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             can_tunnel = schar(((cptr.ldU64o((ptr), $permonst_mflags1) & 32n) != 0n));
         can_open = schar((!(((cptr.ldU64o((ptr), $permonst_mflags1) & 8192n) != 0n) || (cptr.ld1uo((ptr), $permonst_msize) < NHM.MZ_SMALL))));
         can_unlock = schar(((can_open && monhaskey(mtmp, 1)) || (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || is_rider(ptr) ? 1 : 0));
+        /* doorbuster = is_giant(ptr); */
         if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
             break __lbl_not_special;
+        /* my dog gets special treatment */
         if (cptr.ld1so(mtmp, $monst_mtame)) {
             return (yield* postmov(mtmp, ptr, omx, omy, (yield* dog_move(mtmp, after)), seenflgs, can_tunnel, can_unlock, can_open));
         }
+
+        /* and the acquisitive monsters get special treatment */
         if (((cptr.ldU16o((ptr), $permonst_mflags3) & NHM.M3_COVETOUS))) {
             let covetousattack;
             let tx = cptr.ldI16o(mtmp, $monst_mgoal);
             let ty = cptr.ldI16o(mtmp, $monst_mgoal + $nhcoord_y);
             let intruder = isok(tx, ty) ? (cptr.ldPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) : null;
+            /*
+             * if there's a monster on the object or in possession of it,
+             * attack it.
+             */
             if (intruder && !cptr.eq(intruder, mtmp) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), tx, ty) <= 2) {
                 cptr.stI16o(gb, $instance_globals_b_bhitpos, tx), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, ty);
                 cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI16o(intruder, $monst_mx) != tx || cptr.ldI16o(intruder, $monst_my) != ty ? 1 : 0)));
                 covetousattack = (yield* mattackm(mtmp, intruder));
+                /* 5.0: this used to erroneously use '== 2' (M_ATTK_DEF_DIED) */
                 if (covetousattack & NHM.M_ATTK_AGR_DIED)
                     return NHM.MMOVE_DIED;
                 mmoved.v = NHM.MMOVE_MOVED;
                 return (yield* postmov(mtmp, ptr, omx, omy, mmoved.v, seenflgs, can_tunnel, can_unlock, can_open));
             }
+            /* otherwise continue with normal AI routine */
         }
+
+        /* likewise for shopkeeper, guard, or priest */
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0) {
             let xm = (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 ? (yield* shk_move(mtmp)) : ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 ? (yield* gd_move(mtmp)) : (yield* pri_move(mtmp)));
+
             switch (xm) {
                 case -2:
                 return NHM.MMOVE_DIED;
                 case -1:
-                mmoved.v = NHM.MMOVE_NOTHING;
+                mmoved.v = NHM.MMOVE_NOTHING;  /* shk follow hero outside shop */
                 break;
                 default:
                 (yield* impossible(__s_unknown_shk_gd_pri_move_return_value_d, xm));
@@ -1339,6 +1784,8 @@ export function* m_move(mtmp, after) {
             (yield* mongone(mtmp));
             return NHM.MMOVE_DIED;
         }
+
+        /* teleport if that lies in our nature */
         if (cptr.eq(ptr, cptr.add(mons, NHC.PM_TENGU, $sizeof_permonst)) && !rn2_at(__s_monmove_c, 1841, __s_m_move, 5) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1) && !(yield* tele_restrict(mtmp))) {
             if (cptr.ldI32o(mtmp, $monst_mhp) < 7 || (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || rn2_at(__s_monmove_c, 1843, __s_m_move, 2))
                 void (yield* rloc(mtmp, NHM.RLOC_MSG));
@@ -1358,13 +1805,19 @@ export function* m_move(mtmp, after) {
         appr.v = 0;
     } else {
         let should_see = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.COULD_SEE) != 0) && ((cptr.ldI32o3(svl, ggx.v, $sizeof_rm_x21, ggy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 || !(cptr.ldI32o3(svl, omx, $sizeof_rm_x21, omy, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1)) && (dist2(omx, omy, ggx.v, ggy.v) <= 36) ? 1 : 0));
+
         if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (should_see && Invis() && !((cptr.ldU64o((ptr), $permonst_mflags1) & 16777216n) != 0n) && rn2_at(__s_monmove_c, 1866, __s_m_move, 11)) || ((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.STRANGE_OBJECT) || (cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.GOLD_PIECE) && !((cptr.ldU64o((ptr), $permonst_mflags2) & 268435456n) != 0n)) || ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_isshk) & 1)) || (((cptr.ldI32o((ptr), $permonst_pmidx)) == NHC.PM_STALKER || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_BAT || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_LIGHT) && !rn2_at(__s_monmove_c, 1871, __s_m_move, 3)))
             appr.v = 0;
+
         if (appr.v == 1 && leppie_avoidance(mtmp))
             appr.v = -1;
+
+        /* hostiles with ranged weapon or attack try to stay away */
         appr.v = m_balks_at_approaching(appr.v, mtmp, preferredrange_min, preferredrange_max);
+
         if (!should_see && can_track(ptr)) {
             let cp;
+
             cp = gettrack(omx, omy);
             if (cp) {
                 ggx.v = cptr.ldI16(cp);
@@ -1372,16 +1825,26 @@ export function* m_move(mtmp, after) {
             }
         }
     }
+
     if ((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || !rn2_at(__s_monmove_c, 1891, __s_m_move, 10)) && (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))) {
         let in_line = schar((lined_up(mtmp) && (distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n) ? 20 : (((((acurrstr()) / 2) | 0) + 1) | 0))) ? 1 : 0));
+
         if (appr.v != 1 || !in_line) {
+            /* Monsters in combat won't pick stuff up, avoiding the
+             * situation where you toss arrows at it and it has nothing
+             * better to do than pick the arrows up.
+             */
             getitems = 1;
         }
     }
+
     if (getitems && (yield* m_search_items(mtmp, ggx, ggy, mmoved, appr)))
         return (yield* postmov(mtmp, ptr, omx, omy, mmoved.v, seenflgs, can_tunnel, can_unlock, can_open));
+
+    /* don't tunnel if hostile and close enough to prefer a weapon */
     if (can_tunnel && ((cptr.ldU64o((ptr), $permonst_mflags1) & 64n) != 0n) && ((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || Conflict()) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) <= 8))
         can_tunnel = 0;
+
     nix = omx;
     niy = omy;
     flag = (yield* mon_allowflags(mtmp));
@@ -1396,6 +1859,7 @@ export function* m_move(mtmp, after) {
         let ndist;
         let nidist;
         let mtrk;
+
         cnt = (yield* mfndpos(mtmp, mfp, flag));
         if (cnt == 0 && !is_unicorn(cptr.ldPtro(mtmp, $monst_data))) {
             if ((yield* find_defensive(mtmp, 1)) && (yield* use_defensive(mtmp)))
@@ -1406,9 +1870,11 @@ export function* m_move(mtmp, after) {
         jcnt = (NHM.MTSZ < ((cnt - 1) | 0) ? NHM.MTSZ : ((cnt - 1) | 0));
         chi = -1;
         nidist = dist2(nix, niy, ggx.v, ggy.v);
+        /* allow monsters be shortsighted on some levels for balance */
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted) & 1) | 0 && nidist > (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), niy, 8), nix) & NHM.COULD_SEE) != 0) ? 144 : 36) && appr.v == 1)
             appr.v = 0;
         if (is_unicorn(ptr) && (yield* noteleport_level(mtmp))) {
+            /* on noteleport levels, perhaps we cannot avoid hero */
             for (i = 0; i < cnt; i++)
                 if (!(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 2097152n))
                     avoid = 1;
@@ -1420,8 +1886,10 @@ export function* m_move(mtmp, after) {
                     continue;
                 nx = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss);
                 ny = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss + $nhcoord_y);
+
                 if (m_avoid_kicked_loc(mtmp, i16(nx), i16(ny)))
                     continue;
+
                 if ((cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 4096n) && !(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n) && !better_with_displacing)
                     continue;
                 if (appr.v != 0) {
@@ -1431,7 +1899,9 @@ export function* m_move(mtmp, after) {
                             if (rn2_at(__s_monmove_c, 1963, __s_m_move, Math.imul(4, ((cnt - j) | 0))))
                                 break __lbl_nxti;
                 }
+
                 nearer = ((ndist = dist2(i16(nx), i16(ny), ggx.v, ggy.v)) < nidist);
+
                 if ((appr.v == 1 && nearer) || (appr.v == -1 && !nearer) || (!appr.v && !(rng_log_enabled() ? (rng_log_set_caller(__s_monmove_c, 1970, __s_m_move), rn2(++chcnt)) : rn2(++chcnt))) || (appr.v == -2 && ((ndist <= preferredrange_min.v && !nearer) || (ndist >= preferredrange_max.v && nearer))) || (mmoved.v == NHM.MMOVE_NOTHING)) {
                     nix = i16(nx);
                     niy = i16(ny);
@@ -1443,11 +1913,26 @@ export function* m_move(mtmp, after) {
             ;
         }
     }
+
     if (mmoved.v != NHM.MMOVE_NOTHING) {
         if (mmoved.v == NHM.MMOVE_MOVED && !((nix) == cptr.ldI16(u) && (niy) == cptr.ldI16o(u, $you_uy)) && (yield* itsstuck(mtmp)))
             return NHM.MMOVE_DONE;
+
         if (mmoved.v == NHM.MMOVE_MOVED && (yield* m_digweapon_check(mtmp, nix, niy)))
             return NHM.MMOVE_DONE;
+
+        /* If ALLOW_U is set, either it's trying to attack you, or it
+         * thinks it is.  In either case, attack this spot in preference to
+         * all others.
+         */
+        /* Actually, this whole section of code doesn't work as you'd expect.
+         * Most attacks are handled in dochug().  It calls distfleeck(), which
+         * among other things sets nearby if the monster is near you--and if
+         * nearby is set, we never call m_move unless it is a special case
+         * (confused, stun, etc.)  The effect is that this ALLOW_U (and
+         * mfndpos) has no effect for normal attacks, though it lets a
+         * confused monster attack you by accident.
+         */
         (__builtin_expect(BigInt((!(((chi) >= 0 && (chi) < Number(BigInt.asIntN(32, (72n / 8n))))))), 0n) ? __assert_rtn(__s_m_move, __s_monmove_c, 2005, __s_indexok_chi_mfp_info) : void 0);
         if (cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 262144n) {
             nix = cptr.ldI16o(mtmp, $monst_mux);
@@ -1458,56 +1943,91 @@ export function* m_move(mtmp, after) {
             cptr.stI16o(mtmp, $monst_muy, cptr.ldI16o(u, $you_uy));
             return NHM.MMOVE_NOTHING;
         }
+        /* The monster may attack another based on 1 of 2 conditions:
+         * 1 - It may be confused.
+         * 2 - It may mistake the monster for your (displaced) image.
+         * Pets get taken care of above and shouldn't reach this code.
+         * Conflict gets handled even farther away (movemon()).
+         */
         if ((cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 524288n) != 0n || (nix == cptr.ldI16o(mtmp, $monst_mux) && niy == cptr.ldI16o(mtmp, $monst_muy)))
             return (yield* m_move_aggress(mtmp, nix, niy));
+
         if ((cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 4096n) != 0n) {
             let mtmp2;
             let mstatus;
-            mtmp2 = (cptr.ldPtro3(svl, nix, 168, niy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
+            mtmp2 = (cptr.ldPtro3(svl, nix, 168, niy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));  /* ALLOW_MDISP implies m_at() is !Null */
             mstatus = (yield* mdisplacem(mtmp, mtmp2, 0));
+            /*[if either dies, this reports mtmp has died; is that correct?]*/
             if (mstatus & 6)
                 return NHM.MMOVE_DIED;
             if (mstatus & NHM.M_ATTK_HIT)
                 return NHM.MMOVE_MOVED;
             return NHM.MMOVE_DONE;
         }
+
         if (!(yield* m_in_out_region(mtmp, nix, niy)))
             return NHM.MMOVE_DONE;
+
         if ((cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 33554432n) && m_can_break_boulder(mtmp)) {
             void (yield* m_break_boulder(mtmp, nix, niy));
             return NHM.MMOVE_DONE;
         }
+
         (yield* m_postmove_effect(mtmp));
+
+        /* move a normal monster; for a long worm, remove_monster() and
+           place_monster() only manipulate the head; they leave tail as-is */
         cptr.stPtro3(svl, omx, 168, omy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* place_monster(mtmp, nix, niy));
         (yield* msg_mon_movement(mtmp, omx, omy));
+        /* for a long worm, insert a new segment to reconnect the head
+           with the tail; worm_move() keeps the end of the tail if worm
+           is scheduled to grow, removes that for move-without-growing */
         if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
             (yield* worm_move(mtmp));
+
         (yield* maybe_unhide_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
+
         mon_track_add(mtmp, omx, omy);
     } else {
         if (is_unicorn(ptr) && rn2_at(__s_monmove_c, 2064, __s_m_move, 2) && !(yield* tele_restrict(mtmp))) {
             void (yield* rloc(mtmp, NHM.RLOC_MSG));
             return NHM.MMOVE_MOVED;
         }
+        /* for a long worm, shrink it (by discarding end of tail) when
+           it has failed to move */
         if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
             (yield* worm_nomove(mtmp));
     }
     return (yield* postmov(mtmp, ptr, omx, omy, mmoved.v, seenflgs, can_tunnel, can_unlock, can_open));
 }
 
+/* The part of m_move that deals with a monster attacking another monster (and
+ * that monster possibly retaliating).
+ * Extracted into its own function so that it can be called with monsters that
+ * have special move patterns (shopkeepers, priests, etc) that want to attack
+ * other monsters but aren't just roaming freely around the level (so allowing
+ * m_move to run fully for them could select an invalid move).
+ * x and y are the coordinates mtmp wants to attack.
+ * Return values are the same as for m_move, but this function only return 2
+ * (mtmp died) or 3 (mtmp made its move).
+ */
 /** C ref: monmove.c:2088 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* m_move_aggress(mtmp, x, y) {
     let mtmp2;
-    let mstatus = 0;
+    let mstatus = 0;  /* M_ATTK_MISS */
+
     mtmp2 = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mtmp2) {
         cptr.stI16o(gb, $instance_globals_b_bhitpos, x), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, y);
         cptr.st1o(gn, $instance_globals_n_notonhead, schar((x != cptr.ldI16o(mtmp2, $monst_mx) || y != cptr.ldI16o(mtmp2, $monst_my) ? 1 : 0)));
         mstatus = (yield* mattackm(mtmp, mtmp2));
     }
+
     if ((mstatus & NHM.M_ATTK_AGR_DIED) || (cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return NHM.MMOVE_DIED;
+
     if ((mstatus & 3) == NHM.M_ATTK_HIT && rn2_at(__s_monmove_c, 2104, __s_m_move_aggress, 4) && cptr.ldI16o(mtmp2, $monst_movement) > rn2_at(__s_monmove_c, 2104, __s_m_move_aggress, NHM.NORMAL_SPEED)) {
         if (cptr.ldI16o(mtmp2, $monst_movement) > NHM.NORMAL_SPEED)
             cptr.stI16o(mtmp2, $monst_movement, cptr.ldI16o(mtmp2, $monst_movement) - NHM.NORMAL_SPEED);
@@ -1515,37 +2035,50 @@ export function* m_move_aggress(mtmp, x, y) {
             cptr.stI16o(mtmp2, $monst_movement, 0);
         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
         cptr.st1o(gn, $instance_globals_n_notonhead, 0);
-        mstatus = (yield* mattackm(mtmp2, mtmp));
+        mstatus = (yield* mattackm(mtmp2, mtmp));  /* return attack */
+        /* note: at this point, defender is the original (moving) aggressor */
         if (mstatus & NHM.M_ATTK_DEF_DIED)
             return NHM.MMOVE_DIED;
     }
     return NHM.MMOVE_DONE;
 }
 
+/* returns TRUE if a mon can hide under the obj */
 /** C ref: monmove.c:2121 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function can_hide_under_obj(obj) {
+    /* uncomment '#define NO_HIDING_UNDER_STATUES' to prevent hiding under
+     * statues; that was introduced to avoid nullifying statue traps but
+     * isn't needed now that hiding at any non-pit trap site is disallowed */
+    /* #define NO_HIDING_UNDER_STATUES */
     let t;
+
     if (!obj || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FLOOR)
         return 0;
+    /* can't hide in/on/under traps (except pits) even when there is an
+       object here; since obj is on floor, its <ox,oy> are up to date */
     if ((t = t_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy))) !== null && !is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)))
         return 0;
+    /* can't hide under small amount of coins unless non-coins are also
+       present; we expect coins to be a single stack but don't assume that */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         let coinquan = 0n;
+
         do {
+            /* 10 coins is arbitrary amount considered enough to hide under */
             if ((coinquan += cptr.ldI64o(obj, $obj_quan)) >= 10n)
-                break;
+                break;  /* fall through to other checks */
             obj = cptr.ldPtro(obj, $obj_v);
             if (!obj)
-                return 0;
+                return 0;  /* whole pile was less than 10 coins */
         } while (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS);
     }
-    return 1;
+    return 1;  /* can hide under the object */
 }
 
 /** C ref: monmove.c:2170 — @param {CInt} x @param {CInt} y */
 export function* dissolve_bars(x, y) {
     cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) | 0) == 1) ? NHC.DOOR : ((Is_special(cptr.add(u, $you_uz)) || cptr.ld1s((yield* in_rooms(x, y, 0)))) ? NHC.ROOM : NHC.CORR))));
-    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
+    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);  /* doormask = D_NODOOR */
     (yield* newsym(x, y));
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         (yield* switch_terrain());
@@ -1558,10 +2091,13 @@ export function closed_door(x, y) {
 
 /** C ref: monmove.c:2188 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function accessible(x, y) {
+    /* use underlying terrain in front of closed drawbridge */
     let levtyp = SURFACE_AT(x, y);
+
     return schar((((levtyp) >= NHC.DOOR) && !closed_door(x, y) ? 1 : 0));
 }
 
+/* decide where the monster thinks you are standing */
 /** C ref: monmove.c:2198 — @param {CPtr<struct monst>} mtmp */
 export function set_apparxy(mtmp) {
     let notseen;
@@ -1571,16 +2107,27 @@ export function set_apparxy(mtmp) {
     let mx = cptr.ldI16o(mtmp, $monst_mux);
     let my = cptr.ldI16o(mtmp, $monst_muy);
     let umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
+
+    /*
+     * do cheapest and/or most likely tests first
+     */
+
+    /* pet knows your smell; grabber still has hold of you; monsters which
+       know where you are don't suddenly forget, if you haven't moved away */
     if (cptr.ld1so(mtmp, $monst_mtame) || cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) || ((mx) == cptr.ldI16(u) && (my) == cptr.ldI16o(u, $you_uy))) {
         cptr.stI16o(mtmp, $monst_mux, cptr.ldI16(u));
         cptr.stI16o(mtmp, $monst_muy, cptr.ldI16o(u, $you_uy));
         return;
     }
+
     notseen = schar((!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) ? 1 : 0));
     notthere = schar((Displaced() && !cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_DISPLACER_BEAST, $sizeof_permonst)) ? 1 : 0));
+    /* add cases as required.  eg. Displacement ... */
     if (Underwater()) {
         displ = 1;
     } else if (notseen) {
+        /* Xorns can smell quantities of valuable metal
+           like that in solid gold coins, treat as seen */
         displ = (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_XORN, $sizeof_permonst)) && umoney) ? 0 : 1;
     } else if (notthere) {
         displ = ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), my, 8), mx) & NHM.COULD_SEE) != 0) ? 2 : 1;
@@ -1592,14 +2139,19 @@ export function set_apparxy(mtmp) {
         cptr.stI16o(mtmp, $monst_muy, cptr.ldI16o(u, $you_uy));
         return;
     }
+
+    /* without something like the following, invisibility and displacement
+       are too powerful */
     gotu = schar((notseen ? !rn2_at(__s_monmove_c, 2239, __s_set_apparxy, 3) : (notthere ? !rn2_at(__s_monmove_c, 2239, __s_set_apparxy, 4) : 0)));
+
     if (!gotu) {
         let try_cnt = 0;
+
         do {
             if (++try_cnt > 200) {
                 mx = cptr.ldI16(u);
                 my = cptr.ldI16o(u, $you_uy);
-                break;
+                break;  /* punt */
             }
             mx = i16(((((cptr.ldI16(u) - displ) | 0) + rn2_at(__s_monmove_c, 2250, __s_set_apparxy, (Math.imul(2, displ) + 1) | 0)) | 0));
             my = i16(((((cptr.ldI16o(u, $you_uy) - displ) | 0) + rn2_at(__s_monmove_c, 2251, __s_set_apparxy, (Math.imul(2, displ) + 1) | 0)) | 0));
@@ -1608,31 +2160,57 @@ export function set_apparxy(mtmp) {
         mx = cptr.ldI16(u);
         my = cptr.ldI16o(u, $you_uy);
     }
+
     cptr.stI16o(mtmp, $monst_mux, mx);
     cptr.stI16o(mtmp, $monst_muy, my);
 }
 
+/*
+ * mon-to-mon displacement is a deliberate "get out of my way" act,
+ * not an accidental bump, so we don't consider mstun or mconf in
+ * undesired_disp().
+ *
+ * We do consider many other things about the target and its
+ * location however.
+ */
 /** C ref: monmove.c:2277 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function undesirable_disp(mtmp, x, y) {
     let is_pet = schar((cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1) ? 1 : 0));
     let trap = t_at(x, y);
+
     if (is_pet) {
+        /* Pets avoid a trap if you've seen it usually. */
         if (trap && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && rn2_at(__s_monmove_c, 2287, __s_undesirable_disp, 40))
             return 1;
+        /* Pets avoid cursed locations */
         if (cursed_object_at(x, y))
             return 1;
+
+        /* Monsters avoid a trap if they've seen that type before */
     } else if (trap && rn2_at(__s_monmove_c, 2294, __s_undesirable_disp, 40) && mon_knows_traps(mtmp, (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0)) {
         return 1;
     }
+
+    /* oversimplification:  creatures that bargethrough can't swap places
+       when target monster is in rock or closed door or water (in particular,
+       avoid moving to spots where mondied() won't leave a corpse; doesn't
+       matter whether barger is capable of moving to such a target spot if
+       it were unoccupied) */
     if (!accessible(x, y) && !(is_pool(x, y) && is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))))
         return 1;
+
     return 0;
 }
 
+/*
+ * Inventory prevents passage under door.
+ * Used by can_ooze() and can_fog().
+ */
 /** C ref: monmove.c:2319 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function stuff_prevents_passage(mtmp) {
     let chain;
     let obj;
+
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         chain = cptr.ldPtro(gi, $instance_globals_i_invent);
     } else {
@@ -1640,6 +2218,7 @@ function stuff_prevents_passage(mtmp) {
     }
     for (obj = chain; obj; obj = cptr.ldPtr(obj)) {
         let typ = cptr.ldI16o(obj, $obj_otyp);
+
         if (typ == NHC.COIN_CLASS && cptr.ldI64o(obj, $obj_quan) > 100n)
             return 1;
         if (cptr.ld1so(obj, $obj_oclass) != NHC.GEM_CLASS && !(typ >= NHC.ARROW && typ <= NHC.BOOMERANG) && !(typ >= NHC.DAGGER && typ <= NHC.CRYSKNIFE) && typ != NHC.SLING && !is_cloak(obj) && typ != NHC.FEDORA && !is_gloves(obj) && typ != NHC.LEATHER_JACKET && typ != NHC.CREDIT_CARD && !is_shirt(obj) && !(typ == NHC.CORPSE && (cptr.ld1uo((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)), $permonst_msize) < NHM.MZ_SMALL)) && typ != NHC.FORTUNE_COOKIE && typ != NHC.CANDY_BAR && typ != NHC.PANCAKE && typ != NHC.LEMBAS_WAFER && typ != NHC.LUMP_OF_ROYAL_JELLY && cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.RING_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.VENOM_CLASS && typ != NHC.SACK && typ != NHC.BAG_OF_HOLDING && typ != NHC.BAG_OF_TRICKS && !Is_candle(obj) && typ != NHC.OILSKIN_SACK && typ != NHC.LEASH && typ != NHC.STETHOSCOPE && typ != NHC.BLINDFOLD && typ != NHC.TOWEL && typ != NHC.TIN_WHISTLE && typ != NHC.MAGIC_WHISTLE && typ != NHC.MAGIC_MARKER && typ != NHC.TIN_OPENER && typ != NHC.SKELETON_KEY && typ != NHC.LOCK_PICK)
@@ -1657,6 +2236,7 @@ export function can_ooze(mtmp) {
     return 1;
 }
 
+/* monster can change form into a fog if necessary */
 /** C ref: monmove.c:2365 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_fog(mtmp) {
     if (!(cptr.ld1uo2(svm, NHC.PM_FOG_CLOUD, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) && is_vampshifter(mtmp) && !Protection_from_shape_changers() && !stuff_prevents_passage(mtmp))
@@ -1664,13 +2244,20 @@ export function can_fog(mtmp) {
     return 0;
 }
 
+/* this is called when a vampire turns into a fog cloud in order to move
+   under a closed door; if it was sensed via telepathy or seen via
+   infravision, its new fog cloud shape will disappear */
 /** C ref: monmove.c:2377 — @param {CPtr<struct monst>} mon @param {CPtr<struct permonst>} ptr @param {CInt} domsg @returns {CInt} */
 function* vamp_shift(mon, ptr, domsg) {
     let reslt = 0;
+
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), ptr)) {
+        /* already right shape */
         reslt = 1;
     } else if (is_vampshifter(mon)) {
         reslt = (yield* newcham(mon, ptr, domsg ? NHM.NC_SHOW_MSG : NHM.NO_NC_FLAGS));
+        /* shape-change message is given when vampshifter turns into a
+           fog cloud in order to move under a closed door */
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
     }
     return reslt;

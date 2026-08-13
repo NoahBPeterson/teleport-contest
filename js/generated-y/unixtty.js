@@ -89,17 +89,24 @@ function speednum(speed) {
         case 38400n:
         return 15;
     }
+
     return 0;
 }
 
 /** C ref: unixtty.c:199 */
 function setctty() {
     if ((tcsetattr(0, 1, curttyb)) < 0 || 0) {
+        /* Silent when running under NOMUX_MARKERS (no controlling tty). */
         if (!getenv(__s_nomux_markers))
             perror(__s_nethack_setctty);
     }
 }
 
+/*
+ * Get initial state of terminal, set ospeed (for termcap routines)
+ * and switch off tab expansion if necessary.
+ * Called by startup() in termcap.c and after returning from ! or ^Z
+ */
 /** C ref: unixtty.c:214 */
 export function gettty() {
     if ((tcgetattr(0, inittyb)) < 0 || 0) {
@@ -107,6 +114,10 @@ export function gettty() {
             perror(__s_nethack_gettty);
     }
     if (getenv(__s_nomux_markers)) {
+        /* Without a real tty the GTTY ioctls leave inittyb zeroed.
+         * Synthesize the conventional terminal control characters so
+         * getline.c sees the same erase_char/kill_char as a recording
+         * captured under tmux: \177 (DEL) for erase, ^U for kill. */
         cptr.st1o2(inittyb, 3, 1, $termios_c_cc, 127);
         cptr.st1o2(inittyb, 5, 1, $termios_c_cc, 21);
         cptr.st1o2(inittyb, 8, 1, $termios_c_cc, 3);
@@ -118,6 +129,8 @@ export function gettty() {
     kill_char = schar(cptr.ld1uo2(inittyb, 5, 1, $termios_c_cc));
     intr_char = schar(cptr.ld1uo2(inittyb, 8, 1, $termios_c_cc));
     getioctls();
+
+    /* do not expand tabs - they might be needed inside a cm sequence */
     if (cptr.ldU64o(curttyb, $termios_c_oflag) & 4n) {
         cptr.stU64o(curttyb, $termios_c_oflag, cptr.ldU64o(curttyb, $termios_c_oflag) & 18446744073709551611n);
         setctty();
@@ -125,6 +138,7 @@ export function gettty() {
     settty_needed = 1;
 }
 
+/* reset terminal to original state */
 /** C ref: unixtty.c:247 — @param {CPtr<char>} s */
 export function* settty(s) {
     if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty))
@@ -147,19 +161,23 @@ export function setftty() {
     let ef;
     let cf;
     let change = 0;
-    ef = 0;
-    cf = 0;
+
+    ef = 0;  /* desired value of flags & ECHO */
+    cf = 0;  /* desired value of flags & CBREAK */
     cptr.st1o(iflags, $instance_flags_cbreak, NHM.ON);
     cptr.st1o(iflags, $instance_flags_echo, NHM.OFF);
+    /* Should use (ECHO|CRMOD) here instead of ECHO */
     if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, $termios_c_lflag) & 8n))) != ef) {
         cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551607n);
+        /* curttyb.echoflgs |= ef; */
         change++;
     }
     if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, $termios_c_lflag) & 256n))) != cf) {
         cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551359n);
         cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) | BigInt(cf >>> 0));
-        cptr.st1o2(curttyb, 16, 1, $termios_c_cc, 1);
-        cptr.st1o2(curttyb, 17, 1, $termios_c_cc, 0);
+        /* be satisfied with one character; no timeout */
+        cptr.st1o2(curttyb, 16, 1, $termios_c_cc, 1);  /* was VEOF */
+        cptr.st1o2(curttyb, 17, 1, $termios_c_cc, 0);  /* was VEOL */
         cptr.st1o2(curttyb, 10, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         cptr.st1o2(curttyb, 11, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         cptr.st1o2(curttyb, 6, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
@@ -170,10 +188,14 @@ export function setftty() {
     }
     if (!(cptr.ldU64o((inittyb), $termios_c_cflag) & 512n))
         cptr.stU64(curttyb, cptr.ldU64(curttyb) & 18446744073709551583n);
+    /* If an interrupt character is used, it will be overridden and
+     * set to ^C.
+     */
     if (BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) != 3) {
         cptr.st1o2(curttyb, 8, 1, $termios_c_cc, 3);
         change++;
     }
+
     if (change)
         setctty();
     if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty))
@@ -182,6 +204,7 @@ export function setftty() {
 
 /** C ref: unixtty.c:338 */
 export function intron() {
+    /* Ugly hack to keep from changing tty modes for non-tty games -dlc */
     if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) != 3) {
         cptr.st1o2(curttyb, 8, 1, $termios_c_cc, 3);
         setctty();
@@ -190,18 +213,21 @@ export function intron() {
 
 /** C ref: unixtty.c:350 */
 export function introff() {
+    /* Ugly hack to keep from changing tty modes for non-tty games -dlc */
     if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && BigInt(cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) >>> 0) != (fpathconf(0, 9))) {
         cptr.st1o2(curttyb, 8, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         setctty();
     }
 }
 
+/* fatal error */
 /** C ref: unixtty.c:489 — @param {CPtr<char>} s */
 export function* error(s, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     if (cptr.ld1so(iflags, $instance_flags_window_inited))
-        (yield* Y.icall(exit_nhwindows()(null)));
+        (yield* Y.icall(exit_nhwindows()(null)));  /* for tty, will call settty() */
     if (settty_needed)
         (yield* settty(null));
     void vprintf(s, the_args);
@@ -210,6 +236,11 @@ export function* error(s, ...__va) {
     exit(1);
 }
 
+/*
+ * set in term_start_screen() and allows
+ * OS-specific changes that may be
+ * required for support of utf8.
+ */
 /** C ref: unixtty.c:514 */
 export function tty_utf8graphics_fixup() {
 }

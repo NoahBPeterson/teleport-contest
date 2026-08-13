@@ -1406,6 +1406,7 @@ cptr.stI64o(colortable, 7392 + $nethack_color_b, 255n);
 /** C ref: coloratt.c:237 — @param {CPtr<struct nethack_color>} cte @returns {*} */
 export function colortable_to_int32(cte) {
     let clr = 16777224;
+
     if (cptr.ldI32(cte) == NHC.rgb_color)
         clr = Number(BigInt.asIntN(32, ((cptr.ldI64o(cte, $nethack_color_r) << 16n) | (cptr.ldI64o(cte, $nethack_color_g) << 8n) | cptr.ldI64o(cte, $nethack_color_b))));
     else if (cptr.ldI32(cte) == NHC.nh_color)
@@ -1417,10 +1418,12 @@ const __static_color_attr_to_str_buf = new Uint8Array(256); /** C ref: coloratt.
 
 /** C ref: coloratt.c:249 — @param {CPtr<color_attr>} ca @returns {CPtr<char>} */
 export function color_attr_to_str(ca) {
+
     void cptr.sprintf(cptr.decay(__static_color_attr_to_str_buf), __s_s_s, clr2colorname(cptr.ldI32(ca)), attr2attrname(cptr.ldI32o(ca, $color_attr_attr)));
     return cptr.decay(__static_color_attr_to_str_buf);
 }
 
+/* parse string like "color&attr" into color_attr */
 /** C ref: coloratt.c:261 — @param {CPtr<color_attr>} ca @param {CPtr<char>} str @returns {CInt} */
 export function color_attr_parse_str(ca, str) {
     let buf = new Uint8Array(256);
@@ -1428,21 +1431,28 @@ export function color_attr_parse_str(ca, str) {
     let tmp;
     let c = NHM.NO_COLOR;
     let a = NHM.ATR_NONE;
+
     void __builtin___strncpy_chk(cptr.decay(buf), str, 255n, __builtin_object_size(cptr.decay(buf), 1));
     cptr.st1o(cptr.decay(buf), 255n, 0, 1);
+
     if ((amp = cptr.strchr(cptr.decay(buf), 38)) !== null)
         cptr.st1(amp, 0);
+
     if (amp) {
         amp = cptr.add(amp, 1);
         c = match_str2clr(cptr.decay(buf), 0);
         a = match_str2attr(amp, 1);
+        /* FIXME: match_str2clr & match_str2attr give config_error_add(),
+           so this is useless */
         if (c >= NHM.CLR_MAX && a == -1) {
+            /* try other way around */
             c = match_str2clr(amp, 0);
             a = match_str2attr(cptr.decay(buf), 1);
         }
         if (c >= NHM.CLR_MAX || a == -1)
             return 0;
     } else {
+        /* one param only */
         tmp = match_str2attr(cptr.decay(buf), 0);
         if (tmp == -1) {
             tmp = match_str2clr(cptr.decay(buf), 0);
@@ -1462,6 +1472,7 @@ export function color_attr_parse_str(ca, str) {
 export function query_color_attr(ca, prompt) {
     let c;
     let a;
+
     c = query_color(prompt, cptr.ldI32(ca));
     if (c == -1)
         return 0;
@@ -1476,15 +1487,24 @@ export function query_color_attr(ca, prompt) {
 /** C ref: coloratt.c:320 — @param {CInt} attr @returns {CPtr<char>} */
 export function attr2attrname(attr) {
     let i;
+
     for (i = 0; i < 11; i++)
         if (cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr) == attr)
             return cptr.ldPtro(attrnames, i, $sizeof_attr_names);
     return null;
 }
 
+/*
+ * Color support functions and data for "color"
+ *
+ * Used by: optfn_()
+ *
+ */
+
 /** C ref: coloratt.c:338 — @param {CInt} clr @returns {CPtr<char>} */
 export function clr2colorname(clr) {
     let i;
+
     for (i = 0; i < 27; i++)
         if (cptr.ldPtro(colornames, i, $sizeof_color_names) && cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == clr)
             return cptr.ldPtro(colornames, i, $sizeof_color_names);
@@ -1495,6 +1515,10 @@ export function clr2colorname(clr) {
 export function match_str2clr(str, suppress_msg) {
     let i;
     let c = NHM.CLR_MAX;
+
+    /* allow "lightblue", "light blue", and "light-blue" to match "light blue"
+       (also junk like "_l i-gh_t---b l u e" but we won't worry about that);
+       also copes with trailing space; caller has removed any leading space */
     for (i = 0; i < 27; i++)
         if (cptr.ldPtro(colornames, i, $sizeof_color_names) && fuzzymatch(str, cptr.ldPtro(colornames, i, $sizeof_color_names), __s_sp_dash_us, 1)) {
             c = cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color);
@@ -1502,10 +1526,11 @@ export function match_str2clr(str, suppress_msg) {
         }
     if (i == 27 && digit(cptr.ld1s(str)))
         c = atoi(str);
+
     if (c < 0 || c >= NHM.CLR_MAX) {
         if (!suppress_msg)
             config_error_add(__s_unknown_color_60s, str);
-        c = NHM.CLR_MAX;
+        c = NHM.CLR_MAX;  /* "none of the above" */
     }
     return c;
 }
@@ -1514,16 +1539,23 @@ export function match_str2clr(str, suppress_msg) {
 export function match_str2attr(str, complain) {
     let i;
     let a = -1;
+
     for (i = 0; i < 11; i++)
         if (cptr.ldPtro(attrnames, i, $sizeof_attr_names) && fuzzymatch(str, cptr.ldPtro(attrnames, i, $sizeof_attr_names), __s_sp_dash_us, 1)) {
             a = cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr);
             break;
         }
+
     if (a == -1 && complain)
         config_error_add(__s_unknown_text_attribute_50s, str);
+
     return a;
 }
 
+/* ask about highlighting attribute; for menu headers and menu
+   coloring patterns, only one attribute at a time is allowed;
+   for status highlighting, multiple attributes are allowed [overkill;
+   life would be much simpler if that were restricted to one also...] */
 /** C ref: coloratt.c:396 — @param {CPtr<char>} prompt @param {CInt} dflt_attr @returns {CInt} */
 export function query_attr(prompt, dflt_attr) {
     let tmpwin;
@@ -1533,6 +1565,7 @@ export function query_attr(prompt, dflt_attr) {
     let picks = cptr.box(null);
     let allow_many = schar((prompt && !strncmpi(prompt, __s_choose, 6) ? 1 : 0));
     let clr = NHM.NO_COLOR;
+
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -1548,7 +1581,10 @@ export function query_attr(prompt, dflt_attr) {
     if (pick_cnt > 0) {
         let j;
         let k = 0;
+
         if (allow_many) {
+            /* PICK_ANY, with one preselected entry (ATR_NONE) which
+               should be excluded if any other choices were picked */
             for (i = 0; i < pick_cnt; ++i) {
                 j = (cptr.ldI32o(picks.v, i, $sizeof_menu_item) - 1) | 0;
                 if (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) != NHM.ATR_NONE || pick_cnt == 1) {
@@ -1578,7 +1614,10 @@ export function query_attr(prompt, dflt_attr) {
                 }
             }
         } else {
+            /* PICK_ONE, but might get 0 or 2 due to preselected entry */
             j = (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0;
+            /* pick_cnt==2: explicitly picked something other than the
+               preselected entry */
             if (pick_cnt == 2 && cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) == dflt_attr)
                 j = (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0;
             k = cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr);
@@ -1586,8 +1625,11 @@ export function query_attr(prompt, dflt_attr) {
         cptr.free(picks.v);
         return k;
     } else if (pick_cnt == 0 && !allow_many) {
+        /* PICK_ONE, preselected entry explicitly chosen */
         return dflt_attr;
     }
+    /* either ESC to explicitly cancel (pick_cnt==-1) or
+       PICK_ANY with preselected entry toggled off and nothing chosen */
     return -1;
 }
 
@@ -1598,7 +1640,10 @@ export function query_color(prompt, dflt_color) {
     let i;
     let pick_cnt;
     let picks = cptr.box(null);
+
+    /* replace user patterns with color name ones and force 'menucolors' On */
     basic_menu_colors(1);
+
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -1611,46 +1656,76 @@ export function query_color(prompt, dflt_color) {
     end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __s_pick_a_color);
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     destroy_nhwindow()(tmpwin);
+
+    /* remove temporary color name patterns and restore user-specified ones;
+       reset 'menucolors' option to its previous value */
     basic_menu_colors(0);
+
     if (pick_cnt > 0) {
         i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0, $sizeof_color_names, $color_names_color);
+        /* pick_cnt==2: explicitly picked something other than the
+           preselected entry */
         if (pick_cnt == 2 && i == NHM.NO_COLOR)
             i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0, $sizeof_color_names, $color_names_color);
         cptr.free(picks.v);
         return i;
     } else if (pick_cnt == 0) {
+        /* pick_cnt==0: explicitly picking preselected entry toggled it off */
         return dflt_color;
     }
     return -1;
 }
 
+/* set up a menu for picking a color, one that shows each name in its color;
+   overrides player's MENUCOLORS with a set of "blue"=blue, "red"=red, and
+   so forth; suppresses color for black and white because one of those will
+   likely be invisible due to matching the background; the alternate set of
+   MENUCOLORS is kept around for potential re-use */
 /** C ref: coloratt.c:530 — @param {CInt} load_colors */
 export function basic_menu_colors(load_colors) {
     if (load_colors) {
+        /* replace normal menu colors with a set specifically for colors */
         cptr.st1o(gs, $instance_globals_s_save_menucolors, cptr.ld1so(iflags, $instance_flags_use_menu_color));
         cptr.stPtro(gs, $instance_globals_s_save_colorings, cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
+
         cptr.st1o(iflags, $instance_flags_use_menu_color, 1);
         if (cptr.ldPtro(gc, $instance_globals_c_color_colorings)) {
+            /* use the alternate colorings which were set up previously */
             cptr.stPtro(gm, $instance_globals_m_menu_colorings, cptr.ldPtro(gc, $instance_globals_c_color_colorings));
         } else {
+            /* create the alternate colorings once */
             let cnm = new Uint8Array(128);
             let i;
             let c;
             let pmatchregex = schar((!strncmpi(cptr.decay((regex_id)), (__s_pmatchregex), -1)));
             let patternfmt = pmatchregex ? __s_star_pct_s : __s_pct_s;
+
+            /* menu_colorings pointer has been saved; clear it in order
+               to add the alternate entries as if from scratch */
             cptr.stPtro(gm, $instance_globals_m_menu_colorings, null);
+
+            /* this orders the patterns last-in/first-out; that means
+               that the "light <foo>" variations come before the basic
+               "<foo>" ones, which is exactly what we want (so that the
+               shorter basic names won't get false matches as substrings
+               of the longer ones) */
             for (i = 0; i < 27; ++i) {
                 if (!cptr.ldPtro(colornames, i, $sizeof_color_names))
                     break;
                 c = cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color);
                 if (c == NHM.CLR_BLACK || c == NHM.CLR_WHITE || c == NHM.NO_COLOR)
-                    continue;
+                    continue;  /* skip these */
                 void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtro(colornames, i, $sizeof_color_names));
                 add_menu_coloring_parsed(cptr.decay(cnm), c, NHM.ATR_NONE);
             }
+
+            /* right now, menu_colorings contains the alternate color list;
+               remember that list for future pick-a-color instances and
+               also keep it as is for this instance */
             cptr.stPtro(gc, $instance_globals_c_color_colorings, cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
         }
     } else {
+        /* restore normal user-specified menu colors */
         cptr.st1o(iflags, $instance_flags_use_menu_color, cptr.ld1so(gs, $instance_globals_s_save_menucolors));
         cptr.stPtro(gm, $instance_globals_m_menu_colorings, cptr.ldPtro(gs, $instance_globals_s_save_colorings));
     }
@@ -1661,13 +1736,18 @@ const __static_add_menu_coloring_parsed_re_error = cptr.bytes("Menucolor regex e
 /** C ref: coloratt.c:585 — @param {CPtr<char>} str @param {CInt} c @param {CInt} a @returns {CInt} */
 export function add_menu_coloring_parsed(str, c, a) {
     let tmp;
+
     if (!str)
         return 0;
     tmp = alloc(32);
     cptr.stPtr(tmp, regex_init());
+    /* test_regex_pattern() has already validated this regexp but parsing
+       it again could conceivably run out of memory */
     if (!regex_compile(str, cptr.ldPtr(tmp))) {
         let errbuf = new Uint8Array(256);
         let re_error_desc = regex_error_desc(cptr.ldPtr(tmp), cptr.decay(errbuf));
+
+        /* free first in case reason for regcomp failure was out-of-memory */
         regex_free(cptr.ldPtr(tmp));
         cptr.free(tmp);
         config_error_add(__s_s_s__2, cptr.decay(__static_add_menu_coloring_parsed_re_error), re_error_desc);
@@ -1682,6 +1762,7 @@ export function add_menu_coloring_parsed(str, c, a) {
     return 1;
 }
 
+/* parse '"regex_string"=color&attr' and add it to menucoloring */
 /** C ref: coloratt.c:617 — @param {CPtr<char>} tmpstr @returns {CInt} */
 export function add_menu_coloring(tmpstr) {
     let c = NHM.NO_COLOR;
@@ -1690,25 +1771,32 @@ export function add_menu_coloring(tmpstr) {
     let cs;
     let amp;
     let str = new Uint8Array(256);
+
     void __builtin___strncpy_chk(cptr.decay(str), tmpstr, 255n, __builtin_object_size(cptr.decay(str), 1));
     cptr.st1o(cptr.decay(str), 255n, 0, 1);
+
     if ((cs = cptr.strchr(cptr.decay(str), 61)) === null) {
         config_error_add(__s_malformed_menucolor);
         return 0;
     }
-    tmps = cptr.add(cs, 1);
+
+    tmps = cptr.add(cs, 1);  /* advance past '=' */
     mungspaces(tmps);
     if ((amp = cptr.strchr(tmps, 38)) !== null)
         cptr.st1(amp, 0);
+
     c = match_str2clr(tmps, 0);
     if (c >= NHM.CLR_MAX)
         return 0;
+
     if (amp) {
-        tmps = cptr.add(amp, 1);
+        tmps = cptr.add(amp, 1);  /* advance past '&' */
         a = match_str2attr(tmps, 1);
         if (a == -1)
             return 0;
     }
+
+    /* the regexp portion here has not been condensed by mungspaces() */
     cptr.st1(cs, 0);
     tmps = cptr.decay(str);
     if (cptr.ld1s(tmps) == 34 || cptr.ld1s(tmps) == 39) {
@@ -1723,11 +1811,15 @@ export function add_menu_coloring(tmpstr) {
     return add_menu_coloring_parsed(tmps, c, a);
 }
 
+/* release all menu color patterns */
 /** C ref: coloratt.c:664 */
 export function free_menu_coloring() {
+    /* either menu_colorings or color_colorings or both might need to
+       be freed or already be Null; do-loop will iterate at most twice */
     do {
         let tmp;
         let tmp2;
+
         for (tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings); tmp; tmp = tmp2) {
             tmp2 = cptr.ldPtro(tmp, $menucoloring_next);
             regex_free(cptr.ldPtr(tmp));
@@ -1739,13 +1831,16 @@ export function free_menu_coloring() {
     } while (cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
 }
 
+/* release a specific menu color pattern; not used for color_colorings */
 /** C ref: coloratt.c:684 — @param {CInt} idx */
 export function free_one_menu_coloring(idx) {
     let tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings);
     let prev = null;
+
     while (tmp) {
         if (idx == 0) {
             let next = cptr.ldPtro(tmp, $menucoloring_next);
+
             regex_free(cptr.ldPtr(tmp));
             cptr.free(cptr.ldPtro(tmp, $menucoloring_origstr));
             cptr.free(tmp);
@@ -1765,29 +1860,42 @@ export function free_one_menu_coloring(idx) {
 export function count_menucolors() {
     let tmp;
     let count = 0;
+
     for (tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings); tmp; tmp = cptr.ldPtro(tmp, $menucoloring_next))
         count++;
     return count;
 }
 
+/* returns -1 on no-match.
+ * buf is NONNULLARG1
+ */
 /** C ref: coloratt.c:723 — @param {CPtr<char>} buf @returns {*} */
 export function check_enhanced_colors(buf) {
-    let xtra = cptr.box(0);
+    let xtra = cptr.box(0);  /* used to catch trailing junk after "#rrggbb" */
     let r = cptr.box(0);
     let g = cptr.box(0);
     let b = cptr.box(0);
     let retcolor = -1;
     let color;
+
     if ((color = match_str2clr(buf, 1)) != NHM.CLR_MAX) {
         retcolor = color | NHM.NH_BASIC_COLOR;
     } else if (sscanf(buf, __s_02x_02x_02x_c, r, g, b, xtra) >= 3) {
         retcolor = !xtra.v ? (((((r.v << 16) >>> 0) | ((g.v << 8) >>> 0)) >>> 0 | b.v) >>> 0) | 0 : -1;
     } else {
+        /* altbuf: allow user's "grey" to match colortable[]'s "gray";
+         * fuzzymatch(): ignore spaces, hyphens, and underscores so that
+         * space or underscore in user-supplied name will match hyphen
+         * [note: caller splits text at spaces so we won't see any here]
+         */
         let altbuf = null;
         let grey = strstri(buf, __s_grey);
         let greyoffset = grey ? (cptr.diff(grey, buf)) : -1n;
+
         if (greyoffset >= 0n) {
             altbuf = dupstr(buf);
+            /* use direct copy because strsubst() is case-sensitive */
+            /*(void) strncpy(&altbuf[greyoffset], "gray", 4);*/
             void cptr.memcpy(cptr.add(altbuf, greyoffset), __s_gray, 4n);
         }
         for (color = 0; color < 155; ++color) {
@@ -1802,13 +1910,18 @@ export function check_enhanced_colors(buf) {
     return retcolor;
 }
 
+/* return the canonical name of a particular color */
 const __static_wc_color_name_hexcolor = new Uint8Array(8); /** C ref: coloratt.c:766 — char[8] (function-static) */
 
 /** C ref: coloratt.c:764 — @param {CInt} colorindx @returns {CPtr<char>} */
 export function wc_color_name(colorindx) {
     let result = __s_no_color__2;
+
     if (colorindx >= 0) {
         let basicindx = colorindx & -16777217;
+
+        /* if colorindx has NH_BASIC_COLOR bit set, basicindx won't,
+           so differing implies a basic color */
         if (basicindx != colorindx) {
             (__builtin_expect(BigInt((!(basicindx < 16))), 0n) ? __assert_rtn(__s_wc_color_name, __s_coloratt_c, 775, __s_basicindx_16) : void 0);
             result = cptr.ldPtro2(colortable, basicindx, $sizeof_nethack_color, $nethack_color_name);
@@ -1816,9 +1929,11 @@ export function wc_color_name(colorindx) {
             let indx;
             let r = BigInt(((colorindx >> 16) & 255));
             let g = BigInt(((colorindx >> 8) & 255));
-            let b = BigInt((colorindx & 255));
+            let b = BigInt((colorindx & 255));  /* mask  XXXXbb to bb */
+
             nh_snprintf(__s_wc_color_name, 784, cptr.decay(__static_wc_color_name_hexcolor), 8n, __s_02x_02x_02x, Number(BigInt.asUintN(8, r)), Number(BigInt.asUintN(8, g)), Number(BigInt.asUintN(8, b)));
             result = cptr.decay(__static_wc_color_name_hexcolor);
+            /* override hex value if this is a named color */
             for (indx = 16; indx < 155; ++indx)
                 if (cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_r) == r && cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_g) == g && cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_b) == b) {
                     result = cptr.ldPtro2(colortable, indx, $sizeof_nethack_color, $nethack_color_name);
@@ -1829,9 +1944,11 @@ export function wc_color_name(colorindx) {
     return result;
 }
 
+/* hexdd[] is defined in decl.c */
 /** C ref: coloratt.c:801 — @param {CPtr<char>} buf @returns {CInt} */
 export function onlyhexdigits(buf) {
     let dp = buf;
+
     for (dp = buf; cptr.ld1s(dp); dp = cptr.add(dp, 1)) {
         if (!(cptr.strchr(cptr.decay(hexdd), cptr.ld1s(dp)) || cptr.ld1s(dp) == 45))
             return 0;
@@ -1852,7 +1969,9 @@ export function rgbstr_to_int32(rgbstr) {
     let rgb = 0;
     let buf = new Uint8Array(256);
     let dash = 0;
+
     nh_snprintf(__s_rgbstr_to_int32, 823, cptr.decay(buf), 256n, __s_pct_s, rgbstr ? rgbstr : __s_empty);
+
     if (cptr.ld1s(cptr.decay(buf)) && onlyhexdigits(cptr.decay(buf))) {
         c_g = (c_b = null);
         c_r = (cp = cptr.decay(buf));
@@ -1875,6 +1994,7 @@ export function rgbstr_to_int32(rgbstr) {
                 return -1;
             }
         }
+        /* sanity checks */
         if (c_r && c_g && c_b && (cptr.strlen(c_r) > 0n && cptr.strlen(c_r) < 4n) && (cptr.strlen(c_g) > 0n && cptr.strlen(c_g) < 4n) && (cptr.strlen(c_b) > 0n && cptr.strlen(c_b) < 4n)) {
             r = atoi(c_r);
             g = atoi(c_g);
@@ -1883,6 +2003,7 @@ export function rgbstr_to_int32(rgbstr) {
             return rgb;
         }
     } else if (cptr.ld1s(cptr.decay(buf))) {
+        /* perhaps an enhanced color name was used instead of rgb value? */
         if ((rgb = check_enhanced_colors(cptr.decay(buf))) != -1) {
             return rgb;
         }
@@ -1895,8 +2016,10 @@ export function set_map_customcolor(gmap, nhcolor) {
     let tmpgm = gmap;
     let closecolor = cptr.box(0);
     let clridx = cptr.box(0);
+
     if (!tmpgm)
         return 0;
+
     cptr.stI32o(gmap, $glyph_map_customcolor, nhcolor);
     if (closest_color(nhcolor, closecolor, clridx))
         cptr.stI16o(gmap, $glyph_map_color256idx, clridx.v);
@@ -2390,6 +2513,12 @@ cptr.stI32o(color_256_definitions, 1908, 15000804);
 cptr.stI32o(color_256_definitions, 1912, 255);
 cptr.stI32o(color_256_definitions, 1916, 15658734);
 
+/** Calculate the color distance between two colors.
+ *
+ * Algorithm taken from UnNetHack which took it from
+ * https://www.compuphase.com/cmetric.htm
+ **/
+
 /** C ref: coloratt.c:979 — @param {CUInt} rgb1 @param {CUInt} rgb2 @returns {CInt} */
 export function color_distance(rgb1, rgb2) {
     let r1 = (((rgb1 >>> 16) & 255) >>> 0) | 0;
@@ -2398,6 +2527,7 @@ export function color_distance(rgb1, rgb2) {
     let r2 = (((rgb2 >>> 16) & 255) >>> 0) | 0;
     let g2 = (((rgb2 >>> 8) & 255) >>> 0) | 0;
     let b2 = (((rgb2) & 255) >>> 0) | 0;
+
     let rmean = (((r1 + r2) | 0) / 2) | 0;
     let r = (r1 - r2) | 0;
     let g = (g1 - g2) | 0;
@@ -2412,11 +2542,14 @@ export function closest_color(lcolor, closecolor, clridx) {
     let similar = 2147483647;
     let current;
     let retbool = 0;
+
     for (i = 0; i < 240; i++) {
+        /* look for an exact match */
         if (lcolor == cptr.ldI32o2(color_256_definitions, i, 8, 4)) {
             color_index = i;
             break;
         }
+        /* find a close color match */
         current = color_distance(lcolor, cptr.ldI32o2(color_256_definitions, i, 8, 4));
         if (current < similar) {
             color_index = i;
@@ -2434,6 +2567,7 @@ export function closest_color(lcolor, closecolor, clridx) {
 /** C ref: coloratt.c:1024 — @param {CInt} idx @returns {*} */
 export function get_nhcolor_from_256_index(idx) {
     let retcolor = 16777224;
+
     if (((idx) >= 0 && (idx) < 240))
         retcolor = cptr.ldI32o2(color_256_definitions, idx, 8, 4);
     return retcolor;

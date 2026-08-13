@@ -219,11 +219,13 @@ const __s_clumsy = cptr.lit("clumsy.");
 const __s_vulnerable = cptr.lit("vulnerable.");
 const __s_less_attractive = cptr.lit("less attractive.");
 
+/* take away the hero's money */
 /** C ref: sit.c:14 */
 export function* take_gold() {
     let otmp;
     let nobj;
     let lost_money = 0;
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nobj) {
         nobj = cptr.ldPtr(otmp);
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
@@ -240,30 +242,37 @@ export function* take_gold() {
     }
 }
 
+/* maybe do something when hero sits on a throne */
 /** C ref: sit.c:39 */
 function* throne_sit_effect() {
     let tx = cptr.ldI16(u);
     let ty = cptr.ldI16o(u, $you_uy);
+
     let special_throne = schar((!!In_V_tower(cptr.add(u, $you_uz))));
+
     if (rnd_at(__s_sit_c, 45, __s_throne_sit_effect, 6) > 4) {
         let effect = rnd_at(__s_sit_c, 46, __s_throne_sit_effect, 13);
+
         if (wizard() && !cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             let buf = new Uint8Array(256);
             let which;
+
             cptr.st1o(cptr.decay(buf), 0, 0, 1);
             (yield* getlin(__s_throne_sit_effect_1_13_0_random, cptr.decay(buf)));
             if (cptr.ld1so(cptr.decay(buf), 0, 1) == 27) {
                 (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
-                return;
+                return;  /* caller will still cause a move to elapse */
             }
             which = atoi(cptr.decay(buf));
             if (which >= 1 && which <= 13)
                 effect = which;
         }
+
         if (special_throne) {
             (yield* special_throne_effect(effect));
             return;
         }
+
         switch (effect) {
             case 1:
             void (yield* adjattrib(rn2_at(__s_sit_c, 70, __s_throne_sit_effect, NHC.A_MAX), -((rn2_at(__s_sit_c, 70, __s_throne_sit_effect, 4) + 3) | 0), 0));
@@ -309,6 +318,8 @@ function* throne_sit_effect() {
             case 7:
             {
                 let cnt = rnd_at(__s_sit_c, 114, __s_throne_sit_effect, 10);
+
+                /* Magical voice not affected by deafness */
                 (yield* pline(__s_a_voice_echoes));
                 ;
                 (yield* verbalize(__s_thine_audience_hath_been_summoned_s, cptr.ld1so(flags, $flag_female) ? __s_dame : __s_sire));
@@ -317,12 +328,14 @@ function* throne_sit_effect() {
                 break;
             }
             case 8:
+            /* Magical voice not affected by deafness */
             (yield* pline(__s_a_voice_echoes));
             ;
             (yield* verbalize(__s_by_thine_imperious_order_s, cptr.ld1so(flags, $flag_female) ? __s_dame : __s_sire));
-            (yield* do_genocide(5));
+            (yield* do_genocide(5));  /* REALLY|ONTHRONE, see do_genocide() */
             break;
             case 9:
+            /* Magical voice not affected by deafness */
             (yield* pline(__s_a_voice_echoes));
             ;
             (yield* verbalize(__s_a_curse_upon_thee_for_sitting_upon_this));
@@ -342,11 +355,16 @@ function* throne_sit_effect() {
                     (yield* do_mapping());
                 }
             } else {
+                /* avoid "vision clears" if hero can't see */
                 if (!Blind()) {
                     (yield* Your(__s_vision_becomes_clear));
                 } else {
                     let num_of_eyes = eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
                     let eye = (yield* body_part(NHC.EYE));
+
+                    /* note: 1 eye case won't actually happen--can't
+                       sit on throne when poly'd into always-levitating
+                       floating eye and can't polymorph into Cyclops */
                     switch (num_of_eyes) {
                         default:
                         case 2:
@@ -371,12 +389,13 @@ function* throne_sit_effect() {
                 (yield* aggravate());
             } else {
                 (yield* You_feel(__s_a_wrenching_sensation));
-                (yield* tele());
+                (yield* tele());  /* teleport him */
             }
             break;
             case 12:
             (yield* You(__s_are_granted_an_insight));
             if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
+                /* rn2(5) agrees w/seffects() */
                 (yield* identify_pack(rn2_at(__s_sit_c, 198, __s_throne_sit_effect, 5), 0));
             }
             break;
@@ -394,23 +413,40 @@ function* throne_sit_effect() {
         else
             (yield* You_feel(__s_somehow_out_of_place));
     }
+
+    /* 5.0: when the random chance for removal is hit, ask for confirmation
+       if in wizard mode, and remove the throne even if hero was teleported
+       away from it.  [This used to remove a throne at hero's current
+       location if there happened to be one, so for the teleport case that
+       only happened when teleporting back to the same point where hero
+       started from.]  "Analyzing a throne" doesn't really make any sense
+       but if the answer is yes than it will vanish in a puff of logic. */
     if (!special_throne && !rn2_at(__s_sit_c, 225, __s_throne_sit_effect, 3) && (!wizard() || (yield* yn_function(__s_analyze_throne, cptr.decay(ynchars), 110, 1)) == 121)) {
         cptr.st1o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         (yield* map_background(tx, ty, 0));
         (yield* newsym_force(tx, ty));
+        /* "[God] promptly vanishes in a puff of logic" is from
+           Douglas Adams' _The_Hitchhiker's_Guide_to_the_Galaxy_. */
         (yield* pline_The(__s_throne_s_in_a_puff_of_logic, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ty, 8), tx) & NHM.IN_SIGHT) != 0) ? __s_vanishes : __s_has_vanished));
     }
 }
 
+/* special throne in Vlad's tower: effect is 1 to 13 inclusive */
 /** C ref: sit.c:238 — @param {CInt} effect */
 function* special_throne_effect(effect) {
     let tx = cptr.ldI16(u);
     let ty = cptr.ldI16o(u, $you_uy);
+
     switch (effect) {
         case 1:
         case 2:
         case 3:
         case 4:
+        /* 4 chances of a wish, but then the throne disappears.
+
+           This is the only way the throne can disappear from sitting
+           on it, so if you sit on it enough (enduring the negative
+           effects) you are guaranteed an eventual wish. */
         (yield* makewish());
         cptr.st1o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         (yield* map_background(tx, ty, 0));
@@ -418,6 +454,7 @@ function* special_throne_effect(effect) {
         (yield* pline_The(__s_throne_disintegrates_having_spent_its));
         break;
         case 5:
+        /* permanent level drain */
         (yield* pline(__s_sitting_on_the_throne_was_a_terrible));
         if (!Drain_resistance()) {
             (yield* losexp(__s_a_bad_experience_sitting_on_a_throne));
@@ -427,7 +464,11 @@ function* special_throne_effect(effect) {
         break;
         case 6:
         {
+            /* grease hands and inventory
+
+               Same rules for which items can be affected as grease_ok in apply.c */
             let otmp;
+
             (yield* pline(__s_a_greasy_liquid_sprays_all_over_you));
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
@@ -437,11 +478,13 @@ function* special_throne_effect(effect) {
             break;
         }
         case 7:
+        /* lose an intrinsic */
         (yield* attrcurse());
         (yield* pline_The(__s_throne_somehow_seems_to_be_amused));
         break;
         case 8:
         {
+            /* level teleport to Vibrating Square level */
             let vs_level = cptr.alloc(4);
             find_hell(vs_level);
             cptr.stI16o(vs_level, $d_level_dlevel, i16(((cptr.ldI16o2(svd, cptr.ldI16(vs_level), $sizeof_dungeon, $dungeon_num_dunlevs) - 1) | 0)));
@@ -453,6 +496,8 @@ function* special_throne_effect(effect) {
         }
         case 9:
         {
+            /* summon demons; a NULL argument to msummon summons demons as
+               though they were summoned by the Wizard of Yendor */
             (yield* pline_The(__s_throne_seeems_to_be_calling_for_help));
             (yield* msummon(null));
             (yield* msummon(null));
@@ -461,8 +506,10 @@ function* special_throne_effect(effect) {
         }
         case 10:
         {
+            /* confused blessed remove curse effect */
             let fake_spellbook = cptr.alloc(216);
             let save_confusion = HConfusion();
+
             cptr.memcpy(fake_spellbook, cg, 216);
             cptr.stI16o(fake_spellbook, $obj_otyp, NHC.SPE_REMOVE_CURSE);
             cptr.st1o(fake_spellbook, $obj_oclass, NHC.SPBOOK_CLASS);
@@ -473,6 +520,8 @@ function* special_throne_effect(effect) {
             break;
         }
         case 11:
+        /* polymorph effect (not blocked by magic resistance, but other things
+           that protect from polymorphs work) */
         if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE)) {
             (yield* You_feel(__s_unworthy));
         } else {
@@ -482,12 +531,14 @@ function* special_throne_effect(effect) {
         }
         break;
         case 12:
+        /* acid damage */
         (yield* pline(__s_the_throne_is_covered_in_acid));
         (yield* losehp(Acid_resistance() ? rnd_at(__s_sit_c, 339, __s_special_throne_effect, 16) : rnd_at(__s_sit_c, 339, __s_special_throne_effect, 80), __s_acidic_chair, NHM.KILLED_BY_AN));
         (yield* exercise(NHC.A_CON, 0));
         break;
         case 13:
         {
+            /* ability shuffle */
             let ability;
             (yield* pline(__s_as_you_sit_on_the_throne_your_body_and));
             for (ability = 0; ability < NHC.A_MAX; ++ability) {
@@ -498,9 +549,11 @@ function* special_throne_effect(effect) {
     }
 }
 
+/* hero lays an egg */
 /** C ref: sit.c:358 @returns {CInt} */
 function* lay_an_egg() {
     let uegg;
+
     if (!cptr.ld1so(flags, $flag_female)) {
         (yield* pline(__s_s_can_t_lay_eggs, Hallucination() ? __s_you_may_think_you_are_a_platypus_but_a : __s_males));
         return NHM.ECMD_OK;
@@ -521,6 +574,7 @@ function* lay_an_egg() {
     cptr.st1o(uegg, $obj_spe, 1);
     cptr.stI64o(uegg, $obj_quan, 1n);
     cptr.stI32o(uegg, $obj_owt, (yield* weight(uegg)) >>> 0);
+    /* this sets hatch timers if appropriate */
     (yield* set_corpsenm(uegg, egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 0)));
     cptr.stI32o(uegg, $obj_known, 1);
     (yield* observe_object(uegg));
@@ -531,6 +585,7 @@ function* lay_an_egg() {
     return NHM.ECMD_TIME;
 }
 
+/* #sit command */
 const __static_dosit_sit_message = cptr.bytes("sit on the %s."); /** C ref: sit.c:402 — char[15] (function-static) */
 
 /** C ref: sit.c:400 @returns {CInt} */
@@ -539,12 +594,14 @@ export function* dosit() {
     __skip_in_water: {
         let trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         let typ = cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+
         if (cptr.ldPtro(u, $you_usteed)) {
             (yield* You(__s_are_already_sitting_on_s, (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
             return NHM.ECMD_OK;
         }
         if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 256n) != 0n) && cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER)
-            cptr.stI32o(u, $you_uundetected, 0);
+            cptr.stI32o(u, $you_uundetected, 0);  /* no longer on the ceiling */
+
         if (!can_reach_floor(0)) {
             if ((cptr.ldI32o(u, $you_uswallow) & 1))
                 (yield* There(__s_are_no_seats_in_here));
@@ -554,6 +611,8 @@ export function* dosit() {
                 (yield* You(__s_are_sitting_on_air));
             return NHM.ECMD_OK;
         } else if (cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+            /* holding monster is next to hero rather than beneath, but
+               hero is in no condition to actually sit at has/her own spot */
             if (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 131072n) != 0n))
                 (yield* pline(__s_s_won_t_offer_s_lap, (yield* Monnam(cptr.ldPtro(u, $you_ustuck))), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_ustuck), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his))));
             else
@@ -564,8 +623,10 @@ export function* dosit() {
         } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN && (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN || is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
             { __go_in_water = true; break __skip_in_water; }
         }
+
         if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !(uteetering_at_seen_pit(trap) || uescaped_shaft(trap))) {
             let obj;
+
             obj = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
             if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_DRAGON && cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
                 (yield* You(__s_coil_up_around_your_shoard, (BigInt.asIntN(64, cptr.ldI64o(obj, $obj_quan) + money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) < BigInt(Math.imul(cptr.ldI32o(u, $you_ulevel), 1000))) ? __s_meager : __s_empty));
@@ -589,7 +650,7 @@ export function* dosit() {
             }
         } else if (trap !== null || (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) >= NHC.TT_LAVA))) {
             if (cptr.ldI32o(u, $you_utrap)) {
-                (yield* exercise(NHC.A_WIS, 0));
+                (yield* exercise(NHC.A_WIS, 0));  /* you're getting stuck longer */
                 if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) {
                     (yield* You_cant(__s_sit_down_with_your_s_in_the_bear_trap, (yield* body_part(NHC.FOOT))));
                     (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + 1)) - (1);
@@ -605,16 +666,20 @@ export function* dosit() {
                     (yield* You(__s_sit_in_the_spider_web_and_get_entangled));
                     cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (((rn2_at(__s_sit_c, 484, __s_dosit, 10) + 5) | 0) >>> 0)) | 0);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
+                    /* Must have fire resistance or they'd be dead already */
                     (yield* You(__s_sit_in_the_s, hliquid(__s_lava)));
                     if (Slimed())
                         (yield* burn_away_slime());
                     cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rnd_at(__s_sit_c, 490, __s_dosit, 4) >>> 0)) | 0);
-                    (yield* losehp(d_at(__s_sit_c, 491, __s_dosit, 2, 10), __s_sitting_in_lava, NHM.KILLED_BY));
+                    (yield* losehp(d_at(__s_sit_c, 491, __s_dosit, 2, 10), __s_sitting_in_lava, NHM.KILLED_BY));  /* lava damage */
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
                     (yield* You_cant(__s_maneuver_to_sit));
                     (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + 1)) - (1);
                 }
             } else {
+                /* when flying, "you land" might need some refinement; it sounds
+                   as if you're staying on the ground but you will immediately
+                   take off again unless you become stuck in a holding trap */
                 (yield* You(__s_pct_s_dot, Flying() ? __s_land : __s_sit_down));
                 (yield* dotrap(trap, NHM.VIASITTING));
             }
@@ -638,6 +703,7 @@ export function* dosit() {
         } else if (typ == NHC.LADDER) {
             (yield* You(cptr.decay(__static_dosit_sit_message), __s_ladder));
         } else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+            /* must be WWalking */
             (yield* You(cptr.decay(__static_dosit_sit_message), hliquid(__s_lava)));
             (yield* burn_away_slime());
             if (likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
@@ -668,6 +734,7 @@ export function* dosit() {
                 if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN)
                     (yield* dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1));
             }
+            /* splitting--or failing to do so--protects gear from the water */
         } else {
             if (!rn2_at(__s_sit_c, 521, __s_dosit, 10) && uarm.v)
                 void (yield* water_damage(uarm.v, __s_armor, 1));
@@ -678,6 +745,7 @@ export function* dosit() {
     return NHM.ECMD_TIME;
 }
 
+/* curse a few inventory items at random! */
 const __static_rndcurse_mal_aura = cptr.bytes("feel a malignant aura surround %s."); /** C ref: sit.c:574 — char[35] (function-static) */
 
 /** C ref: sit.c:569 */
@@ -686,15 +754,20 @@ export function* rndcurse() {
     let cnt;
     let onum;
     let otmp;
+
     if (is_art(uwep.v, NHC.ART_MAGICBANE) && rn2_at(__s_sit_c, 576, __s_rndcurse, 20)) {
         (yield* You(cptr.decay(__static_rndcurse_mal_aura), __s_the_magic_absorbing_blade));
         return;
     }
+
     if (Antimagic()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     }
+
     (yield* You(cptr.decay(__static_rndcurse_mal_aura), __s_you));
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+        /* gold isn't subject to being cursed or blessed */
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             continue;
         nobj++;
@@ -704,17 +777,22 @@ export function* rndcurse() {
         for (; cnt > 0; cnt--) {
             onum = rnd_at(__s_sit_c, 596, __s_rndcurse, nobj);
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
+                /* as above */
                 if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
                     continue;
                 if (--onum == 0)
-                    break;
+                    break;  /* found the target */
             }
+            /* the !otmp case should never happen; picking an already
+               cursed item happens--avoid "resists" message in that case */
             if (!otmp || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
-                continue;
+                continue;  /* next target */
+
             if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && rn2_at(__s_sit_c, 610, __s_rndcurse, 10) < 8) {
                 (yield* pline(__s_pct_s_bang, (yield* Tobjnam(otmp, __s_resist))));
                 continue;
             }
+
             if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
                 (yield* unbless(otmp));
             else
@@ -722,6 +800,8 @@ export function* rndcurse() {
         }
         (yield* update_inventory());
     }
+
+    /* treat steed's saddle as extended part of hero's inventory */
     if (cptr.ldPtro(u, $you_usteed) && !rn2_at(__s_sit_c, 624, __s_rndcurse, 4) && (otmp = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) !== null && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
             (yield* unbless(otmp));
@@ -729,16 +809,20 @@ export function* rndcurse() {
             (yield* curse(otmp));
         if (!Blind()) {
             (yield* pline(__s_s_s__2, (yield* Yobjnam2(otmp, __s_glow)), hcolor((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? cptr.ldPtr(c_color_names) : __s_brown)));
-            cptr.stI32o(otmp, $obj_bknown, (Hallucination() ? 0 : 1) >>> 0);
+            cptr.stI32o(otmp, $obj_bknown, (Hallucination() ? 0 : 1) >>> 0);  /* bypass set_bknown() */
         } else {
-            cptr.stI32o(otmp, $obj_bknown, 0);
+            cptr.stI32o(otmp, $obj_bknown, 0);  /* bypass set_bknown() */
         }
     }
 }
 
+/* remove a random INTRINSIC ability from hero.
+   returns the intrinsic property which was removed,
+   or 0 if nothing was removed. */
 /** C ref: sit.c:644 @returns {CInt} */
 export function* attrcurse() {
     let ret = 0;
+
     switch (rnd_at(__s_sit_c, 648, __s_attrcurse, 11)) {
         case 1:
         if (HFire_resistance() & 117440512n) {
@@ -771,7 +855,7 @@ export function* attrcurse() {
         if (HTelepat() & 117440512n) {
             cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             if (Blind() && !Blind_telepat())
-                (yield* see_monsters());
+                (yield* see_monsters());  /* Can't sense mons anymore! */
             (yield* Your(__s_senses_fail));
             ret = NHC.TELEPAT;
             break;
@@ -802,6 +886,7 @@ export function* attrcurse() {
             if (!See_invisible()) {
                 (yield* set_mimic_blocking());
                 (yield* see_monsters());
+                /* might not be able to see self anymore */
                 (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             }
             (yield* You(__s_pct_s_bang, Hallucination() ? __s_tawt_you_taw_a_puttie_tat : __s_thought_you_saw_something));
@@ -829,6 +914,7 @@ export function* attrcurse() {
         // @FallThrough
         ;
         case 10:
+        /* intrinsic protection is just disabled, not set back to 0 */
         if (HProtection() & 117440512n) {
             cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             (yield* You_feel(__s_vulnerable));

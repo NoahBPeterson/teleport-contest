@@ -77,6 +77,9 @@ const __s_error_reading_level_file = cptr.lit("Error reading level file.");
 export function historical_sfo_arti_info(nhfp, d_arti_info, myname) {
     norm_ptrs_arti_info(d_arti_info);
     bwrite(cptr.ldI32(nhfp), d_arti_info, 36);
+    /* NetHack 5.0	sfstruct.c	$NHDT-Date: 1606765215 2020/11/30 19:40:15 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.4 $ */
+    /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
+    /*-Copyright (c) Michael Allison, 2025. */
 }
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct arti_info>} d_arti_info @param {CPtr<char>} myname */
@@ -109,6 +112,8 @@ export function historical_sfi_nhrect(nhfp, d_nhrect, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct branch>} d_branch @param {CPtr<char>} myname */
 export function historical_sfo_branch(nhfp, d_branch, myname) {
+    /* NetHack may be freely redistributed.  See license for details. */
+
     norm_ptrs_branch(d_branch);
     bwrite(cptr.ldI32(nhfp), d_branch, 32);
 }
@@ -143,7 +148,8 @@ export function historical_sfi_bubble(nhfp, d_bubble, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct cemetery>} d_cemetery @param {CPtr<char>} myname */
 export function historical_sfo_cemetery(nhfp, d_cemetery, myname) {
-    norm_ptrs_cemetery(d_cemetery);
+
+    norm_ptrs_cemetery(d_cemetery);  /* debugging */
     bwrite(cptr.ldI32(nhfp), d_cemetery, 184);
 }
 
@@ -177,6 +183,7 @@ export function historical_sfi_context_info(nhfp, d_context_info, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct nhcoord>} d_nhcoord @param {CPtr<char>} myname */
 export function historical_sfo_nhcoord(nhfp, d_nhcoord, myname) {
+
     norm_ptrs_nhcoord(d_nhcoord);
     bwrite(cptr.ldI32(nhfp), d_nhcoord, 4);
 }
@@ -213,6 +220,7 @@ export function historical_sfi_damage(nhfp, d_damage, myname) {
 export function historical_sfo_dest_area(nhfp, d_dest_area, myname) {
     norm_ptrs_dest_area(d_dest_area);
     bwrite(cptr.ldI32(nhfp), d_dest_area, 16);
+
 }
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dest_area>} d_dest_area @param {CPtr<char>} myname */
@@ -228,6 +236,8 @@ export function historical_sfi_dest_area(nhfp, d_dest_area, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dgn_topology>} d_dgn_topology @param {CPtr<char>} myname */
 export function historical_sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
+    /* historical full struct savings */
+
     norm_ptrs_dgn_topology(d_dgn_topology);
     bwrite(cptr.ldI32(nhfp), d_dgn_topology, 114);
 }
@@ -381,6 +391,7 @@ export function historical_sfi_epri(nhfp, d_epri, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct eshk>} d_eshk @param {CPtr<char>} myname */
 export function historical_sfo_eshk(nhfp, d_eshk, myname) {
+
     norm_ptrs_eshk(d_eshk);
     bwrite(cptr.ldI32(nhfp), d_eshk, 4960);
 }
@@ -432,6 +443,7 @@ export function historical_sfi_flag(nhfp, d_flag, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct fruit>} d_fruit @param {CPtr<char>} myname */
 export function historical_sfo_fruit(nhfp, d_fruit, myname) {
+
     norm_ptrs_fruit(d_fruit);
     bwrite(cptr.ldI32(nhfp), d_fruit, 48);
 }
@@ -585,6 +597,7 @@ export function historical_sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} d_mkroom @param {CPtr<char>} myname */
 export function historical_sfo_mkroom(nhfp, d_mkroom, myname) {
+
     norm_ptrs_mkroom(d_mkroom);
     bwrite(cptr.ldI32(nhfp), d_mkroom, 224);
 }
@@ -1165,6 +1178,7 @@ export function historical_sfi_genericptr_t(nhfp, d_genericptr_t, myname) {
 
 /** C ref: sfstruct.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint8_t>} d_bitfield @param {CPtr<char>} myname @param {CInt} bflen */
 export function historical_sfo_bitfield(nhfp, d_bitfield, myname, bflen) {
+
     bwrite(cptr.ldI32(nhfp), d_bitfield, 1);
 }
 
@@ -1355,10 +1369,49 @@ cptr.stPtro(bw_FILE, 16, null);
 cptr.stPtro(bw_FILE, 24, null);
 cptr.stPtro(bw_FILE, 32, null);
 
+/*
+ * Presumably, the fdopen() to allow use of stdio fwrite()
+ * over write() was done for performance or functionality
+ * reasons to help some particular platform long ago.
+ *
+ * There have been some issues being encountered with the
+ * implementation due to having an individual set of
+ * tracking variables, even though there were nested
+ * sets of open fd (like INSURANCE).
+ *
+ * This uses an individual tracking entry for each fd
+ * being used.
+ *
+ * Some notes:
+ *
+ * Once buffered IO (stdio) has been enabled on the file
+ * associated with a descriptor via fdopen():
+ *
+ *    1. If you use bufoff and bufon to try to toggle the
+ *       use of write vs fwrite; the code just tracks which
+ *       routine is to be called through the tracking
+ *       variables and acts accordingly.
+ *             bw_sticky[]    -  used to find the index number for
+ *                               the fd that is stored in it, or -1
+ *                               if it is a free slot.
+ *             bw_buffered[]  -  indicator that buffered IO routines
+ *                               are available for use.
+ *             bw_FILE[]      -  the non-zero FILE * for use in calling
+ *                               fwrite() when bw_buffered[] is also
+ *                               non-zero.
+ *
+ *    2. It is illegal to call close(fd) after fdopen(), you
+ *       must always use fclose() on the FILE * from
+ *       that point on, so care must be taken to never call
+ *       close(fd) on the underlying fd or bad things will
+ *       happen.
+ */
+
 /** C ref: sfstruct.c:384 — @param {CInt} fd @param {CInt} flg @returns {CInt} */
 function getidx(fd, flg) {
     let i;
     let retval = -1;
+
     for (i = 0; i < 5; ++i)
         if (cptr.ldI32o(bw_sticky, i, 4) == fd)
             return i;
@@ -1373,10 +1426,12 @@ function getidx(fd, flg) {
     return retval;
 }
 
+/* Let caller know that bclose() should handle it (TRUE) */
 /** C ref: sfstruct.c:404 — @param {CInt} fd @returns {CInt} */
 export function close_check(fd) {
     let idx = getidx(fd, NHC.NOSLOT);
     let retval = 0;
+
     if (idx >= 0)
         retval = 1;
     return retval;
@@ -1385,6 +1440,7 @@ export function close_check(fd) {
 /** C ref: sfstruct.c:415 — @param {CInt} fd */
 export function bufon(fd) {
     let idx = getidx(fd, NHC.NOFLG);
+
     if (idx >= 0) {
         cptr.stI32o(bw_sticky, idx, fd, 4);
         if (cptr.ldI32o(bw_buffered, idx, 4))
@@ -1400,22 +1456,25 @@ export function bufon(fd) {
 /** C ref: sfstruct.c:436 — @param {CInt} fd */
 export function bufoff(fd) {
     let idx = getidx(fd, NHC.NOFLG);
+
     if (idx >= 0) {
         bflush(fd);
-        cptr.stI32o(bw_buffered, idx, 0, 4);
+        cptr.stI32o(bw_buffered, idx, 0, 4);  /* just a flag that says "use write(fd)" */
     }
 }
 
 /** C ref: sfstruct.c:447 — @param {CInt} fd */
 export function bclose(fd) {
     let idx = getidx(fd, NHC.NOSLOT);
-    bufoff(fd);
+
+    bufoff(fd);  /* sets bw_buffered[idx] = 0 */
     if (idx >= 0) {
         if (cptr.ldPtro(bw_FILE, idx, 8)) {
             void fclose(cptr.ldPtro(bw_FILE, idx, 8));
             cptr.stPtro(bw_FILE, idx, null, 8);
         } else
             close(fd);
+        /* return the idx to the pool */
         cptr.stI32o(bw_sticky, idx, -1, 4);
     }
     return;
@@ -1424,6 +1483,7 @@ export function bclose(fd) {
 /** C ref: sfstruct.c:478 — @param {CInt} fd */
 export function bflush(fd) {
     let idx = getidx(fd, NHC.NOFLG);
+
     if (idx >= 0) {
         if (cptr.ldPtro(bw_FILE, idx, 8)) {
             if (fflush(cptr.ldPtro(bw_FILE, idx, 8)) == -1)
@@ -1437,8 +1497,12 @@ export function bflush(fd) {
 export function bwrite(fd, loc, num) {
     let failed;
     let idx = getidx(fd, NHC.NOFLG);
+
     if (idx >= 0) {
         if (num == 0) {
+            /* nothing to do; we need a special case to exit early
+               because glibc fwrite doesn't give reliable
+               success/failure indication when writing 0 bytes */
             return;
         }
         if (cptr.ldI32o(bw_buffered, idx, 4) && cptr.ldPtro(bw_FILE, idx, 8)) {
@@ -1456,9 +1520,12 @@ export function bwrite(fd, loc, num) {
         impossible(__s_fd_not_in_list_d, fd);
 }
 
+/*  ===================================================== */
+
 /** C ref: sfstruct.c:549 — @param {CInt} fd @param {CPtr} buf @param {CUInt} len */
 export function mread(fd, buf, len) {
     let rlen;
+    /* Not perfect, but we don't have ssize_t available. */
     rlen = Number(BigInt.asUintN(32, cptr.read(fd, buf, BigInt(len >>> 0))));
     if (rlen != len) {
         if ((cptr.ldI32o(restoreinfo, $restore_info_mread_flags) == 1) || (cptr.ldI32o(program_state, $sinfo_reading_bonesfile) == 1)) {
@@ -1466,7 +1533,7 @@ export function mread(fd, buf, len) {
             return;
         } else {
             pline(__s_read_d_instead_of_u_bytes, rlen | 0, len);
-            display_nhwindow()(WIN_MESSAGE.v, 1);
+            display_nhwindow()(WIN_MESSAGE.v, 1);  /* flush before error() */
             if (cptr.ldI32o(program_state, $sinfo_restoring)) {
                 void nhclose(fd);
                 void delete_savefile();

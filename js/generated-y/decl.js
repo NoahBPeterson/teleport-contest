@@ -694,9 +694,11 @@ export const emptystr = [0];
 /** C ref: decl.c:57 — struct flag */
 export let flags = cptr.alloc($sizeof_flag);
 
+/* used by coloratt.c, options.c, utf8map.c, windows.c */
 /** C ref: decl.c:74 — char[33] */
 export const hexdd = cptr.bytes("00112233445566778899aAbBcCdDeEfF");
 
+/* x/y/z deltas for the 10 movement directions (8 compass pts, 2 down/up) */
 /** C ref: decl.c:77 — schar[10] */
 export const xdir = [-1, -1, 0, 1, 1, 1, 0, -1, 0, 0];
 
@@ -706,6 +708,7 @@ export const ydir = [0, -1, -1, -1, 0, 1, 1, 1, 0, 0];
 /** C ref: decl.c:79 — schar[10] */
 export const zdir = [0, 0, 0, 0, 0, 0, 0, 0, 1, -1];
 
+/* reordered directions, cardinals first */
 /** C ref: decl.c:81 — schar[8] */
 export const dirs_ord = [NHC.DIR_W, NHC.DIR_N, NHC.DIR_E, NHC.DIR_S, NHC.DIR_NW, NHC.DIR_NE, NHC.DIR_SE, NHC.DIR_SW];
 
@@ -721,6 +724,8 @@ export let iflags = cptr.alloc($sizeof_instance_flags);
 /** C ref: decl.c:87 — struct accessibility_data */
 export let a11y = cptr.alloc($sizeof_accessibility_data);
 
+/* NOTE: the order of these words exactly corresponds to the
+   order of oc_material values #define'd in objclass.h. */
 /** C ref: decl.c:90 — char *[22] */
 export const materialnm = cptr.alloc(22 * 8);
 cptr.stPtro(materialnm, 0, __s_mysterious);
@@ -1979,6 +1984,7 @@ export function decl_globals_init() {
     cptr.memcpy(svw, init_svw, 16);
     cptr.memcpy(svx, init_svx, 8);
     cptr.memcpy(svy, init_svy, 8);
+
     cptr.stPtro2(gv, 0, $sizeof_val_list, $instance_globals_v_valuables, cptr.add(gg, $instance_globals_g_gems));
     cptr.stI32o2(gv, 0, $sizeof_val_list, $instance_globals_v_valuables + $val_list_size, Number(BigInt.asIntN(32, (368n / 16n))));
     cptr.stPtro2(gv, 1, $sizeof_val_list, $instance_globals_v_valuables, cptr.add(ga, $instance_globals_a_amulets));
@@ -2167,7 +2173,9 @@ export function decl_globals_init() {
         }
     }
     ;
+
     cptr.stPtro(gs, $instance_globals_s_subrooms, cptr.add(svr, 41, $sizeof_mkroom));
+
     __builtin___memset_chk(flags, 0, 208n, __builtin_object_size(flags, 0));
     __builtin___memset_chk(iflags, 0, 432n, __builtin_object_size(iflags, 0));
     __builtin___memset_chk(a11y, 0, 16n, __builtin_object_size(a11y, 0));
@@ -2175,18 +2183,28 @@ export function decl_globals_init() {
     __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
     __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
+
     uwep.v = (uarm.v = (uswapwep.v = (uquiver.v = (uarmu.v = (uskin.v = (uarmc.v = null))))));
     uarmh.v = (uarms.v = (uarmg.v = (uarmf.v = (uamul.v = (uright.v = (uleft.v = null))))));
     ublindf.v = (uchain.v = (uball.v = null));
+
     WIN_MESSAGE.v = (WIN_STATUS.v = (WIN_MAP.v = (WIN_INVEN.v = -1)));
+
     cptr.memcpy(cptr.add(gu, $instance_globals_u_urole), urole_init_data, 312);
     cptr.memcpy(cptr.add(gu, $instance_globals_u_urace), urace_init_data, 112);
 }
 
+/* fields in 'hands_obj' don't matter, just its distinct address */
 /** C ref: decl.c:1190 — struct obj */
 export let hands_obj = cptr.alloc($sizeof_obj);
 cptr.stPtr(hands_obj, null);
 
+/* gcc 12.2's static analyzer thinks that some fields of svc.context.victual
+   are uninitialized when compiling 'bite(eat.c)' but that's impossible;
+   it is defined at global scope so guaranteed to be given implicit
+   initialization for fields that aren't explicitly initialized (all of
+   'context'); having bite() pass &svc.context.victual to this no-op
+   eliminates the analyzer's very verbose complaint */
 /** C ref: decl.c:1199 — @param {CPtr<struct victual_info>} context_victual */
 export function sa_victual(context_victual) {
     return;

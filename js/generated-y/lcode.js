@@ -46,16 +46,21 @@ const __s_opcodes = cptr.lit("opcodes");
 const __s_function_or_expression_needs_too_many = cptr.lit("function or expression needs too many registers");
 const __s_constants = cptr.lit("constants");
 
+/* semantic error */
 /** C ref: lcode.c:47 — @param {CPtr<LexState>} ls @param {CPtr<char>} msg */
 export function* luaK_semerror(ls, msg) {
-    cptr.stI32o(ls, $LexState_t, 0);
+    cptr.stI32o(ls, $LexState_t, 0);  /* remove "near <token>" from final message */
     (yield* luaX_syntaxerror(ls, msg));
 }
 
+/*
+** If expression is a numeric constant, fills 'v' with its value
+** and returns 1. Otherwise, returns 0.
+*/
 /** C ref: lcode.c:57 — @param {CPtr<expdesc>} e @param {CPtr<TValue>} v @returns {CInt} */
 function tonumeral(e, v) {
     if ((cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
-        return 0;
+        return 0;  /* not a numeral */
     switch (cptr.ldI32(e)) {
         case NHC.VKINT:
         if (v) {
@@ -78,16 +83,23 @@ function tonumeral(e, v) {
     }
 }
 
+/*
+** Get the constant value from a constant expression
+*/
 /** C ref: lcode.c:75 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CPtr<TValue>} */
 function const2val(fs, e) {
     (void 0);
     return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), $sizeof_Vardesc);
 }
 
+/*
+** If expression is a constant, fills 'v' with its value
+** and returns 1. Otherwise, returns 0.
+*/
 /** C ref: lcode.c:85 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CPtr<TValue>} v @returns {CInt} */
 export function luaK_exp2const(fs, e, v) {
     if ((cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
-        return 0;
+        return 0;  /* not a constant */
     switch (cptr.ldI32(e)) {
         case NHC.VFALSE:
         (cptr.st1o((v), $TValue_tt_, 1));
@@ -128,45 +140,65 @@ export function luaK_exp2const(fs, e, v) {
     }
 }
 
+/*
+** Return the previous instruction of the current code. If there
+** may be a jump target between the current instruction and the
+** previous one, return an invalid instruction (to avoid wrong
+** optimizations).
+*/
 let __static_previousinstruction_invalidinstruction = cptr.box(~0); /** C ref: lcode.c:118 — unsigned int (function-static, boxed) */
 
 /** C ref: lcode.c:117 — @param {CPtr<FuncState>} fs @returns {CPtr<Instruction>} */
 function previousinstruction(fs) {
     if (cptr.ldI32o(fs, $FuncState_pc) > cptr.ldI32o(fs, $FuncState_lasttarget))
-        return cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0, 4);
+        return cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0, 4);  /* previous instruction */
     else
         return ((__static_previousinstruction_invalidinstruction));
 }
 
+/*
+** Create a OP_LOADNIL instruction, but try to optimize: if the previous
+** instruction is also OP_LOADNIL and ranges are compatible, adjust
+** range of previous instruction instead of emitting a new one. (For
+** instance, 'local a; local b' will generate a single opcode.)
+*/
 /** C ref: lcode.c:132 — @param {CPtr<FuncState>} fs @param {CInt} from @param {CInt} n */
 export function* luaK_nil(fs, from, n) {
-    let l = (((from + n) | 0) - 1) | 0;
+    let l = (((from + n) | 0) - 1) | 0;  /* last register to set nil */
     let previous = previousinstruction(fs);
     if (((((((cptr.ldI32(previous)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_LOADNIL) {
-        let pfrom = (((((((cptr.ldI32(previous)) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
+        let pfrom = (((((((cptr.ldI32(previous)) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));  /* get previous range */
         let pl = (pfrom + ((((((((cptr.ldI32(previous)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) | 0;
         if ((pfrom <= from && from <= ((pl + 1) | 0)) || (from <= pfrom && pfrom <= ((l + 1) | 0))) {
             if (pfrom < from)
-                from = pfrom;
+                from = pfrom;  /* from = min(from, pfrom) */
             if (pl > l)
-                l = pl;
+                l = pl;  /* l = max(l, pl) */
             (cptr.stI32(previous, (((((cptr.ldI32(previous)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((from) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
             (cptr.stI32(previous, (((((cptr.ldI32(previous)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) | (((((((l - from) | 0) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>> 0)) >>> 0)));
             return;
-        }
+        }  /* else go through */
     }
-    (yield* luaK_codeABCk(fs, NHC.OP_LOADNIL, from, (n - 1) | 0, 0, 0));
+    (yield* luaK_codeABCk(fs, NHC.OP_LOADNIL, from, (n - 1) | 0, 0, 0));  /* else no optimization */
 }
 
+/*
+** Gets the destination address of a jump instruction. Used to traverse
+** a list of jumps.
+*/
 /** C ref: lcode.c:155 — @param {CPtr<FuncState>} fs @param {CInt} pc @returns {CInt} */
 function getjump(fs, pc) {
     let offset = (((((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0);
     if (offset == -1)
-        return -1;
+        return -1;  /* end of list */
     else
-        return (((pc + 1) | 0) + offset) | 0;
+        return (((pc + 1) | 0) + offset) | 0;  /* turn offset into absolute position */
 }
 
+/*
+** Fix jump instruction at position 'pc' to jump to 'dest'.
+** (Jump addresses are relative in Lua)
+*/
 /** C ref: lcode.c:168 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} dest */
 function* fixjump(fs, pc, dest) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
@@ -178,26 +210,36 @@ function* fixjump(fs, pc, dest) {
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) | (((((((((((offset) + 16777215) | 0)) >>> 0))) << 7) >>> 0) & (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
 }
 
+/*
+** Concatenate jump-list 'l2' into jump-list 'l1'
+*/
 /** C ref: lcode.c:182 — @param {CPtr<FuncState>} fs @param {CPtr<int>} l1 @param {CInt} l2 */
 export function* luaK_concat(fs, l1, l2) {
     if (l2 == -1)
-        return;
+        return;  /* nothing to concatenate? */
     else if (cptr.ldI32(l1) == -1)
-        cptr.stI32(l1, l2);
+        cptr.stI32(l1, l2);  /* 'l1' points to 'l2' */
     else {
         let list = cptr.ldI32(l1);
         let next;
         while ((next = getjump(fs, list)) != -1)
             list = next;
-        (yield* fixjump(fs, list, l2));
+        (yield* fixjump(fs, list, l2));  /* last element links to 'l2' */
     }
 }
 
+/*
+** Create a jump instruction and return its position, so its destination
+** can be fixed later (with 'fixjump').
+*/
 /** C ref: lcode.c:200 — @param {CPtr<FuncState>} fs @returns {CInt} */
 export function* luaK_jump(fs) {
     return (yield* codesJ(fs, NHC.OP_JMP, -1, 0));
 }
 
+/*
+** Code a 'return' instruction
+*/
 /** C ref: lcode.c:208 — @param {CPtr<FuncState>} fs @param {CInt} first @param {CInt} nret */
 export function* luaK_ret(fs, first, nret) {
     let op;
@@ -215,18 +257,31 @@ export function* luaK_ret(fs, first, nret) {
     (yield* luaK_codeABCk(fs, op, first, (nret + 1) | 0, 0, 0));
 }
 
+/*
+** Code a "conditional jump", that is, a test or comparison opcode
+** followed by a jump. Return jump position.
+*/
 /** C ref: lcode.c:223 — @param {CPtr<FuncState>} fs @param {*} op @param {CInt} A @param {CInt} B @param {CInt} C @param {CInt} k @returns {CInt} */
 function* condjump(fs, op, A, B, C, k) {
     (yield* luaK_codeABCk(fs, op, A, B, C, k));
     return (yield* luaK_jump(fs));
 }
 
+/*
+** returns current 'pc' and marks it as a jump target (to avoid wrong
+** optimizations with consecutive instructions not in the same basic block).
+*/
 /** C ref: lcode.c:233 — @param {CPtr<FuncState>} fs @returns {CInt} */
 export function luaK_getlabel(fs) {
     cptr.stI32o(fs, $FuncState_lasttarget, cptr.ldI32o(fs, $FuncState_pc));
     return cptr.ldI32o(fs, $FuncState_pc);
 }
 
+/*
+** Returns the position of the instruction "controlling" a given
+** jump (that is, its condition), or the jump itself if it is
+** unconditional.
+*/
 /** C ref: lcode.c:244 — @param {CPtr<FuncState>} fs @param {CInt} pc @returns {CPtr<Instruction>} */
 function getjumpcontrol(fs, pc) {
     let pi = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
@@ -236,25 +291,42 @@ function getjumpcontrol(fs, pc) {
         return pi;
 }
 
+/*
+** Patch destination register for a TESTSET instruction.
+** If instruction in position 'node' is not a TESTSET, return 0 ("fails").
+** Otherwise, if 'reg' is not 'NO_REG', set it as the destination
+** register. Otherwise, change instruction to a simple 'TEST' (produces
+** no register value)
+*/
 /** C ref: lcode.c:260 — @param {CPtr<FuncState>} fs @param {CInt} node @param {CInt} reg @returns {CInt} */
 function patchtestreg(fs, node, reg) {
     let i = getjumpcontrol(fs, node);
     if (((((((cptr.ldI32(i)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
-        return 0;
+        return 0;  /* cannot patch other instructions */
     if (reg != 255 && reg != ((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
         (cptr.stI32(i, (((((cptr.ldI32(i)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
     else {
+        /* no register to put value or register already has the value;
+           change instruction to simple test */
         cptr.stI32(i, ((((((((66) << 0) >>> 0) | ((((((((((((cptr.ldI32(i)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) >>> 0) << 7) >>> 0)) >>> 0 | 0) >>> 0 | 0) >>> 0 | ((((((((((((cptr.ldI32(i)) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) >>> 0) << 15) >>> 0)) >>> 0));
     }
     return 1;
 }
 
+/*
+** Traverse a list of tests ensuring no one produces a value
+*/
 /** C ref: lcode.c:278 — @param {CPtr<FuncState>} fs @param {CInt} list */
 function removevalues(fs, list) {
     for (; list != -1; list = getjump(fs, list))
         patchtestreg(fs, list, 255);
 }
 
+/*
+** Traverse a list of tests, patching their destination address and
+** registers: tests producing values jump to 'vtarget' (and put their
+** values in 'reg'), other tests jump to 'dtarget'.
+*/
 /** C ref: lcode.c:289 — @param {CPtr<FuncState>} fs @param {CInt} list @param {CInt} vtarget @param {CInt} reg @param {CInt} dtarget */
 function* patchlistaux(fs, list, vtarget, reg, dtarget) {
     while (list != -1) {
@@ -262,11 +334,16 @@ function* patchlistaux(fs, list, vtarget, reg, dtarget) {
         if (patchtestreg(fs, list, reg))
             (yield* fixjump(fs, list, vtarget));
         else
-            (yield* fixjump(fs, list, dtarget));
+            (yield* fixjump(fs, list, dtarget));  /* jump to default target */
         list = next;
     }
 }
 
+/*
+** Path all jumps in 'list' to jump to 'target'.
+** (The assert means that we cannot fix a jump to a forward address
+** because we only know addresses once code is generated.)
+*/
 /** C ref: lcode.c:307 — @param {CPtr<FuncState>} fs @param {CInt} list @param {CInt} target */
 export function* luaK_patchlist(fs, list, target) {
     (void 0);
@@ -275,55 +352,81 @@ export function* luaK_patchlist(fs, list, target) {
 
 /** C ref: lcode.c:313 — @param {CPtr<FuncState>} fs @param {CInt} list */
 export function* luaK_patchtohere(fs, list) {
-    let hr = luaK_getlabel(fs);
+    let hr = luaK_getlabel(fs);  /* mark "here" as a jump target */
     (yield* luaK_patchlist(fs, list, hr));
 }
 
+/*
+** Save line info for a new instruction. If difference from last line
+** does not fit in a byte, of after that many instructions, save a new
+** absolute line info; (in that case, the special value 'ABSLINEINFO'
+** in 'lineinfo' signals the existence of this absolute information.)
+** Otherwise, store the difference from last line in 'lineinfo'.
+*/
 /** C ref: lcode.c:330 — @param {CPtr<FuncState>} fs @param {CPtr<Proto>} f @param {CInt} line */
 function* savelineinfo(fs, f, line) {
     let linedif = (line - cptr.ldI32o(fs, $FuncState_previousline)) | 0;
-    let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
+    let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;  /* last instruction coded */
     if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, $FuncState_iwthabs)) >= 128) {
         (cptr.stPtro(f, $Proto_abslineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), cptr.add(f, $Proto_sizeabslineinfo), 8, 2147483647, __s_lines))))));
         cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), pc, $sizeof_AbsLineInfo);
         cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), (cptr.stI32o(fs, $FuncState_nabslineinfo, cptr.ldI32o(fs, $FuncState_nabslineinfo) + 1)) - (1), $sizeof_AbsLineInfo, $AbsLineInfo_line, line);
-        linedif = -128;
-        cptr.st1o(fs, $FuncState_iwthabs, 1);
+        linedif = -128;  /* signal that there is absolute information */
+        cptr.st1o(fs, $FuncState_iwthabs, 1);  /* restart counter */
     }
     (cptr.stPtro(f, $Proto_lineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_lineinfo), pc, cptr.add(f, $Proto_sizelineinfo), 1, 2147483647, __s_opcodes))))));
     cptr.st1o(cptr.ldPtro(f, $Proto_lineinfo), pc, schar(linedif));
-    cptr.stI32o(fs, $FuncState_previousline, line);
+    cptr.stI32o(fs, $FuncState_previousline, line);  /* last line saved */
 }
 
+/*
+** Remove line information from the last instruction.
+** If line information for that instruction is absolute, set 'iwthabs'
+** above its max to force the new (replacing) instruction to have
+** absolute line info, too.
+*/
 /** C ref: lcode.c:354 — @param {CPtr<FuncState>} fs */
 function removelastlineinfo(fs) {
     let f = cptr.ldPtr(fs);
-    let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
+    let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;  /* last instruction coded */
     if (cptr.ld1uo(cptr.ldPtro(f, $Proto_lineinfo), pc) != -128) {
-        cptr.stI32o(fs, $FuncState_previousline, (cptr.ldI32o(fs, $FuncState_previousline) - cptr.ld1uo(cptr.ldPtro(f, $Proto_lineinfo), pc)) | 0);
-        (cptr.st1o(fs, $FuncState_iwthabs, cptr.ld1uo(fs, $FuncState_iwthabs) + -1)) - (-1);
+        cptr.stI32o(fs, $FuncState_previousline, (cptr.ldI32o(fs, $FuncState_previousline) - cptr.ld1uo(cptr.ldPtro(f, $Proto_lineinfo), pc)) | 0);  /* correct last line saved */
+        (cptr.st1o(fs, $FuncState_iwthabs, cptr.ld1uo(fs, $FuncState_iwthabs) + -1)) - (-1);  /* undo previous increment */
     } else {
         (void 0);
-        (cptr.stI32o(fs, $FuncState_nabslineinfo, cptr.ldI32o(fs, $FuncState_nabslineinfo) + -1)) - (-1);
-        cptr.st1o(fs, $FuncState_iwthabs, 129);
+        (cptr.stI32o(fs, $FuncState_nabslineinfo, cptr.ldI32o(fs, $FuncState_nabslineinfo) + -1)) - (-1);  /* remove it */
+        cptr.st1o(fs, $FuncState_iwthabs, 129);  /* force next line info to be absolute */
     }
 }
 
+/*
+** Remove the last instruction created, correcting line information
+** accordingly.
+*/
 /** C ref: lcode.c:373 — @param {CPtr<FuncState>} fs */
 function removelastinstruction(fs) {
     removelastlineinfo(fs);
     (cptr.stI32o(fs, $FuncState_pc, cptr.ldI32o(fs, $FuncState_pc) + -1)) - (-1);
 }
 
+/*
+** Emit instruction 'i', checking for array sizes and saving also its
+** line information. Return 'i' position.
+*/
 /** C ref: lcode.c:383 — @param {CPtr<FuncState>} fs @param {CUInt} i @returns {CInt} */
 export function* luaK_code(fs, i) {
     let f = cptr.ldPtr(fs);
+    /* put new instruction in code array */
     (cptr.stPtro(f, $Proto_code, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_code), cptr.ldI32o(fs, $FuncState_pc), cptr.add(f, $Proto_sizecode), 4, 2147483647, __s_opcodes))))));
     cptr.stI32o(cptr.ldPtro(f, $Proto_code), (cptr.stI32o(fs, $FuncState_pc, cptr.ldI32o(fs, $FuncState_pc) + 1)) - (1), i, 4);
     (yield* savelineinfo(fs, f, cptr.ldI32o(cptr.ldPtro(fs, $FuncState_ls), $LexState_lastline)));
-    return (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
+    return (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;  /* index of new instruction */
 }
 
+/*
+** Format and emit an 'iABC' instruction. (Assertions check consistency
+** of parameters versus opcode.)
+*/
 /** C ref: lcode.c:398 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CInt} b @param {CInt} c @param {CInt} k @returns {CInt} */
 export function* luaK_codeABCk(fs, o, a, b, c, k) {
     (void 0);
@@ -331,6 +434,9 @@ export function* luaK_codeABCk(fs, o, a, b, c, k) {
     return (yield* luaK_code(fs, (((((((((o)) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0 | ((((b) >>> 0) << 16) >>> 0)) >>> 0 | ((((c) >>> 0) << 24) >>> 0)) >>> 0 | ((((k) >>> 0) << 15) >>> 0)) >>> 0)));
 }
 
+/*
+** Format and emit an 'iABx' instruction.
+*/
 /** C ref: lcode.c:409 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CUInt} bc @returns {CInt} */
 export function* luaK_codeABx(fs, o, a, bc) {
     (void 0);
@@ -338,6 +444,9 @@ export function* luaK_codeABx(fs, o, a, bc) {
     return (yield* luaK_code(fs, (((((((o)) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0 | ((((bc)) << 15) >>> 0)) >>> 0)));
 }
 
+/*
+** Format and emit an 'iAsBx' instruction.
+*/
 /** C ref: lcode.c:419 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CInt} bc @returns {CInt} */
 function* codeAsBx(fs, o, a, bc) {
     let b = ((bc + 65535) | 0) >>> 0;
@@ -346,6 +455,9 @@ function* codeAsBx(fs, o, a, bc) {
     return (yield* luaK_code(fs, (((((((o)) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0 | ((((b)) << 15) >>> 0)) >>> 0)));
 }
 
+/*
+** Format and emit an 'isJ' instruction.
+*/
 /** C ref: lcode.c:430 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} sj @param {CInt} k @returns {CInt} */
 function* codesJ(fs, o, sj, k) {
     let j = ((sj + 16777215) | 0) >>> 0;
@@ -354,12 +466,20 @@ function* codesJ(fs, o, sj, k) {
     return (yield* luaK_code(fs, (((((((o)) << 0) >>> 0) | ((((j)) << 7) >>> 0)) >>> 0 | ((((k) >>> 0) << 15) >>> 0)) >>> 0)));
 }
 
+/*
+** Emit an "extra argument" instruction (format 'iAx')
+*/
 /** C ref: lcode.c:441 — @param {CPtr<FuncState>} fs @param {CInt} a @returns {CInt} */
 function* codeextraarg(fs, a) {
     (void 0);
     return (yield* luaK_code(fs, (((((82) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0)));
 }
 
+/*
+** Emit a "load constant" instruction, using either 'OP_LOADK'
+** (if constant index 'k' fits in 18 bits) or an 'OP_LOADKX'
+** instruction with "extra argument".
+*/
 /** C ref: lcode.c:452 — @param {CPtr<FuncState>} fs @param {CInt} reg @param {CInt} k @returns {CInt} */
 function* luaK_codek(fs, reg, k) {
     if (k <= 131071)
@@ -371,6 +491,10 @@ function* luaK_codek(fs, reg, k) {
     }
 }
 
+/*
+** Check register-stack level, keeping track of its maximum size
+** in field 'maxstacksize'
+*/
 /** C ref: lcode.c:467 — @param {CPtr<FuncState>} fs @param {CInt} n */
 export function* luaK_checkstack(fs, n) {
     let newstack = (cptr.ld1uo(fs, $FuncState_freereg) + n) | 0;
@@ -381,12 +505,20 @@ export function* luaK_checkstack(fs, n) {
     }
 }
 
+/*
+** Reserve 'n' registers in register stack
+*/
 /** C ref: lcode.c:481 — @param {CPtr<FuncState>} fs @param {CInt} n */
 export function* luaK_reserveregs(fs, n) {
     (yield* luaK_checkstack(fs, n));
     cptr.st1o(fs, $FuncState_freereg, cptr.ld1uo(fs, $FuncState_freereg) + n);
 }
 
+/*
+** Free register 'reg', if it is neither a constant index nor
+** a local variable.
+)
+*/
 /** C ref: lcode.c:492 — @param {CPtr<FuncState>} fs @param {CInt} reg */
 function freereg(fs, reg) {
     if (reg >= luaY_nvarstack(fs)) {
@@ -395,6 +527,9 @@ function freereg(fs, reg) {
     }
 }
 
+/*
+** Free two registers in proper order
+*/
 /** C ref: lcode.c:503 — @param {CPtr<FuncState>} fs @param {CInt} r1 @param {CInt} r2 */
 function freeregs(fs, r1, r2) {
     if (r1 > r2) {
@@ -406,12 +541,19 @@ function freeregs(fs, r1, r2) {
     }
 }
 
+/*
+** Free register used by expression 'e' (if any)
+*/
 /** C ref: lcode.c:518 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function freeexp(fs, e) {
     if (cptr.ldI32(e) == NHC.VNONRELOC)
         freereg(fs, cptr.ldI32o(e, $expdesc_u));
 }
 
+/*
+** Free registers used by expressions 'e1' and 'e2' (if any) in proper
+** order.
+*/
 /** C ref: lcode.c:528 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function freeexps(fs, e1, e2) {
     let r1 = (cptr.ldI32(e1) == NHC.VNONRELOC) ? cptr.ldI32o(e1, $expdesc_u) : -1;
@@ -419,22 +561,35 @@ function freeexps(fs, e1, e2) {
     freeregs(fs, r1, r2);
 }
 
+/*
+** Add constant 'v' to prototype's list of constants (field 'k').
+** Use scanner's table to cache position of constants in constant list
+** and try to reuse constants. Because some values should not be used
+** as keys (nil cannot be a key, integer keys can collapse with float
+** keys), the caller must provide a useful 'key' for indexing the cache.
+** Note that all functions share the same table, so entering or exiting
+** a function can make some indices wrong.
+*/
 /** C ref: lcode.c:544 — @param {CPtr<FuncState>} fs @param {CPtr<TValue>} key @param {CPtr<TValue>} v @returns {CInt} */
 function* addk(fs, key, v) {
     let val = cptr.alloc(16);
     let L = cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L);
     let f = cptr.ldPtr(fs);
-    let idx = luaH_get(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_h), key);
+    let idx = luaH_get(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_h), key);  /* query scanner table */
     let k;
     let oldsize;
     if (((cptr.ld1uo(((idx)), $TValue_tt_)) == 3)) {
         k = (Number(BigInt.asIntN(32, (((cptr.ldI64(((idx)))))))));
+        /* correct value? (warning: must distinguish floats from integers!) */
         if (k < cptr.ldI32o(fs, $FuncState_nk) && (((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), k, $sizeof_TValue)), $TValue_tt_))) & 63) == (((cptr.ld1uo((v), $TValue_tt_))) & 63) && (yield* luaV_equalobj(null, cptr.add(cptr.ldPtro(f, $Proto_k), k, $sizeof_TValue), v)))
-            return k;
+            return k;  /* reuse index */
     }
+    /* constant not found; create a new entry */
     oldsize = cptr.ldI32o(f, $Proto_sizek);
     k = cptr.ldI32o(fs, $FuncState_nk);
     {
+        /* numerical value does not need GC barrier;
+           table has no metatable, so it does not need to invalidate cache */
         let io = (val);
         cptr.stI64(((io)), BigInt((k)));
         (cptr.st1o((io), $TValue_tt_, 3));
@@ -458,6 +613,9 @@ function* addk(fs, key, v) {
     return k;
 }
 
+/*
+** Add a string to list of constants and return its index.
+*/
 /** C ref: lcode.c:576 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} s @returns {CInt} */
 function* stringK(fs, s) {
     let o = cptr.alloc(16);
@@ -469,9 +627,12 @@ function* stringK(fs, s) {
         (void cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), (void 0));
     }
     ;
-    return (yield* addk(fs, o, o));
+    return (yield* addk(fs, o, o));  /* use string itself as key */
 }
 
+/*
+** Add an integer to list of constants and return its index.
+*/
 /** C ref: lcode.c:586 — @param {CPtr<FuncState>} fs @param {CLongLong} n @returns {CInt} */
 function* luaK_intK(fs, n) {
     let o = cptr.alloc(16);
@@ -481,9 +642,20 @@ function* luaK_intK(fs, n) {
         (cptr.st1o((io), $TValue_tt_, 3));
     }
     ;
-    return (yield* addk(fs, o, o));
+    return (yield* addk(fs, o, o));  /* use integer itself as key */
 }
 
+/*
+** Add a float to list of constants and return its index. Floats
+** with integral values need a different key, to avoid collision
+** with actual integers. To that, we add to the number its smaller
+** power-of-two fraction that is still significant in its scale.
+** For doubles, that would be 1/2^52.
+** (This method is not bulletproof: there may be another float
+** with that value, and for floats larger than 2^53 the result is
+** still an integer. At worst, this only wastes an entry with
+** a duplicate.)
+*/
 /** C ref: lcode.c:603 — @param {CPtr<FuncState>} fs @param {CDouble} r @returns {CInt} */
 function* luaK_numberK(fs, r) {
     let o = cptr.alloc(16);
@@ -495,11 +667,11 @@ function* luaK_numberK(fs, r) {
     }
     ;
     if (!luaV_flttointeger(r, ik, NHC.F2Ieq))
-        return (yield* addk(fs, o, o));
+        return (yield* addk(fs, o, o));  /* use number itself as key */
     else {
         let nbm = 53;
         let q = ldexp(1, (-nbm + 1) | 0);
-        let k = (ik.v == 0n) ? q : r + r * q;
+        let k = (ik.v == 0n) ? q : r + r * q;  /* new key */
         let kv = cptr.alloc(16);
         {
             let io = (kv);
@@ -507,31 +679,42 @@ function* luaK_numberK(fs, r) {
             (cptr.st1o((io), $TValue_tt_, 19));
         }
         ;
+        /* result is not an integral value, unless value is too large */
         (void 0);
         return (yield* addk(fs, kv, o));
     }
 }
 
+/*
+** Add a false to list of constants and return its index.
+*/
 /** C ref: lcode.c:626 — @param {CPtr<FuncState>} fs @returns {CInt} */
 function* boolF(fs) {
     let o = cptr.alloc(16);
     (cptr.st1o((o), $TValue_tt_, 1));
-    return (yield* addk(fs, o, o));
+    return (yield* addk(fs, o, o));  /* use boolean itself as key */
 }
 
+/*
+** Add a true to list of constants and return its index.
+*/
 /** C ref: lcode.c:636 — @param {CPtr<FuncState>} fs @returns {CInt} */
 function* boolT(fs) {
     let o = cptr.alloc(16);
     (cptr.st1o((o), $TValue_tt_, 17));
-    return (yield* addk(fs, o, o));
+    return (yield* addk(fs, o, o));  /* use boolean itself as key */
 }
 
+/*
+** Add nil to list of constants and return its index.
+*/
 /** C ref: lcode.c:646 — @param {CPtr<FuncState>} fs @returns {CInt} */
 function* nilK(fs) {
     let k = cptr.alloc(16);
     let v = cptr.alloc(16);
     (cptr.st1o((v), $TValue_tt_, 0));
     {
+        /* cannot use nil as key; instead use table itself to represent nil */
         let io = (k);
         let x_ = (cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_h));
         cptr.stPtr(((io)), ((((x_)))));
@@ -542,11 +725,19 @@ function* nilK(fs) {
     return (yield* addk(fs, k, v));
 }
 
+/*
+** Check whether 'i' can be stored in an 'sC' operand. Equivalent to
+** (0 <= int2sC(i) && int2sC(i) <= MAXARG_C) but without risk of
+** overflows in the hidden addition inside 'int2sC'.
+*/
 /** C ref: lcode.c:660 — @param {CLongLong} i @returns {CInt} */
 function fitsC(i) {
     return (BigInt.asUintN(64, (BigInt.asUintN(64, (i))) + 127n) <= 255n);
 }
 
+/*
+** Check whether 'i' can be stored in an 'sBx' operand.
+*/
 /** C ref: lcode.c:668 — @param {CLongLong} i @returns {CInt} */
 function fitsBx(i) {
     return (-65535n <= i && i <= 65536n ? 1 : 0);
@@ -569,6 +760,9 @@ function* luaK_float(fs, reg, f) {
         (yield* luaK_codek(fs, reg, (yield* luaK_numberK(fs, f))));
 }
 
+/*
+** Convert a constant in 'v' into an expression description 'e'
+*/
 /** C ref: lcode.c:693 — @param {CPtr<TValue>} v @param {CPtr<expdesc>} e */
 function const2exp(v, e) {
     switch ((((cptr.ld1uo((v), $TValue_tt_))) & 63)) {
@@ -599,6 +793,10 @@ function const2exp(v, e) {
     }
 }
 
+/*
+** Fix an expression to return the number of results 'nresults'.
+** 'e' must be a multi-ret expression (function call or vararg).
+*/
 /** C ref: lcode.c:722 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} nresults */
 export function* luaK_setreturns(fs, e, nresults) {
     let pc = cptr.add(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4);
@@ -612,6 +810,9 @@ export function* luaK_setreturns(fs, e, nresults) {
     }
 }
 
+/*
+** Convert a VKSTR to a VK
+*/
 /** C ref: lcode.c:738 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function* str2K(fs, e) {
     (void 0);
@@ -619,18 +820,33 @@ function* str2K(fs, e) {
     cptr.stI32(e, NHC.VK);
 }
 
+/*
+** Fix an expression to return one result.
+** If expression is not a multi-ret expression (function call or
+** vararg), it already returns one result, so nothing needs to be done.
+** Function calls become VNONRELOC expressions (as its result comes
+** fixed in the base register of the call), while vararg expressions
+** become VRELOC (as OP_VARARG puts its results where it wants).
+** (Calls are created returning one result, so that does not need
+** to be fixed.)
+*/
 /** C ref: lcode.c:755 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function luaK_setoneret(fs, e) {
     if (cptr.ldI32(e) == NHC.VCALL) {
+        /* already returns 1 value */
         (void 0);
-        cptr.stI32(e, NHC.VNONRELOC);
+        cptr.stI32(e, NHC.VNONRELOC);  /* result has fixed position */
         cptr.stI32o(e, $expdesc_u, ((((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4))) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
     } else if (cptr.ldI32(e) == NHC.VVARARG) {
         (cptr.stI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), ((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4))) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | ((33554432 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0), 4));
-        cptr.stI32(e, NHC.VRELOC);
+        cptr.stI32(e, NHC.VRELOC);  /* can relocate its simple result */
     }
 }
 
+/*
+** Ensure that expression 'e' is not a variable (nor a <const>).
+** (Expression still may have jump lists.)
+*/
 /** C ref: lcode.c:773 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_dischargevars(fs, e) {
     switch (cptr.ldI32(e)) {
@@ -642,8 +858,8 @@ export function* luaK_dischargevars(fs, e) {
         case NHC.VLOCAL:
         {
             let temp = cptr.ld1uo(e, $expdesc_u);
-            cptr.stI32o(e, $expdesc_u, temp);
-            cptr.stI32(e, NHC.VNONRELOC);
+            cptr.stI32o(e, $expdesc_u, temp);  /* (can't do a direct assignment; values overlap) */
+            cptr.stI32(e, NHC.VNONRELOC);  /* becomes a non-relocatable value */
             break;
         }
         case NHC.VUPVAL:
@@ -686,10 +902,15 @@ export function* luaK_dischargevars(fs, e) {
             break;
         }
         default:
-        break;
+        break;  /* there is one value available (somewhere) */
     }
 }
 
+/*
+** Ensure expression value is in register 'reg', making 'e' a
+** non-relocatable expression.
+** (Expression still may have jump lists.)
+*/
 /** C ref: lcode.c:827 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} reg */
 function* discharge2reg(fs, e, reg) {
     (yield* luaK_dischargevars(fs, e));
@@ -712,7 +933,7 @@ function* discharge2reg(fs, e, reg) {
         case NHC.VKSTR:
         {
             (yield* str2K(fs, e));
-        }
+        }  /* FALLTHROUGH */
         case NHC.VK:
         {
             (yield* luaK_codek(fs, reg, cptr.ldI32o(e, $expdesc_u)));
@@ -731,7 +952,7 @@ function* discharge2reg(fs, e, reg) {
         case NHC.VRELOC:
         {
             let pc = cptr.add(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4);
-            (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
+            (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((reg) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));  /* instruction will put result in 'reg' */
             break;
         }
         case NHC.VNONRELOC:
@@ -743,27 +964,36 @@ function* discharge2reg(fs, e, reg) {
         default:
         {
             (void 0);
-            return;
+            return;  /* nothing to do... */
         }
     }
     cptr.stI32o(e, $expdesc_u, reg);
     cptr.stI32(e, NHC.VNONRELOC);
 }
 
+/*
+** Ensure expression value is in a register, making 'e' a
+** non-relocatable expression.
+** (Expression still may have jump lists.)
+*/
 /** C ref: lcode.c:882 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function* discharge2anyreg(fs, e) {
     if (cptr.ldI32(e) != NHC.VNONRELOC) {
-        (yield* luaK_reserveregs(fs, 1));
-        (yield* discharge2reg(fs, e, (cptr.ld1uo(fs, $FuncState_freereg) - 1) | 0));
+        (yield* luaK_reserveregs(fs, 1));  /* get a register */
+        (yield* discharge2reg(fs, e, (cptr.ld1uo(fs, $FuncState_freereg) - 1) | 0));  /* put value there */
     }
 }
 
 /** C ref: lcode.c:890 — @param {CPtr<FuncState>} fs @param {CInt} A @param {*} op @returns {CInt} */
 function* code_loadbool(fs, A, op) {
-    luaK_getlabel(fs);
+    luaK_getlabel(fs);  /* those instructions may be jump targets */
     return (yield* luaK_codeABCk(fs, op, A, 0, 0, 0));
 }
 
+/*
+** check whether list has any jump that do not produce a value
+** or produce an inverted value
+*/
 /** C ref: lcode.c:900 — @param {CPtr<FuncState>} fs @param {CInt} list @returns {CInt} */
 function need_value(fs, list) {
     for (; list != -1; list = getjump(fs, list)) {
@@ -771,22 +1001,30 @@ function need_value(fs, list) {
         if (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
             return 1;
     }
-    return 0;
+    return 0;  /* not found */
 }
 
+/*
+** Ensures final expression result (which includes results from its
+** jump lists) is in register 'reg'.
+** If expression has jumps, need to patch these jumps either to
+** its final position or to "load" instructions (for those tests
+** that do not produce values).
+*/
 /** C ref: lcode.c:916 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} reg */
 function* exp2reg(fs, e, reg) {
     (yield* discharge2reg(fs, e, reg));
     if (cptr.ldI32(e) == NHC.VJMP)
-        (yield* luaK_concat(fs, cptr.add(e, $expdesc_t), cptr.ldI32o(e, $expdesc_u)));
+        (yield* luaK_concat(fs, cptr.add(e, $expdesc_t), cptr.ldI32o(e, $expdesc_u)));  /* put this jump in 't' list */
     if ((cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f))) {
-        let final;
-        let p_f = -1;
-        let p_t = -1;
+        let final;  /* position after whole expression */
+        let p_f = -1;  /* position of an eventual LOAD false */
+        let p_t = -1;  /* position of an eventual LOAD true */
         if (need_value(fs, cptr.ldI32o(e, $expdesc_t)) || need_value(fs, cptr.ldI32o(e, $expdesc_f))) {
             let fj = (cptr.ldI32(e) == NHC.VJMP) ? -1 : (yield* luaK_jump(fs));
-            p_f = (yield* code_loadbool(fs, reg, NHC.OP_LFALSESKIP));
+            p_f = (yield* code_loadbool(fs, reg, NHC.OP_LFALSESKIP));  /* skip next inst. */
             p_t = (yield* code_loadbool(fs, reg, NHC.OP_LOADTRUE));
+            /* jump around these booleans if 'e' is not a test */
             (yield* luaK_patchtohere(fs, fj));
         }
         final = luaK_getlabel(fs);
@@ -798,6 +1036,9 @@ function* exp2reg(fs, e, reg) {
     cptr.stI32(e, NHC.VNONRELOC);
 }
 
+/*
+** Ensures final expression result is in next available register.
+*/
 /** C ref: lcode.c:944 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_exp2nextreg(fs, e) {
     (yield* luaK_dischargevars(fs, e));
@@ -806,27 +1047,42 @@ export function* luaK_exp2nextreg(fs, e) {
     (yield* exp2reg(fs, e, (cptr.ld1uo(fs, $FuncState_freereg) - 1) | 0));
 }
 
+/*
+** Ensures final expression result is in some (any) register
+** and return that register.
+*/
 /** C ref: lcode.c:956 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 export function* luaK_exp2anyreg(fs, e) {
     (yield* luaK_dischargevars(fs, e));
     if (cptr.ldI32(e) == NHC.VNONRELOC) {
         if (!(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
-            return cptr.ldI32o(e, $expdesc_u);
+            return cptr.ldI32o(e, $expdesc_u);  /* result is already in a register */
         if (cptr.ldI32o(e, $expdesc_u) >= luaY_nvarstack(fs)) {
-            (yield* exp2reg(fs, e, cptr.ldI32o(e, $expdesc_u)));
+            (yield* exp2reg(fs, e, cptr.ldI32o(e, $expdesc_u)));  /* put final result in it */
             return cptr.ldI32o(e, $expdesc_u);
         }
+        /* else expression has jumps and cannot change its register
+           to hold the jump values, because it is a local variable.
+           Go through to the default case. */
     }
-    (yield* luaK_exp2nextreg(fs, e));
+    (yield* luaK_exp2nextreg(fs, e));  /* default: use next available register */
     return cptr.ldI32o(e, $expdesc_u);
 }
 
+/*
+** Ensures final expression result is either in a register
+** or in an upvalue.
+*/
 /** C ref: lcode.c:978 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_exp2anyregup(fs, e) {
     if (cptr.ldI32(e) != NHC.VUPVAL || (cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
         (yield* luaK_exp2anyreg(fs, e));
 }
 
+/*
+** Ensures final expression result is either in a register
+** or it is a constant.
+*/
 /** C ref: lcode.c:988 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_exp2val(fs, e) {
     if (cptr.ldI32(e) == NHC.VJMP || (cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
@@ -835,6 +1091,10 @@ export function* luaK_exp2val(fs, e) {
         (yield* luaK_dischargevars(fs, e));
 }
 
+/*
+** Try to make 'e' a K expression with an index in the range of R/K
+** indices. Return true iff succeeded.
+*/
 /** C ref: lcode.c:1000 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function* luaK_exp2K(fs, e) {
     if (!(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f))) {
@@ -862,17 +1122,24 @@ function* luaK_exp2K(fs, e) {
             info = cptr.ldI32o(e, $expdesc_u);
             break;
             default:
-            return 0;
+            return 0;  /* not a constant */
         }
         if (info <= 255) {
-            cptr.stI32(e, NHC.VK);
+            cptr.stI32(e, NHC.VK);  /* make expression a 'K' expression */
             cptr.stI32o(e, $expdesc_u, info);
             return 1;
         }
     }
+    /* else, expression doesn't fit; leave it unchanged */
     return 0;
 }
 
+/*
+** Ensures final expression result is in a valid R/K index
+** (that is, it is either in a register or in 'k' with an index
+** in the range of R/K indices).
+** Returns 1 iff expression is K.
+*/
 /** C ref: lcode.c:1030 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function* exp2RK(fs, e) {
     if ((yield* luaK_exp2K(fs, e)))
@@ -889,13 +1156,16 @@ function* codeABRK(fs, o, a, b, ec) {
     (yield* luaK_codeABCk(fs, o, a, b, cptr.ldI32o(ec, $expdesc_u), k));
 }
 
+/*
+** Generate code to store result of expression 'ex' into variable 'var'.
+*/
 /** C ref: lcode.c:1050 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} var @param {CPtr<expdesc>} ex */
 export function* luaK_storevar(fs, var$, ex) {
     switch (cptr.ldI32(var$)) {
         case NHC.VLOCAL:
         {
             freeexp(fs, ex);
-            (yield* exp2reg(fs, ex, cptr.ld1uo(var$, $expdesc_u)));
+            (yield* exp2reg(fs, ex, cptr.ld1uo(var$, $expdesc_u)));  /* compute 'ex' into proper place */
             return;
         }
         case NHC.VUPVAL:
@@ -925,24 +1195,30 @@ export function* luaK_storevar(fs, var$, ex) {
             break;
         }
         default:
-        (void 0);
+        (void 0);  /* invalid var kind to store */
     }
     freeexp(fs, ex);
 }
 
+/*
+** Emit SELF instruction (convert expression 'e' into 'e:key(e,').
+*/
 /** C ref: lcode.c:1087 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CPtr<expdesc>} key */
 export function* luaK_self(fs, e, key) {
     let ereg;
     (yield* luaK_exp2anyreg(fs, e));
-    ereg = cptr.ldI32o(e, $expdesc_u);
+    ereg = cptr.ldI32o(e, $expdesc_u);  /* register where 'e' was placed */
     freeexp(fs, e);
-    cptr.stI32o(e, $expdesc_u, cptr.ld1uo(fs, $FuncState_freereg));
-    cptr.stI32(e, NHC.VNONRELOC);
-    (yield* luaK_reserveregs(fs, 2));
+    cptr.stI32o(e, $expdesc_u, cptr.ld1uo(fs, $FuncState_freereg));  /* base register for op_self */
+    cptr.stI32(e, NHC.VNONRELOC);  /* self expression has a fixed register */
+    (yield* luaK_reserveregs(fs, 2));  /* function and 'self' produced by op_self */
     (yield* codeABRK(fs, NHC.OP_SELF, cptr.ldI32o(e, $expdesc_u), ereg, key));
     freeexp(fs, key);
 }
 
+/*
+** Negate condition 'e' (where 'e' is a comparison).
+*/
 /** C ref: lcode.c:1103 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function negatecondition(fs, e) {
     let pc = getjumpcontrol(fs, cptr.ldI32o(e, $expdesc_u));
@@ -950,29 +1226,39 @@ function negatecondition(fs, e) {
     (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>> 0) | (((((((((((((((cptr.ldI32(pc)) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) ^ 1)) >>> 0) << 15) >>> 0) & (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));
 }
 
+/*
+** Emit instruction to jump if 'e' is 'cond' (that is, if 'cond'
+** is true, code will jump if 'e' is true.) Return jump position.
+** Optimize when 'e' is 'not' something, inverting the condition
+** and removing the 'not'.
+*/
 /** C ref: lcode.c:1117 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} cond @returns {CInt} */
 function* jumponcond(fs, e, cond) {
     if (cptr.ldI32(e) == NHC.VRELOC) {
         let ie = (cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4));
         if (((((((ie) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_NOT) {
-            removelastinstruction(fs);
+            removelastinstruction(fs);  /* remove previous OP_NOT */
             return (yield* condjump(fs, NHC.OP_TEST, ((((((((ie) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 0, 0, !cond));
         }
+        /* else go through */
     }
     (yield* discharge2anyreg(fs, e));
     freeexp(fs, e);
     return (yield* condjump(fs, NHC.OP_TESTSET, 255, cptr.ldI32o(e, $expdesc_u), 0, cond));
 }
 
+/*
+** Emit code to go through if 'e' is true, jump otherwise.
+*/
 /** C ref: lcode.c:1135 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_goiftrue(fs, e) {
-    let pc;
+    let pc;  /* pc of new jump */
     (yield* luaK_dischargevars(fs, e));
     switch (cptr.ldI32(e)) {
         case NHC.VJMP:
         {
-            negatecondition(fs, e);
-            pc = cptr.ldI32o(e, $expdesc_u);
+            negatecondition(fs, e);  /* jump when it is false */
+            pc = cptr.ldI32o(e, $expdesc_u);  /* save jump position */
             break;
         }
         case NHC.VK:
@@ -981,54 +1267,60 @@ export function* luaK_goiftrue(fs, e) {
         case NHC.VKSTR:
         case NHC.VTRUE:
         {
-            pc = -1;
+            pc = -1;  /* always true; do nothing */
             break;
         }
         default:
         {
-            pc = (yield* jumponcond(fs, e, 0));
+            pc = (yield* jumponcond(fs, e, 0));  /* jump when false */
             break;
         }
     }
-    (yield* luaK_concat(fs, cptr.add(e, $expdesc_f), pc));
-    (yield* luaK_patchtohere(fs, cptr.ldI32o(e, $expdesc_t)));
+    (yield* luaK_concat(fs, cptr.add(e, $expdesc_f), pc));  /* insert new jump in false list */
+    (yield* luaK_patchtohere(fs, cptr.ldI32o(e, $expdesc_t)));  /* true list jumps to here (to go through) */
     cptr.stI32o(e, $expdesc_t, -1);
 }
 
+/*
+** Emit code to go through if 'e' is false, jump otherwise.
+*/
 /** C ref: lcode.c:1162 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_goiffalse(fs, e) {
-    let pc;
+    let pc;  /* pc of new jump */
     (yield* luaK_dischargevars(fs, e));
     switch (cptr.ldI32(e)) {
         case NHC.VJMP:
         {
-            pc = cptr.ldI32o(e, $expdesc_u);
+            pc = cptr.ldI32o(e, $expdesc_u);  /* already jump if true */
             break;
         }
         case NHC.VNIL:
         case NHC.VFALSE:
         {
-            pc = -1;
+            pc = -1;  /* always false; do nothing */
             break;
         }
         default:
         {
-            pc = (yield* jumponcond(fs, e, 1));
+            pc = (yield* jumponcond(fs, e, 1));  /* jump if true */
             break;
         }
     }
-    (yield* luaK_concat(fs, cptr.add(e, $expdesc_t), pc));
-    (yield* luaK_patchtohere(fs, cptr.ldI32o(e, $expdesc_f)));
+    (yield* luaK_concat(fs, cptr.add(e, $expdesc_t), pc));  /* insert new jump in 't' list */
+    (yield* luaK_patchtohere(fs, cptr.ldI32o(e, $expdesc_f)));  /* false list jumps to here (to go through) */
     cptr.stI32o(e, $expdesc_f, -1);
 }
 
+/*
+** Code 'not e', doing constant folding.
+*/
 /** C ref: lcode.c:1188 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function* codenot(fs, e) {
     switch (cptr.ldI32(e)) {
         case NHC.VNIL:
         case NHC.VFALSE:
         {
-            cptr.stI32(e, NHC.VTRUE);
+            cptr.stI32(e, NHC.VTRUE);  /* true == not nil == not false */
             break;
         }
         case NHC.VK:
@@ -1037,7 +1329,7 @@ function* codenot(fs, e) {
         case NHC.VKSTR:
         case NHC.VTRUE:
         {
-            cptr.stI32(e, NHC.VFALSE);
+            cptr.stI32(e, NHC.VFALSE);  /* false == not "x" == not 0.5 == not 1 == not true */
             break;
         }
         case NHC.VJMP:
@@ -1055,37 +1347,56 @@ function* codenot(fs, e) {
             break;
         }
         default:
-        (void 0);
+        (void 0);  /* cannot happen */
     }
     {
+        /* interchange true and false lists */
         let temp = cptr.ldI32o(e, $expdesc_f);
         cptr.stI32o(e, $expdesc_f, cptr.ldI32o(e, $expdesc_t));
         cptr.stI32o(e, $expdesc_t, temp);
     }
-    removevalues(fs, cptr.ldI32o(e, $expdesc_f));
+    removevalues(fs, cptr.ldI32o(e, $expdesc_f));  /* values are useless when negated */
     removevalues(fs, cptr.ldI32o(e, $expdesc_t));
 }
 
+/*
+** Check whether expression 'e' is a short literal string
+*/
 /** C ref: lcode.c:1222 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function isKstr(fs, e) {
     return (cptr.ldI32(e) == NHC.VK && !(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) && cptr.ldI32o(e, $expdesc_u) <= 255 && ((cptr.ld1uo(((cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_k), cptr.ldI32o(e, $expdesc_u), $sizeof_TValue))), $TValue_tt_)) == 68) ? 1 : 0);
 }
 
+/*
+** Check whether expression 'e' is a literal integer.
+*/
 /** C ref: lcode.c:1230 — @param {CPtr<expdesc>} e @returns {CInt} */
 function isKint(e) {
     return (cptr.ldI32(e) == NHC.VKINT && !(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) ? 1 : 0);
 }
 
+/*
+** Check whether expression 'e' is a literal integer in
+** proper range to fit in register C
+*/
 /** C ref: lcode.c:1239 — @param {CPtr<expdesc>} e @returns {CInt} */
 function isCint(e) {
     return isKint(e) && ((BigInt.asUintN(64, (cptr.ldI64o(e, $expdesc_u)))) <= 255n) ? 1 : 0;
 }
 
+/*
+** Check whether expression 'e' is a literal integer in
+** proper range to fit in register sC
+*/
 /** C ref: lcode.c:1248 — @param {CPtr<expdesc>} e @returns {CInt} */
 function isSCint(e) {
     return isKint(e) && fitsC(cptr.ldI64o(e, $expdesc_u)) ? 1 : 0;
 }
 
+/*
+** Check whether expression 'e' is a literal integer or float in
+** proper range to fit in a register (sB or sC).
+*/
 /** C ref: lcode.c:1257 — @param {CPtr<expdesc>} e @param {CPtr<int>} pi @param {CPtr<int>} isfloat @returns {CInt} */
 function isSCnumber(e, pi, isfloat) {
     let i = cptr.box(0n);
@@ -1094,7 +1405,7 @@ function isSCnumber(e, pi, isfloat) {
     else if (cptr.ldI32(e) == NHC.VKFLT && luaV_flttointeger(cptr.ldF64o(e, $expdesc_u), i, NHC.F2Ieq))
         cptr.stI32(isfloat, 1);
     else
-        return 0;
+        return 0;  /* not a number */
     if (!(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) && fitsC(i.v)) {
         cptr.stI32(pi, ((((Number(BigInt.asIntN(32, ((i.v)))))) + 127) | 0));
         return 1;
@@ -1102,34 +1413,46 @@ function isSCnumber(e, pi, isfloat) {
         return 0;
 }
 
+/*
+** Create expression 't[k]'. 't' must have its final result already in a
+** register or upvalue. Upvalues can only be indexed by literal strings.
+** Keys can be literal strings in the constant table or arbitrary
+** values in registers.
+*/
 /** C ref: lcode.c:1280 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} t @param {CPtr<expdesc>} k */
 export function* luaK_indexed(fs, t, k) {
     if (cptr.ldI32(k) == NHC.VKSTR)
         (yield* str2K(fs, k));
     (void 0);
     if (cptr.ldI32(t) == NHC.VUPVAL && !isKstr(fs, k))
-        (yield* luaK_exp2anyreg(fs, t));
+        (yield* luaK_exp2anyreg(fs, t));  /* put it in a register */
     if (cptr.ldI32(t) == NHC.VUPVAL) {
-        let temp = cptr.ldI32o(t, $expdesc_u);
+        let temp = cptr.ldI32o(t, $expdesc_u);  /* upvalue index */
         (void 0);
-        cptr.st1o(t, $expdesc_u + 2, uchar(temp));
-        cptr.stI16o(t, $expdesc_u, i16(cptr.ldI32o(k, $expdesc_u)));
+        cptr.st1o(t, $expdesc_u + 2, uchar(temp));  /* (can't do a direct assignment; values overlap) */
+        cptr.stI16o(t, $expdesc_u, i16(cptr.ldI32o(k, $expdesc_u)));  /* literal short string */
         cptr.stI32(t, NHC.VINDEXUP);
     } else {
+        /* register index of the table */
         cptr.st1o(t, $expdesc_u + 2, uchar(((cptr.ldI32(t) == NHC.VLOCAL) ? cptr.ld1uo(t, $expdesc_u) : cptr.ldI32o(t, $expdesc_u))));
         if (isKstr(fs, k)) {
-            cptr.stI16o(t, $expdesc_u, i16(cptr.ldI32o(k, $expdesc_u)));
+            cptr.stI16o(t, $expdesc_u, i16(cptr.ldI32o(k, $expdesc_u)));  /* literal short string */
             cptr.stI32(t, NHC.VINDEXSTR);
         } else if (isCint(k)) {
-            cptr.stI16o(t, $expdesc_u, i16((Number(BigInt.asIntN(32, ((cptr.ldI64o(k, $expdesc_u))))))));
+            cptr.stI16o(t, $expdesc_u, i16((Number(BigInt.asIntN(32, ((cptr.ldI64o(k, $expdesc_u))))))));  /* int. constant in proper range */
             cptr.stI32(t, NHC.VINDEXI);
         } else {
-            cptr.stI16o(t, $expdesc_u, i16((yield* luaK_exp2anyreg(fs, k))));
+            cptr.stI16o(t, $expdesc_u, i16((yield* luaK_exp2anyreg(fs, k))));  /* register */
             cptr.stI32(t, NHC.VINDEXED);
         }
     }
 }
 
+/*
+** Return false if folding can raise an error.
+** Bitwise operations need operands convertible to integers; division
+** operations cannot have 0 as divisor.
+*/
 /** C ref: lcode.c:1318 — @param {CInt} op @param {CPtr<TValue>} v1 @param {CPtr<TValue>} v2 @returns {CInt} */
 function validop(op, v1, v2) {
     switch (op) {
@@ -1148,18 +1471,22 @@ function validop(op, v1, v2) {
         case 3:
         return (((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3) ? (Number((((cptr.ldI64(((v2)))))))) : (cptr.ldF64(((v2)))))) != 0);
         default:
-        return 1;
+        return 1;  /* everything else is valid */
     }
 }
 
+/*
+** Try to "constant-fold" an operation; return 1 iff successful.
+** (In this case, 'e1' has the final result.)
+*/
 /** C ref: lcode.c:1337 — @param {CPtr<FuncState>} fs @param {CInt} op @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @returns {CInt} */
 function* constfolding(fs, op, e1, e2) {
     let v1 = cptr.alloc(16);
     let v2 = cptr.alloc(16);
     let res = cptr.alloc(16);
     if (!tonumeral(e1, v1) || !tonumeral(e2, v2) || !validop(op, v1, v2))
-        return 0;
-    (yield* luaO_rawarith(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), op, v1, v2, res));
+        return 0;  /* non-numeric operands or not safe to fold */
+    (yield* luaO_rawarith(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), op, v1, v2, res));  /* does operation */
     if (((cptr.ld1uo(((res)), $TValue_tt_)) == 3)) {
         cptr.stI32(e1, NHC.VKINT);
         cptr.stI64o(e1, $expdesc_u, (cptr.ldI64(((res)))));
@@ -1173,99 +1500,141 @@ function* constfolding(fs, op, e1, e2) {
     return 1;
 }
 
+/*
+** Convert a BinOpr to an OpCode  (ORDER OPR - ORDER OP)
+*/
 /** C ref: lcode.c:1361 — @param {*} opr @param {*} baser @param {*} base @returns {*} */
 function binopr2op(opr, baser, base) {
     (void 0);
     return ((((((((opr))) - (((baser)))) | 0) + (((base)))) | 0));
 }
 
+/*
+** Convert a UnOpr to an OpCode  (ORDER OPR - ORDER OP)
+*/
 /** C ref: lcode.c:1372 — @param {*} opr @returns {*} */
 function unopr2op(opr) {
     return ((((((((opr))) - NHC.OPR_MINUS) | 0) + NHC.OP_UNM) | 0));
 }
 
+/*
+** Convert a BinOpr to a tag method  (ORDER OPR - ORDER TM)
+*/
 /** C ref: lcode.c:1381 — @param {*} opr @returns {*} */
 function binopr2TM(opr) {
     (void 0);
     return ((((((((opr))) - NHC.OPR_ADD) | 0) + NHC.TM_ADD) | 0));
 }
 
+/*
+** Emit code for unary expressions that "produce values"
+** (everything but 'not').
+** Expression to produce final result will be encoded in 'e'.
+*/
 /** C ref: lcode.c:1392 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} e @param {CInt} line */
 function* codeunexpval(fs, op, e, line) {
-    let r = (yield* luaK_exp2anyreg(fs, e));
+    let r = (yield* luaK_exp2anyreg(fs, e));  /* opcodes operate only on registers */
     freeexp(fs, e);
-    cptr.stI32o(e, $expdesc_u, (yield* luaK_codeABCk(fs, op, 0, r, 0, 0)));
-    cptr.stI32(e, NHC.VRELOC);
+    cptr.stI32o(e, $expdesc_u, (yield* luaK_codeABCk(fs, op, 0, r, 0, 0)));  /* generate opcode */
+    cptr.stI32(e, NHC.VRELOC);  /* all those operations are relocatable */
     (yield* luaK_fixline(fs, line));
 }
 
+/*
+** Emit code for binary expressions that "produce values"
+** (everything but logical operators 'and'/'or' and comparison
+** operators).
+** Expression to produce final result will be encoded in 'e1'.
+*/
 /** C ref: lcode.c:1407 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {*} op @param {CInt} v2 @param {CInt} flip @param {CInt} line @param {*} mmop @param {*} event */
 function* finishbinexpval(fs, e1, e2, op, v2, flip, line, mmop, event) {
     let v1 = (yield* luaK_exp2anyreg(fs, e1));
     let pc = (yield* luaK_codeABCk(fs, op, 0, v1, v2, 0));
     freeexps(fs, e1, e2);
     cptr.stI32o(e1, $expdesc_u, pc);
-    cptr.stI32(e1, NHC.VRELOC);
+    cptr.stI32(e1, NHC.VRELOC);  /* all those operations are relocatable */
     (yield* luaK_fixline(fs, line));
-    (yield* luaK_codeABCk(fs, mmop, v1, v2, event, flip));
+    (yield* luaK_codeABCk(fs, mmop, v1, v2, event, flip));  /* to call metamethod */
     (yield* luaK_fixline(fs, line));
 }
 
+/*
+** Emit code for binary expressions that "produce values" over
+** two registers.
+*/
 /** C ref: lcode.c:1425 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codebinexpval(fs, opr, e1, e2, line) {
     let op = binopr2op(opr, NHC.OPR_ADD, NHC.OP_ADD);
-    let v2 = (yield* luaK_exp2anyreg(fs, e2));
+    let v2 = (yield* luaK_exp2anyreg(fs, e2));  /* make sure 'e2' is in a register */
+    /* 'e1' must be already in a register or it is a constant */
     (void 0);
     (void 0);
     (yield* finishbinexpval(fs, e1, e2, op, v2, 0, line, NHC.OP_MMBIN, binopr2TM(opr)));
 }
 
+/*
+** Code binary operators with immediate operands.
+*/
 /** C ref: lcode.c:1440 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line @param {*} event */
 function* codebini(fs, op, e1, e2, flip, line, event) {
-    let v2 = ((((Number(BigInt.asIntN(32, ((cptr.ldI64o(e2, $expdesc_u))))))) + 127) | 0);
+    let v2 = ((((Number(BigInt.asIntN(32, ((cptr.ldI64o(e2, $expdesc_u))))))) + 127) | 0);  /* immediate operand */
     (void 0);
     (yield* finishbinexpval(fs, e1, e2, op, v2, flip, line, NHC.OP_MMBINI, event));
 }
 
+/*
+** Code binary operators with K operand.
+*/
 /** C ref: lcode.c:1452 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line */
 function* codebinK(fs, opr, e1, e2, flip, line) {
     let event = binopr2TM(opr);
-    let v2 = cptr.ldI32o(e2, $expdesc_u);
+    let v2 = cptr.ldI32o(e2, $expdesc_u);  /* K index */
     let op = binopr2op(opr, NHC.OPR_ADD, NHC.OP_ADDK);
     (yield* finishbinexpval(fs, e1, e2, op, v2, flip, line, NHC.OP_MMBINK, event));
 }
 
+/* Try to code a binary operator negating its second operand.
+** For the metamethod, 2nd operand must keep its original value.
+*/
 /** C ref: lcode.c:1464 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {*} op @param {CInt} line @param {*} event @returns {CInt} */
 function* finishbinexpneg(fs, e1, e2, op, line, event) {
     if (!isKint(e2))
-        return 0;
+        return 0;  /* not an integer constant */
     else {
         let i2 = cptr.ldI64o(e2, $expdesc_u);
         if (!(fitsC(i2) && fitsC(-i2)))
-            return 0;
+            return 0;  /* not in the proper range */
         else {
             let v2 = (Number(BigInt.asIntN(32, ((i2)))));
             (yield* finishbinexpval(fs, e1, e2, op, (((-v2) + 127) | 0), 0, line, NHC.OP_MMBINI, event));
+            /* correct metamethod argument */
             (cptr.stI32o(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0, (((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0, 4)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) | (((((((((v2) + 127) | 0)) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>> 0)) >>> 0), 4));
-            return 1;
+            return 1;  /* successfully coded */
         }
     }
 }
 
 /** C ref: lcode.c:1483 — @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function swapexps(e1, e2) {
-    let temp = cptr.alloc(24); cptr.memcpy(temp, e1, $sizeof_expdesc);
+    let temp = cptr.alloc(24); cptr.memcpy(temp, e1, $sizeof_expdesc);  /* swap 'e1' and 'e2' */
     cptr.memcpy(e1, e2, 24);
     cptr.memcpy(e2, temp, 24);
 }
 
+/*
+** Code binary operators with no constant operand.
+*/
 /** C ref: lcode.c:1491 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line */
 function* codebinNoK(fs, opr, e1, e2, flip, line) {
     if (flip)
-        swapexps(e1, e2);
-    (yield* codebinexpval(fs, opr, e1, e2, line));
+        swapexps(e1, e2);  /* back to original order */
+    (yield* codebinexpval(fs, opr, e1, e2, line));  /* use standard operators */
 }
 
+/*
+** Code arithmetic operators ('+', '-', ...). If second operand is a
+** constant in the proper range, use variant opcodes with K operands.
+*/
 /** C ref: lcode.c:1503 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line */
 function* codearith(fs, opr, e1, e2, flip, line) {
     if (tonumeral(e2, null) && (yield* luaK_exp2K(fs, e2)))
@@ -1274,11 +1643,16 @@ function* codearith(fs, opr, e1, e2, flip, line) {
         (yield* codebinNoK(fs, opr, e1, e2, flip, line));
 }
 
+/*
+** Code commutative operators ('+', '*'). If first operand is a
+** numeric constant, change order of operands to try to use an
+** immediate or K operator.
+*/
 /** C ref: lcode.c:1517 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codecommutative(fs, op, e1, e2, line) {
     let flip = 0;
     if (tonumeral(e1, null)) {
-        swapexps(e1, e2);
+        swapexps(e1, e2);  /* change order */
         flip = 1;
     }
     if (op == NHC.OPR_ADD && isSCint(e2))
@@ -1287,11 +1661,15 @@ function* codecommutative(fs, op, e1, e2, line) {
         (yield* codearith(fs, op, e1, e2, flip, line));
 }
 
+/*
+** Code bitwise operations; they are all commutative, so the function
+** tries to put an integer constant as the 2nd operand (a K operand).
+*/
 /** C ref: lcode.c:1535 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codebitwise(fs, opr, e1, e2, line) {
     let flip = 0;
     if (cptr.ldI32(e1) == NHC.VKINT) {
-        swapexps(e1, e2);
+        swapexps(e1, e2);  /* 'e2' will be the constant operand */
         flip = 1;
     }
     if (cptr.ldI32(e2) == NHC.VKINT && (yield* luaK_exp2K(fs, e2)))
@@ -1300,6 +1678,10 @@ function* codebitwise(fs, opr, e1, e2, line) {
         (yield* codebinNoK(fs, opr, e1, e2, flip, line));
 }
 
+/*
+** Emit code for order comparisons. When using an immediate operand,
+** 'isfloat' tells whether the original value was a float.
+*/
 /** C ref: lcode.c:1553 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function* codeorder(fs, opr, e1, e2) {
     let r1;
@@ -1308,10 +1690,12 @@ function* codeorder(fs, opr, e1, e2) {
     let isfloat = cptr.box(0);
     let op;
     if (isSCnumber(e2, im, isfloat)) {
+        /* use immediate operand */
         r1 = (yield* luaK_exp2anyreg(fs, e1));
         r2 = im.v;
         op = binopr2op(opr, NHC.OPR_LT, NHC.OP_LTI);
     } else if (isSCnumber(e1, im, isfloat)) {
+        /* transform (A < B) to (B > A) and (A <= B) to (B >= A) */
         r1 = (yield* luaK_exp2anyreg(fs, e2));
         r2 = im.v;
         op = binopr2op(opr, NHC.OPR_LT, NHC.OP_GTI);
@@ -1325,26 +1709,30 @@ function* codeorder(fs, opr, e1, e2) {
     cptr.stI32(e1, NHC.VJMP);
 }
 
+/*
+** Emit code for equality comparisons ('==', '~=').
+** 'e1' was already put as RK by 'luaK_infix'.
+*/
 /** C ref: lcode.c:1585 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function* codeeq(fs, opr, e1, e2) {
     let r1;
     let r2;
     let im = cptr.box(0);
-    let isfloat = cptr.box(0);
+    let isfloat = cptr.box(0);  /* not needed here, but kept for symmetry */
     let op;
     if (cptr.ldI32(e1) != NHC.VNONRELOC) {
         (void 0);
         swapexps(e1, e2);
     }
-    r1 = (yield* luaK_exp2anyreg(fs, e1));
+    r1 = (yield* luaK_exp2anyreg(fs, e1));  /* 1st expression must be in register */
     if (isSCnumber(e2, im, isfloat)) {
         op = NHC.OP_EQI;
-        r2 = im.v;
+        r2 = im.v;  /* immediate operand */
     } else if ((yield* exp2RK(fs, e2))) {
         op = NHC.OP_EQK;
-        r2 = cptr.ldI32o(e2, $expdesc_u);
+        r2 = cptr.ldI32o(e2, $expdesc_u);  /* constant index */
     } else {
-        op = NHC.OP_EQ;
+        op = NHC.OP_EQ;  /* will compare two registers */
         r2 = (yield* luaK_exp2anyreg(fs, e2));
     }
     freeexps(fs, e1, e2);
@@ -1352,6 +1740,9 @@ function* codeeq(fs, opr, e1, e2) {
     cptr.stI32(e1, NHC.VJMP);
 }
 
+/*
+** Apply prefix operation 'op' to expression 'e'.
+*/
 let __static_luaK_prefix_ef = cptr.alloc($sizeof_expdesc); /** C ref: lcode.c:1617 — struct expdesc (function-static) */
 cptr.stI32(__static_luaK_prefix_ef, NHC.VKINT);
 cptr.stI64o(__static_luaK_prefix_ef, $expdesc_u, 0n);
@@ -1377,23 +1768,27 @@ export function* luaK_prefix(fs, opr, e, line) {
     }
 }
 
+/*
+** Process 1st operand 'v' of binary operation 'op' before reading
+** 2nd operand.
+*/
 /** C ref: lcode.c:1637 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} v */
 export function* luaK_infix(fs, op, v) {
     (yield* luaK_dischargevars(fs, v));
     switch (op) {
         case NHC.OPR_AND:
         {
-            (yield* luaK_goiftrue(fs, v));
+            (yield* luaK_goiftrue(fs, v));  /* go ahead only if 'v' is true */
             break;
         }
         case NHC.OPR_OR:
         {
-            (yield* luaK_goiffalse(fs, v));
+            (yield* luaK_goiffalse(fs, v));  /* go ahead only if 'v' is false */
             break;
         }
         case NHC.OPR_CONCAT:
         {
-            (yield* luaK_exp2nextreg(fs, v));
+            (yield* luaK_exp2nextreg(fs, v));  /* operand must be on the stack */
             break;
         }
         case NHC.OPR_ADD:
@@ -1411,6 +1806,8 @@ export function* luaK_infix(fs, op, v) {
         {
             if (!tonumeral(v, null))
                 (yield* luaK_exp2anyreg(fs, v));
+            /* else keep numeral, which may be folded or used as an immediate
+               operand */
             break;
         }
         case NHC.OPR_EQ:
@@ -1418,6 +1815,7 @@ export function* luaK_infix(fs, op, v) {
         {
             if (!tonumeral(v, null))
                 (yield* exp2RK(fs, v));
+            /* else keep numeral, which may be an immediate operand */
             break;
         }
         case NHC.OPR_LT:
@@ -1429,6 +1827,7 @@ export function* luaK_infix(fs, op, v) {
             let dummy2 = cptr.box(0);
             if (!isSCnumber(v, dummy, dummy2))
                 (yield* luaK_exp2anyreg(fs, v));
+            /* else keep numeral, which may be an immediate operand */
             break;
         }
         default:
@@ -1436,38 +1835,46 @@ export function* luaK_infix(fs, op, v) {
     }
 }
 
+/*
+** Create code for '(e1 .. e2)'.
+** For '(e1 .. e2.1 .. e2.2)' (which is '(e1 .. (e2.1 .. e2.2))',
+** because concatenation is right associative), merge both CONCATs.
+*/
 /** C ref: lcode.c:1686 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codeconcat(fs, e1, e2, line) {
     let ie2 = previousinstruction(fs);
     if (((((((cptr.ldI32(ie2)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_CONCAT) {
-        let n = ((((((((cptr.ldI32(ie2)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+        let n = ((((((((cptr.ldI32(ie2)) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* # of elements concatenated in 'e2' */
         (void 0);
         freeexp(fs, e2);
-        (cptr.stI32(ie2, (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((cptr.ldI32o(e1, $expdesc_u)) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
-        (cptr.stI32(ie2, (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) | (((((((n + 1) | 0) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>> 0)) >>> 0)));
+        (cptr.stI32(ie2, (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 7) >>> 0))) >>> 0) | ((((((cptr.ldI32o(e1, $expdesc_u)) >>> 0) << 7) >>> 0) & (((~(((~0) << 8) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));  /* correct first element ('e1') */
+        (cptr.stI32(ie2, (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) | (((((((n + 1) | 0) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>> 0)) >>> 0)));  /* will concatenate one more element */
     } else {
-        (yield* luaK_codeABCk(fs, NHC.OP_CONCAT, cptr.ldI32o(e1, $expdesc_u), 2, 0, 0));
+        (yield* luaK_codeABCk(fs, NHC.OP_CONCAT, cptr.ldI32o(e1, $expdesc_u), 2, 0, 0));  /* new concat opcode */
         freeexp(fs, e2);
         (yield* luaK_fixline(fs, line));
     }
 }
 
+/*
+** Finalize code for binary operation, after reading 2nd operand.
+*/
 /** C ref: lcode.c:1706 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 export function* luaK_posfix(fs, opr, e1, e2, line) {
     (yield* luaK_dischargevars(fs, e2));
     if (((opr) <= NHC.OPR_SHR) && (yield* constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2)))
-        return;
+        return;  /* done by folding */
     switch (opr) {
         case NHC.OPR_AND:
         {
-            (void 0);
+            (void 0);  /* list closed by 'luaK_infix' */
             (yield* luaK_concat(fs, cptr.add(e2, $expdesc_f), cptr.ldI32o(e1, $expdesc_f)));
             cptr.memcpy(e1, e2, 24);
             break;
         }
         case NHC.OPR_OR:
         {
-            (void 0);
+            (void 0);  /* list closed by 'luaK_infix' */
             (yield* luaK_concat(fs, cptr.add(e2, $expdesc_t), cptr.ldI32o(e1, $expdesc_t)));
             cptr.memcpy(e1, e2, 24);
             break;
@@ -1487,8 +1894,9 @@ export function* luaK_posfix(fs, opr, e1, e2, line) {
         case NHC.OPR_SUB:
         {
             if ((yield* finishbinexpneg(fs, e1, e2, NHC.OP_ADDI, line, NHC.TM_SUB)))
-                break;
-        }
+                break;  /* coded as (r1 + -I) */
+            /* ELSE */
+        }  /* FALLTHROUGH */
         case NHC.OPR_DIV:
         case NHC.OPR_IDIV:
         case NHC.OPR_MOD:
@@ -1508,7 +1916,7 @@ export function* luaK_posfix(fs, opr, e1, e2, line) {
         {
             if (isSCint(e1)) {
                 swapexps(e1, e2);
-                (yield* codebini(fs, NHC.OP_SHLI, e1, e2, 1, line, NHC.TM_SHL));
+                (yield* codebini(fs, NHC.OP_SHLI, e1, e2, 1, line, NHC.TM_SHL));  /* I << r2 */
             } else if ((yield* finishbinexpneg(fs, e1, e2, NHC.OP_SHRI, line, NHC.TM_SHL))) {
                 ;
             } else
@@ -1518,7 +1926,7 @@ export function* luaK_posfix(fs, opr, e1, e2, line) {
         case NHC.OPR_SHR:
         {
             if (isSCint(e2))
-                (yield* codebini(fs, NHC.OP_SHRI, e1, e2, 0, line, NHC.TM_SHR));
+                (yield* codebini(fs, NHC.OP_SHRI, e1, e2, 0, line, NHC.TM_SHR));  /* r1 >> I */
             else
                 (yield* codebinexpval(fs, opr, e1, e2, line));
             break;
@@ -1532,9 +1940,10 @@ export function* luaK_posfix(fs, opr, e1, e2, line) {
         case NHC.OPR_GT:
         case NHC.OPR_GE:
         {
+            /* '(a > b)' <=> '(b < a)';  '(a >= b)' <=> '(b <= a)' */
             swapexps(e1, e2);
             opr = (((((opr - NHC.OPR_GT) >>> 0) + NHC.OPR_LT) >>> 0));
-        }
+        }  /* FALLTHROUGH */
         case NHC.OPR_LT:
         case NHC.OPR_LE:
         {
@@ -1546,6 +1955,10 @@ export function* luaK_posfix(fs, opr, e1, e2, line) {
     }
 }
 
+/*
+** Change line information associated with current position, by removing
+** previous info and adding it again with new line.
+*/
 /** C ref: lcode.c:1787 — @param {CPtr<FuncState>} fs @param {CInt} line */
 export function* luaK_fixline(fs, line) {
     removelastlineinfo(fs);
@@ -1555,14 +1968,21 @@ export function* luaK_fixline(fs, line) {
 /** C ref: lcode.c:1793 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} ra @param {CInt} asize @param {CInt} hsize */
 export function luaK_settablesize(fs, pc, ra, asize, hsize) {
     let inst = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
-    let rb = (hsize != 0) ? (luaO_ceillog2(hsize >>> 0) + 1) | 0 : 0;
-    let extra = (asize / 256) | 0;
-    let rc = asize % 256;
-    let k = (extra > 0);
+    let rb = (hsize != 0) ? (luaO_ceillog2(hsize >>> 0) + 1) | 0 : 0;  /* hash size */
+    let extra = (asize / 256) | 0;  /* higher bits of array size */
+    let rc = asize % 256;  /* lower bits of array size */
+    let k = (extra > 0);  /* true iff needs extra argument */
     cptr.stI32(inst, ((((((((19) << 0) >>> 0) | ((((ra) >>> 0) << 7) >>> 0)) >>> 0 | ((((rb) >>> 0) << 16) >>> 0)) >>> 0 | ((((rc) >>> 0) << 24) >>> 0)) >>> 0 | ((((k) >>> 0) << 15) >>> 0)) >>> 0));
     cptr.stI32((cptr.add(inst, 1, 4)), (((((82) << 0) >>> 0) | ((((extra) >>> 0) << 7) >>> 0)) >>> 0));
 }
 
+/*
+** Emit a SETLIST instruction.
+** 'base' is register that keeps table;
+** 'nelems' is #table plus those to be stored now;
+** 'tostore' is number of values (in registers 'base + 1',...) to add to
+** table (or LUA_MULTRET to add up to stack top).
+*/
 /** C ref: lcode.c:1811 — @param {CPtr<FuncState>} fs @param {CInt} base @param {CInt} nelems @param {CInt} tostore */
 export function* luaK_setlist(fs, base, nelems, tostore) {
     (void 0);
@@ -1576,9 +1996,12 @@ export function* luaK_setlist(fs, base, nelems, tostore) {
         (yield* luaK_codeABCk(fs, NHC.OP_SETLIST, base, tostore, nelems, 1));
         (yield* codeextraarg(fs, extra));
     }
-    cptr.st1o(fs, $FuncState_freereg, uchar(((base + 1) | 0)));
+    cptr.st1o(fs, $FuncState_freereg, uchar(((base + 1) | 0)));  /* free registers with list values */
 }
 
+/*
+** return the final target of a jump (skipping jumps to jumps)
+*/
 /** C ref: lcode.c:1830 — @param {CPtr<Instruction>} code @param {CInt} i @returns {CInt} */
 function finaltarget(code, i) {
     let count;
@@ -1592,6 +2015,10 @@ function finaltarget(code, i) {
     return i;
 }
 
+/*
+** Do a final pass over the code of a function, doing small peephole
+** optimizations and adjustments.
+*/
 /** C ref: lcode.c:1847 — @param {CPtr<FuncState>} fs */
 export function* luaK_finish(fs) {
     let i;
@@ -1604,16 +2031,17 @@ export function* luaK_finish(fs) {
             case NHC.OP_RETURN1:
             {
                 if (!(cptr.ld1uo(fs, $FuncState_needclose) || cptr.ld1uo(p, $Proto_is_vararg)))
-                    break;
+                    break;  /* no extra work */
+                /* else use OP_RETURN to do the extra work */
                 (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | (((((70) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0)));
-            }
+            }  /* FALLTHROUGH */
             case NHC.OP_RETURN:
             case NHC.OP_TAILCALL:
             {
                 if (cptr.ld1uo(fs, $FuncState_needclose))
-                    (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>> 0) | ((32768 & (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));
+                    (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>> 0) | ((32768 & (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));  /* signal that it needs to close */
                 if (cptr.ld1uo(p, $Proto_is_vararg))
-                    (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | (((((((cptr.ld1uo(p, $Proto_numparams) + 1) | 0) >>> 0) << 24) >>> 0) & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));
+                    (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | (((((((cptr.ld1uo(p, $Proto_numparams) + 1) | 0) >>> 0) << 24) >>> 0) & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));  /* signal that it is vararg */
                 break;
             }
             case NHC.OP_JMP:

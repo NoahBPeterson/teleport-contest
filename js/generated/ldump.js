@@ -56,10 +56,10 @@ function dumpSize(D, x) {
     let buff = new Uint8Array(10);
     let n = 0;
     do {
-        cptr.st1o(cptr.decay(buff), BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))), Number(BigInt.asUintN(8, (x & 127n))), 1);
+        cptr.st1o(cptr.decay(buff), BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))), Number(BigInt.asUintN(8, (x & 127n))), 1);  /* fill buffer in reverse order */
         x >>= 7n;
     } while (x != 0n);
-    cptr.st1o(cptr.decay(buff), 9n, cptr.ld1uo(cptr.decay(buff), 9n, 1) | 128, 1);
+    cptr.st1o(cptr.decay(buff), 9n, cptr.ld1uo(cptr.decay(buff), 9n, 1) | 128, 1);  /* mark last byte */
     dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), 10n), -(n)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n));
 }
 
@@ -174,7 +174,7 @@ function dumpDebug(D, f) {
 /** C ref: ldump.c:183 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f @param {CPtr<TString>} psource */
 function dumpFunction(D, f, psource) {
     if (cptr.ldI32o(D, $DumpState_strip) || cptr.eq(cptr.ldPtro(f, $Proto_source), psource))
-        dumpString(D, null);
+        dumpString(D, null);  /* no debug info or same source as its parent */
     else
         dumpString(D, cptr.ldPtro(f, $Proto_source));
     dumpInt(D, cptr.ldI32o(f, $Proto_linedefined));
@@ -202,6 +202,9 @@ function dumpHeader(D) {
     dumpNumber(D, (((370.5))));
 }
 
+/*
+** dump Lua function as precompiled chunk
+*/
 /** C ref: ldump.c:217 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} f @param {CPtr} w @param {CPtr<void>} data @param {CInt} strip @returns {CInt} */
 export function luaU_dump(L, f, w, data, strip) {
     let D = cptr.alloc(32);

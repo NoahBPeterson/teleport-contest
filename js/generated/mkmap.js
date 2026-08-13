@@ -54,6 +54,7 @@ const __s_litstate_rnd = cptr.lit("litstate_rnd");
 function init_map(bg_typ) {
     let x;
     let y;
+
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.NO_ROOM);
@@ -68,6 +69,7 @@ function init_fill(bg_typ, fg_typ) {
     let y;
     let limit;
     let count;
+
     limit = 624n;
     count = 0n;
     while (count < limit) {
@@ -112,11 +114,13 @@ function pass_one(bg_typ, fg_typ) {
     let y;
     let count;
     let dr;
+
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
                 if (get_map(i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)), i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)), bg_typ) == fg_typ)
                     count++;
+
             switch (count) {
                 case 0:
                 case 1:
@@ -141,6 +145,7 @@ function pass_two(bg_typ, fg_typ) {
     let y;
     let count;
     let dr;
+
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
@@ -151,6 +156,7 @@ function pass_two(bg_typ, fg_typ) {
             else
                 cptr.st1((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x))), get_map(x, y, bg_typ));
         }
+
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++)
             cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, cptr.ld1s((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x)))));
@@ -162,6 +168,7 @@ function pass_three(bg_typ, fg_typ) {
     let y;
     let count;
     let dr;
+
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
@@ -172,27 +179,40 @@ function pass_three(bg_typ, fg_typ) {
             else
                 cptr.st1((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x))), get_map(x, y, bg_typ));
         }
+
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++)
             cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, cptr.ld1s((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x)))));
 }
 
+/*
+ * use a flooding algorithm to find all locations that should
+ * have the same rm number as the current location.
+ * if anyroom is TRUE, use IS_ROOM to check room membership instead of
+ * exactly matching levl[sx][sy].typ and walls are included as well.
+ */
 /** C ref: mkmap.c:153 — @param {CInt} sx @param {CInt} sy @param {CInt} rmno @param {CInt} lit @param {CInt} anyroom */
 export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     let i;
     let nx;
     let fg_typ = cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+
+    /* back up to find leftmost uninitialized location */
     while (sx > 0 && (anyroom ? ((cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) : cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) && ((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
         sx--;
-    sx++;
+    sx++;  /* compensate for extra decrement */
+
+    /* assume sx,sy is valid */
     if (sx < cptr.ldI16o(gm, $instance_globals_m_min_rx))
         cptr.stI16o(gm, $instance_globals_m_min_rx, sx);
     if (sy < cptr.ldI16o(gm, $instance_globals_m_min_ry))
         cptr.stI16o(gm, $instance_globals_m_min_ry, sy);
+
     for (i = sx; i <= 78 && cptr.ld1so3(svl, i, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ; i++) {
         cptr.stI32o3(svl, i, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, rmno >>> 0);
         cptr.stI32o3(svl, i, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, lit);
         if (anyroom) {
+            /* add walls to room as well */
             let ii;
             let jj;
             for (ii = i16((i == sx ? (i - 1) | 0 : i)); ii <= ((i + 1) | 0); ii++)
@@ -201,6 +221,7 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
                         cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge, 1);
                         if (lit)
                             cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, lit);
+
                         if (((cptr.ldI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == NHM.NO_ROOM)
                             cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, rmno >>> 0);
                         else if (((cptr.ldI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
@@ -210,6 +231,7 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
         (cptr.stI32o(gn, $instance_globals_n_n_loc_filled, cptr.ldI32o(gn, $instance_globals_n_n_loc_filled) + 1)) - (1);
     }
     nx = i;
+
     if (isok(sx, i16(((sy - 1) | 0)))) {
         for (i = sx; i < nx; i++)
             if (cptr.ld1so3(svl, i, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
@@ -242,16 +264,19 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
                 }
             }
     }
+
     if (nx > cptr.ldI16o(gm, $instance_globals_m_max_rx))
-        cptr.stI16o(gm, $instance_globals_m_max_rx, i16(((nx - 1) | 0)));
+        cptr.stI16o(gm, $instance_globals_m_max_rx, i16(((nx - 1) | 0)));  /* nx is just past valid region */
     if (sy > cptr.ldI16o(gm, $instance_globals_m_max_ry))
         cptr.stI16o(gm, $instance_globals_m_max_ry, sy);
 }
 
+/* join_map uses temporary rooms; clean up after it */
 /** C ref: mkmap.c:246 */
 function join_map_cleanup() {
     let x;
     let y;
+
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.NO_ROOM);
@@ -263,6 +288,7 @@ function join_map_cleanup() {
 function join_map(bg_typ, fg_typ) {
     let croom;
     let croom2;
+
     let x;
     let y;
     let sx;
@@ -270,6 +296,9 @@ function join_map(bg_typ, fg_typ) {
     let sm = cptr.alloc(4);
     let em = cptr.alloc(4);
     __lbl_joinm: {
+
+        /* first, use flood filling to find all of the regions that need joining
+         */
         for (x = 2; x <= 78; x++)
             for (y = 1; y < 20; y++) {
                 if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ && ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == NHM.NO_ROOM) {
@@ -283,6 +312,10 @@ function join_map(bg_typ, fg_typ) {
                         if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= 80)
                             break __lbl_joinm;
                     } else {
+                        /*
+                         * it's a tiny hole; erase it from the map to avoid
+                         * having the player end up here with no way out.
+                         */
                         for (sx = cptr.ldI16o(gm, $instance_globals_m_min_rx); sx <= cptr.ldI16o(gm, $instance_globals_m_max_rx); sx++)
                             for (sy = cptr.ldI16o(gm, $instance_globals_m_min_ry); sy <= cptr.ldI16o(gm, $instance_globals_m_max_ry); sy++)
                                 if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0)) {
@@ -293,19 +326,32 @@ function join_map(bg_typ, fg_typ) {
                 }
             }
     }
+    /*
+     * Ok, now we can actually join the regions with fg_typ's.
+     * The rooms are already sorted due to the previous loop,
+     * so don't call sort_rooms(), which can screw up the roomno's
+     * validity in the levl structure.
+     */
     for (croom = cptr.add(svr, 0, $sizeof_mkroom), croom2 = cptr.add(croom, 1, 224); cptr.cmp(croom2, cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom)) < 0; ) {
+        /* pick random starting and end locations for "corridor" */
         if (!somexy(croom, sm) || !somexy(croom2, em)) {
+            /* ack! -- the level is going to be busted */
+            /* arbitrarily pick centers of both rooms and hope for the best */
             impossible(__s_no_start_end_room_loc_in_join_map);
             cptr.stI16(sm, i16(((cptr.ldI16(croom) + ((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) / 2) | 0)) | 0)));
             cptr.stI16o(sm, $nhcoord_y, i16(((cptr.ldI16o(croom, $mkroom_ly) + ((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) / 2) | 0)) | 0)));
             cptr.stI16(em, i16(((cptr.ldI16(croom2) + ((((cptr.ldI16o(croom2, $mkroom_hx) - cptr.ldI16(croom2)) | 0) / 2) | 0)) | 0)));
             cptr.stI16o(em, $nhcoord_y, i16(((cptr.ldI16o(croom2, $mkroom_ly) + ((((cptr.ldI16o(croom2, $mkroom_hy) - cptr.ldI16o(croom2, $mkroom_ly)) | 0) / 2) | 0)) | 0)));
         }
+
         void dig_corridor(sm, em, null, 0, fg_typ, bg_typ);
+
+        /* choose next region to join */
+        /* only increment croom if croom and croom2 are non-overlapping */
         if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) || ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) || cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) && rn2_at(__s_mkmap_c, 322, __s_join_map, 3))) {
             croom = croom2;
         }
-        croom2 = cptr.add(croom2, 1, 224);
+        croom2 = cptr.add(croom2, 1, 224);  /* always increment the next room */
     }
     join_map_cleanup();
 }
@@ -314,8 +360,10 @@ function join_map(bg_typ, fg_typ) {
 function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     let x;
     let y;
+
     if (walled)
         wallify_map(1, 0, 79, 20);
+
     if (lit) {
         for (x = 1; x < NHM.COLNO; x++)
             for (y = 0; y < NHM.ROWNO; y++)
@@ -324,6 +372,8 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
         for (x = 0; x < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); x++)
             cptr.st1o2(svr, x, $sizeof_mkroom, $mkroom_rlit, 1);
     }
+    /* light lava even if everything's otherwise unlit;
+       ice might be frozen pool rather than frozen moat */
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
             if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL)
@@ -333,23 +383,49 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
         }
 }
 
+/*
+ * TODO: If we really want to remove rooms after a map is plopped down
+ * in a special level, this needs to be rewritten - the maps may have
+ * holes in them ("x" mapchar), leaving parts of rooms still on the map.
+ *
+ * When level processed by join_map is overlaid by a MAP, some rooms may no
+ * longer be valid.  All rooms in the region lx <= x < hx, ly <= y < hy are
+ * removed.  Rooms partially in the region are truncated.  This function
+ * must be called before the REGIONs or ROOMs of the map are processed, or
+ * those rooms will be removed as well.  Assumes roomno fields in the
+ * region are already cleared, and roomno and irregular fields outside the
+ * region are all set.
+ */
 /** C ref: mkmap.c:379 — @param {CInt} lx @param {CInt} ly @param {CInt} hx @param {CInt} hy */
 export function remove_rooms(lx, ly, hx, hy) {
     let i;
     let croom;
+
     for (i = (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0; i >= 0; --i) {
         croom = cptr.add(svr, i, $sizeof_mkroom);
         if (cptr.ldI16o(croom, $mkroom_hx) < lx || cptr.ldI16(croom) >= hx || cptr.ldI16o(croom, $mkroom_hy) < ly || cptr.ldI16o(croom, $mkroom_ly) >= hy)
-            continue;
+            continue;  /* no overlap */
+
         if (cptr.ldI16(croom) < lx || cptr.ldI16o(croom, $mkroom_hx) >= hx || cptr.ldI16o(croom, $mkroom_ly) < ly || cptr.ldI16o(croom, $mkroom_hy) >= hy) {
+            /* TODO: ensure remaining parts of room are still joined */
+
             if (!cptr.ld1so(croom, $mkroom_irregular))
                 impossible(__s_regular_room_in_joined_map);
         } else {
+            /* total overlap, remove the room */
             remove_room(i >>> 0);
         }
     }
 }
 
+/*
+ * Remove roomno from the rooms array, decrementing nroom.
+ * The last room is swapped with the being-removed room and locations
+ * within it have their roomno field updated.  Other rooms are unaffected.
+ * Assumes level structure contents corresponding to roomno have already
+ * been reset.
+ * Currently handles only the removal of rooms that have no subrooms.
+ */
 /** C ref: mkmap.c:412 — @param {CUInt} roomno */
 function remove_room(roomno) {
     let croom = cptr.add(svr, roomno, $sizeof_mkroom);
@@ -357,8 +433,14 @@ function remove_room(roomno) {
     let x;
     let y;
     let oroomno;
+
     if (!cptr.eq(croom, maxroom)) {
+        /* since the order in the array only matters for making corridors,
+         * copy the last room over the one being removed on the assumption
+         * that corridors have already been dug. */
         cptr.memcpy(croom, maxroom, 224);
+
+        /* since maxroom moved, update affected level roomno values */
         oroomno = ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0) >>> 0;
         roomno = (roomno + NHM.ROOMOFFSET) | 0;
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); ++x)
@@ -367,7 +449,8 @@ function remove_room(roomno) {
                     cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, roomno);
             }
     }
-    cptr.stI16o(maxroom, $mkroom_hx, -1);
+
+    cptr.stI16o(maxroom, $mkroom_hx, -1);  /* just like add_room */
 }
 
 /** C ref: mkmap.c:443 — @param {CInt} litstate @returns {CInt} */
@@ -386,20 +469,29 @@ export function mkmap(init_lev) {
     let lit = cptr.ldI16o(init_lev, $lev_init_lit);
     let walled = cptr.ldI16o(init_lev, $lev_init_walled);
     let i;
+
     lit = i16(litstate_rnd(lit));
+
     cptr.stPtro(gn, $instance_globals_n_new_locations, alloc(1580));
+
     init_map(bg_typ);
     init_fill(bg_typ, fg_typ);
+
     for (i = 0; i < 1; i++)
         pass_one(bg_typ, fg_typ);
+
     for (i = 0; i < 1; i++)
         pass_two(bg_typ, fg_typ);
+
     if (smooth)
         for (i = 0; i < 2; i++)
             pass_three(bg_typ, fg_typ);
+
     if (join)
         join_map(bg_typ, fg_typ);
+
     finish_map(fg_typ, bg_typ, schar(lit), schar(walled), cptr.ld1so(init_lev, $lev_init_icedpools));
+    /* a walled, joined level is cavernous, not mazelike -dlc */
     if (walled && join) {
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev, 0);
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev, 1);

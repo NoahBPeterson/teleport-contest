@@ -203,21 +203,28 @@ const __s_d_tumbler_s_click = cptr.lit("%d tumbler%s click.");
 const __s_d_gear_s_turn = cptr.lit("%d gear%s turn.");
 const __s_pct_s = cptr.lit("%s");
 
+/* wake up monster, possibly scare it */
 /** C ref: music.c:45 — @param {CPtr<struct monst>} mtmp @param {CInt} scary */
 function* awaken_scare(mtmp, scary) {
     cptr.stI32o(mtmp, $monst_msleeping, 0);
     cptr.stI32o(mtmp, $monst_mcanmove, 1);
     cptr.stI32o(mtmp, $monst_mfrozen, 0);
+    /* may scare some monsters -- waiting monsters excluded */
     if (!((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
     else if (scary && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) && !(yield* resist(mtmp, NHC.TOOL_CLASS, 0, NHM.NOTELL)) && (yield* onscary(0, 0, mtmp)))
         (yield* monflee(mtmp, 0, 0, 1));
 }
 
+/*
+ * Wake every monster in range...
+ */
+
 /** C ref: music.c:67 — @param {CInt} distance */
 function* awaken_monsters(distance) {
     let mtmp;
     let distm;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -226,24 +233,34 @@ function* awaken_monsters(distance) {
     }
 }
 
+/*
+ * Make monsters fall asleep.  Note that they may resist the spell.
+ */
+
 /** C ref: music.c:85 — @param {CInt} distance */
 function* put_monsters_to_sleep(distance) {
     let mtmp;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < distance && (yield* sleep_monst(mtmp, d_at(__s_music_c, 93, __s_put_monsters_to_sleep, 10, 10), NHC.TOOL_CLASS))) {
-            cptr.stI32o(mtmp, $monst_msleeping, 1);
+            cptr.stI32o(mtmp, $monst_msleeping, 1);  /* 10d10 turns + wake_nearby to rouse */
             (yield* slept_monst(mtmp));
         }
     }
 }
+
+/*
+ * Charm snakes in range.  Note that the snakes are NOT tamed.
+ */
 
 /** C ref: music.c:105 — @param {CInt} distance */
 function* charm_snakes(distance) {
     let mtmp;
     let could_see_mon;
     let was_peaceful;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -265,9 +282,14 @@ function* charm_snakes(distance) {
     }
 }
 
+/*
+ * Calm nymphs in range.
+ */
+
 /** C ref: music.c:139 — @param {CInt} distance */
 function* calm_nymphs(distance) {
     let mtmp;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -282,12 +304,16 @@ function* calm_nymphs(distance) {
     }
 }
 
+/* Awake soldiers anywhere the level (and any nearby monster). */
 /** C ref: music.c:162 — @param {CPtr<struct monst>} bugler */
 export function* awaken_soldiers(bugler) {
     let mtmp;
     let distance;
     let distm;
+
+    /* distance of affected non-soldier monsters to bugler */
     distance = Math.imul(((cptr.eq(bugler, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI32o(u, $you_ulevel) : cptr.ld1so(cptr.ldPtro(bugler, $monst_data), $permonst_mlevel)), 30);
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -300,41 +326,51 @@ export function* awaken_soldiers(bugler) {
             if (canseemon(mtmp))
                 (yield* pline(__s_s_is_now_ready_for_battle, (yield* Monnam(mtmp))));
             else if (!Deaf())
-                (yield* Norep(__s_s_the_rattle_of_battle_gear_being, __s_you_hear));
+                (yield* Norep(__s_s_the_rattle_of_battle_gear_being, __s_you_hear));  /* Deaf-aware */
         } else if ((distm = ((cptr.eq(bugler, cptr.add(gy, $instance_globals_y_youmonst))) ? dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) : dist2(cptr.ldI16o(bugler, $monst_mx), cptr.ldI16o(bugler, $monst_my), cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))) < distance) {
             (yield* awaken_scare(mtmp, schar((distm < ((distance / 3) | 0)))));
         }
     }
 }
 
+/* Charm monsters in range.  Note that they may resist the spell. */
 /** C ref: music.c:196 — @param {CInt} distance */
 function* charm_monsters(distance) {
     let mtmp;
     let mtmp2;
+
     if ((cptr.ldI32o(u, $you_uswallow) & 1))
         distance = 0;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
+
         if (dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= distance) {
+            /* a shopkeeper can't be tamed but tamedog() pacifies an angry
+               one; do that even if mtmp resists in order to behave the same
+               as a non-cursed scroll of taming or spell of charm monster */
             if (!(yield* resist(mtmp, NHC.TOOL_CLASS, 0, NHM.NOTELL)) || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0)
                 void (yield* tamedog(mtmp, null, 1));
         }
     }
 }
 
+/* Try to make a pit. */
 /** C ref: music.c:221 — @param {CInt} x @param {CInt} y @param {CUInt} tu_pit */
 function* do_pit(x, y, tu_pit) {
     let mtmp;
     let otmp;
     let chasm;
     let filltype;
+
     chasm = (yield* maketrap(x, y, NHC.PIT));
     if (!chasm)
-        return;
+        return;  /* no pit if portal at that location */
     cptr.stI32o(chasm, $trap_tseen, 1);
-    mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
+    mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));  /* (redundant?) */
     if ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null) {
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
             (yield* pline(__s_kadoom_the_boulder_falls_into_a_chasm_s, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_below_you : __s_empty));
@@ -344,16 +380,25 @@ function* do_pit(x, y, tu_pit) {
         void (yield* flooreffects(otmp, x, y, __s_empty));
         return;
     }
+
+    /* Let liquid flow into the newly created chasm.
+       Adjust corresponding code in apply.c for exploding
+       wand of digging if you alter this sequence. */
     filltype = fillholetyp(x, y, 0);
     if (filltype != NHC.ROOM) {
-        (yield* set_levltyp(x, y, filltype));
+        (yield* set_levltyp(x, y, filltype));  /* levl[x][y] = filltype; */
         (yield* liquid_flow(x, y, filltype, chasm, null));
+        /* liquid_flow() deletes trap, might kill mtmp */
         if (cptr.eq((chasm = t_at(x, y)), (null)))
             return;
     }
+
+    /* We have to check whether monsters or hero falls into a
+       new pit....  Note: if we get here, chasm is non-Null. */
     if (mtmp) {
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16n) != 0n)) {
             let m_already_trapped = schar((cptr.ldI32o(mtmp, $monst_mtrapped) & 1));
+
             cptr.stI32o(mtmp, $monst_mtrapped, 1);
             if (!m_already_trapped) {
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
@@ -363,6 +408,8 @@ function* do_pit(x, y, tu_pit) {
                     (yield* You_hear(__s_a_scream));
                 }
             }
+            /* Falling is okay for falling down
+               within a pit from jostling too */
             (yield* mselftouch(mtmp, __s_falling, 1));
             if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                 cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - rnd_at(__s_music_c, 276, __s_do_pit, m_already_trapped ? 4 : 6)) | 0);
@@ -378,6 +425,12 @@ function* do_pit(x, y, tu_pit) {
         }
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
+            /* Note:  the chain should break if a pit gets
+               created at the buried ball's location, which
+               is not necessarily here.  But if we don't do
+               things this way, entering the new pit below
+               will override current trap anyway, but too
+               late to get Lev and Fly handling. */
             (yield* Your(__s_chain_breaks));
             (yield* reset_utrap(1));
         }
@@ -387,12 +440,15 @@ function* do_pit(x, y, tu_pit) {
                 (yield* You(__s_don_t_fall_in));
             }
         } else if (!tu_pit || !cptr.ldI32o(u, $you_utrap) || cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT) {
+            /* no pit here previously, or you were
+               not in it even if there was */
             (yield* You(__s_fall_into_a_chasm));
             set_utrap(((rn2_at(__s_music_c, 313, __s_do_pit, 6) + 2) | 0) >>> 0, NHC.TT_PIT);
             (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_music_c, 314, __s_do_pit, 6) + 1) | 0) / 2) | 0) : rnd_at(__s_music_c, 314, __s_do_pit, 6)), __s_fell_into_a_chasm, NHM.NO_KILLER_PREFIX));
             (yield* selftouch(__s_falling_you));
         } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
             let keepfooting = schar((!(Fumbling() && rn2_at(__s_music_c, 319, __s_do_pit, 5)) && (!rnl_at(__s_music_c, 320, __s_do_pit, (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9) || (((acurr(NHC.A_DEX)) > 7) && rn2_at(__s_music_c, 321, __s_do_pit, 5))) ? 1 : 0));
+
             (yield* You(__s_are_jostled_around_violently));
             set_utrap(((rn2_at(__s_music_c, 324, __s_do_pit, 6) + 2) | 0) >>> 0, NHC.TT_PIT);
             (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_music_c, 325, __s_do_pit, keepfooting ? 2 : 4) + 1) | 0) / 2) | 0) : rnd_at(__s_music_c, 325, __s_do_pit, keepfooting ? 2 : 4)), __s_hurt_in_a_chasm, NHM.NO_KILLER_PREFIX));
@@ -406,6 +462,9 @@ function* do_pit(x, y, tu_pit) {
     }
 }
 
+/* Generate earthquake :-) of desired force.
+ * That is:  create random chasms (pits).
+ */
 const __static_do_earthquake_into_a_chasm = cptr.bytes(" into a chasm"); /** C ref: music.c:346 — char[14] (function-static) */
 
 /** C ref: music.c:344 — @param {CInt} force */
@@ -421,6 +480,7 @@ function* do_earthquake(force) {
     let amsk;
     let algn;
     let tu_pit = 0;
+
     if (trap_at_u)
         tu_pit = is_pit((cptr.ldI32o(trap_at_u, $trap_ttyp) & 31)) >>> 0;
     if (force > 13)
@@ -436,7 +496,7 @@ function* do_earthquake(force) {
     for (x = i16(start_x); x <= end_x; x++)
         for (y = i16(start_y); y <= end_y; y++) {
             if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
-                (yield* wakeup(mtmp, 1));
+                (yield* wakeup(mtmp, 1));  /* peaceful monster will become hostile */
                 if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1)) {
                     cptr.stI32o(mtmp, $monst_mundetected, 0);
                     (yield* newsym(x, y));
@@ -454,6 +514,25 @@ function* do_earthquake(force) {
             }
             if (rn2_at(__s_music_c, 387, __s_do_earthquake, (14 - force) | 0))
                 continue;
+
+            /*
+             * Possible extensions:
+             *  When a door is trapped, explode it instead of silently
+             *   turning it into an empty doorway.
+             *  Trigger divine wrath when an altar is dumped into a chasm.
+             *  Sometimes replace sink with fountain or fountain with pool
+             *   instead of always producing a pit.
+             *  Sometimes release monster and/or treasure from a grave or
+             *   a throne instead of just dumping them into the chasm.
+             *  Chance to destroy wall segments?  Trees too?
+             *  Honor non-diggable for locked doors, walls, and trees.
+             *   Treat non-passwall as if it was non-diggable?
+             *  Conjoin some of the umpteen pits when they're adjacent?
+             *
+             *  Replace 'goto do_pit;' with 'do_pit = TRUE; break;' and
+             *   move the pit code to after the switch.
+             */
+
             switch (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) {
                 case NHC.FOUNTAIN:
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
@@ -467,6 +546,7 @@ function* do_earthquake(force) {
                 break;
                 case NHC.ALTAR:
                 amsk = altarmask_at(x, y);
+                /* always preserve the high altars */
                 if ((amsk & NHM.AM_SANCTUM) != 0)
                     break;
                 algn = (schar(((((amsk & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((amsk & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((amsk & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))));
@@ -497,19 +577,21 @@ function* do_earthquake(force) {
                 (yield* do_pit(x, y, tu_pit));
                 break;
                 case NHC.SDOOR:
-                cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));
+                cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));  /* .typ = DOOR */
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     (yield* pline(__s_a_secret_door_is_revealed));
                 // @FallThrough
                 ;
                 case NHC.DOOR:
+                /* if already doorless, treat like room or corridor */
                 if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
                     (yield* do_pit(x, y, tu_pit));
                     break;
                 }
+                /* wasn't doorless, now it will be */
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
                 (yield* recalc_block_point(x, y));
-                (yield* newsym(x, y));
+                (yield* newsym(x, y));  /* before pline */
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     (yield* pline_The(__s_door_collapses));
                 if (cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))))
@@ -546,6 +628,9 @@ cptr.stPtro(beats, 40, __s_half_time_shuffle);
 cptr.stPtro(beats, 48, __s_second_line);
 cptr.stPtro(beats, 56, __s_train);
 
+/*
+ * The player is trying to extract something from his/her instrument.
+ */
 const __static_do_improvisation_my_goto_song = [67, 0]; /** C ref: music.c:508 — char[2] (function-static) */
 let __static_do_improvisation_improvisation = cptr.decay(__static_do_improvisation_my_goto_song); /** C ref: music.c:509 — char * (function-static) */
 
@@ -557,8 +642,11 @@ function* do_improvisation(instr) {
     let itmp = cptr.alloc(216);
     let mundane = 0;
     let same_old_song = cptr.box(0);
+
     cptr.memcpy(itmp, instr, 216);
     cptr.stPtro(itmp, $obj_oextra, null);
+
+    /* if won't yield special effect, make sound of mundane counterpart */
     if (!do_spec || cptr.ld1so(instr, $obj_spe) <= 0)
         while ((cptr.ldI32o2(objects, cptr.ldI16o(itmp, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) & 1)) {
             cptr.stI16o(itmp, $obj_otyp, cptr.ldI16o(itmp, $obj_otyp) - 1);
@@ -571,12 +659,24 @@ function* do_improvisation(instr) {
         mode |= 2;
     if (Hallucination())
         mode |= 4;
+
     if (!rn2_at(__s_music_c, 535, __s_do_improvisation, 2)) {
+        /*
+         * TEMPORARY?  for multiple impairments, don't always
+         * give the generic "it's far from music" message.
+         */
+        /* remove if STUNNED+CONFUSED ever gets its own message below */
         if (mode == 3)
             mode = !rn2_at(__s_music_c, 542, __s_do_improvisation, 2) ? 1 : 2;
+        /* likewise for stunned and/or confused combined with hallucination */
         if (mode & 4)
             mode = 4;
     }
+
+    /* 3.6.3: most of these gave "You produce <blah>" and then many of
+       the instrument-specific messages below which immediately follow
+       also gave "You produce <something>."  That looked strange so we
+       now use a different verb here */
     switch (mode) {
         case 0:
         (yield* You(__s_start_playing_s, (yield* yname(instr))));
@@ -604,10 +704,13 @@ function* do_improvisation(instr) {
         (yield* pline(__s_what_you_perform_is_quite_far_from_music));
         break;
     }
+
     __static_do_improvisation_improvisation = improvised_notes(same_old_song);
+
     switch (cptr.ldI16o(itmp, $obj_otyp)) {
         case NHC.MAGIC_FLUTE:
         (yield* consume_obj_charge(instr, 1));
+
         (yield* You(__s_sproduce_s_s_music, !Deaf() ? __s_empty : __s_seem_to, Hallucination() ? __s_piped : __s_soft, same_old_song.v ? __s_familiar : __s_empty));
         ;
         (yield* put_monsters_to_sleep(Math.imul(cptr.ldI32o(u, $you_ulevel), 5)));
@@ -627,18 +730,21 @@ function* do_improvisation(instr) {
         case NHC.FIRE_HORN:
         case NHC.FROST_HORN:
         (yield* consume_obj_charge(instr, 1));
+
         if (!(yield* getdir(null))) {
             (yield* pline(__s_pct_s_dot, (yield* Tobjnam(instr, __s_vibrate))));
             break;
         } else if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
             if ((damage = (yield* zapyourself(instr, 1))) != 0) {
                 let buf = new Uint8Array(256);
+
                 void cptr.sprintf(cptr.decay(buf), __s_using_a_magical_horn_on_sself, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
                 ;
-                (yield* losehp(damage, cptr.decay(buf), NHM.KILLED_BY));
+                (yield* losehp(damage, cptr.decay(buf), NHM.KILLED_BY));  /* fire or frost damage */
             }
         } else {
             let type = (Math.abs((((cptr.ldI16o(instr, $obj_otyp) == NHC.FROST_HORN) ? NHM.AD_COLD : NHM.AD_FIRE) - NHM.AD_MAGM) | 0) % 10);
+
             if (!Blind())
                 (yield* pline(__s_a_s_blasts_out_of_the_horn, flash_str(type, 0)));
             ;
@@ -668,6 +774,7 @@ function* do_improvisation(instr) {
         break;
         case NHC.MAGIC_HARP:
         (yield* consume_obj_charge(instr, 1));
+
         if (!Deaf())
             (yield* pline(__s_s_very_attractive_s_music, (yield* Tobjnam(instr, __s_produce)), same_old_song.v ? __s_and_familiar : __s_empty));
         else
@@ -688,11 +795,17 @@ function* do_improvisation(instr) {
         (yield* exercise(NHC.A_DEX, 1));
         break;
         case NHC.DRUM_OF_EARTHQUAKE:
+        /* a drum of earthquake does not cause deafness
+           while still magically functional, nor afterwards
+           when it invokes the LEATHER_DRUM case instead and
+           mundane is flagged */
         (yield* consume_obj_charge(instr, 1));
+
         (yield* You(__s_produce_a_heavy_thunderous_rolling));
         ;
         (yield* pline_The(__s_entire_s_is_shaking_around_you, generic_lvl_desc()));
         (yield* do_earthquake((((((cptr.ldI32o(u, $you_ulevel) - 1) | 0) / 3) | 0) + 1) | 0));
+        /* shake up monsters in a much larger radius... */
         (yield* awaken_monsters(1680));
         (yield* discover_object(NHC.DRUM_OF_EARTHQUAKE, 1, 1, 1));
         break;
@@ -707,6 +820,7 @@ function* do_improvisation(instr) {
             }
             (yield* exercise(NHC.A_WIS, 0));
         } else {
+            /* TODO maybe: sound effects for these riffs */
             (yield* You(__s_s_s__2, rn2_at(__s_music_c, 717, __s_do_improvisation, 2) ? __s_butcher : (rn2_at(__s_music_c, 717, __s_do_improvisation, 2) ? __s_manage : __s_pull_off), (yield* an(cptr.ldPtro(beats, rn2_at(__s_music_c, 718, __s_do_improvisation, 8), 8)))));
             ;
         }
@@ -718,16 +832,22 @@ function* do_improvisation(instr) {
         return 0;
     }
     (void (__static_do_improvisation_improvisation));
-    return 2;
+    return 2;  /* That takes time */
 }
 
 const __static_improvised_notes_notes = [65, 66, 67, 68, 69, 70, 71]; /** C ref: music.c:735 — char[7] (function-static) */
 
 /** C ref: music.c:733 — @param {CPtr<boolean>} same_as_last_time @returns {CPtr<char>} */
 function improvised_notes(same_as_last_time) {
+    /* target buffer has to be in svc.context, otherwise saving game
+     * between improvised recitals would not be able to maintain
+     * the same_as_last_time context. */
+
+    /* You can change your tune, usually */
     if (!(Unchanging() && cptr.ld1so2(svc, 0, 1, $context_info_jingle) != 0)) {
         let i;
-        let notecount = rnd_at(__s_music_c, 742, __s_improvised_notes, (Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0);
+        let notecount = rnd_at(__s_music_c, 742, __s_improvised_notes, (Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0);  /* 1 - 5 */
+
         for (i = 0; i < notecount; ++i) {
             cptr.st1o2(svc, i, 1, $context_info_jingle, cptr.ld1so(cptr.decay(__static_improvised_notes_notes), rn2_at(__s_music_c, 745, __s_improvised_notes, __static_improvised_notes_notes.length), 1));
         }
@@ -739,6 +859,9 @@ function improvised_notes(same_as_last_time) {
     return cptr.add(svc, $context_info_jingle);
 }
 
+/*
+ * So you want music...
+ */
 /** C ref: music.c:759 — @param {CPtr<struct obj>} instr @returns {CInt} */
 export function* do_play_instrument(instr) {
     let buf = [0];
@@ -748,6 +871,7 @@ export function* do_play_instrument(instr) {
     let y = cptr.box(0);
     let ok;
     __lbl_nevermind: {
+
         if (Underwater()) {
             (yield* You_cant(__s_play_music_underwater));
             return NHM.ECMD_OK;
@@ -760,8 +884,10 @@ export function* do_play_instrument(instr) {
             if (c == 113)
                 break __lbl_nevermind;
         }
+
         if (c != 110)
             return (yield* do_improvisation(instr)) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+
         if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) == 2)
             c = (yield* yn_function(__s_play_the_passtune, cptr.decay(ynqchars), 113, 1));
         if (c == 113) {
@@ -773,22 +899,31 @@ export function* do_play_instrument(instr) {
             void (yield* mungspaces(cptr.decay(buf)));
             if (cptr.ld1s(cptr.decay(buf)) == 27)
                 break __lbl_nevermind;
+
+            /* convert to uppercase and change any "H" to the expected "B" */
             for (s = cptr.decay(buf); cptr.ld1s(s); s = cptr.add(s, 1)) {
                 cptr.st1(s, highc(cptr.ld1s(s)));
                 if (cptr.ld1s(s) == 72)
                     cptr.st1(s, 66);
             }
         }
+
         (yield* You(!Deaf() ? __s_extract_a_strange_sound_from_s : __s_can_feel_s_emitting_vibrations, (yield* the((yield* xname(instr))))));
         ;
+
+        /* Check if there was the Stronghold drawbridge near
+         * and if the tune conforms to what we're waiting for.
+         */
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
-            (yield* exercise(NHC.A_WIS, 1));
+            (yield* exercise(NHC.A_WIS, 1));  /* just for trying */
             if (!strcmp(cptr.decay(buf), svt)) {
+                /* Search for the drawbridge */
                 for (y.v = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y.v <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y.v++)
                     for (x.v = i16(((cptr.ldI16(u) - 1) | 0)); x.v <= ((cptr.ldI16(u) + 1) | 0); x.v++) {
                         if (!isok(x.v, y.v))
                             continue;
                         if (find_drawbridge(x, y)) {
+                            /* tune now fully known */
                             cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));
                             if (cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN)
@@ -801,6 +936,9 @@ export function* do_play_instrument(instr) {
             } else if (!Deaf()) {
                 if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 1)
                     cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 1);
+                /* Okay, it wasn't the right tune, but perhaps
+                 * we can give the player some hints like in the
+                 * Mastermind game */
                 ok = 0;
                 for (y.v = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y.v <= ((cptr.ldI16o(u, $you_uy) + 1) | 0) && !ok; y.v++)
                     for (x.v = i16(((cptr.ldI16(u) - 1) | 0)); x.v <= ((cptr.ldI16(u) + 1) | 0) && !ok; x.v++)
@@ -811,9 +949,11 @@ export function* do_play_instrument(instr) {
                     let tumblers;
                     let gears;
                     let matched = new Uint8Array(5);
+
                     tumblers = (gears = 0);
                     for (x.v = 0; x.v < 5; x.v++)
                         cptr.st1o(cptr.decay(matched), x.v, 0, 1);
+
                     for (x.v = 0; x.v < Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(buf)))); x.v++)
                         if (x.v < 5) {
                             if (cptr.ld1so(cptr.decay(buf), x.v, 1) == cptr.ld1so(svt, x.v, 1)) {
@@ -839,6 +979,9 @@ export function* do_play_instrument(instr) {
                         }
                     } else if (gears) {
                         (yield* You_hear(__s_d_gear_s_turn, gears, (((gears) == 1) ? __s_empty : __s_s)));
+                        /* could only get `gears == 5' by playing five
+                           correct notes followed by excess; otherwise,
+                           tune would have matched above */
                         if (gears == 5) {
                             cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));

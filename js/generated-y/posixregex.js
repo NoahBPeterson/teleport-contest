@@ -20,6 +20,49 @@ const __s_no_regexp = cptr.lit("no regexp");
 const __s_no_explanation = cptr.lit("no explanation");
 const __s_unspecified_regexp_error = cptr.lit("unspecified regexp error");
 
+/* The nhregex interface is implemented by several source files. The
+ * file to be used can be linked in by the build.
+ *
+ * The regex standard implemented should be POSIX extended regular
+ * expressions, see:
+ *   http://pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap09.html
+ * If an implementation uses an alternate expression format, this should
+ * be clearly noted; this will result in incompatibility of config files
+ * when NetHack is compiled with that implementation.
+ *
+ * struct nhregex
+ * The nhregex structure is an opaque structure type containing the
+ * information about a compiled regular expression.
+ *
+ * struct nhregex *regex_init(void)
+ * Used to create a new instance of the nhregex structure. It is
+ * uninitialized and can only safely be passed to regex_compile.
+ *
+ * boolean regex_compile(const char *s, struct nhregex *re)
+ * Used to compile s into a regex and store it in re. Returns TRUE if
+ * successful and FALSE otherwise. re is invalidated regardless of
+ * success.
+ *
+ * boolean regex_match(const char *s, struct nhregex *re)
+ * Used to determine if s (or any substring) matches the regex compiled
+ * into re. Only valid if the most recent call to regex_compile on re
+ * succeeded.
+ *
+ * void regex_free(struct nhregex *re)
+ * Deallocate a regex object.
+ *
+ * char *regex_error_desc(struct nhregex *re, char *outbuf)
+ * Used to retrieve an explanation for an error encountered by
+ * regex_compile() or regex_match().  The explanation is copied into
+ * outbuf[] and a pointer to that is returned.  regex_error_desc()
+ * should be called before regex_free() but outbuf[] may be used after
+ * that.  outbuf[] must be able to hold at least BUFSZ characters.
+ *
+ * One possible error result is "out of memory" so freeing the failed
+ * re should be done to try to recover memory before issuing any error
+ * feedback.
+ */
+
 /** C ref: posixregex.c:52 — char[11] */
 export const regex_id = cptr.bytes("posixregex");
 
@@ -57,8 +100,10 @@ export function regex_error_desc(re, errbuf) {
 /** C ref: posixregex.c:92 — @param {CPtr<char>} s @param {CPtr<struct nhregex>} re @returns {CInt} */
 export function regex_match(s, re) {
     let result;
+
     if (!re || !s)
         return 0;
+
     if ((result = regexec(re, s, 0n, null, 0))) {
         if (result != 1)
             cptr.stI32o(re, $nhregex_err, result);

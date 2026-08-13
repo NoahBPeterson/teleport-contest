@@ -108,6 +108,12 @@ const __s_the_low_life_wants_to_talk_eh = cptr.lit("The low-life wants to talk, 
 const __s_fight_scum = cptr.lit("Fight, scum!");
 const __s_here_is_what_i_have_to_say = cptr.lit("Here is what I have to say!");
 
+/* These are the names of those who
+ * contributed to the development of NetHack 3.2/3.3/3.4/3.6.
+ *
+ * Keep in alphabetical order within teams.
+ * Same first name is entered once within each team.
+ */
 /** C ref: mplayer.c:17 — char *[58] */
 const developers = cptr.alloc(58 * 8);
 cptr.stPtro(developers, 0, __s_alex);
@@ -169,6 +175,7 @@ cptr.stPtro(developers, 440, __s_joshua);
 cptr.stPtro(developers, 448, __s_pat);
 cptr.stPtro(developers, 456, __s_empty);
 
+/* return a randomly chosen developer name */
 /** C ref: mplayer.c:44 @returns {CPtr<char>} */
 function dev_name() {
     let i;
@@ -176,6 +183,7 @@ function dev_name() {
     let n = 58;
     let mtmp;
     let match;
+
     do {
         match = 0;
         i = rn2_at(__s_mplayer_c, 52, __s_dev_name, n);
@@ -188,7 +196,8 @@ function dev_name() {
             }
         }
         m++;
-    } while (match && m < 100);
+    } while (match && m < 100);  /* m for insurance */
+
     if (match)
         return null;
     return (cptr.ldPtro(developers, i, 8));
@@ -198,6 +207,7 @@ function dev_name() {
 function get_mplname(mtmp, nam) {
     let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 131072n) != 0n));
     let devnam;
+
     devnam = dev_name();
     if (!devnam)
         void cptr.strcpy(nam, fmlkind ? __s_eve : __s_adam);
@@ -205,6 +215,7 @@ function get_mplname(mtmp, nam) {
         void cptr.strcpy(nam, rn2_at(__s_mplayer_c, 81, __s_get_mplname, 2) ? __s_maud : __s_eve);
     else
         void cptr.strcpy(nam, devnam);
+
     if (fmlkind || !strcmp(nam, __s_janet))
         cptr.stI32o(mtmp, $monst_female, 1);
     else
@@ -216,6 +227,7 @@ function get_mplname(mtmp, nam) {
 /** C ref: mplayer.c:95 — @param {CPtr<struct monst>} mon @param {CInt} typ */
 function* mk_mplayer_armor(mon, typ) {
     let obj;
+
     if (typ == NHC.STRANGE_OBJECT)
         return;
     obj = (yield* mksobj(typ, 0, 0));
@@ -226,6 +238,10 @@ function* mk_mplayer_armor(mon, typ) {
         (yield* curse(obj));
     if (!rn2_at(__s_mplayer_c, 107, __s_mk_mplayer_armor, 3))
         (yield* bless(obj));
+    /* Most players who get to the endgame who have cursed equipment
+     * have it because the wizard or other monsters cursed it, so its
+     * chances of having plusses is the same as usual....
+     */
     cptr.st1o(obj, $obj_spe, schar((rn2_at(__s_mplayer_c, 113, __s_mk_mplayer_armor, 10) ? (rn2_at(__s_mplayer_c, 113, __s_mk_mplayer_armor, 3) ? rn2_at(__s_mplayer_c, 113, __s_mk_mplayer_armor, 5) : ((rn2_at(__s_mplayer_c, 113, __s_mk_mplayer_armor, 4) + 4) | 0)) : -rnd_at(__s_mplayer_c, 113, __s_mk_mplayer_armor, 3))));
     void (yield* mpickobj(mon, obj));
 }
@@ -234,12 +250,16 @@ function* mk_mplayer_armor(mon, typ) {
 export function* mk_mplayer(ptr, x, y, special) {
     let mtmp;
     let nam = new Uint8Array(32);
+
     if (!is_mplayer(ptr))
         return (null);
+
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        void (yield* rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), 5));
+        void (yield* rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), 5));  /* insurance */
+
     if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         special = 0;
+
     if ((mtmp = (yield* makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n)))))) !== null) {
         let weapon;
         let armor;
@@ -248,20 +268,25 @@ export function* mk_mplayer(ptr, x, y, special) {
         let shield;
         let quan;
         let otmp;
+
         cptr.st1o(mtmp, $monst_m_lev, uchar((special ? ((rn2_at(__s_mplayer_c, 137, __s_mk_mplayer, 16) + 15) | 0) : rnd_at(__s_mplayer_c, 137, __s_mk_mplayer, 16))));
         cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, (d_at(__s_mplayer_c, 138, __s_mk_mplayer, (cptr.ld1uo(mtmp, $monst_m_lev)), 10) + (special ? ((30 + rnd_at(__s_mplayer_c, 139, __s_mk_mplayer, 30)) | 0) : 30)) | 0));
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = (yield* christen_monst(mtmp, cptr.decay(nam)));
+            /* that's why they are "stuck" in the endgame :-) */
             void (yield* mongets(mtmp, NHC.FAKE_AMULET_OF_YENDOR));
         }
         cptr.stI32o(mtmp, $monst_mpeaceful, 0);
-        set_malign(mtmp);
+        set_malign(mtmp);  /* peaceful may have changed again */
+
+        /* default equipment; much of it will be overridden below */
         weapon = i16((!rn2_at(__s_mplayer_c, 150, __s_mk_mplayer, 2) ? NHC.LONG_SWORD : rnd_class(NHC.SPEAR, NHC.BULLWHIP)));
         armor = i16(rnd_class(NHC.GRAY_DRAGON_SCALE_MAIL, NHC.YELLOW_DRAGON_SCALE_MAIL));
         cloak = i16((!rn2_at(__s_mplayer_c, 152, __s_mk_mplayer, 8) ? NHC.STRANGE_OBJECT : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
         helm = i16((!rn2_at(__s_mplayer_c, 154, __s_mk_mplayer, 8) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
         shield = i16((!rn2_at(__s_mplayer_c, 156, __s_mk_mplayer, 8) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
+
         switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
             case NHC.PM_ARCHEOLOGIST:
             if (rn2_at(__s_mplayer_c, 161, __s_mk_mplayer, 2))
@@ -333,6 +358,7 @@ export function* mk_mplayer(ptr, x, y, special) {
                 weapon = NHC.KATANA;
             break;
             case NHC.PM_TOURIST:
+            /* Defaults are just fine */
             break;
             case NHC.PM_VALKYRIE:
             if (rn2_at(__s_mplayer_c, 233, __s_mk_mplayer, 2))
@@ -356,6 +382,7 @@ export function* mk_mplayer(ptr, x, y, special) {
             weapon = 0;
             break;
         }
+
         if (weapon != NHC.STRANGE_OBJECT) {
             otmp = (yield* mksobj(weapon, 1, 0));
             cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
@@ -364,15 +391,19 @@ export function* mk_mplayer(ptr, x, y, special) {
                 cptr.stI32o(otmp, $obj_oerodeproof, 1);
             else if (!rn2_at(__s_mplayer_c, 262, __s_mk_mplayer, 2))
                 cptr.stI32o(otmp, $obj_greased, 1);
+            /* mk_artifact() with otmp and A_NONE will never return NULL */
             if (special && rn2_at(__s_mplayer_c, 265, __s_mk_mplayer, 2))
                 otmp = (yield* mk_artifact(otmp, -128, 99, 0));
+            /* usually increase stack size if stackable weapon */
             if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, $obj_oartifact) && monmightthrowwep(otmp))
                 cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rn2_at(__s_mplayer_c, 270, __s_mk_mplayer, is_spear(otmp) ? 4 : 8)));
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+            /* mplayers knew better than to overenchant Magicbane */
             if (is_art(otmp, NHC.ART_MAGICBANE))
                 cptr.st1o(otmp, $obj_spe, schar(rnd_at(__s_mplayer_c, 274, __s_mk_mplayer, 4)));
             void (yield* mpickobj(mtmp, otmp));
         }
+
         if (special) {
             if (!rn2_at(__s_mplayer_c, 279, __s_mk_mplayer, 10))
                 void (yield* mongets(mtmp, rn2_at(__s_mplayer_c, 280, __s_mk_mplayer, 3) ? NHC.LUCKSTONE : NHC.LOADSTONE));
@@ -387,9 +418,12 @@ export function* mk_mplayer(ptr, x, y, special) {
             if (rn2_at(__s_mplayer_c, 290, __s_mk_mplayer, 8))
                 (yield* mk_mplayer_armor(mtmp, i16(rnd_class(NHC.LOW_BOOTS, NHC.LEVITATION_BOOTS))));
             (yield* m_dowear(mtmp, 1));
+
             quan = rn2_at(__s_mplayer_c, 295, __s_mk_mplayer, 3) ? rn2_at(__s_mplayer_c, 295, __s_mk_mplayer, 3) : rn2_at(__s_mplayer_c, 295, __s_mk_mplayer, 16);
             while (quan--)
                 void (yield* mongets(mtmp, rnd_class(NHC.DILITHIUM_CRYSTAL, NHC.JADE)));
+            /* To get the gold "right" would mean a player can double his
+               gold supply by killing one mplayer.  Not good. */
             (yield* mkmonmoney(mtmp, BigInt(rn2_at(__s_mplayer_c, 300, __s_mk_mplayer, 1000))));
             quan = rn2_at(__s_mplayer_c, 301, __s_mk_mplayer, 10);
             while (quan--)
@@ -405,26 +439,42 @@ export function* mk_mplayer(ptr, x, y, special) {
         while (quan--)
             void (yield* mongets(mtmp, rnd_misc_item(mtmp)));
     }
+
     return (mtmp);
 }
 
+/* create the indicated number (num) of monster-players,
+ * randomly chosen, and in randomly chosen (free) locations
+ * on the level.  If "special", the size of num should not
+ * be bigger than the number of _non-repeated_ names in the
+ * developers array, otherwise a bunch of Adams and Eves will
+ * fill up the overflow.
+ */
 /** C ref: mplayer.c:327 — @param {CInt} num @param {CInt} special */
 export function* create_mplayers(num, special) {
     let pm;
     let x;
     let y;
     let fakemon = cptr.alloc(320);
+
     cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
     while (num) {
         let tryct = 0;
+
+        /* roll for character class */
         pm = ((rn2_at(__s_mplayer_c, 337, __s_create_mplayers, ((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
         set_mon_data(fakemon, cptr.add(mons, pm, $sizeof_permonst));
+
+        /* roll for an available location */
         do {
             x = ((rn2_at(__s_mplayer_c, 342, __s_create_mplayers, 76) + 2) | 0);
             y = rnd_at(__s_mplayer_c, 343, __s_create_mplayers, 19);
         } while (!(yield* goodpos(i16(x), i16(y), fakemon, 0)) && tryct++ <= 50);
+
+        /* if pos not found in 50 tries, don't bother to continue */
         if (tryct > 50)
             return;
+
         void (yield* mk_mplayer(cptr.add(mons, pm, $sizeof_permonst), i16(x), i16(y), special));
         num--;
     }
@@ -441,8 +491,10 @@ cptr.stPtro(__static_mplayer_talk_other_class_msg, 16, __s_here_is_what_i_have_t
 
 /** C ref: mplayer.c:356 — @param {CPtr<struct monst>} mtmp */
 export function* mplayer_talk(mtmp) {
+
     if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
-        return;
+        return;  /* will drop to humanoid talk */
+
     ;
     (yield* verbalize(__s_talk_s, cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), $sizeof_permonst)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, rn2_at(__s_mplayer_c, 375, __s_mplayer_talk, 3), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, rn2_at(__s_mplayer_c, 376, __s_mplayer_talk, 3), 8)));
 }

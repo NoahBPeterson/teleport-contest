@@ -102,6 +102,7 @@ const __s_metatable = cptr.lit("__metatable");
 /** C ref: nhlsel.c:58 — @param {CPtr<lua_State>} L @param {CInt} index @returns {CPtr<struct selectionvar>} */
 export function l_selection_check(L, index) {
     let sel;
+
     luaL_checktype(L, index, 7);
     sel = luaL_checkudata(L, index, __s_selection);
     if (!sel)
@@ -112,42 +113,54 @@ export function l_selection_check(L, index) {
 /** C ref: nhlsel.c:70 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_gc(L) {
     let sel = l_selection_check(L, 1);
+
     if (sel)
         selection_free(sel, 0);
     return 0;
 }
 
+/* push a new selection into lua stack, return the selectionvar */
 /** C ref: nhlsel.c:94 — @param {CPtr<lua_State>} L @returns {CPtr<struct selectionvar>} */
 function l_selection_push_new(L) {
     let tmp = selection_new();
     let sel = lua_newuserdatauv(L, 32n, 1);
+
     (lua_getfield(L, -1001000, (__s_selection)));
     lua_setmetatable(L, -2);
+
     cptr.memcpy(sel, tmp, 32);
     cptr.stPtro(sel, $selectionvar_map, dupstr(cptr.ldPtro(tmp, $selectionvar_map)));
     selection_free(tmp, 1);
+
     return sel;
 }
 
+/* push a copy of selectionvar tmp to lua stack */
 /** C ref: nhlsel.c:112 — @param {CPtr<lua_State>} L @param {CPtr<struct selectionvar>} tmp */
 export function l_selection_push_copy(L, tmp) {
     let sel = lua_newuserdatauv(L, 32n, 1);
+
     (lua_getfield(L, -1001000, (__s_selection)));
     lua_setmetatable(L, -2);
+
     cptr.memcpy(sel, tmp, 32);
     cptr.stPtro(sel, $selectionvar_map, dupstr(cptr.ldPtro(tmp, $selectionvar_map)));
 }
 
+/* local sel = selection.new(); */
 /** C ref: nhlsel.c:127 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_new(L) {
     void l_selection_push_new(L);
     return 1;
 }
 
+/* Replace the topmost selection in the stack with a clone of it. */
+/* local sel = selection.clone(sel); */
 /** C ref: nhlsel.c:136 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_clone(L) {
     let sel = l_selection_check(L, 1);
     let tmp;
+
     void l_selection_new(L);
     tmp = l_selection_check(L, 2);
     if (cptr.ldPtro(tmp, $selectionvar_map))
@@ -157,6 +170,12 @@ function l_selection_clone(L) {
     return 1;
 }
 
+/* selection.set(sel, x, y); */
+/* selection.set(sel, x, y, value); */
+/* local sel = selection.set(); */
+/* local sel = sel:set(); */
+/* local sel = selection.set(sel); */
+/* TODO: allow setting multiple coords at once: set({x1,y1},{x2,y2},...); */
 /** C ref: nhlsel.c:159 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_setpoint(L) {
     let sel = null;
@@ -165,6 +184,7 @@ function l_selection_setpoint(L) {
     let val = 1;
     let argc = lua_gettop(L);
     let crd = 0n;
+
     if (argc == 0) {
         void l_selection_new(L);
     } else if (argc == 1) {
@@ -181,10 +201,13 @@ function l_selection_setpoint(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
         val = Number(BigInt.asIntN(32, luaL_optinteger(L, 4, 1n)));
     }
+
     if (!sel || !cptr.ldPtro(sel, $selectionvar_map)) {
         nhl_error(L, __s_selection_setpoint_error);
+        /*NOTREACHED*/
         return 0;
     }
+
     if (x.v == -1 && y.v == -1)
         crd = 16777216n;
     else
@@ -195,6 +218,7 @@ function l_selection_setpoint(L) {
     return 1;
 }
 
+/* local numpoints = selection.numpoints(sel); */
 /** C ref: nhlsel.c:203 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_numpoints(L) {
     let sel = l_selection_check(L, 1);
@@ -202,16 +226,20 @@ function l_selection_numpoints(L) {
     let y;
     let ret = 0;
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     selection_getbounds(sel, rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (selection_getpoint(x, y, sel))
                 ret++;
+
     lua_settop(L, 0);
     lua_pushinteger(L, BigInt(ret));
     return 1;
 }
 
+/* local value = selection.get(sel, x, y); */
 /** C ref: nhlsel.c:224 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_getpoint(L) {
     let sel = l_selection_check(L, 1);
@@ -221,29 +249,37 @@ function l_selection_getpoint(L) {
     let iy = cptr.box(0n);
     let val;
     let crd;
-    (lua_rotate(L, 1, -1), lua_settop(L, -2));
+
+    (lua_rotate(L, 1, -1), lua_settop(L, -2));  /* sel */
     if (!nhl_get_xy_params(L, ix, iy)) {
         nhl_error(L, __s_l_selection_getpoint_incorrect_params);
+        /*NOTREACHED*/
         return 0;
     }
     x.v = Number(BigInt.asIntN(16, ix.v));
     y.v = Number(BigInt.asIntN(16, iy.v));
+
     if (x.v == -1 && y.v == -1)
         crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, crd);
+
     val = selection_getpoint(x.v, y.v, sel);
     lua_settop(L, 0);
     lua_pushnumber(L, val);
     return 1;
 }
 
+/* local s = selection.negate(sel); */
+/* local s = selection.negate(); */
+/* local s = sel:negate(); */
 /** C ref: nhlsel.c:260 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_not(L) {
     let argc = lua_gettop(L);
     let sel;
     let sel2;
+
     if (argc == 0) {
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
@@ -258,6 +294,7 @@ function l_selection_not(L) {
     return 1;
 }
 
+/* local sel = selection.area(4,5, 40,10) & selection.rect(7,8, 60,14); */
 /** C ref: nhlsel.c:281 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_and(L) {
     let x;
@@ -266,17 +303,22 @@ function l_selection_and(L) {
     let selb = l_selection_check(L, 2);
     let selr = l_selection_push_new(L);
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
             let val = (selection_getpoint(i16(x), i16(y), sela) & selection_getpoint(i16(x), i16(y), selb));
+
             selection_setpoint(i16(x), i16(y), selr, val);
         }
+
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
+/* local sel = selection.area(4,5, 40,10) | selection.rect(7,8, 60,14); */
 /** C ref: nhlsel.c:306 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_or(L) {
     let x;
@@ -285,18 +327,23 @@ function l_selection_or(L) {
     let selb = l_selection_check(L, 2);
     let selr = l_selection_push_new(L);
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
             let val = (selection_getpoint(i16(x), i16(y), sela) | selection_getpoint(i16(x), i16(y), selb));
+
             selection_setpoint(i16(x), i16(y), selr, val);
         }
     cptr.memcpy(cptr.add(selr, $selectionvar_bounds), rect, 8);
+
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
+/* local sel = selection.area(4,5, 40,10) ~ selection.rect(7,8, 60,14); */
 /** C ref: nhlsel.c:332 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_xor(L) {
     let x;
@@ -305,18 +352,26 @@ function l_selection_xor(L) {
     let selb = l_selection_check(L, 2);
     let selr = l_selection_push_new(L);
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
             let val = (selection_getpoint(i16(x), i16(y), sela) ^ selection_getpoint(i16(x), i16(y), selb));
+
             selection_setpoint(i16(x), i16(y), selr, val);
         }
+    /* this may have created a smaller or irregular selection with
+     * bounds_dirty set to true - update its boundaries */
     selection_recalc_bounds(selr);
+
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
+/* local sel = selection.area(10,10, 20,20) - selection.area(14,14, 17,17)
+ *   - i.e. points that are in A but not in B */
 /** C ref: nhlsel.c:361 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_sub(L) {
     let x;
@@ -325,7 +380,9 @@ function l_selection_sub(L) {
     let selb = l_selection_check(L, 2);
     let selr = l_selection_push_new(L);
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
             let a_pt = selection_getpoint(i16(x), i16(y), sela);
@@ -333,25 +390,33 @@ function l_selection_sub(L) {
             let val = (a_pt ^ b_pt) & a_pt;
             selection_setpoint(i16(x), i16(y), selr, val);
         }
+    /* this may have created a smaller or irregular selection with
+     * bounds_dirty set to true - update its boundaries */
     selection_recalc_bounds(selr);
+
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     (lua_rotate(L, 1, -1), lua_settop(L, -2));
     return 1;
 }
 
+/* local s = selection.percentage(sel, 50); */
 /** C ref: nhlsel.c:389 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_filter_percent(L) {
     let argc = lua_gettop(L);
     let sel = l_selection_check(L, 1);
     let p = Number(BigInt.asIntN(32, luaL_checkinteger(L, 2)));
     let tmp;
+
     tmp = selection_filter_percent(sel, p);
     lua_settop(L, (-(argc) - 1) | 0);
     l_selection_push_copy(L, tmp);
     selection_free(tmp, 1);
+
     return 1;
 }
 
+/* local pt = selection.rndcoord(sel); */
+/* local pt = selection.rndcoord(sel, 1); */
 /** C ref: nhlsel.c:407 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_rndcoord(L) {
     let sel = l_selection_check(L, 1);
@@ -376,25 +441,33 @@ function l_selection_rndcoord(L) {
     return 1;
 }
 
+/* local s = selection.room(); */
 /** C ref: nhlsel.c:432 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_room(L) {
     let sel;
     let argc = lua_gettop(L);
     let croom = null;
+
     if (argc == 1) {
         let i = Number(BigInt.asIntN(32, luaL_checkinteger(L, -1)));
+
         croom = (i >= 0 && i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) ? cptr.add(svr, i, $sizeof_mkroom) : null;
     }
+
     sel = selection_from_mkroom(croom);
+
     l_selection_push_copy(L, sel);
     selection_free(sel, 1);
+
     return 1;
 }
 
+/* local rect = sel:bounds(); */
 /** C ref: nhlsel.c:454 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_getbounds(L) {
     let sel = l_selection_check(L, 1);
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     selection_getbounds(sel, rect);
     lua_settop(L, 0);
     lua_createtable(L, 0, 0);
@@ -405,9 +478,16 @@ function l_selection_getbounds(L) {
     return 1;
 }
 
+/* internal function to get a selection and 4 integer values from lua stack.
+   removes the integers from the stack.
+   returns TRUE if params are good.
+*/
+/* function(selection, x1,y1, x2,y2) */
+/* selection:function(x1,y1, x2,y2) */
 /** C ref: nhlsel.c:476 — @param {CPtr<lua_State>} L @param {CPtr<struct selectionvar *>} sel @param {CPtr<coordxy>} x1 @param {CPtr<coordxy>} y1 @param {CPtr<coordxy>} x2 @param {CPtr<coordxy>} y2 @returns {CInt} */
 function params_sel_2coords(L, sel, x1, y1, x2, y2) {
     let argc = lua_gettop(L);
+
     if (argc == 4) {
         void l_selection_new(L);
         cptr.stI16(x1, Number(BigInt.asIntN(16, luaL_checkinteger(L, 1))));
@@ -432,6 +512,9 @@ function params_sel_2coords(L, sel, x1, y1, x2, y2) {
     return 0;
 }
 
+/* local s = selection.line(sel, x1,y1, x2,y2); */
+/* local s = selection.line(x1,y1, x2,y2); */
+/* s:line(x1,y1, x2,y2); */
 /** C ref: nhlsel.c:509 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_line(L) {
     let sel = cptr.box(null);
@@ -439,17 +522,21 @@ function l_selection_line(L) {
     let y1 = cptr.box(0);
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
+
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __s_selection_line_illegal_arguments);
     }
+
     get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
     get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     selection_do_line(x1.v, y1.v, x2.v, y2.v, sel.v);
     return 1;
 }
 
+/* local s = selection.rect(sel, x1,y1, x2,y2); */
 /** C ref: nhlsel.c:531 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_rect(L) {
     let sel = cptr.box(null);
@@ -457,11 +544,14 @@ function l_selection_rect(L) {
     let y1 = cptr.box(0);
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
+
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __s_selection_rect_illegal_arguments);
     }
+
     get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
     get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     selection_do_line(x1.v, y1.v, x2.v, y1.v, sel.v);
@@ -471,6 +561,10 @@ function l_selection_rect(L) {
     return 1;
 }
 
+/* local s = selection.fillrect(sel, x1,y1, x2,y2); */
+/* local s = selection.fillrect(x1,y1, x2,y2); */
+/* s:fillrect(x1,y1, x2,y2); */
+/* selection.area(x1,y1, x2,y2); */
 /** C ref: nhlsel.c:559 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_fillrect(L) {
     let sel = cptr.box(null);
@@ -479,11 +573,14 @@ function l_selection_fillrect(L) {
     let y1 = cptr.box(0);
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
+
     if (!params_sel_2coords(L, sel, x1, y1, x2, y2)) {
         nhl_error(L, __s_selection_fillrect_illegal_arguments);
     }
+
     get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
     get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+
     void l_selection_clone(L);
     sel.v = l_selection_check(L, 2);
     if (x1.v == x2.v) {
@@ -496,6 +593,10 @@ function l_selection_fillrect(L) {
     return 1;
 }
 
+/* local s = selection.randline(sel, x1,y1, x2,y2, roughness); */
+/* local s = selection.randline(x1,y1, x2,y2, roughness); */
+/* TODO: selection.randline(x1,y1, x2,y2, roughness); */
+/* TODO: selection.randline({x1,y1}, {x2,y2}, roughness); */
 /** C ref: nhlsel.c:591 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_randline(L) {
     let argc = lua_gettop(L);
@@ -505,6 +606,7 @@ function l_selection_randline(L) {
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
     let roughness = 7;
+
     if (argc == 6) {
         void l_selection_check(L, 1);
         x1.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
@@ -523,14 +625,18 @@ function l_selection_randline(L) {
         void l_selection_new(L);
         void l_selection_check(L, 1);
     }
+
     get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0)));
     get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0)));
+
     void l_selection_clone(L);
     sel = l_selection_check(L, 2);
     selection_do_randline(x1.v, y1.v, x2.v, y2.v, schar(roughness), 12, sel);
     return 1;
 }
 
+/* local s = selection.grow(sel); */
+/* local s = selection.grow(sel, "north"); */
 const __static_l_selection_grow_growdirs = cptr.alloc(7 * 8);
 cptr.stPtro(__static_l_selection_grow_growdirs, 0, __s_all);
 cptr.stPtro(__static_l_selection_grow_growdirs, 8, __s_random);
@@ -553,35 +659,44 @@ function l_selection_grow(L) {
     let sel;
     let dir;
     let argc = lua_gettop(L);
+
     void l_selection_check(L, 1);
     dir = cptr.ldI32o(__static_l_selection_grow_growdirs2i, luaL_checkoption(L, 2, __s_all, __static_l_selection_grow_growdirs), 4);
+
     if (argc == 2)
-        lua_settop(L, -2);
+        lua_settop(L, -2);  /* get rid of growdir */
+
     void l_selection_clone(L);
     sel = l_selection_check(L, 2);
     selection_do_grow(sel, dir);
     return 1;
 }
 
+/* local s = selection.filter_mapchar(sel, mapchar, lit); */
 /** C ref: nhlsel.c:657 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_filter_mapchar(L) {
     let argc = lua_gettop(L);
     let sel = l_selection_check(L, 1);
     let mapchr = dupstr((luaL_checklstring(L, 2, null)));
     let typ = i16(check_mapchr(mapchr));
-    let lit = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, -2n)));
+    let lit = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, -2n)));  /* TODO: special lit values */
     let tmp;
+
     if (typ == NHC.INVALID_TYPE)
         nhl_error(L, __s_erroneous_map_char);
+
     tmp = selection_filter_mapchar(sel, typ, lit);
     lua_settop(L, (-(argc) - 1) | 0);
     l_selection_push_copy(L, tmp);
     selection_free(tmp, 1);
+
     if (mapchr)
         cptr.free(mapchr);
+
     return 1;
 }
 
+/* local s = selection.match([[...]]); */
 /** C ref: nhlsel.c:682 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_match(L) {
     let argc = lua_gettop(L);
@@ -589,28 +704,42 @@ function l_selection_match(L) {
     let mf = cptr.box(null);
     let x;
     let y;
+
     if (argc == 1) {
         let err;
         let mapstr = dupstr((luaL_checklstring(L, 1, null)));
         lua_settop(L, -2);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
+
         mf.v = mapfrag_fromstr(mapstr);
         cptr.free(mapstr);
+
         if (!cptr.eq((err = mapfrag_error(mf.v)), (null))) {
             nhl_error(L, err);
+            /*NOTREACHED*/
         }
+
     } else {
         nhl_error(L, __s_wrong_parameters);
+        /*NOTREACHED*/
     }
+
     for (y = 0; y <= cptr.ldI32o(sel, $selectionvar_hei); y++)
         for (x = 1; x < cptr.ldI32(sel); x++)
             selection_setpoint(i16(x), i16(y), sel, mapfrag_match(mf.v, x, y) ? 1 : 0);
+
+    /* unless the (0, 1) coordinate is a match, this would wind up with a
+       selection with lx=COLNO, hx=0, etc, so fix the boundaries */
     selection_recalc_bounds(sel);
+
     mapfrag_free(mf);
+
     return 1;
 }
 
+/* local s = selection.floodfill(x,y); */
+/* local s = selection.floodfill(x,y, diagonals); */
 /** C ref: nhlsel.c:726 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_flood(L) {
     let argc = lua_gettop(L);
@@ -618,6 +747,7 @@ function l_selection_flood(L) {
     let x = cptr.box(0);
     let y = cptr.box(0);
     let diagonals = 0;
+
     if (argc == 2 || argc == 3) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
@@ -628,8 +758,11 @@ function l_selection_flood(L) {
         sel = l_selection_check(L, 1);
     } else {
         nhl_error(L, __s_wrong_parameters);
+        /*NOTREACHED*/
     }
+
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+
     if (isok(x.v, y.v)) {
         set_floodfillchk_match_under(i16(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)));
         selection_floodfill(sel, x.v, y.v, diagonals);
@@ -637,6 +770,10 @@ function l_selection_flood(L) {
     return 1;
 }
 
+/* local s = selection.circle(x,y, radius); */
+/* local s = selection.circle(x, y, radius, filled); */
+/* local s = selection.circle(sel, x, y, radius); */
+/* local s = selection.circle(sel, x, y, radius, filled); */
 /** C ref: nhlsel.c:762 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_circle(L) {
     let argc = lua_gettop(L);
@@ -645,6 +782,7 @@ function l_selection_circle(L) {
     let y = cptr.box(0);
     let r = 0;
     let filled = 0;
+
     if (argc == 3) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
@@ -657,7 +795,7 @@ function l_selection_circle(L) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
-        filled = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
+        filled = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));  /* TODO: boolean*/
         lua_settop(L, -5);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
@@ -666,16 +804,24 @@ function l_selection_circle(L) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
         r = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
-        filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 5, 0n)));
+        filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 5, 0n)));  /* TODO: boolean */
     } else {
         nhl_error(L, __s_wrong_parameters);
+        /*NOTREACHED*/
     }
+
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+
     selection_do_ellipse(sel, x.v, y.v, r, r, !filled);
+
     lua_settop(L, 1);
     return 1;
 }
 
+/* local s = selection.ellipse(x, y, radius1, radius2); */
+/* local s = selection.ellipse(x, y, radius1, radius2, filled); */
+/* local s = selection.ellipse(sel, x, y, radius1, radius2); */
+/* local s = selection.ellipse(sel, x, y, radius1, radius2, filled); */
 /** C ref: nhlsel.c:810 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_ellipse(L) {
     let argc = lua_gettop(L);
@@ -685,6 +831,7 @@ function l_selection_ellipse(L) {
     let r1 = 0;
     let r2 = 0;
     let filled = 0;
+
     if (argc == 4) {
         x.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 1)));
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
@@ -699,7 +846,7 @@ function l_selection_ellipse(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 2)));
         r1 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 3)));
         r2 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
-        filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 5, 0n)));
+        filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 5, 0n)));  /* TODO: boolean */
         lua_settop(L, -6);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
@@ -709,16 +856,25 @@ function l_selection_ellipse(L) {
         y.v = Number(BigInt.asIntN(16, luaL_checkinteger(L, 3)));
         r1 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 4)));
         r2 = Number(BigInt.asIntN(32, luaL_checkinteger(L, 5)));
-        filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 6, 0n)));
+        filled = Number(BigInt.asIntN(32, luaL_optinteger(L, 6, 0n)));  /* TODO: boolean */
     } else {
         nhl_error(L, __s_wrong_parameters);
+        /*NOTREACHED*/
     }
+
     get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0)));
+
     selection_do_ellipse(sel, x.v, y.v, r1, r2, !filled);
+
     lua_settop(L, 1);
     return 1;
 }
 
+/* Gradients are versatile enough, with so many independently optional
+ * arguments, that it doesn't seem helpful to provide a non-table form with
+ * non-obvious argument order. */
+/* selection.gradient({ type = "radial", x = 3, y = 5, x2 = 10, y2 = 12,
+ *                      mindist = 4, maxdist = 10, limited = false });    */
 const __static_l_selection_gradient_gradtypes = cptr.alloc(3 * 8);
 cptr.stPtro(__static_l_selection_gradient_gradtypes, 0, __s_radial);
 cptr.stPtro(__static_l_selection_gradient_gradtypes, 8, __s_square);
@@ -732,13 +888,19 @@ cptr.stI32o(__static_l_selection_gradient_gradtypes2i, 8, -1); /** C ref: nhlsel
 function l_selection_gradient(L) {
     let argc = lua_gettop(L);
     let sel = null;
+    /* if x2 and y2 aren't set, the gradient has a single center point of x,y;
+     * if they are set, the gradient is centered on a (x,y) to (x2,y2) line */
     let x = cptr.box(0);
     let y = cptr.box(0);
     let x2 = cptr.box(-1);
     let y2 = cptr.box(-1);
+    /* points are always added within mindist of the center; the chance for a
+     * point between mindist and maxdist to be added to the selection starts
+     * at 100% at mindist and decreases linearly to 0% at maxdist */
     let mindist = 0;
     let maxdist = 0;
     let type = 0n;
+
     if (argc == 1 && lua_type(L, 1) == 5) {
         lcheck_param_table(L);
         type = BigInt(cptr.ldI32o(__static_l_selection_gradient_gradtypes2i, get_table_option(L, __s_type, __s_radial, __static_l_selection_gradient_gradtypes), 4));
@@ -748,23 +910,38 @@ function l_selection_gradient(L) {
         y2.v = i16(get_table_int_opt(L, __s_y2, -1));
         cvt_to_abscoord(x, y);
         cvt_to_abscoord(x2, y2);
+        /* maxdist is required because there's no obvious default value for
+         * it, whereas mindist has an obvious default of 0 */
         maxdist = i16(get_table_int(L, __s_maxdist));
         mindist = i16(get_table_int_opt(L, __s_mindist, 0));
+
         lua_settop(L, -2);
         void l_selection_new(L);
         sel = l_selection_check(L, 1);
     } else {
         nhl_error(L, __s_selection_gradient_requires_table);
+        /* NOTREACHED */
     }
+
+    /* someone might conceivably want to draw a gradient somewhere off-map. So
+     * the only coordinate that's "illegal" for that is (-1,-1).
+     * If a level designer really needs to draw a gradient line using that
+     * coordinate, they can do so by setting regular x and y to -1. */
     if (x2.v == -1 && y2.v == -1) {
         x2.v = x.v;
         y2.v = y.v;
     }
+
     selection_do_gradient(sel, BigInt(x.v), BigInt(y.v), BigInt(x2.v), BigInt(y2.v), type, BigInt(mindist), BigInt(maxdist));
     lua_settop(L, 1);
     return 1;
 }
 
+/* sel:iterate(function(x,y) ... end);
+ * The x, y coordinates passed to the function are map- or room-relative
+ * rather than absolute, unless there has been no previous map or room
+ * defined.
+ */
 /** C ref: nhlsel.c:925 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_iterate(L) {
     let argc = lua_gettop(L);
@@ -773,6 +950,7 @@ function l_selection_iterate(L) {
     let y;
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     __lbl_out: {
+
         if (argc == 2 && lua_type(L, 2) == 6) {
             sel = l_selection_check(L, 1);
             selection_getbounds(sel, rect);
@@ -786,6 +964,7 @@ function l_selection_iterate(L) {
                         lua_pushinteger(L, BigInt(tmpx.v));
                         lua_pushinteger(L, BigInt(tmpy.v));
                         if (nhl_pcall_handle(L, 2, 0, __s_l_selection_iterate, NHC.NHLpa_impossible)) {
+                            /* abort loops to prevent possible error cascade */
                             break __lbl_out;
                         }
                     }
@@ -793,21 +972,27 @@ function l_selection_iterate(L) {
             }
         } else {
             nhl_error(L, __s_wrong_parameters);
+            /*NOTREACHED*/
         }
     }
     return 0;
 }
 
+/* local txt = sel:describe_size(); */
+/* gives a textual description of the selection size */
 /** C ref: nhlsel.c:962 — @param {CPtr<lua_State>} L @returns {CInt} */
 function l_selection_size_description(L) {
     let argc = lua_gettop(L);
+
     if (argc == 1) {
         let sel = l_selection_check(L, 1);
         let buf = new Uint8Array(256);
+
         lua_pushstring(L, selection_size_description(sel, cptr.decay(buf)));
         return 1;
     } else {
         nhl_error(L, __s_wrong_parameters);
+        /*NOTREACHED*/
     }
     return 0;
 }
@@ -888,15 +1073,29 @@ cptr.stPtro(l_selection_meta, 128 + $luaL_Reg_func, null);
 
 /** C ref: nhlsel.c:1025 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function l_selection_register(L) {
+    /* Table of instance methods and static methods. */
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n)))), luaL_setfuncs(L, l_selection_methods, 0));
+
+    /* metatable = { __name = "selection", __gc = l_selection_gc } */
     luaL_newmetatable(L, __s_selection);
     luaL_setfuncs(L, l_selection_meta, 0);
+
+    /* metatable.__index points at the selection method table. */
     lua_pushvalue(L, -2);
     lua_setfield(L, -2, __s_index);
+
+    /* Don't let lua code mess with the real metatable.
+       Instead offer a fake one that only contains __gc. */
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, l_selection_meta, 0));
     lua_setfield(L, -2, __s_metatable);
+
+    /* We don't need the metatable anymore. It's safe in the
+       Lua registry for use by luaL_setmetatable. */
     lua_settop(L, -2);
+
+    /* global selection = the method table we created at the start */
     lua_setglobal(L, __s_selection);
+
     return 0;
 }
 

@@ -215,6 +215,16 @@ const __s_wall_angle_bottom_of_crwall_check = cptr.lit("wall_angle: bottom of cr
 const __s_wall_angle_unknown_crosswall_mode = cptr.lit("wall_angle: unknown crosswall mode");
 const __s_wall_angle_unexpected_wall_type_d = cptr.lit("wall_angle: unexpected wall type %d");
 
+/*
+ *      See display.h for descriptions of tp_sensemon() through
+ *      is_safemon().  Some of these were generating an awful lot of
+ *      code "behind the curtain", particularly canspotmon() (which is
+ *      still a macro but one that now expands to a pair of function
+ *      calls rather than to a ton of special case checks).  Return
+ *      values are all int 0 or 1, not boolean.
+ *
+ *      They're still implemented as macros within this file.
+ */
 /** C ref: display.c:166 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tp_sensemon(mon) {
     return ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range)))) ? 1 : 0);
@@ -250,16 +260,37 @@ export function knowninvisible(mon) {
     return ((cptr.ldI32o((mon), $monst_minvis) & 1) | 0 && ((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mon), $monst_my), 8), cptr.ldI16o((mon), $monst_mx)) & NHM.IN_SIGHT) != 0) && (See_invisible() || Detect_monsters())) || (!Blind() && (HTelepat() & -117440513n) && dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 64)) ? 1 : 0);
 }
 
+/* #define knowninvisible() isn't useful here */
+
 /** C ref: display.c:215 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function is_safemon(mon) {
     return (cptr.ld1so(flags, $flag_safe_dog) && (cptr.ldI32o((mon), $monst_mpeaceful) & 1) | 0 && ((((cptr.ldI32o(mon, $monst_wormno) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0) || (!Blind() && Infravision() && ((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_INFRAVISIBLE)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0)) ? 1 : 0)) && ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1))) || ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))))) && !HConfusion() && !Hallucination() && !HStun() ? 1 : 0);
 }
 
+/* #define is_safemon() isn't useful here */
+
+/*
+ *      End of former macro-only vision related (mostly) routines
+ *      converted to functions.
+ */
+
+/*
+ * magic_map_background()
+ *
+ * This function is similar to map_background (see below) except we pay
+ * attention to and correct unexplored, lit ROOM and CORR spots.
+ */
 /** C ref: display.c:233 — @param {CInt} x @param {CInt} y @param {CInt} show */
 export function magic_map_background(x, y, show) {
-    let glyph = back_to_glyph(x, y);
+    let glyph = back_to_glyph(x, y);  /* assumes hero can see x,y */
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+
+    /*
+     * Correct for out of sight lit corridors and rooms that the hero
+     * doesn't remember as lit.
+     */
     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && !(cptr.ldI32o(lev, $rm_waslit) & 1)) {
+        /* Floor spaces are dark if unlit.  Corridors are dark if unlit. */
         if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM && glyph == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
             glyph = (cptr.ld1so(flags, $flag_dark_room) && cptr.ld1so(iflags, $instance_flags_wc_color)) ? (((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) <= NHC.S_trwall) ? (((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) < NHC.S_altar) ? (((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) <= NHC.S_goodpos) ? (((((((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_stone : NHC.S_darkroom)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : NHC.GLYPH_NOTHING_OFF;
         else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR && glyph == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
@@ -269,54 +300,106 @@ export function magic_map_background(x, y, show) {
         cptr.stI32(lev, glyph);
     if (show)
         show_glyph(x, y, glyph);
+
     update_lastseentyp(x, y);
 }
 
+/*
+ * The routines map_background(), map_object(), and map_trap() could just
+ * as easily be:
+ *
+ *      map_glyph(x,y,glyph,show)
+ *
+ * Which is called with the xx_to_glyph() in the call.  Then I can get
+ * rid of 3 routines that don't do very much anyway.  And then stop
+ * having to create fake objects and traps.  However, I am reluctant to
+ * make this change.
+ */
+
+/*
+ * map_background()
+ *
+ * Make the real background part of our map.  This routine assumes that
+ * the hero can physically see the location.  Update the screen if directed.
+ */
 /** C ref: display.c:279 — @param {CInt} x @param {CInt} y @param {CInt} show */
 export function map_background(x, y, show) {
     let glyph = back_to_glyph(x, y);
+
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1))
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
     if (show)
         show_glyph(x, y, glyph);
 }
 
+/*
+ * map_trap()
+ *
+ * Map the trap and print it out if directed.  This routine assumes that the
+ * hero can physically see the location.
+ */
 /** C ref: display.c:296 — @param {CPtr<struct trap>} trap @param {CInt} show */
 export function map_trap(trap, show) {
     let x = cptr.ldI16o(trap, $trap_tx);
     let y = cptr.ldI16o(trap, $trap_ty);
     let glyph = (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1))
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
     if (show)
         show_glyph(x, y, glyph);
 }
 
+/*
+ * map_engraving()
+ *
+ * Map the engraving and print it out if directed.
+ */
 /** C ref: display.c:313 — @param {CPtr<struct engr>} ep @param {CInt} show */
 export function map_engraving(ep, show) {
     let x = cptr.ldI16o(ep, $engr_engr_x);
     let y = cptr.ldI16o(ep, $engr_engr_y);
     let glyph = (((engraving_to_defsym(ep)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((engraving_to_defsym(ep)) <= NHC.S_trwall) ? (((((engraving_to_defsym(ep)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((engraving_to_defsym(ep)) < NHC.S_altar) ? cmap_a_to_glyph(ep) : (((engraving_to_defsym(ep)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((engraving_to_defsym(ep)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(ep) : (((engraving_to_defsym(ep)) <= NHC.S_goodpos) ? cmap_c_to_glyph(ep) : NHC.MAX_GLYPH))))));
+
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1))
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
     if (show)
         show_glyph(x, y, glyph);
 }
 
+/*
+ * map_object()
+ *
+ * Map the given object.  This routine assumes that the hero can physically
+ * see the location of the object.  Update the screen if directed.
+ * [Note: feel_location() -> map_location() -> map_object() contradicts
+ * the claim here that the hero can see obj's <ox,oy>.]
+ */
 /** C ref: display.c:333 — @param {CPtr<struct obj>} obj @param {CInt} show */
 export function map_object(obj, show) {
     let x = cptr.ldI16o(obj, $obj_ox);
     let y = cptr.ldI16o(obj, $obj_oy);
     let glyph = ((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(obj) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
+
+    /* if this object is already displayed as a generic object, it might
+       become a specific one now */
     if (glyph_is_generic_object(glyph) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && !Hallucination()) {
+        /* these 'r' and 'neardist' calculations match distant_name(objnam.c)
+           and see_nearby_objects(below); we assume that this is a lone
+           object or a pile-top, not something below the top of a pile */
         let r = (cptr.ldI32o(u, $you_xray_range) > 2) ? cptr.ldI32o(u, $you_xray_range) : 2;
-        let neardist = (Math.imul((Math.imul(r, r)), 2) - r) | 0;
+        let neardist = (Math.imul((Math.imul(r, r)), 2) - r) | 0;  /* same as r*r + r*(r-1) */
+
         if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= neardist) {
             observe_object(obj);
             glyph = ((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(obj) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
         }
     }
+
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1)) {
+        /* MRKR: While hallucinating, statues are seen as random monsters */
+        /*       but remembered as random objects.                        */
+
         if (Hallucination() && cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)));
         } else {
@@ -327,6 +410,15 @@ export function map_object(obj, show) {
         show_glyph(x, y, glyph);
 }
 
+/*
+ * map_invisible()
+ *
+ * Make the hero remember that a square contains an invisible monster.
+ * This is a special case in that the square will continue to be displayed
+ * this way even when the hero is close enough to see it.  To get rid of
+ * this and display the square's actual contents, use unmap_object() followed
+ * by newsym() if necessary.
+ */
 /** C ref: display.c:378 — @param {CInt} x @param {CInt} y */
 export function map_invisible(x, y) {
     if (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy)) {
@@ -346,16 +438,28 @@ export function unmap_invisible(x, y) {
     return 0;
 }
 
+/*
+ * unmap_object()
+ *
+ * Remove something from the map when the hero realizes it's not there
+ * anymore.  Replace it with background or known trap, but not with
+ * any other remembered object.  If this is used for detection, a full
+ * screen update is imminent anyway; if this is used to get rid of an
+ * invisible monster notation, we might have to call newsym().
+ */
 /** C ref: display.c:409 — @param {CInt} x @param {CInt} y */
 export function unmap_object(x, y) {
     let trap;
     let ep;
+
     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1))
         return;
+
     if ((trap = t_at(x, y)) !== null && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && !((is_pool(x, y) && !Underwater()) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL))) {
         map_trap(trap, 0);
     } else if (cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) {
         let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+
         if (spot_shows_engravings(x, y) && (ep = engr_at(x, y)) !== null && !((is_pool(x, y) && !Underwater()) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL))) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                 cptr.stI32o(ep, $engr_erevealed, 1);
@@ -363,10 +467,12 @@ export function unmap_object(x, y) {
         } else {
             map_background(x, y, 0);
         }
+
+        /* turn remembered dark room squares dark */
         if (!(cptr.ldI32o(lev, $rm_waslit) & 1) && cptr.ldI32(lev) == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && cptr.ld1so(lev, $rm_typ) == NHC.ROOM)
             cptr.stI32(lev, NHC.GLYPH_CMAP_STONE_OFF);
     } else {
-        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, NHC.GLYPH_CMAP_STONE_OFF);
+        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, NHC.GLYPH_CMAP_STONE_OFF);  /* default val */
     }
 }
 
@@ -392,22 +498,46 @@ export function map_location(x, y, show) {
     }
 }
 
+/* display something on monster layer; may need to fixup object layer */
 /** C ref: display.c:482 — @param {CInt} x @param {CInt} y @param {CInt} monglyph */
 function show_mon_or_warn(x, y, monglyph) {
     let o;
+
+    /* "remembered, unseen monster" is tracked by object layer so if we're
+       putting something on monster layer at same spot, stop remembering
+       that; if an object is in view there, start remembering it instead */
     if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_INVIS_OFF)) {
         unmap_object(x, y);
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && (o = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null)
             map_object(o, 0);
     }
+
     show_glyph(x, y, monglyph);
 }
 
+/*
+ * display_monster()
+ *
+ * Note that this is *not* a map_XXXX() function!  Monsters sort of float
+ * above everything.
+ *
+ * Yuck.  Display body parts by recognizing that the display position is
+ * not the same as the monster position.  Currently the only body part is
+ * a worm tail.
+ *
+ */
 /** C ref: display.c:514 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mon @param {CInt} sightflags @param {CInt} worm_tail */
 function display_monster(x, y, mon, sightflags, worm_tail) {
     let mon_mimic = schar(((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING));
     let sensed = (mon_mimic && (Protection_from_shape_changers() || ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))))) ? 1 : 0);
     let mgendercode = (cptr.ldI32o(mon, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE;
+
+    /*
+     * We must do the mimic check first.  If the mimic is mimicking something,
+     * and the location is in sight, we have to change the hero's memory
+     * so that when the position is out of sight, the hero remembers what
+     * the mimic was mimicking.
+     */
     if (mon_mimic && (sightflags == 1)) {
         switch ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
             default:
@@ -418,37 +548,66 @@ function display_monster(x, y, mon, sightflags, worm_tail) {
             show_glyph(x, y, (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((mon), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
             break;
             case NHC.M_AP_FURNITURE:
+
             {
+                /*
+                 * This is a poor man's version of map_background().  I can't
+                 * use map_background() because we are overriding what is in
+                 * the 'typ' field.  Maybe have map_background()'s parameters
+                 * be (x,y,glyph) instead of just (x,y).
+                 *
+                 * mappearance is currently set to an S_ index value in
+                 * makemon.c.
+                 */
                 let sym = cptr.ldI32o(mon, $monst_mappearance) | 0;
                 let glyph = (((sym) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((sym) <= NHC.S_trwall) ? (((((sym) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((sym) < NHC.S_altar) ? (((((sym) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((sym) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((sym) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((sym) <= NHC.S_goodpos) ? (((((sym) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, glyph);
                 if (!sensed) {
                     show_glyph(x, y, glyph);
+                    /* override real topology with mimic's fake one */
                     cptr.st1o3(svl, x, 21, y, 1, 0, schar(cmap_to_type(sym)));
                 }
                 break;
             }
             case NHC.M_AP_OBJECT:
+
             {
+                /* Make a fake object to send to map_object(). */
                 let obj = cptr.alloc(216);
+
                 cptr.memcpy(obj, cg, 216);
                 cptr.stI16o(obj, $obj_ox, x);
                 cptr.stI16o(obj, $obj_oy, y);
                 cptr.stI16o(obj, $obj_otyp, i16(cptr.ldI32o(mon, $monst_mappearance)));
+                /* might be mimicking a corpse or statue */
                 cptr.stI32o(obj, $obj_corpsenm, has_mcorpsenm(mon) ? (cptr.ldI32o(cptr.ldPtro((mon), $monst_mextra), $mextra_mcorpsenm)) : NHC.PM_TENGU);
                 map_object(obj, !sensed);
                 break;
             }
             case NHC.M_AP_MONSTER:
+
             {
                 let mndx = (Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : cptr.ldI32o(mon, $monst_mappearance) | 0);
+
                 show_glyph(x, y, (((mndx) + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
                 break;
-            }
-        }
+            }  /* case M_AP_MONSTER */
+        }  /* switch M_AP_TYPE() */
     }
+
+    /* If mimic is unsuccessfully mimicking something, display the monster. */
     if (!mon_mimic || sensed) {
         let num;
+
+        /* [ALI] Only use detected glyphs when monster wouldn't be
+         * visible by any other means.
+         *
+         * There are no glyphs for "detected pets" so we have to
+         * decide whether to display such things as detected or as tame.
+         * If both are being highlighted in the same way, it doesn't
+         * matter, but if not, showing them as pets is preferrable.
+         */
         if (cptr.ld1so(mon, $monst_mtame) && !Hallucination()) {
             if (worm_tail)
                 num = ((NHC.PM_LONG_WORM_TAIL + (((mgendercode) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0);
@@ -470,13 +629,24 @@ function display_monster(x, y, mon, sightflags, worm_tail) {
     }
 }
 
+/*
+ * display_warning()
+ *
+ * This is also *not* a map_XXXX() function!  Monster warnings float
+ * above everything just like monsters do, but only if the monster
+ * is not showing.
+ *
+ * Do not call for worm tails.
+ */
 /** C ref: display.c:634 — @param {CPtr<struct monst>} mon */
 function display_warning(mon) {
     let x = cptr.ldI16o(mon, $monst_mx);
     let y = cptr.ldI16o(mon, $monst_my);
     let glyph;
+
     if ((Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel)))) {
         let wl = Hallucination() ? (rn2_on_display_rng(5) + 1) | 0 : warning_of(mon);
+
         glyph = (((wl) + NHC.GLYPH_WARNING_OFF) | 0);
     } else if ((Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))) {
         glyph = (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((mon), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mon), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
@@ -491,33 +661,57 @@ function display_warning(mon) {
 export function warning_of(mon) {
     let wl = 0;
     let tmp = 0;
+
     if ((Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel)))) {
-        tmp = ((cptr.ld1uo(mon, $monst_m_lev) / 4) | 0);
+        tmp = ((cptr.ld1uo(mon, $monst_m_lev) / 4) | 0);  /* match display.h */
         wl = (tmp > 5) ? 5 : tmp;
     }
     return wl;
 }
 
+/* used by newsym() to decide whether to show a monster or a visible gas
+   cloud region when both are at the same spot; caller deals with region */
 /** C ref: display.c:668 — @param {CPtr<struct monst>} mon @param {CInt} mx @param {CInt} my @returns {CInt} */
 function mon_overrides_region(mon, mx, my) {
     let r;
+
+    /* this is redundant because newsym() doesn't call us when swallowed */
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (!mon || !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))))
         return 0;
+
     if (mon) {
+        /* when not a worm tail, show mon if sensed rather than seen */
         if (mx == cptr.ldI16o(mon, $monst_mx) && my == cptr.ldI16o(mon, $monst_my) && (((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data)))))))) || (Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel)))))
             return 1;
+
+        /* even if worm tail;
+           check whether the spot is adjacent and 'mon' would be visible
+           there if the gas cloud wasn't interfering with normal vision;
+           _mon_visible() handles mon->mundetected; don't need to check
+           infravision when monster is adjacent */
         r = (cptr.ldI32o(u, $you_xray_range) > 1) ? cptr.ldI32o(u, $you_xray_range) : 1;
         if (!Blind() && ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1)) && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT && dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= Math.imul(r, ((r + 1) | 0)))
             return 1;
     }
+
+    /* if not overriding region for current mon, propagate "remembered,
+       unseen monster" */
     return schar((((cptr.ldI32o3(svl, mx, $sizeof_rm_x21, my, $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_INVIS_OFF) ? 1 : 0));
 }
 
+/* map or status window might not be ready for output during level creation
+   or game restoration (something like u.usteed which affects display of
+   the hero and also a status condition might not be set up yet) */
 /** C ref: display.c:715 @returns {CInt} */
 export function suppress_map_output() {
     return schar((cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup) ? 1 : 0));
 }
 
+/*
+ * feel_newsym()
+ *
+ * When hero knows what happened to location, even when blind.
+ */
 /** C ref: display.c:726 — @param {CInt} x @param {CInt} y */
 export function feel_newsym(x, y) {
     if (Blind())
@@ -526,23 +720,62 @@ export function feel_newsym(x, y) {
         newsym(x, y);
 }
 
+/*
+ * feel_location()
+ *
+ * Feel the given location.  This assumes that the hero is blind and that
+ * the given position is either the hero's or one of the eight squares
+ * adjacent to the hero (except for a boulder push).
+ * If an invisible monster has gone away, that will be discovered.  If an
+ * invisible monster has appeared, this will _not_ be discovered since
+ * searching only finds one monster per turn so we must check that separately.
+ */
 /** C ref: display.c:746 — @param {CInt} x @param {CInt} y */
 export function feel_location(x, y) {
     let lev;
     let boulder;
     let mon;
     let ep;
+
+    /* replicate safeguards used by newsym(); might not be required here */
     if ((cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup)))
         return;
     if (!isok(x, y))
         return;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+    /* If hero's memory of an invisible monster is accurate, we want to keep
+     * him from detecting the same monster over and over again on each turn.
+     * We must return (so we don't erase the monster).  (We must also, in the
+     * search function, be sure to skip over previously detected 'I's.)
+     */
     if (((cptr.ldI32(lev)) == NHC.GLYPH_INVIS_OFF) && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)))
         return;
+
+    /* The hero can't feel non pool locations while under water
+       except for lava and ice. */
     if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_pool_or_lava(x, y) && !is_ice(x, y))
         return;
+
+    /* Set the seen vector as if the hero had seen it.
+       It doesn't matter if the hero is levitating or not. */
     set_seenv(lev, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y);
+
     if (!can_reach_floor(0)) {
+        /*
+         * Levitation Rules.  It is assumed that the hero can feel the state
+         * of the walls around herself and can tell if she is in a corridor,
+         * room, or doorway.  Boulders are felt because they are large enough.
+         * Anything else is unknown because the hero can't reach the ground.
+         * This makes things difficult.
+         *
+         * Check (and display) in order:
+         *
+         *      + Stone, walls, and closed doors.
+         *      + Boulders.  [see a boulder before a doorway]
+         *      + doors.
+         *      + Room/water positions
+         *      + Everything else (hallways!)
+         */
         if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 12))) {
             map_background(x, y, 1);
         } else if ((boulder = sobj_at(NHC.BOULDER, x, y)) !== null) {
@@ -551,6 +784,31 @@ export function feel_location(x, y) {
             map_background(x, y, 1);
         } else if (((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) || IS_POOL(cptr.ld1so(lev, $rm_typ))) {
             let do_room_glyph;
+
+            /*
+             * An open room or water location.  Normally we wouldn't touch
+             * this, but we have to get rid of remembered boulder symbols.
+             * This will only occur in rare occasions when the hero goes
+             * blind and doesn't find a boulder where expected (something
+             * came along and picked it up).  We know that there is not a
+             * boulder at this location.  Show fountains, pools, etc.
+             * underneath if already seen.  Otherwise, show the appropriate
+             * floor symbol.
+             *
+             * Similarly, if the hero digs a hole in a wall or feels a
+             * location that used to contain an unseen monster.  In these
+             * cases, there's no reason to assume anything was underneath,
+             * so just show the appropriate floor symbol.  If something was
+             * embedded in the wall, the glyph will probably already
+             * reflect that.  Don't change the symbol in this case.
+             *
+             * This isn't quite correct.  If the boulder was on top of some
+             * other objects they should be seen once the boulder is removed.
+             * However, we have no way of knowing that what is there now
+             * was there then.  So we let the hero have a lapse of memory.
+             * We could also just display what is currently on the top of the
+             * object stack (if anything).
+             */
             do_room_glyph = 0;
             if (cptr.ldI32(lev) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) || ((cptr.ldI32(lev)) == NHC.GLYPH_INVIS_OFF)) {
                 if (cptr.ld1so(lev, $rm_typ) != NHC.ROOM && cptr.ld1uo(lev, $rm_seenv))
@@ -565,7 +823,10 @@ export function feel_location(x, y) {
                 show_glyph(x, y, cptr.ldI32(lev));
             }
         } else {
+            /* We feel it (I think hallways are the only things left). */
             map_background(x, y, 1);
+            /* Corridors are never felt as lit (unless remembered that way) */
+            /* (lit_corridor only).                                         */
             if (cptr.ld1so(lev, $rm_typ) == NHC.CORR && cptr.ldI32(lev) == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && !(cptr.ldI32o(lev, $rm_waslit) & 1))
                 show_glyph(x, y, cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)));
             else if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM && cptr.ld1so(flags, $flag_dark_room) && cptr.ld1so(iflags, $instance_flags_wc_color) && cptr.ldI32(lev) == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
@@ -575,6 +836,7 @@ export function feel_location(x, y) {
         if ((ep = engr_at(x, y)) !== null && engr_can_be_felt(ep))
             cptr.stI32o(ep, $engr_erevealed, 1);
         {
+
             let obj;
             let trap;
             let ml_ep;
@@ -592,25 +854,47 @@ export function feel_location(x, y) {
             if (!Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
                 show_region(_ml_reg, x, y);
         }
+
         if (Punished()) {
+            /*
+             * A ball or chain is only felt if it is first on the object
+             * location list.  Otherwise, we need to clear the felt bit ---
+             * something has been dropped on the ball/chain.  If the bit is
+             * not cleared, then when the ball/chain is moved it will drop
+             * the wrong glyph.
+             *
+             * Note: during unpunish() we can be called by delobj() when
+             * destroying uchain while uball hasn't been cleared yet (so
+             * Punished will still yield True but uchain might not be part
+             * of the floor list anymore).
+             */
             if (uchain.v && cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uchain.v, $obj_ox) == x && cptr.ldI16o(uchain.v, $obj_oy) == y && cptr.eq(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), uchain.v))
                 cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) | NHM.BC_CHAIN);
             else
-                cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -3);
+                cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -3);  /* do not feel the chain */
+
             if (uball.v && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR && cptr.ldI16o(uball.v, $obj_ox) == x && cptr.ldI16o(uball.v, $obj_oy) == y && cptr.eq(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), uball.v))
                 cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) | NHM.BC_BALL);
             else
-                cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -2);
+                cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -2);  /* do not feel the ball */
         }
+
+        /* Floor spaces are dark if unlit.  Corridors are dark if unlit. */
         if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM && cptr.ldI32(lev) == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && (!(cptr.ldI32o(lev, $rm_waslit) & 1) || (cptr.ld1so(flags, $flag_dark_room) && cptr.ld1so(iflags, $instance_flags_wc_color))))
             show_glyph(x, y, cptr.stI32(lev, (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) <= NHC.S_trwall) ? (((((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) < NHC.S_altar) ? (((((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) <= NHC.S_goodpos) ? (((((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))))));
         else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR && cptr.ldI32(lev) == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && !(cptr.ldI32o(lev, $rm_waslit) & 1))
             show_glyph(x, y, cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)));
     }
+    /* draw monster on top if we can sense it */
     if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && (mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data)))))))))
         display_monster(x, y, mon, (((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))) ? 1 : 2, schar(((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my))) ? 1 : 0)));
 }
 
+/*
+ * newsym()
+ *
+ * Possibly put a new glyph at the given location.
+ */
 /** C ref: display.c:917 — @param {CInt} x @param {CInt} y */
 export function newsym(x, y) {
     let lev;
@@ -618,40 +902,88 @@ export function newsym(x, y) {
     let mon;
     let see_it;
     let worm_tail;
+
+    /* don't try to produce map output when level is in a state of flux */
     if ((cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup)))
         return;
+    /* should never happen; same error handling as u_on_newpos() */
     if (!isok(x, y)) {
         let errfunc;
-        errfunc = (x < 0 || y < 0 || x > 79 || y > 20) ? panic : impossible;
+
+        errfunc = (x < 0 || y < 0 || x > 79 || y > 20) ? panic : impossible;  /* misuse of column 0 is less severe */
         (errfunc)(__s_newsym_attempting_screen_update_for_d_d, x, y);
         return;
     }
+
+    /* only permit updating the hero when swallowed */
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
             show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && ((!(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mundetected) & 1))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
         return;
     }
     if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+        /* when underwater, don't do anything unless <x,y> is an
+           adjacent water or lava or ice position */
         if (!(is_pool_or_lava(x, y) || is_ice(x, y)) || !(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
             return;
     }
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+
+    /* Can physically see the location. */
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
         let reg = visible_region_at(x, y);
-        cptr.stI32o(lev, $rm_waslit, (((cptr.ldI32o(lev, $rm_lit) & 1) | 0) != 0) >>> 0);
+        /*
+         * Don't use templit here:  E.g.
+         *
+         *      lev->waslit = !!(lev->lit || templit(x,y));
+         *
+         * Otherwise we have the "light pool" problem, where non-permanently
+         * lit areas just out of sight stay remembered as lit.  They should
+         * re-darken.
+         *
+         * Perhaps ALL areas should revert to their "unlit" look when
+         * out of sight.
+         */
+        cptr.stI32o(lev, $rm_waslit, (((cptr.ldI32o(lev, $rm_lit) & 1) | 0) != 0) >>> 0);  /* remember lit condition */
+
         mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
         worm_tail = schar(((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my))) ? 1 : 0));
+
         if ((ep = engr_at(x, y)) !== null)
-            cptr.stI32o(ep, $engr_erevealed, 1);
+            cptr.stI32o(ep, $engr_erevealed, 1);  /* even when covered by objects or a monster */
+        /*
+         * Normal region shown only on accessible positions, but
+         * poison clouds and steam clouds also shown above lava,
+         * pools and moats.
+         * However, sensed monsters (via detection or telepathy or
+         * warning) take precedence over all regions.
+         * Adjacent monsters also take precedence if they would be
+         * seen when there's no gas region.
+         *
+         * FIXME:
+         *  The adjacency checking [in mon_overrides_region()] works
+         *  when the hero is outside the region and the monster is
+         *  inside, and when they're both inside, but not when the
+         *  hero is inside and monster outside (because 'reg' will be
+         *  Null for mon's <x,y>).  Checking whether hero is inside
+         *  a region for every newsym() seems excessive.  The hero is
+         *  usually blind when in a gas cloud so the problem is less
+         *  noticeable then it might otherwise be.
+         */
         if (reg && (((cptr.ld1so(lev, $rm_typ)) >= NHC.DOOR) || (cptr.ld1so(reg, $NhRegion_visible) && is_pool_or_lava(x, y)))) {
             if (!mon_overrides_region(mon, x, y)) {
                 show_region(reg, x, y);
                 return;
             }
         }
+
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
             let see_self = ((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters()) ? 1 : 0);
             {
+
+                /* update map information for <u.ux,u.uy> (remembered topology
+                   and object/known trap/terrain glyph) but only display it if
+                   hero can't see him/herself, then show self if appropriate */
                 let obj;
                 let trap;
                 let ml_ep;
@@ -673,16 +1005,19 @@ export function newsym(x, y) {
                 show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && ((!(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mundetected) & 1))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
         } else {
             let show = 0;
+
             see_it = mon && (((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1)) || (!worm_tail && (((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))))) ? 1 : 0;
             if (mon && (see_it || (!worm_tail && Detect_monsters()))) {
                 if ((cptr.ldI32o(mon, $monst_mtrapped) & 1)) {
                     let trap = t_at(x, y);
                     let tt = trap ? (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP;
+
+                    /* if monster is in a physical trap, you see trap too */
                     if (tt == NHC.BEAR_TRAP || ((tt) == NHC.PIT || (tt) == NHC.SPIKED_PIT) || tt == NHC.WEB)
                         cptr.stI32o(trap, $trap_tseen, 1);
                 }
                 {
-                    let obj;
+                    let obj;  /* map under the monster */
                     let trap;
                     let ml_ep;
                     let _ml_reg;
@@ -699,6 +1034,7 @@ export function newsym(x, y) {
                     if (show && !Blind() && (_ml_reg = visible_region_at(x, y)) !== null)
                         show_region(_ml_reg, x, y);
                 }
+                /* also gets rid of any invisibility glyph */
                 display_monster(x, y, mon, see_it ? 1 : 2, worm_tail);
             } else if (mon && (Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel))) && !worm_tail) {
                 display_warning(mon);
@@ -706,7 +1042,7 @@ export function newsym(x, y) {
                 map_invisible(x, y);
             } else {
                 {
-                    let obj;
+                    let obj;  /* map the location */
                     let trap;
                     let ml_ep;
                     let _ml_reg;
@@ -725,17 +1061,44 @@ export function newsym(x, y) {
                 }
             }
         }
+
+        /* Can't see the location. */
     } else {
         let __go_show_mem = false;
         __skip_show_mem: {
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
-                feel_location(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                feel_location(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* forces an update */
+
                 if (((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters())))
                     show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && ((!(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mundetected) & 1))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
             } else if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && ((see_it = (((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data)))))) || ((!Blind() && Infravision() && ((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_INFRAVISIBLE)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0)) && ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1))) ? 1 : 0)) != 0 || (Detect_monsters() && !((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my))))))) {
+                /* Seen or sensed monsters are printed every time.
+                   This also gets rid of any invisibility glyph. */
                 display_monster(x, y, mon, see_it ? 0 : 2, schar((((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my)))) ? 1 : 0)));
             } else if (mon && (Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel))) && !((mon) && ((x != cptr.ldI16o((mon), $monst_mx)) || (y != cptr.ldI16o((mon), $monst_my))))) {
                 display_warning(mon);
+
+                /*
+                 * If the location is remembered as being both dark (waslit is false)
+                 * and lit (glyph is a lit room or lit corridor) then it was either:
+                 *
+                 *      (1) A dark location that the hero could see through night
+                 *          vision.
+                 *      (2) Darkened while out of the hero's sight.  This can happen
+                 *          when cursed scroll of light is read.
+                 *
+                 * In either case, we have to manually correct the hero's memory to
+                 * match waslit.  Deciding when to change waslit is non-trivial.
+                 *
+                 *  Note:  If flags.lit_corridor is set, then corridors act like room
+                 *         squares.  That is, they light up if in night vision range.
+                 *         If flags.lit_corridor is not set, then corridors will
+                 *         remain dark unless lit by a light spell and may darken
+                 *         again, as discussed above.
+                 *
+                 * These checks and changes must be here and not in back_to_glyph().
+                 * They are dependent on the position being out of sight.
+                 */
             } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 if (cptr.ldI32(lev) == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && cptr.ld1so(lev, $rm_typ) == NHC.CORR)
                     show_glyph(x, y, cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)));
@@ -760,18 +1123,25 @@ export function newsym(x, y) {
     }
 }
 
+/*
+ * shieldeff()
+ *
+ * Put magic shield pyrotechnics at the given location.  This *could* be
+ * pulled into a platform dependent routine for fancier graphics if desired.
+ */
 /** C ref: display.c:1110 — @param {CInt} x @param {CInt} y */
 export function shieldeff(x, y) {
     let i;
+
     if (!cptr.ld1so(flags, $flag_sparkle))
         return;
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
         for (i = 0; i < NHM.SHIELD_COUNT; i++) {
             show_glyph(x, y, (((cptr.ldI32o(shield_static, i, 4)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(shield_static, i, 4)) <= NHC.S_trwall) ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(shield_static, i, 4)) < NHC.S_altar) ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(shield_static, i, 4)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(shield_static, i, 4)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(shield_static, i, 4)) <= NHC.S_goodpos) ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
-            flush_screen(1);
+            flush_screen(1);  /* make sure the glyph shows up */
             nh_delay_output()();
         }
-        newsym(x, y);
+        newsym(x, y);  /* restore the old information */
     }
 }
 
@@ -794,6 +1164,7 @@ let __static_tmp_at_tglyph = null; /** C ref: display.c:1176 — struct tmp_glyp
 /** C ref: display.c:1174 — @param {CInt} x @param {CInt} y */
 export function tmp_at(x, y) {
     let tmp;
+
     switch (x) {
         case -1:
         case -2:
@@ -809,7 +1180,7 @@ export function tmp_at(x, y) {
         cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, 0);
         cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_style, x);
         cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_glyph, y);
-        flush_screen(0);
+        flush_screen(0);  /* flush buffered glyphs */
         return;
         case -8:
         while (__static_tmp_at_tglyph) {
@@ -822,6 +1193,7 @@ export function tmp_at(x, y) {
         default:
         break;
     }
+
     if (!__static_tmp_at_tglyph) {
         panic(__s_tmp_at_tglyph_not_initialized);
     } else {
@@ -832,15 +1204,19 @@ export function tmp_at(x, y) {
             case -7:
             if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_style) == -1 || cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_style) == -2) {
                 let i;
+
+                /* Erase (reset) from source to end */
                 for (i = 0; i < cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx); i++)
                     newsym(cptr.ldI16o(__static_tmp_at_tglyph, i, $sizeof_coord), cptr.ldI16o2(__static_tmp_at_tglyph, i, $sizeof_coord, $nhcoord_y));
             } else if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_style) == -3) {
                 let i;
+
                 if (y == -1 && cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) > 1) {
+                    /* backtrack */
                     for (i = (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) - 1) | 0; i > 0; i--) {
                         newsym(cptr.ldI16o(__static_tmp_at_tglyph, i, $sizeof_coord), cptr.ldI16o2(__static_tmp_at_tglyph, i, $sizeof_coord, $nhcoord_y));
                         show_glyph(cptr.ldI16o(__static_tmp_at_tglyph, (i - 1) | 0, $sizeof_coord), cptr.ldI16o2(__static_tmp_at_tglyph, (i - 1) | 0, $sizeof_coord, $nhcoord_y), cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_glyph));
-                        flush_screen(0);
+                        flush_screen(0);  /* make sure it shows up */
                         nh_delay_output()();
                     }
                     cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, 1);
@@ -851,6 +1227,7 @@ export function tmp_at(x, y) {
                 if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx))
                     newsym(cptr.ldI16o(__static_tmp_at_tglyph, 0, $sizeof_coord), cptr.ldI16o2(__static_tmp_at_tglyph, 0, $sizeof_coord, $nhcoord_y));
             }
+            /* tglyph->sidx = 0; -- about to be freed, so not necessary */
             tmp = cptr.ldPtro(__static_tmp_at_tglyph, $tmp_glyph_prev);
             if (!cptr.eq(__static_tmp_at_tglyph, tgfirst))
                 cptr.free(__static_tmp_at_tglyph);
@@ -863,27 +1240,30 @@ export function tmp_at(x, y) {
                 if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_style) != -2 && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     break;
                 if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) >= 160)
-                    break;
+                    break;  /* too many locations */
+                /* save pos for later erasing */
                 cptr.stI16o(__static_tmp_at_tglyph, cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx), x, $sizeof_coord);
                 cptr.stI16o2(__static_tmp_at_tglyph, cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx), $sizeof_coord, $nhcoord_y, y);
                 cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) + 1) | 0);
             } else if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_style) == -3) {
                 if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) >= 160)
-                    break;
+                    break;  /* too many locations */
                 if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx)) {
                     let px;
                     let py;
+
                     px = cptr.ldI16o(__static_tmp_at_tglyph, (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) - 1) | 0, $sizeof_coord);
                     py = cptr.ldI16o2(__static_tmp_at_tglyph, (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) - 1) | 0, $sizeof_coord, $nhcoord_y);
                     show_glyph(i16(px), i16(py), tether_glyph(i16(px), i16(py)));
                 }
+                /* save pos for later use or erasure */
                 cptr.stI16o(__static_tmp_at_tglyph, cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx), x, $sizeof_coord);
                 cptr.stI16o2(__static_tmp_at_tglyph, cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx), $sizeof_coord, $nhcoord_y, y);
                 cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx) + 1) | 0);
             } else {
                 if (cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx)) {
                     newsym(cptr.ldI16o(__static_tmp_at_tglyph, 0, $sizeof_coord), cptr.ldI16o2(__static_tmp_at_tglyph, 0, $sizeof_coord, $nhcoord_y));
-                    cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, 0);
+                    cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, 0);  /* display is presently up to date */
                 }
                 if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_style) != -5)
                     break;
@@ -891,20 +1271,31 @@ export function tmp_at(x, y) {
                 cptr.stI16o2(__static_tmp_at_tglyph, 0, $sizeof_coord, $nhcoord_y, y);
                 cptr.stI32o(__static_tmp_at_tglyph, $tmp_glyph_sidx, 1);
             }
-            show_glyph(x, y, cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_glyph));
-            flush_screen(0);
+
+            show_glyph(x, y, cptr.ldI32o(__static_tmp_at_tglyph, $tmp_glyph_glyph));  /* show it */
+            flush_screen(0);  /* make sure it shows up */
             break;
-        }
+        }  /* end switch */
     }
 }
 
+/*
+ * flash_glyph_at(x, y, glyph, repeatcount)
+ *
+ * Briefly flash between the passed glyph and the glyph that's
+ * meant to be at the location.
+ */
 /** C ref: display.c:1305 — @param {CInt} x @param {CInt} y @param {CInt} tg @param {CInt} rpt */
 export function flash_glyph_at(x, y, tg, rpt) {
     let i;
     let glyph = cptr.alloc(2 * 4);
-    rpt = Math.imul(rpt, 2);
+
+    rpt = Math.imul(rpt, 2);  /* two loop iterations per 'count' */
     cptr.stI32o(glyph, 0, tg, 4);
     cptr.stI32o(glyph, 1, ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1)) | 0 ? cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) : back_to_glyph(x, y), 4);
+    /* even iteration count (guaranteed) ends with glyph[1] showing;
+       caller might want to override that, but no newsym() calls here
+       in case caller has tinkered with location visibility */
     for (i = 0; i < rpt; i++) {
         show_glyph(x, y, cptr.ldI32o(glyph, i % 2, 4));
         flush_screen(1);
@@ -912,6 +1303,14 @@ export function flash_glyph_at(x, y, tg, rpt) {
     }
 }
 
+/*
+ * swallowed()
+ *
+ * The hero is swallowed.  Show a special graphics sequence for this.  This
+ * bypasses all of the display routines and messes with buffered screen
+ * directly.  This method works because both vision and display check for
+ * being swallowed.
+ */
 let __static_swallowed_lastx = 0; /** C ref: display.c:1334 — short (function-static) */
 let __static_swallowed_lasty = 0; /** C ref: display.c:1334 — short (function-static) */
 
@@ -920,20 +1319,28 @@ export function swallowed(first) {
     let swallower;
     let left_ok;
     let rght_ok;
+
     if (first) {
         cls();
         bot();
     } else {
         let x;
         let y;
+
+        /* Clear old location */
         for (y = i16(((__static_swallowed_lasty - 1) | 0)); y <= ((__static_swallowed_lasty + 1) | 0); y++)
             for (x = i16(((__static_swallowed_lastx - 1) | 0)); x <= ((__static_swallowed_lastx + 1) | 0); x++)
                 if (isok(x, y))
                     show_glyph(x, y, NHC.GLYPH_UNEXPLORED_OFF);
     }
+
     swallower = (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_pmidx));
+    /* assume isok(u.ux,u.uy) */
     left_ok = isok(i16(((cptr.ldI16(u) - 1) | 0)), cptr.ldI16o(u, $you_uy));
     rght_ok = isok(i16(((cptr.ldI16(u) + 1) | 0)), cptr.ldI16o(u, $you_uy));
+    /*
+     *  Display the hero surrounded by the monster's stomach.
+     */
     if (isok(cptr.ldI16(u), i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)))) {
         if (left_ok)
             show_glyph(i16(((cptr.ldI16(u) - 1) | 0)), i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)), swallow_to_glyph(swallower, NHC.S_sw_tl));
@@ -941,11 +1348,13 @@ export function swallowed(first) {
         if (rght_ok)
             show_glyph(i16(((cptr.ldI16(u) + 1) | 0)), i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)), swallow_to_glyph(swallower, NHC.S_sw_tr));
     }
+
     if (left_ok)
         show_glyph(i16(((cptr.ldI16(u) - 1) | 0)), cptr.ldI16o(u, $you_uy), swallow_to_glyph(swallower, NHC.S_sw_ml));
     show_glyph(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), ((cptr.ldPtro(u, $you_usteed) && ((!(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mundetected) & 1))) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_usteed)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_usteed)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_RIDDEN_MALE_OFF : NHC.GLYPH_RIDDEN_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_NOTHING) ? ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((U_AP_TYPE() == NHC.M_AP_FURNITURE) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_trwall) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < NHC.S_altar) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) <= NHC.S_goodpos) ? (((((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))) : ((U_AP_TYPE() == NHC.M_AP_OBJECT) ? (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + NHC.GLYPH_OBJ_OFF) | 0) : (((cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0) + (((Ugender()) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))))));
     if (rght_ok)
         show_glyph(i16(((cptr.ldI16(u) + 1) | 0)), cptr.ldI16o(u, $you_uy), swallow_to_glyph(swallower, NHC.S_sw_mr));
+
     if (isok(cptr.ldI16(u), i16(((cptr.ldI16o(u, $you_uy) + 1) | 0)))) {
         if (left_ok)
             show_glyph(i16(((cptr.ldI16(u) - 1) | 0)), i16(((cptr.ldI16o(u, $you_uy) + 1) | 0)), swallow_to_glyph(swallower, NHC.S_sw_bl));
@@ -953,10 +1362,18 @@ export function swallowed(first) {
         if (rght_ok)
             show_glyph(i16(((cptr.ldI16(u) + 1) | 0)), i16(((cptr.ldI16o(u, $you_uy) + 1) | 0)), swallow_to_glyph(swallower, NHC.S_sw_br));
     }
+
+    /* Update the swallowed position. */
     __static_swallowed_lastx = cptr.ldI16(u);
     __static_swallowed_lasty = cptr.ldI16o(u, $you_uy);
 }
 
+/*
+ * under_water()
+ *
+ * Similar to swallowed() in operation.  Shows hero when underwater
+ * except when in water level.  Special routines exist for that.
+ */
 let __static_under_water_lastx = 0; /** C ref: display.c:1397 — short (function-static) */
 let __static_under_water_lasty = 0; /** C ref: display.c:1397 — short (function-static) */
 let __static_under_water_dela = 0; /** C ref: display.c:1398 — signed char (function-static) */
@@ -965,20 +1382,33 @@ let __static_under_water_dela = 0; /** C ref: display.c:1398 — signed char (fu
 export function under_water(mode) {
     let x;
     let y;
+
+    /* swallowing has a higher precedence than under water */
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return;
+
+    /* full update */
     if (mode == 1 || __static_under_water_dela) {
         cls();
         __static_under_water_dela = 0;
+
+        /* delayed full update */
     } else if (mode == 2) {
         __static_under_water_dela = 1;
         return;
+
+        /* limited update */
     } else {
         for (y = i16(((__static_under_water_lasty - 1) | 0)); y <= ((__static_under_water_lasty + 1) | 0); y++)
             for (x = i16(((__static_under_water_lastx - 1) | 0)); x <= ((__static_under_water_lastx + 1) | 0); x++)
                 if (isok(x, y))
                     show_glyph(x, y, NHC.GLYPH_UNEXPLORED_OFF);
     }
+
+    /*
+     * TODO?  Should this honor Xray radius rather than force radius 1?
+     */
+
     for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
         for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y++)
             if (isok(x, y) && (is_pool_or_lava(x, y) || is_ice(x, y))) {
@@ -991,33 +1421,71 @@ export function under_water(mode) {
     __static_under_water_lasty = cptr.ldI16o(u, $you_uy);
 }
 
+/*
+ *      under_ground()
+ *
+ *      Very restricted display.  You can only see yourself.
+ */
 let __static_under_ground_dela = 0; /** C ref: display.c:1447 — signed char (function-static) */
 
 /** C ref: display.c:1445 — @param {CInt} mode */
 export function under_ground(mode) {
+
+    /* swallowing has a higher precedence than under ground */
     if ((cptr.ldI32o(u, $you_uswallow) & 1))
         return;
+
+    /* full update */
     if (mode == 1 || __static_under_ground_dela) {
         cls();
         __static_under_ground_dela = 0;
+
+        /* delayed full update */
     } else if (mode == 2) {
         __static_under_ground_dela = 1;
         return;
+
+        /* limited update */
     } else {
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     }
 }
 
+/* ======================================================================== */
+
+/*
+ * Loop through all of the monsters and update them.  Called when:
+ *      + going blind & telepathic
+ *      + regaining sight & telepathic
+ *      + getting and losing infravision
+ *      + hallucinating
+ *      + doing a full screen redraw
+ *      + see invisible times out or a ring of see invisible is taken off
+ *        or intrinsic see invisible is stolen by a gremlin
+ *      + when a potion of see invisible is quaffed or a ring of see
+ *        invisible is put on
+ *      + gaining telepathy when blind [givit() in eat.c, pleased() in pray.c]
+ *      + losing telepathy while blind [xkilled() in mon.c, attrcurse() in
+ *        sit.c]
+ */
 /** C ref: display.c:1487 */
 export function see_monsters() {
     let mon;
     let new_warn_obj_cnt = 0;
+
     if (cptr.ld1so(gd, $instance_globals_d_defer_see_monsters))
         return;
+
+    /* steed and unseen engulfer/holder/holdee are recognized via touch
+       even if they aren't going to be rendered; other monsters
+       may get flagged as having been seen by display_monster() if it's
+       called by newsym() */
     if (cptr.ldPtro(u, $you_usteed))
         cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_meverseen, 1);
     if (cptr.ldPtro(u, $you_ustuck))
         cptr.stI32o(cptr.ldPtro(u, $you_ustuck), $monst_meverseen, 1);
+
+    /* loop through level.monsters (aka fmon) */
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
             continue;
@@ -1029,10 +1497,16 @@ export function see_monsters() {
         if (Warn_of_mon() && (cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro(mon, $monst_data), $permonst_mflags2)) != 0n)
             new_warn_obj_cnt++;
     }
+
+    /*
+     * Make Sting glow blue or stop glowing if required.
+     */
     if (new_warn_obj_cnt != cptr.ldI32(gw)) {
         Sting_effects(new_warn_obj_cnt);
         cptr.stI32(gw, new_warn_obj_cnt);
     }
+
+    /* when mounted, hero's location gets caught by monster loop */
     if (!cptr.ldPtro(u, $you_usteed))
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 }
@@ -1047,20 +1521,37 @@ function mimic_light_blocking(mtmp) {
     }
 }
 
+/*
+ * Block/unblock light depending on what a mimic is mimicking and if it's
+ * invisible or not.  Should be called only when the state of See_invisible
+ * changes.
+ */
 /** C ref: display.c:1548 */
 export function set_mimic_blocking() {
     iter_mons(mimic_light_blocking);
 }
 
+/*
+ * Loop through all of the object *locations* and update them.  Called when
+ *      + hallucinating.
+ */
 /** C ref: display.c:1558 */
 export function see_objects() {
     let obj;
+
     for (obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); obj; obj = cptr.ldPtr(obj))
         if (cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(obj, $obj_ox), 168, cptr.ldI16o(obj, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects)), obj))
             newsym(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy));
+
+    /* Qt's "paper doll" subset of persistent inventory shows map tiles
+       for objects which aren't on the floor so not handled by above loop;
+       inventory which includes glyphs should also be affected, so do this
+       for all interfaces in case any feature that for persistent inventory */
     update_inventory();
 }
 
+/* mark the top object of nearby stacks as having been seen, and if
+   that object was being displayed as generic, redisplay it as specific */
 /** C ref: display.c:1576 */
 export function see_nearby_objects() {
     let obj;
@@ -1069,27 +1560,39 @@ export function see_nearby_objects() {
     let iy;
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
+    /* these 'r' and 'neardist' calculations match distant_name(objnam.c) */
     let r = (cptr.ldI32o(u, $you_xray_range) > 2) ? cptr.ldI32o(u, $you_xray_range) : 2;
-    let neardist = (Math.imul((Math.imul(r, r)), 2) - r) | 0;
+    let neardist = (Math.imul((Math.imul(r, r)), 2) - r) | 0;  /* same as r*r + r*(r-1) */
+
+    /* [note: this could be optimized to avoid the distu() calculations] */
     for (iy = i16(((y - r) | 0)); iy <= ((y + r) | 0); ++iy)
         for (ix = i16(((x - r) | 0)); ix <= ((x + r) | 0); ++ix) {
             if (!isok(ix, iy))
                 continue;
+            /* skip if no object or the object has already been marked as
+               having been seen up close */
             if ((obj = (cptr.ldPtro3(svl, ix, 168, iy, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) === null || (cptr.ldI32o(obj, $obj_dknown) & 1) | 0)
                 continue;
+            /* skip if the spot can't be seen or is too far (diagonal) */
             if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), iy, 8), ix) & NHM.IN_SIGHT) != 0) || dist2((ix), (iy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > neardist)
                 continue;
+
             observe_object(obj);
+            /* operate on remembered glyph rather than current one */
             glyph = cptr.ldI32o3(svl, ix, $sizeof_rm_x21, iy, $sizeof_rm, $instance_globals_saved_l_level);
             if (glyph_is_generic_object(glyph))
                 newsym_force(ix, iy);
         }
 }
 
+/*
+ * Update hallucinated traps.
+ */
 /** C ref: display.c:1611 */
 export function see_traps() {
     let trap;
     let glyph;
+
     for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap)) {
         glyph = cptr.ldI32o3(gg, cptr.ldI16o(trap, $trap_ty), $sizeof_gbuf_entry_x80, cptr.ldI16o(trap, $trap_tx), $sizeof_gbuf_entry, $gbuf_entry_glyphinfo);
         if (glyph_is_trap(glyph))
@@ -1097,6 +1600,9 @@ export function see_traps() {
     }
 }
 
+/*  glyph, ttychar, framecolor,
+    { glyphflags, { NO_COLOR, sym.symidx },
+    customcolor, color256idx, tileidx, u } */
 /** C ref: display.c:1626 — struct glyphinfo */
 let no_ginfo = cptr.alloc($sizeof_glyphinfo);
 cptr.stI32(no_ginfo, NHC.MAX_GLYPH);
@@ -1110,6 +1616,8 @@ cptr.stI16o(no_ginfo, $glyphinfo_gm + $glyph_map_entry_color256idx, 0);
 cptr.stI16o(no_ginfo, $glyphinfo_gm + $glyph_map_entry_tileidx, 0);
 cptr.stPtro(no_ginfo, $glyphinfo_gm + $glyph_map_entry_u, null);
 
+/* glyph, ttychar, framecolor, { glyphflags, { sym.symidx }, nhcolor,
+                     tileidx, 0} */
 /** C ref: display.c:1655 — struct glyphinfo */
 export let nul_glyphinfo = cptr.box(cptr.alloc($sizeof_glyphinfo));
 cptr.stI32(nul_glyphinfo.v, NHC.MAX_GLYPH);
@@ -1133,22 +1641,28 @@ cptr.stI16o(glyphmap, 0 + $glyph_map_color256idx, 0);
 cptr.stI16o(glyphmap, 0 + $glyph_map_tileidx, 0);
 cptr.stPtro(glyphmap, 0 + $glyph_map_u, null);
 
+/*
+ * Put the cursor on the hero.  Flush all accumulated glyphs before doing it.
+ */
 /** C ref: display.c:1687 */
 export function curs_on_u() {
-    flush_screen(1);
+    flush_screen(1);  /* Flush waiting glyphs & put cursor on hero */
 }
 
+/* the #redraw command */
 /** C ref: display.c:1694 @returns {CInt} */
 export function doredraw() {
     docrt();
     return NHM.ECMD_OK;
 }
 
+/* the main refresh-the-screen routine */
 /** C ref: display.c:1702 */
 export function docrt() {
     docrt_flags(NHC.docrtRecalc);
 }
 
+/* docrt() with finer control */
 /** C ref: display.c:1709 — @param {CInt} refresh_flags */
 export function docrt_flags(refresh_flags) {
     let x;
@@ -1158,9 +1672,12 @@ export function docrt_flags(refresh_flags) {
     let redrawonly = schar(((refresh_flags & NHC.docrtRefresh) != 0));
     let nocls = schar(((refresh_flags & NHC.docrtNocls) != 0));
     __lbl_post_map: {
+
         if (!cptr.ldI16(u) || cptr.ldI32o(program_state, $sinfo_in_docrt))
-            return;
+            return;  /* display isn't ready yet */
+
         cptr.stI32o(program_state, $sinfo_in_docrt, 1);
+
         if (redrawonly) {
             redraw_map(0);
             break __lbl_post_map;
@@ -1177,35 +1694,70 @@ export function docrt_flags(refresh_flags) {
             under_ground(1);
             break __lbl_post_map;
         }
+
+        /* shut down vision */
         vision_recalc(2);
+
+        /*
+         * This routine assumes that cls() does the following:
+         *      + fills the physical screen with the symbol for rock
+         *      + clears the glyph buffer
+         */
         if (!nocls)
             cls();
+
+        /* display memory */
         for (x = 1; x < NHM.COLNO; x++) {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), 0, $sizeof_rm);
             for (y = 0; y < NHM.ROWNO; y++, lev = cptr.add(lev, 1, 36))
                 show_glyph(x, y, cptr.ldI32(lev));
         }
+
+        /* see what is to be seen */
         vision_recalc(0);
+
+        /* overlay with monsters */
         see_monsters();
     }
+
     if (!maponly) {
+        /* perm_invent */
         update_inventory();
-        cptr.st1o(disp, $display_hints_botlx, 1);
+        /* status */
+        cptr.st1o(disp, $display_hints_botlx, 1);  /* force a redraw of the bottom lines */
+        /* note: caller needs to call bot() to actually redraw status */
     }
     cptr.stI32o(program_state, $sinfo_in_docrt, 0);
 }
 
+/* for panning beyond a clipped region; resend the current map data to
+   the interface rather than use docrt()'s regeneration of that data */
 /** C ref: display.c:1778 — @param {CInt} cursor_on_u */
 export function redraw_map(cursor_on_u) {
     let x;
     let y;
     let glyph;
     let bkglyphinfo = cptr.alloc(48); cptr.memcpy(bkglyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
+
+    /*
+     * Not sure whether this is actually necessary; save and restore did
+     * used to get much too involved with each dungeon level as it was
+     * read and written.
+     *
+     * !u.ux: display isn't ready yet; (restoring || !on_level()): was part
+     * of cliparound() but interface shouldn't access this much internals
+     */
     if (!cptr.ldI16(u) || suppress_map_output() || !on_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz)))
         return;
+
+    /*
+     * This yields sensible clipping when #terrain+getpos is in
+     * progress and the screen displays something other than what
+     * the map would currently be showing.
+     */
     for (y = 0; y < NHM.ROWNO; ++y)
         for (x = 1; x < NHM.COLNO; ++x) {
-            glyph = cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo);
+            glyph = cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo);  /* not levl[x][y].glyph */
             get_bkglyph_and_framecolor(x, y, bkglyphinfo, cptr.add(bkglyphinfo, $glyphinfo_framecolor));
             print_glyph()(WIN_MAP.v, x, y, (((x) < 0 || (y) < 0 || (x) >= NHM.COLNO || (y) >= NHM.ROWNO) ? no_ginfo : cptr.add(cptr.add(cptr.add(gg, (y), $sizeof_gbuf_entry_x80), (x), $sizeof_gbuf_entry), $gbuf_entry_glyphinfo)), bkglyphinfo);
         }
@@ -1213,13 +1765,18 @@ export function redraw_map(cursor_on_u) {
     (void (glyph));
 }
 
+/*
+ * =======================================================
+ */
 /** C ref: display.c:1818 */
 export function reglyph_darkroom() {
     let x;
     let y;
+
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
             let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+
             if (!cptr.ld1so(flags, $flag_dark_room)) {
                 if (cptr.ldI32(lev) == (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && (cptr.ldI32o(lev, $rm_waslit) & 1) | 0)
                     cptr.stI32(lev, (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0));
@@ -1227,6 +1784,7 @@ export function reglyph_darkroom() {
                 if (cptr.ldI32(lev) == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0));
             }
+
             if (!cptr.ld1so(flags, $flag_dark_room) || !cptr.ld1so(iflags, $instance_flags_wc_color) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                 if (cptr.ldI32(lev) == (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
                     cptr.stI32(lev, (cptr.ldI32o(lev, $rm_waslit) & 1) | 0 ? (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : NHC.GLYPH_NOTHING_OFF);
@@ -1243,6 +1801,12 @@ export function reglyph_darkroom() {
         cptr.st1o2(gs, NHC.S_darkroom, 1, $instance_globals_s_showsyms, cptr.ld1uo2(gs, ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms));
 }
 
+/* ======================================================================== */
+/* Glyph Buffering (3rd screen) =========================================== */
+
+/* FIXME: This is a dirty hack, because newsym() doesn't distinguish
+ * between object piles and single objects, it doesn't mark the location
+ * for update. */
 /** C ref: display.c:1863 — @param {CInt} x @param {CInt} y */
 export function newsym_force(x, y) {
     newsym(x, y);
@@ -1253,19 +1817,38 @@ export function newsym_force(x, y) {
         cptr.stI16o2(gg, y, 2, $instance_globals_g_gbuf_stop, x);
 }
 
+/*
+ * Store the glyph in the 3rd screen for later flushing.
+ */
 /** C ref: display.c:1877 — @param {CInt} x @param {CInt} y @param {CInt} glyph */
 export function show_glyph(x, y, glyph) {
     let glyphinfo = cptr.alloc(48);
     let show_glyph_change = 0;
     let oldglyph;
+
+    /* don't process map glyphs when saving, restoring, or in_mklev */
     if ((cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup)))
         return;
+
+    //if (glyph == 3972 || glyph == 3988)
+    //    __debugbreak();
+    /*
+     * Check for bad positions and glyphs.
+     */
     if (!isok(x, y)) {
         let text = __s_empty;
         let offset = -1;
+
+        /* column 0 is invalid, but it's often used as a flag, so ignore it */
         if (x == 0)
             return;
+
+        /*
+         *  This assumes an ordering of the offsets.  See display.h for
+         *  the definition.
+         */
         if (glyph < 0 || glyph >= NHC.MAX_GLYPH) {
+            /* invalid location and also invalid glyph */
             text = __s_invalid;
         } else if ((offset = ((glyph - NHC.GLYPH_NOTHING_OFF) | 0)) >= 0) {
             text = __s_nothing;
@@ -1284,6 +1867,7 @@ export function show_glyph(x, y, glyph) {
         } else if ((offset = ((glyph - NHC.GLYPH_STATUE_MALE_OFF) | 0)) >= 0) {
             text = __s_statue_of_male_monster;
         } else if ((offset = ((glyph - NHC.GLYPH_WARNING_OFF) | 0)) >= 0) {
+            /* warn flash */
             text = __s_warning_explosion;
         } else if ((offset = ((glyph - NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0)) >= 0) {
             text = __s_frosty_explosion;
@@ -1349,21 +1933,29 @@ export function show_glyph(x, y, glyph) {
         impossible(__s_show_glyph_bad_pos_d_d_with_glyph_d_s_d, x, y, glyph, text, offset);
         return;
     } else if (glyph < 0 || glyph >= NHC.MAX_GLYPH) {
+        /* valid location but invalid glyph */
         impossible(__s_show_glyph_bad_glyph_d_max_d_at_d_d, glyph, NHC.MAX_GLYPH, x, y);
         return;
     }
+    /* without UNBUFFERED_GLYPHINFO defined the glyphinfo values are buffered
+       alongside the glyphs themselves for better performance, increased
+       buffer size */
     map_glyphinfo(x, y, glyph, 0, glyphinfo);
+
     oldglyph = cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo);
+
     if (cptr.ld1so(a11y, $accessibility_data_glyph_updates) && !cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) && !cptr.ldI32o(program_state, $sinfo_in_docrt) && !cptr.ldI32(program_state) && !cptr.ldI32o(program_state, $sinfo_in_getlev) && !cptr.ldI32o(program_state, $sinfo_stopprint) && !(cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup)) && (oldglyph != glyph || cptr.ld1so3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, 0))) {
         let c = glyph_to_cmap(glyph);
+
         if ((((oldglyph) == NHC.GLYPH_NOTHING_OFF) || ((oldglyph) == NHC.GLYPH_UNEXPLORED_OFF) || is_cmap_furniture(c)) && !is_cmap_wall(c) && !is_cmap_room(c)) {
             if ((cptr.ld1so(a11y, $accessibility_data_mon_notices) && glyph_is_monster(glyph)) || (glyph_is_monster(oldglyph)) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
-                ;
+                ;  /* nothing */
             } else {
                 show_glyph_change = 1;
             }
         }
     }
+
     if (cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo) != glyph || cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_ttychar) != cptr.ldI32o(glyphinfo, $glyphinfo_ttychar) || cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_customcolor) != cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_customcolor) || cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm) != cptr.ldI32o(glyphinfo, $glyphinfo_gm) || cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_sym) != cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym) || cptr.ldI16o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_tileidx) != cptr.ldI16o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_tileidx) || cptr.ld1so(iflags, $instance_flags_use_background_glyph)) {
         cptr.stI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo, glyph);
         cptr.st1o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, 0, 1);
@@ -1375,12 +1967,14 @@ export function show_glyph(x, y, glyph) {
         if (cptr.ldI16o2(gg, y, 2, $instance_globals_g_gbuf_stop) < x)
             cptr.stI16o2(gg, y, 2, $instance_globals_g_gbuf_stop, x);
     }
+
     if (show_glyph_change) {
         let buf = new Uint8Array(256);
         let cc = cptr.alloc(4);
         let sym = 0;
         let firstmatch = cptr.box(null);
         let tmp_accessiblemsg = cptr.ld1s(a11y);
+
         cptr.st1(a11y, 1);
         cptr.stI16(cc, x), cptr.stI16o(cc, $nhcoord_y, y);
         do_screen_description(cc, 1, sym, cptr.decay(buf), firstmatch, null);
@@ -1403,6 +1997,9 @@ cptr.stI16o(nul_gbuf, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_c
 cptr.stI16o(nul_gbuf, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_tileidx, 0);
 cptr.stPtro(nul_gbuf, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u, null);
 
+/*
+ * Turn the 3rd screen into UNEXPLORED that needs to be refreshed.
+ */
 /** C ref: display.c:2107 */
 export function clear_glyph_buffer() {
     let x;
@@ -1420,6 +2017,8 @@ export function clear_glyph_buffer() {
     }
 }
 
+/* used by tty after menu or text popup has temporarily overwritten the map
+   and it has been erased so shows spaces, not necessarily S_unexplored */
 /** C ref: display.c:2147 — @param {CInt} start @param {CInt} stop @param {CInt} y */
 export function row_refresh(start, stop, y) {
     let x;
@@ -1443,16 +2042,21 @@ let __static_cls_in_cls = 0; /** C ref: display.c:2191 — signed char (function
 
 /** C ref: display.c:2189 */
 export function cls() {
+
     if (__static_cls_in_cls)
         return;
     __static_cls_in_cls = 1;
-    display_nhwindow()(WIN_MESSAGE.v, 0);
-    cptr.st1o(disp, $display_hints_botlx, 1);
-    clear_nhwindow()(WIN_MAP.v);
-    clear_glyph_buffer();
+    display_nhwindow()(WIN_MESSAGE.v, 0);  /* flush messages */
+    cptr.st1o(disp, $display_hints_botlx, 1);  /* force update of botl window */
+    clear_nhwindow()(WIN_MAP.v);  /* clear physical screen */
+
+    clear_glyph_buffer();  /* force gbuf[][].glyph to unexplored */
     __static_cls_in_cls = 0;
 }
 
+/*
+ * Synch the third screen with the display.
+ */
 let __static_flush_screen_flushing = 0; /** C ref: display.c:2213 — int (function-static) */
 let __static_flush_screen_delay_flushing = 0; /** C ref: display.c:2214 — int (function-static) */
 
@@ -1462,26 +2066,34 @@ export function flush_screen(cursor_on_u) {
     let y;
     let bkglyphinfo = cptr.alloc(48); cptr.memcpy(bkglyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
     let bkglyph = cptr.box(0);
+
+    /* 5.0: don't update map, status, or perm_invent during save/restore */
     if ((cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_saving) || cptr.ldI32o(program_state, $sinfo_restoring) || cptr.ldI32o(program_state, $sinfo_done_hup)))
         return;
+
     if (cursor_on_u == -1)
         __static_flush_screen_delay_flushing = !__static_flush_screen_delay_flushing;
     if (__static_flush_screen_delay_flushing)
         return;
     if (__static_flush_screen_flushing)
-        return;
+        return;  /* if already flushing then return */
     __static_flush_screen_flushing = 1;
     if (cptr.ldI32o(program_state, $sinfo_done_hup))
         return;
+
+    /* get this done now, before we place the cursor on the hero */
     if (cptr.ld1s(disp) || cptr.ld1so(disp, $display_hints_botlx))
         bot();
     else if (cptr.ld1so(disp, $display_hints_time_botl))
         timebot();
+
     for (y = 0; y < NHM.ROWNO; y++) {
         let gptr = cptr.add(cptr.add(gg, y, $sizeof_gbuf_entry_x80), x = cptr.ldI16o2(gg, y, 2, $instance_globals_g_gbuf_start), $sizeof_gbuf_entry);
+
         for (; x <= cptr.ldI16o2(gg, y, 2, $instance_globals_g_gbuf_stop); gptr = cptr.add(gptr, 1, 56), x++) {
             get_bkglyph_and_framecolor(x, y, bkglyph, cptr.add(bkglyphinfo, $glyphinfo_framecolor));
             if (cptr.ld1s(gptr) || (cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color) != NHM.NO_COLOR && cptr.ldI32o(bkglyphinfo, $glyphinfo_framecolor) != NHM.NO_COLOR)) {
+                /* map_glyphinfo() won't touch framecolor */
                 map_glyphinfo(x, y, bkglyph.v, 0, bkglyphinfo);
                 print_glyph()(WIN_MAP.v, x, y, (((x) < 0 || (y) < 0 || (x) >= NHM.COLNO || (y) >= NHM.ROWNO) ? no_ginfo : cptr.add(cptr.add(cptr.add(gg, (y), $sizeof_gbuf_entry_x80), (x), $sizeof_gbuf_entry), $gbuf_entry_glyphinfo)), bkglyphinfo);
                 cptr.st1(gptr, 0);
@@ -1496,18 +2108,39 @@ export function flush_screen(cursor_on_u) {
         }
     }
     ;
+
+    /* after map update, before display_nhwindow(WIN_MAP) */
     if (cursor_on_u)
-        curs()(WIN_MAP.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        curs()(WIN_MAP.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* move cursor to the hero */
+
     display_nhwindow()(WIN_MAP.v, 0);
     __static_flush_screen_flushing = 0;
 }
 
+/* ======================================================================== */
+
+/*
+ * back_to_glyph()
+ *
+ * Use the information in the rm structure at the given position to create
+ * a glyph of a background.
+ *
+ * I had to add a field in the rm structure (horizontal) so that we knew
+ * if open doors and secret doors were horizontal or vertical.  Previously,
+ * the screen symbol had the horizontal/vertical information set at
+ * level generation time.
+ *
+ * I used the 'ladder' field (really doormask) for deciding if stairwells
+ * were up or down.  I didn't want to check the upstairs and dnstairs
+ * variables.
+ */
 /** C ref: display.c:2287 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function back_to_glyph(x, y) {
     let idx;
     let bypass_glyph = NHC.MAX_GLYPH;
     let ptr = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     let sway;
+
     switch (cptr.ld1so(ptr, $rm_typ)) {
         case NHC.SCORR:
         case NHC.STONE:
@@ -1581,7 +2214,7 @@ export function back_to_glyph(x, y) {
         idx = NHC.S_sink;
         break;
         case NHC.ALTAR:
-        idx = NHC.S_altar;
+        idx = NHC.S_altar;  /* not really used */
         bypass_glyph = altar_to_glyph(ptr);
         break;
         case NHC.GRAVE:
@@ -1627,7 +2260,7 @@ export function back_to_glyph(x, y) {
             break;
             default:
             impossible(__s_strange_db_under_d, ((cptr.ldI32o(ptr, $rm_flags) & 31) | 0) & NHM.DB_UNDER);
-            idx = NHC.S_room;
+            idx = NHC.S_room;  /* something is better than nothing */
             break;
         }
         break;
@@ -1639,12 +2272,21 @@ export function back_to_glyph(x, y) {
         idx = NHC.S_room;
         break;
     }
+
     return (bypass_glyph != NHC.MAX_GLYPH) ? bypass_glyph : (((idx) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((idx) <= NHC.S_trwall) ? (((((idx) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((idx) < NHC.S_altar) ? (((((idx) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((idx) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((idx) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((idx) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((idx) <= NHC.S_goodpos) ? (((((idx) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
 }
 
+/*
+ * swallow_to_glyph()
+ *
+ * Convert a monster number and a swallow location into the correct glyph.
+ * If you don't want a patchwork monster while hallucinating, decide on
+ * a random monster in swallowed() and don't use what_mon() here.
+ */
 /** C ref: display.c:2437 — @param {CInt} mnum @param {CInt} loc @returns {CInt} */
 function swallow_to_glyph(mnum, loc) {
     let m_3 = (Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : mnum) << 3;
+
     if (loc < NHC.S_sw_tl || NHC.S_sw_br < loc) {
         impossible(__s_swallow_to_glyph_bad_swallow_location);
         loc = NHC.S_sw_br;
@@ -1652,6 +2294,18 @@ function swallow_to_glyph(mnum, loc) {
     return ((m_3 | ((loc - NHC.S_sw_tl) | 0)) + NHC.GLYPH_SWALLOW_OFF) | 0;
 }
 
+/*
+ * zapdir_to_glyph()
+ *
+ * Change the given zap direction and beam type into a glyph.  Each beam
+ * type has four glyphs, one for each of the symbols below.  The order of
+ * the zap symbols [0-3] as defined in defsym.h are:
+ *
+ *      |  S_vbeam      ( 0, 1) or ( 0,-1)
+ *      -  S_hbeam      ( 1, 0) or (-1, 0)
+ *      \  S_lslant     ( 1, 1) or (-1,-1)
+ *      /  S_rslant     (-1, 1) or ( 1,-1)
+ */
 /** C ref: display.c:2461 — @param {CInt} dx @param {CInt} dy @param {CInt} beam_type @returns {CInt} */
 export function zapdir_to_glyph(dx, dy, beam_type) {
     if (beam_type >= NHM.NUM_ZAP) {
@@ -1659,21 +2313,40 @@ export function zapdir_to_glyph(dx, dy, beam_type) {
         beam_type = 0;
     }
     dx = (dx == dy) ? 2 : ((dx && dy) ? 3 : (dx ? 1 : 0));
+
     return ((((beam_type << 2) | dx)) + NHC.GLYPH_ZAP_OFF) | 0;
 }
 
+/*
+ * Utility routine for dowhatis() used to find out the glyph displayed at
+ * the location.  This isn't necessarily the same as the glyph in the levl
+ * structure, so we must check the "third screen".
+ */
 /** C ref: display.c:2478 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function glyph_at(x, y) {
     if (x < 0 || y < 0 || x >= NHM.COLNO || y >= NHM.ROWNO)
-        return (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0);
-    return cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo);
+        return (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0);  /* XXX */
+    return cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo);  /* _glyph_at(x,y) */
 }
+
+/*
+ * Get the glyph for the background so that it can potentially
+ * be merged into graphical window ports to improve the appearance
+ * of stuff on dark room squares and the plane of air etc.
+ * [This should be using background as recorded for #overview rather
+ * than current data from the map.]
+ *
+ * Also get the frame color to use for highlighting the map location
+ * for some purpose.
+ *
+ */
 
 /** C ref: display.c:2507 — @param {CInt} x @param {CInt} y @param {CPtr<int>} bkglyph @param {CPtr<uint32>} framecolor */
 function get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
     let idx;
     let tmp_bkglyph = NHC.GLYPH_UNEXPLORED_OFF;
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+
     if (cptr.ld1so(iflags, $instance_flags_use_background_glyph) && cptr.ld1uo(lev, $rm_seenv) != 0 && (cptr.ldI32o3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo) != NHC.GLYPH_UNEXPLORED_OFF)) {
         switch (cptr.ld1so(lev, $rm_typ)) {
             case NHC.SCORR:
@@ -1712,7 +2385,9 @@ function get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
             idx = NHC.S_room;
             break;
         }
+
         if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && (!(cptr.ldI32o(lev, $rm_waslit) & 1) || cptr.ld1so(flags, $flag_dark_room))) {
+            /* Floor spaces and corridors are dark if unlit. */
             if (cptr.ld1so(lev, $rm_typ) == NHC.CORR && idx == NHC.S_litcorr)
                 idx = NHC.S_corr;
             else if (idx == NHC.S_room)
@@ -1733,15 +2408,32 @@ export function map_glyphinfo(x, y, glyph, mgflags, glyphinfo) {
     let offset;
     let is_you = schar((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && glyph_is_monster(glyph) ? 1 : 0));
     let gmap = cptr.add(glyphmap, glyph, $sizeof_glyph_map);
-    cptr.memcpy(cptr.add(glyphinfo, $glyph_info_gm), gmap, 32);
+
+    cptr.memcpy(cptr.add(glyphinfo, $glyph_info_gm), gmap, 32);  /* glyphflags, sym.symidx, sym.color, tileidx */
+    /*
+     * Only hero tinkering permitted on-the-fly (who).
+     * Unique glyphs in glyphmap[] determine everything else (what).
+     *
+     * (Note: if hero is invisible without see invisible, he/she usually
+     * can't see himself/herself.  This applies to accessibility hacks
+     * as well as to regular display.)
+     */
     if (is_you) {
         if (!cptr.ld1so(iflags, $instance_flags_wc_color) || Upolyd() || glyph != ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0)) {
             ;
         } else if ((cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET && (cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_IBM)) && ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor) & 1) | 0) == 0) {
+            /* actually player should be yellow-on-gray if in corridor */
             cptr.stI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_sym, NHM.CLR_YELLOW);
         } else if (cptr.ld1so(flags, $flag_showrace)) {
+            /* for showrace, non-human hero is displayed by the symbol of
+               corresponding type of monster rather than by '@' (handled
+               by newsym()); we change the color to same as human hero */
             cptr.stI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_sym, NHM.CLR_WHITE);
         }
+        /* accessibility
+          This unchanging display character for hero was requested by
+          a blind player to enhance screen reader use.
+          Turn on override symbol if caller hasn't specified NOOVERRIDE. */
         if (cptr.ldI32o(sysopt, $sysopt_s_accessibility) == 1 && !((mgflags & NHM.MG_FLAG_NOOVERRIDE) >>> 0)) {
             offset = 195;
             if ((cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) & 2n) ? cptr.ld1uo2(go, offset, 1, $instance_globals_o_ov_rogue_syms) : cptr.ld1uo2(go, offset, 1, $instance_globals_o_ov_primary_syms))
@@ -1750,12 +2442,18 @@ export function map_glyphinfo(x, y, glyph, mgflags, glyphinfo) {
         cptr.stI32o(glyphinfo, $glyph_info_gm, cptr.ldI32o(glyphinfo, $glyph_info_gm) | NHM.MG_HERO);
     }
     if (cptr.ldI32o(sysopt, $sysopt_s_accessibility) == 1 && ((mgflags & NHM.MG_FLAG_NOOVERRIDE) >>> 0) && glyph_is_pet(glyph)) {
+        /* one more accessibility kludge;
+           turn off override symbol if caller has specified NOOVERRIDE */
         cptr.stI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_sym + $classic_representation_symidx, (cptr.ld1so2(mons, glyph_to_mon(glyph), $sizeof_permonst, $permonst_mlet) + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0);
     }
     cptr.stI32o(glyphinfo, $glyph_info_ttychar, cptr.ld1uo2(gs, cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_sym + $classic_representation_symidx), 1, $instance_globals_s_showsyms));
     cptr.stI32(glyphinfo, glyph);
 }
 
+/*
+ *  This must be the same order as used for buzz() in zap.c.
+ *  The zap_color_ and altar_color_ enums are in decl.h.
+ */
 /** C ref: display.c:2661 — int[8] */
 export const zapcolors = cptr.alloc(8 * 4);
 cptr.stI32o(zapcolors, 0, NHC.zap_color_missile);
@@ -1785,6 +2483,7 @@ cptr.stI32o(explodecolors, 16, NHC.explode_color_magical);
 cptr.stI32o(explodecolors, 20, NHC.explode_color_fiery);
 cptr.stI32o(explodecolors, 24, NHC.explode_color_frosty);
 
+/* main_walls, mines_walls, gehennom_walls, knox_walls, sokoban_walls */
 /** C ref: display.c:2677 — int[5] */
 export const wallcolors = cptr.alloc(5 * 4);
 cptr.stI32o(wallcolors, 0, NHM.CLR_GRAY);
@@ -1796,8 +2495,10 @@ cptr.stI32o(wallcolors, 16, NHM.CLR_GRAY);
 /** C ref: display.c:2699 — @param {CInt} cmap @returns {CInt} */
 function cmap_to_roguecolor(cmap) {
     let color = NHM.NO_COLOR;
+
     if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor) & 1))
         return NHM.NO_COLOR;
+
     if (cmap >= NHC.S_vwall && cmap <= NHC.S_hcdoor)
         color = NHM.CLR_BROWN;
     else if (cmap >= NHC.S_arrow_trap && cmap <= NHC.S_polymorph_trap)
@@ -1808,27 +2509,61 @@ function cmap_to_roguecolor(cmap) {
         color = NHM.CLR_GREEN;
     else
         color = NHM.NO_COLOR;
+
     return color;
 }
+
+/*
+   reset_glyphmap(trigger)
+
+   The glyphmap likely needs to be re-calculated for the following triggers:
+
+   gm_levelchange    called when the player has gone to a new level.
+
+   gm_symchange      called if someone has interactively altered the symbols
+                     for the game, most likely at the options menu.
+
+   gm_optionchange   The game settings have been toggled and some of them
+                     are configured to trigger a reset_glyphmap()
+
+   gm_accessibility_change  One of the accessibility flags has changed.
+
+*/
 
 /** C ref: display.c:2739 — @param {*} trigger */
 export function reset_glyphmap(trigger) {
     let glyph;
     let offset;
     let color = NHM.NO_COLOR;
+
+    /* condense multiple tests in macro version down to single */
     let has_rogue_ibm_graphics = schar((cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET && (cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_IBM) ? 1 : 0));
     let has_rogue_color = schar((has_rogue_ibm_graphics && ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor) & 1) | 0) == 0 ? 1 : 0));
     if (trigger == NHC.gm_levelchange)
         cptr.stI64o(gg, $instance_globals_g_glyphmap_perlevel_flags, 0n);
+
     if (!cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags)) {
+        /*
+         *    GMAP_SET                0x00000001
+         *    GMAP_ROGUELEVEL         0x00000002
+         */
         cptr.stI64o(gg, $instance_globals_g_glyphmap_perlevel_flags, cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) | 1n);
+
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
             cptr.stI64o(gg, $instance_globals_g_glyphmap_perlevel_flags, cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) | 2n);
         }
     }
+
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         let gmap = cptr.add(glyphmap, glyph, $sizeof_glyph_map);
+
         cptr.stI32(gmap, 0);
+        /*
+         *  Map the glyph to a character and color.
+         *
+         *  Warning:  For speed, this makes an assumption on the order of
+         *            offsets.  The order is set in display.h.
+         */
         if ((offset = ((glyph - NHC.GLYPH_NOTHING_OFF) | 0)) >= 0) {
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
             color = NHM.NO_COLOR;
@@ -1919,6 +2654,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0);
             color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ldI32o(explodecolors, NHC.expl_dark, 4) : NHM.NO_COLOR;
         } else if ((offset = ((glyph - NHC.GLYPH_SWALLOW_OFF) | 0)) >= 0) {
+            /* see swallow_to_glyph() in display.c */
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (((NHC.S_sw_tl + (offset & 7)) | 0) + NHM.SYM_OFF_P) | 0);
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -1931,6 +2667,7 @@ export function reset_glyphmap(trigger) {
             else
                 color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ld1uo2(defsyms, (NHC.S_digbeam + offset) | 0, $sizeof_symdef, $symdef_color) : NHM.NO_COLOR;
         } else if ((offset = ((glyph - NHC.GLYPH_ZAP_OFF) | 0)) >= 0) {
+            /* see zapdir_to_glyph() in display.c */
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (((NHC.S_vbeam + (offset & 3)) | 0) + NHM.SYM_OFF_P) | 0);
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -1939,10 +2676,16 @@ export function reset_glyphmap(trigger) {
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_B_OFF) | 0)) >= 0) {
             let cmap = (NHC.S_grave + offset) | 0;
             let sym = cptr.ld1uo2(gs, (cmap + NHM.SYM_OFF_P) | 0, 1, $instance_globals_s_showsyms);
+
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (cmap + NHM.SYM_OFF_P) | 0);
             color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ld1uo2(defsyms, cmap, $sizeof_symdef, $symdef_color) : NHM.NO_COLOR;
             if (!cptr.ld1so(iflags, $instance_flags_wc_color)) {
                 let spec_cmap = 0;
+
+                /* try to provide a visible difference between water and lava
+                   if they use the same symbol and color is disabled;
+                   similar for floor and ice, for fountain vs sink, and for
+                   corridor engravings (CMAP_A below) */
                 switch (cmap) {
                     case NHC.S_lava:
                     case NHC.S_lavawall:
@@ -1963,6 +2706,7 @@ export function reset_glyphmap(trigger) {
                 color = cmap_to_roguecolor(cmap);
             }
         } else if ((offset = ((glyph - NHC.GLYPH_ALTAR_OFF) | 0)) >= 0) {
+            /* unaligned, chaotic, neutral, lawful, other altar */
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, ((NHC.S_altar + (0)) | 0));
             if (has_rogue_color)
                 color = cmap_to_roguecolor(NHC.S_altar);
@@ -1971,13 +2715,20 @@ export function reset_glyphmap(trigger) {
         } else if ((offset = ((glyph - NHC.GLYPH_CMAP_A_OFF) | 0)) >= 0) {
             let sym;
             let cmap = (NHC.S_ndoor + offset) | 0;
+
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (cmap + NHM.SYM_OFF_P) | 0);
             color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ld1uo2(defsyms, cmap, $sizeof_symdef, $symdef_color) : NHM.NO_COLOR;
             sym = cptr.ld1uo2(gs, cptr.ldI32o(gmap, $glyph_map_sym + $classic_representation_symidx), 1, $instance_globals_s_showsyms);
+            /*
+             *   Some specialty color mappings not hardcoded in data init
+             */
             if (has_rogue_color) {
                 color = cmap_to_roguecolor(cmap);
+                /* provide a visible difference if normal and lit corridor
+                   use the same symbol */
             } else if (cmap == NHC.S_litcorr && sym == cptr.ld1uo2(gs, ((NHC.S_corr + (0)) | 0), 1, $instance_globals_s_showsyms)) {
                 color = NHM.CLR_WHITE;
+                /* likewise for corridor and engraving-in-corridor */
             } else if (cmap == NHC.S_engrcorr && (sym == cptr.ld1uo2(gs, ((NHC.S_corr + (0)) | 0), 1, $instance_globals_s_showsyms) || sym == cptr.ld1uo2(gs, ((NHC.S_litcorr + (0)) | 0), 1, $instance_globals_s_showsyms))) {
                 cptr.stI32(gmap, cptr.ldI32(gmap) | NHM.MG_BW_ENGR);
             }
@@ -2023,6 +2774,10 @@ export function reset_glyphmap(trigger) {
         } else if ((offset = ((glyph - NHC.GLYPH_RIDDEN_FEM_OFF) | 0)) >= 0) {
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0);
             if (has_rogue_color)
+                /* This currently implies that the hero is here -- monsters */
+                /* don't ride (yet...).  Should we set it to yellow like in */
+                /* the monster case below?  There is no equivalent in rogue.
+                 */
                 color = NHM.NO_COLOR;
             else
                 color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ld1uo2(mons, offset, $sizeof_permonst, $permonst_mcolor) : NHM.NO_COLOR;
@@ -2047,6 +2802,8 @@ export function reset_glyphmap(trigger) {
                 color = NHM.NO_COLOR;
             else
                 color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ld1uo2(mons, offset, $sizeof_permonst, $permonst_mcolor) : NHM.NO_COLOR;
+            /* Disabled for now; anyone want to get reverse video to work? */
+            /* is_reverse = TRUE; */
             cptr.stI32(gmap, cptr.ldI32(gmap) | 8200);
         } else if ((offset = ((glyph - NHC.GLYPH_DETECT_MALE_OFF) | 0)) >= 0) {
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0);
@@ -2054,6 +2811,8 @@ export function reset_glyphmap(trigger) {
                 color = NHM.NO_COLOR;
             else
                 color = cptr.ld1so(iflags, $instance_flags_wc_color) ? cptr.ld1uo2(mons, offset, $sizeof_permonst, $permonst_mcolor) : NHM.NO_COLOR;
+            /* Disabled for now; anyone want to get reverse video to work? */
+            /* is_reverse = TRUE; */
             cptr.stI32(gmap, cptr.ldI32(gmap) | 4104);
         } else if ((offset = ((glyph - NHC.GLYPH_INVIS_OFF) | 0)) >= 0) {
             cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, ((NHC.SYM_INVISIBLE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
@@ -2093,11 +2852,16 @@ export function reset_glyphmap(trigger) {
             }
             cptr.stI32(gmap, cptr.ldI32(gmap) | NHM.MG_MALE);
         }
+        /* This was requested by a blind player to enhance screen reader use
+         */
         if (cptr.ldI32o(sysopt, $sysopt_s_accessibility) == 1 && ((cptr.ldI32(gmap) & NHM.MG_PET) >>> 0) != 0) {
             let pet_override = ((cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) & 2n) ? cptr.ld1uo2(go, ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_rogue_syms) : cptr.ld1uo2(go, ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms));
+
             if (cptr.ld1uo2(gs, pet_override, 1, $instance_globals_s_showsyms) != 32)
                 cptr.stI32o(gmap, $glyph_map_sym + $classic_representation_symidx, ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0));
         }
+        /* Turn off color if no color defined, or rogue level w/o PC graphics.
+         */
         if ((!has_color(color) || ((cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) & 2n) && !has_rogue_color)) || !cptr.ld1so(iflags, $instance_flags_wc_color))
             color = NHM.NO_COLOR;
         cptr.stI32o(gmap, $glyph_map_sym, color);
@@ -2105,23 +2869,33 @@ export function reset_glyphmap(trigger) {
     cptr.stI64o(gg, $instance_globals_g_glyph_reset_timestamp, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
 }
 
+/*
+ * Return 'which' if position is implies an unfinished exterior.  Return
+ * zero otherwise.  Unfinished implies outer area is rock or a corridor.
+ *
+ * Things that are ambiguous: lava
+ */
 /** C ref: display.c:3130 — @param {CInt} x @param {CInt} y @param {CInt} which @returns {CInt} */
 function check_pos(x, y, which) {
     let type;
+
     if (!isok(x, y))
         return which;
     type = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    /* Everything below POOL, excluding TREE */
     if (((type) <= NHC.DBWALL) || type == NHC.CORR || type == NHC.SCORR || ((type) == NHC.SDOOR))
         return which;
     return 0;
 }
 
+/* Return the wall mode for a T wall. */
 /** C ref: display.c:3162 — @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @param {CInt} x3 @param {CInt} y3 @returns {CInt} */
 function set_twall(x0, y0, x1, y1, x2, y2, x3, y3) {
     let wmode;
     let is_1;
     let is_2;
     let is_3;
+
     is_1 = check_pos(x1, y1, NHM.WM_T_LONG);
     is_2 = check_pos(x2, y2, NHM.WM_T_BL);
     is_3 = check_pos(x3, y3, NHM.WM_T_BR);
@@ -2133,11 +2907,13 @@ function set_twall(x0, y0, x1, y1, x2, y2, x3, y3) {
     return wmode;
 }
 
+/* Return wall mode for a horizontal or vertical wall. */
 /** C ref: display.c:3187 — @param {CInt} x @param {CInt} y @param {CInt} horiz @returns {CInt} */
 function set_wall(x, y, horiz) {
     let wmode;
     let is_1;
     let is_2;
+
     if (horiz) {
         is_1 = check_pos(x, i16(((y - 1) | 0)), NHM.WM_W_LEFT);
         is_2 = check_pos(x, i16(((y + 1) | 0)), NHM.WM_W_RIGHT);
@@ -2153,6 +2929,7 @@ function set_wall(x, y, horiz) {
     return wmode;
 }
 
+/* Return a wall mode for a corner wall. (x4,y4) is the "inner" position. */
 /** C ref: display.c:3208 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @param {CInt} x3 @param {CInt} y3 @param {CInt} x4 @param {CInt} y4 @returns {CInt} */
 function set_corn(x1, y1, x2, y2, x3, y3, x4, y4) {
     let wmode;
@@ -2160,19 +2937,30 @@ function set_corn(x1, y1, x2, y2, x3, y3, x4, y4) {
     let is_2;
     let is_3;
     let is_4;
+
     is_1 = i16(check_pos(x1, y1, 1));
     is_2 = i16(check_pos(x2, y2, 1));
     is_3 = i16(check_pos(x3, y3, 1));
-    is_4 = i16(check_pos(x4, y4, 1));
+    is_4 = i16(check_pos(x4, y4, 1));  /* inner location */
+
+    /*
+     * All 4 should not be true.  So if the inner location is rock,
+     * use it.  If all of the outer 3 are true, use outer.  We currently
+     * can't cover the case where only part of the outer is rock, so
+     * we just say that all the walls are finished (if not overridden
+     * by the inner section).
+     */
     if (is_4) {
         wmode = NHM.WM_C_INNER;
     } else if (is_1 && is_2 && is_3)
         wmode = NHM.WM_C_OUTER;
     else
-        wmode = 0;
+        wmode = 0;  /* finished walls on all sides */
+
     return wmode;
 }
 
+/* Return mode for a crosswall. */
 /** C ref: display.c:3240 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function set_crosswall(x, y) {
     let wmode;
@@ -2180,10 +2968,12 @@ function set_crosswall(x, y) {
     let is_2;
     let is_3;
     let is_4;
+
     is_1 = i16(check_pos(i16(((x - 1) | 0)), i16(((y - 1) | 0)), 1));
     is_2 = i16(check_pos(i16(((x + 1) | 0)), i16(((y - 1) | 0)), 1));
     is_3 = i16(check_pos(i16(((x + 1) | 0)), i16(((y + 1) | 0)), 1));
     is_4 = i16(check_pos(i16(((x - 1) | 0)), i16(((y + 1) | 0)), 1));
+
     wmode = i16(((((((is_1 + is_2) | 0) + is_3) | 0) + is_4) | 0));
     if (wmode > 1) {
         if (is_1 && is_3 && (((is_2 + is_4) | 0) == 0)) {
@@ -2201,13 +2991,17 @@ function set_crosswall(x, y) {
         wmode = NHM.WM_X_BR;
     else if (is_4)
         wmode = NHM.WM_X_BL;
+
     return wmode;
 }
 
+/* called for every <x,y> by set_wall_state() and for specific <x,y> during
+   vault wall repair */
 /** C ref: display.c:3276 — @param {CInt} x @param {CInt} y */
 export function xy_set_wall_state(x, y) {
     let wmode;
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+
     switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.SDOOR:
         wmode = i16(set_wall(x, y, i16((cptr.ldI32o(lev, $rm_horizontal) & 1))));
@@ -2246,36 +3040,46 @@ export function xy_set_wall_state(x, y) {
         wmode = i16(set_crosswall(x, y));
         break;
         default:
-        wmode = -1;
+        wmode = -1;  /* don't set wall info */
         break;
     }
+
     if (wmode >= 0)
         cptr.stI32o(lev, $rm_flags, ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -8) | wmode) >>> 0);
 }
 
+/* Called from mklev.  Scan the level and set the wall modes. */
 /** C ref: display.c:3330 */
 export function set_wall_state() {
     let x;
     let y;
+
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
             xy_set_wall_state(x, y);
 }
 
+/* ------------------------------------------------------------------------ */
+/* This matrix is used here and in vision.c. */
 /** C ref: display.c:3358 — unsigned char[3][3] */
 export const seenv_matrix = [[4, 2, 1], [8, 255, 128], [16, 32, 64]];
 
+/* Set the seen vector of lev as if seen from (x0,y0) to (x,y). */
 /** C ref: display.c:3369 — @param {CPtr<struct rm>} lev @param {CInt} x0 @param {CInt} y0 @param {CInt} x @param {CInt} y */
 function set_seenv(lev, x0, y0, x, y) {
     let dx = i16(((x - x0) | 0));
     let dy = i16(((y0 - y) | 0));
+
     cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) | cptr.ld1uo(cptr.decay(seenv_matrix[(((dy) < 0 ? -1 : ((dy) != 0)) + 1) | 0]), (((dx) < 0 ? -1 : ((dx) != 0)) + 1) | 0, 1));
 }
 
+/* Called by blackout(vault.c) when vault guard removes temporary corridor,
+   turning spot <x0,y0> back into stone; <x1,y1> is an adjacent spot. */
 /** C ref: display.c:3384 — @param {CPtr<struct rm>} lev @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 */
 export function unset_seenv(lev, x0, y0, x1, y1) {
     let dx = i16(((x1 - x0) | 0));
     let dy = i16(((y0 - y1) | 0));
+
     cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) & ~cptr.ld1uo(cptr.decay(seenv_matrix[(dy + 1) | 0]), (dx + 1) | 0, 1));
 }
 
@@ -2329,11 +3133,16 @@ cptr.stI32o(cptr.decay(cross_matrix[3]), 12, NHC.S_tlwall);
 cptr.stI32o(cptr.decay(cross_matrix[3]), 16, NHC.S_tuwall);
 cptr.stI32o(cptr.decay(cross_matrix[3]), 20, NHC.S_crwall);
 
+/* Print out a T wall warning and all interesting info. */
 const __static_t_warn_warn_str = cptr.bytes("wall_angle: %s: case %d: seenv = 0x%x"); /** C ref: display.c:3455 — char[38] (function-static) */
 
 /** C ref: display.c:3453 — @param {CPtr<struct rm>} lev */
 function t_warn(lev) {
     let wname;
+
+    /* 5.0: non-T_wall cases added after shop repair (via breaching a wall,
+       using locking magic to put a door there, then unlocking the door;
+       D_CLOSED carried over to the wall) triggered warning for "unknown" */
     switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
         wname = __s_tuwall;
@@ -2372,6 +3181,18 @@ function t_warn(lev) {
     impossible(cptr.decay(__static_t_warn_warn_str), wname, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK, cptr.ld1uo(lev, $rm_seenv));
 }
 
+/*
+ * Return the correct graphics character index using wall type, wall mode,
+ * and the seen vector.  It is expected that seenv is non zero.
+ *
+ * All T-wall vectors are rotated to be TDWALL.  All single crosswall
+ * blocks are rotated to bottom right.  All double crosswall are rotated
+ * to W_X_BLTR.  All results are converted back.
+ *
+ * The only way to understand this is to take out pen and paper and
+ * draw diagrams.  See rm.h for more details on the wall modes and
+ * seen vector (SV).
+ */
 /** C ref: display.c:3513 — @param {CPtr<struct rm>} lev @returns {CInt} */
 function wall_angle(lev) {
     let seenv = (cptr.ld1uo(lev, $rm_seenv) & 255) >>> 0;
@@ -2381,7 +3202,7 @@ function wall_angle(lev) {
     switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
         row = cptr.decay(wall_matrix[2]);
-        seenv = (((seenv >>> 4 | (seenv << 4) >>> 0) >>> 0) & 255) >>> 0;
+        seenv = (((seenv >>> 4 | (seenv << 4) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
         {
             switch (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK) {
                 case 0:
@@ -2406,6 +3227,7 @@ function wall_angle(lev) {
                 } else if (((seenv & 32) >>> 0) || (((seenv & 24) >>> 0) && ((seenv & 192) >>> 0))) {
                     col = 4;
                 } else {
+                    /* only SV0|SV1|SV2 */
                     if (!((((seenv) & 7) >>> 0) && !(((seenv) & 4294967288) >>> 0)))
                         t_warn(lev);
                     col = 0;
@@ -2430,6 +3252,7 @@ function wall_angle(lev) {
                     col = 0;
                 else
                     col = 4;
+
                 break;
                 default:
                 impossible(__s_wall_angle_unknown_t_wall_mode_d, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK);
@@ -2441,7 +3264,7 @@ function wall_angle(lev) {
         }
         case NHC.TLWALL:
         row = cptr.decay(wall_matrix[1]);
-        seenv = (((seenv >>> 2 | (seenv << 6) >>> 0) >>> 0) & 255) >>> 0;
+        seenv = (((seenv >>> 2 | (seenv << 6) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
         {
             switch (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK) {
                 case 0:
@@ -2501,7 +3324,7 @@ function wall_angle(lev) {
         }
         case NHC.TRWALL:
         row = cptr.decay(wall_matrix[3]);
-        seenv = (((seenv >>> 6 | (seenv << 2) >>> 0) >>> 0) & 255) >>> 0;
+        seenv = (((seenv >>> 6 | (seenv << 2) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
         {
             switch (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK) {
                 case 0:
@@ -2777,7 +3600,7 @@ function wall_angle(lev) {
                 if (seenv == 16) {
                     idx = NHC.S_stone;
                 } else {
-                    seenv = (seenv & 4294967279) >>> 0;
+                    seenv = (seenv & 4294967279) >>> 0;  /* strip SV4 */
                     if (seenv == 1) {
                         col = 1;
                     } else if ((seenv & 12) >>> 0) {
@@ -2802,6 +3625,7 @@ function wall_angle(lev) {
                         impossible(__s_wall_angle_bottom_of_crwall_check);
                         col = 5;
                     }
+
                     idx = cptr.ldI32o(row, col, 4);
                 }
                 break;
@@ -2944,6 +3768,13 @@ function wall_angle(lev) {
     return idx;
 }
 
+/*
+ * c++ 20 has problems with some of the display.h macros because
+ * comparisons and bit-fiddling and math between different enums
+ * is deprecated.
+ * Create function versions of some of the macros used in some
+ * NetHack c++ source files (Qt) for use there.
+ */
 /** C ref: display.c:3797 — @param {CInt} cmap @returns {CInt} */
 export function fn_cmap_to_glyph(cmap) {
     return (((cmap) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((cmap) <= NHC.S_trwall) ? (((((cmap) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((cmap) < NHC.S_altar) ? (((((cmap) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((cmap) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((cmap) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((cmap) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((cmap) <= NHC.S_goodpos) ? (((((cmap) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));

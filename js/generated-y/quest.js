@@ -124,12 +124,18 @@ function* on_start() {
 
 /** C ref: quest.c:40 */
 function* on_locate() {
+    /* the locate messages are phrased in a manner such that they only
+       make sense when arriving on the level from above */
     let from_above = schar((cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) < cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
+
     if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
         return;
     } else if (!((cptr.ldI32o(svq, $q_score_first_locate) & 1))) {
         if (from_above)
             (yield* qt_pager(__s_locate_first));
+        /* if we've arrived from below this will be a lie, but there won't
+           be any point in delivering the message upon a return visit from
+           above later since the level has now been seen */
         cptr.stI32o(svq, $q_score_first_locate, 1);
     } else {
         if (from_above)
@@ -145,8 +151,17 @@ function* on_goal() {
         (yield* qt_pager(__s_goal_first));
         cptr.stI32o(svq, $q_score_made_goal, 1);
     } else {
+        /*
+         * Some QT_NEXTGOAL messages reference the quest artifact;
+         * find out if it is still present.  If not, request an
+         * alternate message (qt_pager() will revert to delivery
+         * of QT_NEXTGOAL if current role doesn't have QT_ALTGOAL).
+         * Note: if hero is already carrying it, it is treated as
+         * being absent from the level for quest message purposes.
+         */
         let whichobjchains = 82;
         let qarti = find_quest_artifact(whichobjchains);
+
         (yield* qt_pager(qarti ? __s_goal_next : __s_goal_alt));
         if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
             (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
@@ -159,6 +174,7 @@ export function* onquest() {
         return;
     if (!Is_special(cptr.add(u, $you_uz)))
         return;
+
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))))
         (yield* on_start());
     else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))))
@@ -180,19 +196,24 @@ export function* nemdead() {
 export function leaddead() {
     if (!((cptr.ldI32o(svq, $q_score_killed_leader) & 1))) {
         cptr.stI32o(svq, $q_score_killed_leader, 1);
+        /* TODO: qt_pager("killed_leader"); ? */
     }
 }
 
 /** C ref: quest.c:125 — @param {CPtr<struct obj>} obj */
 export function* artitouch(obj) {
     if (!((cptr.ldI32o(svq, $q_score_touched_artifact) & 1))) {
+        /* in case we haven't seen the item yet (ie, currently blinded),
+           this quest message describes it by name so mark it as seen */
         (yield* observe_object(obj));
+        /* only give this message once */
         cptr.stI32o(svq, $q_score_touched_artifact, 1);
         (yield* qt_pager(__s_gotit));
         (yield* exercise(NHC.A_WIS, 1));
     }
 }
 
+/* external hook for do.c (level change check) */
 /** C ref: quest.c:140 @returns {CInt} */
 export function* ok_to_quest() {
     return schar((((((cptr.ldI32o(svq, $q_score_got_quest) & 1)) | 0 || ((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) | 0) && (yield* is_pure(0)) > 0) || ((cptr.ldI32o(svq, $q_score_killed_leader) & 1)) | 0 ? 1 : 0));
@@ -207,6 +228,7 @@ function not_capable() {
 function* is_pure(talk) {
     let purity;
     let original_alignment = cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase);
+
     if (wizard() && talk) {
         if (cptr.ld1so(u, $you_ualign) != original_alignment) {
             (yield* You(__s_are_currently_s_instead_of_s, align_str(cptr.ld1so(u, $you_ualign)), align_str(original_alignment)));
@@ -222,39 +244,64 @@ function* is_pure(talk) {
     return purity;
 }
 
+/*
+ * Expel the player to the stairs on the parent of the quest dungeon.
+ *
+ * This assumes that the hero is currently _in_ the quest dungeon and that
+ * there is a single branch to and from it.
+ */
 /** C ref: quest.c:186 — @param {CInt} seal */
 function* expulsion(seal) {
     let br;
     let dest;
     let t;
     let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ? NHC.UTOTYPE_NONE : NHC.UTOTYPE_PORTAL;
+
     br = (yield* dungeon_branch(__s_the_quest));
     dest = (cptr.ldI16o(br, $branch_end1) == cptr.ldI16o(u, $you_uz)) ? cptr.add(br, $branch_end2) : cptr.add(br, $branch_end1);
     if (seal)
         portal_flag |= NHC.UTOTYPE_RMPORTAL;
-    nomul(0);
+    nomul(0);  /* stop running */
     (yield* schedule_goto(dest, portal_flag, null, null));
     if (seal) {
         let reexpelled = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0;
+
         cptr.stI32o(u, $you_uevent + $u_event_qexpelled, 1);
         remdun_mapseen(quest_dnum());
+        /* Delete the near portal now; the far (main dungeon side)
+           portal will be deleted as part of arrival on that level.
+           If monster movement is in progress, any who haven't moved
+           yet will now miss out on a chance to wander through it... */
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
             if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 break;
         if (t)
-            (yield* deltrap(t));
+            (yield* deltrap(t));  /* (display might be briefly out of sync) */
         else if (!reexpelled)
             (yield* impossible(__s_quest_portal_already_gone));
     }
 }
 
+/* Either you've returned to quest leader while carrying the quest
+   artifact or you've just thrown it to/at him or her.  If quest
+   completion text hasn't been given yet, give it now.  Otherwise
+   give another message about the character keeping the artifact
+   and using the magic portal to return to the dungeon.  Also called
+   if hero throws or kicks an invocation item (probably the Bell)
+   at the leader. */
 /** C ref: quest.c:226 — @param {CPtr<struct obj>} obj */
 export function* finish_quest(obj) {
     let otmp;
+
     if (obj && !is_quest_artifact(obj)) {
+        /* tossed an invocation item (or [fake] AoY) at the quest leader */
         if (Deaf())
-            return;
+            return;  /* optional (unlike quest completion) so skip if deaf */
+        /* do ID first so that the message identifying the item will refer to
+           it by name (and so justify the ID we already gave...) */
         (yield* fully_identify_obj(obj));
+        /* update_inventory() is not necessary or helpful here because item
+           was thrown, so isn't currently in inventory anyway */
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) {
             (yield* qt_pager(__s_hasamulet));
         } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR) {
@@ -264,20 +311,32 @@ export function* finish_quest(obj) {
         }
         return;
     }
+
     if ((cptr.ldI32o(u, $you_uhave) & 1)) {
+        /* has the amulet in inventory -- most likely the player has already
+           completed the quest and stopped in on her way back up, but it's not
+           impossible to have gotten the amulet before formally presenting the
+           quest artifact to the leader. */
         (yield* qt_pager(__s_hasamulet));
+        /* leader IDs the real amulet but ignores any fakes */
         if ((otmp = carrying(NHC.AMULET_OF_YENDOR)) !== null) {
             (yield* fully_identify_obj(otmp));
             (yield* update_inventory());
         }
     } else {
+        /* normal quest completion; threw artifact or walked up carrying it */
         (yield* qt_pager(!((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) ? __s_offeredit : __s_offeredit2));
+        /* should have obtained bell during quest;
+           if not, suggest returning for it now */
         if ((otmp = carrying(NHC.BELL_OF_OPENING)) === null)
             (yield* com_pager(__s_quest_complete_no_bell));
     }
     cptr.stI32o(svq, $q_score_got_thanks, 1);
+
     if (obj) {
-        cptr.stI32o(u, $you_uevent + $u_event_qcompleted, 1);
+        cptr.stI32o(u, $you_uevent + $u_event_qcompleted, 1);  /* you did it! */
+        /* behave as if leader imparts sufficient info about the
+           quest artifact */
         (yield* fully_identify_obj(obj));
         (yield* update_inventory());
     }
@@ -287,31 +346,51 @@ export function* finish_quest(obj) {
 function* chat_with_leader(mtmp) {
     if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
         return;
+
+    /*  Rule 0: Cheater checks. */
     if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
         cptr.stI32o(svq, $q_score_cheater, 1);
+
+    /*  It is possible for you to get the amulet without completing
+     *  the quest.  If so, try to induce the player to quest.
+     */
     if (((cptr.ldI32o(svq, $q_score_got_thanks) & 1))) {
+        /* Rule 1: You've gone back with/without the amulet. */
         if ((cptr.ldI32o(u, $you_uhave) & 1))
             (yield* finish_quest(null));
         else
             (yield* qt_pager(__s_posthanks));
+
+        /* Rule 3: You've got the artifact and are back to return it. */
     } else if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1)) {
         let otmp;
+
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (is_quest_artifact(otmp))
                 break;
+
         (yield* finish_quest(otmp));
+
+        /* Rule 4: You haven't got the artifact yet. */
     } else if (((cptr.ldI32o(svq, $q_score_got_quest) & 1))) {
         (yield* qt_pager(__s_encourage));
+
+        /* Rule 5: You aren't yet acceptable - or are you? */
     } else {
         let purity = 0;
+
         if (!((cptr.ldI32o(svq, $q_score_met_leader) & 1))) {
             (yield* qt_pager(__s_leader_first));
             cptr.stI32o(svq, $q_score_met_leader, 1);
             cptr.stI32o(svq, $q_score_not_ready, 0);
         } else
             (yield* qt_pager(__s_leader_next));
+
+        /* the quest leader might have passed through the portal into
+           the regular dungeon; none of the remaining make sense there */
         if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
             return;
+
         if (not_capable()) {
             (yield* qt_pager(__s_badlevel));
             (yield* exercise(NHC.A_WIS, 1));
@@ -321,6 +400,9 @@ function* chat_with_leader(mtmp) {
                 (yield* com_pager(__s_banished));
                 cptr.stI32o(svq, $q_score_pissed_off, 1);
                 (yield* expulsion(0));
+
+                /* being expelled is hardly an achievement but none of the
+                   other livelog classifications fit */
                 (yield* livelog_printf(2n, __s_s_has_expelled_you_from_the_quest, (yield* noit_mon_nam(mtmp))));
             }
         } else if (purity == 0) {
@@ -332,6 +414,11 @@ function* chat_with_leader(mtmp) {
             (yield* qt_pager(__s_assignquest));
             (yield* exercise(NHC.A_WIS, 1));
             cptr.stI32o(svq, $q_score_got_quest, 1);
+
+            /* phrasing is a bit clumsy but allows #chronicle to provide a
+               clue to players who are reaching the quest for first time;
+               matters most for Home 1 that has stairs down which aren't
+               easily found */
             (yield* livelog_printf(2n, __s_s_has_granted_access_to_proceed_deeper, (yield* noit_mon_nam(mtmp))));
         }
     }
@@ -339,21 +426,29 @@ function* chat_with_leader(mtmp) {
 
 /** C ref: quest.c:371 — @param {CPtr<struct monst>} mtmp */
 export function* leader_speaks(mtmp) {
+    /* maybe you attacked leader? */
     if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
         if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
+            /* again, don't end it permanently if the leader gets angry
+             * since you're going to have to kill him to go questing... :)
+             * ...but do only show this crap once. */
             (yield* qt_pager(__s_leader_last));
         }
         cptr.stI32o(svq, $q_score_pissed_off, 1);
-        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
+        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);  /* end the inaction */
     }
+    /* the quest leader might have passed through the portal into the
+       regular dungeon; if so, mustn't perform "backwards expulsion" */
     if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
         return;
+
     if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
         (yield* chat_with_leader(mtmp));
 }
 
 /** C ref: quest.c:394 */
 function* chat_with_nemesis() {
+    /*  The nemesis will do most of the talking, but... */
     (yield* qt_pager(__s_discourage));
     if (!((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
         ((cptr.stI32o(svq, $q_score_met_nemesis, cptr.ldI32o(svq, $q_score_met_nemesis) + 1)) - (1));
@@ -379,9 +474,16 @@ export function* nemesis_speaks() {
         (yield* qt_pager(__s_discourage));
 }
 
+/* create cloud of stinking gas around dying nemesis */
 /** C ref: quest.c:426 — @param {CInt} mx @param {CInt} my */
 export function* nemesis_stinks(mx, my) {
     let save_mon_moving = cptr.ld1so(svc, $context_info_mon_moving);
+
+    /*
+     * Some nemeses (determined by caller) release a cloud of noxious
+     * gas when they die.  Don't make the hero be responsible for such
+     * a cloud even if hero has just killed nemesis.
+     */
     cptr.st1o(svc, $context_info_mon_moving, 1);
     (yield* create_gas_cloud(mx, my, 5, 8));
     cptr.st1o(svc, $context_info_mon_moving, save_mon_moving);
@@ -389,6 +491,7 @@ export function* nemesis_stinks(mx, my) {
 
 /** C ref: quest.c:441 */
 function* chat_with_guardian() {
+    /*  These guys/gals really don't have much to say... */
     if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
         (yield* qt_pager(__s_guardtalk_after));
     else
@@ -398,13 +501,18 @@ function* chat_with_guardian() {
 /** C ref: quest.c:451 — @param {CPtr<struct monst>} mtmp */
 function* prisoner_speaks(mtmp) {
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
+        /* Awaken the prisoner */
         if (canseemon(mtmp))
             (yield* pline(__s_s_speaks, (yield* Monnam(mtmp))));
         ;
         (yield* verbalize(__s_i_m_finally_free));
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+
+        /* Your god is happy... */
         adjalign(3);
+
+        /* ...But the guards are not */
         void (yield* angry_guards(0));
     }
     return;
@@ -414,6 +522,7 @@ function* prisoner_speaks(mtmp) {
 export function* quest_chat(mtmp) {
     if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
         (yield* chat_with_leader(mtmp));
+        /* leader might have become pissed during the chat */
         if (((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
             (yield* setmangry(mtmp, 0));
         return;

@@ -471,6 +471,17 @@ const __s_shkname_shopkeeper_s_lacks_eshk_data = cptr.lit("shkname: shopkeeper \
 const __s_shkname = cptr.lit("shkname");
 const __s_izchak__2 = cptr.lit("Izchak");
 
+/*
+ *  Name prefix codes:
+ *      dash          -  female, personal name
+ *      underscore    _  female, general name
+ *      plus          +  male, personal name
+ *      vertical bar  |  male, general name (implied for most of shktools)
+ *      equals        =  gender not specified, personal name
+ *
+ *  Personal names do not receive the honorific prefix "Mr." or "Ms.".
+ */
+
 /** C ref: shknam.c:32 — char *[31] */
 const shkliquors = cptr.alloc(31 * 8);
 cptr.stPtro(shkliquors, 0, __s_njezjin);
@@ -860,6 +871,25 @@ cptr.stPtro(shkhealthfoods, 232, __s_zoe);
 cptr.stPtro(shkhealthfoods, 240, __s_zora);
 cptr.stPtro(shkhealthfoods, 248, null);
 
+/*
+ * To add new shop types, all that is necessary is to edit the shtypes[]
+ * array.  See mkroom.h for the structure definition.  Typically, you'll
+ * have to lower some or all of the probability fields in old entries to
+ * free up some percentage for the new type.
+ *
+ * The placement type field is not yet used but might be someday.
+ *
+ * The iprobs array in each entry defines the probabilities for various kinds
+ * of objects to be present in the given shop type.  You can associate with
+ * each percentage either a generic object type (represented by one of the
+ * *_CLASS enum value) or a specific object enum value.
+ * In the latter case, prepend it with a unary minus so the code can know
+ * (by testing the sign) whether to use mkobj() or mksobj().
+ * shtypes[] is externally referenced from mkroom.c, mon.c and shk.c.
+ *
+ * The second, usually shorter, store type name is used in automatically
+ * generated annotations for #overview.  If Null, the first name gets used.
+ */
 /** C ref: shknam.c:209 — struct shclass[13] */
 export const shtypes = cptr.alloc(13 * $sizeof_shclass);
 cptr.stPtro(shtypes, 0, __s_general_store);
@@ -1099,23 +1129,29 @@ cptr.stI32o(shtypes, 1344 + $shclass_iprobs + 40, 0);
 cptr.stI32o(shtypes, 1344 + $shclass_iprobs + 40 + $itp_itype, 0);
 cptr.stPtro(shtypes, 1344 + $shclass_shknms, null);
 
+/* decide whether an object or object type is considered vegetarian;
+   for types, items which might go either way are assumed to be veggy */
 /** C ref: shknam.c:380 — @param {CPtr<struct obj>} obj @param {CInt} otyp @returns {CInt} */
 function veggy_item(obj, otyp) {
     let corpsenm;
     let oclass;
+
     if (obj) {
+        /* actual object; will check tin content and corpse species */
         otyp = cptr.ldI16o(obj, $obj_otyp);
         oclass = cptr.ld1so(obj, $obj_oclass);
         corpsenm = cptr.ldI32o(obj, $obj_corpsenm);
     } else {
+        /* just a type; caller will have to handle tins and corpses */
         oclass = cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class);
-        corpsenm = NHC.PM_LICHEN;
+        corpsenm = NHC.PM_LICHEN;  /* veggy standin */
     }
+
     if (oclass == NHC.FOOD_CLASS) {
         if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.VEGGY || otyp == NHC.EGG)
             return 1;
         if (otyp == NHC.TIN && corpsenm == NHC.NON_PM)
-            return schar((cptr.ld1so(obj, $obj_spe) == 1));
+            return schar((cptr.ld1so(obj, $obj_spe) == 1));  /* 0 = empty, 1 = spinach */
         if (otyp == NHC.TIN || otyp == NHC.CORPSE)
             return schar((ismnum(corpsenm) && vegetarian(cptr.add(mons, corpsenm, $sizeof_permonst)) ? 1 : 0));
     }
@@ -1130,11 +1166,13 @@ function* shkveg() {
     let prob;
     let oclass = NHC.FOOD_CLASS;
     let ok = cptr.alloc(481 * 4);
-    void __builtin___memset_chk(ok, 0, 1924n, __builtin_object_size(ok, 0));
+
+    void __builtin___memset_chk(ok, 0, 1924n, __builtin_object_size(ok, 0));  /* lint suppression */
     j = (maxprob = 0);
     for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS; ++i) {
         if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != oclass)
             break;
+
         if (veggy_item(null, i)) {
             cptr.stI32o(ok, j++, i, 4);
             maxprob = (maxprob + cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0;
@@ -1143,37 +1181,47 @@ function* shkveg() {
     if (maxprob < 1)
         (yield* panic(__s_shkveg_no_veggy_objects));
     prob = rnd_at(__s_shknam_c, 427, __s_shkveg, maxprob);
+
     j = 0;
     i = cptr.ldI32o(ok, 0, 4);
     while ((prob = (prob - cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0) > 0) {
         j++;
         i = cptr.ldI32o(ok, j, 4);
     }
+
     if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != oclass || !(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)))
         (yield* panic(__s_shkveg_probtype_error_oclass_d_i_d, oclass, i));
     return i;
 }
 
+/* make a random item for health food store */
 /** C ref: shknam.c:443 — @param {CInt} sx @param {CInt} sy */
 function* mkveggy_at(sx, sy) {
     let obj = (yield* mksobj_at((yield* shkveg()), i16(sx), i16(sy), 1, 1));
+
     if (obj && cptr.ldI16o(obj, $obj_otyp) == NHC.TIN)
         set_tin_variety(obj, -3);
     return;
 }
 
+/* make an object of the appropriate type for a shop square */
 /** C ref: shknam.c:454 — @param {CPtr<struct shclass>} shp @param {CInt} sx @param {CInt} sy @param {CInt} mkspecl */
 function* mkshobj_at(shp, sx, sy, mkspecl) {
     let mtmp;
     let ptr;
     let atype;
+
+    /* 3.6 tribute */
     if (mkspecl && (!strcmp(cptr.ldPtr(shp), __s_rare_books) || !strcmp(cptr.ldPtr(shp), __s_second_hand_bookstore))) {
         let novel = (yield* mksobj_at(NHC.SPE_NOVEL, i16(sx), i16(sy), 0, 0));
+
         if (novel)
             cptr.stI32o(svc, $context_info_tribute + $tribute_info_bookstock, 1);
         return;
     }
+
     if (rn2_at(__s_shknam_c, 470, __s_mkshobj_at, 100) < depth(cptr.add(u, $you_uz)) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (ptr = (yield* mkclass(NHC.S_MIMIC, 0))) !== null && (mtmp = (yield* makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS))) !== null) {
+        /* nothing */
     } else {
         atype = get_shop_item(Number(BigInt.asIntN(32, (cptr.diff(shp, shtypes) / 112n))));
         if (atype == ((NHC.MAXOCLASSES + 1) | 0))
@@ -1185,6 +1233,7 @@ function* mkshobj_at(shp, sx, sy, mkspecl) {
     }
 }
 
+/* extract a shopkeeper name for the given shop type */
 /** C ref: shknam.c:487 — @param {CPtr<struct monst>} shk @param {CPtr<char *>} nlp */
 function nameshk(shk, nlp) {
     let i;
@@ -1194,32 +1243,41 @@ function nameshk(shk, nlp) {
     let mtmp;
     let name_wanted = cptr.ldI32o(shk, $monst_m_id) | 0;
     let sptr;
+
     if (cptr.eq(nlp, shklight) && In_mines(cptr.add(u, $you_uz)) && (sptr = Is_special(cptr.add(u, $you_uz))) !== null && (cptr.ldI32o(sptr, $s_level_flags) & 1) | 0) {
+        /* special-case minetown lighting shk */
         shname = __s_izchak;
         cptr.stI32o(shk, $monst_female, 0);
     } else {
+        /* We want variation from game to game, without needing the save
+           and restore support which would be necessary for randomization;
+           try not to make too many assumptions about time_t's internals;
+           use ledger_no rather than depth to keep minetown distinct. */
         let nseed = Number(BigInt.asIntN(32, (ubirthday.v / 257n)));
+
         name_wanted = (name_wanted + ((((ledger_no(cptr.add(u, $you_uz)) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) | 0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + 18) | 0;
         cptr.stI32o(shk, $monst_female, (name_wanted & 1) >>> 0);
+
         for (names_avail = 0; cptr.ldPtro(nlp, names_avail, 8); names_avail++)
             continue;
         (__builtin_expect(BigInt((!(names_avail > 0))), 0n) ? __assert_rtn(__s_nameshk, __s_shknam_c, 514, __s_names_avail_0) : void 0);
         name_wanted = name_wanted % names_avail;
+
         for (trycnt = 0; trycnt < 50; trycnt++) {
             if (cptr.eq(nlp, shktools)) {
                 shname = cptr.ldPtro(shktools, rn2_at(__s_shknam_c, 519, __s_nameshk, names_avail), 8);
-                cptr.stI32o(shk, $monst_female, 0);
+                cptr.stI32o(shk, $monst_female, 0);  /* reversed below for '_' prefix */
             } else if (name_wanted < names_avail) {
                 shname = cptr.ldPtro(nlp, name_wanted, 8);
             } else if ((i = rn2_at(__s_shknam_c, 523, __s_nameshk, names_avail)) != 0) {
                 shname = cptr.ldPtro(nlp, (i - 1) | 0, 8);
             } else if (!cptr.eq(nlp, shkgeneral)) {
-                nlp = shkgeneral;
+                nlp = shkgeneral;  /* try general names */
                 for (names_avail = 0; cptr.ldPtro(nlp, names_avail, 8); names_avail++)
                     continue;
-                continue;
+                continue;  /* next `trycnt' iteration */
             } else {
                 shname = (cptr.ldI32o(shk, $monst_female) & 1) | 0 ? __s_lucrezia : __s_dirk;
             }
@@ -1227,17 +1285,19 @@ function nameshk(shk, nlp) {
                 cptr.stI32o(shk, $monst_female, 1);
             else if (cptr.ld1s(shname) == 124 || cptr.ld1s(shname) == 43)
                 cptr.stI32o(shk, $monst_female, 0);
+
+            /* is name already in use on this level? */
             for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || (cptr.eq(mtmp, shk)) || !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
                     continue;
                 (__builtin_expect(BigInt((!(has_eshk(mtmp)))), 0n) ? __assert_rtn(__s_nameshk, __s_shknam_c, 542, __s_has_eshk_mtmp) : void 0);
                 if (strcmp(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam), shname))
                     continue;
-                name_wanted = names_avail;
+                name_wanted = names_avail;  /* try a random name */
                 break;
             }
             if (!mtmp)
-                break;
+                break;  /* new name */
         }
     }
     void __builtin___strncpy_chk(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), $eshk_shknam), shname, 32n, __builtin_object_size(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), $eshk_shknam), 1));
@@ -1264,15 +1324,23 @@ export function free_eshk(mtmp) {
     cptr.stI32o(mtmp, $monst_isshk, 0);
 }
 
+/* find a door in room sroom which is good for shop entrance.
+   returns -1 if no good door found, or the svd.doors index
+   and the door coordinates in sx, sy */
 /** C ref: shknam.c:582 — @param {CPtr<struct mkroom>} sroom @param {CPtr<coordxy>} sx @param {CPtr<coordxy>} sy @returns {CInt} */
 function good_shopdoor(sroom, sx, sy) {
     let i;
+
     for (i = 0; i < cptr.ld1so(sroom, $mkroom_doorct); i++) {
         let di = (cptr.ldI32o(sroom, $mkroom_fdoor) + i) | 0;
+
         cptr.stI16(sx, cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), di, $sizeof_coord));
         cptr.stI16(sy, cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), di, $sizeof_coord, $nhcoord_y));
+
+        /* check that the shopkeeper placement is sane */
         if (cptr.ld1so(sroom, $mkroom_irregular)) {
             let rmno = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n))));
+
             if (isok(i16(((cptr.ldI16(sx) - 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + -1)) - (-1);
             else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
@@ -1299,6 +1367,7 @@ function good_shopdoor(sroom, sx, sy) {
     return -1;
 }
 
+/* create a new shopkeeper in the given room */
 /** C ref: shknam.c:628 — @param {CPtr<struct shclass>} shp @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 function* shkinit(shp, sroom) {
     let sh;
@@ -1306,10 +1375,15 @@ function* shkinit(shp, sroom) {
     let sy = cptr.box(0);
     let shk;
     let eshkp;
+
+    /* place the shopkeeper in the given room */
     sh = good_shopdoor(sroom, sx, sy);
     if (sh < 0) {
+        /* Said to happen sometimes, but I have never seen it. */
+        /* Supposedly fixed by fdoor change in mklev.c */
         if (wizard()) {
             let j = cptr.ld1so(sroom, $mkroom_doorct);
+
             (yield* impossible(__s_where_is_shopdoor));
             (yield* pline(__s_room_at_d_d_d_d, cptr.ldI16(sroom), cptr.ldI16o(sroom, $mkroom_ly), cptr.ldI16o(sroom, $mkroom_hx), cptr.ldI16o(sroom, $mkroom_hy)));
             (yield* pline(__s_doormax_d_doorct_d_fdoor_d, cptr.ldI32(gd), cptr.ld1so(sroom, $mkroom_doorct), sh));
@@ -1321,15 +1395,18 @@ function* shkinit(shp, sroom) {
         }
         return -1;
     }
+
     if ((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        void (yield* rloc((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG));
+        void (yield* rloc((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG));  /* insurance */
+
+    /* now initialize the shopkeeper monster structure */
     if (!(shk = (yield* makemon(cptr.add(mons, NHC.PM_SHOPKEEPER, $sizeof_permonst), sx.v, sy.v, NHM.MM_ESHK))))
         return -1;
-    eshkp = (cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk));
+    eshkp = (cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk));  /* makemon(...,MM_ESHK) allocates this */
     cptr.stI32o(shk, $monst_isshk, cptr.stI32o(shk, $monst_mpeaceful, 1));
     set_malign(shk);
     cptr.stI32o(shk, $monst_msleeping, 0);
-    mon_learns_traps(shk, NHC.ALL_TRAPS);
+    mon_learns_traps(shk, NHC.ALL_TRAPS);  /* we know all the traps already */
     cptr.st1o(eshkp, $eshk_shoproom, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
     cptr.stPtro(sroom, $mkroom_resident, shk);
     cptr.stI32o(eshkp, $eshk_shoptype, cptr.ld1so(sroom, $mkroom_rtype));
@@ -1342,12 +1419,13 @@ function* shkinit(shp, sroom) {
     cptr.stI32o(eshkp, $eshk_billct, cptr.stI32o(eshkp, $eshk_visitct, 0));
     cptr.stPtro(eshkp, $eshk_bill_p, null);
     cptr.st1o2(eshkp, 0, 1, $eshk_customer, 0);
-    (yield* mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt(rnd_at(__s_shknam_c, 682, __s_shkinit, 100))))));
+    (yield* mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt(rnd_at(__s_shknam_c, 682, __s_shkinit, 100))))));  /* initial capital */
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings))
         void (yield* mongets(shk, NHC.TOUCHSTONE));
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && rn2_at(__s_shknam_c, 686, __s_shkinit, 2)) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && rn2_at(__s_shknam_c, 687, __s_shkinit, 5)))
         void (yield* mongets(shk, NHC.SCR_CHARGING));
     nameshk(shk, cptr.ldPtro(shp, $shclass_shknms));
+
     return sh;
 }
 
@@ -1358,14 +1436,24 @@ function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
             return 0;
     } else if ((sx == cptr.ldI16(sroom) && cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord) == ((sx - 1) | 0)) || (sx == cptr.ldI16o(sroom, $mkroom_hx) && cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord) == ((sx + 1) | 0)) || (sy == cptr.ldI16o(sroom, $mkroom_ly) && cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord, $nhcoord_y) == ((sy - 1) | 0)) || (sy == cptr.ldI16o(sroom, $mkroom_hy) && cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord, $nhcoord_y) == ((sy + 1) | 0)))
         return 0;
+
+    /* only generate items on solid floor squares */
     if (!((cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM)) {
         return 0;
     }
+
     return 1;
 }
 
+/* stock a newly-created room with objects */
 /** C ref: shknam.c:718 — @param {CInt} shp_indx @param {CPtr<struct mkroom>} sroom */
 export function* stock_room(shp_indx, sroom) {
+    /*
+     * Someday soon we'll dispatch on the shdist field of shclass to do
+     * different placements in this routine. Currently it only supports
+     * shop-style placement (all squares except a row nearest the first
+     * door get objects).
+     */
     let sx;
     let sy;
     let sh;
@@ -1374,8 +1462,12 @@ export function* stock_room(shp_indx, sroom) {
     let buf = new Uint8Array(256);
     let rmno = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n))));
     let shp = cptr.add(shtypes, shp_indx, $sizeof_shclass);
+
+    /* first, try to place a shopkeeper in the room */
     if ((sh = (yield* shkinit(shp, sroom))) < 0)
         return;
+
+    /* make sure no doorways without doors, and no trapped doors, in shops */
     sx = cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(sroom, $mkroom_fdoor), $sizeof_coord);
     sy = cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(sroom, $mkroom_fdoor), $sizeof_coord, $nhcoord_y);
     if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
@@ -1383,14 +1475,16 @@ export function* stock_room(shp_indx, sroom) {
         (yield* newsym(i16(sx), i16(sy)));
     }
     if (cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
-        cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21), sy, $sizeof_rm));
+        cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21), sy, $sizeof_rm));  /* .typ = DOOR */
         (yield* newsym(i16(sx), i16(sy)));
     }
     if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED)
         cptr.stI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
+
     if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_LOCKED) {
         let m = sx;
         let n = sy;
+
         if (inside_shop(i16(((sx + 1) | 0)), i16(sy)))
             m--;
         else if (inside_shop(i16(((sx - 1) | 0)), i16(sy)))
@@ -1404,7 +1498,12 @@ export function* stock_room(shp_indx, sroom) {
         if (cptr.ld1so3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR && cptr.ld1so3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM)
             cptr.st1o3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((Is_special(cptr.add(u, $you_uz)) || cptr.ld1s((yield* in_rooms(i16(m), i16(n), 0)))) ? NHC.ROOM : NHC.CORR)));
     }
+
     if (cptr.ld1so(svc, $context_info_tribute + $tribute_info_enabled) && !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_bookstock) & 1)) {
+        /*
+         * Out of the number of spots where we're actually
+         * going to put stuff, randomly single out one in particular.
+         */
         for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx++)
             for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++)
                 if (stock_room_goodpos(sroom, rmno, sh, sx, sy))
@@ -1412,69 +1511,101 @@ export function* stock_room(shp_indx, sroom) {
         specialspot = rnd_at(__s_shknam_c, 777, __s_stock_room, stockcount);
         stockcount = 0;
     }
+
     for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx++)
         for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++)
             if (stock_room_goodpos(sroom, rmno, sh, sx, sy)) {
                 stockcount++;
                 (yield* mkshobj_at(shp, sx, sy, schar(((stockcount) && (stockcount == specialspot) ? 1 : 0))));
             }
+
+    /*
+     * Special monster placements (if any) should go here: that way,
+     * monsters will sit on top of objects and not the other way around.
+     */
+
+    /* Hack for Orcus's level: it's a ghost town, get rid of shopkeepers */
     if (on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_orcus_level))) {
         let mtmp = (yield* shop_keeper(schar(rmno)));
         (yield* mongone(mtmp));
     }
+
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
 }
 
+/* does shkp's shop stock this item type? */
 /** C ref: shknam.c:805 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function saleable(shkp, obj) {
     let i;
     let shp_indx = (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoptype) - NHC.SHOPBASE) | 0;
     let shp = cptr.add(shtypes, shp_indx, $sizeof_shclass);
+
     if (cptr.ld1so(shp, $shclass_symb) == NHC.RANDOM_CLASS)
         return 1;
     for (i = 0; i < Number(BigInt.asIntN(32, (72n / 8n))) && cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs); i++) {
+        /* pseudo-class needs special handling */
         if (cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) == ((NHC.MAXOCLASSES + 1) | 0)) {
             if (veggy_item(obj, 0))
                 return 1;
         } else if ((cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) < 0) ? cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) == -cptr.ldI16o(obj, $obj_otyp) : cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) == cptr.ld1so(obj, $obj_oclass))
             return 1;
     }
+    /* not found */
     return 0;
 }
 
+/* positive value: class; negative value: specific object type.
+   can also return non-existing object class (eg. VEGETARIAN_CLASS) */
 /** C ref: shknam.c:829 — @param {CInt} type @returns {CInt} */
 export function get_shop_item(type) {
     let shp = cptr.add(shtypes, type, 112);
     let i;
     let j;
+
+    /* select an appropriate object type at random */
     for (j = rnd_at(__s_shknam_c, 835, __s_get_shop_item, 100), i = 0; (j = (j - cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs)) | 0) > 0; i++)
         continue;
+
     return cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype);
 }
 
+/* version of shkname() for beginning of sentence */
 /** C ref: shknam.c:843 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* Shknam(mtmp) {
     let nam = (yield* shkname(mtmp));
+
+    /* 'nam[]' is almost certainly already capitalized, but be sure */
     cptr.st1o(nam, 0, highc(cptr.ld1so(nam, 0)));
     return nam;
 }
 
+/* shopkeeper's name, without any visibility constraint; if hallucinating,
+   will yield some other shopkeeper's name (not necessarily one residing
+   in the current game's dungeon, or who keeps same type of shop) */
 /** C ref: shknam.c:856 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* shkname(mtmp) {
     let nam;
     let save_isshk = (cptr.ldI32o(mtmp, $monst_isshk) & 1);
-    cptr.stI32o(mtmp, $monst_isshk, 0);
+
+    cptr.stI32o(mtmp, $monst_isshk, 0);  /* don't want mon_nam() calling shkname() */
+    /* get a modifiable name buffer along with fallback result */
     nam = (yield* noit_mon_nam(mtmp));
     cptr.stI32o(mtmp, $monst_isshk, save_isshk);
+
     if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
         (yield* impossible(__s_shkname_s_is_not_a_shopkeeper, nam));
     } else if (!has_eshk(mtmp)) {
         (yield* panic(__s_shkname_shopkeeper_s_lacks_eshk_data, nam));
     } else {
         let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
+
         if (Hallucination() && !cptr.ldI32(program_state)) {
             let nlp;
             let num;
+
+            /* count the number of non-unique shop types;
+               pick one randomly, ignoring shop generation probabilities;
+               pick a name at random from that shop type's list */
             for (num = 0; num < 13; num++)
                 if (cptr.ldI32o2(shtypes, num, $sizeof_shclass, $shclass_prob) == 0)
                     break;
@@ -1486,6 +1617,7 @@ export function* shkname(mtmp) {
                     shknm = cptr.ldPtro(nlp, rn2_at(__s_shknam_c, 888, __s_shkname, num), 8);
             }
         }
+        /* strip prefix if present */
         if (!letter(cptr.ld1s(shknm)))
             shknm = cptr.add(shknm, 1);
         void cptr.strcpy(nam, shknm);
@@ -1496,19 +1628,23 @@ export function* shkname(mtmp) {
 /** C ref: shknam.c:900 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function shkname_is_pname(mtmp) {
     let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
+
     return schar((cptr.ld1s(shknm) == 45 || cptr.ld1s(shknm) == 43 || cptr.ld1s(shknm) == 61 ? 1 : 0));
 }
 
 /** C ref: shknam.c:908 — @param {CPtr<struct monst>} shkp @param {CInt} override_hallucination @returns {CInt} */
 export function is_izchak(shkp, override_hallucination) {
     let shknm;
+
     if (Hallucination() && !override_hallucination)
         return 0;
     if (!(cptr.ldI32o(shkp, $monst_isshk) & 1))
         return 0;
+    /* outside of town, Izchak becomes just an ordinary shopkeeper */
     if (!in_town(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my)))
         return 0;
     shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
+    /* skip "+" prefix */
     if (!letter(cptr.ld1s(shknm)))
         shknm = cptr.add(shknm, 1);
     return schar((!strcmp(shknm, __s_izchak__2)));

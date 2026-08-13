@@ -66,6 +66,7 @@ const __s_lua = cptr.lit("\x1bLua");
 const __s_binary = cptr.lit("binary");
 const __s_text = cptr.lit("text");
 
+/* chain list of long jump buffers */
 /** C ref: ldo.c:84 — struct lua_longjmp { previous, b, status } (memory model v0.5) */
 
 /** C ref: ldo.c:91 — @param {CPtr<lua_State>} L @param {CInt} errcode @param {CPtr} oldtop */
@@ -74,7 +75,7 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
         case 4:
         {
             {
-                let io = (((oldtop)));
+                let io = (((oldtop)));  /* reuse preregistered msg. */
                 let x_ = (cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_memerrmsg));
                 cptr.stPtr(((io)), ((((x_)))));
                 (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
@@ -85,14 +86,14 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
         }
         case 0:
         {
-            (cptr.st1o((((oldtop))), $TValue_tt_, 0));
+            (cptr.st1o((((oldtop))), $TValue_tt_, 0));  /* no error message */
             break;
         }
         default:
         {
-            (void 0);
+            (void 0);  /* real error */
             {
-                let io1 = (((oldtop)));
+                let io1 = (((oldtop)));  /* error message on current top */
                 let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -109,15 +110,15 @@ export function luaD_seterrorobj(L, errcode, oldtop) {
 /** C ref: ldo.c:111 — @param {CPtr<lua_State>} L @param {CInt} errcode */
 export function* luaD_throw(L, errcode) {
     if (cptr.ldPtro(L, $lua_State_errorJmp)) {
-        cptr.stI32o(cptr.ldPtro(L, $lua_State_errorJmp), $lua_longjmp_status, errcode);
-        cjmp.longjmp(cptr.add((cptr.ldPtro(L, $lua_State_errorJmp)), $lua_longjmp_b), 1);
+        cptr.stI32o(cptr.ldPtro(L, $lua_State_errorJmp), $lua_longjmp_status, errcode);  /* set status */
+        cjmp.longjmp(cptr.add((cptr.ldPtro(L, $lua_State_errorJmp)), $lua_longjmp_b), 1);  /* jump to it */
     } else {
         let g = (cptr.ldPtro(L, $lua_State_l_G));
-        errcode = (yield* luaE_resetthread(L, errcode));
+        errcode = (yield* luaE_resetthread(L, errcode));  /* close all upvalues */
         cptr.st1o(L, $lua_State_status, uchar(errcode));
         if (cptr.ldPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_errorJmp)) {
             {
-                let io1 = (((cptr.postinc(() => cptr.ldPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top), (v) => { cptr.stPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top, v); }, 16))));
+                let io1 = (((cptr.postinc(() => cptr.ldPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top), (v) => { cptr.stPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top, v); }, 16))));  /* copy error obj. */
                 let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -125,11 +126,11 @@ export function* luaD_throw(L, errcode) {
                 (void 0);
             }
             ;
-            (yield* luaD_throw(cptr.ldPtro(g, $global_State_mainthread), errcode));
+            (yield* luaD_throw(cptr.ldPtro(g, $global_State_mainthread), errcode));  /* re-throw in main thread */
         } else {
             if (cptr.ldPtro(g, $global_State_panic)) {
                 (void 0);
-                (yield* Y.icall(cptr.ldPtro(g, $global_State_panic)(L)));
+                (yield* Y.icall(cptr.ldPtro(g, $global_State_panic)(L)));  /* call panic function (last chance to jump out) */
             }
             abort();
         }
@@ -141,7 +142,7 @@ export function* luaD_rawrunprotected(L, f, ud) {
     let oldnCcalls = cptr.ldI32o(L, $lua_State_nCcalls);
     let lj = cptr.alloc(208);
     cptr.stI32o(lj, $lua_longjmp_status, 0);
-    cptr.stPtr(lj, cptr.ldPtro(L, $lua_State_errorJmp));
+    cptr.stPtr(lj, cptr.ldPtro(L, $lua_State_errorJmp));  /* chain new error handler */
     cptr.stPtro(L, $lua_State_errorJmp, lj);
     {
         const __sj1 = cjmp.idOf(cptr.add((lj), $lua_longjmp_b));
@@ -151,7 +152,7 @@ export function* luaD_rawrunprotected(L, f, ud) {
                 (yield* Y.icall((f)(L, ud)));
             }
             ;
-            cptr.stPtro(L, $lua_State_errorJmp, cptr.ldPtr(lj));
+            cptr.stPtro(L, $lua_State_errorJmp, cptr.ldPtr(lj));  /* restore old error handler */
             cptr.stI32o(L, $lua_State_nCcalls, oldnCcalls);
             return cptr.ldI32o(lj, $lua_longjmp_status);
         } catch (__e1) {
@@ -168,6 +169,17 @@ export function* luaD_rawrunprotected(L, f, ud) {
     }
 }
 
+/* }====================================================== */
+
+/*
+** {==================================================================
+** Stack reallocation
+** ===================================================================
+*/
+
+/*
+** Change all pointers to the stack into offsets.
+*/
 /** C ref: ldo.c:162 — @param {CPtr<lua_State>} L */
 function relstack(L) {
     let ci;
@@ -182,6 +194,9 @@ function relstack(L) {
     }
 }
 
+/*
+** Change back all offsets into pointers.
+*/
 /** C ref: ldo.c:179 — @param {CPtr<lua_State>} L */
 function correctstack(L) {
     let ci;
@@ -194,10 +209,11 @@ function correctstack(L) {
         cptr.stPtro(ci, $CallInfo_top, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(ci, $CallInfo_top))))));
         cptr.stPtr(ci, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64(ci))))));
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
-            cptr.stI32o(ci, $CallInfo_u + 8, 1);
+            cptr.stI32o(ci, $CallInfo_u + 8, 1);  /* signal to update 'trap' in 'luaV_execute' */
     }
 }
 
+/* raise an error while running the message handler */
 /** C ref: ldo.c:200 — @param {CPtr<lua_State>} L */
 export function* luaD_errerr(L) {
     let msg = ((yield* luaS_newlstr(L, __s_error_in_error_handling, BigInt.asUintN(64, (24n / 1n) - 1n))));
@@ -209,10 +225,21 @@ export function* luaD_errerr(L) {
         (void L, (void 0));
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* assume EXTRA_STACK */
     (yield* luaD_throw(L, 5));
 }
 
+/*
+** Reallocate the stack to a new size, correcting all pointers into it.
+** In ISO C, any pointer use after the pointer has been deallocated is
+** undefined behavior. So, before the reallocation, all pointers are
+** changed to offsets, and after the reallocation they are changed back
+** to pointers. As during the reallocation the pointers are invalid, the
+** reallocation cannot run emergency collections.
+**
+** In case of allocation error, raise an error or return false according
+** to 'raiseerror'.
+*/
 /** C ref: ldo.c:219 — @param {CPtr<lua_State>} L @param {CInt} newsize @param {CInt} raiseerror @returns {CInt} */
 export function* luaD_reallocstack(L, newsize, raiseerror) {
     let oldsize = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n)))));
@@ -220,35 +247,42 @@ export function* luaD_reallocstack(L, newsize, raiseerror) {
     let newstack;
     let oldgcstop = cptr.ld1uo((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem);
     (void 0);
-    relstack(L);
-    cptr.st1o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem, 1);
+    relstack(L);  /* change pointers to offsets */
+    cptr.st1o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem, 1);  /* stop emergency collection */
     newstack = ((((yield* luaM_realloc_(L, cptr.ldPtro(L, $lua_State_stack), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((oldsize + 5) | 0))))) * 16n), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((newsize + 5) | 0))))) * 16n))))));
-    cptr.st1o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem, uchar(oldgcstop));
+    cptr.st1o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem, uchar(oldgcstop));  /* restore emergency collection */
     if ((__builtin_expect(BigInt(((cptr.eq(newstack, (null))) != 0)), 0n))) {
-        correctstack(L);
+        correctstack(L);  /* change offsets back to pointers */
         if (raiseerror)
             (yield* luaD_throw(L, 4));
         else
-            return 0;
+            return 0;  /* do not raise an error */
     }
     cptr.stPtro(L, $lua_State_stack, newstack);
-    correctstack(L);
+    correctstack(L);  /* change offsets back to pointers */
     cptr.stPtro(L, $lua_State_stack_last, cptr.add(cptr.ldPtro(L, $lua_State_stack), newsize, 16));
     for (i = (oldsize + 5) | 0; i < ((newsize + 5) | 0); i++)
-        (cptr.st1o((((cptr.add(newstack, i, 16)))), $TValue_tt_, 0));
+        (cptr.st1o((((cptr.add(newstack, i, 16)))), $TValue_tt_, 0));  /* erase new segment */
     return 1;
 }
 
+/*
+** Try to grow the stack by at least 'n' elements. When 'raiseerror'
+** is true, raises any error; otherwise, return 0 in case of errors.
+*/
 /** C ref: ldo.c:249 — @param {CPtr<lua_State>} L @param {CInt} n @param {CInt} raiseerror @returns {CInt} */
 export function* luaD_growstack(L, n, raiseerror) {
     let size = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n)))));
     if ((__builtin_expect(BigInt(((size > 1000000) != 0)), 0n))) {
+        /* if stack is larger than maximum, thread is already using the
+           extra space reserved for errors, that is, thread is handling
+           a stack error; cannot grow further than that. */
         (void 0);
         if (raiseerror)
-            (yield* luaD_errerr(L));
-        return 0;
+            (yield* luaD_errerr(L));  /* error inside message handler */
+        return 0;  /* if not 'raiseerror', just signal it */
     } else if (n < 1000000) {
-        let newsize = Math.imul(2, size);
+        let newsize = Math.imul(2, size);  /* tentative new size */
         let needed = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(L, $lua_State_stack)) / 16n))))) + n) | 0;
         if (newsize > 1000000)
             newsize = 1000000;
@@ -257,12 +291,18 @@ export function* luaD_growstack(L, n, raiseerror) {
         if ((__builtin_expect(BigInt(((newsize <= 1000000) != 0)), 1n)))
             return (yield* luaD_reallocstack(L, newsize, raiseerror));
     }
+    /* else stack overflow */
+    /* add extra size to be able to handle the error message */
     (yield* luaD_reallocstack(L, 1000200, raiseerror));
     if (raiseerror)
         (yield* luaG_runerror(L, __s_stack_overflow));
     return 0;
 }
 
+/*
+** Compute how much of the stack is being used, by computing the
+** maximum top of all call frames in the stack and the current top.
+*/
 /** C ref: ldo.c:283 — @param {CPtr<lua_State>} L @returns {CInt} */
 function stackinuse(L) {
     let ci;
@@ -273,22 +313,33 @@ function stackinuse(L) {
             lim = cptr.ldPtro(ci, $CallInfo_top);
     }
     (void 0);
-    res = ((Number(BigInt.asIntN(32, ((cptr.diff(lim, cptr.ldPtro(L, $lua_State_stack)) / 16n))))) + 1) | 0;
+    res = ((Number(BigInt.asIntN(32, ((cptr.diff(lim, cptr.ldPtro(L, $lua_State_stack)) / 16n))))) + 1) | 0;  /* part of stack in use */
     if (res < 20)
-        res = 20;
+        res = 20;  /* ensure a minimum size */
     return res;
 }
 
+/*
+** If stack size is more than 3 times the current use, reduce that size
+** to twice the current use. (So, the final stack size is at most 2/3 the
+** previous size, and half of its entries are empty.)
+** As a particular case, if stack was handling a stack overflow and now
+** it is not, 'max' (limited by LUAI_MAXSTACK) will be smaller than
+** stacksize (equal to ERRORSTACKSIZE in this case), and so the stack
+** will be reduced to a "regular" size.
+*/
 /** C ref: ldo.c:307 — @param {CPtr<lua_State>} L */
 export function* luaD_shrinkstack(L) {
     let inuse = stackinuse(L);
     let max = (inuse > 333333) ? 1000000 : Math.imul(inuse, 3);
+    /* if thread is currently not handling a stack overflow and its
+       size is larger than maximum "reasonable" size, shrink it */
     if (inuse <= 1000000 && (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n))))) > max) {
         let nsize = (inuse > 500000) ? 1000000 : Math.imul(inuse, 2);
-        (yield* luaD_reallocstack(L, nsize, 0));
+        (yield* luaD_reallocstack(L, nsize, 0));  /* ok if that fails */
     } else
-        (void 0);
-    (yield* luaE_shrinkCI(L));
+        (void 0);  /* (change only for debugging) */
+    (yield* luaE_shrinkCI(L));  /* shrink CI list */
 }
 
 /** C ref: ldo.c:322 — @param {CPtr<lua_State>} L */
@@ -304,27 +355,34 @@ export function* luaD_inctop(L) {
     cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
 }
 
+/* }================================================================== */
+
+/*
+** Call a hook for the given event. Make sure there is a hook to be
+** called. (Both 'L->hook' and 'L->hookmask', which trigger this
+** function, can be changed asynchronously by signals.)
+*/
 /** C ref: ldo.c:335 — @param {CPtr<lua_State>} L @param {CInt} event @param {CInt} line @param {CInt} ftransfer @param {CInt} ntransfer */
 export function* luaD_hook(L, event, line, ftransfer, ntransfer) {
     let hook = cptr.ldPtro(L, $lua_State_hook);
     if (hook && cptr.ld1uo(L, $lua_State_allowhook)) {
         let mask = 8;
         let ci = cptr.ldPtro(L, $lua_State_ci);
-        let top = (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack))))));
-        let ci_top = (cptr.diff((((cptr.ldPtro(ci, $CallInfo_top)))), (((cptr.ldPtro(L, $lua_State_stack))))));
+        let top = (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* preserve original 'top' */
+        let ci_top = (cptr.diff((((cptr.ldPtro(ci, $CallInfo_top)))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* idem for 'ci->top' */
         let ar = cptr.alloc(136);
         cptr.stI32(ar, event);
         cptr.stI32o(ar, $lua_Debug_currentline, line);
         cptr.stPtro(ar, $lua_Debug_i_ci, ci);
         if (ntransfer != 0) {
-            mask |= 256;
+            mask |= 256;  /* 'ci' has transfer information */
             cptr.stI16o(ci, $CallInfo_u2, u16(ftransfer));
             cptr.stI16o(ci, $CallInfo_u2 + 2, u16(ntransfer));
         }
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)) && cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));
+            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* protect entire activation register */
         if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 20n) != 0)), 0n))) {
-            void 0;
+            void 0;  /* ensure minimum stack size */
             (yield* luaD_growstack(L, 20, 1));
             void 0;
         } else {
@@ -333,7 +391,7 @@ export function* luaD_hook(L, event, line, ftransfer, ntransfer) {
         ;
         if (cptr.cmp(cptr.ldPtro(ci, $CallInfo_top), cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16)) < 0)
             cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16));
-        cptr.st1o(L, $lua_State_allowhook, 0);
+        cptr.st1o(L, $lua_State_allowhook, 0);  /* cannot call hooks inside a hook */
         cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | mask);
         (void 0);
         (yield* Y.icall((hook)(L, ar)));
@@ -346,44 +404,59 @@ export function* luaD_hook(L, event, line, ftransfer, ntransfer) {
     }
 }
 
+/*
+** Executes a call hook for Lua functions. This function is called
+** whenever 'hookmask' is not zero, so it checks whether call hooks are
+** active.
+*/
 /** C ref: ldo.c:376 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci */
 export function* luaD_hookcall(L, ci) {
-    cptr.stI32o(L, $lua_State_oldpc, 0);
+    cptr.stI32o(L, $lua_State_oldpc, 0);  /* set 'oldpc' for new function */
     if (cptr.ldI32o(L, $lua_State_hookmask) & 1) {
         let event = (cptr.ldU16o(ci, $CallInfo_callstatus) & 32) ? 4 : 0;
         let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
-        cptr.postinc(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);
+        cptr.postinc(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);  /* hooks assume 'pc' is already incremented */
         (yield* luaD_hook(L, event, -1, 1, cptr.ld1uo(p, $Proto_numparams)));
-        cptr.postdec(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);
+        cptr.postdec(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);  /* correct 'pc' */
     }
 }
 
+/*
+** Executes a return hook for Lua and C functions and sets/corrects
+** 'oldpc'. (Note that this correction is needed by the line hook, so it
+** is done even when return hooks are off.)
+*/
 /** C ref: ldo.c:394 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CInt} nres */
 function* rethook(L, ci, nres) {
     if (cptr.ldI32o(L, $lua_State_hookmask) & 2) {
-        let firstres = cptr.add(cptr.ldPtro(L, $lua_State_top), -(nres), 16);
-        let delta = 0;
+        let firstres = cptr.add(cptr.ldPtro(L, $lua_State_top), -(nres), 16);  /* index of first result */
+        let delta = 0;  /* correction for vararg functions */
         let ftransfer;
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
             let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
             if (cptr.ld1uo(p, $Proto_is_vararg))
                 delta = (((cptr.ldI32o(ci, $CallInfo_u + 12) + cptr.ld1uo(p, $Proto_numparams)) | 0) + 1) | 0;
         }
-        cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), delta, 16));
+        cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), delta, 16));  /* if vararg, back to virtual 'func' */
         ftransfer = (Number(BigInt.asUintN(16, (cptr.diff(firstres, cptr.ldPtr(ci)) / 16n))));
-        (yield* luaD_hook(L, 1, -1, ftransfer, nres));
+        (yield* luaD_hook(L, 1, -1, ftransfer, nres));  /* call it */
         cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));
     }
     if ((!(cptr.ldU16o((ci = cptr.ldPtro(ci, $CallInfo_previous)), $CallInfo_callstatus) & 2)))
-        cptr.stI32o(L, $lua_State_oldpc, (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, $CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)), $Proto_code)) / 4n))))) - 1) | 0));
+        cptr.stI32o(L, $lua_State_oldpc, (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, $CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)), $Proto_code)) / 4n))))) - 1) | 0));  /* set 'oldpc' */
 }
 
+/*
+** Check whether 'func' has a '__call' metafield. If so, put it in the
+** stack, below original 'func', so that 'luaD_precall' can call it. Raise
+** an error if there is no '__call' metafield.
+*/
 /** C ref: ldo.c:419 — @param {CPtr<lua_State>} L @param {CPtr} func @returns {*} */
 function* tryfuncTM(L, func) {
     let tm;
     let p;
     if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 1n) != 0)), 0n))) {
-        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));
+        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* space for metamethod */
         {
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
                 void 0;
@@ -400,9 +473,9 @@ function* tryfuncTM(L, func) {
         (void 0);
     }
     ;
-    tm = luaT_gettmbyobj(L, ((func)), NHC.TM_CALL);
+    tm = luaT_gettmbyobj(L, ((func)), NHC.TM_CALL);  /* (after previous GC) */
     if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
-        (yield* luaG_callerror(L, ((func))));
+        (yield* luaG_callerror(L, ((func))));  /* nothing to call */
     for (p = cptr.ldPtro(L, $lua_State_top); cptr.cmp(p, func) > 0; p = cptr.add(p, -1, 16)) {
         let io1 = (((p)));
         let io2 = (((cptr.add(p, -(1), 16))));
@@ -412,9 +485,9 @@ function* tryfuncTM(L, func) {
         (void 0);
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* stack space pre-allocated by the caller */
     {
-        let io1 = (((func)));
+        let io1 = (((func)));  /* metamethod is the new function to be called */
         let io2 = (tm);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -425,6 +498,12 @@ function* tryfuncTM(L, func) {
     return func;
 }
 
+/*
+** Given 'nres' results at 'firstResult', move 'wanted' of them to 'res'.
+** Handle most typical cases (zero results for commands, one result for
+** expressions, multiple results for tail calls/single parameters)
+** separated.
+*/
 /** C ref: ldo.c:440 — @param {CPtr<lua_State>} L @param {CPtr} res @param {CInt} nres @param {CInt} wanted */
 function* moveresults(L, res, nres, wanted) {
     let firstresult;
@@ -435,9 +514,9 @@ function* moveresults(L, res, nres, wanted) {
         return;
         case 1:
         if (nres == 0)
-            (cptr.st1o((((res))), $TValue_tt_, 0));
+            (cptr.st1o((((res))), $TValue_tt_, 0));  /* adjust with nil */
         else {
-            let io1 = (((res)));
+            let io1 = (((res)));  /* move it to proper place */
             let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(nres), 16))));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -448,28 +527,29 @@ function* moveresults(L, res, nres, wanted) {
         cptr.stPtro(L, $lua_State_top, cptr.add(res, 1, 16));
         return;
         case -1:
-        wanted = nres;
+        wanted = nres;  /* we want all results */
         break;
         default:
         if (((wanted) < -1)) {
-            cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 512);
+            cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 512);  /* in case of yields */
             cptr.stI32o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u2, nres);
             res = (yield* luaF_close(L, res, -1, 1));
             cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) & -513);
             if (cptr.ldI32o(L, $lua_State_hookmask)) {
                 let savedres = (cptr.diff((((res))), (((cptr.ldPtro(L, $lua_State_stack))))));
                 (yield* rethook(L, cptr.ldPtro(L, $lua_State_ci), nres));
-                res = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (savedres))));
+                res = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (savedres))));  /* hook can move stack */
             }
             wanted = ((-(wanted) - 3) | 0);
             if (wanted == -1)
-                wanted = nres;
+                wanted = nres;  /* we want all results */
         }
         break;
     }
-    firstresult = cptr.add(cptr.ldPtro(L, $lua_State_top), -(nres), 16);
+    /* generic case */
+    firstresult = cptr.add(cptr.ldPtro(L, $lua_State_top), -(nres), 16);  /* index of first result */
     if (nres > wanted)
-        nres = wanted;
+        nres = wanted;  /* don't need them */
     for (i = 0; i < nres; i++) {
         let io1 = (((cptr.add(res, i, 16))));
         let io2 = (((cptr.add(firstresult, i, 16))));
@@ -481,22 +561,30 @@ function* moveresults(L, res, nres, wanted) {
     ;
     for (; i < wanted; i++)
         (cptr.st1o((((cptr.add(res, i, 16)))), $TValue_tt_, 0));
-    cptr.stPtro(L, $lua_State_top, cptr.add(res, wanted, 16));
+    cptr.stPtro(L, $lua_State_top, cptr.add(res, wanted, 16));  /* top points after the last result */
 }
 
+/*
+** Finishes a function call: calls hook if necessary, moves current
+** number of results to proper place, and returns to previous call
+** info. If function has to close variables, hook must be called after
+** that.
+*/
 /** C ref: ldo.c:492 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CInt} nres */
 export function* luaD_poscall(L, ci, nres) {
     let wanted = cptr.ldI16o(ci, $CallInfo_nresults);
     if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask) && !((wanted) < -1) ? 1 : 0) != 0)), 0n)))
         (yield* rethook(L, ci, nres));
+    /* move results to proper place */
     (yield* moveresults(L, cptr.ldPtr(ci), nres, wanted));
+    /* function cannot be in any of these cases when returning */
     (void 0);
-    cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));
+    cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));  /* back to caller (after closing variables) */
 }
 
 /** C ref: ldo.c:509 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nret @param {CInt} mask @param {CPtr} top @returns {CPtr<CallInfo>} */
 function* prepCallInfo(L, func, nret, mask, top) {
-    let ci = cptr.stPtro(L, $lua_State_ci, (cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next) ? cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next) : (yield* luaE_extendCI(L))));
+    let ci = cptr.stPtro(L, $lua_State_ci, (cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next) ? cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next) : (yield* luaE_extendCI(L))));  /* new frame */
     cptr.stPtr(ci, func);
     cptr.stI16o(ci, $CallInfo_nresults, i16(nret));
     cptr.stI16o(ci, $CallInfo_callstatus, u16(mask));
@@ -504,12 +592,15 @@ function* prepCallInfo(L, func, nret, mask, top) {
     return ci;
 }
 
+/*
+** precall for C functions
+*/
 /** C ref: ldo.c:523 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nresults @param {CPtr} f @returns {CInt} */
 function* precallC(L, func, nresults, f) {
-    let n;
+    let n;  /* number of returns */
     let ci;
     if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 20n) != 0)), 0n))) {
-        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));
+        let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* ensure minimum stack size */
         {
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
                 void 0;
@@ -533,13 +624,19 @@ function* precallC(L, func, nresults, f) {
         (yield* luaD_hook(L, 0, -1, 1, narg));
     }
     (void 0);
-    n = (yield* Y.icall((f)(L)));
+    n = (yield* Y.icall((f)(L)));  /* do the actual call */
     (void 0);
     (void L, (void 0));
     (yield* luaD_poscall(L, ci, n));
     return n;
 }
 
+/*
+** Prepare a function for a tail call, building its call info on top
+** of the current call info. 'narg1' is the number of arguments plus 1
+** (so that it includes the function itself). Return the number of
+** results, if it was a C function, or -1 for a Lua function.
+*/
 /** C ref: ldo.c:550 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr} func @param {CInt} narg1 @param {CInt} delta @returns {CInt} */
 export function* luaD_pretailcall(L, ci, func, narg1, delta) {
     __lbl_retry: while (true) {
@@ -551,7 +648,7 @@ export function* luaD_pretailcall(L, ci, func, narg1, delta) {
             case 6:
             {
                 let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $LClosure_p);
-                let fsize = cptr.ld1uo(p, $Proto_maxstacksize);
+                let fsize = cptr.ld1uo(p, $Proto_maxstacksize);  /* frame size */
                 let nfixparams = cptr.ld1uo(p, $Proto_numparams);
                 let i;
                 if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= BigInt(((fsize - delta) | 0))) != 0)), 0n))) {
@@ -572,7 +669,7 @@ export function* luaD_pretailcall(L, ci, func, narg1, delta) {
                     (void 0);
                 }
                 ;
-                cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));
+                cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));  /* restore 'func' (if vararg) */
                 for (i = 0; i < narg1; i++) {
                     let io1 = (((cptr.add(cptr.ldPtr(ci), i, 16))));
                     let io2 = (((cptr.add(func, i, 16))));
@@ -582,27 +679,36 @@ export function* luaD_pretailcall(L, ci, func, narg1, delta) {
                     (void 0);
                 }
                 ;
-                func = cptr.ldPtr(ci);
+                func = cptr.ldPtr(ci);  /* moved-down function */
                 for (; narg1 <= nfixparams; narg1++)
-                    (cptr.st1o((((cptr.add(func, narg1, 16)))), $TValue_tt_, 0));
-                cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.add(func, 1, 16), fsize, 16));
+                    (cptr.st1o((((cptr.add(func, narg1, 16)))), $TValue_tt_, 0));  /* complete missing arguments */
+                cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.add(func, 1, 16), fsize, 16));  /* top for new function */
                 (void 0);
-                cptr.stPtro(ci, $CallInfo_u, cptr.ldPtro(p, $Proto_code));
+                cptr.stPtro(ci, $CallInfo_u, cptr.ldPtro(p, $Proto_code));  /* starting point */
                 cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | 32);
-                cptr.stPtro(L, $lua_State_top, cptr.add(func, narg1, 16));
+                cptr.stPtro(L, $lua_State_top, cptr.add(func, narg1, 16));  /* set top */
                 return -1;
             }
             default:
             {
-                func = (yield* tryfuncTM(L, func));
+                func = (yield* tryfuncTM(L, func));  /* try to get '__call' metamethod */
+                /* return luaD_pretailcall(L, ci, func, narg1 + 1, delta); */
                 narg1++;
-                continue __lbl_retry;
+                continue __lbl_retry;  /* try again */
             }
         }
         break __lbl_retry;
     }
 }
 
+/*
+** Prepares the call to a function (C or Lua). For C functions, also do
+** the call. The function to be called is at '*func'.  The arguments
+** are on the stack, right after the function.  Returns the CallInfo
+** to be executed, if it was a Lua function. Otherwise (a C function)
+** returns NULL, with all the results on the stack, starting at the
+** original function position.
+*/
 /** C ref: ldo.c:595 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nresults @returns {CPtr<CallInfo>} */
 export function* luaD_precall(L, func, nresults) {
     __lbl_retry: while (true) {
@@ -617,9 +723,9 @@ export function* luaD_precall(L, func, nresults) {
             {
                 let ci;
                 let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $LClosure_p);
-                let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), func) / 16n))))) - 1) | 0;
+                let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), func) / 16n))))) - 1) | 0;  /* number of real arguments */
                 let nfixparams = cptr.ld1uo(p, $Proto_numparams);
-                let fsize = cptr.ld1uo(p, $Proto_maxstacksize);
+                let fsize = cptr.ld1uo(p, $Proto_maxstacksize);  /* frame size */
                 if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= BigInt((fsize))) != 0)), 0n))) {
                     let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));
                     {
@@ -639,29 +745,38 @@ export function* luaD_precall(L, func, nresults) {
                 }
                 ;
                 cptr.stPtro(L, $lua_State_ci, ci = (yield* prepCallInfo(L, func, nresults, 0, cptr.add(cptr.add(func, 1, 16), fsize, 16))));
-                cptr.stPtro(ci, $CallInfo_u, cptr.ldPtro(p, $Proto_code));
+                cptr.stPtro(ci, $CallInfo_u, cptr.ldPtro(p, $Proto_code));  /* starting point */
                 for (; narg < nfixparams; narg++)
-                    (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16)))), $TValue_tt_, 0));
+                    (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16)))), $TValue_tt_, 0));  /* complete missing arguments */
                 (void 0);
                 return ci;
             }
             default:
             {
-                func = (yield* tryfuncTM(L, func));
-                continue __lbl_retry;
+                func = (yield* tryfuncTM(L, func));  /* try to get '__call' metamethod */
+                /* return luaD_precall(L, func, nresults); */
+                continue __lbl_retry;  /* try again with metamethod */
             }
         }
         break __lbl_retry;
     }
 }
 
+/*
+** Call a function (C or Lua) through C. 'inc' can be 1 (increment
+** number of recursive invocations in the C stack) or nyci (the same
+** plus increment number of non-yieldable calls).
+** This function can be called with some use of EXTRA_STACK, so it should
+** check the stack before doing anything else. 'luaD_precall' already
+** does that.
+*/
 /** C ref: ldo.c:635 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nResults @param {CUInt} inc */
 function* ccall(L, func, nResults, inc) {
     let ci;
     cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) + inc) | 0);
     if ((__builtin_expect(BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)), 0n))) {
         if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 0n) != 0)), 0n))) {
-            let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));
+            let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* free any use of EXTRA_STACK */
             (yield* luaD_growstack(L, 0, 1));
             func = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (t__))));
         } else {
@@ -671,78 +786,126 @@ function* ccall(L, func, nResults, inc) {
         (yield* luaE_checkcstack(L));
     }
     if (!cptr.eq((ci = (yield* luaD_precall(L, func, nResults))), (null))) {
-        cptr.stI16o(ci, $CallInfo_callstatus, 4);
-        (yield* luaV_execute(L, ci));
+        cptr.stI16o(ci, $CallInfo_callstatus, 4);  /* mark that it is a "fresh" execute */
+        (yield* luaV_execute(L, ci));  /* call it */
     }
     cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) - inc) | 0);
 }
 
+/*
+** External interface for 'ccall'
+*/
 /** C ref: ldo.c:653 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nResults */
 export function* luaD_call(L, func, nResults) {
     (yield* ccall(L, func, nResults, 1));
 }
 
+/*
+** Similar to 'luaD_call', but does not allow yields during the call.
+*/
 /** C ref: ldo.c:661 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nResults */
 export function* luaD_callnoyield(L, func, nResults) {
     (yield* ccall(L, func, nResults, 65537));
 }
 
+/*
+** Finish the job of 'lua_pcallk' after it was interrupted by an yield.
+** (The caller, 'finishCcall', does the final call to 'adjustresults'.)
+** The main job is to complete the 'luaD_pcall' called by 'lua_pcallk'.
+** If a '__close' method yields here, eventually control will be back
+** to 'finishCcall' (when that '__close' method finally returns) and
+** 'finishpcallk' will run again and close any still pending '__close'
+** methods. Similarly, if a '__close' method errs, 'precover' calls
+** 'unroll' which calls ''finishCcall' and we are back here again, to
+** close any pending '__close' methods.
+** Note that, up to the call to 'luaF_close', the corresponding
+** 'CallInfo' is not modified, so that this repeated run works like the
+** first one (except that it has at least one less '__close' to do). In
+** particular, field CIST_RECST preserves the error status across these
+** multiple runs, changing only if there is a new error.
+*/
 /** C ref: ldo.c:682 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @returns {CInt} */
 function* finishpcallk(L, ci) {
-    let status = ((cptr.ldU16o((ci), $CallInfo_callstatus) >> 10) & 7);
+    let status = ((cptr.ldU16o((ci), $CallInfo_callstatus) >> 10) & 7);  /* get original status */
     if ((__builtin_expect(BigInt(((status == 0) != 0)), 1n)))
-        status = 1;
+        status = 1;  /* was interrupted by an yield */
     else {
         let func = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI32o(ci, $CallInfo_u2)))));
-        cptr.st1o(L, $lua_State_allowhook, uchar(((cptr.ldU16o(ci, $CallInfo_callstatus)) & 1)));
-        func = (yield* luaF_close(L, func, status, 1));
+        cptr.st1o(L, $lua_State_allowhook, uchar(((cptr.ldU16o(ci, $CallInfo_callstatus)) & 1)));  /* restore 'allowhook' */
+        func = (yield* luaF_close(L, func, status, 1));  /* can yield or raise an error */
         luaD_seterrorobj(L, status, func);
-        (yield* luaD_shrinkstack(L));
-        ((cptr.stI16o((ci), $CallInfo_callstatus, u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | 0)))));
+        (yield* luaD_shrinkstack(L));  /* restore stack size in case of overflow */
+        ((cptr.stI16o((ci), $CallInfo_callstatus, u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | 0)))));  /* clear original status */
     }
     cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & -17);
     cptr.stI64o(L, $lua_State_errfunc, cptr.ldI64o(ci, $CallInfo_u + 8));
+    /* if it is here, there were errors or yields; unlike 'lua_pcallk',
+       do not change status */
     return status;
 }
 
+/*
+** Completes the execution of a C function interrupted by an yield.
+** The interruption must have happened while the function was either
+** closing its tbc variables in 'moveresults' or executing
+** 'lua_callk'/'lua_pcallk'. In the first case, it just redoes
+** 'luaD_poscall'. In the second case, the call to 'finishpcallk'
+** finishes the interrupted execution of 'lua_pcallk'.  After that, it
+** calls the continuation of the interrupted function and finally it
+** completes the job of the 'luaD_call' that called the function.  In
+** the call to 'adjustresults', we do not know the number of results
+** of the function called by 'lua_callk'/'lua_pcallk', so we are
+** conservative and use LUA_MULTRET (always adjust).
+*/
 /** C ref: ldo.c:715 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci */
 function* finishCcall(L, ci) {
-    let n;
+    let n;  /* actual number of results from C function */
     if (cptr.ldU16o(ci, $CallInfo_callstatus) & 512) {
         (void 0);
-        n = cptr.ldI32o(ci, $CallInfo_u2);
+        n = cptr.ldI32o(ci, $CallInfo_u2);  /* just redo 'luaD_poscall' */
+        /* don't need to reset CIST_CLSRET, as it will be set again anyway */
     } else {
-        let status = 1;
+        let status = 1;  /* default if there were no errors */
+        /* must have a continuation and must be able to call it */
         (void 0);
         if (cptr.ldU16o(ci, $CallInfo_callstatus) & 16)
-            status = (yield* finishpcallk(L, ci));
+            status = (yield* finishpcallk(L, ci));  /* finish it */
         {
             if (cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top), cptr.ldPtro(L, $lua_State_top)) < 0)
-                cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top, cptr.ldPtro(L, $lua_State_top));
+                cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top, cptr.ldPtro(L, $lua_State_top));  /* finish 'lua_callk' */
         }
         ;
         (void 0);
-        n = (yield* Y.icall((cptr.ldPtro(ci, $CallInfo_u))(L, status, cptr.ldI64o(ci, $CallInfo_u + 16))));
+        n = (yield* Y.icall((cptr.ldPtro(ci, $CallInfo_u))(L, status, cptr.ldI64o(ci, $CallInfo_u + 16))));  /* call continuation */
         (void 0);
         (void L, (void 0));
     }
-    (yield* luaD_poscall(L, ci, n));
+    (yield* luaD_poscall(L, ci, n));  /* finish 'luaD_call' */
 }
 
+/*
+** Executes "full continuation" (everything in the stack) of a
+** previously interrupted coroutine until the stack is empty (or another
+** interruption long-jumps out of the loop).
+*/
 /** C ref: ldo.c:743 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function* unroll(L, ud) {
     let ci;
     (void (ud));
     while (!cptr.eq((ci = cptr.ldPtro(L, $lua_State_ci)), cptr.add(L, $lua_State_base_ci))) {
         if (!(!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
-            (yield* finishCcall(L, ci));
+            (yield* finishCcall(L, ci));  /* complete its execution */
         else {
-            (yield* luaV_finishOp(L));
-            (yield* luaV_execute(L, ci));
+            (yield* luaV_finishOp(L));  /* finish interrupted instruction */
+            (yield* luaV_execute(L, ci));  /* execute down to higher C 'boundary' */
         }
     }
 }
 
+/*
+** Try to find a suspended protected call (a "recover point") for the
+** given thread.
+*/
 /** C ref: ldo.c:761 — @param {CPtr<lua_State>} L @returns {CPtr<CallInfo>} */
 function findpcall(L) {
     let ci;
@@ -750,14 +913,19 @@ function findpcall(L) {
         if (cptr.ldU16o(ci, $CallInfo_callstatus) & 16)
             return ci;
     }
-    return null;
+    return null;  /* no pending pcall */
 }
 
+/*
+** Signal an error in the call to 'lua_resume', not in the execution
+** of the coroutine itself. (Such errors should not be handled by any
+** coroutine error handler and should not kill the coroutine.)
+*/
 /** C ref: ldo.c:776 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CInt} narg @returns {CInt} */
 function* resume_error(L, msg, narg) {
-    cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), narg, 16));
+    cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), narg, 16));  /* remove args from the stack */
     {
-        let io = (((cptr.ldPtro(L, $lua_State_top))));
+        let io = (((cptr.ldPtro(L, $lua_State_top))));  /* push error message */
         let x_ = ((yield* luaS_new(L, msg)));
         cptr.stPtr(((io)), ((((x_)))));
         (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
@@ -773,40 +941,57 @@ function* resume_error(L, msg, narg) {
     return 2;
 }
 
+/*
+** Do the work for 'lua_resume' in protected mode. Most of the work
+** depends on the status of the coroutine: initial state, suspended
+** inside a hook, or regularly suspended (optionally with a continuation
+** function), plus erroneous cases: non-suspended coroutine or dead
+** coroutine.
+*/
 /** C ref: ldo.c:792 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function* resume(L, ud) {
-    let n = cptr.ldI32((((ud))));
-    let firstArg = cptr.add(cptr.ldPtro(L, $lua_State_top), -(n), 16);
+    let n = cptr.ldI32((((ud))));  /* number of arguments */
+    let firstArg = cptr.add(cptr.ldPtro(L, $lua_State_top), -(n), 16);  /* first argument */
     let ci = cptr.ldPtro(L, $lua_State_ci);
     if (cptr.ld1uo(L, $lua_State_status) == 0)
-        (yield* ccall(L, cptr.add(firstArg, -(1), 16), -1, 0));
+        (yield* ccall(L, cptr.add(firstArg, -(1), 16), -1, 0));  /* just call its body */
     else {
         (void 0);
-        cptr.st1o(L, $lua_State_status, 0);
+        cptr.st1o(L, $lua_State_status, 0);  /* mark that it is running (again) */
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
+            /* undo increment made by 'luaG_traceexec': instruction was not
+               executed yet */
             (void 0);
             cptr.postdec(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);
-            cptr.stPtro(L, $lua_State_top, firstArg);
-            (yield* luaV_execute(L, ci));
+            cptr.stPtro(L, $lua_State_top, firstArg);  /* discard arguments */
+            (yield* luaV_execute(L, ci));  /* just continue running Lua code */
         } else {
             if (cptr.ldPtro(ci, $CallInfo_u) !== (null)) {
                 (void 0);
-                n = (yield* Y.icall((cptr.ldPtro(ci, $CallInfo_u))(L, 1, cptr.ldI64o(ci, $CallInfo_u + 16))));
+                n = (yield* Y.icall((cptr.ldPtro(ci, $CallInfo_u))(L, 1, cptr.ldI64o(ci, $CallInfo_u + 16))));  /* call continuation */
                 (void 0);
                 (void L, (void 0));
             }
-            (yield* luaD_poscall(L, ci, n));
+            (yield* luaD_poscall(L, ci, n));  /* finish 'luaD_call' */
         }
-        (yield* unroll(L, (null)));
+        (yield* unroll(L, (null)));  /* run continuation */
     }
 }
 
+/*
+** Unrolls a coroutine in protected mode while there are recoverable
+** errors, that is, errors inside a protected call. (Any error
+** interrupts 'unroll', and this loop protects it again so it can
+** continue.) Stops with a normal end (status == LUA_OK), an yield
+** (status == LUA_YIELD), or an unprotected error ('findpcall' doesn't
+** find a recover point).
+*/
 /** C ref: ldo.c:831 — @param {CPtr<lua_State>} L @param {CInt} status @returns {CInt} */
 function* precover(L, status) {
     let ci;
     while (((status) > 1) && !cptr.eq((ci = findpcall(L)), (null))) {
-        cptr.stPtro(L, $lua_State_ci, ci);
-        ((cptr.stI16o((ci), $CallInfo_callstatus, u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | ((status) << 10))))));
+        cptr.stPtro(L, $lua_State_ci, ci);  /* go down to recovery functions */
+        ((cptr.stI16o((ci), $CallInfo_callstatus, u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | ((status) << 10))))));  /* status to finish 'pcall' */
         status = (yield* luaD_rawrunprotected(L, unroll, (null)));
     }
     return status;
@@ -831,12 +1016,13 @@ export function* lua_resume(L, from, nargs, nresults) {
     (void L);
     (void L, (void 0));
     status = (yield* luaD_rawrunprotected(L, resume, nargs));
+    /* continue running after recoverable errors */
     status = (yield* precover(L, status));
     if ((__builtin_expect(BigInt(((!((status) > 1)) != 0)), 1n)))
-        (void 0);
+        (void 0);  /* normal end or yield */
     else {
-        cptr.st1o(L, $lua_State_status, (uchar(((status)))));
-        luaD_seterrorobj(L, status, cptr.ldPtro(L, $lua_State_top));
+        cptr.st1o(L, $lua_State_status, (uchar(((status)))));  /* mark thread as 'dead' */
+        luaD_seterrorobj(L, status, cptr.ldPtro(L, $lua_State_top));  /* push error message */
         cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top, cptr.ldPtro(L, $lua_State_top));
     }
     cptr.stI32(nresults, (status == 1) ? cptr.ldI32o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u2) : (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))) / 16n))))));
@@ -863,29 +1049,39 @@ export function* lua_yieldk(L, nresults, ctx, k) {
             (yield* luaG_runerror(L, __s_attempt_to_yield_from_outside_a));
     }
     cptr.st1o(L, $lua_State_status, 1);
-    cptr.stI32o(ci, $CallInfo_u2, nresults);
+    cptr.stI32o(ci, $CallInfo_u2, nresults);  /* save number of results */
     if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
         (void 0);
         (void L, (void 0));
         (void L, (void 0));
     } else {
         if ((cptr.stPtro(ci, $CallInfo_u, k)) !== (null))
-            cptr.stI64o(ci, $CallInfo_u + 16, ctx);
+            cptr.stI64o(ci, $CallInfo_u + 16, ctx);  /* save context */
         (yield* luaD_throw(L, 1));
     }
+    (void 0);  /* must be inside a hook */
     (void 0);
-    (void 0);
-    return 0;
+    return 0;  /* return to 'luaD_hook' */
 }
 
+/*
+** Auxiliary structure to call 'luaF_close' in protected mode.
+*/
 /** C ref: ldo.c:916 — struct CloseP { level, status } (memory model v0.5) */
 
+/*
+** Auxiliary function to call 'luaF_close' in protected mode.
+*/
 /** C ref: ldo.c:925 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function* closepaux(L, ud) {
     let pcl = ((ud));
     (yield* luaF_close(L, cptr.ldPtr(pcl), cptr.ldI32o(pcl, $CloseP_status), 0));
 }
 
+/*
+** Calls 'luaF_close' in protected mode. Return the original status
+** or, in case of errors, the new status.
+*/
 /** C ref: ldo.c:935 — @param {CPtr<lua_State>} L @param {CLongLong} level @param {CInt} status @returns {CInt} */
 export function* luaD_closeprotected(L, level, status) {
     let old_ci = cptr.ldPtro(L, $lua_State_ci);
@@ -904,6 +1100,11 @@ export function* luaD_closeprotected(L, level, status) {
     }
 }
 
+/*
+** Call the C function 'func' in protected mode, restoring basic
+** thread information ('allowhook', etc.) and in particular
+** its stack level in case of errors.
+*/
 /** C ref: ldo.c:957 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CPtr<void>} u @param {CLongLong} old_top @param {CLongLong} ef @returns {CInt} */
 export function* luaD_pcall(L, func, u, old_top, ef) {
     let status;
@@ -917,12 +1118,15 @@ export function* luaD_pcall(L, func, u, old_top, ef) {
         cptr.st1o(L, $lua_State_allowhook, old_allowhooks);
         status = (yield* luaD_closeprotected(L, old_top, status));
         luaD_seterrorobj(L, status, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (old_top)))));
-        (yield* luaD_shrinkstack(L));
+        (yield* luaD_shrinkstack(L));  /* restore stack size in case of overflow */
     }
     cptr.stI64o(L, $lua_State_errfunc, old_errfunc);
     return status;
 }
 
+/*
+** Execute a protected parser.
+*/
 /** C ref: ldo.c:981 — struct SParser { z, buff, dyd, mode, name } (memory model v0.5) */
 
 /** C ref: ldo.c:990 — @param {CPtr<lua_State>} L @param {CPtr<char>} mode @param {CPtr<char>} x */
@@ -937,7 +1141,7 @@ function* checkmode(L, mode, x) {
 function* f_parser(L, ud) {
     let cl;
     let p = ((ud));
-    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtr(p)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtr(p)), $ZIO_p, v); })))))) : (yield* luaZ_fill(cptr.ldPtr(p))));
+    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtr(p)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtr(p)), $ZIO_p, v); })))))) : (yield* luaZ_fill(cptr.ldPtr(p))));  /* read first character */
     if (c == cptr.ld1so(__s_lua, 0, 1)) {
         (yield* checkmode(L, cptr.ldPtro(p, $SParser_mode), __s_binary));
         cl = (yield* luaU_undump(L, cptr.ldPtr(p), cptr.ldPtro(p, $SParser_name)));
@@ -953,7 +1157,7 @@ function* f_parser(L, ud) {
 export function* luaD_protectedparser(L, z, name, mode) {
     let p = cptr.alloc(96);
     let status;
-    (cptr.stI32o((L), $lua_State_nCcalls, (cptr.ldI32o((L), $lua_State_nCcalls) + 65536) | 0));
+    (cptr.stI32o((L), $lua_State_nCcalls, (cptr.ldI32o((L), $lua_State_nCcalls) + 65536) | 0));  /* cannot yield during parsing */
     cptr.stPtr(p, z);
     cptr.stPtro(p, $SParser_name, name);
     cptr.stPtro(p, $SParser_mode, mode);

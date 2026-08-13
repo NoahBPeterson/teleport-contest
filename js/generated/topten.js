@@ -266,6 +266,7 @@ let tt_head = null;
 /** C ref: topten.c:61 — struct toptenentry */
 let zerott = cptr.alloc($sizeof_toptenentry);
 
+/* "killed by",&c ["an"] 'svk.killer.name' */
 const __static_formatkiller_killed_by_prefix = cptr.alloc(16 * 8);
 cptr.stPtro(__static_formatkiller_killed_by_prefix, 0, __s_killed_by);
 cptr.stPtro(__static_formatkiller_killed_by_prefix, 8, __s_choked_on);
@@ -289,7 +290,8 @@ export function formatkiller(buf, siz, how, incl_helpless) {
     let l;
     let c;
     let kname = cptr.add(svk, $kinfo_name);
-    cptr.st1o(buf, 0, 0);
+
+    cptr.st1o(buf, 0, 0);  /* lint suppression */
     switch (cptr.ldI32o(svk, $kinfo_format)) {
         default:
         impossible(__s_bad_killer_format_d, cptr.ldI32o(svk, $kinfo_format));
@@ -307,6 +309,12 @@ export function formatkiller(buf, siz, how, incl_helpless) {
         buf = cptr.add(buf, l), siz = (siz - l) | 0;
         break;
     }
+    /* Copy kname into buf[].
+     * Object names and named fruit have already been sanitized, but
+     * monsters can have "called 'arbitrary text'" attached to them,
+     * so make sure that that text can't confuse field splitting when
+     * record, logfile, or xlogfile is re-read at some later point.
+     */
     while (--siz > 0) {
         c = cptr.ld1s(cptr.postinc(() => kname, (v) => { kname = v; }));
         if (!c)
@@ -320,11 +328,14 @@ export function formatkiller(buf, siz, how, incl_helpless) {
         cptr.st1(cptr.postinc(() => buf, (v) => { buf = v; }), c);
     }
     cptr.st1(buf, 0);
+
     if (incl_helpless && cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
+        /* X <= siz: 'sizeof "string"' includes 1 for '\0' terminator */
         if (cptr.ldPtro(gm, $instance_globals_m_multi_reason) && BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(gm, $instance_globals_m_multi_reason)) + 9n) <= BigInt(siz >>> 0))
             void cptr.sprintf(buf, __s_while_s, cptr.ldPtro(gm, $instance_globals_m_multi_reason));
         else if (17n <= BigInt(siz >>> 0))
             void cptr.strcpy(buf, __s_while_helpless);
+        /* else extra death info won't fit, so leave it out */
     }
 }
 
@@ -349,9 +360,11 @@ export function observable_depth(lev) {
     return depth(lev);
 }
 
+/* throw away characters until current record has been entirely consumed */
 /** C ref: topten.c:208 — @param {CPtr<FILE>} rfile */
 function discardexcess(rfile) {
     let c;
+
     do {
         c = fgetc(rfile);
     } while (c != 10 && c != -1);
@@ -374,16 +387,22 @@ function readentry(rfile, tt) {
         cptr.stI64o(tt, $toptenentry_points, 0n);
         discardexcess(rfile);
     } else {
+        /* load remainder of record into a local buffer;
+           this imposes an implicit length limit of SCANBUFSZ
+           on every string field extracted from the buffer */
         if (!fgets(cptr.decay(inbuf), 129, rfile)) {
+            /* sscanf will fail and tt->points will be set to 0 */
             cptr.st1(cptr.decay(inbuf), 0);
         } else if (!cptr.strchr(cptr.decay(inbuf), 10)) {
             void cptr.strcpy(cptr.add(cptr.decay(inbuf), 127n, 1), __s_nl);
             discardexcess(rfile);
         }
+        /* Check for backwards compatibility */
         if (cptr.ldI32o(tt, $toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, $toptenentry_ver_major) == 3 && cptr.ldI32o(tt, $toptenentry_ver_minor) < 3)) {
             let i;
+
             if (sscanf(cptr.decay(inbuf), cptr.decay(__static_readentry_fmt32), cptr.add(tt, $toptenentry_plrole), cptr.add(tt, $toptenentry_plgend), cptr.decay(s1), cptr.decay(s2)) == 4) {
-                cptr.st1o2(tt, 1, 1, $toptenentry_plrole, cptr.st1o2(tt, 1, 1, $toptenentry_plgend, 0));
+                cptr.st1o2(tt, 1, 1, $toptenentry_plrole, cptr.st1o2(tt, 1, 1, $toptenentry_plgend, 0));  /* read via %c */
                 copynchars(cptr.add(tt, $toptenentry_name), cptr.decay(s1), 10);
                 copynchars(cptr.add(tt, $toptenentry_death), cptr.decay(s2), 100);
             } else
@@ -404,6 +423,8 @@ function readentry(rfile, tt) {
         } else
             cptr.stI64o(tt, $toptenentry_points, 0n);
     }
+
+    /* check old score entries for Y2K problem and fix whenever found */
     if (cptr.ldI64o(tt, $toptenentry_points) > 0n) {
         if (cptr.ldI64o(tt, $toptenentry_birthdate) < 19000000n)
             cptr.stI64o(tt, $toptenentry_birthdate, cptr.ldI64o(tt, $toptenentry_birthdate) + 19000000n);
@@ -419,6 +440,7 @@ const __static_writeentry_fmtX = cptr.bytes("%s,%s\n"); /** C ref: topten.c:307 
 
 /** C ref: topten.c:301 — @param {CPtr<FILE>} rfile @param {CPtr<struct toptenentry>} tt */
 function writeentry(rfile, tt) {
+
     void fprintf(rfile, cptr.decay(__static_writeentry_fmt0), cptr.ldI32o(tt, $toptenentry_ver_major), cptr.ldI32o(tt, $toptenentry_ver_minor), cptr.ldI32o(tt, $toptenentry_patchlevel), cptr.ldI64o(tt, $toptenentry_points), cptr.ldI32o(tt, $toptenentry_deathdnum), cptr.ldI32o(tt, $toptenentry_deathlev), cptr.ldI32o(tt, $toptenentry_maxlvl), cptr.ldI32o(tt, $toptenentry_hp), cptr.ldI32o(tt, $toptenentry_maxhp), cptr.ldI32o(tt, $toptenentry_deaths), cptr.ldI64o(tt, $toptenentry_deathdate), cptr.ldI64o(tt, $toptenentry_birthdate), cptr.ldI32o(tt, $toptenentry_uid));
     if (cptr.ldI32o(tt, $toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, $toptenentry_ver_major) == 3 && cptr.ldI32o(tt, $toptenentry_ver_minor) < 3))
         void fprintf(rfile, cptr.decay(__static_writeentry_fmt32), cptr.ld1so2(tt, 0, 1, $toptenentry_plrole), cptr.ld1so2(tt, 0, 1, $toptenentry_plgend));
@@ -427,24 +449,27 @@ function writeentry(rfile, tt) {
     void fprintf(rfile, cptr.decay(__static_writeentry_fmtX), onlyspace(cptr.add(tt, $toptenentry_name)) ? __s_us : cptr.add(tt, $toptenentry_name), cptr.add(tt, $toptenentry_death));
 }
 
+/* as tab is never used in eg. svp.plname or death, no need to mangle those. */
 /** C ref: topten.c:340 — @param {CPtr<FILE>} rfile @param {CPtr<struct toptenentry>} tt @param {CInt} how */
 function writexlentry(rfile, tt, how) {
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(101);
     let achbuf = new Uint8Array(1280);
+
     void cptr.sprintf(cptr.decay(buf), __s_version_d_d_d, cptr.ldI32o(tt, $toptenentry_ver_major), cptr.ldI32o(tt, $toptenentry_ver_minor), cptr.ldI32o(tt, $toptenentry_patchlevel));
     void cptr.sprintf(eos(cptr.decay(buf)), __s_cpoints_ld_cdeathdnum_d_cdeathlev_d, 9, cptr.ldI64o(tt, $toptenentry_points), 9, cptr.ldI32o(tt, $toptenentry_deathdnum), 9, cptr.ldI32o(tt, $toptenentry_deathlev));
     void cptr.sprintf(eos(cptr.decay(buf)), __s_cmaxlvl_d_chp_d_cmaxhp_d, 9, cptr.ldI32o(tt, $toptenentry_maxlvl), 9, cptr.ldI32o(tt, $toptenentry_hp), 9, cptr.ldI32o(tt, $toptenentry_maxhp));
     void cptr.sprintf(eos(cptr.decay(buf)), __s_cdeaths_d_cdeathdate_ld_cbirthdate_ld, 9, cptr.ldI32o(tt, $toptenentry_deaths), 9, cptr.ldI64o(tt, $toptenentry_deathdate), 9, cptr.ldI64o(tt, $toptenentry_birthdate), 9, cptr.ldI32o(tt, $toptenentry_uid));
     void fprintf(rfile, __s_pct_s, cptr.decay(buf));
     void cptr.sprintf(cptr.decay(buf), __s_crole_s_crace_s_cgender_s_calign_s, 9, cptr.add(tt, $toptenentry_plrole), 9, cptr.add(tt, $toptenentry_plrace), 9, cptr.add(tt, $toptenentry_plgend), 9, cptr.add(tt, $toptenentry_plalign));
+    /* make a copy of death reason that doesn't include ", while helpless" */
     formatkiller(cptr.decay(tmpbuf), 101, how, 0);
     void fprintf(rfile, __s_s_cname_s_cdeath_s, cptr.decay(buf), 9, svp, 9, cptr.decay(tmpbuf));
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)
         void fprintf(rfile, __s_cwhile_s, 9, cptr.ldPtro(gm, $instance_globals_m_multi_reason) ? cptr.ldPtro(gm, $instance_globals_m_multi_reason) : __s_helpless);
     void fprintf(rfile, __s_cconduct_0x_lx_cturns_ld_cachieve_0x_lx, 9, encodeconduct(), 9, cptr.ldI64o(svm, $instance_globals_saved_m_moves), 9, encodeachieve(0));
     void fprintf(rfile, __s_cachievex_s, 9, encode_extended_achievements(cptr.decay(achbuf)));
-    void fprintf(rfile, __s_cconductx_s, 9, encode_extended_conducts(cptr.decay(buf)));
+    void fprintf(rfile, __s_cconductx_s, 9, encode_extended_conducts(cptr.decay(buf)));  /* reuse 'buf[]' */
     void fprintf(rfile, __s_crealtime_ld_cstarttime_ld_cendtime_ld, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64o(urealtime, $u_realtime_finish_time)));
     void fprintf(rfile, __s_cgender0_s_calign0_s, 9, cptr.ldPtro2(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender, $Gender_filecode), 9, cptr.ldPtro2(aligns, (1 - cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) | 0, $sizeof_Align, $Align_filecode));
     void fprintf(rfile, __s_cflags_0x_lx, 9, encodexlogflags());
@@ -459,6 +484,7 @@ function writexlentry(rfile, tt, how) {
 /** C ref: topten.c:394 @returns {CLongLong} */
 function encodexlogflags() {
     let e = 0n;
+
     if (wizard())
         e |= 1n;
     if (discover())
@@ -467,12 +493,14 @@ function encodexlogflags() {
         e |= 4n;
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_reroll))
         e |= 8n;
+
     return e;
 }
 
 /** C ref: topten.c:411 @returns {CLongLong} */
 function encodeconduct() {
     let e = 0n;
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_food))
         e |= 1n;
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan))
@@ -497,10 +525,18 @@ function encodeconduct() {
         e |= 1024n;
     if (!num_genocides())
         e |= 2048n;
+    /* one bit isn't really adequate for sokoban conduct:
+       reporting "obeyed sokoban rules" is misleading if sokoban wasn't
+       completed or at least attempted; however, suppressing that when
+       sokoban was never entered, as we do here, risks reporting
+       "violated sokoban rules" when no such thing occurred; this can
+       be disambiguated in xlogfile post-processors by testing the
+       entered-sokoban bit in the 'achieve' field */
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_sokocheat) && sokoban_in_play())
         e |= 4096n;
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_pets))
         e |= 8192n;
+
     return e;
 }
 
@@ -510,6 +546,15 @@ function encodeachieve(secondlong) {
     let achidx;
     let offset;
     let r = 0n;
+
+    /*
+     * 32: portable limit for 'long'.
+     * Force 32 even on configurations that are using 64 bit longs.
+     *
+     * We use signed long and limit ourselves to 31 bits since tools
+     * that post-process xlogfile might not be able to cope with
+     * 'unsigned long'.
+     */
     offset = secondlong ? 31 : 0;
     for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); ++i) {
         achidx = (cptr.ld1so2(u, i, 1, $you_uachieved) - offset) | 0;
@@ -519,6 +564,7 @@ function encodeachieve(secondlong) {
     return r;
 }
 
+/* add the achievement or conduct comma-separated to string */
 /** C ref: topten.c:480 — @param {CPtr<char>} buf @param {CPtr<char>} achievement @param {CInt} condition */
 function add_achieveX(buf, achievement, condition) {
     if (condition) {
@@ -536,6 +582,7 @@ function encode_extended_achievements(buf) {
     let i;
     let achidx;
     let absidx;
+
     cptr.st1o(buf, 0, 0);
     for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); i++) {
         achidx = cptr.ld1so2(u, i, 1, $you_uachieved);
@@ -613,7 +660,7 @@ function encode_extended_achievements(buf) {
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
             void cptr.sprintf(cptr.decay(rnkbuf), __s_attained_the_rank_of_s, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), Role_switch(), schar(((achidx < 0) ? 1 : 0))));
-            strNsubst(cptr.decay(rnkbuf), __s_sp, __s_us, 0);
+            strNsubst(cptr.decay(rnkbuf), __s_sp, __s_us, 0);  /* replace every ' ' with '_' */
             achievement = lcase(cptr.decay(rnkbuf));
             break;
             default:
@@ -621,6 +668,7 @@ function encode_extended_achievements(buf) {
         }
         add_achieveX(buf, achievement, 1);
     }
+
     return buf;
 }
 
@@ -648,12 +696,14 @@ function encode_extended_conducts(buf) {
     add_achieveX(buf, __s_bonesless, schar((!cptr.ld1so(flags, $flag_bones))));
     add_achieveX(buf, __s_petless, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_pets))));
     add_achieveX(buf, __s_unrerolled, schar((!cptr.ld1so(u, $you_uroleplay + $u_roleplay_reroll))));
+
     return buf;
 }
 
 /** C ref: topten.c:615 — @param {CPtr<struct toptenentry>} tt */
 function free_ttlist(tt) {
     let ttnext;
+
     while (cptr.ldI64o(tt, $toptenentry_points) > 0n) {
         ttnext = cptr.ldPtr(tt);
         cptr.free((tt));
@@ -680,11 +730,17 @@ export function topten(how, when) {
     let skip_scores;
     __lbl_destroywin: {
     __lbl_showwin: {
+        /* If we are in the midst of a panic, cut out topten entirely.
+         * topten uses alloc() several times, which will lead to
+         * problems if the panic was the result of an alloc() failure.
+         */
         if (cptr.ldI32o(program_state, $sinfo_panicking))
             return;
+
         if (cptr.ld1so(iflags, $instance_flags_toptenwin)) {
             cptr.stI32o(gt, $instance_globals_t_toptenwin, create_nhwindow()(NHM.NHW_TEXT));
         }
+        /* create a new 'topten' entry */
         t0_used = 0;
         t0 = alloc(208);
         cptr.memcpy(t0, zerott, 208);
@@ -693,6 +749,12 @@ export function topten(how, when) {
         cptr.stI32o(t0, $toptenentry_patchlevel, NHM.PATCHLEVEL);
         cptr.stI64o(t0, $toptenentry_points, cptr.ldI64o(u, $you_urexp));
         cptr.stI32o(t0, $toptenentry_deathdnum, cptr.ldI16o(u, $you_uz));
+        /* deepest_lev_reached() is in terms of depth(), and reporting the
+         * deepest level reached in the dungeon death occurred in doesn't
+         * seem right, so we have to report the death level in depth() terms
+         * as well (which also seems reasonable since that's all the player
+         * sees on the screen anyway)
+         */
         cptr.stI32o(t0, $toptenentry_deathlev, observable_depth(cptr.add(u, $you_uz)));
         cptr.stI32o(t0, $toptenentry_maxlvl, deepest_lev_reached(1));
         cptr.stI32o(t0, $toptenentry_hp, cptr.ldI32o(u, $you_uhp));
@@ -728,19 +790,23 @@ export function topten(how, when) {
             }
             unlock_file(__s_xlogfile);
         }
+
         if (wizard() || discover()) {
             if (how != NHC.PANICKED)
                 if (!cptr.ldI32o(program_state, $sinfo_done_hup)) {
                     let pbuf = new Uint8Array(256);
+
                     topten_print(__s_empty);
                     void cptr.sprintf(cptr.decay(pbuf), __s_since_you_were_in_s_mode_the_score_list, wizard() ? __s_wizard : __s_discover);
                     topten_print(cptr.decay(pbuf));
                 }
             break __lbl_showwin;
         }
+
         if (!lock_file(__s_record, NHM.SCOREPREFIX, 60))
             break __lbl_destroywin;
         rfile = fopen_datafile(__s_record, __s_r, NHM.SCOREPREFIX);
+
         if (!rfile) {
             if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                 raw_print()(__s_cannot_open_record_file);
@@ -748,11 +814,16 @@ export function topten(how, when) {
             break __lbl_destroywin;
         }
         if (!cptr.ldI32o(program_state, $sinfo_done_hup))
+
             topten_print(__s_empty);
+
+        /* assure minimum number of points */
         if (cptr.ldI64o(t0, $toptenentry_points) < BigInt(cptr.ldI32o(sysopt, $sysopt_s_pointsmin)))
             cptr.stI64o(t0, $toptenentry_points, 0n);
+
         t1 = (tt_head = alloc(208));
         tprev = null;
+        /* rank0: -1 undefined, 0 not_on_list, n n_th on list */
         for (rank = 1; ; ) {
             readentry(rfile, t1);
             if (cptr.ldI64o(t1, $toptenentry_points) < BigInt(cptr.ldI32o(sysopt, $sysopt_s_pointsmin)))
@@ -766,9 +837,10 @@ export function topten(how, when) {
                 cptr.stPtr(t0, t1);
                 t0_used = 1;
                 occ_cnt--;
-                flg++;
+                flg++;  /* ask for a rewrite */
             } else
                 tprev = t1;
+
             if (cptr.ldI64o(t1, $toptenentry_points) == 0n)
                 break;
             if ((cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) ? cptr.ldI32o(t1, $toptenentry_uid) == cptr.ldI32o(t0, $toptenentry_uid) : cptr.strncmp(cptr.add(t1, $toptenentry_name), cptr.add(t0, $toptenentry_name), 10n) == 0) && !cptr.strncmp(cptr.add(t1, $toptenentry_plrole), cptr.add(t0, $toptenentry_plrole), 3n) && --occ_cnt <= 0) {
@@ -777,6 +849,7 @@ export function topten(how, when) {
                     rank1 = rank;
                     if (!cptr.ldI32o(program_state, $sinfo_done_hup)) {
                         let pbuf = new Uint8Array(256);
+
                         void cptr.sprintf(cptr.decay(pbuf), __s_you_didn_t_beat_your_previous_score_of, cptr.ldI64o(t1, $toptenentry_points));
                         topten_print(cptr.decay(pbuf));
                         topten_print(__s_empty);
@@ -812,6 +885,7 @@ export function topten(how, when) {
                         topten_print(__s_you_made_the_top_ten_list);
                     } else {
                         let pbuf = new Uint8Array(256);
+
                         void cptr.sprintf(cptr.decay(pbuf), __s_you_reached_the_d_s_place_on_the_top_d, rank0, ordin(rank0), cptr.ldI32o(sysopt, $sysopt_s_entrymax));
                         topten_print(cptr.decay(pbuf));
                     }
@@ -833,6 +907,7 @@ export function topten(how, when) {
             if (rank <= cptr.ldI32o(flags, $flag_end_top) || (rank >= ((rank0 - cptr.ldI32o(flags, $flag_end_around)) | 0) && rank <= ((rank0 + cptr.ldI32o(flags, $flag_end_around)) | 0)) || (cptr.ld1so(flags, $flag_end_own) && (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) ? cptr.ldI32o(t1, $toptenentry_uid) == cptr.ldI32o(t0, $toptenentry_uid) : !cptr.strncmp(cptr.add(t1, $toptenentry_name), cptr.add(t0, $toptenentry_name), 10n)))) {
                 if (rank == ((rank0 - cptr.ldI32o(flags, $flag_end_around)) | 0) && rank0 > ((((cptr.ldI32o(flags, $flag_end_top) + cptr.ldI32o(flags, $flag_end_around)) | 0) + 1) | 0) && !cptr.ld1so(flags, $flag_end_own))
                     topten_print(__s_empty);
+
                 if (rank != rank0) {
                     outentry(rank, t1, 0);
                 } else if (!rank1) {
@@ -854,6 +929,9 @@ export function topten(how, when) {
             if (cptr.ld1so(iflags, $instance_flags_toptenwin)) {
                 display_nhwindow()(cptr.ldI32o(gt, $instance_globals_t_toptenwin), 1);
             } else {
+                /* when not a window, we need something comparable to more()
+                   but can't use it directly because we aren't dealing with
+                   the message window */
                 ;
             }
         }
@@ -870,6 +948,7 @@ export function topten(how, when) {
 function outheader() {
     let linebuf = new Uint8Array(256);
     let bp;
+
     void cptr.strcpy(cptr.decay(linebuf), __s_no_points_name);
     bp = eos(cptr.decay(linebuf));
     while (cptr.cmp(bp, cptr.add(cptr.add(cptr.decay(linebuf), NHM.COLNO), -(9))) < 0)
@@ -878,6 +957,7 @@ function outheader() {
     topten_print(cptr.decay(linebuf));
 }
 
+/* so>0: standout line; so=0: ordinary line */
 /** C ref: topten.c:946 — @param {CInt} rank @param {CPtr<struct toptenentry>} t1 @param {CInt} so */
 function outentry(rank, t1, so) {
     let second_line = 1;
@@ -887,15 +967,21 @@ function outentry(rank, t1, so) {
     let linebuf3 = new Uint8Array(256);
     let hppos;
     let lngr;
+
     cptr.st1o(cptr.decay(linebuf), 0, 0, 1);
     if (rank)
         void cptr.sprintf(eos(cptr.decay(linebuf)), __s_3d, rank);
     else
         void cptr.strcat(cptr.decay(linebuf), __s_sp3);
+
     void cptr.sprintf(eos(cptr.decay(linebuf)), __s_10ld_10s, cptr.ldI64o(t1, $toptenentry_points) ? cptr.ldI64o(t1, $toptenentry_points) : cptr.ldI64o(u, $you_urexp), cptr.add(t1, $toptenentry_name));
     void cptr.sprintf(eos(cptr.decay(linebuf)), __s_dash_pct_s, cptr.add(t1, $toptenentry_plrole));
     if (cptr.ld1so2(t1, 0, 1, $toptenentry_plrace) != 63)
         void cptr.sprintf(eos(cptr.decay(linebuf)), __s_dash_pct_s, cptr.add(t1, $toptenentry_plrace));
+    /* Printing of gender and alignment is intentional.  It has been
+     * part of the NetHack Geek Code, and illustrates a proper way to
+     * specify a character from the command line.
+     */
     void cptr.sprintf(eos(cptr.decay(linebuf)), __s_dash_pct_s, cptr.add(t1, $toptenentry_plgend));
     if (cptr.ld1so2(t1, 0, 1, $toptenentry_plalign) != 63)
         void cptr.sprintf(eos(cptr.decay(linebuf)), __s_dash_pct_s_sp, cptr.add(t1, $toptenentry_plalign));
@@ -903,6 +989,7 @@ function outentry(rank, t1, so) {
         void cptr.strcat(cptr.decay(linebuf), __s_sp);
     if (!cptr.strncmp(__s_escaped, cptr.add(t1, $toptenentry_death), 7n)) {
         void cptr.sprintf(eos(cptr.decay(linebuf)), __s_escaped_the_dungeon_s_max_level_d, !cptr.strncmp(__s_sp_lparen, cptr.add(t1, $toptenentry_death + 7), 2n) ? cptr.add(t1, $toptenentry_death + 7 + 2) : __s_empty, cptr.ldI32o(t1, $toptenentry_maxlvl));
+        /* fixup for closing paren in "escaped... with...Amulet)[max..." */
         if ((bp = cptr.strchr(cptr.decay(linebuf), 41)) !== null)
             cptr.st1(bp, schar(((cptr.ldI32o(t1, $toptenentry_deathdnum) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 32)));
         second_line = 0;
@@ -926,9 +1013,11 @@ function outentry(rank, t1, so) {
             void cptr.strcat(cptr.decay(linebuf), __s_turned_to_stone);
         } else
             void cptr.strcat(cptr.decay(linebuf), __s_died);
+
         if (cptr.ldI32o(t1, $toptenentry_deathdnum) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) {
             let arg;
             let fmt = __s_on_the_plane_of_s;
+
             switch (cptr.ldI32o(t1, $toptenentry_deathlev)) {
                 case -5:
                 fmt = __s_on_the_s_plane;
@@ -958,26 +1047,38 @@ function outentry(rank, t1, so) {
             if (cptr.ldI32o(t1, $toptenentry_deathlev) != cptr.ldI32o(t1, $toptenentry_maxlvl))
                 void cptr.sprintf(eos(cptr.decay(linebuf)), __s_max_d, cptr.ldI32o(t1, $toptenentry_maxlvl));
         }
+
+        /* kludge for "quit while already on Charon's boat" */
         if (!cptr.strncmp(cptr.add(t1, $toptenentry_death), __s_quit__2, 5n))
             void cptr.strcat(cptr.decay(linebuf), cptr.add(t1, $toptenentry_death + 4));
     }
     void cptr.strcat(cptr.decay(linebuf), __s_dot);
+
+    /* Quit, starved, ascended, and escaped contain no second line */
     if (second_line) {
         bp = eos(cptr.decay(linebuf));
         void cptr.sprintf(bp, __s_c_s, highc(cptr.ld1s((cptr.add(t1, $toptenentry_death)))), cptr.add(t1, $toptenentry_death + 1));
+        /* fix up "Killed by Mr. Asidonhopo; the shopkeeper"; that starts
+           with a comma but has it changed to semi-colon to keep the comma
+           out of 'record'; change it back for display */
         void strsubst(bp, __s_the, __s_the__2);
     }
+
     lngr = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(linebuf))));
     if (cptr.ldI32o(t1, $toptenentry_hp) <= 0)
         cptr.st1o(cptr.decay(hpbuf), 0, 45, 1), cptr.st1o(cptr.decay(hpbuf), 1, 0, 1);
     else
         void cptr.sprintf(cptr.decay(hpbuf), __s_pct_d, cptr.ldI32o(t1, $toptenentry_hp));
+    /* beginning of hp column after padding (not actually padded yet) */
     hppos = 70;
     while (lngr >= hppos) {
         for (bp = eos(cptr.decay(linebuf)); !(cptr.ld1s(bp) == 32 && cptr.diff(bp, cptr.decay(linebuf)) < BigInt(hppos)); bp = cptr.add(bp, -1))
             ;
+        /* special case: word is too long, wrap in the middle */
         if (cptr.cmp(cptr.add(cptr.decay(linebuf), 15), bp) >= 0)
             bp = cptr.add(cptr.add(cptr.decay(linebuf), hppos), -(1));
+        /* special case: if about to wrap in the middle of maximum
+           dungeon depth reached, wrap in front of it instead */
         if (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), 5)) > 0 && !cptr.strncmp(cptr.add(bp, -(5)), __s_max, 5n))
             bp = cptr.sub(bp, 5);
         if (cptr.ld1s(bp) != 32)
@@ -995,14 +1096,18 @@ function outentry(rank, t1, so) {
         nh_snprintf(__s_outentry, 1082, cptr.decay(linebuf), 256n, __s_15s_s, __s_empty, cptr.decay(linebuf3));
         lngr = Strlen_(cptr.decay(linebuf), __s_outentry, 1083) | 0;
     }
+    /* beginning of hp column not including padding */
     hppos = (73 - Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(hpbuf))))) | 0;
     bp = eos(cptr.decay(linebuf));
+
     if (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), hppos)) <= 0) {
+        /* pad any necessary blanks to the hit point entry */
         while (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), hppos)) < 0)
             cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
         void cptr.strcpy(bp, cptr.decay(hpbuf));
         void cptr.sprintf(eos(bp), __s_s_d, (cptr.ldI32o(t1, $toptenentry_maxhp) < 10) ? __s_sp2 : ((cptr.ldI32o(t1, $toptenentry_maxhp) < 100) ? __s_sp : __s_empty), cptr.ldI32o(t1, $toptenentry_maxhp));
     }
+
     if (so) {
         bp = eos(cptr.decay(linebuf));
         while (cptr.cmp(bp, cptr.add(cptr.decay(linebuf), 79)) < 0)
@@ -1018,14 +1123,50 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
     let arg;
     let nxt;
     let i;
+
     if (current_ver && (cptr.ldI32o(t1, $toptenentry_ver_major) != NHM.VERSION_MAJOR || cptr.ldI32o(t1, $toptenentry_ver_minor) != NHM.VERSION_MINOR || cptr.ldI32o(t1, $toptenentry_patchlevel) != NHM.PATCHLEVEL))
         return 0;
+
     if (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid) && !playerct && cptr.ldI32o(t1, $toptenentry_uid) == uid)
         return 1;
+
+    /*
+     * FIXME:
+     *  This selection produces a union (OR) of criteria rather than
+     *  an intersection (AND).  So
+     *    nethack -s -u igor -p Cav -r Hum
+     *  will list all entries for name igor regardless of role or race
+     *  plus all entries for cave dwellers regardless of name or race
+     *  plus all entries for humans regardless of name or role.
+     *
+     *  It would be more useful if it only chose human cave dwellers
+     *  named igor.  That would be pretty straightforward if only one
+     *  instance of each of the criteria were possible, but
+     *    nethack -s -u igor -u ayn -p Cav -p Pri -r Hum -r Dwa
+     *  should list human cave dwellers named igor and human cave
+     *  dwellers named ayn plus dwarven cave dwellers named igor and
+     *  dwarven cave dwellers named ayn plus human priest[esse]s named
+     *  igor and human priest[esse]s named ayn (the combination of
+     *  dwarven priest[esse]s doesn't occur but the selection can test
+     *  entries without being aware of such; it just won't find any
+     *  matches for that).  An extra initial pass of the command line
+     *  to collect all criteria before testing any entry is needed to
+     *  accomplish this.  And we might need to drop support for
+     *  pre-3.3.0 entries (old elf role) depending on how the criteria
+     *  matching is performed.
+     *
+     *  It also ought to extended to handle
+     *    nethack -s -u igor-Cav-Hum
+     *  Alignment and gender could be useful too but no one has ever
+     *  clamored for them.  Presumably if they care they postprocess
+     *  with some custom tool.
+     */
+
     for (i = 0; i < playerct; i++) {
         arg = cptr.ldPtro(players, i, 8);
         if (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 117 && cptr.ld1so(arg, 2) != 0)
-            arg = cptr.add(arg, 2);
+            arg = cptr.add(arg, 2);  /* handle '-uname' */
+
         if (cptr.ld1so(arg, 0) == 45 && cptr.strchr(__s_pru, cptr.ld1so(arg, 1)) && !cptr.ld1so(arg, 2) && ((i + 1) | 0) < playerct) {
             nxt = cptr.ldPtro(players, (i + 1) | 0, 8);
             if ((cptr.ld1so(arg, 1) == 112 && str2role(nxt) == str2role(cptr.add(t1, $toptenentry_plrole))) || (cptr.ld1so(arg, 1) == 114 && str2race(nxt) == str2race(cptr.add(t1, $toptenentry_plrace))) || (cptr.ld1so(arg, 1) == 117 && (!strcmp(nxt, __s_all) || !cptr.strncmp(cptr.add(t1, $toptenentry_name), nxt, 10n))))
@@ -1037,6 +1178,12 @@ function score_wanted(current_ver, rank, t1, playerct, players, uid) {
     return 0;
 }
 
+/*
+ * print selected parts of score list.
+ * argc >= 2, with argv[0] untrustworthy (directory names, et al.),
+ * and argv[1] starting with "-s".
+ * caveat: some shells might allow argv elements to be arbitrarily long.
+ */
 /** C ref: topten.c:1194 — @param {CInt} argc @param {CPtr<char *>} argv */
 export function prscore(argc, argv) {
     let players;
@@ -1053,32 +1200,45 @@ export function prscore(argc, argv) {
     let current_ver = 1;
     let init_done = 0;
     let match_found = 0;
+
+    /* expect "-s" or "--scores"; "-s<anything> is accepted */
     ln = (argc < 2) ? 0 : (((p = cptr.strchr(cptr.ldPtro(argv, 1, 8), 32)) !== null) ? Number(BigInt.asUintN(32, (cptr.diff(p, cptr.ldPtro(argv, 1, 8))))) : Strlen_(cptr.ldPtro(argv, 1, 8), __s_prscore, 1208));
     if (ln < 2 || (cptr.strncmp(cptr.ldPtro(argv, 1, 8), __s_dash_s, 2n) && strcmp(cptr.ldPtro(argv, 1, 8), __s_scores))) {
         raw_printf(__s_prscore_bad_arguments_d, argc);
         return;
     }
+
     rfile = fopen_datafile(__s_record, __s_r, NHM.SCOREPREFIX);
     if (!rfile) {
         raw_print()(__s_cannot_open_record_file);
         return;
     }
+
+    /* If the score list isn't after a game, we never went through
+     * initialization. */
     if (cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) == 0) {
         ;
         init_dungeons();
         init_done = 1;
     }
+
+    /* to get here, argv[1] either starts with "-s" or is "--scores" without
+       trailing stuff; for "-s<anything>" treat <anything> as separate arg */
     if (cptr.ld1so(cptr.ldPtro(argv, 1, 8), 1) == 45 || !cptr.ld1so(cptr.ldPtro(argv, 1, 8), 2)) {
         argc--;
         argv = cptr.add(argv, 1, 8);
     } else {
         cptr.stPtro(argv, 1, cptr.add(cptr.ldPtro(argv, 1, 8), 2), 8);
     }
+    /* -v doesn't take a version number arg; it means 'all versions present
+       in the file' instead of the default of only the current version;
+       unlike -s, we don't accept "-v<anything>" for non-empty <anything> */
     if (argc > 1 && !strcmp(cptr.ldPtro(argv, 1, 8), __s_dash_v)) {
         current_ver = 0;
         argc--;
         argv = cptr.add(argv, 1, 8);
     }
+
     if (argc <= 1) {
         if (cptr.ldI32o(sysopt, $sysopt_s_pers_is_uid)) {
             uid = getuid() | 0;
@@ -1096,6 +1256,7 @@ export function prscore(argc, argv) {
         players = cptr.preinc(() => argv, (v) => { argv = v; }, 8);
     }
     raw_print()(__s_empty);
+
     t1 = (tt_head = alloc(208));
     for (rank = 1; ; rank++) {
         readentry(rfile, t1);
@@ -1106,11 +1267,13 @@ export function prscore(argc, argv) {
         cptr.stPtr(t1, alloc(208));
         t1 = cptr.ldPtr(t1);
     }
+
     void fclose(rfile);
     if (init_done) {
         free_dungeons();
         ;
     }
+
     if (match_found) {
         outheader();
         t1 = tt_head;
@@ -1123,14 +1286,19 @@ export function prscore(argc, argv) {
         if (playerct < 1) {
             void cptr.strcat(cptr.decay(pbuf), __s_you);
         } else {
+            /* minor bug: 'nethack -s -u ziggy' will say "any of"
+               even though the '-u' doesn't indicate multiple names */
             if (playerct > 1)
                 void cptr.strcat(cptr.decay(pbuf), __s_any_of);
             for (i = 0; i < playerct; i++) {
+                /* accept '-u name' and '-uname' as well as just 'name'
+                   so skip '-u' for the none-found feedback */
                 if (!cptr.strncmp(cptr.ldPtro(players, i, 8), __s_dash_u, 2n)) {
                     if (!cptr.ld1so(cptr.ldPtro(players, i, 8), 2))
                         continue;
                     cptr.stPtro(players, i, cptr.add(cptr.ldPtro(players, i, 8), 2), 8);
                 }
+                /* stop printing players if there are too many to fit */
                 if (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(pbuf)) + cptr.strlen(cptr.ldPtro(players, i, 8))) + 2n) >= 256n) {
                     if (cptr.strlen(cptr.decay(pbuf)) < 252n)
                         void cptr.strcat(cptr.decay(pbuf), __s_dot3);
@@ -1147,6 +1315,7 @@ export function prscore(argc, argv) {
                 }
             }
         }
+        /* append end-of-sentence punctuation if there is room */
         if (cptr.strlen(cptr.decay(pbuf)) < 255n)
             void cptr.strcat(cptr.decay(pbuf), __s_dot);
         raw_print()(cptr.decay(pbuf));
@@ -1159,6 +1328,8 @@ export function prscore(argc, argv) {
 /** C ref: topten.c:1356 — @param {CPtr<char>} plch @returns {CInt} */
 function classmon(plch) {
     let i;
+
+    /* Look for this role in the role table */
     for (i = 0; cptr.ldPtro(roles, i, $sizeof_Role); i++) {
         if (!cptr.strncmp(plch, cptr.ldPtro2(roles, i, $sizeof_Role, $Role_filecode), 3n)) {
             if (cptr.ldI16o2(roles, i, $sizeof_Role, $Role_mnum) != NHC.NON_PM)
@@ -1167,12 +1338,17 @@ function classmon(plch) {
                 return NHC.PM_HUMAN;
         }
     }
+    /* this might be from a 3.2.x score for former Elf class */
     if (!strcmp(plch, __s_e))
         return NHC.PM_RANGER;
+
     impossible(__s_what_weird_role_is_this_s, plch);
     return NHC.PM_HUMAN_MUMMY;
 }
 
+/*
+ * Get a random player name and class from the high score list,
+ */
 let __static_get_rnd_toptenentry_tt_buf = cptr.alloc($sizeof_toptenentry); /** C ref: topten.c:1386 — struct toptenentry (function-static) */
 
 /** C ref: topten.c:1381 @returns {CPtr<struct toptenentry>} */
@@ -1181,11 +1357,13 @@ export function get_rnd_toptenentry() {
     let i;
     let rfile;
     let tt;
+
     rfile = fopen_datafile(__s_record, __s_r, NHM.SCOREPREFIX);
     if (!rfile) {
         impossible(__s_cannot_open_record_file);
         return null;
     }
+
     tt = __static_get_rnd_toptenentry_tt_buf;
     rank = rnd_at(__s_topten_c, 1395, __s_get_rnd_toptenentry, cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank));
     __lbl_pickentry: while (true) {
@@ -1194,6 +1372,7 @@ export function get_rnd_toptenentry() {
             if (cptr.ldI64o(tt, $toptenentry_points) == 0n)
                 break;
         }
+
         if (cptr.ldI64o(tt, $toptenentry_points) == 0n) {
             if (rank > 1) {
                 rank = 1;
@@ -1202,32 +1381,43 @@ export function get_rnd_toptenentry() {
             }
             tt = null;
         }
+
         void fclose(rfile);
         return tt;
     }
 }
 
+/*
+ * Attach random player name and class from high score list
+ * to an object (for statues or morgue corpses).
+ */
 /** C ref: topten.c:1422 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct obj>} */
 export function tt_oname(otmp) {
     let tt;
     if (!otmp)
         return null;
+
     tt = get_rnd_toptenentry();
+
     if (!tt)
         return null;
+
     set_corpsenm(otmp, classmon(cptr.add(tt, $toptenentry_plrole)));
     if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
         cptr.st1o(otmp, $obj_spe, NHM.CORPSTAT_FEMALE);
     else if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77)
         cptr.st1o(otmp, $obj_spe, NHM.CORPSTAT_MALE);
     otmp = oname(otmp, cptr.add(tt, $toptenentry_name), NHM.ONAME_NO_FLAGS);
+
     return otmp;
 }
 
+/* Randomly select a topten entry to mimic */
 /** C ref: topten.c:1445 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tt_doppel(mon) {
     let tt = rn2_at(__s_topten_c, 1446, __s_tt_doppel, 13) ? get_rnd_toptenentry() : null;
     let ret;
+
     if (!tt)
         ret = ((rn2_at(__s_topten_c, 1450, __s_tt_doppel, ((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
@@ -1236,6 +1426,9 @@ export function tt_doppel(mon) {
         else if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77)
             cptr.stI32o(mon, $monst_female, 0);
         ret = classmon(cptr.add(tt, $toptenentry_plrole));
+        /* Only take on a name if the player can see
+           the doppelganger, otherwise we end up with
+           named monsters spoiling the fun - Kes */
         if (canseemon(mon))
             christen_monst(mon, cptr.add(tt, $toptenentry_name));
     }

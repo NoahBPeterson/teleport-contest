@@ -72,6 +72,26 @@ const __s_view_from_called_with_range_d = cptr.lit("view_from called with range 
 const __s_view_from = cptr.lit("view_from");
 const __s_do_clear_area_illegal_range_d = cptr.lit("do_clear_area:  illegal range %d");
 
+/* Circles
+ * ==================================================================*/
+
+/*
+ * These numbers are limit offsets for one quadrant of a circle of a given
+ * radius (the first number of each line) from the source.  The number in
+ * the comment is the element number (so pointers can be set up).  Each
+ * "circle" has as many elements as its radius+1.  The radius is the number
+ * of points away from the source that the limit exists.  The radius of the
+ * offset on the same row as the source *is* included so we don't have to
+ * make an extra check.  For example, a circle of radius 4 has offsets:
+ *
+ *              XXX     +2
+ *              ...X    +3
+ *              ....X   +4
+ *              ....X   +4
+ *              @...X   +4
+ *
+ * Externally referenced from light.c
+*/
 /** C ref: vision.c:27 — short[137] */
 export const circle_data = cptr.alloc(137 * 2);
 cptr.stI16o(circle_data, 0, 0);
@@ -212,6 +232,12 @@ cptr.stI16o(circle_data, 268, 6);
 cptr.stI16o(circle_data, 270, 3);
 cptr.stI16o(circle_data, 272, 16);
 
+/*
+ * These are the starting indexes into the circle_data[] array for a
+ * circle of a given radius.  Radius 0 used to be unused, but is now
+ * used for a single point:  temporary light source of a camera flash
+ * as it traverses its path.
+ */
 /** C ref: vision.c:53 — short[16] */
 export const circle_start = cptr.alloc(16 * 2);
 cptr.stI16o(circle_start, 0, 0);
@@ -230,6 +256,12 @@ cptr.stI16o(circle_start, 24, 78);
 cptr.stI16o(circle_start, 26, 91);
 cptr.stI16o(circle_start, 28, 105);
 cptr.stI16o(circle_start, 30, 120);
+
+/*==========================================================================*/
+/* Vision (arbitrary line of sight)
+ * =========================================*/
+
+/*------ local variables ------*/
 
 /** C ref: vision.c:78 — unsigned char[2][21][80] */
 const could_see = Array.from({ length: 2 }, () => (function () { const flat = new Uint8Array(21 * (80 * 1)); const a = []; for (let r = 0; r < 21; r++) a.push(flat.subarray(r * (80 * 1), (r + 1) * (80 * 1))); a.buf = flat; return a; })());
@@ -264,6 +296,7 @@ const left_ptrs = (function () { const flat = new Uint8Array(21 * 80 * 2); const
 /** C ref: vision.c:87 — short[21][80] */
 const right_ptrs = (function () { const flat = new Uint8Array(21 * 80 * 2); const a = []; for (let r = 0; r < 21; r++) a.push(flat.subarray(r * 80 * 2, (r + 1) * 80 * 2)); a.buf = flat; return a; })();
 
+/* expose viz_clear[][] for sanity checking */
 /** C ref: vision.c:105 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function get_viz_clear(x, y) {
     if (isok(i16(x), i16(y)) && !cptr.ld1so(cptr.decay(viz_clear[y]), x, 1))
@@ -271,47 +304,85 @@ export function get_viz_clear(x, y) {
     return 0;
 }
 
+/*
+ * vision_init()
+ *
+ * The one-time vision initialization routine.
+ *
+ * This must be called before mklev() is called in newgame() [allmain.c],
+ * or before a game restore.   Else we die a horrible death.
+ */
 /** C ref: vision.c:121 */
 export function vision_init() {
     let i;
+
+    /* Set up the pointers. */
     for (i = 0; i < NHM.ROWNO; i++) {
         cptr.stPtro(cs_rows0, i, cptr.decay(could_see[0][i]), 8);
         cptr.stPtro(cs_rows1, i, cptr.decay(could_see[1][i]), 8);
         cptr.stPtro(viz_clear_rows, i, cptr.decay(viz_clear[i]), 8);
     }
+
+    /* Start out with cs0 as our current array */
     cptr.stPtro(gv, $instance_globals_v_viz_array, cs_rows0);
     cptr.stPtro(gv, $instance_globals_v_viz_rmin, cs_rmin0);
     cptr.stPtro(gv, $instance_globals_v_viz_rmax, cs_rmax0);
+
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);
     void __builtin___memset_chk(cptr.decay(could_see), 0, 3360n, __builtin_object_size(cptr.decay(could_see), 0));
+
+    /* Initialize the vision algorithm (currently C). */
     view_init();
 }
 
+/*
+ * does_block()
+ *
+ * Returns 0 if nothing at (x,y) blocks sight, 1 if anything other than
+ * an opaque region (gas cloud rather than CLOUD terrain) blocks sight,
+ * or 2 if an opaque region blocks sight.  [At present, the rest of the
+ * code makes no distinction between 1 and 2, just between 0 and non-0.]
+ */
 /** C ref: vision.c:153 — @param {CInt} x @param {CInt} y @param {CPtr<struct rm>} lev @returns {CInt} */
 export function* does_block(x, y, lev) {
     let obj;
     let mon;
+    /* set DEBUGFILES=seethru in environment to see through bubbles */
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 0) {
         cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__s_seethru, 0))) ? 1 : -1);
     }
+
+    /* Features that block . . */
     if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || cptr.ld1so(lev, $rm_typ) == NHC.TREE || (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 28)))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
         if (cptr.ld1so(lev, $rm_typ) == NHC.CLOUD || ((cptr.ld1so(lev, $rm_typ)) == NHC.WATER) || cptr.ld1so(lev, $rm_typ) == NHC.LAVAWALL || (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && is_moat(i16(x), i16(y))))
             return 1;
-    }
+    }  /* gs.seethru */
+
+    /* Boulders block light. */
     for (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v))
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER)
             return 1;
+
+    /* Mimics mimicking a door or boulder or ... block light. */
     if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && (!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && is_lightblocker_mappear(mon))
         return 1;
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) != 1) {
+        /* Clouds (poisonous or not) block light. */
         if (visible_region_at(i16(x), i16(y)))
             return 2;
-    }
+    }  /* gs.seethru */
+
     return 0;
 }
 
+/*
+ * vision_reset()
+ *
+ * This must be called *after* the levl[][] structure is set with the new
+ * level and the level monsters and objects are in place.
+ */
 /** C ref: vision.c:211 */
 export function* vision_reset() {
     let y;
@@ -320,14 +391,21 @@ export function* vision_reset() {
     let dig_left;
     let block;
     let lev;
+
+    /* Start out with cs0 as our current array */
     cptr.stPtro(gv, $instance_globals_v_viz_array, cs_rows0);
     cptr.stPtro(gv, $instance_globals_v_viz_rmin, cs_rmin0);
     cptr.stPtro(gv, $instance_globals_v_viz_rmax, cs_rmax0);
+
     void __builtin___memset_chk(cptr.decay(could_see), 0, 3360n, __builtin_object_size(cptr.decay(could_see), 0));
+
+    /* Reset the pointers and clear so that we have a "full" dungeon. */
     void __builtin___memset_chk(cptr.decay(viz_clear), 0, 1680n, __builtin_object_size(cptr.decay(viz_clear), 0));
+
+    /* Dig the level */
     for (y = 0; y < NHM.ROWNO; y++) {
         dig_left = 0;
-        block = 1;
+        block = 1;  /* location (0,y) is always stone; it's !isok() */
         lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), 1, $sizeof_rm_x21), y, $sizeof_rm);
         for (x = 1; x < NHM.COLNO; x++, lev = cptr.add(lev, NHM.ROWNO, 36))
             if (block != (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || (yield* does_block(x, y, lev)) ? 1 : 0)) {
@@ -339,7 +417,7 @@ export function* vision_reset() {
                 } else {
                     i = dig_left;
                     if (dig_left)
-                        dig_left--;
+                        dig_left--;  /* point at first blocked point */
                     for (; i < x; i++) {
                         cptr.stI16o(cptr.decay(left_ptrs[y]), i, i16(dig_left), 2);
                         cptr.stI16o(cptr.decay(right_ptrs[y]), i, i16(x), 2);
@@ -349,24 +427,33 @@ export function* vision_reset() {
                 dig_left = x;
                 block = !block;
             }
+        /* handle right boundary; almost identical for blocked/unblocked */
         i = dig_left;
         if (!block && dig_left)
-            dig_left--;
+            dig_left--;  /* point at first blocked point */
         for (; i < NHM.COLNO; i++) {
             cptr.stI16o(cptr.decay(left_ptrs[y]), i, i16(dig_left), 2);
             cptr.stI16o(cptr.decay(right_ptrs[y]), i, 79, 2);
             cptr.st1o(cptr.decay(viz_clear[y]), i, schar((!block)), 1);
         }
     }
-    cptr.st1o(iflags, $instance_flags_vision_inited, 1);
-    cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+
+    cptr.st1o(iflags, $instance_flags_vision_inited, 1);  /* vision is ready */
+    cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* we want to run vision_recalc() */
 }
 
+/*
+ * get_unused_cs()
+ *
+ * Called from vision_recalc() and at least one light routine.  Get pointers
+ * to the unused vision work area.
+ */
 /** C ref: vision.c:274 — @param {CPtr<seenV **>} rows @param {CPtr<coordxy *>} rmin @param {CPtr<coordxy *>} rmax */
 function* get_unused_cs(rows, rmin, rmax) {
     let row;
     let nrmin;
     let nrmax;
+
     if (cptr.eq(cptr.ldPtro(gv, $instance_globals_v_viz_array), cs_rows0)) {
         cptr.stPtr(rows, cs_rows1);
         cptr.stPtr(rmin, cs_rmin1);
@@ -376,8 +463,11 @@ function* get_unused_cs(rows, rmin, rmax) {
         cptr.stPtr(rmin, cs_rmin0);
         cptr.stPtr(rmax, cs_rmax0);
     }
+
+    /* return an initialized, unused work area */
     nrmin = cptr.ldPtr(rmin);
     nrmax = cptr.ldPtr(rmax);
+
     void __builtin___memset_chk(cptr.ldPtr(cptr.ldPtr(rows)), 0, 1680n, __builtin_object_size(cptr.ldPtr(cptr.ldPtr(rows)), 0));
     for (row = 0; row < NHM.ROWNO; row++) {
         cptr.stI16(cptr.postinc(() => nrmin, (v) => { nrmin = v; }, 2), 79);
@@ -385,9 +475,21 @@ function* get_unused_cs(rows, rmin, rmax) {
     }
 }
 
+/*
+ * rogue_vision()
+ *
+ * Set the "could see" and in sight bits so vision acts just like the old
+ * rogue game:
+ *
+ *      + If in a room, the hero can see to the room boundaries.
+ *      + The hero can always see adjacent squares.
+ *
+ * We set the in_sight bit here as well to escape a bug that shows up
+ * due to the one-sided lit wall hack.
+ */
 /** C ref: vision.c:314 — @param {CPtr<seenV *>} next @param {CPtr<coordxy>} rmin @param {CPtr<coordxy>} rmax */
 function* rogue_vision(next, rmin, rmax) {
-    let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
+    let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;  /* no SHARED... */
     let start;
     let stop;
     let in_door;
@@ -397,20 +499,27 @@ function* rogue_vision(next, rmin, rmax) {
     let ylo;
     let zx;
     let zy;
+
+    /* If in a lit room, we are able to see to its boundaries. */
+    /* If dark, set COULD_SEE so various spells work -dlc */
     if (rnum >= 0) {
         for (zy = (cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_ly) - 1) | 0; zy <= ((cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_hy) + 1) | 0); zy++) {
             cptr.stI16o(rmin, zy, i16((start = (cptr.ldI16o(svr, rnum, $sizeof_mkroom) - 1) | 0)), 2);
             cptr.stI16o(rmax, zy, i16((stop = (cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_hx) + 1) | 0)), 2);
+
             for (zx = start; zx <= stop; zx++) {
                 if (cptr.ld1so2(svr, rnum, $sizeof_mkroom, $mkroom_rlit)) {
                     cptr.st1o(cptr.ldPtro(next, zy, 8), zx, 3);
-                    cptr.st1o3(svl, zx, $sizeof_rm_x21, zy, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
+                    cptr.st1o3(svl, zx, $sizeof_rm_x21, zy, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);  /* see the walls */
                 } else
                     cptr.st1o(cptr.ldPtro(next, zy, 8), zx, NHM.COULD_SEE);
             }
         }
     }
+
     in_door = cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DOOR;
+
+    /* Can always see adjacent. */
     ylo = (((cptr.ldI16o(u, $you_uy) - 1) | 0) > 0 ? ((cptr.ldI16o(u, $you_uy) - 1) | 0) : 0);
     yhi = (((cptr.ldI16o(u, $you_uy) + 1) | 0) < 20 ? ((cptr.ldI16o(u, $you_uy) + 1) | 0) : 20);
     xlo = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
@@ -420,88 +529,192 @@ function* rogue_vision(next, rmin, rmax) {
             cptr.stI16o(rmin, zy, i16(xlo), 2);
         if (xhi > cptr.ldI16o(rmax, zy, 2))
             cptr.stI16o(rmax, zy, i16(xhi), 2);
+
         for (zx = xlo; zx <= xhi; zx++) {
             cptr.st1o(cptr.ldPtro(next, zy, 8), zx, 3);
+            /*
+             * Yuck, update adjacent non-diagonal positions when in a doorway.
+             * We need to do this to catch the case when we first step into
+             * a room.  The room's walls were not seen from the outside, but
+             * now are seen (the seen bits are set just above).  However, the
+             * positions are not updated because they were already in sight.
+             * So, we have to do it here.
+             */
             if (in_door && (zx == cptr.ldI16(u) || zy == cptr.ldI16o(u, $you_uy)))
                 (yield* newsym(i16(zx), i16(zy)));
         }
     }
 }
 
+/*
+ * vision_recalc()
+ *
+ * Do all of the heavy vision work.  Recalculate all locations that could
+ * possibly be seen by the hero --- if the location were lit, etc.  Note
+ * which locations are actually seen because of lighting.  Then add to
+ * this all locations that be seen by hero due to night vision and x-ray
+ * vision.  Finally, compare with what the hero was able to see previously.
+ * Update the difference.
+ *
+ * This function is usually called only when the variable 'vision_full_recalc'
+ * is set.  The following is a list of places where this function is called,
+ * with three valid values for the control flag parameter:
+ *
+ * Control flag = 0.  A complete vision recalculation.  Generate the vision
+ * tables from scratch.  This is necessary to correctly set what the hero
+ * can see.  (1) and (2) call this routine for synchronization purposes, (3)
+ * calls this routine so it can operate correctly.
+ *
+ *      + After the monster move, before input from the player. [moveloop()]
+ *      + At end of moveloop. [moveloop() ??? not sure why this is here]
+ *      + Right before something is printed. [pline()]
+ *      + Right before we do a vision-based operation. [do_clear_area()]
+ *      + screen redraw, so we can renew all positions in sight. [docrt()]
+ *      + When toggling temporary blindness, in case additional events
+ *        impacted by vision occur during the same move [make_blinded()]
+ *
+ * Control flag = 1.  An adjacent vision recalculation.  The hero has moved
+ * one square.  Knowing this, it might be possible to optimize the vision
+ * recalculation using the current knowledge.  This is presently unimplemented
+ * and is treated as a control = 0 call.
+ *
+ *      + Right after the hero moves. [domove()]
+ *
+ * Control flag = 2.  Turn off the vision system.  Nothing new will be
+ * displayed, since nothing is seen.  This is usually done when you need
+ * a newsym() run on all locations in sight, or on some locations but you
+ * don't know which ones.
+ *
+ *      + Before a screen redraw, so all positions are renewed. [docrt()]
+ *      + Right before the hero arrives on a new level. [goto_level()]
+ *      + Right after a scroll of light is read. [litroom()]
+ *      + After an option has changed that affects vision [parseoptions()]
+ *      + Right after the hero is swallowed. [gulpmu()]
+ *      + Just before bubbles are moved. [movebubbles()]
+ */
 const __static_vision_recalc_colbump = cptr.alloc(81 * 2); /** C ref: vision.c:515 — short[81] (function-static) */
 
 /** C ref: vision.c:512 — @param {CInt} control */
 export function* vision_recalc(control) {
-    let temp_array;
-    let next_array = cptr.box(0);
-    let next_row;
-    let old_row;
-    let next_rmin = cptr.box(0);
-    let next_rmax = cptr.box(0);
-    let ranges;
-    let row = 0;
+    let temp_array;  /* points to the old vision array */
+    let next_array = cptr.box(0);  /* points to the new vision array */
+    let next_row;  /* row pointer for the new array */
+    let old_row;  /* row pointer for the old array */
+    let next_rmin = cptr.box(0);  /* min pointer for the new array */
+    let next_rmax = cptr.box(0);  /* max pointer for the new array */
+    let ranges;  /* circle ranges -- used for xray & night vision */
+    let row = 0;  /* row counter (outer loop)  */
     let start;
-    let stop;
+    let stop;  /* inner loop starting/stopping index */
     let dx;
-    let dy;
-    let col;
-    let lev;
-    let flev;
-    let sv;
-    let oldseenv;
+    let dy;  /* one step from a lit door or lit wall (see below) */
+    let col;  /* inner loop counter */
+    let lev;  /* pointer to current pos */
+    let flev;  /* pointer to position in "front" of current pos */
+    let sv;  /* ptr to seen angle bits */
+    let oldseenv;  /* previous seenv value */
     __lbl_skip: {
-        cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);
+
+        cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);  /* reset flag */
         if (cptr.ld1so(gi, $instance_globals_i_in_mklev) || cptr.ldI32o(program_state, $sinfo_in_getlev) || !cptr.ld1so(iflags, $instance_flags_vision_inited))
             return;
+
+        /*
+         * Either the light sources have been taken care of, or we must
+         * recalculate them here.
+         */
+
+        /* Get the unused could see, row min, and row max arrays. */
         (yield* get_unused_cs(next_array, next_rmin, next_rmax));
+
+        /* You see nothing, nothing can see you --- if swallowed or refreshing. */
         if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || control == 2) {
+            /* do nothing -- get_unused_cs() nulls out the new work area */
             ;
         } else if (Blind()) {
+            /*
+             * Calculate the could_see array even when blind so that monsters
+             * can see you, even if you can't see them.  Note that the current
+             * setup allows:
+             *
+             *      + Monsters to see with the "new" vision, even on the rogue
+             *        level.
+             *      + Monsters can see you even when you're in a pit.
+             */
             (yield* view_from(cptr.ldI16o(u, $you_uy), cptr.ldI16(u), next_array.v, next_rmin.v, next_rmax.v, 0, null, null));
-            temp_array = cptr.ldPtro(gv, $instance_globals_v_viz_array);
+
+            /*
+             * Our own version of the update loop below.  We know we can't see
+             * anything, so we only need to update positions we used to be able
+             * to see.
+             */
+            temp_array = cptr.ldPtro(gv, $instance_globals_v_viz_array);  /* set gv.viz_array so newsym() will work */
             cptr.stPtro(gv, $instance_globals_v_viz_array, next_array.v);
+
             for (row = 0; row < NHM.ROWNO; row++) {
                 old_row = cptr.ldPtro(temp_array, row, 8);
+
+                /* Find the min and max positions on the row. */
                 start = min(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), cptr.ldI16o(next_rmin.v, row, 2));
                 stop = max(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), cptr.ldI16o(next_rmax.v, row, 2));
+
                 for (col = start; col <= stop; col++)
                     if (cptr.ld1uo(old_row, col) & NHM.IN_SIGHT)
                         (yield* newsym(i16(col), i16(row)));
             }
+
+            /* skip the normal update loop */
             break __lbl_skip;
         } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
             (yield* rogue_vision(next_array.v, next_rmin.v, next_rmax.v));
         } else {
             let lo_col;
-            let has_night_vision = 1;
+            let has_night_vision = 1;  /* hero has night vision */
+
             if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+                /*
+                 * The hero is underwater.  Only see surrounding locations if
+                 * they are also underwater.  This overrides night vision but
+                 * does not override x-ray vision.
+                 */
                 has_night_vision = 0;
+
                 lo_col = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
                 for (row = (cptr.ldI16o(u, $you_uy) - 1) | 0; row <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); row++)
                     for (col = lo_col; col <= ((cptr.ldI16(u) + 1) | 0); col++) {
                         if (!isok(i16(col), i16(row)) || !is_pool(i16(col), i16(row)))
                             continue;
+
                         cptr.stI16o(next_rmin.v, row, i16(min(cptr.ldI16o(next_rmin.v, row, 2), col)), 2);
                         cptr.stI16o(next_rmax.v, row, i16(max(cptr.ldI16o(next_rmax.v, row, 2), col)), 2);
                         cptr.st1o(cptr.ldPtro(next_array.v, row, 8), col, 3);
                     }
+
+                /* if in a pit, just update for immediate locations */
             } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                 for (row = (cptr.ldI16o(u, $you_uy) - 1) | 0; row <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); row++) {
                     if (row < 0)
                         continue;
                     if (row >= NHM.ROWNO)
                         break;
+
                     cptr.stI16o(next_rmin.v, row, i16((1 > ((cptr.ldI16(u) - 1) | 0) ? 1 : ((cptr.ldI16(u) - 1) | 0))), 2);
                     cptr.stI16o(next_rmax.v, row, i16((79 < ((cptr.ldI16(u) + 1) | 0) ? 79 : ((cptr.ldI16(u) + 1) | 0))), 2);
                     next_row = cptr.ldPtro(next_array.v, row, 8);
+
                     for (col = cptr.ldI16o(next_rmin.v, row, 2); col <= cptr.ldI16o(next_rmax.v, row, 2); col++)
                         cptr.st1o(next_row, col, 3);
                 }
             } else
                 (yield* view_from(cptr.ldI16o(u, $you_uy), cptr.ldI16(u), next_array.v, next_rmin.v, next_rmax.v, 0, null, null));
+
+            /*
+             * Set the IN_SIGHT bit for xray and night vision.
+             */
             if (cptr.ldI32o(u, $you_xray_range) >= 0) {
                 if (cptr.ldI32o(u, $you_xray_range)) {
                     ranges = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI32o(u, $you_xray_range), 2), 2));
+
                     for (row = (cptr.ldI16o(u, $you_uy) - cptr.ldI32o(u, $you_xray_range)) | 0; row <= ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_xray_range)) | 0); row++) {
                         if (row < 0)
                             continue;
@@ -509,19 +722,25 @@ export function* vision_recalc(control) {
                             break;
                         dy = (((cptr.ldI16o(u, $you_uy) - row) | 0) < 0 ? -((cptr.ldI16o(u, $you_uy) - row) | 0) : ((cptr.ldI16o(u, $you_uy) - row) | 0));
                         next_row = cptr.ldPtro(next_array.v, row, 8);
+
                         start = (1 > ((cptr.ldI16(u) - cptr.ldI16o(ranges, dy, 2)) | 0) ? 1 : ((cptr.ldI16(u) - cptr.ldI16o(ranges, dy, 2)) | 0));
                         stop = (79 < ((cptr.ldI16(u) + cptr.ldI16o(ranges, dy, 2)) | 0) ? 79 : ((cptr.ldI16(u) + cptr.ldI16o(ranges, dy, 2)) | 0));
+
                         for (col = start; col <= stop; col++) {
                             let old_row_val = schar(cptr.ld1uo(next_row, col));
+
                             cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
                             oldseenv = cptr.ld1uo3(svl, col, $sizeof_rm_x21, row, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv);
-                            cptr.st1o3(svl, col, $sizeof_rm_x21, row, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
+                            cptr.st1o3(svl, col, $sizeof_rm_x21, row, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);  /* see all! */
+                            /* Update if previously not in sight or new angle. */
                             if (!(old_row_val & NHM.IN_SIGHT) || oldseenv != 255)
                                 (yield* newsym(i16(col), i16(row)));
                         }
+
                         cptr.stI16o(next_rmin.v, row, i16(min(start, cptr.ldI16o(next_rmin.v, row, 2))), 2);
                         cptr.stI16o(next_rmax.v, row, i16(max(stop, cptr.ldI16o(next_rmax.v, row, 2))), 2);
                     }
+
                 } else {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
                     cptr.st1o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
@@ -529,6 +748,7 @@ export function* vision_recalc(control) {
                     cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(max(cptr.ldI16(u), cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2))), 2);
                 }
             }
+
             if (has_night_vision && cptr.ldI32o(u, $you_xray_range) < cptr.ldI32o(u, $you_nv_range)) {
                 if (!cptr.ldI32o(u, $you_nv_range)) {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
@@ -537,6 +757,7 @@ export function* vision_recalc(control) {
                     cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(max(cptr.ldI16(u), cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2))), 2);
                 } else if (cptr.ldI32o(u, $you_nv_range) > 0) {
                     ranges = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI32o(u, $you_nv_range), 2), 2));
+
                     for (row = (cptr.ldI16o(u, $you_uy) - cptr.ldI32o(u, $you_nv_range)) | 0; row <= ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_nv_range)) | 0); row++) {
                         if (row < 0)
                             continue;
@@ -544,84 +765,181 @@ export function* vision_recalc(control) {
                             break;
                         dy = (((cptr.ldI16o(u, $you_uy) - row) | 0) < 0 ? -((cptr.ldI16o(u, $you_uy) - row) | 0) : ((cptr.ldI16o(u, $you_uy) - row) | 0));
                         next_row = cptr.ldPtro(next_array.v, row, 8);
+
                         start = (1 > ((cptr.ldI16(u) - cptr.ldI16o(ranges, dy, 2)) | 0) ? 1 : ((cptr.ldI16(u) - cptr.ldI16o(ranges, dy, 2)) | 0));
                         stop = (79 < ((cptr.ldI16(u) + cptr.ldI16o(ranges, dy, 2)) | 0) ? 79 : ((cptr.ldI16(u) + cptr.ldI16o(ranges, dy, 2)) | 0));
+
                         for (col = start; col <= stop; col++)
                             if (cptr.ld1uo(next_row, col))
                                 cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
+
                         cptr.stI16o(next_rmin.v, row, i16(min(start, cptr.ldI16o(next_rmin.v, row, 2))), 2);
                         cptr.stI16o(next_rmax.v, row, i16(max(stop, cptr.ldI16o(next_rmax.v, row, 2))), 2);
                     }
                 }
             }
         }
+
+        /* Set the correct bits for all light sources. */
         do_light_sources(next_array.v);
+
+        /*
+         * Make the viz_array the new array so that cansee() will work correctly.
+         */
         temp_array = cptr.ldPtro(gv, $instance_globals_v_viz_array);
         cptr.stPtro(gv, $instance_globals_v_viz_array, next_array.v);
+
+        /*
+         * The main update loop.  Here we do two things:
+         *
+         *      + Set the IN_SIGHT bit for places that we could see and are lit.
+         *      + Reset changed places.
+         *
+         * There is one thing that makes deciding what the hero can see
+         * difficult:
+         *
+         *  1.  Directional lighting.  Items that block light create problems.
+         *      The worst offenders are doors.  Suppose a door to a lit room
+         *      is closed.  It is lit on one side, but not on the other.  How
+         *      do you know?  You have to check the closest adjacent position.
+         *      Even so, that is not entirely correct.  But it seems close
+         *      enough for now.
+         */
         cptr.stI16o(__static_vision_recalc_colbump, cptr.ldI16(u), cptr.stI16o(__static_vision_recalc_colbump, (cptr.ldI16(u) + 1) | 0, 1, 2), 2);
         for (row = 0; row < NHM.ROWNO; row++) {
             dy = (cptr.ldI16o(u, $you_uy) - row) | 0;
             dy = ((dy) < 0 ? -1 : ((dy) ? 1 : 0));
             next_row = cptr.ldPtro(next_array.v, row, 8);
             old_row = cptr.ldPtro(temp_array, row, 8);
+
+            /* Find the min and max positions on the row. */
             start = min(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), cptr.ldI16o(next_rmin.v, row, 2));
             stop = max(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), cptr.ldI16o(next_rmax.v, row, 2));
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), start, $sizeof_rm_x21), row, $sizeof_rm);
+
             sv = cptr.add(cptr.decay(seenv_matrix[(dy + 1) | 0]), start < cptr.ldI16(u) ? 0 : (start > cptr.ldI16(u) ? 2 : 1), 1);
+
             for (col = start; col <= stop; lev = cptr.add(lev, NHM.ROWNO, 36), sv = cptr.add(sv, cptr.ldI16o(__static_vision_recalc_colbump, ++col, 2))) {
                 let __go_not_in_sight = false;
                 __skip_not_in_sight: {
                     if (cptr.ld1uo(next_row, col) & NHM.IN_SIGHT) {
+                        /*
+                         * We see this position because of night- or xray-vision.
+                         */
                         oldseenv = cptr.ld1uo(lev, $rm_seenv);
-                        cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) | (cptr.ld1u(sv)));
+                        cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) | (cptr.ld1u(sv)));  /* update seen angle */
+
+                        /* Update pos if previously not in sight or new angle. */
                         if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, $rm_seenv))
                             (yield* newsym(i16(col), i16(row)));
+
                     } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && ((cptr.ldI32o(lev, $rm_lit) & 1) | 0 || (cptr.ld1uo(next_row, col) & NHM.TEMP_LIT))) {
+                        /*
+                         * We see this position because it is lit.
+                         */
                         if ((((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ))) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
+                            /*
+                             * Make sure doors, walls, boulders or mimics don't show
+                             * up at the end of dark hallways.  We do this by checking
+                             * the adjacent position.  If it is lit, then we can see
+                             * the door or wall; otherwise we can't.
+                             */
                             dx = (cptr.ldI16(u) - col) | 0;
                             dx = ((dx) < 0 ? -1 : ((dx) ? 1 : 0));
                             flev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (col + dx) | 0, $sizeof_rm_x21), (row + dy) | 0, $sizeof_rm);
                             if ((cptr.ldI32o(flev, $rm_lit) & 1) | 0 || cptr.ld1uo(cptr.ldPtro(next_array.v, (row + dy) | 0, 8), (col + dx) | 0) & NHM.TEMP_LIT) {
-                                cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
+                                cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);  /* we see it */
+
                                 oldseenv = cptr.ld1uo(lev, $rm_seenv);
                                 cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) | (cptr.ld1u(sv)));
+
+                                /* Update pos if previously not in sight or new
+                                 * angle.*/
                                 if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, $rm_seenv))
                                     (yield* newsym(i16(col), i16(row)));
                             } else
-                                { __go_not_in_sight = true; break __skip_not_in_sight; }
+                                { __go_not_in_sight = true; break __skip_not_in_sight; }  /* we don't see it */
+
                         } else {
-                            cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
+                            cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);  /* we see it */
+
                             oldseenv = cptr.ld1uo(lev, $rm_seenv);
                             cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) | (cptr.ld1u(sv)));
+
+                            /* Update pos if previously not in sight or new angle. */
                             if (!(cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || oldseenv != cptr.ld1uo(lev, $rm_seenv))
                                 (yield* newsym(i16(col), i16(row)));
                         }
                     } else if ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) && (cptr.ldI32o(lev, $rm_waslit) & 1) | 0) {
-                        cptr.stI32o(lev, $rm_waslit, 0);
+                        /*
+                         * If we make it here, the hero _could see_ the location,
+                         * but doesn't see it (location is not lit).
+                         * However, the hero _remembers_ it as lit (waslit is true).
+                         * The hero can now see that it is not lit, so change waslit
+                         * and update the location.
+                         */
+                        cptr.stI32o(lev, $rm_waslit, 0);  /* remember lit condition */
                         (yield* newsym(i16(col), i16(row)));
+
+                        /*
+                         * At this point we know that the row position is *not* in normal
+                         * sight.  That is, the position could be seen, but is dark
+                         * or LOS is just plain blocked.
+                         *
+                         * Update the position if:
+                         * o If the old one *was* in sight.  We may need to clean up
+                         *   the glyph -- E.g. darken room spot, etc.
+                         * o If we now could see the location (yet the location is not
+                         *   lit), but previously we couldn't see the location, or vice
+                         *   versa.  Update the spot because there may be an
+                         *   infrared monster there.
+                         */
                     } else {
                         __go_not_in_sight = true; break __skip_not_in_sight;
                     }
                 }
                 if (__go_not_in_sight) {
                     if ((cptr.ld1uo(old_row, col) & NHM.IN_SIGHT) || ((cptr.ld1uo(next_row, col) & NHM.COULD_SEE) ^ (cptr.ld1uo(old_row, col) & NHM.COULD_SEE))) {
+                        /*
+                         * TEMPORARY?  Sometimes we get here with col==0 and
+                         * newsym()'s impossible() for !isok() is being
+                         * triggered, so avoid calling it for <0,y>; other bad
+                         * coordinates will produce a panic() as they should.
+                         */
                         if (col != 0)
+                            /*
+                             */
                             (yield* newsym(i16(col), i16(row)));
                     }
                 }
-            }
-        }
+
+            }  /* end for col . . */
+        }  /* end for row . .  */
         cptr.stI16o(__static_vision_recalc_colbump, cptr.ldI16(u), cptr.stI16o(__static_vision_recalc_colbump, (cptr.ldI16(u) + 1) | 0, 0, 2), 2);
     }
+    /* This newsym() caused a crash delivering msg about failure to open
+     * dungeon file init_dungeons() -> panic() -> done(11) ->
+     * vision_recalc(2) -> newsym() -> crash!  u.ux and u.uy are 0 and
+     * program_state.panicking == 1 under those circumstances
+     */
     if (!cptr.ldI32o(program_state, $sinfo_panicking))
-        (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* Make sure the hero shows up! */
+
+    /* Set the new min and max pointers. */
     cptr.stPtro(gv, $instance_globals_v_viz_rmin, next_rmin.v);
     cptr.stPtro(gv, $instance_globals_v_viz_rmax, next_rmax.v);
+
     (yield* notice_all_mons(1));
 }
 
+/*
+ * block_point()
+ *
+ * Make the location opaque to light.
+ */
 /** C ref: vision.c:865 — @param {CInt} x @param {CInt} y */
 export function* block_point(x, y) {
+    /* set DEBUGFILES=seethru in environment to see through clouds & water */
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 0) {
         cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__s_seethru, 0))) ? 1 : -1);
     }
@@ -629,18 +947,38 @@ export function* block_point(x, y) {
         if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm))))
             return;
     }
+
     fill_point(y, x);
+
+    /* recalc light sources here? */
+
+    /*
+     * We have to do a full vision recalculation if we "could see" the
+     * location.  Why? Suppose some monster opened a way so that the
+     * hero could see a lit room.  However, the position of the opening
+     * was out of night-vision range of the hero.  Suddenly the hero should
+     * see the lit room.
+     */
     if (cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x))
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
 }
 
+/*
+ * unblock_point()
+ *
+ * Make the location transparent to light.
+ */
 /** C ref: vision.c:899 — @param {CInt} x @param {CInt} y */
 export function unblock_point(x, y) {
     dig_point(y, x);
+
+    /* recalc light sources here? */
+
     if (cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x))
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
 }
 
+/* recalc if point should be blocked or unblocked */
 /** C ref: vision.c:911 — @param {CInt} x @param {CInt} y */
 export function* recalc_block_point(x, y) {
     if ((yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm))))
@@ -649,12 +987,65 @@ export function* recalc_block_point(x, y) {
         unblock_point(x, y);
 }
 
+/*==========================================================================* \
+ :                                                                          :
+ :      Everything below this line uses (y,x) instead of (x,y) --- the      :
+ :      algorithms are faster if they are less recursive and can scan       :
+ :      on a row longer.                                                    :
+ :                                                                          :
+\*==========================================================================*/
+
+/* ======================================================================= *\
+                        Left and Right Pointer Updates
+\* ======================================================================= */
+
+/*
+ *              LEFT and RIGHT pointer rules
+ *
+ *
+ * **NOTE**  The rules changed on 4/4/90.  This comment reflects the
+ * new rules.  The change was so that the stone-wall optimization
+ * would work.
+ *
+ * OK, now the tough stuff.  We must maintain our left and right
+ * row pointers.  The rules are as follows:
+ *
+ * Left Pointers:
+ * ______________
+ *
+ * + If you are a clear spot, your left will point to the first
+ *   stone to your left.  If there is none, then point the first
+ *   legal position in the row (0).
+ *
+ * + If you are a blocked spot, then your left will point to the
+ *   left-most blocked spot to your left that is connected to you.
+ *   This means that a left-edge (a blocked spot that has an open
+ *   spot on its left) will point to itself.
+ *
+ *
+ * Right Pointers:
+ * ---------------
+ * + If you are a clear spot, your right will point to the first
+ *   stone to your right.  If there is none, then point the last
+ *   legal position in the row (COLNO-1).
+ *
+ * + If you are a blocked spot, then your right will point to the
+ *   right-most blocked spot to your right that is connected to you.
+ *   This means that a right-edge (a blocked spot that has an open
+ *   spot on its right) will point to itself.
+ */
 /** C ref: vision.c:967 — @param {CInt} row @param {CInt} col */
 function dig_point(row, col) {
     let i;
+
     if (cptr.ld1so(cptr.decay(viz_clear[row]), col, 1))
-        return;
+        return;  /* already done */
+
     cptr.st1o(cptr.decay(viz_clear[row]), col, 1, 1);
+
+    /*
+     * Boundary cases first.
+     */
     if (col == 0) {
         if (cptr.ld1so(cptr.decay(viz_clear[row]), 1, 1)) {
             cptr.stI16o(cptr.decay(right_ptrs[row]), 0, cptr.ldI16o(cptr.decay(right_ptrs[row]), 1, 2), 2);
@@ -664,6 +1055,7 @@ function dig_point(row, col) {
                 cptr.stI16o(cptr.decay(left_ptrs[row]), i, 1, 2);
         }
     } else if (col == 79) {
+
         if (cptr.ld1so(cptr.decay(viz_clear[row]), 78, 1)) {
             cptr.stI16o(cptr.decay(left_ptrs[row]), 79, cptr.ldI16o(cptr.decay(left_ptrs[row]), 78, 2), 2);
         } else {
@@ -671,40 +1063,55 @@ function dig_point(row, col) {
             for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), 78, 2); i < 79; i++)
                 cptr.stI16o(cptr.decay(right_ptrs[row]), i, 78, 2);
         }
+
+        /*
+         * At this point, we know we aren't on the boundaries.
+         */
     } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1) && cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) {
+        /* Both sides clear */
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i <= col; i++) {
             if (!cptr.ld1so(cptr.decay(viz_clear[row]), i, 1))
-                continue;
+                continue;  /* catch non-end case */
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2), 2);
         }
         for (i = col; i <= cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++) {
             if (!cptr.ld1so(cptr.decay(viz_clear[row]), i, 1))
-                continue;
+                continue;  /* catch non-end case */
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2), 2);
         }
+
     } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1)) {
+        /* Left side clear, right side blocked. */
         for (i = (col + 1) | 0; i <= cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(((col + 1) | 0)), 2);
+
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i <= col; i++) {
             if (!cptr.ld1so(cptr.decay(viz_clear[row]), i, 1))
-                continue;
+                continue;  /* catch non-end case */
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(((col + 1) | 0)), 2);
         }
         cptr.stI16o(cptr.decay(left_ptrs[row]), col, cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2), 2);
+
     } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) {
+        /* Right side clear, left side blocked. */
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i < col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(((col - 1) | 0)), 2);
+
         for (i = col; i <= cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++) {
             if (!cptr.ld1so(cptr.decay(viz_clear[row]), i, 1))
-                continue;
+                continue;  /* catch non-end case */
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(((col - 1) | 0)), 2);
         }
         cptr.stI16o(cptr.decay(right_ptrs[row]), col, cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2), 2);
+
     } else {
+        /* Both sides blocked */
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i < col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(((col - 1) | 0)), 2);
+
         for (i = (col + 1) | 0; i <= cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(((col + 1) | 0)), 2);
+
         cptr.stI16o(cptr.decay(left_ptrs[row]), col, i16(((col - 1) | 0)), 2);
         cptr.stI16o(cptr.decay(right_ptrs[row]), col, i16(((col + 1) | 0)), 2);
     }
@@ -713,9 +1120,12 @@ function dig_point(row, col) {
 /** C ref: vision.c:1051 — @param {CInt} row @param {CInt} col */
 function fill_point(row, col) {
     let i;
+
     if (!cptr.ld1so(cptr.decay(viz_clear[row]), col, 1))
         return;
+
     cptr.st1o(cptr.decay(viz_clear[row]), col, 0, 1);
+
     if (col == 0) {
         if (cptr.ld1so(cptr.decay(viz_clear[row]), 1, 1)) {
             cptr.stI16o(cptr.decay(right_ptrs[row]), 0, 0, 2);
@@ -732,39 +1142,66 @@ function fill_point(row, col) {
             for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), 78, 2); i < 79; i++)
                 cptr.stI16o(cptr.decay(right_ptrs[row]), i, 79, 2);
         }
+
+        /*
+         * Else we know that we are not on an edge.
+         */
     } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1) && cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) {
+        /* Both sides clear */
         for (i = (cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2) + 1) | 0; i <= col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(col), 2);
+
         if (!cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2))
             cptr.stI16o(cptr.decay(right_ptrs[row]), 0, i16(col), 2);
+
         for (i = col; i < cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(col), 2);
+
         if (cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2) == 79)
             cptr.stI16o(cptr.decay(left_ptrs[row]), 79, i16(col), 2);
+
     } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col - 1) | 0, 1)) {
+        /* Left side clear, right side blocked. */
         for (i = col; i <= cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(col), 2);
+
         for (i = (cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2) + 1) | 0; i < col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(col), 2);
+
         if (!cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2))
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(col), 2);
+
         cptr.stI16o(cptr.decay(right_ptrs[row]), col, cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2), 2);
+
     } else if (cptr.ld1so(cptr.decay(viz_clear[row]), (col + 1) | 0, 1)) {
+        /* Right side clear, left side blocked. */
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i <= col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, i16(col), 2);
+
         for (i = (col + 1) | 0; i < cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(col), 2);
+
         if (cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2) == 79)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, i16(col), 2);
+
         cptr.stI16o(cptr.decay(left_ptrs[row]), col, cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2), 2);
+
     } else {
+        /* Both sides blocked */
         for (i = cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2); i <= col; i++)
             cptr.stI16o(cptr.decay(right_ptrs[row]), i, cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2), 2);
+
         for (i = col; i <= cptr.ldI16o(cptr.decay(right_ptrs[row]), (col + 1) | 0, 2); i++)
             cptr.stI16o(cptr.decay(left_ptrs[row]), i, cptr.ldI16o(cptr.decay(left_ptrs[row]), (col - 1) | 0, 2), 2);
     }
 }
 
+/*==========================================================================*/
+/*==========================================================================*/
+
+/*
+ * Variables local to Algorithm C.
+ */
 /** C ref: vision.c:1136 — int */
 let start_row = 0;
 
@@ -789,10 +1226,18 @@ let vis_func = null;
 /** C ref: vision.c:1144 — void * */
 let varg = null;
 
+/*
+ * Use vision tables to determine if there is a clear path from
+ * (col1,row1) to (col2,row2).  This is used by:
+ *      m_cansee()
+ *      m_canseeu()
+ *      do_light_sources()
+ */
 /** C ref: vision.c:1613 — @param {CInt} col1 @param {CInt} row1 @param {CInt} col2 @param {CInt} row2 @returns {CInt} */
 export function clear_path(col1, row1, col2, row2) {
     let result;
     __lbl_cleardone: {
+
         if (col1 < col2) {
             if (row1 > row2) {
                 {
@@ -984,26 +1429,44 @@ export function clear_path(col1, row1, col2, row2) {
     return schar(result);
 }
 
+/* Initialize algorithm C (nothing). */
 /** C ref: vision.c:1651 */
 function view_init() {
 }
 
+/*
+ * Mark positions as visible on one quadrant of the right side.  The
+ * quadrant is determined by the value of the global variable step.
+ *
+ * Arguments:
+ *   row         current row
+ *   left        first (left side) visible spot on prev row
+ *   right_mark  last (right side) visible spot on prev row
+ *   limits      points at range limit for current row, or NULL
+ */
 /** C ref: vision.c:1666 — @param {CInt} row @param {CInt} left @param {CInt} right_mark @param {CPtr<coordxy>} limits */
 function* right_side(row, left, right_mark, limits) {
-    let right;
-    let right_edge;
-    let nrow;
-    let deeper;
-    let result;
-    let i;
-    let rowp = null;
-    let row_min = null;
-    let row_max = null;
-    let lim_max;
+    let right;  /* right limit of "could see" */
+    let right_edge;  /* right edge of an opening */
+    let nrow;  /* new row (calculate once) */
+    let deeper;  /* if TRUE, call self as needed */
+    let result;  /* set by q?_path() */
+    let i;  /* loop counter */
+    let rowp = null;  /* row optimization */
+    let row_min = null;  /* left most  [used by macro set_min()] */
+    let row_max = null;  /* right most [used by macro set_max()] */
+    let lim_max;  /* right most limit of circle */
+
     nrow = (row + step.v) | 0;
+    /*
+     * Can go deeper if the row is in bounds and the next row is within
+     * the circle's limit.  We tell the latter by checking to see if the next
+     * limit value is the start of a new circle radius (meaning we depend
+     * on the structure of circle_data[]).
+     */
     deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2))))) ? 1 : 0;
     if (!vis_func) {
-        rowp = cptr.ldPtro(cs_rows, row, 8);
+        rowp = cptr.ldPtro(cs_rows, row, 8);  /* optimization */
         row_min = cptr.add(cs_left, row, 2);
         row_max = cptr.add(cs_right, row, 2);
     }
@@ -1013,15 +1476,31 @@ function* right_side(row, left, right_mark, limits) {
             lim_max = 79;
         if (right_mark > lim_max)
             right_mark = lim_max;
-        limits = cptr.add(limits, 1, 2);
+        limits = cptr.add(limits, 1, 2);  /* prepare for next row */
     } else
         lim_max = 79;
+
     while (left <= right_mark) {
         right_edge = cptr.ldI16o(cptr.decay(right_ptrs[row]), left, 2);
         if (right_edge > lim_max)
             right_edge = lim_max;
+
         if (!cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), left)) {
+            /*
+             * Jump to the far side of a stone wall.  We can set all
+             * the points in between as seen.
+             *
+             * If the right edge goes beyond the right mark, check to see
+             * how much we can see.
+             */
             if (right_edge > right_mark) {
+                /*
+                 * If the mark on the previous row was a clear position,
+                 * the odds are that we can actually see part of the wall
+                 * beyond the mark on this row.  If so, then see one beyond
+                 * the mark.  Otherwise don't.  This is a kludge so corners
+                 * with an adjacent doorway show up in nethack.
+                 */
                 right_edge = cptr.ld1so(cptr.ldPtro(viz_clear_rows, (row - step.v) | 0, 8), right_mark) ? (right_mark + 1) | 0 : right_mark;
             }
             if (vis_func) {
@@ -1044,10 +1523,16 @@ function* right_side(row, left, right_mark, limits) {
                         cptr.stI16(row_max, i16((right_edge)));
                 }
             }
-            left = (right_edge + 1) | 0;
+            left = (right_edge + 1) | 0;  /* no limit check necessary */
             continue;
         }
+
+        /* No checking needed if our left side is the start column. */
         if (left != start_col) {
+            /*
+             * Find the left side.  Move right until we can see it or we run
+             * into a wall.
+             */
             for (; left <= right_edge; left++) {
                 __lbl_rside1: {
                     if (step.v < 0) {
@@ -1145,8 +1630,16 @@ function* right_side(row, left, right_mark, limits) {
                 if (result)
                     break;
             }
+
+            /*
+             * Check for boundary conditions.  We *need* check (2) to break
+             * an infinite loop where:
+             *
+             *           left == right_edge == right_mark == lim_max.
+             *
+             */
             if (left > lim_max)
-                return;
+                return;  /* check (1) */
             if (left == lim_max) {
                 if (vis_func) {
                     (yield* Y.icall((vis_func)(i16(lim_max), i16(row), varg)));
@@ -1163,11 +1656,30 @@ function* right_side(row, left, right_mark, limits) {
                 }
                 return;
             }
+            /*
+             * Check if we can see any spots in the opening.  We might
+             * (left == right_edge) or might not (left == right_edge+1) have
+             * been able to see the far wall.  Make sure we *can* see the
+             * wall (remember, we can see the spot above/below this one)
+             * by backing up.
+             */
             if (left >= right_edge) {
-                left = right_edge;
+                left = right_edge;  /* for the case left == right_edge+1 */
                 continue;
             }
         }
+
+        /*
+         * Find the right side.  If the marker from the previous row is
+         * closer than the edge on this row, then we have to check
+         * how far we can see around the corner (under the overhang).  Stop
+         * at the first non-visible spot or we actually hit the far wall.
+         *
+         * Otherwise, we know we can see the right edge of the current row.
+         *
+         * This must be a strict "less than" so that we can always see a
+         * horizontal wall, even if it is adjacent to us.
+         */
         if (right_mark < right_edge) {
             for (right = right_mark; right <= right_edge; right++) {
                 __lbl_rside2: {
@@ -1266,14 +1778,27 @@ function* right_side(row, left, right_mark, limits) {
                 if (!result)
                     break;
             }
-            --right;
+            --right;  /* get rid of the last increment */
         } else
             right = right_edge;
+
+        /*
+         * We have the range that we want.  Set the bits.  Note that
+         * there is no else --- we no longer handle splinters.
+         */
         if (left <= right) {
+            /*
+             * An ugly special case.  If you are adjacent to a vertical wall
+             * and it has a break in it, then the right mark is set to be
+             * start_col.  We *want* to be able to see adjacent vertical
+             * walls, so we have to set it back.
+             */
             if (left == right && left == start_col && start_col < 79 && !cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), (start_col + 1) | 0))
                 right = (start_col + 1) | 0;
+
             if (right > lim_max)
                 right = lim_max;
+            /* set the bits */
             if (vis_func) {
                 for (i = left; i <= right; i++)
                     (yield* Y.icall((vis_func)(i16(i), i16(row), varg)));
@@ -1294,13 +1819,19 @@ function* right_side(row, left, right_mark, limits) {
                         cptr.stI16(row_max, i16((right)));
                 }
             }
+
+            /* recursive call for next finger of light */
             if (deeper)
                 (yield* right_side(nrow, left, right, limits));
-            left = (right + 1) | 0;
+            left = (right + 1) | 0;  /* no limit check necessary */
         }
     }
 }
 
+/*
+ * This routine is the mirror image of right_side().  See right_side() for
+ * extensive comments.
+ */
 /** C ref: vision.c:1858 — @param {CInt} row @param {CInt} left_mark @param {CInt} right @param {CPtr<coordxy>} limits */
 function* left_side(row, left_mark, right, limits) {
     let left;
@@ -1313,6 +1844,7 @@ function* left_side(row, left_mark, right, limits) {
     let row_min = null;
     let row_max = null;
     let lim_min;
+
     nrow = (row + step.v) | 0;
     deeper = ((nrow) >= 0 && (nrow) < NHM.ROWNO) && (!limits || (cptr.ldI16(limits) >= cptr.ldI16((cptr.add(limits, 1, 2))))) ? 1 : 0;
     if (!vis_func) {
@@ -1326,15 +1858,19 @@ function* left_side(row, left_mark, right, limits) {
             lim_min = 0;
         if (left_mark < lim_min)
             left_mark = lim_min;
-        limits = cptr.add(limits, 1, 2);
+        limits = cptr.add(limits, 1, 2);  /* prepare for next row */
     } else
         lim_min = 0;
+
     while (right >= left_mark) {
         left_edge = cptr.ldI16o(cptr.decay(left_ptrs[row]), right, 2);
         if (left_edge < lim_min)
             left_edge = lim_min;
+
         if (!cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), right)) {
+            /* Jump to the far side of a stone wall. */
             if (left_edge < left_mark) {
+                /* Maybe see more (kludge). */
                 left_edge = cptr.ld1so(cptr.ldPtro(viz_clear_rows, (row - step.v) | 0, 8), left_mark) ? (left_mark - 1) | 0 : left_mark;
             }
             if (vis_func) {
@@ -1357,10 +1893,12 @@ function* left_side(row, left_mark, right, limits) {
                         cptr.stI16(row_max, i16((right)));
                 }
             }
-            right = (left_edge - 1) | 0;
+            right = (left_edge - 1) | 0;  /* no limit check necessary */
             continue;
         }
+
         if (right != start_col) {
+            /* Find the right side. */
             for (; right >= left_edge; right--) {
                 __lbl_lside1: {
                     if (step.v < 0) {
@@ -1458,6 +1996,8 @@ function* left_side(row, left_mark, right, limits) {
                 if (result)
                     break;
             }
+
+            /* Check for boundary conditions. */
             if (right < lim_min)
                 return;
             if (right == lim_min) {
@@ -1476,11 +2016,14 @@ function* left_side(row, left_mark, right, limits) {
                 }
                 return;
             }
+            /* Check if we can see any spots in the opening. */
             if (right <= left_edge) {
                 right = left_edge;
                 continue;
             }
         }
+
+        /* Find the left side. */
         if (left_mark > left_edge) {
             for (left = left_mark; left >= left_edge; --left) {
                 __lbl_lside2: {
@@ -1579,12 +2122,15 @@ function* left_side(row, left_mark, right, limits) {
                 if (!result)
                     break;
             }
-            left++;
+            left++;  /* get rid of the last decrement */
         } else
             left = left_edge;
+
         if (left <= right) {
+            /* An ugly special case. */
             if (left == right && right == start_col && start_col > 0 && !cptr.ld1so(cptr.ldPtro(viz_clear_rows, row, 8), (start_col - 1) | 0))
                 left = (start_col - 1) | 0;
+
             if (left < lim_min)
                 left = lim_min;
             if (vis_func) {
@@ -1607,50 +2153,81 @@ function* left_side(row, left_mark, right, limits) {
                         cptr.stI16(row_max, i16((right)));
                 }
             }
+
+            /* Recurse */
             if (deeper)
                 (yield* left_side(nrow, left, right, limits));
-            right = (left - 1) | 0;
+            right = (left - 1) | 0;  /* no limit check necessary */
         }
     }
 }
 
+/*
+ * Calculate all possible visible locations from the given location
+ * (srow,scol).  NOTE this is (y,x)!  Mark the visible locations in the
+ * array provided.
+ *
+ * Arguments
+ *   srow, scol     starting row and column
+ *   loc_cs_rows    pointers to the rows of the could_see array
+ *   left_most      min mark on each row
+ *   right_most     max mark on each row
+ *   range          0 if unlimited
+ *   func           function to call on each spot
+ *   arg            argument for func
+ */
 /** C ref: vision.c:2002 — @param {CInt} srow @param {CInt} scol @param {CPtr<seenV *>} loc_cs_rows @param {CPtr<coordxy>} left_most @param {CPtr<coordxy>} right_most @param {CInt} range @param {CPtr} func @param {CPtr} arg */
 function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func, arg) {
-    let i;
-    let rowp;
-    let nrow;
-    let left;
-    let right;
-    let limits;
+    let i;  /* loop counter */
+    let rowp;  /* optimization for setting could_see */
+    let nrow;  /* the next row */
+    let left;  /* the left-most visible column */
+    let right;  /* the right-most visible column */
+    let limits;  /* range limit for next row */
+
+    /* Set globals for q?_path(), left_side(), and right_side() to use. */
     start_col = scol;
     start_row = srow;
-    cs_rows = loc_cs_rows;
+    cs_rows = loc_cs_rows;  /* 'could see' rows */
     cs_left = left_most;
     cs_right = right_most;
     vis_func = func;
     varg = arg;
+
+    /*
+     * Determine extent of sight on the starting row.
+     */
     if (cptr.ld1so(cptr.ldPtro(viz_clear_rows, srow, 8), scol)) {
         left = cptr.ldI16o(cptr.decay(left_ptrs[srow]), scol, 2);
         right = cptr.ldI16o(cptr.decay(right_ptrs[srow]), scol, 2);
     } else {
+        /*
+         * When in stone, you can only see your adjacent squares, unless
+         * you are on an array boundary or a stone/clear boundary.
+         */
         left = (!scol) ? 0 : (cptr.ld1so(cptr.ldPtro(viz_clear_rows, srow, 8), (scol - 1) | 0) ? cptr.ldI16o(cptr.decay(left_ptrs[srow]), (scol - 1) | 0, 2) : (scol - 1) | 0);
         right = (scol == 79) ? 79 : (cptr.ld1so(cptr.ldPtro(viz_clear_rows, srow, 8), (scol + 1) | 0) ? cptr.ldI16o(cptr.decay(right_ptrs[srow]), (scol + 1) | 0, 2) : (scol + 1) | 0);
     }
+
     if (range) {
         if (range > NHM.MAX_RADIUS || range < 1)
             (yield* panic(__s_view_from_called_with_range_d, range));
-        limits = cptr.add((cptr.add(circle_data, cptr.ldI16o(circle_start, range, 2), 2)), 1, 2);
+        limits = cptr.add((cptr.add(circle_data, cptr.ldI16o(circle_start, range, 2), 2)), 1, 2);  /* start at next row */
         if (left < ((scol - range) | 0))
             left = (scol - range) | 0;
         if (right > ((scol + range) | 0))
             right = (scol + range) | 0;
     } else
         limits = null;
+
     if (func) {
         for (i = left; i <= right; i++)
             (yield* Y.icall((func)(i16(i), srow, arg)));
     } else {
+        /* Row pointer optimization. */
         rowp = cptr.ldPtro(cs_rows, srow, 8);
+
+        /* We know that we can see our row. */
         for (i = left; i <= right; i++)
             {
                 (__builtin_expect(BigInt((!(!cptr.eq(rowp, (null))))), 0n) ? __assert_rtn(__s_view_from, __s_vision_c, 2066, __s_rowp_null) : void 0);
@@ -1659,6 +2236,12 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
         cptr.stI16o(cs_left, srow, i16(left), 2);
         cptr.stI16o(cs_right, srow, i16(right), 2);
     }
+
+    /*
+     * Check what could be seen in quadrants.  We need to check for valid
+     * rows here, since we don't do it in the routines right_side() and
+     * left_side() [ugliness to remove extra routine calls].
+     */
     if ((nrow = (srow + 1) | 0) < NHM.ROWNO) {
         step.v = 1;
         if (scol < 79)
@@ -1666,6 +2249,7 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
         if (scol)
             (yield* left_side(nrow, left, scol, limits));
     }
+
     if ((nrow = (srow - 1) | 0) >= 0) {
         step.v = -1;
         if (scol < 79)
@@ -1675,8 +2259,22 @@ function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func,
     }
 }
 
+/*===== End of algorithm C =====*/
+
+/*
+ * AREA OF EFFECT "ENGINE"
+ *
+ * Calculate all possible visible locations as viewed from the given location
+ * (srow,scol) within the range specified. Perform "func" with (x, y) args and
+ * additional argument "arg" for each square.
+ *
+ * If not centered on the hero, just forward arguments to view_from(); it
+ * will call "func" when necessary.  If the hero is the center, use the
+ * vision matrix and reduce extra work.
+ */
 /** C ref: vision.c:2107 — @param {CInt} scol @param {CInt} srow @param {CInt} range @param {CPtr} func @param {CPtr} arg */
 export function* do_clear_area(scol, srow, range, func, arg) {
+    /* If not centered on hero, do the hard work of figuring the area */
     if (scol != cptr.ldI16(u) || srow != cptr.ldI16o(u, $you_uy)) {
         (yield* view_from(srow, scol, null, null, null, range, func, arg));
     } else {
@@ -1688,11 +2286,15 @@ export function* do_clear_area(scol, srow, range, func, arg) {
         let offset;
         let limits;
         let override_vision;
+
+        /* vision doesn't pass through water or clouds, detection should
+           [this probably ought to be an arg supplied by our caller...] */
         override_vision = schar((detecting(func) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? 1 : 0));
+
         if (range > NHM.MAX_RADIUS || range < 1)
             (yield* panic(__s_do_clear_area_illegal_range_d, range));
         if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
-            (yield* vision_recalc(0));
+            (yield* vision_recalc(0));  /* recalc vision if dirty */
         limits = (cptr.add(circle_data, cptr.ldI16o(circle_start, range, 2), 2));
         if ((max_y = ((srow + range) | 0)) >= NHM.ROWNO)
             max_y = 20;
@@ -1711,25 +2313,38 @@ export function* do_clear_area(scol, srow, range, func, arg) {
     }
 }
 
+/* bitmask indicating ways mon is seen; extracted from lookat(pager.c) */
 /** C ref: vision.c:2152 — @param {CPtr<struct monst>} mon @returns {CUInt} */
 export function howmonseen(mon) {
     let useemon = schar(canseemon(mon));
     let xraydist = (cptr.ldI32o(u, $you_xray_range) < 0) ? -1 : (Math.imul(cptr.ldI32o(u, $you_xray_range), cptr.ldI32o(u, $you_xray_range)));
-    let how_seen = 0;
+    let how_seen = 0;  /* result */
+
+    /* assert(mon != NULL) */
+    /* normal vision;
+       cansee is true for both normal and astral vision,
+       but couldsee it not true for astral vision */
     if (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0) ? 1 : 0)) && mon_visible(mon) && !(cptr.ldI32o(mon, $monst_minvis) & 1))
         how_seen |= NHM.MONSEEN_NORMAL;
+    /* see invisible */
     if (useemon && (cptr.ldI32o(mon, $monst_minvis) & 1) | 0)
         how_seen |= NHM.MONSEEN_SEEINVIS;
+    /* infravision */
     if ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && see_with_infrared(mon))
         how_seen |= NHM.MONSEEN_INFRAVIS;
+    /* telepathy */
     if (tp_sensemon(mon))
         how_seen |= NHM.MONSEEN_TELEPAT;
+    /* xray */
     if (useemon && xraydist > 0 && dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= xraydist)
         how_seen |= NHM.MONSEEN_XRAYVIS;
+    /* extended detection */
     if (Detect_monsters())
         how_seen |= NHM.MONSEEN_DETECT;
+    /* class-/type-specific warning */
     if ((Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data)))))))
         how_seen |= NHM.MONSEEN_WARNMON;
+
     return how_seen;
 }
 

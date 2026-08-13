@@ -106,19 +106,25 @@ const __s_lt_m_gt = cptr.lit("<m>");
 const __s_query3 = cptr.lit("???");
 const __s_none = cptr.lit("<none>");
 
+/* Create a new light source.  Caller (and extern.h) doesn't need to know
+   anything about type 'light_source'. */
 /** C ref: light.c:62 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id */
 export function new_light_source(x, y, range, type, id) {
     void new_light_core(x, y, range, type, id);
 }
 
+/* Create a new light source and return it.  Only used within this file. */
 /** C ref: light.c:69 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id @returns {CPtr<light_source>} */
 function new_light_core(x, y, range, type, id) {
     let ls;
+
     if (range > NHM.MAX_RADIUS || range < 0 || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null))) {
         impossible(__s_new_light_source_illegal_range_d, range);
         return null;
     }
+
     ls = alloc(32);
+
     void __builtin___memset_chk(ls, 0, 32n, __builtin_object_size(ls, 0));
     cptr.stPtr(ls, cptr.ldPtro(gl, $instance_globals_l_light_base));
     cptr.stI16o(ls, $light_source_x, x);
@@ -128,15 +134,22 @@ function new_light_core(x, y, range, type, id) {
     cptr.memcpy(cptr.add(ls, $light_source_id), id, 8);
     cptr.stI16o(ls, $light_source_flags, 0);
     cptr.stPtro(gl, $instance_globals_l_light_base, ls);
-    cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+
+    cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* make the source show up */
     return ls;
 }
 
+/* Find and delete a light source.
+   Assumes at most one light source is attached to an object at a time. */
 /** C ref: light.c:99 — @param {CInt} type @param {CPtr<anything>} id */
 export function del_light_source(type, id) {
     let curr;
     let tmp_id = cptr.alloc(8);
+
     cptr.memcpy(tmp_id, cptr.add(cg, $const_globals_zeroany), 8);
+    /* need to be prepared for dealing a with light source which
+       has only been partially restored during a level change
+       (in particular: chameleon vs prot. from shape changers) */
     switch (type) {
         case NHC.LS_NONE:
         impossible(__s_del_light_source_type_none);
@@ -152,6 +165,8 @@ export function del_light_source(type, id) {
         cptr.stI32(tmp_id, 0);
         break;
     }
+
+    /* find the light source from its id */
     for (curr = cptr.ldPtro(gl, $instance_globals_l_light_base); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.ldI16o(curr, $light_source_type) != type)
             continue;
@@ -165,10 +180,12 @@ export function del_light_source(type, id) {
     }
 }
 
+/* remove a light source from the light_base list and free it */
 /** C ref: light.c:142 — @param {CPtr<light_source>} ls */
 function delete_ls(ls) {
     let curr;
     let prev;
+
     for (prev = null, curr = cptr.ldPtro(gl, $instance_globals_l_light_base); curr; prev = curr, curr = cptr.ldPtr(curr)) {
         if (cptr.eq(curr, ls)) {
             if (prev)
@@ -189,6 +206,7 @@ function delete_ls(ls) {
     return;
 }
 
+/* Mark locations that are temporarily lit via mobile light sources. */
 /** C ref: light.c:169 — @param {CPtr<seenV *>} cs_rows */
 export function do_light_sources(cs_rows) {
     let x;
@@ -201,8 +219,16 @@ export function do_light_sources(cs_rows) {
     let at_hero_range = 0;
     let ls;
     let row;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -2);
+
+        /*
+         * Check for moved light sources.  It may be possible to
+         * save some effort if an object has not moved, but not in
+         * the current setup -- we need to recalculate for every
+         * vision recalc.
+         */
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
             if (cptr.ldI16o(ls, $light_source_range) == 0 || get_obj_location(cptr.ldPtro(ls, $light_source_id), cptr.add(ls, $light_source_x), cptr.add(ls, $light_source_y), 0))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 1);
@@ -210,13 +236,24 @@ export function do_light_sources(cs_rows) {
             if (get_mon_location(cptr.ldPtro(ls, $light_source_id), cptr.add(ls, $light_source_x), cptr.add(ls, $light_source_y), 0))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 1);
         }
+
+        /* minor optimization: don't bother with duplicate light sources
+           at hero */
         if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
             if (at_hero_range >= cptr.ldI16o(ls, $light_source_range))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -2);
             else
                 at_hero_range = cptr.ldI16o(ls, $light_source_range);
         }
+
         if (cptr.ldI16o(ls, $light_source_flags) & 1) {
+            /*
+             * Walk the points in the circle and see if they are
+             * visible from the center.  If so, mark'em.
+             *
+             * Kevin's tests indicated that doing this brute-force
+             * method is faster for radius <= 3 (or so).
+             */
             limits = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI16o(ls, $light_source_range), 2), 2));
             if ((max_y = i16(((cptr.ldI16o(ls, $light_source_y) + cptr.ldI16o(ls, $light_source_range)) | 0))) >= NHM.ROWNO)
                 max_y = 20;
@@ -229,7 +266,19 @@ export function do_light_sources(cs_rows) {
                     min_x = 1;
                 if ((max_x = i16(((cptr.ldI16o(ls, $light_source_x) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
+
                 if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
+                    /*
+                     * If the light source is located at the hero, then
+                     * we can use the COULD_SEE bits already calculated
+                     * by the vision system.  More importantly than
+                     * this optimization, is that it allows the vision
+                     * system to correct problems with clear_path().
+                     * The function clear_path() is a simple LOS
+                     * path checker that doesn't go out of its way to
+                     * make things look "correct".  The vision system
+                     * does this.
+                     */
                     for (x = min_x; x <= max_x; x++)
                         if (cptr.ld1uo(row, x) & NHM.COULD_SEE)
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
@@ -243,59 +292,93 @@ export function do_light_sources(cs_rows) {
     }
 }
 
+/* lit 'obj' has been thrown or kicked and is passing through x,y on the
+   way to its destination; show its light so that hero has a chance to
+   remember terrain, objects, and monsters being revealed;
+   if 'obj' is Null, <x,y> is being hit by a camera's light flash */
 /** C ref: light.c:257 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function show_transient_light(obj, x, y) {
     let ls = null;
     let cameraflash = cptr.alloc(8);
     let mon;
     let radius_squared;
+
+    /* Null object indicates camera flash */
     if (!obj) {
+        /* no need to temporarily light an already lit spot */
         if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))
             return;
+
         cptr.memcpy(cameraflash, cptr.add(cg, $const_globals_zeroany), 8);
+        /* radius 0 will just light <x,y>; cameraflash.a_obj is Null */
         ls = new_light_core(x, y, 0, NHC.LS_OBJECT, cameraflash);
+        /* pacify static analysis; 'ls' is never Null for
+           new_light_core(,,0,LS_OBJECT,&zeroany) */
         (__builtin_expect(BigInt((!(!cptr.eq(ls, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 275, __s_ls_null) : void 0);
     } else {
+        /* thrown or kicked object which is emitting light; validate its
+           light source to obtain its radius (for monster sightings) */
         for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
             if (cptr.ldI16o(ls, $light_source_type) != NHC.LS_OBJECT)
                 continue;
             if (cptr.eq(cptr.ldPtro(ls, $light_source_id), obj))
                 break;
         }
-        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 285, __s_obj_null) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 285, __s_obj_null) : void 0);  /* necessary condition to get into this 'else' */
         if (!ls || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE) {
             impossible(__s_transient_light_s_s_s_not_s, (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __s_lit : __s_unlit, simpleonames(obj), otense(obj, __s_are), !ls ? __s_a_light_source : __s_free);
             return;
         }
     }
+
     if (obj)
         place_object(obj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
     else
         cptr.stI16o(ls, $light_source_x, x), cptr.stI16o(ls, $light_source_y, y);
+
+    /* full recalc; runs do_light_sources() */
     vision_recalc(0);
     flush_screen(0);
+
     radius_squared = Math.imul(cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_range));
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
+        /* light range is the radius of a circle and we're limiting
+           canseemon() to a square enclosing that circle, but setting
+           mtemplit 'erroneously' for a seen monster is not a problem;
+           it just flags monsters for another canseemon() check when
+           'obj' has reached its destination after missile traversal */
         if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <= radius_squared) {
             if (canseemon(mon))
                 cptr.stI32o(mon, $monst_mtemplit, 1);
         }
+        /* [what about worm tails?] */
     }
+
     if (obj) {
         nh_delay_output()();
         remove_object(obj);
     }
 }
 
+/* delete any camera flash light sources and draw "remembered, unseen
+   monster" glyph at locations where a monster was flagged for being
+   visible during transient light movement but can't be seen now */
 /** C ref: light.c:330 */
 export function transient_light_cleanup() {
     let mon;
     let mtempcount;
+
+    /* in case we're cleaning up a camera flash, remove all object light
+       sources which aren't associated with a specific object */
     discard_flashes();
     if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
         vision_recalc(0);
+
+    /* for thrown/kicked candle or lamp or for camera flash, some
+       monsters may have been mapped in light which has now gone away
+       so need to be replaced by "remembered, unseen monster" glyph */
     mtempcount = 0;
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
@@ -311,10 +394,12 @@ export function transient_light_cleanup() {
         flush_screen(0);
 }
 
+/* camera flashes have Null object; caller wants to get rid of them now */
 /** C ref: light.c:361 */
 function discard_flashes() {
     let ls;
     let nxt_ls;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = nxt_ls) {
         nxt_ls = cptr.ldPtr(ls);
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && !cptr.ldPtro(ls, $light_source_id))
@@ -325,6 +410,7 @@ function discard_flashes() {
 /** C ref: light.c:376 — @param {CUInt} nid @param {CUInt} fmflags @returns {CPtr<struct monst>} */
 export function find_mid(nid, fmflags) {
     let mtmp;
+
     if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1)
         return cptr.add(gy, $instance_globals_y_youmonst);
     if ((fmflags & NHM.FM_FMON) >>> 0)
@@ -345,6 +431,7 @@ export function find_mid(nid, fmflags) {
 /** C ref: light.c:398 — @param {CPtr<struct monst>} mon @param {CUInt} fmflags @returns {CUInt} */
 function whereis_mon(mon, fmflags) {
     let mtmp;
+
     if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)))
         return NHM.FM_YOU;
     if ((fmflags & NHM.FM_FMON) >>> 0)
@@ -362,6 +449,7 @@ function whereis_mon(mon, fmflags) {
     return 0;
 }
 
+/* Save all light sources of the given range. */
 /** C ref: light.c:421 — @param {CPtr<NHFILE>} nhfp @param {CInt} range */
 export function save_light_sources(nhfp, range) {
     let count = cptr.box(0);
@@ -369,8 +457,14 @@ export function save_light_sources(nhfp, range) {
     let is_global;
     let prev;
     let curr;
+
+    /* camera flash light sources have Null object and would trigger
+       impossible("no id!") below; they can only happen here if we're
+       in the midst of a panic save and they wouldn't be useful after
+       restore so just throw any that are present away */
     discard_flashes();
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 0);
+
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         count.v = maybe_write_ls(nhfp, range, 0);
         sfo_int(nhfp, count, __s_lightsource_count);
@@ -378,6 +472,7 @@ export function save_light_sources(nhfp, range) {
         if (actual != count.v)
             panic(__s_counted_d_light_sources_wrote_d_range_d, count.v, actual, range);
     }
+
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (prev = cptr.add(gl, $instance_globals_l_light_base); (curr = cptr.ldPtr(prev)) !== null; ) {
             if (!cptr.ldPtro(curr, $light_source_id)) {
@@ -396,6 +491,7 @@ export function save_light_sources(nhfp, range) {
                     impossible(__s_save_light_sources_bad_type_d_range_d, cptr.ldI16o(curr, $light_source_type), range);
                     break;
                 }
+            /* if global and not doing local, or vice versa, remove it */
             if (is_global ^ (range == NHM.RANGE_LEVEL)) {
                 cptr.stPtr(prev, cptr.ldPtr(curr));
                 void __builtin___memset_chk(curr, 0, 32n, __builtin_object_size(curr, 0));
@@ -407,12 +503,19 @@ export function save_light_sources(nhfp, range) {
     }
 }
 
+/*
+ * Pull in the structures from disk, but don't recalculate the object
+ * pointers.
+ */
 /** C ref: light.c:479 — @param {CPtr<NHFILE>} nhfp */
 export function restore_light_sources(nhfp) {
     let count = cptr.box(0);
     let ls;
+
+    /* restore elements */
     sfi_int(nhfp, count, __s_lightsource_count);
     ;
+
     while (count.v-- > 0) {
         ls = alloc(32);
         sfi_ls_t(nhfp, ls, __s_lightsource);
@@ -421,9 +524,11 @@ export function restore_light_sources(nhfp) {
     }
 }
 
+/* to support '#stats' wizard-mode command */
 /** C ref: light.c:501 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
 export function light_stats(hdrfmt, hdrbuf, count, size) {
     let ls;
+
     void cptr.sprintf(hdrbuf, hdrfmt, 32n);
     cptr.stI64(count, cptr.stI64(size, 0n));
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
@@ -432,17 +537,36 @@ export function light_stats(hdrfmt, hdrbuf, count, size) {
     }
 }
 
+/* Relink all lights that are so marked. */
 /** C ref: light.c:517 — @param {CInt} ghostly */
 export function relink_light_sources(ghostly) {
     let which;
     let nid = cptr.box(0);
     let ls;
+
+    /*
+     * Caveat:
+     *  There has been at least one instance during to-be-5.0 development
+     *  where the light_base linked list ended up with a circular link.
+     *  If that happens, then once all the traversed elements have their
+     *  LSF_NEEDS_FIXUP flag cleared, the traversal attempt will run wild.
+     *
+     *  The circular list instance was blamed on attempting to restore
+     *  a save file which should have been invalidated by version/patch/
+     *  editlevel verification, but wasn't rejected because EDITLEVEL
+     *  didn't get incremented when it should have been.  Valid data should
+     *  never produce the problem and it isn't possible in general to guard
+     *  against code updates that neglect to set the verification info up
+     *  to date.
+     */
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         if (cptr.ldI16o(ls, $light_source_flags) & 2) {
             if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
                 nid.v = cptr.ldI32o(ls, $light_source_id);
                 if (ghostly && !lookup_id_mapping(nid.v, nid))
                     panic(__s_relink_light_sources_no_id_mapping);
+
                 which = 0;
                 if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
                     if ((cptr.stPtro(ls, $light_source_id, find_oid(nid.v))) === null)
@@ -461,11 +585,17 @@ export function relink_light_sources(ghostly) {
     }
 }
 
+/*
+ * Part of the light source save routine.  Count up the number of light
+ * sources that would be written.  If write_it is true, actually write
+ * the light source out.
+ */
 /** C ref: light.c:571 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
 function maybe_write_ls(nhfp, range, write_it) {
     let count = 0;
     let is_global;
     let ls;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         if (!cptr.ldPtro(ls, $light_source_id)) {
             impossible(__s_maybe_write_ls_no_id_range_d, range);
@@ -483,12 +613,14 @@ function maybe_write_ls(nhfp, range, write_it) {
             impossible(__s_maybe_write_ls_bad_type_d_range_d, cptr.ldI16o(ls, $light_source_type), range);
             break;
         }
+        /* if global and not doing local, or vice versa, count it */
         if (is_global ^ (range == NHM.RANGE_LEVEL)) {
             count++;
             if (write_it)
                 write_ls(nhfp, ls);
         }
     }
+
     return count;
 }
 
@@ -498,6 +630,7 @@ export function light_sources_sanity_check() {
     let mtmp;
     let otmp;
     let auint;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         if (!cptr.ldPtro(ls, $light_source_id))
             panic(__s_insane_light_source_no_id);
@@ -517,15 +650,18 @@ export function light_sources_sanity_check() {
     }
 }
 
+/* Write a light source structure to disk. */
 /** C ref: light.c:634 — @param {CPtr<NHFILE>} nhfp @param {CPtr<light_source>} ls */
 function write_ls(nhfp, ls) {
     let arg_save = cptr.alloc(8);
     let otmp;
     let mtmp;
+
     if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
         if (cptr.ldI16o(ls, $light_source_flags) & 2) {
             sfo_ls_t(nhfp, ls, __s_lightsource);
         } else {
+            /* replace object pointer with id for write, then put back */
             cptr.memcpy(arg_save, cptr.add(ls, $light_source_id), 8);
             if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
                 otmp = cptr.ldPtro(ls, $light_source_id);
@@ -537,7 +673,23 @@ function write_ls(nhfp, ls) {
                 }
             } else {
                 let monloc = 0;
+
                 mtmp = cptr.ldPtro(ls, $light_source_id);
+
+                /* The monster pointer has been stashed in the light source
+                 * for a while and while there is code meant to clean-up the
+                 * light source aspects if a monster goes away, there have
+                 * been some reports of light source issues, such as when
+                 * going to the planes.
+                 *
+                 * Verify that the stashed monst pointer is still present
+                 * in one of the monster chains before pulling subfield
+                 * values such as m_id from it, to avoid any attempt to
+                 * pull random m_id value from (now) freed memory.
+                 *
+                 * find_mid() disregards a DEADMONSTER, but whereis_mon()
+                 * does not. */
+
                 if ((monloc = whereis_mon(mtmp, 15)) != 0) {
                     cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
                     cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id));
@@ -551,6 +703,7 @@ function write_ls(nhfp, ls) {
                 }
             }
             if (cptr.ldI16o(ls, $light_source_flags) & 4) {
+                /* TODO: cleanup this ls, or skip writing it */
             }
             cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 2);
             sfo_ls_t(nhfp, ls, __s_lightsource);
@@ -563,9 +716,11 @@ function write_ls(nhfp, ls) {
     }
 }
 
+/* Change light source's ID from src to dest. */
 /** C ref: light.c:706 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_move_light_source(src, dest) {
     let ls;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), src))
             cptr.stPtro(ls, $light_source_id, dest);
@@ -573,73 +728,112 @@ export function obj_move_light_source(src, dest) {
     cptr.stI32o(dest, $obj_lamplit, 1);
 }
 
+/* return true if there exist any light sources */
 /** C ref: light.c:719 @returns {CInt} */
 export function any_light_source() {
     return schar((cptr.ldPtro(gl, $instance_globals_l_light_base) !== null));
 }
 
+/*
+ * Snuff an object light source if at (x,y).  This currently works
+ * only for burning light sources.
+ */
 /** C ref: light.c:729 — @param {CInt} x @param {CInt} y */
 export function snuff_light_source(x, y) {
     let ls;
     let obj;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
+        /*
+         * Is this position check valid??? Can I assume that the positions
+         * will always be correct because the objects would have been
+         * updated with the last vision update?  [Is that recent enough???]
+         */
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.ldI16o(ls, $light_source_x) == x && cptr.ldI16o(ls, $light_source_y) == y) {
             obj = cptr.ldPtro(ls, $light_source_id);
             if (obj_is_burning(obj)) {
+                /* The only way to snuff Sunsword is to unwield it.  Darkness
+                 * scrolls won't affect it.  (If we got here because it was
+                 * dropped or thrown inside a monster, this won't matter
+                 * anyway because it will go out when dropped.)
+                 */
                 if (artifact_light(obj))
                     continue;
                 end_burn(obj, schar((cptr.ldI16o(obj, $obj_otyp) != NHC.MAGIC_LAMP)));
+                /*
+                 * The current ls element has just been removed (and
+                 * ls->next is now invalid).  Return assuming that there
+                 * is only one light source attached to each object.
+                 */
                 return;
             }
         }
 }
 
+/* Return TRUE if object sheds any light at all. */
 /** C ref: light.c:763 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_sheds_light(obj) {
+    /* so far, only burning objects shed light */
     return obj_is_burning(obj);
 }
 
+/* Return TRUE if sheds light AND will be snuffed by end_burn(). */
 /** C ref: light.c:771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_burning(obj) {
     return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && (ignitable(obj) || artifact_light(obj)) ? 1 : 0));
 }
 
+/* copy the light source(s) attached to src, and attach it/them to dest */
 /** C ref: light.c:779 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_split_light_source(src, dest) {
     let ls;
     let new_ls;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), src)) {
+            /*
+             * Insert the new source at beginning of list.  This will
+             * never interfere us walking down the list - we are already
+             * past the insertion point.
+             */
             new_ls = alloc(32);
             cptr.memcpy(new_ls, ls, 32);
             if (Is_candle(src)) {
+                /* split candles may emit less light than original group */
                 cptr.stI16o(ls, $light_source_range, i16(candle_light_range(src)));
                 cptr.stI16o(new_ls, $light_source_range, i16(candle_light_range(dest)));
-                cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+                cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* in case range changed */
             }
             cptr.stPtro(new_ls, $light_source_id, dest);
             cptr.stPtr(new_ls, cptr.ldPtro(gl, $instance_globals_l_light_base));
             cptr.stPtro(gl, $instance_globals_l_light_base, new_ls);
-            cptr.stI32o(dest, $obj_lamplit, 1);
+            cptr.stI32o(dest, $obj_lamplit, 1);  /* now an active light source */
         }
 }
 
+/* light source `src' has been folded into light source `dest';
+   used for merging lit candles and adding candle(s) to lit candelabrum */
 /** C ref: light.c:808 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_merge_light_sources(src, dest) {
     let ls;
+
+    /* src == dest implies adding to candelabrum */
     if (!cptr.eq(src, dest))
-        end_burn(src, 1);
+        end_burn(src, 1);  /* extinguish candles */
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), dest)) {
             cptr.stI16o(ls, $light_source_range, i16(candle_light_range(dest)));
-            cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+            cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* in case range changed */
             break;
         }
 }
 
+/* light source `obj' is being made brighter or dimmer */
 /** C ref: light.c:826 — @param {CPtr<struct obj>} obj @param {CInt} new_radius */
 export function obj_adjust_light_radius(obj, new_radius) {
     let ls;
+
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), obj)) {
             if (new_radius != cptr.ldI16o(ls, $light_source_range))
@@ -650,64 +844,111 @@ export function obj_adjust_light_radius(obj, new_radius) {
     impossible(__s_obj_adjust_light_radius_can_t_find_s, xname(obj));
 }
 
+/* Candlelight is proportional to the number of candles;
+   minimum range is 2 rather than 1 for playability. */
 /** C ref: light.c:843 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function candle_light_range(obj) {
     let radius;
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
+        /*
+         *      The special candelabrum emits more light than the
+         *      corresponding number of candles would.
+         *       1..3 candles, range 2 (minimum range);
+         *       4..6 candles, range 3 (normal lamp range);
+         *          7 candles, range 4 (bright).
+         */
         radius = (cptr.ld1so(obj, $obj_spe) < 4) ? 2 : ((cptr.ld1so(obj, $obj_spe) < 7) ? 3 : 4);
     } else if (Is_candle(obj)) {
+        /*
+         *      Range is incremented quadratically. You can get the same
+         *      amount of light as from a lamp with 4 candles, and
+         *      even better light with 9 candles, and so on.
+         *       1..3  candles, range 2;
+         *       4..8  candles, range 3;
+         *       9..15 candles, range 4; &c.
+         */
         let n = cptr.ldI64o(obj, $obj_quan);
-        radius = 1;
+
+        radius = 1;  /* always incremented at least once */
         while (BigInt(Math.imul(radius, radius)) <= n && radius < NHM.MAX_RADIUS) {
             radius++;
         }
     } else {
-        radius = 3;
+        /* we're only called for lit candelabrum or candles */
+        /* impossible("candlelight for %d?", obj->otyp); */
+        radius = 3;  /* lamp's value */
     }
     return radius;
 }
 
+/* light emitting artifact's range depends upon its curse/bless state */
 /** C ref: light.c:881 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function arti_light_radius(obj) {
     let res;
+
+    /*
+     * Used by begin_burn() when setting up a new light source
+     * (obj->lamplit will already be set by this point) and
+     * also by bless()/unbless()/uncurse()/curse() to decide
+     * whether to call obj_adjust_light_radius().
+     */
+
+    /* sanity check [simplifies usage by bless()/curse()/&c] */
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) || !artifact_light(obj))
         return 0;
+
+    /* cursed radius of 1 is not noticeable for an item that's
+       carried by the hero but is if it's carried by a monster
+       or left lit on the floor (not applicable for Sunsword) */
     res = ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 2 : 1));
+
+    /* if poly'd into gold dragon with embedded scales, make the scales
+       have minimum radiance (hero as light source will use light radius
+       based on monster form); otherwise, worn gold DSM gives off more
+       light than other light sources */
     if (cptr.eq(obj, uskin.v))
         res = 1;
     else if (cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALE_MAIL)
         ++res;
+
     return res;
 }
 
+/* adverb describing lit artifact's light; radius varies depending upon
+   curse/bless state; also used for gold dragon scales/scale mail */
 /** C ref: light.c:916 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function arti_light_description(obj) {
     switch (arti_light_radius(obj)) {
         case 4:
-        return __s_radiantly;
+        return __s_radiantly;  /* blessed gold dragon scale mail */
         case 3:
-        return __s_brilliantly;
+        return __s_brilliantly;  /* blessed artifact, uncursed gold DSM */
         case 2:
-        return __s_brightly;
+        return __s_brightly;  /* uncursed artifact, cursed gold DSM */
         case 1:
-        return __s_dimly;
+        return __s_dimly;  /* cursed artifact, embedded scales */
         default:
         break;
     }
     return __s_strangely;
 }
 
+/* the #lightsources command */
 /** C ref: light.c:935 @returns {CInt} */
 export function wiz_light_sources() {
     let win;
     let buf = new Uint8Array(256);
     let ls;
-    win = create_nhwindow()(NHM.NHW_MENU);
+
+    win = create_nhwindow()(NHM.NHW_MENU);  /* corner text window */
     if (win == -1)
         return NHM.ECMD_OK;
+
     void cptr.sprintf(cptr.decay(buf), __s_mobile_light_sources_hero_2d_2d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     putstr()(win, 0, cptr.decay(buf));
     putstr()(win, 0, __s_empty);
+
     if (cptr.ldPtro(gl, $instance_globals_l_light_base)) {
         putstr()(win, 0, __s_location_range_flags_type_id);
         putstr()(win, 0, __s_dash8_sp_dash5_sp_dash6_sp_dash4_sp2);
@@ -717,7 +958,9 @@ export function wiz_light_sources() {
         }
     } else
         putstr()(win, 0, __s_none);
+
     display_nhwindow()(win, 0);
     destroy_nhwindow()(win);
+
     return NHM.ECMD_OK;
 }

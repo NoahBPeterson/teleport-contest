@@ -22,6 +22,7 @@ export function* alloc(lth) {
     let ptr;
     {
         if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n)
+
             lth = Number(BigInt.asUintN(32, BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)));
     }
     ptr = cptr.malloc(BigInt(lth >>> 0));
@@ -30,14 +31,17 @@ export function* alloc(lth) {
     return ptr;
 }
 
+/* realloc() call that might get substituted by nhrealloc(p,n,file,line) */
 /** C ref: alloc.c:85 — @param {CPtr<long>} oldptr @param {CUInt} newlth @returns {CPtr<long>} */
 export function* re_alloc(oldptr, newlth) {
     let newptr;
     {
         if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n)
+
             newlth = Number(BigInt.asUintN(32, BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)));
     }
     newptr = realloc(oldptr, BigInt(newlth >>> 0));
+    /* "extend to":  assume it won't ever fail if asked to shrink */
     if (newlth && !newptr)
         (yield* panic(__s_memory_allocation_failure_cannot_extend, newlth));
     return newptr;
@@ -49,27 +53,38 @@ const ptrbuf = (function () { const flat = new Uint8Array(4 * (32 * 1)); const a
 /** C ref: alloc.c:121 — int */
 let ptrbufidx = 0;
 
+/* format a pointer for display purposes; returns a static buffer */
 /** C ref: alloc.c:125 — @param {CPtr<void>} ptr @returns {CPtr<char>} */
 export function fmt_ptr(ptr) {
     let buf;
+
     buf = cptr.decay(ptrbuf[ptrbufidx]);
     if (++ptrbufidx >= 4)
         ptrbufidx = 0;
+
     void cptr.sprintf(buf, __s_pct_p, ptr);
     return buf;
 }
 
+/* strdup() which uses our alloc() rather than libc's malloc();
+   not used when MONITOR_HEAP is enabled, but included unconditionally
+   in case utility programs get built using a different setting for that */
 /** C ref: alloc.c:238 — @param {CPtr<char>} string @returns {CPtr<char>} */
 export function* dupstr(string) {
     let len = cptr.strlen(string);
+
+    /* make sure len+1 doesn't overflow plain unsigned (for alloc()) */
     if (len > BigInt(((~0 - 1) >>> 0) >>> 0))
         (yield* panic(__s_dupstr_string_length_overflow));
+
     return cptr.strcpy((yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, len + 1n))))), string);
 }
 
+/* cast to int or panic on overflow; use via macro */
 /** C ref: alloc.c:266 — @param {CLongLong} i @param {CPtr<char>} file @param {CInt} line @returns {CInt} */
 export function* FITSint_(i, file, line) {
     let iret = Number(BigInt.asIntN(32, i));
+
     if (BigInt(iret) != i)
         (yield* panic(__s_overflow_at_s_d, file, line));
     return iret;
@@ -78,6 +93,7 @@ export function* FITSint_(i, file, line) {
 /** C ref: alloc.c:276 — @param {CLongLong} ull @param {CPtr<char>} file @param {CInt} line @returns {CUInt} */
 export function* FITSuint_(ull, file, line) {
     let uret = Number(BigInt.asUintN(32, ull));
+
     if (BigInt(uret >>> 0) != ull)
         (yield* panic(__s_overflow_at_s_d, file, line));
     return uret;

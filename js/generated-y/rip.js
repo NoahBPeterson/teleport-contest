@@ -39,6 +39,7 @@ const __s_ld_au = cptr.lit("%ld Au");
 const __s_4d = cptr.lit("%4d");
 const __s_empty = cptr.lit("");
 
+/* A normal tombstone for end of game display. */
 /** C ref: rip.c:27 — char *[16] */
 const rip_txt = cptr.alloc(16 * 8);
 cptr.stPtro(rip_txt, 0, __s_sp23_dash10);
@@ -77,22 +78,33 @@ export function* genl_outrip(tmpwin, how, when) {
     let line;
     let year;
     let cash;
+
     cptr.stPtro(gr, $instance_globals_r_rip, dp = (yield* alloc(128)));
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); ++x)
         cptr.stPtro(dp, x, (yield* dupstr(cptr.ldPtro(rip_txt, x, 8))), 8);
     cptr.stPtro(dp, x, null, 8);
+
+    /* Put name on stone */
     void cptr.sprintf(cptr.decay(buf), __s_pct_dot_star_s, 16, svp);
     (yield* center(6, cptr.decay(buf)));
+
+    /* Put $ on stone */
     cash = ((cptr.ldI64o(gd, $instance_globals_d_done_money)) > 0n ? (cptr.ldI64o(gd, $instance_globals_d_done_money)) : 0n);
+    /* arbitrary upper limit; practical upper limit is quite a bit less */
     if (cash > 999999999n)
         cash = 999999999n;
     void cptr.sprintf(cptr.decay(buf), __s_ld_au, cash);
     (yield* center(7, cptr.decay(buf)));
+
+    /* Put together death description */
     (yield* formatkiller(cptr.decay(buf), 256, how, 0));
+
+    /* Put death type on stone */
     for (line = 8, dpx = cptr.decay(buf); line < 12; line++) {
         let tmpchar;
         let i;
         let i0 = Number(BigInt.asIntN(32, cptr.strlen(dpx)));
+
         if (i0 > 16) {
             for (i = 16; (i > 0) && (i0 > 16); --i)
                 if (cptr.ld1so(dpx, i) == 32)
@@ -109,14 +121,19 @@ export function* genl_outrip(tmpwin, how, when) {
         } else
             dpx = cptr.add(dpx, (i0 + 1) | 0);
     }
+
+    /* Put year on stone */
     year = Number(BigInt.asIntN(32, (((yield* yyyymmdd(when)) / 10000n) % 10000n)));
     void cptr.sprintf(cptr.decay(buf), __s_4d, year);
     (yield* center(12, cptr.decay(buf)));
     (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
+
     for (; cptr.ldPtr(dp); dp = cptr.add(dp, 1, 8))
         (yield* Y.icall(putstr()(tmpwin, 0, cptr.ldPtr(dp))));
+
     (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
     (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
+
     for (x = 0; cptr.ldPtro(rip_txt, x, 8); x++) {
         cptr.free(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_rip), x, 8));
     }

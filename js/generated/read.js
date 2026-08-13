@@ -614,12 +614,16 @@ function learnscrolltyp(scrolltyp) {
         return 0;
 }
 
+/* also called from teleport.c for scroll of teleportation */
 /** C ref: read.c:70 — @param {CPtr<struct obj>} sobj */
 export function learnscroll(sobj) {
+    /* it's implied that sobj->dknown is set;
+       we couldn't be reading this scroll otherwise */
     if (cptr.ld1so(sobj, $obj_oclass) != NHC.SPBOOK_CLASS)
         void learnscrolltyp(cptr.ldI16o(sobj, $obj_otyp));
 }
 
+/* max spe is +99, min is -99 */
 /** C ref: read.c:80 — @param {CPtr<struct obj>} obj */
 function cap_spe(obj) {
     if (obj) {
@@ -631,6 +635,7 @@ function cap_spe(obj) {
 /** C ref: read.c:89 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} buf @returns {CPtr<char>} */
 function erode_obj_text(otmp, buf) {
     let erosion = greatest_erosion(otmp);
+
     if (erosion)
         wipeout_text(buf, Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(buf) * BigInt.asUintN(64, BigInt(erosion))) / 6n))), (cptr.ldI32o(otmp, $obj_o_id) ^ Number(BigInt.asUintN(32, ubirthday.v))) >>> 0);
     return buf;
@@ -710,6 +715,7 @@ cptr.stPtro(__static_tshirt_text_shirt_msgs, 552, __s_valar_morghulis_valar_doha
 
 /** C ref: read.c:100 — @param {CPtr<struct obj>} tshirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function tshirt_text(tshirt, buf) {
+
     void cptr.strcpy(buf, cptr.ldPtro(__static_tshirt_text_shirt_msgs, u32mod(cptr.ldI32o(tshirt, $obj_o_id), 70 >>> 0), 8));
     return erode_obj_text(tshirt, buf);
 }
@@ -734,7 +740,11 @@ cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 120, __s_ukulele); /** C re
 
 /** C ref: read.c:190 — @param {CPtr<struct obj>} shirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function hawaiian_motif(shirt, buf) {
+
+    /* a tourist's starting shirt always has the same o_id; we need some
+       additional randomness or else its design will never differ */
     let motif = (cptr.ldI32o(shirt, $obj_o_id) ^ Number(BigInt.asUintN(32, ubirthday.v))) >>> 0;
+
     void cptr.strcpy(buf, cptr.ldPtro(__static_hawaiian_motif_hawaiian_motifs, u32mod(motif, 16 >>> 0), 8));
     return buf;
 }
@@ -754,7 +764,12 @@ cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 80, __s_naturalistic); /** C 
 
 /** C ref: read.c:224 — @param {CPtr<struct obj>} shirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 function hawaiian_design(shirt, buf) {
+
+    /* This hash method is slightly different than the one in hawaiian_motif;
+       using the same formula in both cases may lead to some shirt combos
+       never appearing, if the sizes of the two lists have common factors. */
     let bg = (cptr.ldI32o(shirt, $obj_o_id) ^ Number(BigInt.asUintN(32, BigInt.asIntN(64, ~ubirthday.v)))) >>> 0;
+
     void cptr.sprintf(buf, __s_s_on_s_background, makeplural(hawaiian_motif(shirt, buf)), an(cptr.ldPtro(__static_hawaiian_design_hawaiian_bgs, u32mod(bg, 11 >>> 0), 8)));
     return buf;
 }
@@ -773,6 +788,7 @@ cptr.stPtro(__static_apron_text_apron_msgs, 72, __s_i_am_an_alchemist_if_you_see
 
 /** C ref: read.c:254 — @param {CPtr<struct obj>} apron @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function apron_text(apron, buf) {
+
     void cptr.strcpy(buf, cptr.ldPtro(__static_apron_text_apron_msgs, u32mod(cptr.ldI32o(apron, $obj_o_id), 10 >>> 0), 8));
     return erode_obj_text(apron, buf);
 }
@@ -793,28 +809,36 @@ cptr.stPtro(candy_wrappers, 80, __s_om_nom);
 cptr.stPtro(candy_wrappers, 88, __s_fruity_oaty);
 cptr.stPtro(candy_wrappers, 96, __s_wonka_bar);
 
+/* return the text of a candy bar's wrapper */
 /** C ref: read.c:296 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function candy_wrapper_text(obj) {
+    /* modulo operation is just bullet proofing; 'spe' is already in range */
     return cptr.ldPtro(candy_wrappers, cptr.ld1so(obj, $obj_spe) % 13, 8);
 }
 
+/* assign a wrapper to a candy bar stack */
 /** C ref: read.c:304 — @param {CPtr<struct obj>} obj */
 export function assign_candy_wrapper(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDY_BAR) {
+        /* skips candy_wrappers[0] */
         cptr.st1o(obj, $obj_spe, schar(((1 + rn2_at(__s_read_c, 308, __s_assign_candy_wrapper, (13 - 1) | 0)) | 0)));
     }
     return;
 }
 
+/* getobj callback for object to read */
 /** C ref: read.c:315 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function read_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS)
         return NHC.GETOBJ_SUGGEST;
+
     return NHC.GETOBJ_DOWNPLAY;
 }
 
+/* the #read command; read a scroll or spell book or various other things */
 const __static_doread_find_any_braille = cptr.bytes("feel any Braille writing."); /** C ref: read.c:332 — char[26] (function-static) */
 const __static_doread_card_msgs = cptr.alloc(14 * 8);
 cptr.stPtro(__static_doread_card_msgs, 0, __s_leprechaun_gold_tru_t_shamrock_card);
@@ -853,14 +877,35 @@ export function doread() {
     let confused;
     let nodisappear;
     let otyp;
+
+    /*
+     * Reading while blind is allowed in most cases, including the
+     * Book of the Dead but not regular spellbooks.  For scrolls, the
+     * description has to have been seen or magically learned (so only
+     * when scroll->dknown is true):  hero recites the label while
+     * holding the unfurled scroll.  We deliberately don't require
+     * free hands because that would cripple scroll of remove curse,
+     * but we ought to be requiring hands or at least limbs.  The
+     * recitation could be sub-vocal; actual speech isn't required.
+     *
+     * Reading while confused is allowed and can produce alternate
+     * outcome.
+     *
+     * Reading while stunned is currently allowed but probably should
+     * be prevented....
+     */
+
     cptr.st1o(gk, $instance_globals_k_known, 0);
     if (check_capacity(null))
         return NHM.ECMD_OK;
+
     scroll = getobj(__s_read, read_ok, NHM.GETOBJ_PROMPT);
     if (!scroll)
         return NHM.ECMD_CANCEL;
     otyp = cptr.ldI16o(scroll, $obj_otyp);
-    cptr.stI32o(scroll, $obj_pickup_prev, 0);
+    cptr.stI32o(scroll, $obj_pickup_prev, 0);  /* no longer 'just picked up' */
+
+    /* outrumor has its own blindness check */
     if (otyp == NHC.FORTUNE_COOKIE) {
         if (cptr.ld1so(flags, $flag_verbose))
             You(__s_break_up_the_cookie_and_throw_away_the);
@@ -874,10 +919,12 @@ export function doread() {
         let buf = new Uint8Array(256);
         let mesg;
         let endpunct;
+
         if (Blind()) {
             You_cant(cptr.decay(__static_doread_find_any_braille));
             return NHM.ECMD_OK;
         }
+        /* can't read shirt worn under suit (under cloak is ok though) */
         if ((otyp == NHC.T_SHIRT || otyp == NHC.HAWAIIAN_SHIRT) && uarm.v && cptr.eq(scroll, uarmu.v)) {
             pline(__s_s_shirt_is_obscured_by_s_s, (cptr.ldI32o(scroll, $obj_unpaid) & 1) | 0 ? __s_that : __s_your, shk_your(cptr.decay(buf), uarm.v), suit_simple_name(uarm.v));
             return NHM.ECMD_OK;
@@ -888,10 +935,14 @@ export function doread() {
         }
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_s, (cptr.ldI16o(scroll, $obj_otyp) == NHC.T_SHIRT) ? __s_a_t_shirt : __s_an_apron);
+
+        /* populate 'buf[]' */
         mesg = (otyp == NHC.T_SHIRT) ? tshirt_text(scroll, cptr.decay(buf)) : apron_text(scroll, cptr.decay(buf));
         endpunct = __s_empty;
         if (cptr.ld1so(flags, $flag_verbose)) {
             let ln = Number(BigInt.asIntN(32, cptr.strlen(mesg)));
+
+            /* we will be displaying a sentence; need ending punctuation */
             if (ln > 0 && !cptr.strchr(__s_dot_bang_query, cptr.ld1so(mesg, (ln - 1) | 0)))
                 endpunct = __s_dot;
             pline(__s_it_reads);
@@ -899,17 +950,30 @@ export function doread() {
         pline(__s_s_s, mesg, endpunct);
         return NHM.ECMD_TIME;
     } else if ((otyp == NHC.DUNCE_CAP || otyp == NHC.CORNUTHAUM) && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST)) {
+        /* another note: the misspelling, "wizzard", is correct;
+           that's what is written on Rincewind's pointy hat from
+           Pratchett's Discworld series, along with a lot of stars;
+           rather than inked on or painted on, treat them as stitched
+           or even separate pieces of fabric which have been attached
+           (don't recall whether the books mention anything like that...) */
         let cap_text = (otyp == NHC.DUNCE_CAP) ? __s_dunce : __s_wizzard;
+
         if (u32mod(cptr.ldI32o(scroll, $obj_o_id), 3)) {
+            /* no need to vary this when blind; "on this ___" is important
+               because it suggests that there might be something on others */
             You_cant(__s_find_anything_to_read_on_this_s, simpleonames(scroll));
             return NHM.ECMD_OK;
         }
         pline(__s_s_on_the_s_it_reads_s, !Blind() ? __s_there_is_writing : __s_you_feel_lettering, simpleonames(scroll), cap_text);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_s, (otyp == NHC.DUNCE_CAP) ? __s_a_dunce_cap : __s_a_cornuthaum);
+
+        /* yet another note: despite the fact that player will recognize
+           the object type, don't make it become a discovery for hero */
         trycall(scroll);
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.CREDIT_CARD) {
+
         if (Blind()) {
             You(__s_feel_the_embossed_numbers);
         } else {
@@ -917,9 +981,11 @@ export function doread() {
                 pline(__s_it_reads);
             pline(__s_quot_pct_s_quot, cptr.ld1so(scroll, $obj_oartifact) ? cptr.ldPtro(__static_doread_card_msgs, (14 - 1) | 0, 8) : cptr.ldPtro(__static_doread_card_msgs, u32mod(cptr.ldI32o(scroll, $obj_o_id), ((14 - 1) | 0) >>> 0), 8));
         }
+        /* Make a credit card number */
         pline(__s_d0_d_ld_d1_0_d_d0_s, ((((cptr.ldI32o(scroll, $obj_o_id) | 0) % 89) + 10) | 0), ((cptr.ldI32o(scroll, $obj_o_id) | 0) % 4), (BigInt.asIntN(64, ((BigInt.asIntN(64, BigInt(cptr.ldI32o(scroll, $obj_o_id) >>> 0) * 499n)) % 899999n) + 100000n)), ((cptr.ldI32o(scroll, $obj_o_id) | 0) % 10), (!((cptr.ldI32o(scroll, $obj_o_id) | 0) % 3)), ((Math.imul(cptr.ldI32o(scroll, $obj_o_id) | 0, 7)) % 10), (cptr.ld1so(flags, $flag_verbose) || Blind()) ? __s_dot : __s_empty);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_a_credit_card);
+
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.CAN_OF_GREASE) {
         pline(__s_this_s_has_no_label, singular(scroll, xname));
@@ -927,6 +993,7 @@ export function doread() {
     } else if (otyp == NHC.MAGIC_MARKER) {
         let buf = new Uint8Array(256);
         let pm = cptr.add(mons, cptr.ldI32o(__static_doread_red_mons, u32mod(cptr.ldI32o(scroll, $obj_o_id), 14 >>> 0), 4), $sizeof_permonst);
+
         if (Blind()) {
             You_cant(cptr.decay(__static_doread_find_any_braille));
             return NHM.ECMD_OK;
@@ -937,6 +1004,7 @@ export function doread() {
         pline(__s_magic_marker_tm_s_red_ink_marker_pen, upwords(cptr.decay(buf)));
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_a_magic);
+
         return NHM.ECMD_TIME;
     } else if (cptr.ld1so(scroll, $obj_oclass) == NHC.COIN_CLASS) {
         if (Blind())
@@ -946,6 +1014,7 @@ export function doread() {
         pline(__s_1_zorkmid_857_gue_in_frobs_we_trust);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_a_coin_s);
+
         return NHM.ECMD_TIME;
     } else if (is_art(scroll, NHC.ART_ORB_OF_FATE)) {
         if (Blind())
@@ -955,9 +1024,11 @@ export function doread() {
         pline(__s_odin);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_the_divine);
+
         return NHM.ECMD_TIME;
     } else if (otyp == NHC.CANDY_BAR) {
         let wrapper = candy_wrapper_text(scroll);
+
         if (Blind()) {
             You_cant(cptr.decay(__static_doread_find_any_braille));
             return NHM.ECMD_OK;
@@ -969,13 +1040,17 @@ export function doread() {
         pline(__s_the_wrapper_reads_s, wrapper);
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_a_candy_bar);
+
         return NHM.ECMD_TIME;
     } else if (cptr.ld1so(scroll, $obj_oclass) != NHC.SCROLL_CLASS && cptr.ld1so(scroll, $obj_oclass) != NHC.SPBOOK_CLASS) {
         pline(cptr.ldPtro(c_common_strings, $c_common_strings_c_silly_thing_to), __s_read);
         return NHM.ECMD_OK;
     } else if (Blind() && otyp != NHC.SPE_BOOK_OF_THE_DEAD) {
         let what = null;
+
         if (otyp == NHC.SPE_NOVEL)
+            /* unseen novels are already distinguishable from unseen
+               spellbooks so this isn't revealing any extra information */
             what = __s_words;
         else if (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS)
             what = __s_mystic_runes;
@@ -986,23 +1061,38 @@ export function doread() {
             return NHM.ECMD_OK;
         }
     }
+
     confused = schar((HConfusion() != 0n));
     if (otyp == NHC.SCR_MAIL) {
-        confused = 0;
+        confused = 0;  /* override */
+        /* reading mail is a convenience for the player and takes
+           place outside the game, so shouldn't affect gameplay;
+           on the other hand, it starts by explicitly making the
+           hero actively read something, which is pretty hard
+           to simply ignore; as a compromise, if the player has
+           maintained illiterate conduct so far, and this mail
+           scroll didn't come from bones, ask for confirmation */
         if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) {
             if (!cptr.ld1so(scroll, $obj_spe) && yn_function(__s_reading_mail_will_violate_illiterate, cptr.decay(ynchars), 110, 1) != 121)
                 return NHM.ECMD_OK;
         }
     }
+
+    /* Actions required to win the game aren't counted towards conduct */
+    /* Novel conduct is handled in read_tribute so exclude it too */
     if (otyp != NHC.SPE_BOOK_OF_THE_DEAD && otyp != NHC.SPE_NOVEL && otyp != NHC.SPE_BLANK_PAPER && otyp != NHC.SCR_BLANK_PAPER)
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_reading_s, (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS) ? __s_a_book : ((cptr.ld1so(scroll, $obj_oclass) == NHC.SCROLL_CLASS) ? __s_a_scroll : cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
+
     if (cptr.ld1so(scroll, $obj_oclass) == NHC.SPBOOK_CLASS) {
         return study_book(scroll) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
-    cptr.stI32o(scroll, $obj_in_use, 1);
+    cptr.stI32o(scroll, $obj_in_use, 1);  /* scroll, not spellbook, now being read */
     if (otyp != NHC.SCR_BLANK_PAPER) {
         let silently = schar((!can_chant(cptr.add(gy, $instance_globals_y_youmonst))));
+
+        /* a few scroll feedback messages describe something happening
+           to the scroll itself, so avoid "it disappears" for those */
         nodisappear = schar((otyp == NHC.SCR_FIRE || (otyp == NHC.SCR_REMOVE_CURSE && (cptr.ldI32o(scroll, $obj_cursed) & 1) | 0) ? 1 : 0));
         if (Blind())
             pline(nodisappear ? __s_you_s_the_formula_on_the_scroll : __s_as_you_s_the_formula_on_it_the_scroll, silently ? __s_cogitate : __s_pronounce);
@@ -1034,6 +1124,7 @@ function stripspe(obj) {
     if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || cptr.ld1so(obj, $obj_spe) <= 0) {
         pline(__s_pct_s, cptr.ldPtr(c_common_strings));
     } else {
+        /* order matters: message, shop handling, actual transformation */
         pline(__s_s_briefly, Yobjnam2(obj, __s_vibrate));
         costly_alteration(obj, NHC.COST_UNCHRG);
         cptr.st1o(obj, $obj_spe, 0);
@@ -1057,28 +1148,40 @@ function p_glow3(otmp, color) {
     pline(__s_s_feebly_s_s_for_a_moment, Yobjnam2(otmp, Blind() ? __s_vibrate : __s_glow), Blind() ? __s_empty : __s_sp, Blind() ? __s_empty : hcolor(color));
 }
 
+/* getobj callback for object to charge */
 /** C ref: read.c:689 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function charge_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS)
         return NHC.GETOBJ_SUGGEST;
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) | 0 && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
         return NHC.GETOBJ_SUGGEST;
+
     if (is_weptool(obj))
         return NHC.GETOBJ_EXCLUDE;
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
+        /* suggest tools that aren't oc_charged but can still be recharged */
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN || (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP) || (cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP && !(cptr.ldI32o2(objects, NHC.MAGIC_LAMP, $sizeof_objclass, $objclass_oc_name_known) & 1))) {
             return NHC.GETOBJ_SUGGEST;
         }
+        /* suggest chargeable tools only if discovered, to prevent leaking
+           info (e.g. revealing if an unidentified 'flute' is magic or not) */
         if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1)) {
             return ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) ? NHC.GETOBJ_SUGGEST : NHC.GETOBJ_DOWNPLAY;
         }
         return NHC.GETOBJ_EXCLUDE;
     }
+    /* why are weapons/armor considered charged anyway?
+     * make them selectable even so for "feeling of loss" message */
     return NHC.GETOBJ_EXCLUDE_SELECTABLE;
 }
 
+/* recharge an object; curse_bless is -1 if the recharging implement
+   was cursed, +1 if blessed, 0 otherwise. */
 /** C ref: read.c:729 — @param {CPtr<struct obj>} obj @param {CInt} curse_bless */
 export function recharge(obj, curse_bless) {
     let __go_not_chargable = false;
@@ -1086,29 +1189,55 @@ export function recharge(obj, curse_bless) {
         let n;
         let is_cursed;
         let is_blessed;
+
         is_cursed = schar((curse_bless < 0));
         is_blessed = schar((curse_bless > 0));
+
         if (cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS) {
             let lim = (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_WISHING) ? 1 : ((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_dir) & 7) | 0) != NHM.NODIR) ? 8 : 15);
+
+            /* undo any prior cancellation, even when is_cursed */
             if (cptr.ld1so(obj, $obj_spe) == -1)
                 cptr.st1o(obj, $obj_spe, 0);
+
+            /*
+             * Recharging might cause wands to explode.
+             *      v = number of previous recharges
+             *            v = percentage chance to explode on this attempt
+             *                    v = cumulative odds for exploding
+             *      0 :   0       0
+             *      1 :   0.29    0.29
+             *      2 :   2.33    2.62
+             *      3 :   7.87   10.28
+             *      4 :  18.66   27.02
+             *      5 :  36.44   53.62
+             *      6 :  62.97   82.83
+             *      7 : 100     100
+             */
             n = (cptr.ldI32o(obj, $obj_recharged) & 7) | 0;
             if (n > 0 && (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_WISHING || (Math.imul(Math.imul(n, n), n) > rn2_at(__s_read_c, 762, __s_recharge, 343)))) {
                 wand_explode(obj, rnd_at(__s_read_c, 763, __s_recharge, lim));
                 return;
             }
+            /* didn't explode, so increment the recharge count */
             cptr.stI32o(obj, $obj_recharged, ((n + 1) | 0) >>> 0);
+
+            /* now handle the actual recharging */
             if (is_cursed) {
                 stripspe(obj);
             } else {
                 n = (lim == 1) ? 1 : ((rn2_at(__s_read_c, 773, __s_recharge, 5) + ((((lim + 1) | 0) - 5) | 0)) | 0);
                 if (!is_blessed)
                     n = rnd_at(__s_read_c, 775, __s_recharge, n);
+
                 if (cptr.ld1so(obj, $obj_spe) < n)
                     cptr.st1o(obj, $obj_spe, schar(n));
                 else
                     cptr.postinc1(cptr.add(obj, $obj_spe));
                 if (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_WISHING && cptr.ld1so(obj, $obj_spe) > 3) {
+                    /* wands can't give more than three wishes; this code is
+                       currently unreachable but left in case the rules for
+                       wands of wishing change in future */
                     wand_explode(obj, 1);
                     return;
                 }
@@ -1119,32 +1248,44 @@ export function recharge(obj, curse_bless) {
                 else
                     p_glow1(obj);
             }
+
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) | 0) {
+            /* charging does not affect ring's curse/bless status */
             let s = is_blessed ? rnd_at(__s_read_c, 803, __s_recharge, 3) : (is_cursed ? -rnd_at(__s_read_c, 803, __s_recharge, 2) : 1);
             let is_on = schar((cptr.eq(obj, uleft.v) || cptr.eq(obj, uright.v) ? 1 : 0));
+
+            /* destruction depends on current state, not adjustment */
             if (cptr.ld1so(obj, $obj_spe) > rn2_at(__s_read_c, 807, __s_recharge, 7) || cptr.ld1so(obj, $obj_spe) <= -5) {
                 pline(__s_s_momentarily_then_s, Yobjnam2(obj, __s_pulsate), otense(obj, __s_explode));
                 if (is_on)
                     Ring_gone(obj);
-                s = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 812, __s_recharge), rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))))) : rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe)))));
+                s = (rng_log_enabled() ? (rng_log_set_caller(__s_read_c, 812, __s_recharge), rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))))) : rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe)))));  /* amount of damage */
                 useup(obj), obj = null;
                 losehp(((Half_physical_damage()) ? (((((s) + 1) | 0) / 2) | 0) : (s)), __s_exploding_ring, NHM.KILLED_BY_AN);
             } else {
                 let mask = is_on ? (cptr.eq(obj, uleft.v) ? 131072n : 262144n) : 0n;
+
                 pline(__s_s_spins_sclockwise_for_a_moment, Yname2(obj), s < 0 ? __s_counter : __s_empty);
                 if (s < 0)
                     costly_alteration(obj, NHC.COST_DECHNT);
+                /* cause attributes and/or properties to be updated */
                 if (is_on)
                     Ring_off(obj);
-                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + s);
+                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + s);  /* update the ring while it's off */
                 if (is_on)
                     setworn(obj, mask), Ring_on(obj);
+                /* oartifact: if a touch-sensitive artifact ring is
+                   ever created the above will need to be revised  */
+                /* update shop bill to reflect new higher price */
                 if (s > 0 && (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
                     alter_cost(obj, 0n);
             }
+
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             let rechrg = (cptr.ldI32o(obj, $obj_recharged) & 7) | 0;
+
             if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1)) {
+                /* tools don't have a limit, but the counter used does */
                 if (rechrg < 7)
                     (cptr.stI32o(obj, $obj_recharged, cptr.ldI32o(obj, $obj_recharged) + 1)) - (1);
             }
@@ -1165,13 +1306,14 @@ export function recharge(obj, curse_bless) {
                 if (is_cursed) {
                     stripspe(obj);
                 } else if (rechrg && cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_MARKER) {
-                    cptr.stI32o(obj, $obj_recharged, 1);
+                    /* previously recharged */
+                    cptr.stI32o(obj, $obj_recharged, 1);  /* override increment done above */
                     if (cptr.ld1so(obj, $obj_spe) < 3)
                         Your(__s_marker_seems_permanently_dried_out);
                     else
                         pline(__s_pct_s, cptr.ldPtr(c_common_strings));
                 } else if (is_blessed) {
-                    n = ((rn2_at(__s_read_c, 867, __s_recharge, 16) + 15) | 0);
+                    n = ((rn2_at(__s_read_c, 867, __s_recharge, 16) + 15) | 0);  /* 15..30 */
                     if (((cptr.ld1so(obj, $obj_spe) + n) | 0) <= 50)
                         cptr.st1o(obj, $obj_spe, 50);
                     else if (((cptr.ld1so(obj, $obj_spe) + n) | 0) <= 75)
@@ -1185,11 +1327,12 @@ export function recharge(obj, curse_bless) {
                     }
                     p_glow2(obj, cptr.ldPtro(c_color_names, $c_color_names_c_blue));
                 } else {
-                    n = ((rn2_at(__s_read_c, 881, __s_recharge, 11) + 10) | 0);
+                    n = ((rn2_at(__s_read_c, 881, __s_recharge, 11) + 10) | 0);  /* 10..20 */
                     if (((cptr.ld1so(obj, $obj_spe) + n) | 0) <= 50)
                         cptr.st1o(obj, $obj_spe, 50);
                     else {
                         let chrg = cptr.ld1so(obj, $obj_spe);
+
                         if (((chrg + n) | 0) > NHM.SPE_LIM)
                             cptr.st1o(obj, $obj_spe, NHM.SPE_LIM);
                         else
@@ -1222,7 +1365,10 @@ export function recharge(obj, curse_bless) {
                 case NHC.CRYSTAL_BALL:
                 if (cptr.ld1so(obj, $obj_spe) == -1)
                     cptr.st1o(obj, $obj_spe, 0);
+
                 if (is_cursed) {
+                    /* cursed scroll removes charges and curses ball */
+                    /*stripspe(obj); -- doesn't do quite what we want...*/
                     if (!(cptr.ldI32o(obj, $obj_cursed) & 1)) {
                         p_glow2(obj, cptr.ldPtr(c_color_names));
                         curse(obj);
@@ -1233,11 +1379,14 @@ export function recharge(obj, curse_bless) {
                         costly_alteration(obj, NHC.COST_UNCHRG);
                     cptr.st1o(obj, $obj_spe, 0);
                 } else if (is_blessed) {
+                    /* blessed scroll sets charges to max and blesses ball */
                     cptr.st1o(obj, $obj_spe, 7);
                     p_glow2(obj, !(cptr.ldI32o(obj, $obj_blessed) & 1) ? cptr.ldPtro(c_color_names, $c_color_names_c_light_blue) : cptr.ldPtro(c_color_names, $c_color_names_c_blue));
                     if (!(cptr.ldI32o(obj, $obj_blessed) & 1))
                         bless(obj);
+                    /* [shop price stays the same regardless of charges or BUC] */
                 } else {
+                    /* uncursed scroll increments charges and uncurses ball */
                     if (cptr.ld1so(obj, $obj_spe) < 7 || (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) {
                         n = rnd_at(__s_read_c, 942, __s_recharge, 2);
                         cptr.st1o(obj, $obj_spe, schar((((cptr.ld1so(obj, $obj_spe) + n) | 0) < 7 ? ((cptr.ld1so(obj, $obj_spe) + n) | 0) : 7)));
@@ -1248,6 +1397,7 @@ export function recharge(obj, curse_bless) {
                             uncurse(obj);
                         }
                     } else {
+                        /* charges at max and ball not being uncursed */
                         pline(__s_pct_s, cptr.ldPtr(c_common_strings));
                     }
                 }
@@ -1293,7 +1443,8 @@ export function recharge(obj, curse_bless) {
                 break;
                 default:
                 { __go_not_chargable = true; break __skip_not_chargable; }
-            }
+            }  /* switch */
+
         } else {
             __go_not_chargable = true; break __skip_not_chargable;
         }
@@ -1301,41 +1452,67 @@ export function recharge(obj, curse_bless) {
     if (__go_not_chargable) {
         You(__s_have_a_feeling_of_loss);
     }
+
+    /* prevent enchantment from getting out of range */
     cap_spe(obj);
 }
 
+/*
+ * Forget some things (e.g. after reading a scroll of amnesia).  When called,
+ * the following are always forgotten:
+ *      - felt ball & chain
+ *      - skill training
+ *
+ * Other things are subject to flags:
+ *      howmuch & ALL_SPELLS    = forget all spells
+ */
 /** C ref: read.c:1020 — @param {CInt} howmuch */
 function forget(howmuch) {
     let mtmp;
+
     if (Punished())
-        cptr.stI32o(u, $you_bc_felt, 0);
+        cptr.stI32o(u, $you_bc_felt, 0);  /* forget felt ball&chain */
+
     if (howmuch & NHM.ALL_SPELLS)
         losespells();
+
+    /* Forget some skills. */
     drain_weapon_skill(rnd_at(__s_read_c, 1031, __s_forget, howmuch ? 5 : 3));
+
+    /* forget having seen monsts (affects recognizing unseen ones by sound) */
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
         if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) && !cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
             cptr.stI32o(mtmp, $monst_meverseen, 0);
+    /* [perhaps ought to forget having seen every monster on every level] */
     for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
         cptr.stI32o(mtmp, $monst_meverseen, 0);
 }
 
+/* monster is hit by scroll of taming's effect */
 /** C ref: read.c:1044 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} sobj @returns {CInt} */
 function maybe_tame(mtmp, sobj) {
     let was_tame = cptr.ld1so(mtmp, $monst_mtame);
     let was_peaceful = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1);
+
     if ((cptr.ldI32o(sobj, $obj_cursed) & 1)) {
         setmangry(mtmp, 0);
         if (was_peaceful && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             return -1;
     } else {
+        /* for a shopkeeper, tamedog() will call make_happy_shk() but
+           not tame the target, so call it even if taming gets resisted */
         if (!resist(mtmp, cptr.ld1so(sobj, $obj_oclass), 0, NHM.NOTELL) || (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0)
             void tamedog(mtmp, sobj, 0);
+
         if ((!was_peaceful && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) || was_tame != cptr.ld1so(mtmp, $monst_mtame))
             return 1;
     }
     return 0;
 }
 
+/* Can a stinking cloud physically exist at a certain position?
+ * NOT the same thing as can_center_cloud.
+ */
 /** C ref: read.c:1069 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function valid_cloud_pos(x, y) {
     if (!isok(x, y))
@@ -1343,6 +1520,9 @@ export function valid_cloud_pos(x, y) {
     return schar((((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.DOOR) || is_pool(x, y) || is_lava(x, y) ? 1 : 0));
 }
 
+/* Callback for getpos_sethilite, also used in determining whether a scroll
+ * should have its regular effects, or not because it was out of range.
+ */
 /** C ref: read.c:1080 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function can_center_cloud(x, y) {
     if (!valid_cloud_pos(x, y))
@@ -1357,18 +1537,24 @@ function display_stinking_cloud_positions(on_off) {
     let dx;
     let dy;
     let dist = 6;
+
     if (on_off) {
+        /* on */
         tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
                 x = i16(((cptr.ldI16(u) + dx) | 0));
                 y = i16(((cptr.ldI16o(u, $you_uy) + dy) | 0));
+                /* hero's location is allowed but highlighting the hero's
+                   spot makes map harder to read (if using '$' rather than
+                   by changing background color) */
                 if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                     continue;
                 if (can_center_cloud(x, y))
                     tmp_at(x, y);
             }
     } else {
+        /* off */
         tmp_at(-7, 0);
     }
 }
@@ -1385,9 +1571,10 @@ function seffect_enchant_armor(sobjp) {
     let confused = schar((HConfusion() != 0n));
     let old_erodeproof;
     let new_erodeproof;
+
     if (!otmp) {
         strange_feeling(sobj, !Blind() ? __s_your_skin_glows_then_fades : __s_your_skin_feels_warm_for_a_moment);
-        cptr.stPtr(sobjp, null);
+        cptr.stPtr(sobjp, null);  /* useup() in strange_feeling() */
         exercise(NHC.A_CON, schar((!scursed)));
         exercise(NHC.A_STR, schar((!scursed)));
         return;
@@ -1395,7 +1582,7 @@ function seffect_enchant_armor(sobjp) {
     if (confused) {
         old_erodeproof = schar((((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) != 0));
         new_erodeproof = schar((!scursed));
-        cptr.stI32o(otmp, $obj_oerodeproof, 0);
+        cptr.stI32o(otmp, $obj_oerodeproof, 0);  /* for messages */
         if (Blind()) {
             cptr.stI32o(otmp, $obj_rknown, 0);
             pline(__s_s_warm_for_a_moment, Yobjnam2(otmp, __s_feel));
@@ -1408,12 +1595,14 @@ function seffect_enchant_armor(sobjp) {
             pline(__s_s_as_good_as_new, Yobjnam2(otmp, Blind() ? __s_feel : __s_look));
         }
         if (old_erodeproof && !new_erodeproof) {
+            /* restore old_erodeproof before shop charges */
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
             costly_alteration(otmp, NHC.COST_DEGRD);
         }
         cptr.stI32o(otmp, $obj_oerodeproof, (new_erodeproof ? 1 : 0) >>> 0);
         return;
     }
+    /* elven armor vibrates warningly when enchanted beyond a limit */
     special_armor = schar((is_elven_armor(otmp) || ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORNUTHAUM) ? 1 : 0));
     if (scursed)
         same_color = schar((cptr.ldI16o(otmp, $obj_otyp) == NHC.BLACK_DRAGON_SCALE_MAIL || cptr.ldI16o(otmp, $obj_otyp) == NHC.BLACK_DRAGON_SCALES ? 1 : 0));
@@ -1421,6 +1610,8 @@ function seffect_enchant_armor(sobjp) {
         same_color = schar((cptr.ldI16o(otmp, $obj_otyp) == NHC.SILVER_DRAGON_SCALE_MAIL || cptr.ldI16o(otmp, $obj_otyp) == NHC.SILVER_DRAGON_SCALES || cptr.ldI16o(otmp, $obj_otyp) == NHC.SHIELD_OF_REFLECTION ? 1 : 0));
     if (Blind())
         same_color = 0;
+
+    /* KMH -- catch underflow */
     s = schar((scursed ? -cptr.ld1so(otmp, $obj_spe) : cptr.ld1so(otmp, $obj_spe)));
     if (s > (special_armor ? 5 : 3) && rn2_at(__s_read_c, 1179, __s_seffect_enchant_armor, s)) {
         cptr.stI32o(otmp, $obj_in_use, 1);
@@ -1430,14 +1621,26 @@ function seffect_enchant_armor(sobjp) {
         return;
     }
     if (s < -100)
-        s = -100;
+        s = -100;  /* avoid integer overflow with very negative armor */
+
+    /* Base power of the enchantment:
+
+       2 for -1 to +0 armor;
+       1 for +1 to +2 armor;
+       0 for +3 to +4 armor, etc.
+
+       When disenchanting, everything is done with reversed signs. */
     s = schar(((((4 - s) | 0) / 2) | 0));
+
+    /* Elven/artifact and nonmagical armor is easier to enchant;
+       blessed scrolls are more effective. */
     if (special_armor)
         ++s;
     if (!(cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) & 1))
         ++s;
     if (sblessed)
         ++s;
+
     if (s <= 0) {
         s = 0;
         if (cptr.ld1so(otmp, $obj_spe) > 0 && !rn2_at(__s_read_c, 1214, __s_seffect_enchant_armor, cptr.ld1so(otmp, $obj_spe)))
@@ -1446,14 +1649,19 @@ function seffect_enchant_armor(sobjp) {
         s = schar(rnd_at(__s_read_c, 1217, __s_seffect_enchant_armor, s));
     }
     if (s > 11)
-        s = 11;
+        s = 11;  /* unlikely but possible: avoids an overflow later */
+
     if (scursed)
         s = schar((-s));
+
     if (s >= 0 && Is_dragon_scales(otmp)) {
         let was_lit = (cptr.ldI32o(otmp, $obj_lamplit) & 1);
         let old_light = artifact_light(otmp) ? arti_light_radius(otmp) : 0;
+
+        /* dragon scales get turned into dragon scale mail */
         pline(__s_s_merges_and_hardens, Yname2(otmp));
         setworn(null, 1n);
+        /* assumes same order */
         cptr.stI16o(otmp, $obj_otyp, cptr.ldI16o(otmp, $obj_otyp) + ((NHC.GRAY_DRAGON_SCALE_MAIL - NHC.GRAY_DRAGON_SCALES) | 0));
         cptr.stI32o(otmp, $obj_lamplit, 0);
         if (sblessed) {
@@ -1466,13 +1674,15 @@ function seffect_enchant_armor(sobjp) {
         cptr.stI32o(otmp, $obj_known, 1);
         setworn(otmp, 1n);
         if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
-            alter_cost(otmp, 0n);
+            alter_cost(otmp, 0n);  /* shop bill */
         cptr.stI32o(otmp, $obj_lamplit, was_lit);
         if (old_light)
             maybe_adjust_light(otmp, old_light);
         return;
     }
     pline(__s_s_s_s_s_s_for_a_s, Yname2(otmp), (s == 0) ? __s_violently : __s_empty, otense(otmp, Blind() ? __s_vibrate : __s_glow), (!Blind() && !same_color) ? __s_sp : __s_empty, (Blind() || same_color) ? __s_empty : hcolor(scursed ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_silver)), (Math.imul(s, s) > 1) ? __s_while : __s_moment);
+    /* [this cost handling will need updating if shop pricing is
+       ever changed to care about curse/bless status of armor] */
     if (s < 0)
         costly_alteration(otmp, NHC.COST_DECHNT);
     if (scursed && !(cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -1483,23 +1693,30 @@ function seffect_enchant_armor(sobjp) {
         uncurse(otmp);
     if (s) {
         let oldspe = cptr.ld1so(otmp, $obj_spe);
+        /* despite being schar, it shouldn't be possible for spe to wrap
+           here because it has been capped at 99 and s is quite small;
+           however, might need to change s if it takes spe past 99 */
         cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + s);
-        cap_spe(otmp);
-        s = schar(((cptr.ld1so(otmp, $obj_spe) - oldspe) | 0));
+        cap_spe(otmp);  /* make sure that it doesn't exceed SPE_LIM */
+        s = schar(((cptr.ld1so(otmp, $obj_spe) - oldspe) | 0));  /* cap_spe() might have throttled 's' */
         if (s)
-            adj_abon(otmp, s);
+            adj_abon(otmp, s);  /* adjust armor bonus for Dex or Int+Wis */
         cptr.st1o(gk, $instance_globals_k_known, schar((cptr.ldI32o(otmp, $obj_known) & 1)));
+        /* update shop bill to reflect new higher price */
         if (s > 0 && (cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0)
             alter_cost(otmp, 0n);
     }
+
     if ((cptr.ld1so(otmp, $obj_spe) > (special_armor ? 5 : 3)) && (special_armor || !rn2_at(__s_read_c, 1287, __s_seffect_enchant_armor, 7)))
         pline(__s_s_s__2, Yobjnam2(otmp, __s_suddenly_vibrate), Blind() ? __s_again : __s_unexpectedly);
 }
 
+/* destroy a random cursed armor worn by hero */
 /** C ref: read.c:1294 @returns {CInt} */
 function disintegrate_cursed_armor() {
     let armors = cptr.alloc(10 * 8);
     let idx = 0;
+
     cptr.stPtro(armors, 0, null, 8);
     if (uarm.v && (cptr.ldI32o(uarm.v, $obj_cursed) & 1) | 0)
         cptr.stPtro(armors, idx++, uarm.v, 8);
@@ -1517,8 +1734,10 @@ function disintegrate_cursed_armor() {
         cptr.stPtro(armors, idx++, uarmu.v, 8);
     if (!idx)
         return 0;
+
     if (disintegrate_arm(cptr.ldPtro(armors, rn2_at(__s_read_c, 1317, __s_disintegrate_cursed_armor, idx), 8)))
         return 1;
+
     return 0;
 }
 
@@ -1530,27 +1749,31 @@ function seffect_destroy_armor(sobjp) {
     let confused = schar((HConfusion() != 0n));
     let old_erodeproof;
     let new_erodeproof;
+
     if (confused) {
         if (!otmp) {
             strange_feeling(sobj, __s_your_bones_itch);
-            cptr.stPtr(sobjp, null);
+            cptr.stPtr(sobjp, null);  /* useup() in strange_feeling() */
             exercise(NHC.A_STR, 0);
             exercise(NHC.A_CON, 0);
             return;
         }
         old_erodeproof = schar((((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) != 0));
         new_erodeproof = scursed;
-        cptr.stI32o(otmp, $obj_oerodeproof, 0);
+        cptr.stI32o(otmp, $obj_oerodeproof, 0);  /* for messages */
         p_glow2(otmp, cptr.ldPtro(c_color_names, $c_color_names_c_purple));
         if (old_erodeproof && !new_erodeproof) {
+            /* restore old_erodeproof before shop charges */
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
             costly_alteration(otmp, NHC.COST_DEGRD);
         }
         cptr.stI32o(otmp, $obj_oerodeproof, (new_erodeproof ? 1 : 0) >>> 0);
         return;
     }
+
     if (scursed) {
         if (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
+            /* armor and scroll both cursed */
             pline(__s_pct_s_dot, Yobjnam2(otmp, __s_vibrate));
             if (cptr.ld1so(otmp, $obj_spe) >= -6) {
                 cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + -1);
@@ -1563,12 +1786,15 @@ function seffect_destroy_armor(sobjp) {
         }
     } else {
         let gets_choice = schar((otmp && sobj && (cptr.ldI32o(sobj, $obj_blessed) & 1) | 0 && count_worn_armor() > 1 ? 1 : 0));
+
         if (gets_choice) {
             let atmp;
+
             if (!(cptr.ldI32o2(objects, cptr.ldI16o(sobj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1))
                 pline(__s_this_is_s, an(actualoname(sobj)));
             cptr.st1o(gk, $instance_globals_k_known, 1);
             atmp = getobj(__s_destroy, any_worn_armor_ok, NHM.GETOBJ_PROMPT);
+            /* check the return value, if user picked non-valid obj */
             if (any_worn_armor_ok(atmp) == NHC.GETOBJ_SUGGEST)
                 otmp = atmp;
             if (disintegrate_arm(otmp)) {
@@ -1580,7 +1806,7 @@ function seffect_destroy_armor(sobjp) {
             return;
         } else if (!destroy_arm()) {
             strange_feeling(sobj, __s_your_skin_itches);
-            cptr.stPtr(sobjp, null);
+            cptr.stPtr(sobjp, null);  /* useup() in strange_feeling() */
             exercise(NHC.A_STR, 0);
             exercise(NHC.A_CON, 0);
             return;
@@ -1597,6 +1823,7 @@ function seffect_confuse_monster(sobjp) {
     let confused = schar((HConfusion() != 0n));
     let altfeedback = schar((Blind() || Invisible() ? 1 : 0));
     let hands = makeplural(body_part(NHC.HAND));
+
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_HUMAN || scursed) {
         if (!HConfusion())
             You_feel(__s_confused);
@@ -1610,7 +1837,9 @@ function seffect_confuse_monster(sobjp) {
             make_confused(0n, 1);
         }
     } else {
+        /* scroll vs spell */
         let incr = (cptr.ld1so(sobj, $obj_oclass) == NHC.SCROLL_CLASS) ? 3 : 0;
+
         if (!sblessed) {
             if (altfeedback)
                 Your(__s_s_tingle_s, hands, cptr.ldI32o(u, $you_umconf) ? __s_even_more : __s_empty);
@@ -1626,6 +1855,7 @@ function seffect_confuse_monster(sobjp) {
                 Your(__s_s_glow_s_brilliant_s, hands, cptr.ldI32o(u, $you_umconf) ? __s_an_even_more : __s_a, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red)));
             incr = (incr + ((rn2_at(__s_read_c, 1444, __s_seffect_confuse_monster, 8) + 2) | 0)) | 0;
         }
+        /* after a while, repeated uses become less effective */
         if (cptr.ldI32o(u, $you_umconf) >= 40)
             incr = 1;
         cptr.stI32o(u, $you_umconf, (cptr.ldI32o(u, $you_umconf) + (incr >>> 0)) | 0);
@@ -1640,6 +1870,7 @@ function seffect_scare_monster(sobjp) {
     let confused = schar((HConfusion() != 0n));
     let ct = 0;
     let mtmp;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -1650,7 +1881,7 @@ function seffect_scare_monster(sobjp) {
             } else if (!resist(mtmp, cptr.ld1so(sobj, $obj_oclass), 0, NHM.NOTELL))
                 monflee(mtmp, 0, 0, 0);
             if (!cptr.ld1so(mtmp, $monst_mtame))
-                ct++;
+                ct++;  /* pets don't laugh at you */
         }
     }
     if (otyp == NHC.SCR_SCARE_MONSTER || !ct) {
@@ -1665,7 +1896,7 @@ function seffect_scare_monster(sobjp) {
 
 /** C ref: read.c:1489 — @param {CPtr<struct obj *>} sobjp */
 function seffect_remove_curse(sobjp) {
-    let sobj = cptr.ldPtr(sobjp);
+    let sobj = cptr.ldPtr(sobjp);  /* scroll or fake spellbook */
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
@@ -1673,60 +1904,94 @@ function seffect_remove_curse(sobjp) {
     let obj;
     let nxto;
     let wornmask;
+
     You_feel(!Hallucination() ? (!confused ? __s_like_someone_is_helping_you : __s_like_you_need_some_help) : (!confused ? __s_in_touch_with_the_universal_oneness : __s_the_power_of_the_force_against_you));
+
     if (scursed) {
         pline_The(__s_scroll_disintegrates);
     } else {
+        /* 5.0: this used to use a straight
+               for (obj = invent; obj; obj = obj->nobj) {}
+           traversal, but for the confused case, secondary weapon might
+           become cursed and be dropped, moving it from the invent chain
+           to the floor chain at hero's spot, so we have to remember the
+           next object prior to processing the current one */
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nxto) {
             nxto = cptr.ldPtr(obj);
+            /* gold isn't subject to cursing and blessing */
             if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
                 continue;
+            /* hide current scroll from itself so that perm_invent won't
+               show known blessed scroll losing bknown when confused */
             if (cptr.eq(obj, sobj) && cptr.ldI64o(obj, $obj_quan) == 1n)
                 continue;
             wornmask = (cptr.ldI64o(obj, $obj_owornmask) & -2109441n);
             if (wornmask && !sblessed) {
+                /* handle a couple of special cases; we don't
+                   allow auxiliary weapon slots to be used to
+                   artificially increase number of worn items */
                 if (cptr.eq(obj, uswapwep.v)) {
                     if (!cptr.ld1so(u, $you_twoweap))
                         wornmask = 0n;
                 } else if (cptr.eq(obj, uquiver.v)) {
                     if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) {
+                        /* mergeable weapon test covers ammo,
+                           missiles, spears, daggers & knives */
                         if (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1))
                             wornmask = 0n;
                     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
+                        /* possibly ought to check whether
+                           alternate weapon is a sling... */
                         if (!(uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_SLING))
                             wornmask = 0n;
                     } else {
+                        /* weptools don't merge and aren't
+                           reasonable quivered weapons */
                         wornmask = 0n;
                     }
                 }
             }
             if (sblessed || wornmask || cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE || (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm))) {
+                /* water price varies by curse/bless status */
                 let shop_h2o = schar(((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER ? 1 : 0));
+
                 if (confused) {
                     blessorcurse(obj, 2);
+                    /* lose knowledge of this object's curse/bless
+                       state (even if it didn't actually change) */
                     cptr.stI32o(obj, $obj_bknown, 0);
+                    /* blessorcurse() only affects uncursed items
+                       so no need to worry about price of water
+                       going down (hence no costly_alteration) */
                     if (shop_h2o && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0))
-                        alter_cost(obj, 0n);
+                        alter_cost(obj, 0n);  /* price goes up */
                 } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
                     if (shop_h2o)
                         costly_alteration(obj, NHC.COST_UNCURS);
                     uncurse(obj);
+                    /* if the object was known to be cursed and is now
+                       known not to be, make the scroll known; it's
+                       trivial to identify anyway by comparing inventory
+                       before and after */
                     if ((cptr.ldI32o(obj, $obj_bknown) & 1) | 0 && otyp == NHC.SCR_REMOVE_CURSE)
                         learnscrolltyp(NHC.SCR_REMOVE_CURSE);
                 }
             }
         }
+        /* if riding, treat steed's saddle as if part of hero's invent */
         if (cptr.ldPtro(u, $you_usteed) && (obj = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null) {
             if (confused) {
                 blessorcurse(obj, 2);
-                cptr.stI32o(obj, $obj_bknown, 0);
+                cptr.stI32o(obj, $obj_bknown, 0);  /* skip set_bknown() */
             } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
                 uncurse(obj);
+                /* like rndcurse(sit.c), effect on regular inventory
+                   doesn't show things glowing but saddle does */
                 if (!Blind()) {
                     pline(__s_s_s__2, Yobjnam2(obj, __s_glow), hcolor(__s_amber));
                     cptr.stI32o(obj, $obj_bknown, (Hallucination() ? 0 : 1) >>> 0);
                 } else {
-                    cptr.stI32o(obj, $obj_bknown, 0);
+                    cptr.stI32o(obj, $obj_bknown, 0);  /* skip set_bknown() */
                 }
             }
         }
@@ -1746,8 +2011,12 @@ function seffect_create_monster(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
+
     if (create_critters((((1 + ((confused || scursed) ? 12 : 0)) | 0) + ((sblessed || rn2_at(__s_read_c, 1616, __s_seffect_create_monster, 73)) ? 0 : rnd_at(__s_read_c, 1616, __s_seffect_create_monster, 4))) | 0, confused ? cptr.add(mons, NHC.PM_ACID_BLOB, $sizeof_permonst) : null, 0))
         cptr.st1o(gk, $instance_globals_k_known, 1);
+    /* no need to flush monsters; we ask for identification only if the
+     * monsters are not visible
+     */
 }
 
 /** C ref: read.c:1627 — @param {CPtr<struct obj *>} sobjp */
@@ -1759,10 +2028,14 @@ function seffect_enchant_weapon(sobjp) {
     let old_erodeproof;
     let new_erodeproof;
     let s;
+
+    /* [What about twoweapon mode?  Proofing/repairing/enchanting both
+       would be too powerful, but shouldn't we choose randomly between
+       primary and secondary instead of always acting on primary?] */
     if (confused && uwep.v && erosion_matters(uwep.v) && cptr.ld1so(uwep.v, $obj_oclass) != NHC.ARMOR_CLASS) {
         old_erodeproof = schar((((cptr.ldI32o(uwep.v, $obj_oerodeproof) & 1) | 0) != 0));
         new_erodeproof = schar((!scursed));
-        cptr.stI32o(uwep.v, $obj_oerodeproof, 0);
+        cptr.stI32o(uwep.v, $obj_oerodeproof, 0);  /* for messages */
         if (Blind()) {
             cptr.stI32o(uwep.v, $obj_rknown, 0);
             Your(__s_weapon_feels_warm_for_a_moment);
@@ -1775,15 +2048,16 @@ function seffect_enchant_weapon(sobjp) {
             pline(__s_s_as_good_as_new, Yobjnam2(uwep.v, Blind() ? __s_feel : __s_look));
         }
         if (old_erodeproof && !new_erodeproof) {
+            /* restore old_erodeproof before shop charges */
             cptr.stI32o(uwep.v, $obj_oerodeproof, 1);
             costly_alteration(uwep.v, NHC.COST_DEGRD);
         }
         cptr.stI32o(uwep.v, $obj_oerodeproof, (new_erodeproof ? 1 : 0) >>> 0);
         return;
     }
-    s = scursed ? -1 : (!uwep.v ? 1 : ((cptr.ld1so(uwep.v, $obj_spe) >= 9) ? (rn2_at(__s_read_c, 1669, __s_seffect_enchant_weapon, cptr.ld1so(uwep.v, $obj_spe)) == 0) : (sblessed ? rnd_at(__s_read_c, 1670, __s_seffect_enchant_weapon, (3 - ((cptr.ld1so(uwep.v, $obj_spe) / 3) | 0)) | 0) : 1)));
+    s = scursed ? -1 : (!uwep.v ? 1 : ((cptr.ld1so(uwep.v, $obj_spe) >= 9) ? (rn2_at(__s_read_c, 1669, __s_seffect_enchant_weapon, cptr.ld1so(uwep.v, $obj_spe)) == 0) : (sblessed ? rnd_at(__s_read_c, 1670, __s_seffect_enchant_weapon, (3 - ((cptr.ld1so(uwep.v, $obj_spe) / 3) | 0)) | 0) : 1)));  /* uncursed */
     if (!chwepon(sobj, s))
-        cptr.stPtr(sobjp, null);
+        cptr.stPtr(sobjp, null);  /* nothing enchanted: strange_feeling -> useup */
     if (uwep.v)
         cap_spe(uwep.v);
 }
@@ -1796,6 +2070,7 @@ function seffect_taming(sobjp) {
     let res;
     let results;
     let vis_results;
+
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         candidates = 1;
         results = (vis_results = maybe_tame(cptr.ldPtro(u, $you_ustuck), sobj));
@@ -1804,6 +2079,9 @@ function seffect_taming(sobjp) {
         let j;
         let bd = confused ? 5 : 1;
         let mtmp;
+
+        /* note: maybe_tame() can return either positive or
+           negative values, but not both for the same scroll */
         candidates = (results = (vis_results = 0));
         for (i = -bd; i <= bd; i++)
             for (j = -bd; j <= bd; j++) {
@@ -1834,6 +2112,7 @@ function seffect_genocide(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS || (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+
     if (!already_known)
         You(__s_have_found_a_scroll_of_genocide);
     cptr.st1o(gk, $instance_globals_k_known, 1);
@@ -1849,6 +2128,7 @@ function seffect_light(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
+
     if (!confused) {
         if (!Blind())
             cptr.st1o(gk, $instance_globals_k_known, 1);
@@ -1859,13 +2139,16 @@ function seffect_light(sobjp) {
         }
     } else {
         let pm = scursed ? NHC.PM_BLACK_LIGHT : NHC.PM_YELLOW_LIGHT;
+
         if ((cptr.ld1uo2(svm, pm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
             pline(__s_tiny_lights_sparkle_in_the_air);
         } else {
+            /* surround with cancelled tame lights which won't explode */
             let mon;
             let sawlights = 0;
             let i;
             let numlights = (((rn2_at(__s_read_c, 1765, __s_seffect_light, 2) + 3) | 0) + (Math.imul(sblessed, 2))) | 0;
+
             for (i = 0; i < numlights; ++i) {
                 mon = makemon(cptr.add(mons, pm, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 133121);
                 if (mon) {
@@ -1894,6 +2177,7 @@ function seffect_charging(sobjp) {
     let confused = schar((HConfusion() != 0n));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS || (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
     let otmp;
+
     if (confused) {
         if (scursed) {
             You_feel(__s_discharged);
@@ -1902,19 +2186,23 @@ function seffect_charging(sobjp) {
             You_feel(__s_charged_up);
             cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + d_at(__s_read_c, 1805, __s_seffect_charging, (sblessed ? 6 : 4), 4)) | 0);
             if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
-                cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uen));
+                cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uen));  /* or near maximum, increase maximum */
             else
-                cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));
+                cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));  /* otherwise restore current to max  */
         }
         cptr.st1(disp, 1);
         return;
     }
+    /* known = TRUE; -- handled inline here */
     if (!already_known) {
         pline(__s_this_is_a_charging_scroll);
         learnscroll(sobj);
     }
+    /* use it up now to prevent it from showing in the
+       getobj picklist because the "disappears" message
+       was already delivered */
     useup(sobj);
-    cptr.stPtr(sobjp, null);
+    cptr.stPtr(sobjp, null);  /* it's gone */
     otmp = getobj(__s_charge, charge_ok, 3);
     if (otmp)
         recharge(otmp, scursed ? -1 : (sblessed ? 1 : 0));
@@ -1924,6 +2212,7 @@ function seffect_charging(sobjp) {
 function seffect_amnesia(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
+
     cptr.st1o(gk, $instance_globals_k_known, 1);
     forget((!sblessed ? NHM.ALL_SPELLS : 0));
     if (Hallucination())
@@ -1947,12 +2236,13 @@ function seffect_fire(sobjp) {
     let cc = cptr.alloc(4);
     let dam;
     let cval;
+
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     cval = bcsign(sobj);
     dam = (((Math.imul(2, ((((rn2_at(__s_read_c, 1864, __s_seffect_fire, 3) + 3) | 0) + Math.imul(2, cval)) | 0)) + 1) | 0) / 3) | 0;
     useup(sobj);
-    cptr.stPtr(sobjp, null);
+    cptr.stPtr(sobjp, null);  /* it's gone */
     if (!already_known)
         void learnscrolltyp(NHC.SCR_FIRE);
     if (confused) {
@@ -1983,13 +2273,14 @@ function seffect_fire(sobjp) {
             getpos_sethilite(display_stinking_cloud_positions, can_center_cloud);
             void getpos(cc, 1, __s_the_desired_position);
             if (!can_center_cloud(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))) {
+                /* try to reach too far, get burned */
                 cptr.stI16(cc, cptr.ldI16(u));
                 cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
             }
         }
         if (((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
             pline_The(__s_scroll_erupts_in_a_tower_of_flame);
-            cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_TOWER_OF_FLAME);
+            cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_TOWER_OF_FLAME);  /* for explode() */
             burn_away_slime();
         }
     }
@@ -2002,10 +2293,14 @@ function seffect_earth(sobjp) {
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
+
+    /* TODO: handle steeds */
     if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && has_ceiling(cptr.add(u, $you_uz)) && (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))) {
         let x;
         let y;
         let nboulders = 0;
+
+        /* Identify the scroll */
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             You_hear(__s_rumbling);
         } else {
@@ -2014,20 +2309,25 @@ function seffect_earth(sobjp) {
             } else {
                 let matbuf = new Uint8Array(256);
                 let avalanche = __s_avalanche;
+
                 void cptr.sprintf(cptr.decay(matbuf), __s_pct_s, sblessed ? makeplural(avalanche) : an(avalanche));
                 pline(__s_s_of_boulders_s_s_you, upstart(cptr.decay(matbuf)), vtense(cptr.decay(matbuf), __s_materialize), sblessed ? __s_around : __s_above);
             }
         }
         cptr.st1o(gk, $instance_globals_k_known, 1);
         sokoban_guilt();
+
+        /* Loop through the surrounding squares */
         if (!scursed)
             for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++) {
                 for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y++) {
+                    /* Is this a suitable spot? */
                     if (isok(x, y) && !closed_door(x, y) && !((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && !((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD) && (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy))) {
                         nboulders = (nboulders + drop_boulder_on_monster(x, y, confused, 1)) | 0;
                     }
                 }
             }
+        /* Attack the player */
         if (!sblessed) {
             drop_boulder_on_player(confused, schar((!scursed)), 1, 0);
         } else if (!nboulders)
@@ -2040,6 +2340,7 @@ function seffect_punishment(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
     let confused = schar((HConfusion() != 0n));
+
     cptr.st1o(gk, $instance_globals_k_known, 1);
     if (confused || sblessed) {
         You_feel(__s_guilty);
@@ -2053,6 +2354,7 @@ function seffect_stinking_cloud(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS || (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+
     if (!already_known)
         You(__s_have_found_a_scroll_of_stinking_cloud);
     cptr.st1o(gk, $instance_globals_k_known, 1);
@@ -2073,11 +2375,17 @@ function seffect_teleportation(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
+
     if (confused || scursed) {
         level_tele();
+        /* gives "materialize on different/same level!" message, must
+           be a teleport scroll */
         cptr.st1o(gk, $instance_globals_k_known, 1);
     } else {
         scrolltele(sobj);
+        /* this will call learnscroll() as appropriate, and has results
+           which maybe shouldn't result in the scroll becoming known;
+           either way, no need to set gk.known here */
     }
 }
 
@@ -2086,15 +2394,17 @@ function seffect_gold_detection(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
+
     if ((confused || scursed) ? trap_detect(sobj) : gold_detect(sobj))
-        cptr.stPtr(sobjp, null);
+        cptr.stPtr(sobjp, null);  /* failure: strange_feeling() -> useup() */
 }
 
 /** C ref: read.c:2046 — @param {CPtr<struct obj *>} sobjp */
 function seffect_food_detection(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
+
     if (food_detect(sobj))
-        cptr.stPtr(sobjp, null);
+        cptr.stPtr(sobjp, null);  /* nothing detected: strange_feeling -> useup */
 }
 
 /** C ref: read.c:2055 — @param {CPtr<struct obj *>} sobjp */
@@ -2106,9 +2416,15 @@ function seffect_identify(sobjp) {
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
     let already_known = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SPBOOK_CLASS || (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+
     if (is_scroll) {
+        /* known = TRUE; -- handled inline here */
+        /* use up the scroll first, before learnscrolltyp() -> makeknown()
+           performs perm_invent update; also simplifies empty invent check */
         useup(sobj);
-        cptr.stPtr(sobjp, null);
+        cptr.stPtr(sobjp, null);  /* it's gone */
+        /* scroll just identifies itself for any scroll read while confused
+           or for cursed scroll read without knowing identify yet */
         if (confused || (scursed && !already_known))
             You(__s_identify_this_as_an_identify_scroll);
         else if (!already_known)
@@ -2118,15 +2434,19 @@ function seffect_identify(sobjp) {
         if (confused || (scursed && !already_known))
             return;
     }
+
     if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         let cval = 1;
         if (sblessed || (!scursed && !rn2_at(__s_read_c, 2086, __s_seffect_identify, 5))) {
             cval = rn2_at(__s_read_c, 2087, __s_seffect_identify, 5);
+            /* note: if cval==0, identify all items */
             if (cval == 1 && sblessed && Luck() > 0)
                 ++cval;
         }
         identify_pack(cval, schar((!already_known)));
     } else {
+        /* spell cast with inventory empty or scroll read when it's
+           the only item leaving empty inventory after being used up */
         pline(__s_you_re_not_carrying_anything_s_to_be, (is_scroll) ? __s_else : __s_empty);
     }
 }
@@ -2139,6 +2459,7 @@ function seffect_magic_mapping(sobjp) {
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
     let confused = schar((HConfusion() != 0n));
     let cval;
+
     if (is_scroll) {
         if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap) & 1)) {
             Your(__s_mind_is_filled_with_crazy_lines);
@@ -2152,6 +2473,7 @@ function seffect_magic_mapping(sobjp) {
         if (sblessed) {
             let x;
             let y;
+
             for (x = 1; x < NHM.COLNO; x++)
                 for (y = 0; y < NHM.ROWNO; y++)
                     if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
@@ -2159,9 +2481,11 @@ function seffect_magic_mapping(sobjp) {
                         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
                             unblock_point(x, y);
                     }
+            /* do_mapping() already reveals secret passages */
         }
         cptr.st1o(gk, $instance_globals_k_known, 1);
     }
+
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap) & 1)) {
         Your(__s_s_spins_as_s_blocks_the_spell, body_part(NHC.HEAD), cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         make_confused(BigInt.asIntN(64, HConfusion() + BigInt(rnd_at(__s_read_c, 2139, __s_seffect_magic_mapping, 30))), 0);
@@ -2170,7 +2494,7 @@ function seffect_magic_mapping(sobjp) {
     pline(__s_a_map_coalesces_in_your_mind);
     cval = (scursed && !confused ? 1 : 0);
     if (cval)
-        cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);
+        cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);  /* to screw up map */
     {
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
     }
@@ -2182,7 +2506,7 @@ function seffect_magic_mapping(sobjp) {
         }
     }
     if (cval) {
-        cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
+        cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);  /* restore */
         pline(__s_unfortunately_you_can_t_grasp_the);
     }
 }
@@ -2191,12 +2515,17 @@ function seffect_magic_mapping(sobjp) {
 function seffect_mail(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let odd = schar(((u32mod(cptr.ldI32o(sobj, $obj_o_id), 2)) == 1));
+
     cptr.st1o(gk, $instance_globals_k_known, 1);
     switch (cptr.ld1so(sobj, $obj_spe)) {
         case 2:
+        /* "stamped scroll" created via magic marker--without a stamp */
         pline(__s_this_scroll_is_marked_s, odd ? __s_postage_due : __s_return_to_sender);
         break;
         case 1:
+        /* scroll of mail obtained from bones file or from wishing;
+           note to the puzzled: the game Larn actually sends you junk
+           mail if you win! */
         pline(__s_this_seems_to_be_s, odd ? __s_a_chain_letter_threatening_your_luck : __s_junk_mail_addressed_to_the_finder_of);
         break;
         default:
@@ -2205,12 +2534,16 @@ function seffect_mail(sobjp) {
     }
 }
 
+/* scroll effects; return 1 if we use up the scroll and possibly make it
+   become discovered, 0 if caller should take care of those side-effects */
 /** C ref: read.c:2194 — @param {CPtr<struct obj>} sobj @returns {CInt} */
 export function seffects(sobj) {
     sobj = cptr.box(sobj);
     let otyp = cptr.ldI16o(sobj.v, $obj_otyp);
+
     if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_magic) & 1))
-        exercise(NHC.A_WIS, 1);
+        exercise(NHC.A_WIS, 1);  /* just for trying */
+
     switch (otyp) {
         case NHC.SCR_MAIL:
         seffect_mail(sobj);
@@ -2292,6 +2625,9 @@ export function seffects(sobj) {
         default:
         impossible(__s_what_weird_effect_is_this_u, otyp);
     }
+    /* if sobj is gone, we've already called useup() above and the
+       update_inventory() that it performs might have come too soon
+       (before charging an item, for instance) */
     if (!sobj.v)
         update_inventory();
     return sobj.v ? 0 : 1;
@@ -2301,10 +2637,13 @@ export function seffects(sobj) {
 export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswallow) {
     let dmg;
     let otmp2;
+
+    /* hit monster if swallowed */
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !skip_uswallow) {
         drop_boulder_on_monster(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), confused, byu);
         return;
     }
+
     otmp2 = mksobj(confused ? NHC.ROCK : NHC.BOULDER, 0, 0);
     if (!otmp2)
         return;
@@ -2325,6 +2664,7 @@ export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswa
     } else
         dmg = 0;
     wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 16);
+    /* Must be before the losehp(), for bones files */
     if (!flooreffects(otmp2, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_fall)) {
         place_object(otmp2, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         stackobj(otmp2);
@@ -2338,21 +2678,27 @@ export function drop_boulder_on_player(confused, helmet_protects, byu, skip_uswa
 export function drop_boulder_on_monster(x, y, confused, byu) {
     let otmp2;
     let mtmp;
+
+    /* Make the object(s) */
     otmp2 = mksobj(confused ? NHC.ROCK : NHC.BOULDER, 0, 0);
     if (!otmp2)
-        return 0;
+        return 0;  /* Shouldn't happen */
     cptr.stI64o(otmp2, $obj_quan, BigInt((confused ? ((rn2_at(__s_read_c, 2350, __s_drop_boulder_on_monster, 5) + 2) | 0) : 1)));
     cptr.stI32o(otmp2, $obj_owt, weight(otmp2) >>> 0);
+
+    /* Find the monster here (won't be player) */
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mtmp && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8n) != 0n) && !(cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet) == NHC.S_GHOST) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
         let helmet = which_armor(mtmp, 4n);
         let mdmg;
+
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
             pline(__s_s_is_hit_by_s, Monnam(mtmp), doname(otmp2));
             if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !canspotmon(mtmp))
                 map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))
             You_hear(__s_something_hit_s_s_over_your_s, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, NHC.STOMACH), body_part(NHC.HEAD));
+
         mdmg = BigInt.asIntN(64, BigInt(dmgval(otmp2, mtmp)) * cptr.ldI64o(otmp2, $obj_quan));
         if (helmet) {
             if (hard_helmet(helmet)) {
@@ -2381,28 +2727,34 @@ export function drop_boulder_on_monster(x, y, confused, byu) {
         wake_nearto(x, y, 16);
     } else if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
         obfree(otmp2, null);
+        /* fall through to player */
         drop_boulder_on_player(confused, 1, 0, 1);
         return 1;
     }
+    /* Drop the rock/boulder to the floor */
     if (!flooreffects(otmp2, x, y, __s_fall)) {
         place_object(otmp2, x, y);
         stackobj(otmp2);
-        newsym(x, y);
+        newsym(x, y);  /* map the rock */
     }
     return 1;
 }
 
+/* overcharging any wand or zapping/engraving cursed wand */
 /** C ref: read.c:2414 — @param {CPtr<struct obj>} obj @param {CInt} chg */
 export function wand_explode(obj, chg) {
     let expl = !chg ? __s_suddenly : __s_vibrates_violently_and;
     let dmg;
     let n;
     let k;
+
+    /* number of damage dice */
     if (!chg)
-        chg = 2;
+        chg = 2;  /* zap/engrave adjustment */
     n = (cptr.ld1so(obj, $obj_spe) + chg) | 0;
     if (n < 2)
-        n = 2;
+        n = 2;  /* arbitrary minimum */
+    /* size of damage dice */
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.WAN_WISHING:
         k = 12;
@@ -2426,23 +2778,31 @@ export function wand_explode(obj, chg) {
         k = 6;
         break;
     }
+    /* inflict damage and destroy the wand */
     dmg = d_at(__s_read_c, 2450, __s_wand_explode, (n), (k));
-    cptr.stI32o(obj, $obj_in_use, 1);
+    cptr.stI32o(obj, $obj_in_use, 1);  /* in case losehp() is fatal (or --More--^C) */
     pline(__s_s_s_explodes, Yname2(obj), expl);
     losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_exploding_wand, NHM.KILLED_BY_AN);
     useup(obj);
+    /* obscure side-effect */
     exercise(NHC.A_STR, 0);
 }
 
+/* used to collect gremlins being hit by light so that they can be processed
+   after vision for the entire lit area has been brought up to date */
 /** C ref: read.c:2461 — struct litmon { mon, nxt } (memory model v0.5) */
 
 /** C ref: read.c:2465 — struct litmon * */
 let gremlins = null;
 
+/*
+ * Low-level lit-field update routine.
+ */
 /** C ref: read.c:2471 — @param {CInt} x @param {CInt} y @param {CPtr} val */
 function set_lit(x, y, val) {
     let mtmp;
     let gremlin;
+
     if (val) {
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, 1);
         if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst))) {
@@ -2464,20 +2824,40 @@ export function litroom(on, obj) {
     let blessed_effect = schar((obj && cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 1 : 0));
     let no_op = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
     let is_lit = cptr.box(0);
+
+    /* update object lights and produce message (provided you're not blind) */
     if (!on) {
         let still_lit = 0;
+
+        /*
+         * The magic douses lamps,&c too and might curse artifact lights.
+         *
+         * FIXME?
+         *  Shouldn't this affect all lit objects in the area of effect
+         *  rather than just those carried by the hero?
+         */
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
             if ((cptr.ldI32o(otmp, $obj_lamplit) & 1)) {
                 if (!artifact_light(otmp))
                     void snuff_lit(otmp);
                 else
+                    /* wielded Sunsword or worn gold dragon scales/mail;
+                       maybe lower its BUC state if not already cursed */
                     impact_arti_light(otmp, 1, schar((!Blind())));
+
                 if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                     ++still_lit;
             }
         }
+        /* scroll of light becomes discovered when not blind, so some
+           message to justify that is needed */
         if (!Blind()) {
+            /* for the still_lit case, we don't know at this point whether
+               anything currently visibly lit is going to go dark; if this
+               message came after the darkening, we could count visibly
+               lit squares before and after to know; we do know that being
+               swallowed won't be affected--the interior is still lit */
             if (still_lit)
                 pline_The(__s_ambient_light_seems_dimmer);
             else if ((cptr.ldI32o(u, $you_uswallow) & 1))
@@ -2487,15 +2867,18 @@ export function litroom(on, obj) {
         }
     } else {
         if (blessed_effect) {
+            /* might bless artifact lights; no effect on ordinary lights */
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
                 nextobj = cptr.ldPtr(otmp);
                 if ((cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 && artifact_light(otmp))
+                    /* wielded Sunsword or worn gold dragon scales/mail;
+                       maybe raise its BUC state if not already blessed */
                     impact_arti_light(otmp, 0, schar((!Blind())));
             }
         }
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             if (Blind())
-                ;
+                ;  /* no feedback */
             else if ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null))
                 pline(__s_s_s_is_lit, s_suffix(Monnam(cptr.ldPtro(u, $you_ustuck))), mbodypart(cptr.ldPtro(u, $you_ustuck), NHC.STOMACH));
             else if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)))
@@ -2506,34 +2889,62 @@ export function litroom(on, obj) {
             pline(__s_a_lit_field_ssurrounds_you, no_op ? __s_briefly : __s_empty);
         }
     }
+
+    /* No-op when swallowed or in water */
     if (no_op)
         return;
+    /*
+     *  If we are darkening the room and the hero is punished but not
+     *  blind, then we have to pick up and replace the ball and chain so
+     *  that we don't remember them if they are out of sight.
+     */
     if (Punished() && !on && !Blind())
         move_bc(1, 0, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy), cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy));
+
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+        /* Can't use do_clear_area because MAX_RADIUS is too small */
+        /* rogue lighting must light the entire room */
         let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
         let rx;
         let ry;
+
         if (rnum >= 0) {
             for (rx = (cptr.ldI16o(svr, rnum, $sizeof_mkroom) - 1) | 0; rx <= ((cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_hx) + 1) | 0); rx++)
                 for (ry = (cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_ly) - 1) | 0; ry <= ((cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_hy) + 1) | 0); ry++)
                     set_lit(i16(rx), i16(ry), (on ? is_lit : null));
             cptr.st1o2(svr, rnum, $sizeof_mkroom, $mkroom_rlit, on);
         }
+        /* hallways remain dark on the rogue level */
     } else if (is_art(obj, NHC.ART_SUNSWORD)) {
+        /* Sunsword's #invoke power directed up or down lights hero's spot
+           (do_clear_area() rejects radius 0 so call set_lit() directly) */
         set_lit(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), is_lit);
     } else {
         do_clear_area(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), blessed_effect ? 9 : 5, set_lit, (on ? is_lit : null));
     }
+
+    /*
+     *  If we are not blind, then force a redraw on all positions in sight
+     *  by temporarily blinding the hero.  The vision recalculation will
+     *  correctly update all previously seen positions *and* correctly
+     *  set the waslit bit [could be messed up from above].
+     */
     if (!Blind()) {
         vision_recalc(2);
+
+        /* replace ball&chain */
         if (Punished() && !on)
             move_bc(0, 0, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy), cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy));
     }
-    cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+
+    cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* delayed vision recalculation */
     if (gremlins) {
         let gremlin;
+
+        /* can't delay vision recalc after all */
         vision_recalc(0);
+        /* after vision has been updated, monsters who are affected
+           when hit by light can now be hit by it */
         do {
             gremlin = gremlins;
             gremlins = cptr.ldPtro(gremlin, $litmon_nxt);
@@ -2556,8 +2967,9 @@ function do_class_genocide() {
     let ll_done = 0;
     let buf = new Uint8Array(256);
     let promptbuf = new Uint8Array(128);
-    let gameover = 0;
-    cptr.st1o(cptr.decay(buf), 0, 0, 1);
+    let gameover = 0;  /* true iff killed self */
+
+    cptr.st1o(cptr.decay(buf), 0, 0, 1);  /* for EDIT_GETLIN */
     for (j = 0; ; j++) {
         if (j >= 5) {
             pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
@@ -2568,19 +2980,24 @@ function do_class_genocide() {
             nh_snprintf(__s_do_class_genocide, 2657, eos(cptr.decay(promptbuf)), BigInt.asUintN(64, 128n - cptr.strlen(cptr.decay(promptbuf))), __s_enter_s, cptr.ld1so(iflags, $instance_flags_cmdassist) ? __s_the_symbol_or_name_representing_a_class : __s_to_see_previous_genocides);
         getlin(cptr.decay(promptbuf), cptr.decay(buf));
         void mungspaces(cptr.decay(buf));
+        /* avoid 'that does not represent any monster' for empty input */
         if (!cptr.ld1s(cptr.decay(buf))) {
             pline(__s_pct_s_dot, (((j + 1) | 0) < 5) ? __s_type_letter_or_punctuation_or_name_used : __s_no_class_of_monsters_specified);
-            continue;
+            continue;  /* try again */
         }
+        /* choosing "none" preserves genocideless conduct */
         if (cptr.ld1s(cptr.decay(buf)) == 27 || !strncmpi(cptr.decay((buf)), (__s_none), -1) || !strncmpi(cptr.decay((buf)), (__s_none__2), -1) || !strncmpi(cptr.decay((buf)), (__s_nothing), -1)) {
             livelog_printf(128n, __s_declined_to_perform_class_genocide);
             return;
         }
+        /* "?" runs #genocided to show existing genocides, then re-prompts;
+           accept "'?'" too because the prompt's hint shows it that way */
         if (!strcmp(cptr.decay(buf), __s_query) || !strcmp(cptr.decay(buf), __s_apos_query_apos)) {
             list_genocided(103, 0);
-            --j;
+            --j;  /* don't count this iteration as one of the tries */
             continue;
         }
+
         class$ = name_to_monclass(cptr.decay(buf), null);
         if (class$ == 0 && (i = name_to_mon(cptr.decay(buf), null)) != NHC.NON_PM)
             class$ = cptr.ld1so2(mons, i, $sizeof_permonst, $permonst_mlet);
@@ -2603,6 +3020,7 @@ function do_class_genocide() {
             else if (wizard() && cptr.ld1so(cptr.decay(buf), 0, 1) == 42) {
                 let mtmp;
                 let mtmp2;
+
                 gonecnt = 0;
                 for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
                     mtmp2 = cptr.ldPtr(mtmp);
@@ -2617,32 +3035,46 @@ function do_class_genocide() {
                 pline(__s_that_s_does_not_represent_any_monster, cptr.strlen(cptr.decay(buf)) == 1n ? __s_symbol : __s_response);
             continue;
         }
+
         for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++) {
             if (cptr.ld1so2(mons, i, $sizeof_permonst, $permonst_mlet) == class$) {
                 let nam = new Uint8Array(256);
+
                 void cptr.strcpy(cptr.decay(nam), makeplural(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
+                /* Although "genus" is Latin for race, the hero benefits
+                 * from both race and role; thus genocide affects either.
+                 */
                 if (((i) == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)) || ((i) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) || ((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_GENO) && !(cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))) {
+                    /* This check must be first since player monsters might
+                     * have G_GENOD or !G_GENO.
+                     */
                     if (!ll_done++) {
                         if (!num_genocides())
                             livelog_printf(160n, __s_performed_s_first_genocide_class_c, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)), cptr.ld1so(def_monsyms, class$, $sizeof_class_sym));
                         else
                             livelog_printf(128n, __s_genocided_class_c, cptr.ld1so(def_monsyms, class$, $sizeof_class_sym));
                     }
+
                     cptr.st1o2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) | 18);
                     kill_genocided_monsters();
-                    update_inventory();
+                    update_inventory();  /* eggs & tins */
                     pline(__s_wiped_out_all_s, cptr.decay(nam));
                     if (Upolyd() && vampshifted(cptr.add(gy, $instance_globals_y_youmonst)) && (i == cptr.ldI32o(u, $you_umonnum) || i == cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)))
-                        polyself(NHC.POLY_REVERT);
+                        polyself(NHC.POLY_REVERT);  /* vampshifter to vampire */
                     if (Upolyd() && i == cptr.ldI32o(u, $you_umonnum)) {
                         cptr.stI32o(u, $you_mh, -1);
                         if (Unchanging()) {
                             if (!feel_dead++)
                                 urgent_pline(__s_you_die);
+                            /* finish genociding this class of
+                               monsters before ultimately dying */
                             gameover = 1;
                         } else
                             rehumanize();
                     }
+                    /* Self-genocide if it matches either your race
+                       or role.  Assumption:  male and female forms
+                       share same monster class. */
                     if (i == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) || i == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) {
                         cptr.stI32o(u, $you_uhp, -1);
                         if (Upolyd()) {
@@ -2658,13 +3090,18 @@ function do_class_genocide() {
                     if (!gameover)
                         pline(__s_s_are_already_nonexistent, upstart(cptr.decay(nam)));
                 } else if (!gameover) {
+                    /* suppress feedback about quest beings except
+                       for those applicable to our own role */
                     if ((cptr.ld1uo2(mons, i, $sizeof_permonst, $permonst_msound) != NHC.MS_LEADER || quest_info(NHC.MS_LEADER) == i) && (cptr.ld1uo2(mons, i, $sizeof_permonst, $permonst_msound) != NHC.MS_NEMESIS || quest_info(NHC.MS_NEMESIS) == i) && (cptr.ld1uo2(mons, i, $sizeof_permonst, $permonst_msound) != NHC.MS_GUARDIAN || quest_info(NHC.MS_GUARDIAN) == i) && (i != NHC.PM_NINJA || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI))) {
                         let named;
                         let uniq;
+
                         named = schar((((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? 1 : 0));
                         uniq = schar(((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) ? 1 : 0));
+                        /* one special case */
                         if (i == NHC.PM_HIGH_CLERIC)
                             uniq = 0;
+
                         You(__s_aren_t_permitted_to_genocide_s_s, (uniq && !named) ? __s_the : __s_empty, (uniq || named) ? cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0) : cptr.decay(nam));
                     }
                 }
@@ -2690,17 +3127,20 @@ export function do_genocide(how) {
     let mndx;
     let ptr;
     let which;
+
     if (how & 2) {
-        mndx = cptr.ldI32o(u, $you_umonster);
+        mndx = cptr.ldI32o(u, $you_umonster);  /* non-polymorphed mon num */
         ptr = cptr.add(mons, mndx, $sizeof_permonst);
         void cptr.strcpy(cptr.decay(buf), pmname(ptr, Ugender()));
         killplayer++;
     } else {
-        cptr.st1o(cptr.decay(buf), 0, 0, 1);
+        cptr.st1o(cptr.decay(buf), 0, 0, 1);  /* init for EDIT_GETLIN */
         for (i = 0; ; i++) {
             if (i >= 5) {
+                /* cursed effect => no free pass (unless rndmonst() fails) */
                 if (!(how & 1) && (ptr = rndmonst()) !== null)
                     break;
+
                 pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
                 return;
             }
@@ -2709,29 +3149,39 @@ export function do_genocide(how) {
                 nh_snprintf(__s_do_genocide, 2861, eos(cptr.decay(promptbuf)), BigInt.asUintN(64, 128n - cptr.strlen(cptr.decay(promptbuf))), __s_enter_s, cptr.ld1so(iflags, $instance_flags_cmdassist) ? __s_the_name_of_a_type_of_monster_or : __s_to_see_previous_genocides);
             getlin(cptr.decay(promptbuf), cptr.decay(buf));
             void mungspaces(cptr.decay(buf));
+            /* avoid 'such creatures do not exist' for empty input */
             if (!cptr.ld1s(cptr.decay(buf))) {
                 pline(__s_pct_s_dot, (((i + 1) | 0) < 5) ? __s_type_the_name_of_a_type_of_monster_or : __s_no_type_of_monster_specified);
-                continue;
+                continue;  /* try again */
             }
+            /* choosing "none" preserves genocideless conduct */
             if (cptr.ld1s(cptr.decay(buf)) == 27 || !strncmpi(cptr.decay((buf)), (__s_none), -1) || !strncmpi(cptr.decay((buf)), (__s_none__2), -1) || !strncmpi(cptr.decay((buf)), (__s_nothing), -1)) {
+                /* ... but no free pass if cursed */
                 if (!(how & 1) && (ptr = rndmonst()) !== null)
-                    break;
+                    break;  /* remaining checks don't apply */
+
                 livelog_printf(128n, __s_declined_to_perform_genocide);
                 return;
             }
+            /* "?" or "'?'" runs #genocided to show existing genocides */
             if (!strcmp(cptr.decay(buf), __s_query) || !strcmp(cptr.decay(buf), __s_apos_query_apos)) {
                 list_genocided(103, 0);
-                --i;
+                --i;  /* don't count this iteration as one of the tries */
                 continue;
             }
+
             mndx = name_to_mon(cptr.decay(buf), null);
             if (mndx == NHC.NON_PM || (cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD)) {
                 pline(__s_such_creatures_s_exist_in_this_world, (mndx == NHC.NON_PM) ? __s_do_not : __s_no_longer);
                 continue;
             }
             ptr = cptr.add(mons, mndx, $sizeof_permonst);
+            /* first revert if current shifted form or base vampire form */
             if (Upolyd() && vampshifted(cptr.add(gy, $instance_globals_y_youmonst)) && (mndx == cptr.ldI32o(u, $you_umonnum) || mndx == cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)))
-                polyself(NHC.POLY_REVERT);
+                polyself(NHC.POLY_REVERT);  /* vampshifter (bat, &c) to vampire */
+            /* Although "genus" is Latin for race, the hero benefits
+             * from both race and role; thus genocide affects either.
+             */
             if (((mndx) == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)) || ((mndx) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum))) {
                 killplayer++;
                 break;
@@ -2740,24 +3190,33 @@ export function do_genocide(how) {
                 adjalign(-sgn(cptr.ld1so(u, $you_ualign)));
             if (((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n))
                 adjalign(sgn(cptr.ld1so(u, $you_ualign)));
+
             if (!(cptr.ldU16o(ptr, $permonst_geno) & NHM.G_GENO)) {
                 if (!Deaf()) {
+                    /* FIXME: unconditional "caverns" will be silly in some
+                     * circumstances.  Who's speaking?  Divine pronouncements
+                     * aren't supposed to be hampered by deafness....
+                     */
                     if (cptr.ld1so(flags, $flag_verbose))
                         pline(__s_a_thunderous_voice_booms_through_the);
                     ;
+                    /* FIXME? shouldn't this override deafness? */
                     verbalize(__s_no_mortal_that_will_not_be_done);
                 }
                 continue;
             }
+            /* KMH -- Unchanging prevents rehumanization */
             if (Unchanging() && cptr.eq(ptr, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
                 killplayer++;
             break;
         }
-        mndx = (cptr.ldI32o((ptr), $permonst_pmidx));
+        mndx = (cptr.ldI32o((ptr), $permonst_pmidx));  /* needed for the 'no free pass' cases */
     }
+
     which = __s_all;
-    void cptr.strcpy(cptr.decay(realbuf), cptr.ldPtro(ptr, NHC.NEUTRAL, 8));
+    void cptr.strcpy(cptr.decay(realbuf), cptr.ldPtro(ptr, NHC.NEUTRAL, 8));  /* standard singular */
     if (Hallucination()) {
+        /* hallucinate hero's type */
         if (Upolyd()) {
             void cptr.strcpy(cptr.decay(buf), pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
         } else {
@@ -2765,29 +3224,38 @@ export function do_genocide(how) {
             cptr.st1o(cptr.decay(buf), 0, lowc(cptr.ld1so(cptr.decay(buf), 0, 1)), 1);
         }
     } else {
+        /* use actual type */
         void cptr.strcpy(cptr.decay(buf), cptr.decay(realbuf));
         if ((cptr.ldU16o(ptr, $permonst_geno) & NHM.G_UNIQ) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)))
             which = !((cptr.ldU64o((ptr), $permonst_mflags2) & 524288n) != 0n) ? __s_the : __s_empty;
     }
+
     if (how & 1) {
         if (!num_genocides())
             livelog_printf(160n, __s_performed_s_first_genocide_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)), makeplural(cptr.decay(realbuf)));
         else
             livelog_printf(128n, __s_genocided_s, makeplural(cptr.decay(realbuf)));
+
+        /* setting no-corpse affects wishing and random tin generation */
         cptr.st1o2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) | 18);
         pline(__s_wiped_out_s_s, which, (cptr.ld1s(which) != 97) ? cptr.decay(buf) : makeplural(cptr.decay(buf)));
+
         if (killplayer) {
             cptr.stI32o(u, $you_uhp, -1);
             if (how & 2) {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_genocidal_confusion);
             } else if (how & 4) {
+                /* player selected while on a throne */
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_imperious_order);
             } else {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_scroll_of_genocide);
             }
+
+            /* Polymorphed characters will die as soon as they're rehumanized.
+               KMH -- Unchanging prevents rehumanization. */
             if (Upolyd() && !cptr.eq(ptr, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                 delayed_killer(NHC.POLYMORPH, cptr.ldI32o(svk, $kinfo_format), cptr.add(svk, $kinfo_name));
                 You_feel(__s_s_inside, udeadinside());
@@ -2798,19 +3266,22 @@ export function do_genocide(how) {
             rehumanize();
         }
         kill_genocided_monsters();
-        update_inventory();
+        update_inventory();  /* in case identified eggs were affected */
     } else {
         let cnt = 0;
         let census = monster_census(0);
+
         if (!(cptr.ldU16o2(mons, mndx, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) && !(cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
             for (i = ((rn2_at(__s_read_c, 3000, __s_do_genocide, 3) + 4) | 0); i > 0; i--) {
                 if (!makemon(ptr, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 131073))
-                    break;
+                    break;  /* couldn't make one */
                 ++cnt;
                 if (cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_EXTINCT)
-                    break;
+                    break;  /* just made last one */
             }
         if (cnt) {
+            /* accumulated 'cnt' doesn't take groups into account;
+               assume bringing in new mon(s) didn't remove any old ones */
             cnt = (monster_census(0) - census) | 0;
             pline(__s_sent_in_s_s, (cnt > 1) ? __s_some : __s_empty, (cnt > 1) ? makeplural(cptr.decay(buf)) : an(cptr.decay(buf)));
         } else
@@ -2820,8 +3291,13 @@ export function do_genocide(how) {
 
 /** C ref: read.c:3019 — @param {CPtr<struct obj>} sobj */
 export function punish(sobj) {
+    /* angrygods() calls this with NULL sobj arg */
     let reuse_ball = (sobj && cptr.ldI16o(sobj, $obj_otyp) == NHC.HEAVY_IRON_BALL) ? sobj : null;
+    /* analyzer doesn't know that the one caller that passes a NULL
+     * sobj (angrygods) checks !Punished first, so add a guard */
     let cursed_levy = (sobj && (cptr.ldI32o(sobj, $obj_cursed) & 1) | 0) ? 1 : 0;
+
+    /* KMH -- Punishment is still okay when you are riding */
     if (!reuse_ball)
         You(__s_are_being_punished_for_your_misbehavior);
     if (Punished()) {
@@ -2843,25 +3319,39 @@ export function punish(sobj) {
         setworn(mkobj(NHC.BALL_CLASS, 1), 2097152n);
     else
         setworn(reuse_ball, 2097152n);
+
+    /*
+     *  Place ball & chain if not swallowed.  If swallowed, the ball & chain
+     *  variables will be set at the next call to placebc().
+     */
     if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
         placebc();
         if (Blind())
-            set_bc(1);
-        newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+            set_bc(1);  /* set up ball and chain variables */
+        newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* see ball&chain if can't see self */
     }
 }
 
+/* remove the ball and chain */
 /** C ref: read.c:3066 */
 export function unpunish() {
     let savechain = uchain.v;
-    setworn(null, 4194304n);
+
+    /* chain goes away */
+    setworn(null, 4194304n);  /* sets 'uchain' to Null */
+    /* for floor, unhides monster hidden under chain, calls newsym() */
     delobj(savechain);
-    setworn(null, 2097152n);
+
+    /* the chain is gone but the no longer attached ball persists */
+    setworn(null, 2097152n);  /* sets 'uball' to Null */
 }
 
+/* prompt the player to create a stinking cloud and then create it if they
+   give a location */
 /** C ref: read.c:3082 — @param {CPtr<struct obj>} sobj @param {CInt} mention_stinking */
 function do_stinking_cloud(sobj, mention_stinking) {
     let cc = cptr.alloc(4);
+
     pline(__s_where_do_you_want_to_center_the_scloud, mention_stinking ? __s_stinking : __s_empty);
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
@@ -2879,8 +3369,13 @@ function do_stinking_cloud(sobj, mention_stinking) {
     void create_gas_cloud(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), (15 + Math.imul(10, bcsign(sobj))) | 0, (8 + Math.imul(4, bcsign(sobj))) | 0);
 }
 
+/* some creatures have special data structures that only make sense in their
+ * normal locations -- if the player tries to create one elsewhere, or to
+ * revive one, the disoriented creature becomes a zombie
+ */
 /** C ref: read.c:3112 — @param {CPtr<int>} mtype @param {CInt} revival @param {CPtr<struct obj>} from_obj @returns {CInt} */
 export function cant_revive(mtype, revival, from_obj) {
+    /* SHOPKEEPERS can be revived now */
     if (cptr.ldI32(mtype) == NHC.PM_GUARD || (cptr.ldI32(mtype) == NHC.PM_SHOPKEEPER && !revival) || cptr.ldI32(mtype) == NHC.PM_HIGH_CLERIC || cptr.ldI32(mtype) == NHC.PM_ALIGNED_CLERIC || cptr.ldI32(mtype) == NHC.PM_ANGEL) {
         cptr.stI32(mtype, NHC.PM_HUMAN_ZOMBIE);
         return 1;
@@ -2888,6 +3383,8 @@ export function cant_revive(mtype, revival, from_obj) {
         cptr.stI32(mtype, NHC.PM_LONG_WORM);
         return 1;
     } else if (((cptr.ldU16o((cptr.add(mons, cptr.ldI32(mtype), $sizeof_permonst)), $permonst_geno) & NHM.G_UNIQ) != 0) && (!from_obj || !has_omonst(from_obj))) {
+        /* unique corpses (from bones or wizard mode wish) or
+           statues (bones or any wish) end up as shapechangers */
         cptr.stI32(mtype, NHC.PM_DOPPELGANGER);
         return 1;
     }
@@ -2899,14 +3396,17 @@ function create_particular_parse(str, d) {
     let gender_name_var = cptr.box(NHC.NEUTRAL);
     let bufp = str;
     let tmpp;
+
     cptr.stI32(d, (1 + ((cptr.ldI64o(gm, $instance_globals_m_multi) > 0n) ? Number(BigInt.asIntN(32, cptr.ldI64o(gm, $instance_globals_m_multi))) : 0)) | 0);
     cptr.st1o(d, $_create_particular_data_monclass, NHC.MAXMCLASSES);
-    cptr.stI32o(d, $_create_particular_data_which, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum));
-    cptr.stI32o(d, $_create_particular_data_fem, -1);
-    cptr.stI32o(d, $_create_particular_data_genderconf, -1);
+    cptr.stI32o(d, $_create_particular_data_which, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum));  /* an arbitrary index into mons[] */
+    cptr.stI32o(d, $_create_particular_data_fem, -1);  /* gender not specified */
+    cptr.stI32o(d, $_create_particular_data_genderconf, -1);  /* no confusion on which gender to assign */
     cptr.st1o(d, $_create_particular_data_randmonst, 0);
     cptr.st1o(d, $_create_particular_data_maketame, cptr.st1o(d, $_create_particular_data_makepeaceful, cptr.st1o(d, $_create_particular_data_makehostile, 0)));
     cptr.st1o(d, $_create_particular_data_sleeping, cptr.st1o(d, $_create_particular_data_saddled, cptr.st1o(d, $_create_particular_data_invisible, cptr.st1o(d, $_create_particular_data_hidden, 0))));
+
+    /* quantity */
     if (digit(cptr.ld1s(bufp))) {
         cptr.stI32(d, atoi(bufp));
         while (digit(cptr.ld1s(bufp)))
@@ -2914,12 +3414,16 @@ function create_particular_parse(str, d) {
         while (cptr.ld1s(bufp) == 32)
             bufp = cptr.add(bufp, 1);
     }
+    /* maximum possible quantity is one per cell: (0..ROWNO-1) x (1..COLNO-1)
+       [21*79==1659 for default map size; could subtract 1 for hero's spot] */
     if (cptr.ldI32(d) < 1 || cptr.ldI32(d) > 1659)
         cptr.stI32(d, (1659 - monster_census(0)) | 0);
+    /* gear -- extremely limited number of possibilities supported */
     if ((tmpp = strstri(bufp, __s_saddled)) !== null) {
         cptr.st1o(d, $_create_particular_data_saddled, 1);
         void __builtin___memset_chk(tmpp, 32, 8n, __builtin_object_size(tmpp, 0));
     }
+    /* state -- limited number of possibilities supported */
     if ((tmpp = strstri(bufp, __s_sleeping)) !== null) {
         cptr.st1o(d, $_create_particular_data_sleeping, 1);
         void __builtin___memset_chk(tmpp, 32, 9n, __builtin_object_size(tmpp, 0));
@@ -2932,6 +3436,7 @@ function create_particular_parse(str, d) {
         cptr.st1o(d, $_create_particular_data_hidden, 1);
         void __builtin___memset_chk(tmpp, 32, 7n, __builtin_object_size(tmpp, 0));
     }
+    /* check "female" before "male" to avoid false hit mid-word */
     if ((tmpp = strstri(bufp, __s_female)) !== null) {
         cptr.stI32o(d, $_create_particular_data_fem, 1);
         void __builtin___memset_chk(tmpp, 32, 7n, __builtin_object_size(tmpp, 0));
@@ -2940,7 +3445,8 @@ function create_particular_parse(str, d) {
         cptr.stI32o(d, $_create_particular_data_fem, 0);
         void __builtin___memset_chk(tmpp, 32, 5n, __builtin_object_size(tmpp, 0));
     }
-    bufp = mungspaces(bufp);
+    bufp = mungspaces(bufp);  /* after potential memset(' ') */
+    /* allow the initial disposition to be specified */
     if (!strncmpi(bufp, __s_tame, 5)) {
         bufp = cptr.add(bufp, 5);
         cptr.st1o(d, $_create_particular_data_maketame, 1);
@@ -2951,23 +3457,34 @@ function create_particular_parse(str, d) {
         bufp = cptr.add(bufp, 8);
         cptr.st1o(d, $_create_particular_data_makehostile, 1);
     }
+    /* decide whether a valid monster was chosen */
     if (wizard() && (!strcmp(bufp, __s_star) || !strcmp(bufp, __s_random))) {
         cptr.st1o(d, $_create_particular_data_randmonst, 1);
         return 1;
     }
     cptr.stI32o(d, $_create_particular_data_which, name_to_mon(bufp, gender_name_var));
+    /*
+     * With the introduction of male and female monster names
+     * in 5.0, preserve that detail.
+     *
+     * If d->fem is already set to MALE or FEMALE at this juncture, it means
+     * one of those terms was explicitly specified.
+     */
     if (cptr.ldI32o(d, $_create_particular_data_fem) == NHC.MALE || cptr.ldI32o(d, $_create_particular_data_fem) == NHC.FEMALE) {
         if ((gender_name_var.v != NHC.NEUTRAL) && (cptr.ldI32o(d, $_create_particular_data_fem) != gender_name_var.v)) {
-            cptr.stI32o(d, $_create_particular_data_genderconf, gender_name_var.v);
+            /* apparent selection incompatibility */
+            cptr.stI32o(d, $_create_particular_data_genderconf, gender_name_var.v);  /* resolve later */
         }
+        /* otherwise keep the value of d->fem, as it's okay */
     } else {
         cptr.stI32o(d, $_create_particular_data_fem, gender_name_var.v);
     }
     if (ismnum(cptr.ldI32o(d, $_create_particular_data_which)))
-        return 1;
+        return 1;  /* got one */
     cptr.st1o(d, $_create_particular_data_monclass, schar(name_to_monclass(bufp, cptr.add(d, $_create_particular_data_which))));
+
     if (ismnum(cptr.ldI32o(d, $_create_particular_data_which))) {
-        cptr.st1o(d, $_create_particular_data_monclass, NHC.MAXMCLASSES);
+        cptr.st1o(d, $_create_particular_data_monclass, NHC.MAXMCLASSES);  /* matters below */
         return 1;
     } else if (cptr.ld1so(d, $_create_particular_data_monclass) == NHC.S_invisible) {
         cptr.stI32o(d, $_create_particular_data_which, NHC.PM_STALKER);
@@ -2978,7 +3495,7 @@ function create_particular_parse(str, d) {
         cptr.st1o(d, $_create_particular_data_monclass, NHC.MAXMCLASSES);
         return 1;
     } else if (cptr.ld1so(d, $_create_particular_data_monclass) > 0) {
-        cptr.stI32o(d, $_create_particular_data_which, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum));
+        cptr.stI32o(d, $_create_particular_data_which, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum));  /* reset from NON_PM */
         return 1;
     }
     return 0;
@@ -2993,10 +3510,13 @@ function create_particular_creation(d) {
     let firstchoice = NHC.NON_PM;
     let mtmp;
     let madeany = 0;
+
     if (!cptr.ld1so(d, $_create_particular_data_randmonst)) {
         firstchoice = cptr.ldI32o(d, $_create_particular_data_which);
         if (cant_revive(cptr.add(d, $_create_particular_data_which), 0, null) && firstchoice != NHC.PM_LONG_WORM_TAIL) {
+            /* wizard mode can override handling of special monsters */
             let buf = new Uint8Array(256);
+
             void cptr.sprintf(cptr.decay(buf), __s_creating_s_instead_force_s, cptr.ldPtro3(mons, cptr.ldI32o(d, $_create_particular_data_which), $sizeof_permonst, NHC.NEUTRAL, 8, 0), cptr.ldPtro3(mons, firstchoice, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
             if (yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1) == 121)
                 cptr.stI32o(d, $_create_particular_data_which, firstchoice);
@@ -3005,49 +3525,93 @@ function create_particular_creation(d) {
     }
     for (i = 0; i < cptr.ldI32(d); i++) {
         let mmflags = NHM.NO_MM_FLAGS;
+
         if (cptr.ld1so(d, $_create_particular_data_monclass) != NHC.MAXMCLASSES)
             whichpm = mkclass(cptr.ld1so(d, $_create_particular_data_monclass), 0);
         else if (cptr.ld1so(d, $_create_particular_data_randmonst))
             whichpm = rndmonst();
         if (cptr.ldI32o(d, $_create_particular_data_genderconf) == -1) {
+            /* no conflict exists between explicit gender term and
+               the specified monster name */
             if (cptr.ldI32o(d, $_create_particular_data_fem) != -1 && (!whichpm || (!((cptr.ldU64o((whichpm), $permonst_mflags2) & 65536n) != 0n) && !((cptr.ldU64o((whichpm), $permonst_mflags2) & 131072n) != 0n))))
                 mmflags = Number(BigInt.asUintN(32, BigInt(mmflags >>> 0) | ((cptr.ldI32o(d, $_create_particular_data_fem) == NHC.FEMALE) ? 65536n : ((cptr.ldI32o(d, $_create_particular_data_fem) == NHC.MALE) ? 32768n : 0n))));
+            /* no surprise; "<mon> appears." rather than "<mon> appears!" */
             mmflags = Number(BigInt.asUintN(32, BigInt(mmflags >>> 0) | 262144n));
         } else {
+            /* conundrum alert: an explicit gender term conflicts with an
+               explicit gender-tied naming term (i.e. male cavewoman) */
+
+            /* option not gone with: name overrides the explicit gender as
+               commented out here */
+            /*  d->fem = d->genderconf; */
+
+            /* option chosen: let the explicit gender term (male or female)
+               override the gender-tied naming term, so leave d->fem as-is */
+
             mmflags = Number(BigInt.asUintN(32, BigInt(mmflags >>> 0) | ((cptr.ldI32o(d, $_create_particular_data_fem) == NHC.FEMALE) ? 65536n : ((cptr.ldI32o(d, $_create_particular_data_fem) == NHC.MALE) ? 32768n : 0n))));
+
+            /* another option would be to consider it a faulty specification
+               and reject the request completely and produce a random monster
+               with a gender matching that specified instead (i.e. there is
+               no such thing as a male cavewoman) */
+            /* whichpm = rndmonst(); */
+            /* mmflags |= (d->fem == FEMALE) ? MM_FEMALE : MM_MALE; */
         }
         if (cptr.ld1so(d, $_create_particular_data_invisible))
             mmflags = Number(BigInt.asUintN(32, BigInt(mmflags >>> 0) | 1048576n));
+
         mtmp = makemon(whichpm, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), mmflags);
         if (!mtmp) {
+            /* quit trying if creation failed and is going to repeat */
             if (cptr.ld1so(d, $_create_particular_data_monclass) == NHC.MAXMCLASSES && !cptr.ld1so(d, $_create_particular_data_randmonst))
                 break;
+            /* otherwise try again */
             continue;
         }
         mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
         if (cptr.ld1so(d, $_create_particular_data_maketame)) {
             void tamedog(mtmp, null, 0);
         } else if (cptr.ld1so(d, $_create_particular_data_makepeaceful) || cptr.ld1so(d, $_create_particular_data_makehostile)) {
-            cptr.st1o(mtmp, $monst_mtame, 0);
+            cptr.st1o(mtmp, $monst_mtame, 0);  /* sanity precaution */
             cptr.stI32o(mtmp, $monst_mpeaceful, (cptr.ld1so(d, $_create_particular_data_makepeaceful) ? 1 : 0) >>> 0);
             set_malign(mtmp);
         }
         if (cptr.ld1so(d, $_create_particular_data_saddled) && can_saddle(mtmp) && !which_armor(mtmp, 1048576n)) {
+            /* NULL obj arg means put_saddle_on_mon()
+             * will create the saddle itself */
             put_saddle_on_mon(null, mtmp);
         }
         if (cptr.ld1so(d, $_create_particular_data_hidden) && ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 256n) != 0n) && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_MIMIC) || (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) && (cptr.ldPtro3(svl, mx, 168, my, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) || (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL && is_pool(i16(mx), i16(my)))))
             cptr.stI32o(mtmp, $monst_mundetected, 1);
         if (cptr.ld1so(d, $_create_particular_data_sleeping))
             cptr.stI32o(mtmp, $monst_msleeping, 1);
+        /* if asking for 'hidden', show location of every created monster
+           that can't be seen--whether that's due to successfully hiding
+           or vision issues (line-of-sight, invisibility, blindness) */
         if ((cptr.ld1so(d, $_create_particular_data_hidden) || cptr.ld1so(d, $_create_particular_data_invisible)) && !canspotmon(mtmp))
             flash_mon(mtmp);
+
         madeany = 1;
+        /* in case we got a doppelganger instead of what was asked
+           for, make it start out looking like what was asked for */
         if (cptr.ldI16o(mtmp, $monst_cham) != NHC.NON_PM && firstchoice != NHC.NON_PM && cptr.ldI16o(mtmp, $monst_cham) != firstchoice)
             void newcham(mtmp, cptr.add(mons, firstchoice, $sizeof_permonst), NHM.NO_NC_FLAGS);
     }
     return madeany;
 }
 
+/*
+ * Make a new monster with the type controlled by the user.
+ *
+ * Note:  when creating a monster by class letter, specifying the
+ * "strange object" (']') symbol produces a random monster rather
+ * than a mimic.  This behavior quirk is useful so don't "fix" it
+ * (use 'm'--or "mimic"--to create a random mimic).
+ *
+ * Used in wizard mode only (for ^G command and for scroll or spell
+ * of create monster).  Once upon a time, an earlier incarnation of
+ * this code was also used for the scroll/spell in explore mode.
+ */
 /** C ref: read.c:3372 @returns {CInt} */
 export function create_particular() {
     let d = cptr.alloc(28);
@@ -3056,28 +3620,35 @@ export function create_particular() {
     let prompt = new Uint8Array(128);
     let tryct = 5;
     let altmsg = 0;
-    cptr.st1o(cptr.decay(buf), 0, 0, 1);
+
+    cptr.st1o(cptr.decay(buf), 0, 0, 1);  /* for EDIT_GETLIN */
     void cptr.strcpy(cptr.decay(prompt), __s_create_what_kind_of_monster);
     do {
         getlin(cptr.decay(prompt), cptr.decay(buf));
         bufp = mungspaces(cptr.decay(buf));
         if (cptr.ld1s(bufp) == 27)
             return 0;
+
         if (create_particular_parse(bufp, d))
             break;
+
+        /* no good; try again... */
         if (cptr.ld1s(bufp) || altmsg || tryct < 2) {
             pline(__s_i_ve_never_heard_of_such_monsters);
         } else {
             pline(__s_try_again_type_for_random_esc_to_cancel);
             ++altmsg;
         }
+        /* when a second try is needed, expand the prompt */
         if (tryct == 5)
             void cptr.strcat(cptr.decay(prompt), __s_type_name_or_symbol);
     } while (--tryct > 0);
+
     if (!tryct)
         pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries));
     else
         return create_particular_creation(d);
+
     return 0;
 }
 

@@ -126,20 +126,26 @@ export function* ballrelease(showmsg) {
             (yield* setuswapwep(null));
         if (cptr.eq(uquiver.v, uball.v))
             (yield* setuqwep(null));
-        (yield* freeinv(uball.v));
+        /* [this used to test 'if (uwep != uball)' but that always passes
+           after the setuwep() above] */
+        (yield* freeinv(uball.v));  /* remove from inventory but don't place on floor */
         (yield* encumber_msg());
     }
 }
 
+/* ball&chain might hit hero when falling through a trap door */
 /** C ref: ball.c:43 */
 export function* ballfall() {
     let gets_hit;
+
     if (!uball.v || (uball.v && (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (yield* welded(uball.v))))
         return;
+
     gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar(rn2_at(__s_ball_c, 51, __s_ballfall, 5))) ? 1 : 0));
     (yield* ballrelease(1));
     if (gets_hit) {
         let dmg = ((rn2_at(__s_ball_c, 54, __s_ballfall, 7) + 25) | 0);
+
         (yield* pline_The(__s_iron_ball_falls_on_your_s, (yield* body_part(NHC.HEAD))));
         if (uarmh.v) {
             if (hard_helmet(uarmh.v)) {
@@ -152,22 +158,36 @@ export function* ballfall() {
     }
 }
 
+/*
+ *  Place the ball & chain under the hero.  Make sure that the ball & chain
+ *  variables are set (actually only needed when blind, but what the heck).
+ *  It is assumed that when this is called, the ball and chain are NOT
+ *  attached to the object list.
+ *
+ *  Should not be called while swallowed except on waterlevel.
+ */
 /** C ref: ball.c:120 */
 function* placebc_core() {
     if (!uchain.v || !uball.v) {
         (yield* impossible(__s_where_are_your_ball_and_chain));
         return;
     }
-    void (yield* flooreffects(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_empty));
+
+    void (yield* flooreffects(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_empty));  /* chain might rust */
+
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
         cptr.stI32o(u, $you_bc_order, 0);
     } else {
+        /* ball might rust -- already checked when carried */
         void (yield* flooreffects(uball.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_empty));
         (yield* place_object(uball.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         cptr.stI32o(u, $you_bc_order, 1);
     }
+
     (yield* place_object(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-    cptr.stI32o(u, $you_bglyph, cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level)));
+
+    cptr.stI32o(u, $you_bglyph, cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level)));  /* pick up glyph */
+
     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     bcrestriction = 0;
 }
@@ -176,12 +196,18 @@ function* placebc_core() {
 function* unplacebc_core() {
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+            /* we need to proceed with the removal from the floor
+             * so that movebubbles() processing will disregard it as
+             * intended. Ignore all the vision stuff.
+             */
             if (!(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT))
                 (yield* obj_extract_self(uball.v));
             (yield* obj_extract_self(uchain.v));
         }
+        /* ball&chain not unplaced while swallowed */
         return;
     }
+
     if (!(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
         (yield* obj_extract_self(uball.v));
         if (Blind() && (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_BALL))
@@ -193,13 +219,15 @@ function* unplacebc_core() {
     if (Blind() && (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN))
         cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
     (yield* maybe_unhide_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
+
     (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
-    cptr.stI32o(u, $you_bc_felt, 0);
+    cptr.stI32o(u, $you_bc_felt, 0);  /* feel nothing */
 }
 
 /** C ref: ball.c:180 — @param {CInt} restriction @returns {CInt} */
 function check_restriction(restriction) {
     let ret = 0;
+
     if (!bcrestriction || (restriction == NHC.override_restriction))
         ret = 1;
     else
@@ -231,6 +259,7 @@ export function* unplacebc() {
 /** C ref: ball.c:222 @returns {CInt} */
 export function* unplacebc_and_covet_placebc() {
     let restriction = 0;
+
     if (bcrestriction) {
         (yield* impossible(__s_unplacebc_and_covet_placebc_denied));
     } else {
@@ -252,11 +281,17 @@ export function* lift_covet_and_placebc(pin) {
     (yield* placebc_core());
 }
 
+/*
+ *  Return the stacking of the hero's ball & chain.  This assumes that the
+ *  hero is being punished.
+ */
 /** C ref: ball.c:354 @returns {CInt} */
 function* bc_order() {
     let obj;
+
     if (cptr.ldI16o(uchain.v, $obj_ox) != cptr.ldI16o(uball.v, $obj_ox) || cptr.ldI16o(uchain.v, $obj_oy) != cptr.ldI16o(uball.v, $obj_oy) || (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return 0;
+
     for (obj = cptr.ldPtro3(svl, cptr.ldI16o(uball.v, $obj_ox), 168, cptr.ldI16o(uball.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v)) {
         if (cptr.eq(obj, uchain.v))
             return 1;
@@ -267,28 +302,44 @@ function* bc_order() {
     return 0;
 }
 
+/*
+ *  set_bc()
+ *
+ *  The hero is either about to go blind or already blind and just punished.
+ *  Set up the ball and chain variables so that the ball and chain are "felt".
+ */
 /** C ref: ball.c:380 — @param {CInt} already_blind */
 export function* set_bc(already_blind) {
     let ball_on_floor = !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT);
-    cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
-    cptr.stI32o(u, $you_bc_felt, ball_on_floor ? 3 : NHM.BC_CHAIN);
+
+    cptr.stI32o(u, $you_bc_order, (yield* bc_order()));  /* get the order */
+    cptr.stI32o(u, $you_bc_felt, ball_on_floor ? 3 : NHM.BC_CHAIN);  /* felt */
+
     if (already_blind || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         cptr.stI32o(u, $you_cglyph, cptr.stI32o(u, $you_bglyph, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level)));
         return;
     }
+
+    /*
+     *  Since we can still see, remove the ball&chain and get the glyph that
+     *  would be beneath them.  Then put the ball&chain back.  This is pretty
+     *  disgusting, but it will work.
+     */
     (yield* remove_object(uchain.v));
     if (ball_on_floor)
         (yield* remove_object(uball.v));
+
     (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
     cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level));
+
     if (cptr.ldI32o(u, $you_bc_order) == 0) {
         (yield* place_object(uchain.v, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
         (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
         if (ball_on_floor) {
-            (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));
+            (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));  /* see under ball */
             cptr.stI32o(u, $you_bglyph, cptr.ldI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level));
             (yield* place_object(uball.v, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));
-            (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));
+            (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));  /* restore ball */
         }
     } else {
         cptr.stI32o(u, $you_bglyph, cptr.ldI32o(u, $you_cglyph));
@@ -303,18 +354,44 @@ export function* set_bc(already_blind) {
     }
 }
 
+/*
+ *  move_bc()
+ *
+ *  Move the ball and chain.  This is called twice for every move.  The first
+ *  time to pick up the ball and chain before the move, the second time to
+ *  place the ball and chain after the move.  If the ball is carried, this
+ *  function should never have BC_BALL as part of its control.
+ *
+ *  Should not be called while swallowed.
+ */
 /** C ref: ball.c:437 — @param {CInt} before @param {CInt} control @param {CInt} ballx @param {CInt} bally @param {CInt} chainx @param {CInt} chainy */
 export function* move_bc(before, control, ballx, bally, chainx, chainy) {
     if (Blind()) {
+        /*
+         *  The hero is blind.  Time to work hard.  The ball and chain that
+         *  are attached to the hero are very special.  The hero knows that
+         *  they are attached, so when they move, the hero knows that they
+         *  aren't at the last position remembered.  This is complicated
+         *  by the fact that the hero can "feel" the surrounding locations
+         *  at any time, hence, making one or both of them show up again.
+         *  So, we have to keep track of which is felt at any one time and
+         *  act accordingly.
+         */
         if (!before) {
             if ((control & NHM.BC_CHAIN) && (control & NHM.BC_BALL)) {
+                /*
+                 *  Both ball and chain moved.  If felt, drop glyph.
+                 */
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_BALL)
                     cptr.stI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_bglyph));
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN)
                     cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
                 cptr.stI32o(u, $you_bc_felt, 0);
+
+                /* Pick up glyph at new location. */
                 cptr.stI32o(u, $you_bglyph, cptr.ldI32o3(svl, ballx, $sizeof_rm_x21, bally, $sizeof_rm, $instance_globals_saved_l_level));
                 cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, chainx, $sizeof_rm_x21, chainy, $sizeof_rm, $instance_globals_saved_l_level));
+
                 (yield* movobj(uball.v, ballx, bally));
                 (yield* movobj(uchain.v, chainx, chainy));
             } else if (control & NHM.BC_BALL) {
@@ -328,9 +405,12 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
                             cptr.stI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_bglyph));
                         }
                     }
-                    cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -2);
+                    cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -2);  /* no longer feel the ball */
                 }
+
+                /* Pick up glyph at new position. */
                 cptr.stI32o(u, $you_bglyph, (ballx != chainx || bally != chainy) ? cptr.ldI32o3(svl, ballx, $sizeof_rm_x21, bally, $sizeof_rm, $instance_globals_saved_l_level) : cptr.ldI32o(u, $you_cglyph));
+
                 (yield* movobj(uball.v, ballx, bally));
             } else if (control & NHM.BC_CHAIN) {
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN) {
@@ -345,16 +425,31 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
                     }
                     cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -3);
                 }
+                /* Pick up glyph at new position. */
                 cptr.stI32o(u, $you_cglyph, (ballx != chainx || bally != chainy) ? cptr.ldI32o3(svl, chainx, $sizeof_rm_x21, chainy, $sizeof_rm, $instance_globals_saved_l_level) : cptr.ldI32o(u, $you_bglyph));
+
                 (yield* movobj(uchain.v, chainx, chainy));
             }
-            cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
+
+            cptr.stI32o(u, $you_bc_order, (yield* bc_order()));  /* reset the order */
         }
+
     } else {
+        /*
+         *  The hero is not blind.  To make this work correctly, we need to
+         *  pick up the ball and chain before the hero moves, then put them
+         *  in their new positions after the hero moves.
+         */
         if (before) {
             if (!control) {
+                /*
+                 * Neither ball nor chain is moving, so remember which was
+                 * on top until !before.  Use the variable u.bc_order
+                 * since it is only valid when blind.
+                 */
                 cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
             }
+
             (yield* remove_object(uchain.v));
             (yield* maybe_unhide_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
             (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
@@ -365,14 +460,17 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
             }
         } else {
             let on_floor = !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT);
+
             if ((control & NHM.BC_CHAIN) || (!control && cptr.ldI32o(u, $you_bc_order) == 1)) {
+                /* If the chain moved or nothing moved & chain on top. */
                 if (on_floor)
                     (yield* place_object(uball.v, ballx, bally));
-                (yield* place_object(uchain.v, chainx, chainy));
+                (yield* place_object(uchain.v, chainx, chainy));  /* chain on top */
             } else {
                 (yield* place_object(uchain.v, chainx, chainy));
                 if (on_floor)
                     (yield* place_object(uball.v, ballx, bally));
+                /* ball on top */
             }
             (yield* newsym(chainx, chainy));
             if (on_floor)
@@ -381,37 +479,60 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
     }
 }
 
+/* return TRUE if the caller needs to place the ball and chain down again */
 /** C ref: ball.c:560 — @param {CInt} x @param {CInt} y @param {CPtr<int>} bc_control @param {CPtr<coordxy>} ballx @param {CPtr<coordxy>} bally @param {CPtr<coordxy>} chainx @param {CPtr<coordxy>} chainy @param {CPtr<boolean>} cause_delay @param {CInt} allow_drag @returns {CInt} */
 export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_delay, allow_drag) {
     let t = null;
     let already_in_rock;
     __lbl_drag: {
+
+        /*
+         * Should not be called while swallowed.  Should be called before
+         * movement, because we might want to move the ball or chain to the
+         * hero's old position.
+         *
+         * It is called if we are moving.  It is also called if we are
+         * teleporting *if* the ball doesn't move and we thus must drag the
+         * chain.  It is not called for ordinary teleportation.
+         *
+         * 'allow_drag' is only used in the ugly special case where teleporting
+         * must drag the chain, while an identical-looking movement must drag
+         * both the ball and chain.
+         */
+
         cptr.stI16(ballx, cptr.ldI16o(uball.v, $obj_ox));
         cptr.stI16(bally, cptr.ldI16o(uball.v, $obj_oy));
         cptr.stI16(chainx, cptr.ldI16o(uchain.v, $obj_ox));
         cptr.stI16(chainy, cptr.ldI16o(uchain.v, $obj_oy));
         cptr.stI32(bc_control, 0);
         cptr.st1(cause_delay, 0);
+
         if (dist2(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) <= 2) {
             (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
             return 1;
         }
+
+        /* only need to move the chain? */
         if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) || distmin(x, y, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 2) {
             let oldchainx = cptr.ldI16o(uchain.v, $obj_ox);
             let oldchainy = cptr.ldI16o(uchain.v, $obj_oy);
+
             cptr.stI32(bc_control, NHM.BC_CHAIN);
             (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
             if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
+                /* move chain only if necessary */
                 if (distmin(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) > 1) {
                     cptr.stI16(chainx, cptr.ldI16(u));
                     cptr.stI16(chainy, cptr.ldI16o(u, $you_uy));
                 }
                 return 1;
             }
+
             if ((((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) || (((cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))))
                 already_in_rock = 1;
             else
                 already_in_rock = 0;
+
             switch (dist2(x, y, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy))) {
                 case 8:
                 cptr.stI16(chainx, i16(((((cptr.ldI16o(uball.v, $obj_ox) + x) | 0) / 2) | 0)));
@@ -425,11 +546,21 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                     }
                 break;
                 case 5:
+
+                /* player is distance 2/1 from ball; move chain to one of the
+                 * two spaces between
+                 *   @
+                 *   __
+                 *    0
+                 */
                 {
                     let tempx;
                     let tempy;
                     let tempx2;
                     let tempy2;
+
+                    /* find position closest to current position of chain;
+                       no effect if current position is already OK */
                     if (Math.abs((x - cptr.ldI16o(uball.v, $obj_ox)) | 0) == 1) {
                         tempx = x;
                         tempx2 = cptr.ldI16o(uball.v, $obj_ox);
@@ -441,6 +572,11 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                     }
                     if ((((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !(((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock) {
                         if (allow_drag) {
+                            /* Avoid pathological case *if* not teleporting:
+                             *   0                          0_
+                             *   _X  move northeast  ----->  X@
+                             *    @
+                             */
                             if (dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 5 && dist2(x, y, tempx, tempy) == 1)
                                 {
                                     cptr.stI16(chainx, oldchainx);
@@ -448,6 +584,11 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                                     (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
                                     break __lbl_drag;
                                 }
+                            /* Avoid pathological case *if* not teleporting:
+                             *    0                          0
+                             *   _X  move east       ----->  X_
+                             *    @                           @
+                             */
                             if (dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 4 && dist2(x, y, tempx, tempy) == 2)
                                 {
                                     cptr.stI16(chainx, oldchainx);
@@ -525,13 +666,17 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                 ;
                 case 1:
                 case 0:
+                /* do nothing if possible */
                 if ((distmin(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) <= 1 && distmin(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 1))
                     break;
+                /* otherwise try to drag chain to player's old position */
                 if ((distmin(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 1 && distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 1)) {
                     cptr.stI16(chainx, cptr.ldI16(u));
                     cptr.stI16(chainy, cptr.ldI16o(u, $you_uy));
                     break;
                 }
+                /* otherwise use player's new position (they must have
+                   teleported, for this to happen) */
                 cptr.stI16(chainx, x);
                 cptr.stI16(chainy, y);
                 break;
@@ -542,11 +687,13 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
             return 1;
         }
     }
+
     if (near_capacity() > NHC.SLT_ENCUMBER && dist2(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) {
         (yield* You(__s_cannot_sdrag_the_heavy_iron_ball, cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_carry_all_that_and_also : __s_empty));
         nomul(0);
         return 0;
     }
+
     if ((is_pool(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) && (cptr.ld1so3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || !is_pool(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) || cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL)) || ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))))) {
         if (Levitation()) {
             (yield* You_feel(__s_a_tug_from_the_iron_ball));
@@ -554,23 +701,28 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                 cptr.stI32o(t, $trap_tseen, 1);
         } else {
             let victim;
+
             (yield* You(__s_are_jerked_back_by_the_iron_ball));
             if ((victim = (cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
                 let tmp;
                 let dieroll = rnd_at(__s_ball_c, 800, __s_drag_ball, 20);
+
                 tmp = (((-2 + Luck()) | 0) + find_mac(victim)) | 0;
                 tmp = (tmp + (yield* omon_adj(victim, uball.v, 1))) | 0;
+
                 if (tmp >= dieroll)
                     void (yield* hmon(victim, uball.v, NHC.HMON_DRAGGED, dieroll));
                 else
                     (yield* miss((yield* xname(uball.v)), victim));
-            }
+
+            }  /* now check again in case mon died */
             if (!(cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) {
                 cptr.stI16(u, cptr.ldI16o(uchain.v, $obj_ox));
                 cptr.stI16o(u, $you_uy, cptr.ldI16o(uchain.v, $obj_oy));
                 (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));
             }
             nomul(0);
+
             cptr.stI32(bc_control, NHM.BC_BALL);
             (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
             cptr.stI16(ballx, cptr.ldI16o(uchain.v, $obj_ox));
@@ -580,22 +732,41 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
             return 0;
         }
     }
+
     cptr.stI32(bc_control, 3);
+
     (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
     if (dist2(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 2) {
+        /* Awful case: we're still in range of the ball, so we thought we
+         * could only move the chain, but it turned out that the target
+         * square for the chain was rock, so we had to drag it instead.
+         * But we can't drag it either, because we teleported and are more
+         * than one square from our old position.  Revert to the teleport
+         * behavior.
+         */
         cptr.stI16(ballx, cptr.stI16(chainx, x));
         cptr.stI16(bally, cptr.stI16(chainy, y));
     } else {
         let newchainx = cptr.ldI16(u);
         let newchainy = cptr.ldI16o(u, $you_uy);
+
+        /*
+         * Generally, chain moves to hero's previous location and ball
+         * moves to chain's previous location, except that we try to
+         * keep the chain directly between the hero and the ball.  But,
+         * take the simple approach if the hero's previous location or
+         * the potential between location is inaccessible.
+         */
         if (dist2(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == 4 && !(((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))) {
             newchainx = i16(((((x + cptr.ldI16o(uchain.v, $obj_ox)) | 0) / 2) | 0));
             newchainy = i16(((((y + cptr.ldI16o(uchain.v, $obj_oy)) | 0) / 2) | 0));
             if ((((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))) {
+                /* don't let chain move to inaccessible location */
                 newchainx = cptr.ldI16(u);
                 newchainy = cptr.ldI16o(u, $you_uy);
             }
         }
+
         cptr.stI16(ballx, cptr.ldI16o(uchain.v, $obj_ox));
         cptr.stI16(bally, cptr.ldI16o(uchain.v, $obj_oy));
         cptr.stI16(chainx, newchainx);
@@ -605,17 +776,30 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
     return 1;
 }
 
+/*
+ *  drop_ball()
+ *
+ *  The punished hero drops or throws her iron ball.  If the hero is
+ *  blind, we must reset the order and glyph.  Check for side effects.
+ *  This routine expects the ball to be already placed.
+ *
+ *  Should not be called while swallowed.
+ */
 const __static_drop_ball_pullmsg = cptr.bytes("The ball pulls you out of the "); /** C ref: ball.c:892 — char[31] (function-static) */
 
 /** C ref: ball.c:882 — @param {CInt} x @param {CInt} y */
 export function* drop_ball(x, y) {
     if (Blind()) {
+        /* get the order */
         cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
+        /* pick up glyph */
         cptr.stI32o(u, $you_bglyph, (cptr.ldI32o(u, $you_bc_order)) ? cptr.ldI32o(u, $you_cglyph) : cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level));
     }
+
     if (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy)) {
         let t;
         let side;
+
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) != NHC.TT_INFLOOR && cptr.ldI32o(u, $you_utraptype) != NHC.TT_BURIEDBALL) {
             switch (cptr.ldI32o(u, $you_utraptype)) {
                 case NHC.TT_PIT:
@@ -643,6 +827,7 @@ export function* drop_ball(x, y) {
             (yield* reset_utrap(1));
             (yield* fill_pit(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         }
+
         cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
         cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
         if (!Levitation() && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !cptr.ldI32o(u, $you_utrap) && (is_pool(x, y) || ((t = t_at(x, y)) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))))) {
@@ -652,29 +837,34 @@ export function* drop_ball(x, y) {
             cptr.stI16(u, i16(((x - cptr.ldI32o(u, $you_dx)) | 0)));
             cptr.stI16o(u, $you_uy, i16(((y - cptr.ldI32o(u, $you_dy)) | 0)));
         }
-        cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+        cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* hero has moved, recalc vision later */
+
         if (Blind()) {
+            /* drop glyph under the chain */
             if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN)
                 cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
-            cptr.stI32o(u, $you_bc_felt, 0);
+            cptr.stI32o(u, $you_bc_felt, 0);  /* feel nothing */
+            /* pick up new glyph */
             cptr.stI32o(u, $you_cglyph, (cptr.ldI32o(u, $you_bc_order)) ? cptr.ldI32o(u, $you_bglyph) : cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level));
         }
-        (yield* movobj(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        (yield* movobj(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* has a newsym */
         if (Blind()) {
             cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
         }
-        (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));
+        (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));  /* clean up old position */
         if (cptr.ldI16o(u, $you_ux0) != cptr.ldI16(u) || cptr.ldI16o(u, $you_uy0) != cptr.ldI16o(u, $you_uy)) {
             (yield* spoteffects(1));
         }
     }
 }
 
+/* ball&chain cause hero to randomly lose stuff from inventory */
 /** C ref: ball.c:965 */
 function* litter() {
     let otmp;
     let nextobj = null;
     let capacity = weight_cap();
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
         nextobj = cptr.ldPtr(otmp);
         if (!cptr.eq(otmp, uball.v) && rnd_at(__s_ball_c, 972, __s_litter, capacity) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
@@ -692,10 +882,22 @@ function* litter() {
 export function* drag_down() {
     let forward;
     let dragchance = 3;
+
+    /*
+     *  Assume that the ball falls forward if:
+     *
+     *  a) the character is wielding it, or
+     *  b) the character has both hands available to hold it (i.e. is
+     *     not wielding any weapon), or
+     *  c) (perhaps) it falls forward out of his non-weapon hand
+     */
     forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !rn2_at(__s_ball_c, 999, __s_drag_down, 3)) ? 1 : 0));
+
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && !(yield* welded(uball.v)))
         (yield* You(__s_lose_your_grip_on_the_iron_ball));
+
     (yield* cls());
+
     if (forward) {
         if (rn2_at(__s_ball_c, 1008, __s_drag_down, 6)) {
             (yield* pline_The(__s_iron_ball_drags_you_downstairs));
@@ -725,11 +927,15 @@ export function* bc_sanity_check() {
     let freeball;
     let freechain;
     let onam;
+
     if (Punished() && (!uball.v || !uchain.v)) {
         (yield* impossible(__s_punished_without_s_s_s, !uball.v ? __s_iron_ball : __s_empty, (!uball.v && !uchain.v) ? __s_and : __s_empty, !uchain.v ? __s_attached_chain : __s_empty));
     } else if (!Punished() && (uball.v || uchain.v)) {
         (yield* impossible(__s_attached_s_s_s_without_being_punished, uchain.v ? __s_chain : __s_empty, (uchain.v && uball.v) ? __s_and : __s_empty, uball.v ? __s_iron_ball : __s_empty));
     }
+    /* ball is free when swallowed, when changing levels or during air bubble
+       management on Plane of Water (both of which start and end in between
+       sanity checking cycles, so shouldn't be relevant), other times? */
     freechain = (!uchain.v || cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE ? 1 : 0);
     freeball = (!uball.v || cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE || (freechain && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_INVENT) ? 1 : 0);
     if (uball.v && (cptr.ldI16o(uball.v, $obj_otyp) != NHC.HEAVY_IRON_BALL || (cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FLOOR && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_INVENT && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE) || (freeball ^ freechain) || (cptr.ldI64o(uball.v, $obj_owornmask) & 2097152n) == 0n || (cptr.ldI64o(uball.v, $obj_owornmask) & -2098945n) != 0n)) {
@@ -737,6 +943,7 @@ export function* bc_sanity_check() {
         onam = (yield* safe_typename(otyp));
         (yield* impossible(__s_uball_type_d_s_where_d_wornmask_0x_08lx, otyp, onam, cptr.ld1so(uball.v, $obj_where), cptr.ldI64o(uball.v, $obj_owornmask)));
     }
+    /* similar check to ball except can't be in inventory */
     if (uchain.v && (cptr.ldI16o(uchain.v, $obj_otyp) != NHC.IRON_CHAIN || (cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FLOOR && cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FREE) || (freechain ^ freeball) || (cptr.ldI64o(uchain.v, $obj_owornmask) & 4194304n) == 0n || (cptr.ldI64o(uchain.v, $obj_owornmask) & -4194305n) != 0n)) {
         otyp = cptr.ldI16o(uchain.v, $obj_otyp);
         onam = (yield* safe_typename(otyp));
@@ -751,11 +958,14 @@ export function* bc_sanity_check() {
         let bdy;
         let cdx;
         let cdy;
+
+        /* non-free chain should be under or next to the hero;
+           non-free ball should be on or next to the chain or else carried */
         cx = cptr.ldI16o(uchain.v, $obj_ox), cy = cptr.ldI16o(uchain.v, $obj_oy);
         cdx = (cx - cptr.ldI16(u)) | 0, cdy = (cy - cptr.ldI16o(u, $you_uy)) | 0;
         cdx = Math.abs(cdx), cdy = Math.abs(cdy);
         if (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_INVENT)
-            bx = cptr.ldI16(u), by = cptr.ldI16o(u, $you_uy);
+            bx = cptr.ldI16(u), by = cptr.ldI16o(u, $you_uy);  /* get_obj_location() */
         else
             bx = cptr.ldI16o(uball.v, $obj_ox), by = cptr.ldI16o(uball.v, $obj_oy);
         bdx = (bx - cx) | 0, bdy = (by - cy) | 0;
@@ -763,6 +973,7 @@ export function* bc_sanity_check() {
         if (cdx > 1 || cdy > 1 || bdx > 1 || bdy > 1)
             (yield* impossible(__s_b_c_distance_you_d_d_chain_d_d_ball_d_d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cx, cy, bx, by));
     }
+    /* [check bc_order too?] */
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

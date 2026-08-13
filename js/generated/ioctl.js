@@ -30,8 +30,17 @@ export let termio = cptr.alloc($sizeof_termios);
 
 /** C ref: ioctl.c:96 */
 export function getwindowsz() {
+    /*
+     * ttysize is found on Suns and BSD
+     * winsize is found on Suns, BSD, and Ultrix
+     */
     let ttsz = cptr.alloc(8);
+
     if (ioctl(fileno(__stdinp), 1074295912n, ttsz) != -1) {
+        /*
+         * Use the kernel's values for lines and columns if it has
+         * any idea.
+         */
         if (cptr.ldU16(ttsz))
             cptr.stI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI, cptr.ldU16(ttsz));
         if (cptr.ldU16o(ttsz, $winsize_ws_col))
@@ -52,6 +61,7 @@ export function setioctls() {
 
 /** C ref: ioctl.c:161 @returns {CInt} */
 export function dosuspend() {
+    /* NB: check_user_string() is port-specific. */
     if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
         Norep(__s_suspend_command_not_available);
         return 0;

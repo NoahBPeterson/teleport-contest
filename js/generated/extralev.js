@@ -57,6 +57,7 @@ function roguejoin(x1, y1, x2, y2, horiz) {
     let x;
     let y;
     let middle;
+
     if (horiz) {
         middle = i16(((x1 + rn2_at(__s_extralev_c, 26, __s_roguejoin, (((x2 - x1) | 0) + 1) | 0)) | 0));
         for (x = i16(min(x1, middle)); x <= max(x1, middle); x++)
@@ -82,6 +83,7 @@ function roguecorr(x, y, dir) {
     let fromy;
     let tox;
     let toy;
+
     if (dir == 2) {
         cptr.st1o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable, cptr.ld1uo3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable) & -3);
         if (!cptr.ld1so3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_real)) {
@@ -170,11 +172,13 @@ function roguecorr(x, y, dir) {
         impossible(__s_corridor_in_direction_d, dir);
 }
 
+/* Modified walkfrom() from mkmaze.c */
 /** C ref: extralev.c:139 — @param {CInt} x @param {CInt} y */
 function miniwalk(x, y) {
     let q;
     let dir;
     let dirs = cptr.alloc(4 * 4);
+
     while (1) {
         q = 0;
         if (x > 0 && (!((cptr.ld1uo3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable)) & 4)) && (!cptr.ld1uo3(gr, (x - 1) | 0, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable) || !rn2_at(__s_extralev_c, 148, __s_miniwalk, 10)))
@@ -185,6 +189,9 @@ function miniwalk(x, y) {
             cptr.stI32o(dirs, q++, 2, 4);
         if (y < 2 && (!((cptr.ld1uo3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable)) & 2)) && (!cptr.ld1uo3(gr, x, $sizeof_rogueroom_x3, (y + 1) | 0, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable) || !rn2_at(__s_extralev_c, 157, __s_miniwalk, 10)))
             cptr.stI32o(dirs, q++, 3, 4);
+        /* Rogue levels aren't just 3 by 3 mazes; they have some extra
+         * connections, thus that 1/10 chance
+         */
         if (!q)
             return;
         dir = cptr.ldI32o(dirs, rn2_at(__s_extralev_c, 164, __s_miniwalk, q), 4);
@@ -218,17 +225,26 @@ function miniwalk(x, y) {
 export function makeroguerooms() {
     let x;
     let y;
+
     cptr.stI32o(svn, $instance_globals_saved_n_nroom, 0);
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
+            /* Note: we want to insure at least 1 room.  So, if the
+             * first 8 are all dummies, force the last to be a room.
+             */
             if (!rn2_at(__s_extralev_c, 220, __s_makeroguerooms, 5) && (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) || (x < 2 && y < 2))) {
+                /* Arbitrary: dummy rooms may only go where real
+                 * ones do.
+                 */
                 cptr.st1o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_real, 0);
                 cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r, i16(((rn2_at(__s_extralev_c, 225, __s_makeroguerooms, 22) + 2) | 0)));
                 cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_rly, i16(((rn2_at(__s_extralev_c, 226, __s_makeroguerooms, (y == 2) ? 4 : 3) + 2) | 0)));
             } else {
                 cptr.st1o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_real, 1);
-                cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dx, i16(((rn2_at(__s_extralev_c, 229, __s_makeroguerooms, 22) + 2) | 0)));
-                cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dy, i16(((rn2_at(__s_extralev_c, 230, __s_makeroguerooms, (y == 2) ? 4 : 3) + 2) | 0)));
+                cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dx, i16(((rn2_at(__s_extralev_c, 229, __s_makeroguerooms, 22) + 2) | 0)));  /* 2-23 long, plus walls */
+                cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dy, i16(((rn2_at(__s_extralev_c, 230, __s_makeroguerooms, (y == 2) ? 4 : 3) + 2) | 0)));  /* 2-5 high, plus walls */
+
+                /* boundaries of room floor */
                 cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r, i16(rnd_at(__s_extralev_c, 233, __s_makeroguerooms, (((23 - cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dx)) | 0) + 1) | 0)));
                 cptr.stI16o2(cptr.add(gr, x, $sizeof_rogueroom_x3), y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_rly, i16(rnd_at(__s_extralev_c, 234, __s_makeroguerooms, (((((y == 2) ? 5 : 4) - cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dy)) | 0) + 1) | 0)));
                 (cptr.stI32o(svn, $instance_globals_saved_n_nroom, cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + 1)) - (1);
@@ -244,15 +260,23 @@ export function makeroguerooms() {
                 let lowy;
                 let hix;
                 let hiy;
+
                 cptr.stI32o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_nroom, cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
                 cptr.stI32o2(gs, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 4, $instance_globals_s_smeq, cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
+
                 lowx = i16(((((1 + Math.imul(26, x)) | 0) + cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r)) | 0));
                 lowy = i16(((Math.imul(7, y) + cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_rly)) | 0));
                 hix = i16(((((((((1 + Math.imul(26, x)) | 0) + cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r)) | 0) + cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dx)) | 0) - 1) | 0));
                 hiy = i16(((((((Math.imul(7, y) + cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_rly)) | 0) + cptr.ldI16o3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_dy)) | 0) - 1) | 0));
+                /* Strictly speaking, it should be lit only if above
+                 * level 10, but since Rogue rooms are only
+                 * encountered below level 10, use !rn2(7).
+                 */
                 add_room(lowx, lowy, hix, hiy, schar((!rn2_at(__s_extralev_c, 257, __s_makeroguerooms, 7))), NHC.OROOM, 0);
             }
         }
+
+    /* Now, add connecting corridors. */
     for (y = 0; y < 3; y++)
         for (x = 0; x < 3; x++) {
             if (cptr.ld1uo3(gr, x, $sizeof_rogueroom_x3, y, $sizeof_rogueroom, $instance_globals_r_r + $rogueroom_doortable) & 2)
@@ -282,8 +306,9 @@ export function makerogueghost() {
     let croom;
     let x;
     let y;
+
     if (!cptr.ldI32o(svn, $instance_globals_saved_n_nroom))
-        return;
+        return;  /* Should never happen */
     croom = cptr.add(svr, rn2_at(__s_extralev_c, 297, __s_makerogueghost, cptr.ldI32o(svn, $instance_globals_saved_n_nroom)), $sizeof_mkroom);
     x = i16(somex(croom));
     y = i16(somey(croom));
@@ -292,6 +317,7 @@ export function makerogueghost() {
     cptr.stI32o(ghost, $monst_msleeping, 1);
     ghost = christen_monst(ghost, roguename());
     (void (ghost));
+
     if (rn2_at(__s_extralev_c, 306, __s_makerogueghost, 4)) {
         ghostobj = mksobj_at(NHC.FOOD_RATION, x, y, 0, 0);
         cptr.stI64o(ghostobj, $obj_quan, BigInt(rnd_at(__s_extralev_c, 308, __s_makerogueghost, 7)));
@@ -312,12 +338,14 @@ export function makerogueghost() {
     cptr.st1o(ghostobj, $obj_spe, 1);
     if (rn2_at(__s_extralev_c, 324, __s_makerogueghost, 4))
         curse(ghostobj);
+
     ghostobj = mksobj_at(NHC.ARROW, x, y, 0, 0);
     cptr.st1o(ghostobj, $obj_spe, 0);
     cptr.stI64o(ghostobj, $obj_quan, BigInt(((rn2_at(__s_extralev_c, 329, __s_makerogueghost, 10) + 25) | 0)));
     cptr.stI32o(ghostobj, $obj_owt, weight(ghostobj) >>> 0);
     if (rn2_at(__s_extralev_c, 331, __s_makerogueghost, 4))
         curse(ghostobj);
+
     if (rn2_at(__s_extralev_c, 334, __s_makerogueghost, 2)) {
         ghostobj = mksobj_at(NHC.RING_MAIL, x, y, 0, 0);
         cptr.st1o(ghostobj, $obj_spe, schar(rn2_at(__s_extralev_c, 336, __s_makerogueghost, 3)));

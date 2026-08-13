@@ -26,11 +26,14 @@ const $TString_contents = FLD.TString_contents, $TString_extra = FLD.TString_ext
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_not_enough_memory = cptr.lit("not enough memory");
 
+/*
+** equality for long strings
+*/
 /** C ref: lstring.c:34 — @param {CPtr<TString>} a @param {CPtr<TString>} b @returns {CInt} */
 export function luaS_eqlngstr(a, b) {
     let len = cptr.ldU64o(a, $TString_u);
     (void 0);
-    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, $TString_u)) && (memcmp((cptr.add((a), $TString_contents)), (cptr.add((b), $TString_contents)), len) == 0)) ? 1 : 0;
+    return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, $TString_u)) && (memcmp((cptr.add((a), $TString_contents)), (cptr.add((b), $TString_contents)), len) == 0)) ? 1 : 0;  /* equal contents */
 }
 
 /** C ref: lstring.c:43 — @param {CPtr<char>} str @param {CLongLong} l @param {CUInt} seed @returns {CUInt} */
@@ -47,7 +50,7 @@ export function luaS_hashlongstr(ts) {
     if (cptr.ld1uo(ts, $TString_extra) == 0) {
         let len = cptr.ldU64o(ts, $TString_u);
         cptr.stI32o(ts, $TString_hash, luaS_hash((cptr.add((ts), $TString_contents)), len, cptr.ldI32o(ts, $TString_hash)));
-        cptr.st1o(ts, $TString_extra, 1);
+        cptr.st1o(ts, $TString_extra, 1);  /* now it has its hash */
     }
     return cptr.ldI32o(ts, $TString_hash);
 }
@@ -61,34 +64,44 @@ function tablerehash(vect, osize, nsize) {
         let p = cptr.ldPtro(vect, i, 8);
         cptr.stPtro(vect, i, null, 8);
         while (p) {
-            let hnext = cptr.ldPtro(p, $TString_u);
-            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>> 0;
-            cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));
+            let hnext = cptr.ldPtro(p, $TString_u);  /* save next */
+            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>> 0;  /* new position */
+            cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));  /* chain it into array */
             cptr.stPtro(vect, h, p, 8);
             p = hnext;
         }
     }
 }
 
+/*
+** Resize the string table. If allocation fails, keep the current size.
+** (This can degrade performance, but any non-zero size should work
+** correctly.)
+*/
 /** C ref: lstring.c:85 — @param {CPtr<lua_State>} L @param {CInt} nsize */
 export function luaS_resize(L, nsize) {
     let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
     let osize = cptr.ldI32o(tb, $stringtable_size);
     let newvect;
     if (nsize < osize)
-        tablerehash(cptr.ldPtr(tb), osize, nsize);
+        tablerehash(cptr.ldPtr(tb), osize, nsize);  /* depopulate shrinking part */
     newvect = (((luaM_realloc_(L, cptr.ldPtr(tb), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt(((osize))))) * 8n), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt(((nsize))))) * 8n)))));
     if ((__builtin_expect(BigInt(((cptr.eq(newvect, (null))) != 0)), 0n))) {
         if (nsize < osize)
-            tablerehash(cptr.ldPtr(tb), nsize, osize);
+            tablerehash(cptr.ldPtr(tb), nsize, osize);  /* restore to original size */
+        /* leave table as it was */
     } else {
         cptr.stPtr(tb, newvect);
         cptr.stI32o(tb, $stringtable_size, nsize);
         if (nsize > osize)
-            tablerehash(newvect, osize, nsize);
+            tablerehash(newvect, osize, nsize);  /* rehash for new size */
     }
 }
 
+/*
+** Clear API string cache. (Entries cannot be empty, so fill them with
+** a non-collectable string.)
+*/
 /** C ref: lstring.c:110 — @param {CPtr<global_State>} g */
 export function luaS_clearcache(g) {
     let i;
@@ -96,10 +109,13 @@ export function luaS_clearcache(g) {
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++) {
             if (((cptr.ld1uo((cptr.ldPtro3(g, i, 16, j, 8, $global_State_strcache)), $TString_marked)) & 24))
-                cptr.stPtro3(g, i, 16, j, 8, $global_State_strcache, cptr.ldPtro(g, $global_State_memerrmsg));
+                cptr.stPtro3(g, i, 16, j, 8, $global_State_strcache, cptr.ldPtro(g, $global_State_memerrmsg));  /* replace it with something fixed */
         }
 }
 
+/*
+** Initialize the string table and the string cache
+*/
 /** C ref: lstring.c:123 — @param {CPtr<lua_State>} L */
 export function luaS_init(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -107,26 +123,30 @@ export function luaS_init(L) {
     let j;
     let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
     cptr.stPtr(tb, ((luaM_malloc_(L, 1024n, 0))));
-    tablerehash(cptr.ldPtr(tb), 0, 128);
+    tablerehash(cptr.ldPtr(tb), 0, 128);  /* clear array */
     cptr.stI32o(tb, $stringtable_size, 128);
+    /* pre-create memory-error message */
     cptr.stPtro(g, $global_State_memerrmsg, (luaS_newlstr(L, __s_not_enough_memory, BigInt.asUintN(64, (18n / 1n) - 1n))));
-    luaC_fix(L, ((((cptr.ldPtro(g, $global_State_memerrmsg))))));
+    luaC_fix(L, ((((cptr.ldPtro(g, $global_State_memerrmsg))))));  /* it should never be collected */
     for (i = 0; i < 53; i++)
         for (j = 0; j < 2; j++)
             cptr.stPtro3(g, i, 16, j, 8, $global_State_strcache, cptr.ldPtro(g, $global_State_memerrmsg));
 }
 
+/*
+** creates a new string object
+*/
 /** C ref: lstring.c:143 — @param {CPtr<lua_State>} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr<TString>} */
 function createstrobj(L, l, tag, h) {
     let ts;
     let o;
-    let totalsize;
+    let totalsize;  /* total size of TString object */
     totalsize = (BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (l) + 1n)) * 1n)));
     o = luaC_newobj(L, tag, totalsize);
     ts = (((((o)))));
     cptr.stI32o(ts, $TString_hash, h);
     cptr.st1o(ts, $TString_extra, 0);
-    cptr.st1o((cptr.add((ts), $TString_contents)), l, 0, 1);
+    cptr.st1o((cptr.add((ts), $TString_contents)), l, 0, 1);  /* ending 0 */
     return ts;
 }
 
@@ -134,7 +154,7 @@ function createstrobj(L, l, tag, h) {
 export function luaS_createlngstrobj(L, l) {
     let ts = createstrobj(L, l, 20, cptr.ldI32o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_seed));
     cptr.stU64o(ts, $TString_u, l);
-    cptr.st1o(ts, $TString_shrlen, 255);
+    cptr.st1o(ts, $TString_shrlen, 255);  /* signals that it is a long string */
     return ts;
 }
 
@@ -144,21 +164,24 @@ export function luaS_remove(L, ts) {
     let p = cptr.add(cptr.ldPtr(tb), ((((((((cptr.ldI32o(ts, $TString_hash)) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
     while (!cptr.eq(cptr.ldPtr(p), ts))
         p = cptr.add((cptr.ldPtr(p)), $TString_u);
-    cptr.stPtr(p, cptr.ldPtro((cptr.ldPtr(p)), $TString_u));
+    cptr.stPtr(p, cptr.ldPtro((cptr.ldPtr(p)), $TString_u));  /* remove element from its list */
     (cptr.stI32o(tb, $stringtable_nuse, cptr.ldI32o(tb, $stringtable_nuse) + -1)) - (-1);
 }
 
 /** C ref: lstring.c:175 — @param {CPtr<lua_State>} L @param {CPtr<stringtable>} tb */
 function growstrtab(L, tb) {
     if ((__builtin_expect(BigInt(((cptr.ldI32o(tb, $stringtable_nuse) == 2147483647) != 0)), 0n))) {
-        luaC_fullgc(L, 1);
+        luaC_fullgc(L, 1);  /* try to free some... */
         if (cptr.ldI32o(tb, $stringtable_nuse) == 2147483647)
-            luaD_throw(L, 4);
+            luaD_throw(L, 4);  /* cannot even create a message... */
     }
     if (cptr.ldI32o(tb, $stringtable_size) <= 1073741823)
         luaS_resize(L, Math.imul(cptr.ldI32o(tb, $stringtable_size), 2));
 }
 
+/*
+** Checks whether short string exists and reuses it or creates a new one.
+*/
 /** C ref: lstring.c:189 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @param {CLongLong} l @returns {CPtr<TString>} */
 function internshrstr(L, str, l) {
     let ts;
@@ -166,17 +189,19 @@ function internshrstr(L, str, l) {
     let tb = cptr.add(g, $global_State_strt);
     let h = luaS_hash(str, l, cptr.ldI32o(g, $global_State_seed));
     let list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
-    (void 0);
+    (void 0);  /* otherwise 'memcmp'/'memcpy' are undefined */
     for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtro(ts, $TString_u)) {
         if (l == BigInt(cptr.ld1uo(ts, $TString_shrlen) >>> 0) && (memcmp(str, (cptr.add((ts), $TString_contents)), BigInt.asUintN(64, l * 1n)) == 0)) {
+            /* found! */
             if (((cptr.ld1uo((ts), $TString_marked)) & ((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))
-                (cptr.st1o((ts), $TString_marked, cptr.ld1uo((ts), $TString_marked) ^ 24));
+                (cptr.st1o((ts), $TString_marked, cptr.ld1uo((ts), $TString_marked) ^ 24));  /* resurrect it */
             return ts;
         }
     }
+    /* else must create a new string */
     if (cptr.ldI32o(tb, $stringtable_nuse) >= cptr.ldI32o(tb, $stringtable_size)) {
         growstrtab(L, tb);
-        list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
+        list = cptr.add(cptr.ldPtr(tb), ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);  /* rehash with new size */
     }
     ts = createstrobj(L, l, 4, h);
     cptr.st1o(ts, $TString_shrlen, (Number(BigInt.asUintN(8, ((l))))));
@@ -187,6 +212,9 @@ function internshrstr(L, str, l) {
     return ts;
 }
 
+/*
+** new string (with explicit length)
+*/
 /** C ref: lstring.c:222 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @param {CLongLong} l @returns {CPtr<TString>} */
 export function luaS_newlstr(L, str, l) {
     if (l <= 40n)
@@ -201,17 +229,25 @@ export function luaS_newlstr(L, str, l) {
     }
 }
 
+/*
+** Create or reuse a zero-terminated string, first checking in the
+** cache (using the string address as a key). The cache can contain
+** only zero-terminated strings, so it is safe to use 'strcmp' to
+** check hits.
+*/
 /** C ref: lstring.c:242 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @returns {CPtr<TString>} */
 export function luaS_new(L, str) {
-    let i = u32mod((Number(BigInt.asUintN(32, (cptr.addr((str)) & 4294967295n)))), 53);
+    let i = u32mod((Number(BigInt.asUintN(32, (cptr.addr((str)) & 4294967295n)))), 53);  /* hash */
     let j;
     let p = cptr.add(cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strcache), i, 16);
     for (j = 0; j < 2; j++) {
         if (strcmp(str, (cptr.add((cptr.ldPtro(p, j, 8)), $TString_contents))) == 0)
-            return cptr.ldPtro(p, j, 8);
+            return cptr.ldPtro(p, j, 8);  /* that is it */
     }
+    /* normal route */
     for (j = 1; j > 0; j--)
-        cptr.stPtro(p, j, cptr.ldPtro(p, (j - 1) | 0, 8), 8);
+        cptr.stPtro(p, j, cptr.ldPtro(p, (j - 1) | 0, 8), 8);  /* move out last element */
+    /* new element is first in the list */
     cptr.stPtro(p, 0, luaS_newlstr(L, str, cptr.strlen(str)), 8);
     return cptr.ldPtro(p, 0, 8);
 }

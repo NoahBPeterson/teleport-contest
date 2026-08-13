@@ -254,6 +254,7 @@ const __s_lbrack = cptr.lit("[");
 const __s_rbrack = cptr.lit("]");
 const __s_slash = cptr.lit("/");
 
+/* Interface definition, for windows.c */
 /** C ref: wintty.c:98 — struct window_procs */
 export let tty_procs = cptr.alloc($sizeof_window_procs);
 cptr.stPtr(tty_procs, __s_tty);
@@ -368,28 +369,42 @@ export let HE_resets_AS = cptr.box(0);
 /** C ref: wintty.c:247 — signed char */
 let calling_from_update_inventory = 0;
 
+/*
+ * A string containing all the default commands -- to add to a list
+ * of acceptable inputs.
+ */
 /** C ref: wintty.c:287 — char[12] */
 const default_menu_cmds = [94, 124, 62, 60, 46, 45, 64, 44, 92, 126, 58, 0];
 
+/* clean up and quit */
 /** C ref: wintty.c:344 — @param {CPtr<char>} mesg */
 function* bail(mesg) {
     clearlocks();
     (yield* tty_exit_nhwindows(mesg));
     (yield* nh_terminate(0));
+    /*NOTREACHED*/
 }
 
 /** C ref: wintty.c:356 — int */
 let resize_mesg = 0;
 
+/* signal handler is called with at least 1 arg */
+/*ARGUSED*/
 /** C ref: wintty.c:361 — @param {CInt} sig_unused */
 function* winch_handler(sig_unused) {
-    (cptr.stI32o(program_state, $sinfo_resize_pending, cptr.ldI32o(program_state, $sinfo_resize_pending) + 1)) - (1);
+
+    (cptr.stI32o(program_state, $sinfo_resize_pending, cptr.ldI32o(program_state, $sinfo_resize_pending) + 1)) - (1);  /* resize_tty() will reset it */
+    /* if nethack is waiting for input, which is the most likely scenario,
+       we will go ahead and respond to the resize immediately; otherwise,
+       tty_nhgetch() will do so the next time it's called */
     if (cptr.ldI32o(program_state, $sinfo_getting_char)) {
         (yield* resize_tty());
     }
     return;
 }
 
+/* query the system for tty size (vis getwindowsz()), and adapt the game's
+   windows to match */
 /** C ref: wintty.c:392 */
 function* resize_tty() {
     let oldLI = LI();
@@ -400,18 +415,26 @@ function* resize_tty() {
     let i;
     let map_active;
     let cw;
+
+    /* reset to 0 rather than just decrement */
     cptr.stI32o(program_state, $sinfo_resize_pending, 0);
     resize_mesg = 0;
-    getwindowsz();
+
+    getwindowsz();  /* update LI and CO */
     if (!ttyDisplay || (LI() == oldLI && CO() == oldCO))
         return;
+
     cptr.stI16(ttyDisplay, i16(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI)));
     cptr.stI16o(ttyDisplay, $DisplayDesc_cols, i16(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO)));
+
     cw = cptr.ldPtro(wins, BASE_WINDOW, 8);
     cptr.stI64o(cw, $WinDesc_rows, BigInt(cptr.ldI16(ttyDisplay)));
     cptr.stI64o(cw, $WinDesc_cols, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));
+
     if (!cptr.ld1so(iflags, $instance_flags_window_inited))
         return;
+
+    /* try to figure out where we'll want to leave the cursor */
     cw = (WIN_MAP.v != -1) ? cptr.ldPtro(wins, WIN_MAP.v, 8) : null;
     map_active = schar((cw && cptr.ld1so(cw, $WinDesc_active) ? 1 : 0));
     if (!map_active)
@@ -420,25 +443,32 @@ function* resize_tty() {
         mapx = cptr.ldI16(u), mapy = cptr.ldI16o(u, $you_uy);
     else
         mapx = cptr.ldI16o(gg, $instance_globals_g_getposx), mapy = cptr.ldI16o(gg, $instance_globals_g_getposy);
+
     oldtoplin = cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin);
-    cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);
+    cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);  /* (before term_clear_screen()) */
+    /* whatever used to be on the screen has become suspect;
+       blank it all out, then redo the display */
     (yield* term_clear_screen());
     (yield* new_status_window());
+
+    /* if the map window is shown, redisplay it (also status, perminv) */
     if (map_active) {
         (yield* docrt_flags(NHC.docrtRefresh));
-        (yield* bot());
+        (yield* bot());  /* context.botlx=1 gets set by docrt() */
         for (i = 0; i < NHM.MAXWIN; ++i) {
             if (i == BASE_WINDOW || i == WIN_MAP.v || i == WIN_STATUS.v || i == WIN_MESSAGE.v)
                 continue;
             if (cptr.ldPtro(wins, i, 8) && cptr.ld1so(cptr.ldPtro(wins, i, 8), $WinDesc_active)) {
-                oldtoplin = NHM.TOPLINE_EMPTY;
+                /* cop-out */
+                oldtoplin = NHM.TOPLINE_EMPTY;  /* don't restore it below */
                 cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
                 (yield* addtopl(__s_press_a_key_to_continue));
                 resize_mesg++;
                 break;
             }
         }
-    }
+    }  /* wins[WIN_MAP].active */
+
     if (oldtoplin != NHM.TOPLINE_EMPTY) {
         cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, oldtoplin);
         (yield* addtopl(cptr.add(gt, $instance_globals_t_toplines)));
@@ -446,7 +476,7 @@ function* resize_tty() {
     if (map_active) {
         (yield* newclipping(i16(mapx), i16(mapy)));
         (yield* tty_curs(WIN_MAP.v, mapx, mapy));
-        (yield* tty_display_nhwindow(WIN_MAP.v, 0));
+        (yield* tty_display_nhwindow(WIN_MAP.v, 0));  /*fflush(stdout)*/
     }
     return;
 }
@@ -454,7 +484,7 @@ function* resize_tty() {
 /** C ref: wintty.c:471 — @param {CInt} x @param {CInt} y */
 function* newclipping(x, y) {
     if (CO() < NHM.COLNO || LI() < ((22 + cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) {
-        setclipped();
+        setclipped();  /* sets clipping=TRUE */
         if (x)
             (yield* tty_cliparound(x, y));
     } else {
@@ -464,32 +494,46 @@ function* newclipping(x, y) {
     return;
 }
 
+/* destroy and recreate status window; extracted from winch_handler()
+   and augmented for use by tty_preference_update() */
 /** C ref: wintty.c:491 */
 function* new_status_window() {
     if (WIN_STATUS.v != -1) {
+        /* in case it's shrinking, clear it before destroying so that
+           dropped portion won't show anything that's now becoming stale */
         (yield* tty_clear_nhwindow(WIN_STATUS.v));
         (yield* tty_destroy_nhwindow(WIN_STATUS.v)), WIN_STATUS.v = -1;
     }
+    /* frees some status tracking data */
     genl_status_finish();
+    /* creates status window and allocates tracking data */
     (yield* tty_status_init());
-    (yield* tty_clear_nhwindow(WIN_STATUS.v));
+    (yield* tty_clear_nhwindow(WIN_STATUS.v));  /* does some init, sets context.botlx */
     (yield* status_initialize(1));
 }
 
+/*ARGSUSED*/
 /** C ref: wintty.c:511 — @param {CPtr<int>} argcp @param {CPtr<char *>} argv */
 export function* tty_init_nhwindows(argcp, argv) {
     let wid = cptr.box(0);
     let hgt = cptr.box(0);
     let i;
-    cptr.stI32o(iflags, $instance_flags_wc2_statuslines, ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3));
+
+    /* options aren't processed yet so wc2_statuslines might be 0;
+       make sure that it has a reasonable value during tty setup */
+    cptr.stI32o(iflags, $instance_flags_wc2_statuslines, ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3));  /* 2 or 3; 0 => 2 */
     setbuf(__stdoutp, cptr.decay(obuf));
     gettty();
+
+    /* to port dependant tty setup */
     (yield* term_startup(wid, hgt));
-    setftty();
+    setftty();  /* calls term_start_screen */
     term_curs_set(0);
+
+    /* set up tty descriptor */
     ttyDisplay = (yield* alloc(60));
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);
-    cptr.stI32o(ttyDisplay, $DisplayDesc_topl_utf8, 0);
+    cptr.stI32o(ttyDisplay, $DisplayDesc_topl_utf8, 0);  /* putmixed may set this */
     cptr.stI16(ttyDisplay, i16(hgt.v));
     cptr.stI16o(ttyDisplay, $DisplayDesc_cols, i16(wid.v));
     cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.stI16o(ttyDisplay, $DisplayDesc_cury, 0));
@@ -499,17 +543,41 @@ export function* tty_init_nhwindows(argcp, argv) {
     cptr.stI32o(ttyDisplay, $DisplayDesc_attrs, 0);
     cptr.stI32o(ttyDisplay, $DisplayDesc_topl_utf8, 0);
     cptr.stI32o(ttyDisplay, $DisplayDesc_mixed, 0);
+
+    /* set up the default windows */
     BASE_WINDOW = (yield* tty_create_nhwindow(7));
     cptr.st1o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_active, 1);
+
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, -1);
     void signal(28, winch_handler);
+
     (yield* tty_clear_nhwindow(BASE_WINDOW));
+
+    /* Once pline() is functional, error-related prompts such as
+     * those relating to save files etc. can intrude on the
+     * copyright information display because their prompts are
+     * up at the very top in the message window.
+     * Move the copyright information a little further down to
+     * row 3, out of the way. */
+
     (yield* tty_curs(BASE_WINDOW, 1, 4));
     for (i = 1; i <= 4; ++i)
         (yield* tty_putstr(BASE_WINDOW, 0, copyright_banner_line(i)));
     (yield* tty_putstr(BASE_WINDOW, 0, __s_empty));
     (yield* tty_display_nhwindow(BASE_WINDOW, 0));
+
+    /* Move to a default location for the "Shall I pick .." player
+     * selection prompts, which also use the BASE_WINDOW. Leave
+     * room for as many as 3 unexpected raw_prints early startup
+     * messages above that.
+     * If there is a topline message prompt, before the
+     * "Shall I pick ..." prompt, the latter will end up appearing
+     * immediately after the topline message prompt. There should
+     * now be room. */
     (yield* tty_curs(BASE_WINDOW, 1, 11));
+
+    /* 'statuslines' defaults to set_in_config, allowed but invisible;
+       make it dynamically settable if feasible, otherwise visible */
     if ((cptr.ldU64o(tty_procs, $window_procs_wincap2) & 1024n) != 0n)
         (yield* set_wc2_option_mod_status(1024n, NHC.set_in_game));
 }
@@ -517,6 +585,7 @@ export function* tty_init_nhwindows(argcp, argv) {
 /** C ref: wintty.c:596 — @param {CPtr<char>} pref */
 export function* tty_preference_update(pref) {
     let newstatuslines = schar((!strcmp(pref, __s_statuslines) && cptr.ld1so(iflags, $instance_flags_window_inited) ? 1 : 0));
+
     if (newstatuslines) {
         (yield* new_status_window());
         (yield* newclipping(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -529,9 +598,18 @@ export function* tty_preference_update(pref) {
 export function* tty_player_selection() {
     if ((yield* genl_player_setup(cptr.ldI16(ttyDisplay))))
         return;
+
     (yield* bail(null));
+    /*NOTREACHED*/
 }
 
+/*
+ * svp.plname is filled either by an option (-u Player  or  -uPlayer) or
+ * explicitly (by being the wizard) or by askname.
+ * It may still contain a suffix denoting the role, etc.
+ * Always called after init_nhwindows() and before
+ * init_sound_disp_gamewindows().
+ */
 const __static_tty_askname_who_are_you = cptr.bytes("Who are you? "); /** C ref: wintty.c:653 — char[14] (function-static) */
 
 /** C ref: wintty.c:651 */
@@ -542,13 +620,15 @@ export function* tty_askname() {
     if (cptr.ld1so(iflags, $instance_flags_wc2_selectsaved) && !cptr.ld1so(iflags, $instance_flags_renameinprogress))
         switch ((yield* restore_menu(BASE_WINDOW))) {
             case -1:
-            (yield* bail(__s_until_next_time_then));
+            (yield* bail(__s_until_next_time_then));  /* quit */
+            /*NOTREACHED*/
             break;
             case 0:
-            break;
+            break;  /* no game chosen; start new game */
             case 1:
-            return;
+            return;  /* svp.plname[] has been set */
         }
+
     (yield* tty_putstr(BASE_WINDOW, 0, __s_empty));
     do {
         if (++tryct > 1) {
@@ -556,6 +636,7 @@ export function* tty_askname() {
                 (yield* bail(__s_giving_up_after_10_tries));
             (yield* tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) - 1n)))));
             (yield* tty_putstr(BASE_WINDOW, 0, __s_enter_a_name_for_your_character));
+            /* erase previous prompt (in case of ESC after partial response) */
             (yield* tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury))))), (yield* cl_end());
         }
         (yield* tty_putstr(BASE_WINDOW, 0, cptr.decay(__static_tty_askname_who_are_you)));
@@ -569,7 +650,8 @@ export function* tty_askname() {
             if (c == 27) {
                 ct = 0;
                 break;
-            }
+            }  /* continue outer loop */
+            /* some people get confused when their erase char is not ^H */
             if (c == 8 || c == 127) {
                 if (ct) {
                     ct--;
@@ -594,7 +676,12 @@ export function* tty_askname() {
         }
         cptr.st1o(svp, ct, 0, 1);
     } while (ct == 0);
+
+    /* move to next line to simulate echo of user's <return> */
     (yield* tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) + 1n)))));
+
+    /* since we let user pick an arbitrary name now, he/she can pick
+       another one during role selection */
     cptr.st1o(iflags, $instance_flags_renameallowed, 1);
 }
 
@@ -626,15 +713,15 @@ function* getret() {
 /** C ref: wintty.c:808 — @param {CPtr<char>} str */
 export function* tty_suspend_nhwindows(str) {
     term_curs_set(1);
-    (yield* settty(str));
+    (yield* settty(str));  /* calls end_screen, perhaps raw_print */
     if (!str)
-        tty_raw_print(__s_empty);
+        tty_raw_print(__s_empty);  /* calls fflush(stdout) */
 }
 
 /** C ref: wintty.c:817 */
 export function* tty_resume_nhwindows() {
     gettty();
-    setftty();
+    setftty();  /* calls term_start_screen */
     term_curs_set(0);
     (yield* docrt());
 }
@@ -642,17 +729,21 @@ export function* tty_resume_nhwindows() {
 /** C ref: wintty.c:834 — @param {CPtr<char>} str */
 export function* tty_exit_nhwindows(str) {
     let i;
+
     (yield* tty_suspend_nhwindows(str));
-    (yield* free_pickinv_cache());
+    /*
+     * Disable windows to avoid calls to window routines.
+     */
+    (yield* free_pickinv_cache());  /* reset its state as well as tear down window */
     for (i = 0; i < NHM.MAXWIN; i++) {
         if (i == BASE_WINDOW)
-            continue;
+            continue;  /* handle wins[BASE_WINDOW] last */
         if (cptr.ldPtro(wins, i, 8)) {
             free_window_info(cptr.ldPtro(wins, i, 8), 1);
             cptr.free(cptr.ldPtro(wins, i, 8));
             cptr.stPtro(wins, i, null, 8);
         }
-    }
+    }  /* these are all gone now */
     WIN_MAP.v = (WIN_MESSAGE.v = (WIN_INVEN.v = -1));
     WIN_STATUS.v = -1;
     if (BASE_WINDOW != -1 && cptr.ldPtro(wins, BASE_WINDOW, 8)) {
@@ -663,7 +754,8 @@ export function* tty_exit_nhwindows(str) {
     }
     cptr.free(ttyDisplay);
     ttyDisplay = null;
-    term_shutdown();
+
+    term_shutdown();  /* cleanup termcap/terminfo/whatever */
     cptr.st1o(iflags, $instance_flags_window_inited, 0);
 }
 
@@ -673,15 +765,19 @@ export function* tty_create_nhwindow(type) {
     let i;
     let rowoffset;
     let newid;
+
     for (newid = 0; newid < NHM.MAXWIN; ++newid)
         if (cptr.ldPtro(wins, newid, 8) === null)
             break;
     if (newid == NHM.MAXWIN) {
         (yield* panic(__s_no_window_slots));
+        /*NOTREACHED*/
         return -1;
     }
+
     newwin = (yield* alloc(144));
     cptr.stPtro(wins, newid, newwin, 8);
+
     cptr.stI16o(newwin, $WinDesc_type, i16(type));
     cptr.stI32(newwin, 0);
     cptr.st1o(newwin, $WinDesc_active, 0);
@@ -693,13 +789,16 @@ export function* tty_create_nhwindow(type) {
     cptr.stU64o(newwin, $WinDesc_mbehavior, 0n);
     switch (type) {
         case 7:
+        /* base window, used for absolute movement on the screen */
         cptr.stI16o(newwin, $WinDesc_offx, cptr.stI16o(newwin, $WinDesc_offy, 0));
         cptr.stI64o(newwin, $WinDesc_rows, BigInt(cptr.ldI16(ttyDisplay)));
         cptr.stI64o(newwin, $WinDesc_cols, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));
         cptr.stI64o(newwin, $WinDesc_maxrow, cptr.stI64o(newwin, $WinDesc_maxcol, 0n));
         break;
         case NHM.NHW_MESSAGE:
+        /* message window, 1 line long, very wide, top of screen */
         cptr.stI16o(newwin, $WinDesc_offx, cptr.stI16o(newwin, $WinDesc_offy, 0));
+        /* sanity check */
         if (cptr.ldI32o(iflags, $instance_flags_msg_history) < 20)
             cptr.stI32o(iflags, $instance_flags_msg_history, 20);
         else if (cptr.ldI32o(iflags, $instance_flags_msg_history) > NHM.MAX_MSG_HISTORY)
@@ -708,6 +807,7 @@ export function* tty_create_nhwindow(type) {
         cptr.stI64o(newwin, $WinDesc_maxcol, cptr.stI64o(newwin, $WinDesc_cols, 0n));
         break;
         case NHM.NHW_STATUS:
+        /* status window, 2 or 3 lines long, full width, bottom of screen */
         if (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 2 || cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) > 3)
             cptr.stI32o(iflags, $instance_flags_wc2_statuslines, 2);
         cptr.stI16o(newwin, $WinDesc_offx, 0);
@@ -717,15 +817,18 @@ export function* tty_create_nhwindow(type) {
         cptr.stI64o(newwin, $WinDesc_cols, cptr.stI64o(newwin, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols))));
         break;
         case NHM.NHW_MAP:
+        /* map window, ROWNO lines long, full width, below message window */
         cptr.stI16o(newwin, $WinDesc_offx, 0);
         cptr.stI16o(newwin, $WinDesc_offy, 1);
         cptr.stI64o(newwin, $WinDesc_rows, 21n);
         cptr.stI64o(newwin, $WinDesc_cols, 80n);
-        cptr.stI64o(newwin, $WinDesc_maxrow, 0n);
+        cptr.stI64o(newwin, $WinDesc_maxrow, 0n);  /* no buffering done -- let gbuf do it */
         cptr.stI64o(newwin, $WinDesc_maxcol, 0n);
         break;
         case NHM.NHW_MENU:
         case NHM.NHW_TEXT:
+        /* inventory/menu window, variable length, full width, top of screen;
+           help window, the same, different semantics for display, etc */
         cptr.stI16o(newwin, $WinDesc_offx, cptr.stI16o(newwin, $WinDesc_offy, 0));
         cptr.stI64o(newwin, $WinDesc_rows, 0n);
         cptr.stI64o(newwin, $WinDesc_cols, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));
@@ -733,8 +836,10 @@ export function* tty_create_nhwindow(type) {
         break;
         default:
         (yield* panic(__s_tried_to_create_window_type_d, type));
+        /*NOTREACHED*/
         return -1;
     }
+
     if (cptr.ldI64o(newwin, $WinDesc_maxrow)) {
         cptr.stPtro(newwin, $WinDesc_data, (yield* alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(newwin, $WinDesc_maxrow)) * 8n)))))));
         cptr.stPtro(newwin, $WinDesc_datlen, (yield* alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(newwin, $WinDesc_maxrow)) * 2n)))))));
@@ -753,6 +858,7 @@ export function* tty_create_nhwindow(type) {
         cptr.stPtro(newwin, $WinDesc_data, null);
         cptr.stPtro(newwin, $WinDesc_datlen, null);
     }
+
     return newid;
 }
 
@@ -776,9 +882,10 @@ function* erase_menu_or_text(window, cw, clear) {
 /** C ref: wintty.c:1011 — @param {CPtr<struct WinDesc>} cw @param {CInt} free_data */
 function free_window_info(cw, free_data) {
     let i;
+
     if (cptr.ldPtro(cw, $WinDesc_data)) {
         if (WIN_MESSAGE.v != -1 && cptr.eq(cw, cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) && cptr.ldI64o(cw, $WinDesc_rows) > cptr.ldI64o(cw, $WinDesc_maxrow))
-            cptr.stI64o(cw, $WinDesc_maxrow, cptr.ldI64o(cw, $WinDesc_rows));
+            cptr.stI64o(cw, $WinDesc_maxrow, cptr.ldI64o(cw, $WinDesc_rows));  /* topl data */
         for (i = 0; BigInt(i) < cptr.ldI64o(cw, $WinDesc_maxrow); i++)
             if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8)) {
                 cptr.free(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8));
@@ -798,6 +905,7 @@ function free_window_info(cw, free_data) {
     cptr.stI64o(cw, $WinDesc_maxrow, cptr.stI64o(cw, $WinDesc_maxcol, 0n));
     if (cptr.ldPtro(cw, $WinDesc_mlist)) {
         let temp;
+
         while ((temp = cptr.ldPtro(cw, $WinDesc_mlist)) !== null) {
             cptr.stPtro(cw, $WinDesc_mlist, cptr.ldPtr(temp));
             if (cptr.ldPtro(temp, $tty_menu_item_str))
@@ -825,6 +933,7 @@ export function* tty_clear_nhwindow(window) {
     let cw = null;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -833,6 +942,7 @@ export function* tty_clear_nhwindow(window) {
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_clear_nhwindow));
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
     ;
+
     switch (cptr.ldI16o(cw, $WinDesc_type)) {
         case NHM.NHW_MESSAGE:
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_EMPTY) {
@@ -861,13 +971,21 @@ export function* tty_clear_nhwindow(window) {
         cptr.st1o(disp, $display_hints_botlx, 1);
         break;
         case NHM.NHW_MAP:
+        /* cheap -- clear the whole thing and tell nethack to redraw botl */
         cptr.st1o(disp, $display_hints_botlx, 1);
         // @FallThrough
         ;
         case 7:
+        /* if erasing_tty_screen is True, calling sequence is
+           term_clear_screen -> erase_tty_screen -> tty_clear_nhwindow
+           so we don't call term_clear_screen again */
         if (!erasing_tty_screen) {
             (yield* term_clear_screen());
         }
+        /*
+         * Neither map nor base window tracks what is currently shown so
+         * there's no stale data that would need to be changed to spaces.
+         */
         break;
         case NHM.NHW_MENU:
         case NHM.NHW_TEXT:
@@ -881,6 +999,7 @@ export function* tty_clear_nhwindow(window) {
     cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
 }
 
+/* toggle a specific entry */
 /** C ref: wintty.c:1138 — @param {CInt} window @param {CPtr<tty_menu_item>} curr @param {CInt} lineno @param {CInt} in_view @param {CInt} counting @param {CLongLong} count @returns {CInt} */
 function* toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
     if (cptr.ld1so(curr, $tty_menu_item_selected)) {
@@ -895,7 +1014,7 @@ function* toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
             if (in_view)
                 (yield* set_item_state(window, lineno, curr));
             return 1;
-        }
+        }  /* !selected */
     } else {
         if (counting && count > 0n) {
             cptr.stI64o(curr, $tty_menu_item_count, count);
@@ -919,6 +1038,7 @@ function* dmore(cw, s) {
     let offset = (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? 1 : 2;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -939,14 +1059,18 @@ function* dmore(cw, s) {
     cptr.stI16o(ttyDisplay, $DisplayDesc_curx, Number(BigInt.asIntN(16, BigInt.asUintN(64, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx))) + cptr.strlen(prompt))));
     if (cptr.ld1so(flags, $flag_standout))
         standoutend();
+
     (yield* xwaitforspace(s));
 }
 
+/* change screen display for selection state of an item;
+   not used or wanted for items that aren't shown by the current page */
 /** C ref: wintty.c:1204 — @param {CInt} window @param {CInt} lineno @param {CPtr<tty_menu_item>} item */
 function* set_item_state(window, lineno, item) {
     let ch = schar((cptr.ld1so(item, $tty_menu_item_selected) ? (cptr.ldI64o(item, $tty_menu_item_count) == -1n ? 43 : 35) : 45));
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -963,10 +1087,12 @@ function* set_item_state(window, lineno, item) {
     term_end_attr(cptr.ldI32o(item, $tty_menu_item_attr));
 }
 
+/* select all [ignores pending count, if any] */
 /** C ref: wintty.c:1228 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end */
 function* set_all_on_page(window, page_start, page_end) {
     let curr;
     let n;
+
     for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr)) {
         if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(1, cptr.ldI32o(curr, $tty_menu_item_itemflags), 0))
             continue;
@@ -975,10 +1101,12 @@ function* set_all_on_page(window, page_start, page_end) {
     }
 }
 
+/* unselect all */
 /** C ref: wintty.c:1248 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end */
 function* unset_all_on_page(window, page_start, page_end) {
     let curr;
     let n;
+
     for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr)) {
         if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || !cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(2, cptr.ldI32o(curr, $tty_menu_item_itemflags), 1))
             continue;
@@ -988,13 +1116,16 @@ function* unset_all_on_page(window, page_start, page_end) {
     }
 }
 
+/* invert current page */
 /** C ref: wintty.c:1269 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end @param {CInt} acc @param {CLongLong} count */
 function* invert_all_on_page(window, page_start, page_end, acc, count) {
     let curr;
     let n;
+
     for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr)) {
         if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || (acc ? cptr.ld1so(curr, $tty_menu_item_gselector) != acc : !menuitem_invert_test(0, cptr.ldI32o(curr, $tty_menu_item_itemflags), cptr.ld1so(curr, $tty_menu_item_selected))))
             continue;
+
         if (cptr.ld1so(curr, $tty_menu_item_selected)) {
             cptr.st1o(curr, $tty_menu_item_selected, 0);
             cptr.stI64o(curr, $tty_menu_item_count, -1n);
@@ -1007,19 +1138,32 @@ function* invert_all_on_page(window, page_start, page_end, acc, count) {
     }
 }
 
+/* invert all entries that match given group accelerator (or all if zero) */
 /** C ref: wintty.c:1300 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end @param {CInt} acc @param {CLongLong} count */
 function* invert_all(window, page_start, page_end, acc, count) {
     let curr;
     let on_curr_page;
     let cw = cptr.ldPtro(wins, window, 8);
+
+    /* handle current page separately (it will need screen updating) */
     (yield* invert_all_on_page(window, page_start, page_end, acc, count));
+
+    /* invert the rest (no screen updating for them) */
     for (on_curr_page = 0, curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.eq(curr, page_start))
             on_curr_page = 1;
         else if (cptr.eq(curr, page_end))
             on_curr_page = 0;
+
+        /* skip if on current page (already handled above) or not
+           selectable (header line or similar) or if group toggling
+           is taking place and this item isn't in specified group or
+           group toggling is not taking place and this item is off
+           limits to bulk toggling (assumes that an item won't be
+           both in a group and also subject to bulk restrictions) */
         if (on_curr_page || !cptr.ldPtro(curr, $tty_menu_item_identifier) || (acc ? cptr.ld1so(curr, $tty_menu_item_gselector) != acc : !menuitem_invert_test(0, cptr.ldI32o(curr, $tty_menu_item_itemflags), cptr.ld1so(curr, $tty_menu_item_selected))))
             continue;
+
         if (cptr.ld1so(curr, $tty_menu_item_selected)) {
             cptr.st1o(curr, $tty_menu_item_selected, 0);
             cptr.stI64o(curr, $tty_menu_item_count, -1n);
@@ -1031,6 +1175,7 @@ function* invert_all(window, page_start, page_end, acc, count) {
     }
 }
 
+/* support menucolor in addition to caller-supplied attribute */
 /** C ref: wintty.c:1345 — @param {CInt} on @param {CInt} color @param {CInt} attr */
 function toggle_menu_attr(on, color, attr) {
     if (on) {
@@ -1067,20 +1212,26 @@ function* process_menu_window(window, cw) {
     let gacc = new Uint8Array(128);
     let msave;
     let morestr;
-    let really_morc;
+    let really_morc;  /* pseudo menu manipulation char */
+
     curr_page = (page_lines = 0);
     page_start = (page_end = null);
-    msave = cptr.ldPtro(cw, $WinDesc_morestr);
+    msave = cptr.ldPtro(cw, $WinDesc_morestr);  /* save the morestr */
     cptr.stPtro(cw, $WinDesc_morestr, morestr = (yield* alloc(NHM.QBUFSZ)));
     counting = 0;
     count = 0n;
     reset_count = 1;
     finished = 0;
     previous_page_lines = 0;
+
+    /* collect group accelerators; for PICK_NONE, they're ignored;
+       for PICK_ONE, only those which match exactly one entry will be
+       accepted; for PICK_ANY, those which match any entry are okay */
     cptr.st1o(cptr.decay(gacc), 0, 0, 1);
     if (cptr.ldI16o(cw, $WinDesc_how) != NHM.PICK_NONE) {
         let i;
-        let gcnt = cptr.alloc(128 * 4);
+        let gcnt = cptr.alloc(128 * 4);  /* guard against `signed char' */
+
         for (i = 0; i < 128; i++)
             cptr.stI32o(gcnt, i, 0, 4);
         for (n = 0, curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
@@ -1088,14 +1239,16 @@ function* process_menu_window(window, cw) {
                 ++n;
                 cptr.stI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), cptr.ldI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), 4) + 1, 4);
             }
+
         if (n > 0)
             for (rp = cptr.decay(gacc), curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
                 if (cptr.ld1so(curr, $tty_menu_item_gselector) && (cptr.ld1so(curr, $tty_menu_item_gselector) != cptr.ld1so(curr, $tty_menu_item_selector) || cptr.ld1so(curr, $tty_menu_item_gselector) == NHC.GOLD_SYM) && !cptr.strchr(cptr.decay(gacc), cptr.ld1so(curr, $tty_menu_item_gselector)) && (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ANY || cptr.ldI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), 4) == 1)) {
                     cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1so(curr, $tty_menu_item_gselector));
-                    cptr.st1(rp, 0);
+                    cptr.st1(rp, 0);  /* re-terminate for strchr() */
                 }
-    }
+    }  /* lint suppression */
     resp_len = 0;
+
     show_obj_syms = cptr.ld1so(iflags, $instance_flags_use_menu_glyphs);
     if (only_if_no_headers) {
         for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
@@ -1104,6 +1257,8 @@ function* process_menu_window(window, cw) {
                 break;
             }
     }
+
+    /* loop until finished */
     while (!finished) {
         {
             if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -1116,9 +1271,13 @@ function* process_menu_window(window, cw) {
             count = 0n;
         } else
             reset_count = 1;
+
         if (!page_start) {
+            /* new page to be displayed */
             if (curr_page < 0 || (cptr.ldI64o(cw, $WinDesc_npages) > 0n && BigInt(curr_page) >= cptr.ldI64o(cw, $WinDesc_npages)))
                 (yield* panic(__s_bad_menu_screen_page_d, curr_page));
+
+            /* clear screen */
             if (!cptr.ldI16o(cw, $WinDesc_offx)) {
                 if (cptr.ldI16o(cw, $WinDesc_offy)) {
                     (yield* tty_curs(window, 1, 0));
@@ -1126,25 +1285,46 @@ function* process_menu_window(window, cw) {
                 } else
                     (yield* term_clear_screen());
             }
+
             rp = cptr.decay(resp);
             if (cptr.ldI64o(cw, $WinDesc_npages) > 0n) {
+                /* collect accelerators */
                 page_start = cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_plist), curr_page, 8);
                 page_end = cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_plist), (curr_page + 1) | 0, 8);
                 for (page_lines = 0, curr = page_start; !cptr.eq(curr, page_end); page_lines++, curr = cptr.ldPtr(curr)) {
                     let attr;
                     let color = NHM.NO_COLOR;
+
                     if (cptr.ld1so(curr, $tty_menu_item_selector))
                         cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1so(curr, $tty_menu_item_selector));
+
                     (yield* tty_curs(window, 1, page_lines));
                     if (cptr.ldI16o(cw, $WinDesc_offx))
                         (yield* cl_end());
+
                     void putchar(32);
                     cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1);
+
                     attr = cptr.ldI32o(curr, $tty_menu_item_attr);
                     color = cptr.ldI32o(curr, $tty_menu_item_color);
-                    attr_n = 0;
+
+                    /* which character to start attribute highlighting;
+                       whole line for headers and such, after the selector
+                       character and space and selection indicator for menu
+                       lines (including fake ones that simulate grayed-out
+                       entries, so we don't rely on curr->identifier here) */
+                    attr_n = 0;  /* whole line */
                     if (cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 0) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 1) == 32 && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2) && cptr.strchr(__s_dash_plus_hash, cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2)) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 3) == 32)
-                        attr_n = 4;
+                        /* [0]=letter, [1]=space, [2]=[-+#], [3]=space */
+                        attr_n = 4;  /* [4:N]=entry description */
+
+                    /*
+                     * Don't use xputs() because (1) under unix it calls
+                     * tputstr() which will interpret a '*' as some kind
+                     * of padding information and (2) it calls xputc to
+                     * actually output the character.  We're faster doing
+                     * this.
+                     */
                     for (n = 0, cp = cptr.ldPtro(curr, $tty_menu_item_str); cptr.ld1s(cp) && cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) < cptr.ldI16o(ttyDisplay, $DisplayDesc_cols); cp = cptr.add(cp, 1), n++) {
                         if (n == attr_n && (color != NHM.NO_COLOR || attr != NHM.ATR_NONE))
                             toggle_menu_attr(1, color, attr);
@@ -1156,9 +1336,14 @@ function* process_menu_window(window, cw) {
                                 nomux_putch(c);
                                 cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                             }
+
+                            /* all selected: '*' vs count selected: '#' */
                             void putchar(c);
                         } else if (n == 2 && cptr.ldPtro(curr, $tty_menu_item_identifier) !== null && show_obj_syms && cptr.ldI32o(curr, $tty_menu_item_glyphinfo) != NHC.MAX_GLYPH) {
                             let gcolor = cptr.ldI32o(curr, $tty_menu_item_glyphinfo + $glyphinfo_gm + $glyph_map_entry_sym);
+
+                            /* tty_print_glyph could be used, but is overkill
+                               and requires referencing the cursor location */
                             toggle_menu_attr(1, gcolor, NHM.ATR_NONE);
                             void putchar(cptr.ldI32o(curr, $tty_menu_item_glyphinfo + $glyphinfo_ttychar));
                             {
@@ -1176,57 +1361,81 @@ function* process_menu_window(window, cw) {
                                 nomux_putch(cptr.ld1s(cp));
                                 cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                             }
-                        }
+                        }  /* for *cp */
                     }
                     if (n > attr_n && (color != NHM.NO_COLOR || attr != NHM.ATR_NONE))
                         toggle_menu_attr(0, color, attr);
-                }
+                }  /* if npages > 0 */
             } else {
                 page_start = null;
                 page_end = null;
                 page_lines = 0;
             }
             cptr.st1(rp, 0);
+            /* remember how many explicit menu choices there are */
             resp_len = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(resp))));
+
+            /* corner window - clear extra lines from last page */
             if (cptr.ldI16o(cw, $WinDesc_offx)) {
                 for (n = (page_lines + 1) | 0; BigInt(n) < cptr.ldI64o(cw, $WinDesc_maxrow); n++) {
                     (yield* tty_curs(window, 1, n));
                     (yield* cl_end());
                 }
+                /*
+                 * If this corner menu was big, there are likely large
+                 * portions of the map, status window, and tty perm_invent
+                 * window (is there is one), that are all missing a lot of
+                 * information. Let's repair the blacked-out rows now
+                 * because it looks better.
+                 */
                 if (previous_page_lines != 0 && page_lines < previous_page_lines) {
+                    /*
+                     * +3 to leave a couple of blank rows
+                     * under the menu to make it contrast well.
+                     */
                     let row_startoffset = (page_lines + 3) | 0;
+
                     if (BigInt(row_startoffset) > BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n))
                         row_startoffset = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n)));
                     (yield* docorner(cptr.ldI16o(cw, $WinDesc_offx), Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) + 1n))), row_startoffset));
                 }
             }
+            /* set extra chars.. */
             if (cptr.ld1s(cptr.decay(gacc))) {
-                void cptr.strcat(cptr.decay(resp), cptr.decay(gacc));
+                void cptr.strcat(cptr.decay(resp), cptr.decay(gacc));  /* group accelerators */
                 if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE)
                     resp_len = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(resp))));
-            }
+            }  /* next page or end */
             void cptr.strcat(cptr.decay(resp), __s_sp);
-            void cptr.strcat(cptr.decay(resp), __s_0123456789);
+            void cptr.strcat(cptr.decay(resp), __s_0123456789);  /* counts, quit */
             void cptr.strcat(cptr.decay(resp), cptr.add(gm, $instance_globals_m_mapped_menu_cmds));
             void cptr.strcat(cptr.decay(resp), cptr.decay(default_menu_cmds));
+
             if (cptr.ldI64o(cw, $WinDesc_npages) > 1n)
                 void cptr.sprintf(cptr.ldPtro(cw, $WinDesc_morestr), __s_d_of_d, (curr_page + 1) | 0, Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_npages))));
             else if (msave)
                 void cptr.strcpy(cptr.ldPtro(cw, $WinDesc_morestr), msave);
             else
                 void cptr.strcpy(cptr.ldPtro(cw, $WinDesc_morestr), cptr.decay(defmorestr));
+
             (yield* tty_curs(window, 1, page_lines));
             (yield* cl_end());
             (yield* dmore(cw, cptr.decay(resp)));
         } else {
+            /* just put the cursor back... */
             (yield* tty_curs(window, (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(cw, $WinDesc_morestr)))) + 2) | 0, page_lines));
             (yield* xwaitforspace(cptr.decay(resp)));
         }
-        really_morc = morc.v;
+
+        really_morc = morc.v;  /* (only used with MENU_EXPLICIT_CHOICE) */
         if ((rp = cptr.strchr(cptr.decay(resp), morc.v)) !== null && cptr.cmp(rp, cptr.add(cptr.decay(resp), resp_len)) < 0)
+            /* explicit menu selection; don't override it if it also
+               happens to match a mapped menu command (such as ':' to
+               look inside a container vs ':' to search) */
             morc.v = 127;
         else
             morc.v = map_menu_cmd(morc.v);
+
         switch (morc.v) {
             case 48:
             case 49:
@@ -1238,8 +1447,13 @@ function* process_menu_window(window, cw) {
             case 55:
             case 56:
             case 57:
+            /* special case: '0' is also the default ball class;
+               some menus use digits as potential group accelerators
+               but their entries don't rely on counts */
             if (!counting && cptr.strchr(cptr.decay(gacc), morc.v))
                 {
+                    /* group accelerator; for the PICK_ONE case, we know that
+                       it matches exactly one item in order to be in gacc[] */
                     (yield* invert_all(window, page_start, page_end, morc.v, counting ? count : -1n));
                     if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE)
                         finished = 1;
@@ -1247,10 +1461,23 @@ function* process_menu_window(window, cw) {
                 }
             {
                 let dgt = BigInt(((morc.v - 48) | 0));
+
+                /* count = (10 * count) + (morc - '0'); */
                 count = (((count) < 922337203685477580n || ((count) == 922337203685477580n && (dgt) <= 7n)) ? BigInt.asIntN(64, BigInt.asIntN(64, (count) * 10n) + (dgt)) : -1n);
                 if (count < 0n)
-                    continue;
+                    continue;  /* reset_count is True */
             }
+            /*
+             * It is debatable whether we should allow 0 to
+             * start a count.  There is no difference if the
+             * item is selected.  If not selected, then
+             * "0b" could mean:
+             *
+             *  count starting zero:    "zero b's"
+             *  ignore starting zero:   "select b"
+             *
+             * At present I don't know which is better.
+             */
             if (count != 0n) {
                 counting = 1;
                 reset_count = 0;
@@ -1258,6 +1485,7 @@ function* process_menu_window(window, cw) {
             break;
             case 27:
             if (!counting) {
+                /* deselect everything */
                 for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
                     cptr.st1o(curr, $tty_menu_item_selected, 0);
                     cptr.stI64o(curr, $tty_menu_item_count, -1n);
@@ -1265,6 +1493,7 @@ function* process_menu_window(window, cw) {
                 cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_CANCELLED);
                 finished = 1;
             }
+            /* else only stop count */
             break;
             case 0:
             case 10:
@@ -1278,6 +1507,7 @@ function* process_menu_window(window, cw) {
                 curr_page++;
                 page_start = null;
             } else if (morc.v == 32) {
+                /* ' ' finishes menus here, but stop '>' doing the same. */
                 finished = 1;
             }
             break;
@@ -1312,16 +1542,26 @@ function* process_menu_window(window, cw) {
             break;
             case 46:
             if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ANY) {
+                /* entries on the current page need screen updating */
                 (yield* set_all_on_page(window, page_start, page_end));
+                /* set the rest; entries on current page will be skipped
+                   because all of those will be 'already selected' now
+                   (some won't be if they failed menuitem_invert_test()
+                   in set_all_on_page() but those will fail it again here) */
                 for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
                     if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(1, cptr.ldI32o(curr, $tty_menu_item_itemflags), 0))
                         continue;
                     cptr.st1o(curr, $tty_menu_item_selected, 1);
-                }
+                }  /* if PICK_ANY */
             }
             break;
             case 45:
+            /* entries on the current page need screen updating */
             (yield* unset_all_on_page(window, page_start, page_end));
+            /* unset the rest; entries on current page will be skipped
+               because none of those will still be in 'selected' state
+               (unless they failed the menuitem_invert_test() in
+               unset_all_on_page() but those will fail it again here) */
             for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
                 if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || !cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(2, cptr.ldI32o(curr, $tty_menu_item_itemflags), 1))
                     continue;
@@ -1342,10 +1582,12 @@ function* process_menu_window(window, cw) {
                 let tmpbuf = [0];
                 let on_curr_page = 0;
                 let lineno = 0;
+
                 (yield* tty_getlin(__s_search_for, cptr.decay(tmpbuf)));
                 if (!cptr.ld1so(cptr.decay(tmpbuf), 0, 1) || cptr.ld1so(cptr.decay(tmpbuf), 0, 1) == 27)
                     break;
                 void cptr.sprintf(cptr.decay(searchbuf), __s_star_pct_s_star, cptr.decay(tmpbuf));
+
                 for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
                     if (on_curr_page)
                         lineno++;
@@ -1369,6 +1611,7 @@ function* process_menu_window(window, cw) {
             ;
             default:
             if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_NONE || !cptr.strchr(cptr.decay(resp), morc.v)) {
+                /* unacceptable input received */
                 tty_nhbell();
                 break;
             } else if (cptr.strchr(cptr.decay(gacc), morc.v)) {
@@ -1377,16 +1620,18 @@ function* process_menu_window(window, cw) {
                     finished = 1;
                 break;
             }
+            /* find, toggle, and possibly update */
             for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr))
                 if (morc.v == cptr.ld1so(curr, $tty_menu_item_selector)) {
                     (yield* toggle_menu_curr(window, curr, n, 1, counting, count));
                     if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE)
                         finished = 1;
-                    break;
+                    break;  /* from `for' loop */
                 }
             break;
         }
-    }
+
+    }  /* while */
     cptr.stPtro(cw, $WinDesc_morestr, msave);
     cptr.free(morestr);
 }
@@ -1398,6 +1643,7 @@ function* process_text_window(window, cw) {
     let attr;
     let linestart;
     let cp;
+
     for (n = 0, i = 0; BigInt(i) < cptr.ldI64o(cw, $WinDesc_maxrow); i++) {
         {
             if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -1431,8 +1677,11 @@ function* process_text_window(window, cw) {
             }
             term_start_attr(attr);
             for (cp = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), 1), linestart = 1; cptr.ld1s(cp) && cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) < cptr.ldI16o(ttyDisplay, $DisplayDesc_cols); cp = cptr.add(cp, 1)) {
+                /* message recall for msg_window:full/combination/reverse
+                   might have output from '/' in it (see redotoplin()) */
                 if (linestart) {
                     if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8)) {
+                        /* FIXME: what is actually in that line? is it the \GNNNNNNNN or UTF-8? */
                         g_putch(cptr.ld1s(cp));
                     } else if ((cptr.ld1s(cp) & 128) != 0) {
                         g_putch(cptr.ld1s(cp));
@@ -1473,12 +1722,14 @@ function* process_text_window(window, cw) {
     }
 }
 
+/*ARGSUSED*/
 /** C ref: wintty.c:1903 — @param {CInt} window @param {CInt} blocking */
 export function* tty_display_nhwindow(window, blocking) {
     let cw = null;
     let s_maxcol;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -1490,11 +1741,12 @@ export function* tty_display_nhwindow(window, blocking) {
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
     cptr.stI32o(ttyDisplay, $DisplayDesc_rawprint, 0);
     ;
+
     switch (cptr.ldI16o(cw, $WinDesc_type)) {
         case NHM.NHW_MESSAGE:
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE) {
             (yield* more());
-            cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);
+            cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);  /* more resets this */
             (yield* tty_clear_nhwindow(window));
             void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || ((yield* nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 1926)), 0) ? 1 : 0);
         } else
@@ -1517,11 +1769,13 @@ export function* tty_display_nhwindow(window, blocking) {
         void fflush(__stdoutp);
         break;
         case NHM.NHW_TEXT:
-        cptr.stI64o(cw, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));
+        cptr.stI64o(cw, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));  /* force full-screen mode */
         // @FallThrough
         ;
         case NHM.NHW_MENU:
         cptr.st1o(cw, $WinDesc_active, 1);
+        /* cw->maxcol is a long, but its value is constrained to
+           be <= ttyDisplay->cols, so is sure to fit within a short */
         s_maxcol = Number(BigInt.asIntN(16, cptr.ldI64o(cw, $WinDesc_maxcol)));
         cptr.stI16o(cw, $WinDesc_offx, i16(((cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? 0 : (((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0) ? 82 : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0))) < ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0) ? ((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0) ? 82 : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0))) : ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0)))));
         if (cptr.ldI16o(cw, $WinDesc_offx) < 0)
@@ -1542,6 +1796,7 @@ export function* tty_display_nhwindow(window, blocking) {
             if (WIN_MESSAGE.v != -1)
                 (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
         }
+
         if (cptr.ldPtro(cw, $WinDesc_data) || !cptr.ldI64o(cw, $WinDesc_maxrow))
             (yield* process_text_window(window, cw));
         else
@@ -1556,6 +1811,7 @@ export function* tty_dismiss_nhwindow(window) {
     let cw = null;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -1563,6 +1819,7 @@ export function* tty_dismiss_nhwindow(window) {
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_dismiss_nhwindow));
     ;
+
     switch (cptr.ldI16o(cw, $WinDesc_type)) {
         case NHM.NHW_MESSAGE:
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_EMPTY)
@@ -1573,6 +1830,10 @@ export function* tty_dismiss_nhwindow(window) {
         case NHM.NHW_STATUS:
         case 7:
         case NHM.NHW_MAP:
+        /*
+         * these should only get dismissed when the game is going away
+         * or suspending
+         */
         (yield* tty_curs(BASE_WINDOW, 1, (cptr.ldI16(ttyDisplay) - 1) | 0));
         cptr.st1o(cw, $WinDesc_active, 0);
         break;
@@ -1580,10 +1841,21 @@ export function* tty_dismiss_nhwindow(window) {
         case NHM.NHW_TEXT:
         case NHM.NHW_PERMINVENT:
         if (cptr.ld1so(cw, $WinDesc_active)) {
+            /* skip erasure if window_inited has been reset to 0 during
+               final run-down in case this is the end-of-game window;
+               the contents of that window should remain shown even when
+               the window itself has gone away */
             if (cptr.ld1so(iflags, $instance_flags_window_inited) && !erasing_tty_screen) {
-                let clearscreen = 0;
+                let clearscreen = 0;  /* just erase the menu */
+
+                /* during role/race/&c selection, menus are put up on top
+                   of the base window; we don't track what was there so
+                   can't refresh--force the screen to be cleared instead
+                   (affects dismissal of 'reset role filtering' menu if
+                   screen height forces that to need a second page) */
                 if (cptr.ldI32o(program_state, $sinfo_in_role_selection))
                     clearscreen = 1;
+
                 (yield* erase_menu_or_text(window, cw, clearscreen));
             }
             cptr.st1o(cw, $WinDesc_active, 0);
@@ -1596,11 +1868,13 @@ export function* tty_dismiss_nhwindow(window) {
 /** C ref: wintty.c:2057 — @param {CInt} window */
 export function* tty_destroy_nhwindow(window) {
     let cw = null;
+
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null) {
         if (window == WIN_INVEN.v)
             return;
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_destroy_nhwindow));
     }
+
     if (cptr.ld1so(cw, $WinDesc_active))
         (yield* tty_dismiss_nhwindow(window));
     if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_MESSAGE)
@@ -1609,21 +1883,24 @@ export function* tty_destroy_nhwindow(window) {
         (yield* term_clear_screen());
     free_window_info(cw, 1);
     cptr.free(cw);
-    cptr.stPtro(wins, window, null, 8);
+    cptr.stPtro(wins, window, null, 8);  /* available for re-use */
 }
 
+/* when screen is cleared, reset stored data to spaces */
 /** C ref: wintty.c:2084 */
 export function* erase_tty_screen() {
     let cw;
     let i;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
     }
     if (erasing_tty_screen++)
         return;
+    /* update window data to reflect that each active window is all blanks */
     for (i = 0; i < NHM.MAXWIN; ++i) {
         cw = cptr.ldPtro(wins, i, 8);
         if (cw && cptr.ld1so(cw, $WinDesc_active))
@@ -1640,6 +1917,7 @@ export function* tty_curs(window, x, y) {
     let cy = cptr.ldI16o(ttyDisplay, $DisplayDesc_cury);
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -1650,6 +1928,7 @@ export function* tty_curs(window, x, y) {
     ;
     if (x < 1 || y < 0 || BigInt(y) >= cptr.ldI64o(cw, $WinDesc_rows) || BigInt(x) > cptr.ldI64o(cw, $WinDesc_cols)) {
         let s = __s_unknown_type;
+
         switch (cptr.ldI16o(cw, $WinDesc_type)) {
             case NHM.NHW_MESSAGE:
             s = __s_topl_window;
@@ -1670,6 +1949,10 @@ export function* tty_curs(window, x, y) {
             s = __s_base_window;
             break;
         }
+        /* avoid sending a line to the message window if we're complaining
+           about cursor positioning in message window; perhaps raw_printf?
+           this ought to be using impossible() so that someone might
+           actually see it */
         if (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)
             {
                 if ((yield* debugcore(__s_win_tty_wintty_c, 1))) {
@@ -1678,23 +1961,27 @@ export function* tty_curs(window, x, y) {
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
-    }
-    cptr.stI64o(cw, $WinDesc_curx, BigInt((--x)));
+    }  /* DEBUG */
+    cptr.stI64o(cw, $WinDesc_curx, BigInt((--x)));  /* column 0 is not used */
     cptr.stI64o(cw, $WinDesc_cury, BigInt(y));
+
     x = (x + cptr.ldI16o(cw, $WinDesc_offx)) | 0;
     y = (y + cptr.ldI16o(cw, $WinDesc_offy)) | 0;
     if (clipping && window == WIN_MAP.v) {
         x = (x - clipx) | 0;
         y = (y - clipy) | 0;
     }
+
     if (y == cy && x == cx)
         return;
+
     if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_MAP)
         end_glyphout();
     if (!cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_ND) && (cx != x || x <= 3)) {
-        cmov(x, y);
+        cmov(x, y);  /* bunker!wtm */
         return;
     }
+
     if ((cy = (cy - y) | 0) < 0)
         cy = -cy;
     if ((cx = (cx - x) | 0) < 0)
@@ -1709,6 +1996,7 @@ export function* tty_curs(window, x, y) {
         (yield* nocmov(x, y));
     } else
         cmov(x, y);
+
     cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(x));
     cptr.stI16o(ttyDisplay, $DisplayDesc_cury, i16(y));
 }
@@ -1717,12 +2005,17 @@ const __static_compress_str_cbuf = new Uint8Array(256); /** C ref: wintty.c:2249
 
 /** C ref: wintty.c:2247 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function* compress_str(str) {
+
+    /* compress out consecutive spaces if line is too long;
+       topline wrapping converts space at wrap point into newline,
+       we reverse that here */
     if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= CO() || cptr.strchr(str, 10)) {
         let in_str = str;
         let c;
         let outstr = cptr.decay(__static_compress_str_cbuf);
         let outend = cptr.add(cptr.decay(__static_compress_str_cbuf), 255n, 1);
         let was_space = 1;
+
         while ((c = cptr.ld1s(cptr.postinc(() => in_str, (v) => { in_str = v; }))) != 0 && cptr.cmp(outstr, outend) < 0) {
             if (c == 10)
                 c = 32;
@@ -1732,7 +2025,7 @@ function* compress_str(str) {
             was_space = schar((c == 32));
         }
         if ((was_space && cptr.cmp(outstr, cptr.decay(__static_compress_str_cbuf)) > 0) || cptr.eq(outstr, outend))
-            outstr = cptr.add(outstr, -1);
+            outstr = cptr.add(outstr, -1);  /* remove trailing space or make room for terminator */
         cptr.st1(outstr, 0);
         str = cptr.decay(__static_compress_str_cbuf);
     }
@@ -1747,26 +2040,43 @@ export function* tty_putstr(window, attr, str) {
     let n0;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
     }
+    /* Assume there's a real problem if the window is missing --
+     * probably a panic message
+     */
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null) {
         tty_raw_print(str);
         return;
     }
+
     if (str === null || ((cptr.ldI32(cw) & NHM.WIN_CANCELLED) && (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)))
         return;
     if (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)
         str = (yield* compress_str(str));
+
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
     ;
+
     switch (cptr.ldI16o(cw, $WinDesc_type)) {
         case NHM.NHW_MESSAGE:
         {
             let suppress_history = (attr & NHM.ATR_NOHISTORY);
             let urgent_message = (attr & NHM.ATR_URGENT);
+            /* if ^C occurs, player is prompted with "Really quit?" and that
+               prompt is issued via tty_putstr(WIN_MESSAGE); if ^C happens
+               while writing DECgraphics chars, the prompt text would be
+               rendered as VT line-drawing characters unless we do this;
+               also, if color was in progress it wouldn't be switched off */
             end_glyphout();
+            /* if message is designated 'urgent' don't suppress it if user has
+               typed ESC at --More-- prompt when dismissing an earlier message;
+               besides turning off WIN_STOP, we need to prevent current message
+               from provoking --More-- and giving the user another chance at
+               using ESC to suppress, otherwise this message wouldn't get shown */
             if (urgent_message) {
                 if ((cptr.ldI32(cw) & NHM.WIN_STOP) != 0) {
                     (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
@@ -1774,13 +2084,23 @@ export function* tty_putstr(window, attr, str) {
                 }
                 cptr.stI32(cw, cptr.ldI32(cw) | NHM.WIN_NOSTOP);
             }
+
+            /* in case we ever support display attributes for topline
+               messages, clear flag mask leaving only display attr */
+            /*attr &= ~(ATR_URGENT | ATR_NOHISTORY);*/
+
             if (!suppress_history) {
+                /* normal output; add to current top line if room, else flush
+                   whatever is there to history and then write this */
                 (yield* update_topl(str));
             } else {
+                /* put anything already on top line into history */
                 (yield* remember_topl());
+                /* write to top line without remembering what we're writing */
                 (yield* show_topl(str));
             }
-            cptr.stI32(cw, cptr.ldI32(cw) & -5);
+
+            cptr.stI32(cw, cptr.ldI32(cw) & -5);  /* NOSTOP is a one-shot operation */
             break;
         }
         case NHM.NHW_MAP:
@@ -1817,7 +2137,8 @@ export function* tty_putstr(window, attr, str) {
         case NHM.NHW_MENU:
         case NHM.NHW_TEXT:
         if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT && (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) + BigInt(cptr.ldI16o(cw, $WinDesc_offy)))) == BigInt(((cptr.ldI16(ttyDisplay) - 1) | 0))) {
-            cptr.stI64o(cw, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));
+            /* not a menu, so save memory and output 1 page at a time */
+            cptr.stI64o(cw, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));  /* force full-screen mode */
             (yield* tty_display_nhwindow(window, 1));
             for (i = 0n; i < cptr.ldI64o(cw, $WinDesc_maxrow); i++)
                 if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8)) {
@@ -1826,8 +2147,10 @@ export function* tty_putstr(window, attr, str) {
                 }
             cptr.stI64o(cw, $WinDesc_maxrow, cptr.stI64o(cw, $WinDesc_cury, 0n));
         }
+        /* always grows one at a time, but alloc 12 at a time */
         if (cptr.ldI64o(cw, $WinDesc_cury) >= cptr.ldI64o(cw, $WinDesc_rows)) {
             let tmp;
+
             cptr.stI64o(cw, $WinDesc_rows, cptr.ldI64o(cw, $WinDesc_rows) + 12n);
             tmp = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt(Number(BigInt.asUintN(32, cptr.ldI64o(cw, $WinDesc_rows))) >>> 0))))));
             for (i = 0n; i < cptr.ldI64o(cw, $WinDesc_maxrow); i++)
@@ -1835,6 +2158,7 @@ export function* tty_putstr(window, attr, str) {
             if (cptr.ldPtro(cw, $WinDesc_data))
                 cptr.free(cptr.ldPtro(cw, $WinDesc_data));
             cptr.stPtro(cw, $WinDesc_data, tmp);
+
             for (i = cptr.ldI64o(cw, $WinDesc_maxrow); i < cptr.ldI64o(cw, $WinDesc_rows); i++)
                 cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), i, null, 8);
         }
@@ -1842,13 +2166,15 @@ export function* tty_putstr(window, attr, str) {
             cptr.free(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_cury), 8));
         n0 = BigInt.asIntN(64, BigInt.asIntN(64, cptr.strlen(str)) + 1n);
         ob = cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_cury), (yield* alloc((Number(BigInt.asUintN(32, n0)) + 1) >>> 0)), 8);
-        cptr.st1(cptr.postinc(() => ob, (v) => { ob = v; }), schar(((attr + 1) | 0)));
+        cptr.st1(cptr.postinc(() => ob, (v) => { ob = v; }), schar(((attr + 1) | 0)));  /* avoid nuls, for convenience */
         void cptr.strcpy(ob, str);
+
         if (n0 > cptr.ldI64o(cw, $WinDesc_maxcol))
             cptr.stI64o(cw, $WinDesc_maxcol, n0);
         if (cptr.stI64o(cw, $WinDesc_cury, cptr.ldI64o(cw, $WinDesc_cury) + 1n) > cptr.ldI64o(cw, $WinDesc_maxrow))
             cptr.stI64o(cw, $WinDesc_maxrow, cptr.ldI64o(cw, $WinDesc_cury));
         if (n0 > BigInt(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO))) {
+            /* attempt to break the line */
             for (i = BigInt(((CO() - 1) | 0)); i && cptr.ld1so(str, i) != 32 && cptr.ld1so(str, i) != 10; )
                 i--;
             if (i) {
@@ -1867,6 +2193,7 @@ export function* tty_display_file(fname, complain) {
         let f;
         let buf = new Uint8Array(256);
         let cr;
+
         (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
         f = fopen(fname, __s_r);
         if (!f) {
@@ -1875,7 +2202,7 @@ export function* tty_display_file(fname, complain) {
                 tty_mark_synch();
                 tty_raw_print(__s_empty);
                 perror(fname);
-                (yield* tty_wait_synch());
+                (yield* tty_wait_synch());  /* "Hit <space> to continue: " */
                 if (cptr.ldI16(u))
                     (yield* docrt());
                 (yield* pline(__s_cannot_open_s, fname));
@@ -1883,7 +2210,9 @@ export function* tty_display_file(fname, complain) {
         } else {
             let datawin = (yield* tty_create_nhwindow(NHM.NHW_TEXT));
             let empty = 1;
+
             if (complain && cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_CD)) {
+                /* attempt to scroll text below map window if there's room */
                 cptr.stI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy, i16(((cptr.ldI16o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_offy) + ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3)) | 0)));
                 if (((cptr.ldI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy) + 12) | 0) > cptr.ldI16(ttyDisplay))
                     cptr.stI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy, 0);
@@ -1903,20 +2232,27 @@ export function* tty_display_file(fname, complain) {
             (yield* tty_destroy_nhwindow(datawin));
             void fclose(f);
         }
-    }
+    }  /* DEF_PAGER */
     return;
 }
 
 /** C ref: wintty.c:2576 — @param {CInt} window @param {CLongLong} mbehavior */
 export function* tty_start_menu(window, mbehavior) {
     let cw = null;
+
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null)
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_start_menu));
     (void (mbehavior));
+
     (yield* tty_clear_nhwindow(window));
     return;
 }
 
+/*ARGSUSED*/
+/*
+ * Add a menu item to the beginning of the menu list.  This list is reversed
+ * later.
+ */
 /** C ref: wintty.c:2616 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr<char>} str @param {CUInt} itemflags */
 export function* tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     let preselected = schar((((itemflags & NHM.MENU_ITEMFLAGS_SELECTED) >>> 0) != 0));
@@ -1926,18 +2262,23 @@ export function* tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr,
     let buf = new Uint8Array(260);
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
     }
     if (str === null)
         return;
+
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_add_menu));
+
     (cptr.stI64o(cw, $WinDesc_nitems, cptr.ldI64o(cw, $WinDesc_nitems) + 1n)) - (1n);
     if (cptr.ldPtr(identifier)) {
         let len = Number(BigInt.asIntN(32, cptr.strlen(str)));
+
         if (len >= NHM.BUFSZ) {
+            /* We *think* everything's coming in off at most BUFSZ bufs... */
             (yield* impossible(__s_menu_item_too_long_d, len));
             len = 255;
         }
@@ -1947,6 +2288,7 @@ export function* tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr,
         newstr = cptr.decay(buf);
     } else
         newstr = str;
+
     item = (yield* alloc(104));
     cptr.memcpy(cptr.add(item, $tty_menu_item_identifier), identifier, 8);
     cptr.stI64o(item, $tty_menu_item_count, -1n);
@@ -1958,14 +2300,17 @@ export function* tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr,
     cptr.stI32o(item, $tty_menu_item_color, clr);
     cptr.stPtro(item, $tty_menu_item_str, (yield* dupstr(newstr)));
     cptr.memcpy(cptr.add(item, $tty_menu_item_glyphinfo), glyphinfo, 48);
+
     cptr.stPtr(item, cptr.ldPtro(cw, $WinDesc_mlist));
     cptr.stPtro(cw, $WinDesc_mlist, item);
 }
 
+/* Invert the given list, can handle NULL as an input. */
 /** C ref: wintty.c:2684 — @param {CPtr<tty_menu_item>} curr @returns {CPtr<tty_menu_item>} */
 function reverse(curr) {
     let next;
     let head = null;
+
     while (curr) {
         next = cptr.ldPtr(curr);
         cptr.stPtr(curr, head);
@@ -1980,6 +2325,12 @@ let tty_menu_promptstyle = cptr.alloc($sizeof_color_and_attr);
 cptr.stI32(tty_menu_promptstyle, NHM.NO_COLOR);
 cptr.stI32o(tty_menu_promptstyle, $color_and_attr_attr, NHM.ATR_NONE);
 
+/*
+ * End a menu in this window, window must a type NHW_MENU.  This routine
+ * processes the string list.  We calculate the # of pages, then assign
+ * keyboard accelerators as needed.  Finally we decide on the width and
+ * height of the window.
+ */
 /** C ref: wintty.c:2706 — @param {CInt} window @param {CPtr<char>} prompt */
 export function* tty_end_menu(window, prompt) {
     let cw = null;
@@ -1989,29 +2340,53 @@ export function* tty_end_menu(window, prompt) {
     let n;
     let menu_ch;
     let clr = NHM.NO_COLOR;
+
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU) {
+        /* this can happen if start_menu failed due to size requirements
+           for the tty perm inventory window. It isn't a situation that
+           requires a panic, just an early return. */
         if (window == WIN_INVEN.v && !cw)
             return;
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_end_menu));
     }
+
+    /* Reverse the list so that items are in correct order. */
     cptr.stPtro(cw, $WinDesc_mlist, reverse(cptr.ldPtro(cw, $WinDesc_mlist)));
+
+    /* Put the prompt at the beginning of the menu. */
     if (prompt) {
         let any = cptr.alloc(8);
-        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
+        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* not selectable */
         (yield* tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_empty, NHM.MENU_ITEMFLAGS_NONE));
         (yield* tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o(tty_menu_promptstyle, $color_and_attr_attr), cptr.ldI32(tty_menu_promptstyle), prompt, NHM.MENU_ITEMFLAGS_NONE));
     }
-    lmax = (52 < ((cptr.ldI16(ttyDisplay) - 1) | 0) ? 52 : ((cptr.ldI16(ttyDisplay) - 1) | 0));
-    cptr.stI64o(cw, $WinDesc_npages, (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + BigInt(((lmax - 1) | 0)))) / BigInt(lmax));
+
+    /* 52: 'a'..'z' and 'A'..'Z'; avoids selector duplication within a page */
+    lmax = (52 < ((cptr.ldI16(ttyDisplay) - 1) | 0) ? 52 : ((cptr.ldI16(ttyDisplay) - 1) | 0));  /* # lines per page */
+    cptr.stI64o(cw, $WinDesc_npages, (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + BigInt(((lmax - 1) | 0)))) / BigInt(lmax));  /* # of pages */
+    /*
+     * TODO?
+     *  For really tall page, allow 53 if '$' or '#' is present and
+     *  54 if both are.  [Only for single page menu, otherwise pages
+     *  without those could try to use too many letters.]
+     *  Probably not worth bothering with; anyone with a display big
+     *  for this to matter will likely switch from tty to curses for
+     *  multi-line message window and/or persistent inventory window.
+     */
+
+    /* make sure page list is large enough */
     if (cptr.ldI64o(cw, $WinDesc_plist_size) < BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) + 1n)) {
         if (cptr.ldPtro(cw, $WinDesc_plist))
             cptr.free(cptr.ldPtro(cw, $WinDesc_plist));
         cptr.stI64o(cw, $WinDesc_plist_size, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) + 1n));
         cptr.stPtro(cw, $WinDesc_plist, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(cw, $WinDesc_plist_size)) * 8n))))));
     }
-    cptr.stI64o(cw, $WinDesc_cols, 0n);
-    menu_ch = 63;
+
+    cptr.stI64o(cw, $WinDesc_cols, 0n);  /* cols is set when the win is initialized... (why?) */
+    menu_ch = 63;  /* lint suppression */
     for (n = 0, curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; n++, curr = cptr.ldPtr(curr)) {
+        /* set page boundaries and character accelerators */
         if ((n % lmax) == 0) {
             menu_ch = 97;
             cptr.stPtro(cptr.ldPtro(cw, $WinDesc_plist), (n / lmax) | 0, curr, 8);
@@ -2021,17 +2396,24 @@ export function* tty_end_menu(window, prompt) {
             if (menu_ch++ == 122)
                 menu_ch = 65;
         }
-        len = Number(BigInt.asIntN(16, BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(curr, $tty_menu_item_str)) + 2n)));
+
+        /* cut off any lines that are too long */
+        len = Number(BigInt.asIntN(16, BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(curr, $tty_menu_item_str)) + 2n)));  /* extra space at beg & end */
         if (len > cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)) {
             cptr.st1o(cptr.ldPtro(curr, $tty_menu_item_str), (cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 2) | 0, 0);
             len = cptr.ldI16o(ttyDisplay, $DisplayDesc_cols);
         }
         if (BigInt(len) > cptr.ldI64o(cw, $WinDesc_cols))
             cptr.stI64o(cw, $WinDesc_cols, BigInt(len));
-    }
+    }  /* plist terminator */
     cptr.stPtro(cptr.ldPtro(cw, $WinDesc_plist), cptr.ldI64o(cw, $WinDesc_npages), null, 8);
+
+    /*
+     * If greater than 1 page, morestr is "(x of y) " otherwise, "(end) "
+     */
     if (cptr.ldI64o(cw, $WinDesc_npages) > 1n) {
         let buf = new Uint8Array(128);
+        /* produce the largest demo string */
         void cptr.sprintf(cptr.decay(buf), __s_ld_of_ld, cptr.ldI64o(cw, $WinDesc_npages), cptr.ldI64o(cw, $WinDesc_npages));
         len = Number(BigInt.asIntN(16, cptr.strlen(cptr.decay(buf))));
         cptr.stPtro(cw, $WinDesc_morestr, (yield* dupstr(__s_empty)));
@@ -2039,14 +2421,22 @@ export function* tty_end_menu(window, prompt) {
         cptr.stPtro(cw, $WinDesc_morestr, (yield* dupstr(__s_end)));
         len = Number(BigInt.asIntN(16, cptr.strlen(cptr.ldPtro(cw, $WinDesc_morestr))));
     }
+
     if (len > cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)) {
+        /* truncate the prompt if it's too long for the screen */
         if (cptr.ldI64o(cw, $WinDesc_npages) <= 1n)
             cptr.st1o(cptr.ldPtro(cw, $WinDesc_morestr), cptr.ldI16o(ttyDisplay, $DisplayDesc_cols), 0);
         len = cptr.ldI16o(ttyDisplay, $DisplayDesc_cols);
     }
     if (BigInt(len) > cptr.ldI64o(cw, $WinDesc_cols))
         cptr.stI64o(cw, $WinDesc_cols, BigInt(len));
+
     cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_cols));
+
+    /*
+     * The number of lines in the first page plus the morestr will be the
+     * maximum size of the window.
+     */
     if (cptr.ldI64o(cw, $WinDesc_npages) > 1n)
         cptr.stI64o(cw, $WinDesc_maxrow, cptr.stI64o(cw, $WinDesc_rows, BigInt(((lmax + 1) | 0))));
     else
@@ -2060,8 +2450,10 @@ export function* tty_select_menu(window, how, menu_list) {
     let mi;
     let n;
     let cancelled;
+
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
         (yield* panic(cptr.decay(winpanicstr), window, __s_tty_select_menu));
+
     if (cptr.ldU64o(cw, $WinDesc_mbehavior) == 1n) {
         return 0;
     }
@@ -2070,7 +2462,8 @@ export function* tty_select_menu(window, how, menu_list) {
     morc.v = 0;
     (yield* tty_display_nhwindow(window, 1));
     cancelled = !!(cptr.ldI32(cw) & NHM.WIN_CANCELLED);
-    (yield* tty_dismiss_nhwindow(window));
+    (yield* tty_dismiss_nhwindow(window));  /* does not destroy window data */
+
     if (cancelled) {
         n = -1;
     } else {
@@ -2078,6 +2471,7 @@ export function* tty_select_menu(window, how, menu_list) {
             if (cptr.ld1so(curr, $tty_menu_item_selected))
                 n++;
     }
+
     if (n > 0) {
         cptr.stPtr(menu_list, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(n)) * 24n))))));
         for (mi = cptr.ldPtr(menu_list), curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
@@ -2087,37 +2481,50 @@ export function* tty_select_menu(window, how, menu_list) {
                 mi = cptr.add(mi, 1, 24);
             }
     }
+
     return n;
 }
 
+/* special hack for treating top line --More-- as a one item menu */
 /** C ref: wintty.c:2876 — @param {CInt} let @param {CInt} how @param {CPtr<char>} mesg @returns {CInt} */
 export function* tty_message_menu(let$, how, mesg) {
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup))
             return 27;
     }
+    /* "menu" without selection; use ordinary pline, no more() */
     if (how == NHM.PICK_NONE) {
         (yield* pline(__s_pct_s, mesg));
         return 0;
     }
+
     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, let$);
     morc.v = 0;
+    /* barebones pline(); since we're only supposed to be called after
+       response to a prompt, we'll assume that the display is up to date */
     (yield* tty_putstr(WIN_MESSAGE.v, 0, mesg));
+    /* if `mesg' didn't wrap (triggering --More--), force --More-- now */
     if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE) {
         (yield* more());
-        cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);
+        cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);  /* more resets this */
         (yield* tty_clear_nhwindow(WIN_MESSAGE.v));
         void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || ((yield* nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2895)), 0) ? 1 : 0);
     }
+    /* normally <ESC> means skip further messages, but in this case
+       it means cancel the current prompt; any other messages should
+       continue to be output normally */
     cptr.stI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2);
     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
+
     return schar((((how == NHM.PICK_ONE && morc.v == let$) || morc.v == 27) ? morc.v : 0));
 }
 
 /** C ref: wintty.c:2907 — @param {CInt} window @param {CInt} request @param {CPtr<win_request_info>} wri @returns {CPtr<win_request_info>} */
 export function tty_ctrl_nhwindow(window, request, wri) {
+
     if (!wri)
         return null;
+
     switch (request) {
         case NHC.set_mode:
         case NHC.request_settings:
@@ -2131,6 +2538,7 @@ export function tty_ctrl_nhwindow(window, request, wri) {
     return wri;
 }
 
+/* update persistent inventory window */
 /** C ref: wintty.c:3663 — @param {CInt} arg */
 export function tty_update_inventory(arg) {
     return;
@@ -2155,6 +2563,7 @@ export function* tty_wait_synch() {
             return;
         }
     }
+    /* we just need to make sure all windows are synch'd */
     if (WIN_MAP.v == -1 || !ttyDisplay || cptr.ldI32o(ttyDisplay, $DisplayDesc_rawprint)) {
         (yield* getret());
         if (ttyDisplay)
@@ -2165,7 +2574,9 @@ export function* tty_wait_synch() {
             (yield* addtopl(__s_more));
             void fflush(__stdoutp);
         } else if (cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) > cptr.ldI32(program_state)) {
+            /* this can only happen if we were reading and got interrupted */
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_SPECIAL_PROMPT);
+            /* do this twice; 1st time gets the Quit? message again */
             void (yield* tty_doprev_message());
             void (yield* tty_doprev_message());
             (cptr.stI32o(ttyDisplay, $DisplayDesc_intr, cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + 1)) - (1);
@@ -2181,24 +2592,28 @@ export function* docorner(xmin, ymax, ystart_between_menu_pages) {
     let ystart = 0;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
     }
     if (ymax > LI())
-        ymax = LI();
+        ymax = LI();  /* can happen if window gets smaller */
     if (ystart_between_menu_pages)
         ystart = ystart_between_menu_pages;
+
     for (y = ystart; y < ymax; y++) {
-        (yield* tty_curs(BASE_WINDOW, xmin, y));
+        (yield* tty_curs(BASE_WINDOW, xmin, y));  /* move cursor */
         if (!ystart_between_menu_pages)
-            (yield* cl_end());
+            (yield* cl_end());  /* clear to end of line */
         if (y < cptr.ldI16o(cw, $WinDesc_offy) || ((y + clipy) | 0) > NHM.ROWNO)
-            continue;
+            continue;  /* only refresh board */
         (yield* row_refresh(i16(((((xmin + clipx) | 0) - cptr.ldI16o(cw, $WinDesc_offx)) | 0)), 79, i16(((((y + clipy) | 0) - cptr.ldI16o(cw, $WinDesc_offy)) | 0))));
     }
+
     end_glyphout();
     if (ymax >= cptr.ldI16o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_offy) && !ystart_between_menu_pages) {
+        /* we have wrecked the bottom line */
         cptr.st1o(disp, $display_hints_botlx, 1);
         (yield* bot());
     }
@@ -2234,12 +2649,13 @@ export function g_putch(in_ch) {
     if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8)) {
         void putchar(ch);
     } else if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_IBM) || (cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) && (!(cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC) || (in_ch & 127) < 96))) {
+        /* IBM-compatible displays don't need other stuff */
         void putchar(ch);
     } else if (ch & 128) {
         if (!GFlag || HE_resets_AS.v) {
             graph_on();
             GFlag = 1;
-        }
+        }  /* Strip 8th bit */
         void putchar((ch ^ 128));
     } else {
         if (GFlag) {
@@ -2248,6 +2664,7 @@ export function g_putch(in_ch) {
         }
         void putchar(ch);
     }
+    /* Strip high bit for DEC graphics, matching putchar(ch ^ 0x80) */
     nomux_putch(uchar(((ch & 128) ? (ch ^ 128) : ch)));
     return;
 }
@@ -2281,6 +2698,7 @@ export function* tty_cliparound(x, y) {
     let oldy = clipy;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -2302,9 +2720,18 @@ export function* tty_cliparound(x, y) {
         clipy = (clipymax - ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) | 0;
     }
     if (clipx != oldx || clipy != oldy) {
-        (yield* redraw_map(1));
+        (yield* redraw_map(1));  /* ask the core to resend the map window's data */
     }
 }
+
+/*
+ *  tty_print_glyph
+ *
+ *  Print the glyph to the output device.  Don't flush the output device.
+ *
+ *  Since this is only called from show_glyph(), it is assumed that the
+ *  position and glyph are always correct (checked there)!
+ */
 
 /** C ref: wintty.c:3916 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr<glyph_info>} glyphinfo @param {CPtr<glyph_info>} bkglyphinfo */
 export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
@@ -2317,6 +2744,7 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     let special;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
+
             morc.v = 27;
             return;
         }
@@ -2325,10 +2753,13 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         if (x <= clipx || y < clipy || x >= clipxmax || y >= clipymax)
             return;
     }
+    /* get glyph ttychar, color, and special flags */
     ch = cptr.ldI32o(glyphinfo, $glyph_info_ttychar);
     color = cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_sym) >>> 0;
     special = cptr.ldI32o(glyphinfo, $glyph_info_gm);
     ;
+
+    /* Move the cursor. */
     (yield* tty_curs(window, x, y));
     ;
     if (ul_hack() && ch == 95) {
@@ -2341,6 +2772,7 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
             if (cptr.ldI32o(ttyDisplay, $DisplayDesc_color) != NHM.NO_COLOR)
                 term_end_color();
         }
+        /* we don't link with termcap.o if NO_TERMS is defined */
         if ((cptr.ldU64o(tty_procs, $window_procs_wincap2) & 262144n) && cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor) != 0 && cptr.ldI32o(iflags, $instance_flags_colorcount) >= 256 && !calling_from_update_inventory) {
             if (((cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor) & NHM.NH_BASIC_COLOR) >>> 0) == 0) {
                 term_start_extracolor(cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor), cptr.ldU16o(glyphinfo, $glyph_info_gm + $glyph_map_entry_color256idx));
@@ -2354,8 +2786,13 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
             cptr.stI32o(ttyDisplay, $DisplayDesc_color, color);
             if (color != NHM.NO_COLOR)
                 term_start_color(color | 0);
-        }
+        }  /* iflags.use_color aka iflags.wc_color */
     }
+
+    /* must be after color check; term_end_color may turn off inverse too;
+       BW_LAVA, BW_ICE, BW_SINK, BW_ENGR won't ever be set when color is on;
+       (tried bold for ice but it didn't look very good; inverse is easier
+       to see although the Valkyrie quest ends up being hard on the eyes) */
     if (cptr.ld1so(iflags, $instance_flags_wc_color) && bkglyphinfo && cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor) != NHM.NO_COLOR) {
         cptr.stI32o(ttyDisplay, $DisplayDesc_framecolor, cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor));
         term_start_bgcolor(cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor) | 0);
@@ -2367,16 +2804,21 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         inverse_on = 1;
     }
     if (!glyphdone && (cptr.ldU64o(tty_procs, $window_procs_wincap2) & 131072n) && (cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8) && cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u) && cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u), $unicode_representation_utf8str)) {
+        /* we have a sequence to do */
         g_pututf8(cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u), $unicode_representation_utf8str));
         glyphdone = 1;
     }
     if (!glyphdone)
-        g_putch(ch);
+        g_putch(ch);  /* print the character */
+
     if (inverse_on)
         term_end_attr(NHM.ATR_INVERSE);
     else if (petattr)
         term_end_attr(cptr.ldI32o(iflags, $instance_flags_wc2_petattr));
     if (cptr.ld1so(iflags, $instance_flags_wc_color)) {
+        /* turn off color as well, turning off ATR_INVERSE may have done
+          this already and if so, we won't know the current state unless
+          we do it explicitly */
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_color) != NHM.NO_COLOR || cptr.ldI32o(ttyDisplay, $DisplayDesc_framecolor) != NHM.NO_COLOR) {
             term_end_color();
             cptr.stI32o(ttyDisplay, $DisplayDesc_color, cptr.stI32o(ttyDisplay, $DisplayDesc_framecolor, NHM.NO_COLOR));
@@ -2385,8 +2827,9 @@ export function* tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
             term_end_extracolor();
     }
     ;
-    (cptr.stI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx, cptr.ldI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx) + 1n)) - (1n);
-    (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+
+    (cptr.stI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx, cptr.ldI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx) + 1n)) - (1n);  /* one character over */
+    (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);  /* the real cursor moved too */
 }
 
 /** C ref: wintty.c:4065 — @param {CPtr<char>} str */
@@ -2431,15 +2874,25 @@ export function tty_raw_print_bold(str) {
 /** C ref: wintty.c:4112 @returns {CInt} */
 export function* tty_nhgetch() {
     let i;
+    /* kludge alert: Some Unix variants return funny values if getc() is
+     * called, interrupted, and then called again.  There is non-reentrant
+     * code in the internal _filbuf() routine, called by getc().
+     */
     let nestbuf = cptr.box(0);
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup))
+
             return 27;
     }
     ;
     term_curs_set(1);
     void fflush(__stdoutp);
     (yield* nomux_capture_write_input_boundary());
+    /* Note: if raw_print() and wait_synch() get called to report terminal
+     * initialization problems, then wins[] and ttyDisplay might not be
+     * available yet.  Such problems will probably be fatal before we get
+     * here, but validate those pointers just in case...
+     */
     if (WIN_MESSAGE.v != -1 && cptr.ldPtro(wins, WIN_MESSAGE.v, 8))
         cptr.stI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2);
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
@@ -2458,21 +2911,29 @@ export function* tty_nhgetch() {
     }
     term_curs_set(0);
     if (!i)
-        i = 27;
+        i = 27;  /* map NUL to ESC since nethack doesn't expect NUL */
     else if (i == -1) {
         cptr.st1o(iflags, $instance_flags_term_gone, 1);
-        i = 27;
+        i = 27;  /* same for EOF */
     }
+    /* topline has been seen - we can clear the need for --More-- */
     if (ttyDisplay && cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE)
         cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
     return i;
 }
 
+/*
+ * return a key, or 0, in which case a mouse button was pressed
+ * mouse events should be returned as character postitions in the map window.
+ * Since normal tty's don't have mice, just return a key.
+ */
+/*ARGSUSED*/
 /** C ref: wintty.c:4194 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 export function* tty_nh_poskey(x, y, mod) {
     let i;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup))
+
             return 27;
     }
     i = (yield* tty_nhgetch());
@@ -2491,6 +2952,7 @@ export function* tty_putmixed(window, attr, str) {
     let cw;
     let buf = new Uint8Array(256);
     let utf8flag = cptr.box(0);
+
     if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null) {
         tty_raw_print(str);
         return;
@@ -2502,6 +2964,7 @@ export function* tty_putmixed(window, attr, str) {
             cptr.stI32o(ttyDisplay, $DisplayDesc_topl_utf8, utf8flag.v);
     } else
         (yield* decode_mixed(cptr.decay(buf), str));
+    /* now send it to the normal tty_putstr */
     (yield* tty_putstr(window, attr, cptr.decay(buf)));
     cptr.stI32o(ttyDisplay, $DisplayDesc_topl_utf8, 0);
     cptr.stI32o(ttyDisplay, $DisplayDesc_mixed, 0);
@@ -2543,6 +3006,7 @@ cptr.stPtro(cptr.decay(encvals[2]), 24, __s_strn);
 cptr.stPtro(cptr.decay(encvals[2]), 32, __s_ovtx);
 cptr.stPtro(cptr.decay(encvals[2]), 40, __s_ovld);
 
+/* 2 or 3 status lines */
 /** C ref: wintty.c:4351 — enum statusfields[3][19] */
 const twolineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();
 cptr.stI32o(cptr.decay(twolineorder[0]), 0, NHC.BL_TITLE);
@@ -2684,18 +3148,33 @@ let dlvl_shrinklvl = 0;
 /** C ref: wintty.c:4382 — signed char */
 let truncation_expected = 0;
 
+/* This controls whether to skip fields that aren't
+ * flagged as requiring updating during the current
+ * render_status().
+ *
+ * Hopefully that can be confirmed as working correctly
+ * for all platforms eventually and the conditional
+ * setting below can be removed.
+ */
 /** C ref: wintty.c:4394 — int */
 let do_field_opt = 1;
 
+/*
+ *  tty_status_init()
+ *      -- initialize the tty-specific data structures.
+ *      -- call genl_status_init() to initialize the general data.
+ */
 /** C ref: wintty.c:4409 */
 export function* tty_status_init() {
     let i;
     let num_rows;
-    num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);
+
+    num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);  /* 2 or 3 */
     fieldorder = (num_rows != 3) ? cptr.decay(twolineorder) : cptr.decay(threelineorder);
+
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), i, NHC.BL_FLUSH, $sizeof_tty_status_fields);
-        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_color, NHM.NO_COLOR);
+        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_color, NHM.NO_COLOR);  /* no color */
         cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_attr, NHM.ATR_NONE);
         cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_x, cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_y, 0));
         cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_valid, 0);
@@ -2706,6 +3185,8 @@ export function* tty_status_init() {
     }
     tty_condition_bits = 0n;
     hpbar_percent = (hpbar_crit_hp = 0);
+
+    /* let genl_status_init do most of the initialization */
     (yield* genl_status_init());
 }
 
@@ -2724,10 +3205,13 @@ export function* tty_status_update(fldidx, ptr, chg, percent, color, colormasks)
     let p;
     let fmt;
     let reset_state = 0;
+
     if ((fldidx < NHC.BL_RESET) || (fldidx >= NHC.MAXBLSTATS))
         return;
+
     if ((fldidx >= 0 && fldidx < NHC.MAXBLSTATS) && !cptr.ld1so(cptr.decay(status_activefields), fldidx, 1))
         return;
+
     switch (fldidx) {
         case NHC.BL_RESET:
         reset_state = 1;
@@ -2756,8 +3240,11 @@ export function* tty_status_update(fldidx, ptr, chg, percent, color, colormasks)
         fmt = cptr.ldPtro(status_fieldfmt, fldidx, 8);
         if (!fmt)
             fmt = __s_pct_s;
+        /* should be checking for first enabled field here rather than
+           just first field, but 'fieldorder' doesn't start any rows
+           with fields which can be disabled so [any_row][0] suffices */
         if (cptr.ld1s(fmt) == 32 && (fldidx == cptr.ldI32o3(fieldorder, 0, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 1, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 2, 76, 0, 4, 0)))
-            fmt = cptr.add(fmt, 1);
+            fmt = cptr.add(fmt, 1);  /* skip leading space for first field on line */
         void cptr.sprintf(cptr.ldPtro(status_vals, fldidx, 8), fmt, text);
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), fldidx, fldidx, $sizeof_tty_status_fields);
         cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_color, (color & 255));
@@ -2768,13 +3255,19 @@ export function* tty_status_update(fldidx, ptr, chg, percent, color, colormasks)
         cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_sanitycheck, 1);
         break;
     }
+
+    /* The core botl engine sends a single blank to the window port
+       for carrying-capacity when it's unused. Let's suppress that */
     if (fldidx >= 0 && fldidx < NHC.MAXBLSTATS && cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) == 1n && cptr.ld1so(cptr.ldPtro(status_vals, fldidx, 8), 0) == 32) {
         cptr.st1o(cptr.ldPtro(status_vals, fldidx, 8), 0, 0);
         cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, 0n);
     }
+
+    /* default processing above was required before these */
     switch (fldidx) {
         case NHC.BL_HP:
         if (cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar)) {
+            /* Special additional processing for hitpointbar */
             hpbar_percent = percent;
             hpbar_crit_hp = critically_low_hp(1) ? 1 : 0;
             cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, $sizeof_tty_status_fields, $tty_status_fields_color, (color & 255));
@@ -2784,10 +3277,12 @@ export function* tty_status_update(fldidx, ptr, chg, percent, color, colormasks)
         }
         break;
         case NHC.BL_LEVELDESC:
-        dlvl_shrinklvl = 0;
+        dlvl_shrinklvl = 0;  /* caller is passing full length string */
         // @FallThrough
         ;
         case NHC.BL_HUNGER:
+        /* The core sends trailing blanks for some fields.
+           Let's suppress the trailing blanks */
         if (cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) > 0n) {
             p = cptr.ldPtro(status_vals, fldidx, 8);
             for (lastchar = eos(p); cptr.cmp(lastchar, p) > 0 && cptr.ld1s(cptr.predec(() => lastchar, (v) => { lastchar = v; })) == 32; ) {
@@ -2797,18 +3292,22 @@ export function* tty_status_update(fldidx, ptr, chg, percent, color, colormasks)
         }
         break;
         case NHC.BL_TITLE:
+        /* when hitpointbar is enabled, rendering will enforce a length
+           of 30 on title, padding with spaces or truncating if necessary */
         if (cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar))
-            cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, 32n);
+            cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, 32n);  /* '[' and ']' */
         break;
         case NHC.BL_GOLD:
+        /* \GXXXXNNNN counts as 1 [moot since we use decode_mixed() above] */
         if ((p = cptr.strchr(cptr.ldPtro(status_vals, fldidx, 8), 92)) !== null && cptr.ld1so(p, 1) == 71)
             cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) - 9n);
         break;
         case NHC.BL_CAP:
-        enc_shrinklvl = 0;
+        enc_shrinklvl = 0;  /* caller is passing full length string */
         enclev = stat_cap_indx();
         break;
     }
+    /* As of 3.6.2 we only render on BL_FLUSH (or BL_RESET) */
     return;
 }
 
@@ -2821,8 +3320,9 @@ function* make_things_fit(force_update) {
     let num_rows;
     let condrow;
     let otheroptions = 0;
+
     num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);
-    condrow = (num_rows - 1) | 0;
+    condrow = (num_rows - 1) | 0;  /* always last row, 1 for 0..1 or 2 for 0..2 */
     cond_shrinklvl = 0;
     if (enc_shrinklvl > 0 && num_rows == 2)
         shrink_enc(0);
@@ -2830,14 +3330,18 @@ function* make_things_fit(force_update) {
         shrink_dlvl(0);
     set_condition_length();
     for (trycnt = 0; trycnt < 6 && !fitting; ++trycnt) {
+        /* FIXME: this remeasures each line every time even though it
+           is only attempting to shrink one of them and the other one
+           (or two) remains the same */
         if (!(yield* check_fields(force_update, rowsz))) {
             fitting = 0;
             break;
         }
+
         requirement = (cptr.ldI32o(rowsz, condrow, 4) - 1) | 0;
         if (BigInt(requirement) <= BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_cols) - 1n)) {
             fitting = requirement;
-            break;
+            break;  /* we're good */
         }
         if (trycnt < 2) {
             if (cond_shrinklvl < ((trycnt + 1) | 0)) {
@@ -2847,12 +3351,18 @@ function* make_things_fit(force_update) {
             continue;
         }
         if (cond_shrinklvl >= 2) {
+            /* We've exhausted the condition identifiers shrinkage,
+             * so let's try shrinking other things...
+             */
             if (otheroptions < 2) {
+                /* try shrinking the encumbrance word, but
+                   only when it's on the same line as conditions */
                 if (num_rows == 2)
                     shrink_enc((otheroptions + 1) | 0);
             } else if (otheroptions == 2) {
                 shrink_dlvl(1);
             } else {
+                /* Last resort - turn on trunction */
                 truncation_expected = 1;
                 break;
             }
@@ -2862,6 +3372,12 @@ function* make_things_fit(force_update) {
     return fitting;
 }
 
+/*
+ * This is the routine where we figure out where each field
+ * should be placed, and flag whether the on-screen details
+ * must be updated because they need to change.
+ * This is now done at an individual field case-by-case level.
+ */
 /** C ref: wintty.c:4720 — @param {CInt} forcefields @param {CPtr<int>} sz @returns {CInt} */
 function* check_fields(forcefields, sz) {
     let c;
@@ -2873,9 +3389,11 @@ function* check_fields(forcefields, sz) {
     let valid = 1;
     let matchprev;
     let update_right;
+
     if (!windowdata_init && !(yield* check_windowdata()))
         return 0;
-    num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);
+
+    num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);  /* 2 or 3 */
     for (row = 0; row < num_rows; ++row) {
         cptr.stI32o(sz, row, 0, 4);
         col = 1;
@@ -2885,23 +3403,37 @@ function* check_fields(forcefields, sz) {
                 continue;
             if (!cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_valid))
                 valid = 0;
+            /* might be called more than once for shrink tests, so need
+               to reset these (redraw and x at any rate) each time */
             cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 0);
             cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_y, row);
             cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x, col);
+
+            /* On a change to the field location, everything further
+               to the right must be updated as well.  (Not necessarily
+               everything; it's possible for complementary changes across
+               multiple fields to put stuff further right back in sync.) */
             if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)) != BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_x))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)))
                 update_right = 1;
             else if (cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth) != cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth) || cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x) != cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_x))
                 cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 1);
             else
                 update_right = 0;
-            matchprev = 0;
+
+            matchprev = 0;  /* assume failure */
             if (valid && !update_right && !forcefields && !cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw)) {
+                /*
+                 * Check values against those already on the display.
+                 *  - Is the additional processing time for this worth it?
+                 */
                 if (do_field_opt && idx != NHC.BL_CONDITION && (cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_color) == cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_color)) && (cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_attr) == cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_attr))) {
-                    matchprev = 1;
+                    matchprev = 1;  /* assume success */
                     if (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_dirty)) {
+                        /* compare values */
                         let ob;
-                        let nb;
+                        let nb;  /* old byte, new byte */
                         let cw = cptr.ldPtro(wins, WIN_STATUS.v, 8);
+
                         c = (col - 1) | 0;
                         ob = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), row, 8), c);
                         nb = cptr.ldPtro(status_vals, idx, 8);
@@ -2912,13 +3444,20 @@ function* check_fields(forcefields, sz) {
                             ob = cptr.add(ob, 1);
                             c++;
                         }
+                        /* if we're not at the end of new string, no match;
+                           we don't need to worry about whether there might
+                           be leftover old string; that could only happen
+                           if they have different lengths, in which case
+                           'update_right' will be set and we won't get here */
                         if (cptr.ld1s(nb))
                             matchprev = 0;
                     }
                 }
             }
+
             if (forcefields || update_right || (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_dirty) && !matchprev))
                 cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 1);
+
             col = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(col)) + cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)));
         }
         cptr.stI32o(sz, row, col, 4);
@@ -2926,6 +3465,9 @@ function* check_fields(forcefields, sz) {
     return valid;
 }
 
+/*
+ * This is what places a field on the tty display.
+ */
 /** C ref: wintty.c:4876 — @param {CPtr<char>} text @param {CInt} x @param {CInt} y */
 function* tty_putstatusfield(text, x, y) {
     let i;
@@ -2934,12 +3476,15 @@ function* tty_putstatusfield(text, x, y) {
     let nrows;
     let lth = 0;
     let cw = null;
+
     if (WIN_STATUS.v == -1 || (cw = cptr.ldPtro(wins, WIN_STATUS.v, 8)) === null)
         (yield* panic(__s_tty_putstatusfield_invalid_windesc));
+
     ncols = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cols)));
     nrows = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));
     lth = Number(BigInt.asIntN(32, cptr.strlen(text)));
     ;
+
     if (x < ncols && y < nrows) {
         if (BigInt(x) != cptr.ldI64o(cw, $WinDesc_curx) || BigInt(y) != cptr.ldI64o(cw, $WinDesc_cury))
             (yield* tty_curs(NHM.NHW_STATUS, x, y));
@@ -2957,11 +3502,13 @@ function* tty_putstatusfield(text, x, y) {
     }
 }
 
+/* caller must set cond_shrinklvl (0..2) before calling us */
 /** C ref: wintty.c:4920 */
 function set_condition_length() {
     let mask;
     let c;
     let lth = 0;
+
     if (tty_condition_bits) {
         for (c = 0; c < 30; ++c) {
             mask = cptr.ldI64o2(conditions, c, $sizeof_conditions_t, $conditions_t_mask);
@@ -2974,6 +3521,7 @@ function set_condition_length() {
 
 /** C ref: wintty.c:4936 — @param {CInt} lvl */
 function shrink_enc(lvl) {
+    /* shrink or restore the encumbrance word */
     if (lvl <= 2) {
         enc_shrinklvl = lvl;
         void cptr.sprintf(cptr.ldPtro(status_vals, NHC.BL_CAP, 8), __s_sp_pct_s, cptr.ldPtro(cptr.decay(encvals[lvl]), enclev, 8));
@@ -2983,8 +3531,10 @@ function shrink_enc(lvl) {
 
 /** C ref: wintty.c:4947 — @param {CInt} lvl */
 function shrink_dlvl(lvl) {
+    /* try changing Dlvl: to Dl: */
     let buf = new Uint8Array(256);
     let levval = cptr.strchr(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8), 58);
+
     if (levval) {
         dlvl_shrinklvl = lvl;
         void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __s_dlvl : __s_dl);
@@ -2994,21 +3544,30 @@ function shrink_dlvl(lvl) {
     }
 }
 
+/*
+ * Ensure the underlying status window data start out
+ * blank and null-terminated.
+ */
 /** C ref: wintty.c:4967 @returns {CInt} */
 function* check_windowdata() {
     if (WIN_STATUS.v == -1 || cptr.ldPtro(wins, WIN_STATUS.v, 8) === null) {
         (yield* paniclog(__s_check_windowdata, __s_null_status_window));
         return 0;
     } else if (!windowdata_init) {
-        (yield* tty_clear_nhwindow(WIN_STATUS.v));
+        (yield* tty_clear_nhwindow(WIN_STATUS.v));  /* also sets cw->data[] to spaces */
         windowdata_init = 1;
     }
     return 1;
 }
 
+/*
+ * Return what color this condition should
+ * be displayed in based on user settings.
+ */
 /** C ref: wintty.c:4984 — @param {CLongLong} bm @param {CPtr<unsigned long>} bmarray @returns {CInt} */
 function condcolor(bm, bmarray) {
     let i;
+
     if (bm && bmarray)
         for (i = 0; i < NHM.CLR_MAX; ++i) {
             if ((BigInt.asUintN(64, bm) & cptr.ldU64o(bmarray, i, 8)) != 0n)
@@ -3021,6 +3580,7 @@ function condcolor(bm, bmarray) {
 function condattr(bm, bmarray) {
     let attr = 0;
     let i;
+
     if (bm && bmarray) {
         for (i = 18; i < 24; ++i) {
             if ((BigInt.asUintN(64, bm) & cptr.ldU64o(bmarray, i, 8)) != 0n) {
@@ -3069,11 +3629,13 @@ function* render_status() {
     let attrmask = 0;
     let text;
     let cw = null;
+
     if (WIN_STATUS.v == -1 || (cw = cptr.ldPtro(wins, WIN_STATUS.v, 8)) === null) {
         (yield* paniclog(__s_render_status, __s_win_err_on_status_window));
         return;
     }
-    num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);
+
+    num_rows = ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3);  /* 2 or 3 */
     for (row = 0; row < num_rows; ++row) {
         {
             if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -3087,24 +3649,50 @@ function* render_status() {
             if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
                 continue;
             x = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x);
-            text = cptr.ldPtro(status_vals, idx, 8);
-            tlth = Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)));
+            text = cptr.ldPtro(status_vals, idx, 8);  /* always "" for BL_CONDITION */
+            tlth = Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)));  /* valid for BL_CONDITION */
+
             if (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw) || !do_field_opt) {
                 let hitpointbar = schar((idx == NHC.BL_TITLE && cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar) ? 1 : 0));
+
                 if (idx == NHC.BL_CONDITION) {
+                    /*
+                     * +-----------------+
+                     * | Condition Codes |
+                     * +-----------------+
+                     */
                     bits = tty_condition_bits;
+                    /*
+                     * If no bits are set, we can fall through condition
+                     * rendering code to finalx[] handling (and subsequent
+                     * rest-of-line erasure if line is shorter than before).
+                     *
+                     * First, when conditions are on 3rd row, they might
+                     * be indented to line up with a position on 2nd row.
+                     */
                     if (row == 2 && bits != 0n) {
                         let cstart;
                         let last_col = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cols)));
                         let dat = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), y, 8), 0);
+
+                        /* 'version' might follow conditions; if so, adjust
+                           expectations for where conditions should end;
+                           only matters when conditions are being indented */
                         if (cptr.ld1so(cptr.decay(status_activefields), NHC.BL_VERS, 1) && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_VERS)
                             last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, $sizeof_tty_status_fields, $tty_status_fields_lth)))) | 0;
+                        /* line up with hunger (or where it would have
+                           been when currently omitted); if there isn't
+                           enough room for that, right justify; or place
+                           as-is if not even enough room for /that/; we
+                           expect hunger to be on preceding row, in which
+                           case its current data has been moved to [BEFORE] */
                         if (cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_y) < row && x < cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_x) && (((cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_x) + tlth) | 0) < ((last_col - 1) | 0)))
                             cstart = cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_x);
                         else if (BigInt(((x + tlth) | 0)) < BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cols) - 1n))
                             cstart = (last_col - tlth) | 0;
                         else
                             cstart = x;
+                        /* indent conditions to line them up with 2nd row */
                         if (x < cstart) {
                             do {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
@@ -3114,11 +3702,13 @@ function* render_status() {
                             (yield* tty_curs(WIN_STATUS.v, x, y));
                         }
                     }
+                    /* actually draw condition words */
                     for (c = 0; c < 30 && bits != 0n; ++c) {
                         ci = cptr.ldI32o(cond_idx, c, 4);
                         mask = cptr.ldI64o2(conditions, ci, $sizeof_conditions_t, $conditions_t_mask);
                         if (bits & mask) {
                             let condtext;
+
                             (yield* tty_putstatusfield(__s_sp, x++, y));
                             if (cptr.ldI64o(iflags, $instance_flags_hilite_delta)) {
                                 attrmask = condattr(mask, tty_colormasks);
@@ -3146,7 +3736,7 @@ function* render_status() {
                             if (BigInt(x) >= cptr.ldI64o(cw, $WinDesc_cols) && !truncation_expected) {
                                 (yield* impossible(__s_unexpected_condition_placement_overflow, condtext));
                                 condtext = __s_empty;
-                                bits = 0n;
+                                bits = 0n;  /* skip any remaining conditions */
                             }
                             (yield* tty_putstatusfield(condtext, x, y));
                             x = (x + Number(BigInt.asIntN(32, cptr.strlen(condtext)))) | 0;
@@ -3173,18 +3763,32 @@ function* render_status() {
                             bits &= BigInt.asIntN(64, ~mask);
                         }
                     }
+                    /* 'x' is 1-based and 'cols' and 'data' are 0-based,
+                       so x==cols means we just stored in data[N-2] and
+                       are now positioned at data[N-1], the terminator;
+                       that's ok as long as we don't write there */
                     if (BigInt(x) > cptr.ldI64o(cw, $WinDesc_cols)) {
+
                         if (!truncation_expected && !__static_render_status_once_only++)
                             (yield* paniclog(__s_render_status__2, __s_unexpected_truncation));
                         x = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cols)));
                     }
                 } else if (hitpointbar) {
+                    /*
+                     * +-------------------------+
+                     * | Title with Hitpoint Bar |
+                     * +-------------------------+
+                     */
+                    /* hitpointbar using hp percent calculation */
                     let bar_len;
                     let bar_pos = 0;
                     let bar = new Uint8Array(31);
                     let bar2 = null;
                     let savedch = 0;
                     let twoparts = schar((hpbar_percent < 100));
+
+                    /* force exactly 30 characters, padded with spaces
+                       if shorter or truncated if longer */
                     if (cptr.strlen(text) != 30n) {
                         void cptr.sprintf(cptr.decay(bar), __s_30_30s, text);
                         void cptr.strcpy(cptr.ldPtro(status_vals, NHC.BL_TITLE, 8), cptr.decay(bar));
@@ -3193,9 +3797,14 @@ function* render_status() {
                     }
                     if (hpbar_crit_hp)
                         repad_with_dashes(cptr.decay(bar));
-                    bar_len = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(bar))));
-                    attrmask = 0;
+                    bar_len = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(bar))));  /* always 30 */
+                    /*tlth = bar_len + 2; // not needed within this 'if'*/
+                    attrmask = 0;  /* for the second part only case: dead */
+                    /* when at full HP, the whole title will be highlighted;
+                       when injured or dead, there will be a second portion
+                       which is not highlighted */
                     if (twoparts) {
+                        /* figure out where to separate the two parts */
                         bar_pos = ((Math.imul(bar_len, hpbar_percent)) / 100) | 0;
                         if (bar_pos < 1 && hpbar_percent > 0)
                             bar_pos = 1;
@@ -3259,14 +3868,26 @@ function* render_status() {
                     }
                     (yield* tty_putstatusfield(__s_rbrack, x++, y));
                 } else {
+                    /*
+                     * +-----------------------------+
+                     * | Everything else that is not |
+                     * |   in a special case above   |
+                     * +-----------------------------+
+                     */
                     if (idx == NHC.BL_VERS && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_FLUSH) {
                         let vstart;
                         let dat = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), y, 8), 0);
+                        /* FIXME:  there's something fishy going on here;
+                           'x' ends up out of synch when conditions have
+                           3rd row indentation and the indenting of version
+                           overwrites them with spaces; this hides that */
                         let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, $sizeof_tty_status_fields, $tty_status_fields_x))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, $sizeof_tty_status_fields, $tty_status_fields_lth))));
+
                         if (i > 0 && cptr.ldI32o3(fieldorder, row, 76, (i - 1) | 0, 4, 0) == NHC.BL_CONDITION && x != vx) {
                             x = vx;
                             (yield* tty_curs(WIN_STATUS.v, x, y));
                         }
+                        /* indent version to right justify it */
                         vstart = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cols) - BigInt(Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)))))));
                         if (x < vstart) {
                             do {
@@ -3330,21 +3951,31 @@ function* render_status() {
                     }
                 }
             } else {
+                /* not rendered => same text as before */
                 x = (x + tlth) | 0;
             }
             cptr.stI32o(cptr.decay(finalx[row]), NHM.NOW, (x - 1) | 0, 4);
+            /* reset .redraw and .dirty now that field has been rendered */
             cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_dirty, 0);
             cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 0);
             cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_sanitycheck, 0);
+            /*
+             * For comparison of current and previous:
+             * - Copy the entire tty_status struct.
+             */
             cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields), cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields), 40);
-        }
+        }  /* for i=..., idx=fieldorder[][i] */
         x = cptr.ldI32o(cptr.decay(finalx[row]), NHM.NOW, 4);
         if ((x < cptr.ldI32o(cptr.decay(finalx[row]), NHM.BEFORE, 4) || !cptr.ldI32o(cptr.decay(finalx[row]), NHM.BEFORE, 4)) && BigInt(((x + 1) | 0)) < cptr.ldI64o(cw, $WinDesc_cols)) {
             (yield* tty_curs(WIN_STATUS.v, (x + 1) | 0, y));
             (yield* cl_end());
         }
+        /*
+         * For comparison of current and previous:
+         * - Copy the last written column number on the row.
+         */
         cptr.stI32o(cptr.decay(finalx[row]), NHM.BEFORE, cptr.ldI32o(cptr.decay(finalx[row]), NHM.NOW, 4), 4);
-    }
+    }  /* for row=... */
     return;
 }
 

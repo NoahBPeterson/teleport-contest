@@ -65,7 +65,7 @@ function os_execute(L) {
     if (!cptr.eq(cmd, (null)))
         return luaL_execresult(L, stat);
     else {
-        lua_pushboolean(L, stat);
+        lua_pushboolean(L, stat);  /* true if there is a shell */
         return 1;
     }
 }
@@ -105,7 +105,7 @@ function os_tmpname(L) {
 
 /** C ref: loslib.c:182 — @param {CPtr<lua_State>} L @returns {CInt} */
 function os_getenv(L) {
-    lua_pushstring(L, getenv((luaL_checklstring(L, 1, null))));
+    lua_pushstring(L, getenv((luaL_checklstring(L, 1, null))));  /* if NULL push nil */
     return 1;
 }
 
@@ -115,6 +115,23 @@ function os_clock(L) {
     return 1;
 }
 
+/*
+** {======================================================
+** Time/Date operations
+** { year=%Y, month=%m, day=%d, hour=%H, min=%M, sec=%S,
+**   wday=%w+1, yday=%j, isdst=? }
+** =======================================================
+*/
+
+/*
+** About the overflow check: an overflow cannot occur when time
+** is represented by a lua_Integer, because either lua_Integer is
+** large enough to represent all int fields or it is not large enough
+** to represent a time that cause a field to overflow.  However, if
+** times are represented as doubles and lua_Integer is int, then the
+** time 0x1.e1853b0d184f6p+55 would cause an overflow when adding 1900
+** to compute the year.
+*/
 /** C ref: loslib.c:211 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} value @param {CInt} delta */
 function setfield(L, key, value, delta) {
     lua_pushinteger(L, BigInt.asIntN(64, BigInt(value) + BigInt(delta)));
@@ -124,11 +141,14 @@ function setfield(L, key, value, delta) {
 /** C ref: loslib.c:221 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} value */
 function setboolfield(L, key, value) {
     if (value < 0)
-        return;
+        return;  /* does not set field */
     lua_pushboolean(L, value);
     lua_setfield(L, -2, key);
 }
 
+/*
+** Set all fields from structure 'tm' in the table on top of the stack
+*/
 /** C ref: loslib.c:232 — @param {CPtr<lua_State>} L @param {CPtr<struct tm>} stm */
 function setallfields(L, stm) {
     setfield(L, __s_year, cptr.ldI32o(stm, $tm_tm_year), 1900);
@@ -153,7 +173,7 @@ function getboolfield(L, key) {
 /** C ref: loslib.c:253 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} d @param {CInt} delta @returns {CInt} */
 function getfield(L, key, d, delta) {
     let isnum = cptr.box(0);
-    let t = lua_getfield(L, -1, key);
+    let t = lua_getfield(L, -1, key);  /* get field and its type */
     let res = lua_tointegerx(L, -1, isnum);
     if (!isnum.v) {
         if ((__builtin_expect(BigInt(((t != 0) != 0)), 0n)))
@@ -173,18 +193,18 @@ function getfield(L, key, d, delta) {
 /** C ref: loslib.c:274 — @param {CPtr<lua_State>} L @param {CPtr<char>} conv @param {CLongLong} convlen @param {CPtr<char>} buff @returns {CPtr<char>} */
 function checkoption(L, conv, convlen, buff) {
     let option = __s_aabbccddefgghhijmmnprrsttuuvwwxxyyzz;
-    let oplen = 1;
+    let oplen = 1;  /* length of options being checked */
     for (; cptr.ld1s(option) != 0 && BigInt(oplen) <= convlen; option = cptr.add(option, oplen)) {
         if (cptr.ld1s(option) == 124)
-            oplen++;
+            oplen++;  /* will check options with next length (+1) */
         else if (memcmp(conv, option, BigInt.asUintN(64, BigInt(oplen))) == 0) {
-            cptr.memcpy(buff, conv, BigInt.asUintN(64, BigInt(oplen)));
+            cptr.memcpy(buff, conv, BigInt.asUintN(64, BigInt(oplen)));  /* copy valid option to buffer */
             cptr.st1o(buff, oplen, 0);
-            return cptr.add(conv, oplen);
+            return cptr.add(conv, oplen);  /* return next item */
         }
     }
     luaL_argerror(L, 1, lua_pushfstring(L, __s_invalid_conversion_specifier_s, conv));
-    return conv;
+    return conv;  /* to avoid warnings */
 }
 
 /** C ref: loslib.c:293 — @param {CPtr<lua_State>} L @param {CInt} arg @returns {*} */
@@ -199,21 +219,21 @@ function os_date(L) {
     let slen = cptr.box(0n);
     let s = luaL_optlstring(L, 1, __s_pct_c, slen);
     let t = cptr.box(((lua_type(L, 2) <= 0) ? (time(null)) : l_checktime(L, 2)));
-    let se = cptr.add(s, slen.v);
+    let se = cptr.add(s, slen.v);  /* 's' end */
     let tmr = cptr.alloc(56);
     let stm;
     if (cptr.ld1s(s) == 33) {
         stm = gmtime_r(t, tmr);
-        s = cptr.add(s, 1);
+        s = cptr.add(s, 1);  /* skip '!' */
     } else
         stm = localtime_r(t, tmr);
     if (cptr.eq(stm, (null)))
         return luaL_error(L, __s_date_result_cannot_be_represented_in);
     if (strcmp(s, __s_star_t) == 0) {
-        lua_createtable(L, 0, 9);
+        lua_createtable(L, 0, 9);  /* 9 = number of fields */
         setallfields(L, stm);
     } else {
-        let cc = new Uint8Array(4);
+        let cc = new Uint8Array(4);  /* buffer for individual conversion specifiers */
         let b = cptr.alloc(1056);
         cptr.st1o(cptr.decay(cc), 0, 37, 1);
         luaL_buffinit(L, b);
@@ -223,8 +243,8 @@ function os_date(L) {
             else {
                 let reslen;
                 let buff = luaL_prepbuffsize(b, 250n);
-                s = cptr.add(s, 1);
-                s = checkoption(L, s, cptr.diff(se, s), cptr.add(cptr.decay(cc), 1));
+                s = cptr.add(s, 1);  /* skip '%' */
+                s = checkoption(L, s, cptr.diff(se, s), cptr.add(cptr.decay(cc), 1));  /* copy specifier to 'cc' */
                 reslen = strftime(buff, 250n, cptr.decay(cc), stm);
                 (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + (reslen)));
             }
@@ -238,11 +258,11 @@ function os_date(L) {
 function os_time(L) {
     let t;
     if ((lua_type(L, 1) <= 0))
-        t = time(null);
+        t = time(null);  /* get current time */
     else {
         let ts = cptr.alloc(56);
         luaL_checktype(L, 1, 5);
-        lua_settop(L, 1);
+        lua_settop(L, 1);  /* make sure table is at the top */
         cptr.stI32o(ts, $tm_tm_year, getfield(L, __s_year, -1, 1900));
         cptr.stI32o(ts, $tm_tm_mon, getfield(L, __s_month, -1, 1));
         cptr.stI32o(ts, $tm_tm_mday, getfield(L, __s_day, -1, 0));
@@ -251,7 +271,7 @@ function os_time(L) {
         cptr.stI32(ts, getfield(L, __s_sec, 0, 0));
         cptr.stI32o(ts, $tm_tm_isdst, getboolfield(L, __s_isdst));
         t = mktime(ts);
-        setallfields(L, ts);
+        setallfields(L, ts);  /* update fields with normalized values */
     }
     if (t != t || t == -1n)
         return luaL_error(L, __s_time_result_cannot_be_represented_in);
@@ -266,6 +286,8 @@ function os_difftime(L) {
     lua_pushnumber(L, difftime(t1, t2));
     return 1;
 }
+
+/* }====================================================== */
 
 const __static_os_setlocale_cat = cptr.alloc(6 * 4);
 cptr.stI32o(__static_os_setlocale_cat, 0, 0);
@@ -301,7 +323,7 @@ function os_exit(L) {
     if (lua_toboolean(L, 2))
         lua_close(L);
     if (L)
-        exit(status);
+        exit(status);  /* 'if' to avoid warnings for unreachable 'return' */
     return 0;
 }
 
@@ -331,6 +353,8 @@ cptr.stPtro(syslib, 160, __s_tmpname);
 cptr.stPtro(syslib, 160 + $luaL_Reg_func, os_tmpname);
 cptr.stPtro(syslib, 176, null);
 cptr.stPtro(syslib, 176 + $luaL_Reg_func, null);
+
+/* }====================================================== */
 
 /** C ref: loslib.c:426 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_os(L) {

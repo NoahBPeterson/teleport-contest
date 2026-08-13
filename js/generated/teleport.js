@@ -286,6 +286,7 @@ const __s_s_resists_your_magic = cptr.lit("%s resists your magic!");
 const __s_are_no_longer_inside_s = cptr.lit("are no longer inside %s!");
 const __s_u_teleport_mon = cptr.lit("u_teleport_mon");
 
+/* does monster block others from teleporting? */
 /** C ref: teleport.c:21 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_blocks_teleporting(mtmp) {
     if (is_dlord(cptr.ldPtro(mtmp, $monst_data)) || is_dprince(cptr.ldPtro(mtmp, $monst_data)))
@@ -293,33 +294,58 @@ function m_blocks_teleporting(mtmp) {
     return 0;
 }
 
+/* teleporting is prevented on this level for this monster? */
 /** C ref: teleport.c:30 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function noteleport_level(mon) {
+    /* demon court in Gehennom prevent others from teleporting */
     if (In_hell(cptr.add(u, $you_uz)) && !(is_dlord(cptr.ldPtro(mon, $monst_data)) || is_dprince(cptr.ldPtro(mon, $monst_data))))
         if (get_iter_mons(m_blocks_teleporting))
             return 1;
+
+    /* natural no-teleport level; covetous monsters can bypass these */
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) | 0 && !((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_COVETOUS)))
         return 1;
+
+    /* wand of stasis prevents teleportation while the effect is active
+       (even for covetous monsters) */
     if (cptr.ldI64o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until) >= cptr.ldI64o(svm, $instance_globals_saved_m_moves))
         return 1;
+
     return 0;
 }
 
+/* this is an approximation of onscary() that doesn't use any 'struct monst'
+   fields aside from 'monst->data'; used primarily for new monster creation
+   and monster teleport destination, not for ordinary monster movement */
 /** C ref: teleport.c:53 — @param {CInt} x @param {CInt} y @param {CPtr<struct permonst>} mptr @returns {CInt} */
 function goodpos_onscary(x, y, mptr) {
+    /* onscary() checks Angels and lawful minions; this oversimplifies */
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_HUMAN || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL || is_rider(mptr) || ((cptr.ldU16o((mptr), $permonst_geno) & NHM.G_UNIQ) != 0))
         return 0;
+    /* onscary() checks for vampshifted vampire bats/fog clouds/wolves too */
     if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE)
         return 1;
+    /* scare monster scroll doesn't have any of the below restrictions,
+       being its own source of power */
     if (sobj_at(NHC.SCR_SCARE_MONSTER, x, y))
         return 1;
+    /* engraved Elbereth doesn't work in Gehennom or the end-game */
     if (In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return 0;
+    /* creatures who don't (or can't) fear a written Elbereth and weren't
+       caught by the minions check */
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst)) || !((cptr.ldU64o((mptr), $permonst_mflags1) & 4096n) == 0n))
         return 0;
     return schar((sengr_at(__s_elbereth, x, y, 1) ? 1 : 0));
 }
 
+/*
+ * Is (x,y) a good position of mtmp?  If mtmp is NULL, then is (x,y) good
+ * for an object?
+ *
+ * This function will only look at mtmp->mdat, so makemon, mplayer, etc can
+ * call it to generate new monster positions with fake monster structures.
+ */
 /** C ref: teleport.c:86 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mtmp @param {CUInt} gpflags @returns {CInt} */
 export function goodpos(x, y, mtmp, gpflags) {
     let mdat = null;
@@ -328,20 +354,43 @@ export function goodpos(x, y, mtmp, gpflags) {
     let checkscary = schar(((BigInt(gpflags >>> 0) & 8388608n) != 0n));
     let allow_u = schar(((BigInt(gpflags >>> 0) & 4194304n) != 0n));
     let avoid_monpos = schar(((BigInt(gpflags >>> 0) & 16777216n) != 0n));
+
     if (!isok(x, y))
         return 0;
+
+    /* in many cases, we're trying to create a new monster, which
+     * can't go on top of the player or any existing monster.
+     * however, occasionally we are relocating engravings or objects,
+     * which could be co-located and thus get restricted a bit too much.
+     * oh well.
+     */
     if (!allow_u) {
         if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && !cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) && (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) || !(cptr.ldI32o(u, $you_uswallow) & 1)) && (!cptr.ldPtro(u, $you_usteed) || !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))))
             return 0;
     }
+
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && avoid_monpos)
         return 0;
+
     if (mtmp) {
         let mtmp2 = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
+        /* Be careful with long worms.  A monster may be placed back in
+         * its own location.  Normally, if m_at() returns the same monster
+         * that we're trying to place, the monster is being placed in its
+         * own location.  However, that is not correct for worm segments,
+         * because all the segments of the worm return the same m_at().
+         * Actually we overdo the check a little bit--a worm can't be placed
+         * in its own location, period.  If we just checked for mtmp->mx
+         * != x || mtmp->my != y, we'd miss the case where we're called
+         * to place the worm segment and the worm's head is at x,y.
+         */
         if (mtmp2 && (!cptr.eq(mtmp2, mtmp) || (cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0))
             return 0;
+
         mdat = cptr.ldPtro(mtmp, $monst_data);
         if (is_pool(x, y) && !ignorewater) {
+            /* [what about Breathless?] */
             if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
                 return schar((Swimming() || Amphibious() || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && (Levitation() || Flying() || ((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))))) ? 1 : 0));
             else
@@ -349,6 +398,8 @@ export function goodpos(x, y, mtmp, gpflags) {
         } else if (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL && rn2_at(__s_teleport_c, 148, __s_goodpos, 13) && !ignorewater) {
             return 0;
         } else if (is_lava(x, y) && !ignorelava) {
+            /* 3.6.3: floating eye can levitate over lava but it avoids
+               that due the effect of the heat causing it to dry out */
             if (cptr.eq(mdat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)))
                 return 0;
             else if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
@@ -360,6 +411,7 @@ export function goodpos(x, y, mtmp, gpflags) {
             return 1;
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 4n) != 0n) && closed_door(x, y))
             return 1;
+        /* avoid onscary() if caller has specified that restriction */
         if (checkscary && (cptr.ldI32o(mtmp, $monst_m_id) ? onscary(x, y, mtmp) : goodpos_onscary(x, y, mdat)))
             return 0;
     }
@@ -367,13 +419,24 @@ export function goodpos(x, y, mtmp, gpflags) {
         if (!(is_pool(x, y) && ignorewater) && !(is_lava(x, y) && ignorelava))
             return 0;
     }
+    /* skip boulder locations for most creatures */
     if (sobj_at(NHC.BOULDER, x, y) && (!mdat || !((cptr.ldU64o((mdat), $permonst_mflags2) & 134217728n) != 0n)))
         return 0;
+    /* pretend GP_AVOID_MONPOS == monster creation */
     if (avoid_monpos && is_exclusion_zone(NHC.LR_MONGEN, x, y))
         return 0;
+
     return 1;
 }
 
+/*
+ * "entity next to"
+ *
+ * Attempt to find a good place for the given monster type in the closest
+ * position to (xx,yy).  Do so in successive square rings around (xx,yy).
+ * If there is more than one valid position in the ring, choose one randomly.
+ * Return TRUE and the position chosen when successful, FALSE otherwise.
+ */
 /** C ref: teleport.c:196 — @param {CPtr<coord>} cc @param {CInt} xx @param {CInt} yy @param {CPtr<struct permonst>} mdat @returns {CInt} */
 export function enexto(cc, xx, yy, mdat) {
     return schar((enexto_core(cc, xx, yy, mdat, NHM.GP_CHECKSCARY) || enexto_core(cc, xx, yy, mdat, NHM.NO_MM_FLAGS) ? 1 : 0));
@@ -386,12 +449,16 @@ export function enexto_gpflags(cc, xx, yy, mdat, entflags) {
 
 /** C ref: teleport.c:219 — @param {CPtr<coord>} cc @param {CInt} xx @param {CInt} yy @param {CPtr<struct permonst>} mdat @param {CUInt} entflags @returns {CInt} */
 export function enexto_core(cc, xx, yy, mdat, entflags) {
-    let candy = cptr.alloc(1659 * $sizeof_coord);
+    let candy = cptr.alloc(1659 * $sizeof_coord);  /* enough room for every location */
     let i;
     let nearcandyct;
     let allcandyct;
-    let fakemon = cptr.alloc(320);
+    let fakemon = cptr.alloc(320);  /* dummy monster */
     let allow_xx_yy = schar(((BigInt(entflags >>> 0) & 2097152n) != 0n));
+    /* note: GP_ALLOW_XY isn't used by goodpos(); old enext_core() used to
+       mask it off to hide it from goodpos but that isn't required and we
+       want to keep it in case the debugpline4() gets called */
+
     if (!mdat) {
         {
             if (debugcore(__s_teleport_c, 1)) {
@@ -400,27 +467,42 @@ export function enexto_core(cc, xx, yy, mdat, entflags) {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
+        /* default to player's original monster type */
         mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonster), $sizeof_permonst);
     }
     cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
-    set_mon_data(fakemon, mdat);
+    set_mon_data(fakemon, mdat);  /* set up for goodpos() */
+
+    /* gather candidate coordinates within 3 steps, those 1 step away in
+       random order first, then those 2 steps away in random order, then 3;
+       this will usually find a good spot without scanning the whole map */
     nearcandyct = collect_coords(candy, xx, yy, 3, NHM.CC_NO_FLAGS, null);
     for (i = 0; i < nearcandyct; ++i) {
         cptr.memcpy(cc, cptr.add(candy, i, $sizeof_coord), 4);
         if (goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), fakemon, entflags))
             return 1;
     }
+
+    /* didn't find a spot; gather coordinates for the whole map except
+       for <xx,yy> itself, ordered in expanding distance from <xx,yy>
+       (subsets of equal distance grouped together with order randomized) */
     allcandyct = collect_coords(candy, xx, yy, 0, NHM.CC_NO_FLAGS, null);
+    /* skip first 'nearcandyct' spots, they have already been rejected;
+       they will occur in different random order but same overall total */
     for (i = nearcandyct; i < allcandyct; ++i) {
         cptr.memcpy(cc, cptr.add(candy, i, $sizeof_coord), 4);
         if (goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), fakemon, entflags))
             return 1;
     }
-    cptr.stI16(cc, xx), cptr.stI16o(cc, $coord_y, yy);
+
+    /* still didn't find a spot; maybe try <xx,yy> itself */
+    cptr.stI16(cc, xx), cptr.stI16o(cc, $coord_y, yy);  /* final value for 'cc' in case we return False */
     if (allow_xx_yy && goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), fakemon, entflags))
         return 1;
     {
         if (debugcore(__s_teleport_c, 1)) {
+
+            /* failed to find any acceptable spot */
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             pline(__s_enexto_s_d_d_0x_08lx_failed, cptr.ldPtro(mdat, NHC.NEUTRAL, 8), xx, yy, BigInt(entflags >>> 0));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -429,13 +511,20 @@ export function enexto_core(cc, xx, yy, mdat, entflags) {
     return 0;
 }
 
+/*
+ * Check for restricted areas present in some special levels.  (This might
+ * need to be augmented to allow deliberate passage in wizard mode, but
+ * only for explicitly chosen destinations.)
+ */
 /** C ref: teleport.c:386 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @returns {CInt} */
 function tele_jump_ok(x1, y1, x2, y2) {
     if (!isok(x2, y2))
         return 0;
     if (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx) > 0) {
+        /* if inside a restricted region, can't teleport outside */
         if (((x1) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x1) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y1) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y1) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy))) && !((x2) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x2) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y2) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y2) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy))))
             return 0;
+        /* and if outside, can't teleport inside */
         if (!((x1) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x1) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y1) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y1) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy))) && ((x2) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x2) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y2) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y2) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy))))
             return 0;
     }
@@ -451,13 +540,17 @@ function tele_jump_ok(x1, y1, x2, y2) {
 /** C ref: teleport.c:420 — @param {CInt} x @param {CInt} y @param {CInt} trapok @returns {CInt} */
 function teleok(x, y, trapok) {
     if (!trapok) {
+        /* allow teleportation onto vibrating square, it's not a real trap;
+           also allow pits and holes if levitating or flying */
         let trap = t_at(x, y);
+
         if (!trap)
             trapok = 1;
         else if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE)
             trapok = 1;
         else if ((is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(trap, $trap_ttyp) & 31))) && (Levitation() || Flying()))
             trapok = 1;
+
         if (!trapok)
             return 0;
     }
@@ -478,30 +571,51 @@ export function teleds(nux, nuy, teleds_flags) {
     let allow_drag = schar(((teleds_flags & NHM.TELEDS_ALLOW_DRAG) != 0));
     let is_teleport = schar(((teleds_flags & NHM.TELEDS_TELEPORT) != 0));
     let vault_guard = vault_occupied(cptr.add(u, $you_urooms)) ? findgd() : null;
+
     if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
+        /* unearth it */
         buried_ball_to_punishment();
     }
     ball_active = schar((Punished() && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE ? 1 : 0));
     if (!ball_active || near_capacity() > NHC.SLT_ENCUMBER || distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), nux, nuy) > 1)
         allow_drag = 0;
+
+    /* If they have to move the ball, then drag if allow_drag is true;
+     * otherwise they are teleporting, so unplacebc().
+     * If they don't have to move the ball, then always "drag" whether or
+     * not allow_drag is true, because we are calling that function, not
+     * to drag, but to move the chain.  *However*, there are some dumb
+     * special cases:
+     *    0                          0
+     *   _X  move east       ----->  X_
+     *    @                           @
+     * These are permissible if teleporting, but not if dragging.  As a
+     * result, drag_ball() needs to know about allow_drag and might end
+     * up dragging the ball anyway.  Also, drag_ball() might find that
+     * dragging the ball is completely impossible (ball in range but there's
+     * rock in the way), in which case it teleports the ball on its own.
+     */
     if (ball_active) {
         if (!(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && distmin(nux, nuy, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 2)
-            ball_still_in_range = 1;
+            ball_still_in_range = 1;  /* don't have to move the ball */
         else if (!allow_drag)
-            unplacebc();
+            unplacebc();  /* have to move the ball */
     }
     reset_utrap(0);
-    was_swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);
+    was_swallowed = (cptr.ldI32o(u, $you_uswallow) & 1);  /* set_ustuck(Null) clears uswallow */
     set_ustuck(null);
     cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
     cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
+
     if (!hideunder(cptr.add(gy, $instance_globals_y_youmonst)) && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_MIMIC) {
+        /* mimics stop being unnoticed */
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
     }
+
     if (was_swallowed) {
         if (Punished()) {
-            ball_active = 1;
-            ball_still_in_range = (allow_drag = 0);
+            ball_active = 1;  /* to put chain and non-carried ball on map */
+            ball_still_in_range = (allow_drag = 0);  /* (redundant) */
         }
         docrt();
     }
@@ -512,19 +626,32 @@ export function teleds(nux, nuy, teleds_flags) {
         let chainx = cptr.box(0);
         let chainy = cptr.box(0);
         let cause_delay = cptr.box(0);
+
         if (drag_ball(nux, nuy, bc_control, ballx, bally, chainx, chainy, cause_delay, allow_drag))
             move_bc(0, bc_control.v, ballx.v, bally.v, chainx.v, chainy.v);
         else {
+            /* dragging fails if hero is encumbered beyond 'burdened' */
+            /* uball might've been cleared via drag_ball -> spoteffects ->
+               dotrap -> magic trap unpunishment */
             ball_active = schar((Punished() && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE ? 1 : 0));
             if (ball_active)
-                unplacebc();
+                unplacebc();  /* to match placebc() below */
         }
     }
-    u_on_newpos(nux, nuy);
+
+    /* must set u.ux, u.uy after drag_ball(), which may need to know
+       the old position if allow_drag is true... */
+    u_on_newpos(nux, nuy);  /* set u.<x,y>, usteed-><mx,my>; cliparound() */
     fill_pit(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0));
     if (ball_active && uchain.v && cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE)
-        placebc();
+        placebc();  /* put back the ball&chain if they were taken off map */
     update_player_regions();
+    /*
+     *  Make sure the hero disappears from the old location.  This will
+     *  not happen if she is teleported within sight of her previous
+     *  location.  Force a full vision recalculation because the hero
+     *  is now in a new location.
+     */
     newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0));
     see_monsters();
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
@@ -532,19 +659,32 @@ export function teleds(nux, nuy, teleds_flags) {
     {
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
     }
-    vision_recalc(0);
+    vision_recalc(0);  /* vision before effects */
+
+    /* this used to take place sooner, but if a --More-- prompt was issued
+       then the old map display was shown instead of the new one */
     if (is_teleport && cptr.ld1so(flags, $flag_verbose))
         You(__s_materialize_in_s_location, (nux == cptr.ldI16o(u, $you_ux0) && nuy == cptr.ldI16o(u, $you_uy0)) ? __s_the_same : __s_a_different);
+    /* if terrain type changes, levitation or flying might become blocked
+       or unblocked; might issue message, so do this after map+vision has
+       been updated for new location instead of right after u_on_newpos() */
     if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != cptr.ld1so3(svl, cptr.ldI16o(u, $you_ux0), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy0), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))
         switch_terrain();
+    /* sequencing issue:  we want guard's alarm, if any, to occur before
+       room entry message, if any, so need to check for vault exit prior
+       to spoteffects; but spoteffects() sets up new value for u.urooms
+       and vault code depends upon that value, so we need to fake it */
     if (vault_guard) {
-        let save_urooms = new Uint8Array(5);
+        let save_urooms = new Uint8Array(5);  /* [sizeof u.urooms] */
+
         void cptr.strcpy(cptr.decay(save_urooms), cptr.add(u, $you_urooms));
         void cptr.strcpy(cptr.add(u, $you_urooms), in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.VAULT));
+        /* if hero has left vault, make guard notice */
         if (!vault_occupied(cptr.add(u, $you_urooms)))
             uleftvault(vault_guard);
-        void cptr.strcpy(cptr.add(u, $you_urooms), cptr.decay(save_urooms));
+        void cptr.strcpy(cptr.add(u, $you_urooms), cptr.decay(save_urooms));  /* reset prior to spoteffects() */
     }
+    /* possible shop entry message comes after guard's shrill whistle */
     spoteffects(1);
     invocation_message();
     {
@@ -557,6 +697,8 @@ export function teleds(nux, nuy, teleds_flags) {
     return;
 }
 
+/* make a list of coordinates in expanding distance from <cx,cy>;
+   return value is number of coordinates inserted into ccc[]  */
 /** C ref: teleport.c:578 — @param {CPtr<coord>} ccc @param {CInt} cx @param {CInt} cy @param {CInt} maxradius @param {CUInt} cc_flags @param {CPtr} filter @returns {CInt} */
 export function collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
     let x;
@@ -580,36 +722,82 @@ export function collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
     let skip_mons = schar((((cc_flags & NHM.CC_SKIP_MONS) >>> 0) != 0));
     let skip_inaccessible = schar((((cc_flags & NHM.CC_SKIP_INACCS) >>> 0) != 0));
     let result = 0;
+
     rowrange = (cy < 10) ? ((20 - cy) | 0) : cy;
     colrange = (cx < 40) ? ((79 - cx) | 0) : cx;
     k = max(rowrange, colrange);
+    /* if no radius limit has been specified, cover the whole map */
     if (!maxradius)
         maxradius = k;
     else
         maxradius = min(maxradius, k);
+    /*
+     * We operate on an expanding radius around the center, optionally
+     * starting with the center spot itself, and shuffle the edges of
+     * each expanding square or "ring".  (So all 1's are shuffled at
+     * end of the pass for radius==1, then all 2's at end of radius==2,
+     * and so on.  Shuffling of each ring doesn't encroach on any of
+     * the others except when ring_pairs mode is specified.)
+     *
+     * Diagram of first three rings (four if 'include_cxcy' is specified)
+     *   rings       unshuffled output      sample shuffled output (varies)
+     *  3333333     25 26  .  .  .  . 31     33 29  .  .  .  . 44
+     *  3222223     32  9 10 11 12 13 33     35 22 16 14 24 13 40
+     *  3211123     34 14  1  2  3 15  .     38 20  2  8  3 15  .
+     *  3210123     .  16  4  0  5 17  .     .  11  1  0  6  9  .
+     *  3211123     .  18  6  7  8 19 39     .  19  5  7  4 12 25
+     *  3222223     40 20 21 22 23 24 41     43 10 21 17 23 18 27
+     *  3333333     42  .  .  .  . 47 48     37  .  .  .  . 30 36
+     * . == entry not shown to reduce clutter when viewing inner portion.
+     *
+     * The digits under 'rings' are ring number, which is also distmin
+     * from center, indicating the order in which sets of spots are
+     * evaluated.  Output gets collected in expanding rings.  For the
+     * two output grids, the number shown represents the position in the
+     * returned list of coordinates.  When shuffling while ring_pairs is
+     * specified, the 1's and 2's will be mixed together, the 3's and
+     * (unshown) 4's will be mixed together, and so forth.
+     *
+     * If caller processes the output list in order, the closest viable
+     * spot will be chosen.  If a completely random spot is preferred,
+     * the list can be requested to be unscrambled and then the caller
+     * can shuffle it, overriding the collection rings.  A filter function
+     * could be used to skip everything after the first acceptable spot.
+     * 'ring_pairs' mode allows for choosing a very close spot that isn't
+     * immediately adjacent to the center point, useful for emergency
+     * teleport to not always end up at the closest possible spot.
+     *
+     * TODO:
+     *  Redo filter interface to have caller pass in a context cookie
+     *  that can be passed through to filter so that it could have access
+     *  to more info than just <x,y>.  Also add a way to stop collecting
+     *  when an optimal value is found, without checking and skipping the
+     *  rest of the map.
+     */
     for (radius = include_cxcy ? 0 : 1; radius <= maxradius; ++radius) {
         if (!ring_pairs) {
             newpass = (passend = 1);
         } else {
-            newpass = schar(((radius % 2) != 0 || radius == 0 ? 1 : 0));
-            passend = schar(((radius % 2) == 0 || radius == maxradius ? 1 : 0));
+            /* 0 (if include_cxcy) and maxradius override odd/even */
+            newpass = schar(((radius % 2) != 0 || radius == 0 ? 1 : 0));  /* odd */
+            passend = schar(((radius % 2) == 0 || radius == maxradius ? 1 : 0));  /* even */
         }
         if (newpass || !passcc) {
             passcc = ccc;
-            n = 0;
+            n = 0;  /* number of entries for passcc; used for shuffling */
         }
         lox = i16(((cx - radius) | 0)), hix = i16(((cx + radius) | 0));
         loy = i16(((cy - radius) | 0)), hiy = i16(((cy + radius) | 0));
         for (y = i16(((loy) > 0 ? (loy) : 0)); y <= hiy; ++y) {
             if (y > 20)
-                break;
+                break;  /* done with collection for current radius */
             for (x = i16(((lox) > 1 ? (lox) : 1)); x <= hix; ++x) {
                 if (x > 79)
-                    break;
+                    break;  /* advance to next 'y' */
                 if (x != lox && x != hix && y != loy && y != hiy)
-                    continue;
+                    continue;  /* not any edge of ring/square */
                 if ((skip_mons && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || (skip_inaccessible && !((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL)))
-                    continue;
+                    continue;  /* quick filters */
                 if (filter && !(filter)(x, y))
                     continue;
                 cptr.stI16(cc, x), cptr.stI16o(cc, $nhcoord_y, y);
@@ -619,18 +807,19 @@ export function collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
             }
         }
         if (scramble && passend) {
+            /* shuffle entries gathered for current radius (or pair) */
             while (n > 1) {
-                k = rn2_at(__s_teleport_c, 700, __s_collect_coords, n);
+                k = rn2_at(__s_teleport_c, 700, __s_collect_coords, n);  /* 0..n-1 */
                 if (k) {
                     cptr.memcpy(cc, cptr.add(passcc, 0, $sizeof_coord), 4);
                     cptr.memcpy(cptr.add(passcc, 0, $sizeof_coord), cptr.add(passcc, k, $sizeof_coord), 4);
                     cptr.memcpy(cptr.add(passcc, k, $sizeof_coord), cc, 4);
                 }
-                passcc = cptr.add(passcc, 1, 4);
-                --n;
+                passcc = cptr.add(passcc, 1, 4);  /* passcc[0] has reached its final place    */
+                --n;  /* and become exempt from further shuffling */
             }
         }
-    }
+    }  /* radius loop */
     {
         if (debugcore(__s_teleport_c, 1)) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -641,6 +830,7 @@ export function collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
     return result;
 }
 
+/* [try to] teleport hero to a safe spot */
 /** C ref: teleport.c:717 — @param {CInt} teleds_flags @returns {CInt} */
 export function safe_teleds(teleds_flags) {
     let nux;
@@ -650,6 +840,19 @@ export function safe_teleds(teleds_flags) {
     let backupspot = cptr.alloc(4);
     let tcnt;
     let candycount;
+
+    /*
+     * This used to try random locations up to 400 times, with first 200
+     * tries disallowing trap locations and remaining 200 accepting such.
+     * On levels without many accessible locations (either due to being
+     * mostly stone or high monster population) it could fail to find a
+     * spot.
+     *
+     * Now it tries completely randomly only 40 times, all disallowing
+     * traps, then resorts to checking the entire map, near hero's spot
+     * first then expanding out from there.  If no non-trap spot is found,
+     * first trap spot is used.
+     */
     for (tcnt = 0; tcnt < 40; ++tcnt) {
         nux = i16(rnd_at(__s_teleport_c, 737, __s_safe_teleds, 79));
         nuy = i16(rn2_at(__s_teleport_c, 738, __s_safe_teleds, NHM.ROWNO));
@@ -658,11 +861,16 @@ export function safe_teleds(teleds_flags) {
             return 1;
         }
     }
+
+    /* get a shuffled list of candidate locations, starting with spots
+       1 or 2 steps from hero, then 3 or 4 steps, then 5 or 6, on up */
     cc_flags = 12;
     if (!Passes_walls())
         cc_flags |= NHM.CC_SKIP_INACCS;
     candycount = collect_coords(candy, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, cc_flags, null);
     cptr.stI16(backupspot, cptr.stI16o(backupspot, $nhcoord_y, 0));
+    /* skip trap locations via teleok(,,FALSE) but remember first
+       encountered trap spot that is acceptable to teleok(,,TRUE) */
     for (tcnt = 0; tcnt < candycount; ++tcnt) {
         nux = cptr.ldI16o(candy, tcnt, $sizeof_coord), nuy = cptr.ldI16o2(candy, tcnt, $sizeof_coord, $nhcoord_y);
         if (teleok(nux, nuy, 0)) {
@@ -672,6 +880,7 @@ export function safe_teleds(teleds_flags) {
         if (!cptr.ldI16(backupspot) && t_at(nux, nuy) && teleok(nux, nuy, 1))
             cptr.stI16(backupspot, nux), cptr.stI16o(backupspot, $nhcoord_y, nuy);
     }
+    /* no non-trap spot found; if we skipped a viable trap spot, use it */
     if (cptr.ldI16(backupspot)) {
         teleds(cptr.ldI16(backupspot), cptr.ldI16o(backupspot, $nhcoord_y), teleds_flags);
         return 1;
@@ -683,6 +892,7 @@ export function safe_teleds(teleds_flags) {
 function vault_tele() {
     let croom = search_special(NHC.VAULT);
     let c = cptr.alloc(4);
+
     if (croom && somexyspace(croom, c) && teleok(cptr.ldI16(c), cptr.ldI16o(c, $nhcoord_y), 0)) {
         teleds(cptr.ldI16(c), cptr.ldI16o(c, $nhcoord_y), NHM.TELEDS_TELEPORT);
         return;
@@ -693,8 +903,10 @@ function vault_tele() {
 /** C ref: teleport.c:786 — @param {CPtr<struct monst>} mtmp @param {CInt} force_it @returns {CInt} */
 export function teleport_pet(mtmp, force_it) {
     let otmp;
+
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         return 0;
+
     if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
         otmp = get_mleash(mtmp);
         if (!otmp) {
@@ -716,15 +928,18 @@ export function teleport_pet(mtmp, force_it) {
     return 1;
 }
 
+/* teleport to random pet, if valid location next to it */
 /** C ref: teleport.c:814 */
 export function tele_to_rnd_pet() {
     let mtmp;
     let pet = null;
     let cnt = 0;
+
     if (noteleport_level(cptr.add(gy, $instance_globals_y_youmonst))) {
         impossible(__s_pct_s, __s_attempt_to_teleport_hero_to_be_near_a);
         return;
     }
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
         if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI64o((mtmp), $monst_mstate) != 0n)) {
             cnt++;
@@ -734,29 +949,39 @@ export function tele_to_rnd_pet() {
     if (pet && !m_next2u(pet)) {
         let tx = i16(((((cptr.ldI16o(pet, $monst_mx) + rn2_at(__s_teleport_c, 832, __s_tele_to_rnd_pet, 3)) | 0) - 1) | 0));
         let ty = i16(((((cptr.ldI16o(pet, $monst_my) + rn2_at(__s_teleport_c, 833, __s_tele_to_rnd_pet, 3)) | 0) - 1) | 0));
+
         if (isok(tx, ty) && teleok(tx, ty, 0))
             teleds(tx, ty, NHM.TELEDS_TELEPORT);
     }
 }
 
+/* teleport the hero via some method other than scroll of teleport */
 /** C ref: teleport.c:842 */
 export function tele() {
     scrolltele(null);
 }
 
+/* teleport the hero; usually discover scroll of teleportation if via scroll */
 /** C ref: teleport.c:849 — @param {CPtr<struct obj>} scroll */
 export function scrolltele(scroll) {
     let cc = cptr.alloc(4);
+
+    /* Disable teleportation in stronghold && Vlad's Tower */
     if (noteleport_level(cptr.add(gy, $instance_globals_y_youmonst)) && !wizard()) {
         pline(__s_a_mysterious_force_prevents_you_from);
         if (scroll)
-            learnscroll(scroll);
+            learnscroll(scroll);  /* this is obviously a teleport scroll */
         return;
     }
+
+    /* don't show trap if "Sorry..." */
     if (!Blinded())
         make_blinded(0n, 0);
+
     if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || On_W_tower_level(cptr.add(u, $you_uz))) && !rn2_at(__s_teleport_c, 865, __s_scrolltele, 3)) {
         You_feel(__s_disoriented_for_a_moment);
+        /* don't discover the scroll [at least not yet for wizard override];
+           disorientation doesn't reveal that this is a teleport attempt */
         if (!wizard() || yn_function(__s_override, cptr.decay(ynchars), 110, 1) != 121)
             return;
     }
@@ -765,6 +990,7 @@ export function scrolltele(scroll) {
             pline(__s_being_unconscious_you_cannot_control);
         } else {
             let whobuf = new Uint8Array(256);
+
             void cptr.strcpy(cptr.decay(whobuf), __s_you);
             if (cptr.ldPtro(u, $you_usteed))
                 void cptr.sprintf(eos(cptr.decay(whobuf)), __s_and_s, mon_nam(cptr.ldPtro(u, $you_usteed)));
@@ -774,11 +1000,16 @@ export function scrolltele(scroll) {
             cptr.stI16(cc, cptr.ldI16(u));
             cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
             if (isok(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
+                /* The player showed some interest in traveling here;
+                 * pre-suggest this coordinate. */
                 cptr.memcpy(cc, cptr.add(iflags, $instance_flags_travelcc), 4);
             }
             if (getpos(cc, 1, __s_the_desired_position) < 0)
-                return;
+                return;  /* abort */
+            /* possible extensions: introduce a small error if
+               magic power is low; allow transfer to solid rock */
             if (teleok(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) {
+                /* for scroll, discover it regardless of destination */
                 teleds(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), NHM.TELEDS_TELEPORT);
                 if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)))
                     cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
@@ -787,11 +1018,18 @@ export function scrolltele(scroll) {
             pline(__s_sorry);
         }
     }
+
+    /* we used to suppress discovery if hero teleported to a nearby
+       spot which was already within view, but now there is always a
+       "materialize" message regardless of how far you teleported so
+       discovery of scroll type is unconditional */
     if (scroll)
         learnscroll(scroll);
+
     void safe_teleds(NHM.TELEDS_TELEPORT);
 }
 
+/* the #teleport command; 'm ^T' == choose among several teleport modes */
 const __static_dotelecmd_tports = cptr.alloc(4 * $sizeof_tporttypes);
 cptr.st1o(__static_dotelecmd_tports, 0, 110);
 cptr.stPtro(__static_dotelecmd_tports, 0 + $tporttypes_menudesc, __s_normal_t_on_demand_no_spell_obey);
@@ -810,8 +1048,11 @@ export function dotelecmd() {
     let added;
     let hidden;
     let ignore_restrictions = 0;
+
+    /* normal mode; ignore 'm' prefix if it was given */
     if (!wizard())
         return dotele(0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+
     added = (hidden = 0);
     save_HTele = HTeleportation(), save_ETele = ETeleportation();
     if (!cptr.ld1so(iflags, $instance_flags_menu_requested)) {
@@ -823,6 +1064,7 @@ export function dotelecmd() {
         let i;
         let tmode;
         let clr = NHM.NO_COLOR;
+
         win = create_nhwindow()(NHM.NHW_MENU);
         start_menu()(win, 0n);
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -835,37 +1077,46 @@ export function dotelecmd() {
         destroy_nhwindow()(win);
         if (i > 0) {
             tmode = cptr.ldI32o(picks.v, 0, $sizeof_menu_item);
+            /* if we got 2, use the one which wasn't preselected */
             if (i > 1 && tmode == 119)
                 tmode = cptr.ldI32o(picks.v, 1, $sizeof_menu_item);
             cptr.free(picks.v);
         } else if (i == 0) {
+            /* preselected one was explicitly chosen and got toggled off */
             tmode = 119;
         } else {
             return NHM.ECMD_OK;
         }
         switch (tmode) {
             case 110:
-            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 536870912n);
-            hidden = tport_spell(1);
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 536870912n);  /* confer intrinsic teleportation */
+            hidden = tport_spell(1);  /* hide teleport-away */
             break;
             case 115:
-            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n));
-            added = tport_spell(2);
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n));  /* suppress intrinsic */
+            added = tport_spell(2);  /* add teleport-away */
             break;
             case 116:
-            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n));
-            hidden = tport_spell(1);
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n));  /* suppress intrinsic */
+            hidden = tport_spell(1);  /* hide teleport-away */
             break;
             case 119:
             ignore_restrictions = 1;
             break;
         }
     }
+
+    /* if dotele() can be fatal, final disclosure might lie about
+       intrinsic teleportation; we should be able to live with that
+       since the menu finagling is only applicable in wizard mode */
     res = dotele(ignore_restrictions);
+
     cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, save_HTele);
     cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, save_ETele);
     if (added != 0 || hidden != 0)
+        /* can't both be non-NOOP so addition will yield the non-NOOP one */
         void tport_spell((((added + hidden) | 0) - 0) | 0);
+
     return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
@@ -874,18 +1125,22 @@ export function dotele(break_the_rules) {
     let trap;
     let cantdoit;
     let trap_once = 0;
+
     trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     if (trap && !(cptr.ldI32o(trap, $trap_tseen) & 1))
         trap = null;
+
     if (trap) {
         if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.LEVEL_TELEP && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0) {
             if (yn_function(__s_there_is_a_level_teleporter_here, cptr.decay(ynchars), 110, 1) == 121) {
                 level_tele_trap(trap, NHM.FORCETRAP);
+                /* deliberate jumping will always take time even if it doesn't
+                 * work */
                 return 1;
             } else
-                trap = null;
+                trap = null;  /* continue with normal horizontal teleport */
         } else if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.TELEP_TRAP) {
-            trap_once = schar((cptr.ldI32o(trap, $trap_once) & 1));
+            trap_once = schar((cptr.ldI32o(trap, $trap_once) & 1));  /* trap may get deleted, save this */
             if ((cptr.ldI32o(trap, $trap_once) & 1)) {
                 pline(__s_this_is_a_vault_teleport_usable_once);
                 if (yn_function(__s_jump_in, cptr.decay(ynchars), 110, 1) == 110) {
@@ -903,14 +1158,19 @@ export function dotele(break_the_rules) {
     if (!trap && !break_the_rules) {
         let castit = 0;
         let energy = 0;
+
         if (!Teleportation() || (cptr.ldI32o(u, $you_ulevel) < ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 8 : 12) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 33554432n) != 0n))) {
+            /* Try to use teleport away spell. */
             let knownsp = known_spell(NHC.SPE_TELEPORT_AWAY);
+
+            /* casting isn't inhibited by being Stunned (...it ought to be) */
             castit = schar((knownsp >= NHC.spe_Fresh && !HConfusion() ? 1 : 0));
             if (!castit && !break_the_rules) {
                 You(__s_pct_s_dot, (!Teleportation() ? ((knownsp != NHC.spe_Unknown) ? __s_can_t_cast_that_spell : __s_don_t_know_that_spell) : __s_are_not_able_to_teleport_at_will));
                 return 0;
             }
         }
+
         cantdoit = null;
         energy = Math.imul(5, (cptr.ld1so2(objects, NHC.SPE_TELEPORT_AWAY, $sizeof_objclass, $objclass_oc_oc2)));
         if (cptr.ldI32o(u, $you_uhunger) <= 10) {
@@ -924,19 +1184,23 @@ export function dotele(break_the_rules) {
             You(__s_s_s, cantdoit, castit ? __s_for_a_teleport_spell : __s_to_teleport);
             return 0;
         } else if (check_capacity(__s_your_concentration_falters_from)) {
-            return 1;
+            return 1;  /* this failure in spelleffects() also uses the move */
         }
+
         if (castit) {
+            /* energy cost is deducted in spelleffects() */
             exercise(NHC.A_WIS, 1);
             if ((spelleffects(NHC.SPE_TELEPORT_AWAY, 1, 0) & NHM.ECMD_TIME))
                 return 1;
             else if (!break_the_rules)
                 return 0;
         } else {
+            /* bypassing spelleffects(); apply energy cost directly */
             cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - energy) | 0);
             cptr.st1(disp, 1);
         }
     }
+
     if (next_to_u()) {
         if (trap && trap_once) {
             vault_tele();
@@ -966,9 +1230,10 @@ export function level_tele() {
         switch (__pc) {
         case 0: {
         newlevel = cptr.alloc(4);
-        escape_by_flying = null;
+        escape_by_flying = null;  /* when surviving dest of -N */
         buf = new Uint8Array(256);
         force_dest = 0;
+
         if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             do {
                 cptr.stI16(newlevel, i16(rn2_at(__s_teleport_c, 1176, __s_level_tele, cptr.ldI32(svn))));
@@ -988,6 +1253,7 @@ export function level_tele() {
         case 4: {
         qbuf = new Uint8Array(256);
         trycnt = 0;
+
         void cptr.strcpy(cptr.decay(qbuf), __s_to_what_level_do_you_want_to_teleport);
         __pc = 7; continue;
         }
@@ -999,6 +1265,8 @@ export function level_tele() {
         __pc = 9; continue;
         }
         case 10: {
+        /* wizard mode 'm ^V' skips prompting on first pass
+           (note: level Tport via menu won't have any second pass) */
         cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         if (wizard()) { __pc = 12; continue; }
         __pc = 11; continue;
@@ -1058,10 +1326,15 @@ export function level_tele() {
         newlev = print_dungeon(1, destlev, destdnum);
         if (!newlev)
             return;
+
         cptr.stI16(newlevel, destdnum.v);
         cptr.stI16o(newlevel, $d_level_dlevel, i16(destlev.v));
         if ((cptr.ldI16((newlevel)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
+
             if (!(cptr.ldI32o(u, $you_uhave) & 1) && (amu = mksobj(NHC.AMULET_OF_YENDOR, 1, 0)) !== null) {
+                /* ordinarily we'd use hold_another_object()
+                   for something like this, but we don't want
+                   fumbling or already full pack to interfere */
                 amu = addinv(amu);
                 prinv(__s_endgame_prerequisite, amu, 0n);
             }
@@ -1108,10 +1381,22 @@ export function level_tele() {
         return;
         }
         case 22: {
+
+        /* if in Knox and the requested level > 0, stay put.
+         * we let negative values requests fall into the "heaven" loop.
+         */
         if (single_level_branch(cptr.add(u, $you_uz)) && newlev > 0 && !force_dest) {
             You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment));
             return;
         }
+        /* if in Quest, the player sees "Home 1", etc., on the status
+         * line, instead of the logical depth of the level.  controlled
+         * level teleport request is likely to be relativized to the
+         * status line, and consequently it should be incremented to
+         * the value of the logical depth of the target level.
+         *
+         * we let negative values requests fall into the "heaven" handling.
+         */
         if (In_quest(cptr.add(u, $you_uz)) && newlev > 0)
             newlev = (((newlev + cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start)) | 0) - 1) | 0;
         __pc = 3;
@@ -1131,14 +1416,17 @@ export function level_tele() {
         continue;
         }
         case 3: {
+
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)
             buried_ball_to_punishment();
+
         if (!next_to_u() && !force_dest) {
             You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment));
             return;
         }
         if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
             llimit = dunlevs_in_dungeon(cptr.add(u, $you_uz));
+
             if (newlev >= 0 || newlev <= -llimit) {
                 You_cant(cptr.decay(__static_level_tele_get_there_from), __s_here);
                 return;
@@ -1148,7 +1436,8 @@ export function level_tele() {
             schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null);
             return;
         }
-        cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+
+        cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* still alive, so far... */
         if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && newlev < 0) { __pc = 27; continue; }
         __pc = 26; continue;
         }
@@ -1158,8 +1447,10 @@ export function level_tele() {
         case 26: {
         if (newlev < 0 && !force_dest) {
             if (cptr.ld1so(u, $you_ushops0)) {
-                cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
+                /* take unpaid inventory items off of shop bills */
+                cptr.st1o(gi, $instance_globals_i_in_mklev, 1);  /* suppress map update */
                 u_left_shop(cptr.add(u, $you_ushops0), 1);
+                /* you're now effectively out of the shop */
                 cptr.st1o(u, $you_ushops0, cptr.st1o(u, $you_ushops, 0));
                 cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
             }
@@ -1175,8 +1466,9 @@ export function level_tele() {
                 display_nhwindow()(WIN_MESSAGE.v, 0);
             } else
                 You(__s_are_now_high_above_the_clouds);
+
             if (cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
-                ;
+                ;  /* arrival in heaven is pending */
             } else if (Levitation()) {
                 escape_by_flying = __s_float_gently_down_to_earth;
             } else if (Flying()) {
@@ -1188,38 +1480,64 @@ export function level_tele() {
                 cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
             }
         }
+
         if (cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
             lsav = cptr.alloc(4);
-            cptr.memcpy(lsav, cptr.add(u, $you_uz), 4);
-            cptr.stI16o(u, $you_uz, 0);
-            cptr.stI16o(u, $you_uz + $d_level_dlevel, i16(((newlev <= -10) ? -10 : 0)));
+
+            /* set specific death location; this also suppresses bones */
+            cptr.memcpy(lsav, cptr.add(u, $you_uz), 4);  /* save current level; see below */
+            cptr.stI16o(u, $you_uz, 0);  /* main dungeon */
+            cptr.stI16o(u, $you_uz + $d_level_dlevel, i16(((newlev <= -10) ? -10 : 0)));  /* heaven or surface */
             done(NHC.DIED);
+            /* can only get here via life-saving (or declining to die in
+               explore|debug mode); the hero has now left the dungeon... */
             escape_by_flying = __s_find_yourself_back_on_the_surface;
-            cptr.memcpy(cptr.add(u, $you_uz), lsav, 4);
+            cptr.memcpy(cptr.add(u, $you_uz), lsav, 4);  /* restore u.uz so escape code works */
         }
+
+        /* calls done(ESCAPED) if newlevel==0 */
         if (escape_by_flying) {
             You(__s_pct_s_dot, escape_by_flying);
-            cptr.stI16(newlevel, 0);
-            cptr.stI16o(newlevel, $d_level_dlevel, 0);
+            /* [dlevel used to be set to 1, but it doesn't make sense to
+                teleport out of the dungeon and float or fly down to the
+                surface but then actually arrive back inside the dungeon] */
+            cptr.stI16(newlevel, 0);  /* specify main dungeon */
+            cptr.stI16o(newlevel, $d_level_dlevel, 0);  /* escape the dungeon */
         } else if (force_dest) {
+            /* wizard mode menu; no further validation needed */
             ;
         } else if (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && newlev >= ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) + dunlevs_in_dungeon(cptr.add(u, $you_uz))) | 0)) {
             find_hell(newlevel);
         } else {
+            /* FIXME: we should avoid using hard-coded knowledge of
+               which branches don't connect to anything deeper;
+               mainly used to distinguish "can't get there from here"
+               vs "from anywhere" rather than to control destination */
             qbranch = In_quest(cptr.add(u, $you_uz)) ? cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level) : (In_mines(cptr.add(u, $you_uz)) ? cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level) : cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level));
             deepest = (((cptr.ldI32o2(svd, cptr.ldI16(qbranch), $sizeof_dungeon, $dungeon_depth_start) + dunlevs_in_dungeon(qbranch)) | 0) - 1) | 0;
+
+            /* if invocation did not yet occur, teleporting into
+             * the last level of Gehennom is forbidden.
+             */
             if (!wizard() && In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) && newlev >= deepest) {
                 newlev = (deepest - 1) | 0;
                 pline(__s_sorry);
             }
+            /* no teleporting out of quest dungeon */
             if (In_quest(cptr.add(u, $you_uz)) && newlev < depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
                 newlev = depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level));
+            /* the player thinks of levels purely in logical terms, so
+             * we must translate newlev to a number relative to the
+             * current dungeon.
+             */
             get_level(newlevel, newlev);
+
             if (on_level(newlevel, cptr.add(u, $you_uz)) && newlev != depth(cptr.add(u, $you_uz))) {
                 You_cant(cptr.decay(__static_level_tele_get_there_from), (newlev > deepest) ? __s_anywhere : __s_here);
                 return;
             }
         }
+
         schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, cptr.ld1so(flags, $flag_verbose) ? __s_you_materialize_on_a_different_level : null);
         __pc = -1;
         continue;
@@ -1234,21 +1552,36 @@ export function domagicportal(ttmp) {
     let target_level = cptr.alloc(4);
     let totype;
     let stunmsg = null;
+
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)
         buried_ball_to_punishment();
+
     if (!next_to_u()) {
         You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment));
         return;
     }
+
+    /* if landed from another portal, do nothing */
+    /* problem: level teleport landing escapes the check */
     if (!on_level(cptr.add(u, $you_uz), cptr.add(u, $you_uz0)))
         return;
+
     You(__s_activated_a_magic_portal);
+
+    /* prevent the poor shnook, whose amulet was stolen while in
+     * the endgame, from accidently triggering the portal to the
+     * next level, and thus losing the game
+     */
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(cptr.ldI32o(u, $you_uhave) & 1)) {
         You_feel(__s_dizzy_for_a_moment_but_nothing_happens);
         return;
     }
+
     cptr.memcpy(target_level, cptr.add(ttmp, $trap_dst), 4);
+
+    /* coming back from tutorial doesn't trigger stunning */
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()) && !(cptr.ldI16((target_level)) == tutorial_dnum())) {
+        /* returning to normal play => arrive on level 1 stairs */
         totype = NHC.UTOTYPE_ATSTAIRS;
         stunmsg = __s_resuming_regular_play;
     } else {
@@ -1256,6 +1589,7 @@ export function domagicportal(ttmp) {
         stunmsg = !HStun() ? __s_you_feel_slightly_dizzy : __s_you_feel_dizzier;
         make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + 3n), 0);
     }
+
     schedule_goto(target_level, totype, stunmsg, null);
 }
 
@@ -1265,6 +1599,7 @@ let __static_tele_trap_in_tele_trap = 0; /** C ref: teleport.c:1497 — signed c
 export function tele_trap(trap) {
     if (__static_tele_trap_in_tele_trap)
         return;
+
     __static_tele_trap_in_tele_trap = 1;
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || Antimagic() || noteleport_level(cptr.add(gy, $instance_globals_y_youmonst))) {
         if (Antimagic())
@@ -1274,18 +1609,21 @@ export function tele_trap(trap) {
         You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment));
     } else if ((cptr.ldI32o(trap, $trap_once) & 1)) {
         deltrap(trap);
-        newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* get rid of trap symbol */
         vault_tele();
     } else if (isok(cptr.ldI16o(trap, $trap_launch), cptr.ldI16o(trap, $trap_launch + $nhcoord_y))) {
         let cc = cptr.alloc(4);
         let mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(trap, $trap_launch), 168, cptr.ldI16o(trap, $trap_launch + $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
         settrack();
         if (mtmp) {
             if (!enexto(cc, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldPtro(mtmp, $monst_data))) {
+                /* could not find some other place to put mtmp; the level must
+                 * be nearly or completely full */
                 You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment));
             } else {
                 rloc_to(mtmp, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-                mtmp = null;
+                mtmp = null;  /* no longer a monster at dest */
             }
         }
         if (!mtmp) {
@@ -1293,6 +1631,7 @@ export function tele_trap(trap) {
         }
     } else
         tele();
+
     __static_tele_trap_in_tele_trap = 0;
 }
 
@@ -1300,12 +1639,14 @@ export function tele_trap(trap) {
 export function level_tele_trap(trap, trflags) {
     let verbbuf = new Uint8Array(256);
     let intentional = 0;
+
     if (((trflags & 33) >>> 0) != 0) {
-        void cptr.strcpy(cptr.decay(verbbuf), __s_trigger);
+        void cptr.strcpy(cptr.decay(verbbuf), __s_trigger);  /* follows "You sit down." */
         intentional = 1;
     } else
         void cptr.sprintf(cptr.decay(verbbuf), __s_s_onto, u_locomotion(__s_step));
     You(__s_s_a_level_teleport_trap, cptr.decay(verbbuf));
+
     if (Antimagic() && !intentional) {
         shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     }
@@ -1314,25 +1655,40 @@ export function level_tele_trap(trap, trflags) {
         return;
     }
     deltrap(trap);
-    newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+    newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* get rid of trap symbol */
     level_tele();
+
     if (Hallucination() || Teleport_control())
         You(__s_briefly_feel_s, Hallucination() ? __s_oriented : __s_centered);
     else
         You_feel(__s_sdisoriented, HConfusion() ? __s_even_more : __s_empty);
+    /* magic portal traversal causes brief Stun; for level teleport, use
+       confusion instead, and only when hero lacks control; do this after
+       processing the level teleportation attempt because being confused
+       can affect the outcome ("Oops" result) */
     if (!Teleport_control())
         make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + 3n), 0);
 }
 
+/* check whether monster can arrive at location <x,y> via Tport (or fall) */
 /** C ref: teleport.c:1575 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function rloc_pos_ok(x, y, mtmp) {
     let xx;
     let yy;
+
     if (!goodpos(x, y, mtmp, NHM.GP_CHECKSCARY))
         return 0;
+    /*
+     * Check for restricted areas present in some special levels.
+     *
+     * `xx' is current column; if 0, then `yy' will contain flag bits
+     * rather than row:  bit #0 set => moving upwards; bit #1 set =>
+     * inside the Wizard's tower.
+     */
     xx = cptr.ldI16o(mtmp, $monst_mx);
     yy = cptr.ldI16o(mtmp, $monst_my);
     if (!xx) {
+        /* no current location (migrating monster arrival) */
         if (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx) && On_W_tower_level(cptr.add(u, $you_uz)))
             return schar((((yy & 2) != 0) ^ !((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)))));
         if (cptr.ldI16(svu) && (yy & 1) != 0)
@@ -1340,6 +1696,9 @@ function rloc_pos_ok(x, y, mtmp) {
         if (cptr.ldI16o(svd, $instance_globals_saved_d_dndest) && (yy & 1) == 0)
             return schar((((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_ly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hy))) && (!cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx) || !((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)))) ? 1 : 0));
     } else {
+        /* [try to] prevent a shopkeeper or temple priest from being
+           sent out of his room (caller might resort to goodpos() if
+           we report failure here, so this isn't full prevention) */
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && inhishop(mtmp)) {
             if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != uchar(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shoproom)))
                 return 0;
@@ -1347,12 +1706,23 @@ function rloc_pos_ok(x, y, mtmp) {
             if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != uchar(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shroom)))
                 return 0;
         }
+        /* current location is <xx,yy> */
         if (!tele_jump_ok(xx, yy, x, y))
             return 0;
     }
+    /* <x,y> is ok */
     return 1;
 }
 
+/*
+ * rloc_to()
+ *
+ * Pulls a monster from its current position and places a monster at
+ * a new x and y.  If oldx is 0, then the monster was not in the
+ * levels.monsters array.  However, if oldx is 0, oldy may still have
+ * a value because mtmp is a migrating_mon.  Worm tails are always
+ * placed randomly around the head of the worm.
+ */
 /** C ref: teleport.c:1645 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CUInt} rlocflags */
 function rloc_to_core(mtmp, x, y, rlocflags) {
     let oldx = cptr.ldI16o(mtmp, $monst_mx);
@@ -1363,8 +1733,10 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
     let appearmsg = schar(((cptr.ldU64o(mtmp, $monst_mstrategy) & 2147483648n) != 0n));
     let domsg = schar((!cptr.ld1so(gi, $instance_globals_i_in_mklev) && (vanishmsg || appearmsg) && !preventmsg ? 1 : 0));
     let telemsg = 0;
+
     if (x == cptr.ldI16o(mtmp, $monst_mx) && y == cptr.ldI16o(mtmp, $monst_my) && cptr.eq((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), mtmp))
-        return;
+        return;  /* that was easy */
+
     if (oldx) {
         if (domsg && canspotmon(mtmp)) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) || sensemon(mtmp)) {
@@ -1372,20 +1744,28 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
             } else {
                 pline(__s_s_vanishes, Monnam(mtmp));
             }
+            /* avoid "It suddenly appears!" for a STRAT_APPEARMSG monster
+               that has just teleported away if we won't see it after this
+               vanishing (the regular appears message will be given if we
+               do see it) */
             appearmsg = 0;
         }
+
         if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
             remove_worm(mtmp);
         } else {
             cptr.stPtro3(svl, oldx, 168, oldy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
-            newsym(oldx, oldy);
+            newsym(oldx, oldy);  /* update old location */
         }
     }
+
     mon_track_clear(mtmp);
-    place_monster(mtmp, x, y);
+    place_monster(mtmp, x, y);  /* put monster down */
     update_monster_region(mtmp);
+
     if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
         place_worm_tail_randomly(mtmp, x, y);
+
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
             u_on_newpos(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
@@ -1395,16 +1775,18 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
             unstuck(mtmp);
         }
     }
+
     maybe_unhide_at(x, y);
-    newsym(x, y);
-    set_apparxy(mtmp);
+    newsym(x, y);  /* update new location */
+    set_apparxy(mtmp);  /* orient monster */
     if (domsg && (canspotmon(mtmp) || appearmsg || cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))) {
         let du = dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         let olddu;
         let next = (du <= 2) ? __s_next_to_you : null;
         let nearu = (du <= 64) ? __s_close_by : null;
+
         set_msg_xy(x, y);
-        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744071562067967n);
+        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744071562067967n);  /* one chance only */
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) && !((cptr.ldI16o(u, $you_ux0)) == cptr.ldI16(u) && (cptr.ldI16o(u, $you_uy0)) == cptr.ldI16o(u, $you_uy))) {
             You(__s_and_s_teleport_together, mon_nam(mtmp));
         } else if (telemsg && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0) || sensemon(mtmp))) {
@@ -1412,15 +1794,32 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
         } else {
             pline(__s_s_s_s_s, appearmsg ? Amonnam(mtmp) : Monnam(mtmp), appearmsg ? __s_suddenly : __s_empty, !Blind() ? __s_appears : __s_arrives, next ? next : (nearu ? nearu : __s_empty));
         }
+        /* wand discovery only happens if a messaage is delivered (bug?);
+           if spell or q.mechanic attack or artifact #invoke for banish
+           then current_wand will be Null */
         if (cptr.ldPtro(gc, $instance_globals_c_current_wand) && cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_wand), $obj_otyp) == NHC.WAN_TELEPORTATION)
             discover_object(NHC.WAN_TELEPORTATION, 1, 1, 1);
     }
+
+    /* shopkeepers will only teleport if you zap them with a wand of
+       teleportation or if they've been transformed into a jumpy monster;
+       the latter only happens if you've attacked them with polymorph
+       [FIXME? or they've been hit by a genetic engineer, which won't
+       necessarily be due to Conflict by hero] */
     if (resident_shk && !inhishop(mtmp))
         make_angry_shk(mtmp, oldx, oldy);
+
+    /* if a monster carrying shop goods teleports out of the shop, blame
+       it on the hero; chance of an unpaid item is vanishingly small, but
+       no_charge is easily possible and needs to be cleared if not in shop;
+       a for-sale item is ordinary here--shk won't notice it leaving; if
+       mtmp teleports from one shop into another, no_charge status sticks
+       and an item on the first shk's bill stays there */
     if (cptr.ldPtro(mtmp, $monst_minvent) && !costly_spot(x, y)) {
         let otmp;
         let shkp = find_objowner(cptr.ldPtro(mtmp, $monst_minvent), oldx, oldy);
         let peaceful = schar((!shkp || (cptr.ldI32o(shkp, $monst_mpeaceful) & 1) | 0 ? 1 : 0));
+
         for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
             if ((cptr.ldI32o(otmp, $obj_no_charge) & 1))
                 cptr.stI32o(otmp, $obj_no_charge, 0);
@@ -1428,8 +1827,12 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
                 stolen_value(otmp, oldx, oldy, peaceful, 0);
         }
     }
+
+    /* if hero is busy, maybe stop occupation */
     if (cptr.ldPtro(go, $instance_globals_o_occupation))
         void dochugw(mtmp, 0);
+
+    /* trapped monster teleported away */
     if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_wormno) & 31))
         void mintrap(mtmp, NHM.NO_TRAP_FLAGS);
 }
@@ -1447,16 +1850,19 @@ export function rloc_to_flag(mtmp, x, y, rlocflags) {
 /** C ref: teleport.c:1786 — @param {CInt} isladder @param {CInt} up @returns {CPtr<stairway>} */
 function stairway_find_forwiz(isladder, up) {
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
+
     while (stway && !(cptr.ld1so(stway, $stairway_isladder) == isladder && cptr.ld1so(stway, $stairway_up) == up && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz)))
         stway = cptr.ldPtro(stway, $stairway_next);
     return stway;
 }
 
+/* place a monster at a random location, typically due to teleport;
+   return TRUE if successful, FALSE if not; rlocflags is RLOC_foo flags */
 /** C ref: teleport.c:1799 — @param {CPtr<struct monst>} mtmp @param {CUInt} rlocflags @returns {CInt} */
 export function rloc(mtmp, rlocflags) {
     let cc = cptr.alloc(4);
     let backupcc = cptr.alloc(4);
-    let candy = cptr.alloc(1659 * $sizeof_coord);
+    let candy = cptr.alloc(1659 * $sizeof_coord);  /* room for entire map */
     let cc_flags;
     let x;
     let y;
@@ -1465,12 +1871,15 @@ export function rloc(mtmp, rlocflags) {
     let j;
     let candycount;
     __lbl_found_xy: {
+
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
             tele();
             return 1;
         }
+
         if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && cptr.ldI16o(mtmp, $monst_mx)) {
             let stway;
+
             if (!In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz))) {
                 stway = stairway_find_forwiz(0, 1);
             } else if (!stairway_find_forwiz(1, 0)) {
@@ -1478,11 +1887,19 @@ export function rloc(mtmp, rlocflags) {
             } else {
                 stway = stairway_find_forwiz(1, 0);
             }
+
             x = i16((stway ? cptr.ldI16(stway) : 0));
             y = i16((stway ? cptr.ldI16o(stway, $stairway_sy) : 0));
+
+            /* if the wiz teleports away to heal, try the up staircase,
+               to block the player's escaping before he's healed
+               (deliberately use `goodpos' rather than `rloc_pos_ok' here) */
             if (goodpos(x, y, mtmp, NHM.NO_MM_FLAGS))
                 break __lbl_found_xy;
         }
+
+        /* wizard-mode player can choose destination by setting 'montelecontrol'
+           option; ignored if/when this is arrival of a migrating monster */
         if (cptr.ld1so(iflags, $instance_flags_mon_telecontrol) && cptr.ldI16o(mtmp, $monst_mx)) {
             cptr.stI16(cc, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
             if (control_mon_tele(mtmp, cc, rlocflags, 1)) {
@@ -1490,12 +1907,24 @@ export function rloc(mtmp, rlocflags) {
                 break __lbl_found_xy;
             }
         }
+
+        /* this used to try randomly 1000 times, then fallback to left-to-right
+           top-to-bottom exhaustive check; now that the exhaustive check uses
+           randomized order, reduce the number of random attempts to 50;
+           on levels with lots of available space, random can find a spot more
+           quickly but might fail to find one no matter how many tries it makes */
         for (trycount = 0; trycount < 50; ++trycount) {
-            x = i16(rnd_at(__s_teleport_c, 1850, __s_rloc, 79));
-            y = i16(rn2_at(__s_teleport_c, 1851, __s_rloc, NHM.ROWNO));
+            x = i16(rnd_at(__s_teleport_c, 1850, __s_rloc, 79));  /* 1..COLNO-1 */
+            y = i16(rn2_at(__s_teleport_c, 1851, __s_rloc, NHM.ROWNO));  /* 0..ROWNO-1 */
             if (rloc_pos_ok(x, y, mtmp))
                 break __lbl_found_xy;
         }
+
+        /* try harder to find a good place; gather a list of all candidate
+           locations (every accessible unoccupied spot except for hero's;
+           goodpos() will reject that), then shuffle them ourselves instead
+           of having collect_coords() do it (which would be in rings centered
+           around arbitrary <COLNO/2,ROWNO/2>) */
         cc_flags = 11;
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 8n) != 0n))
             cc_flags |= NHM.CC_SKIP_INACCS;
@@ -1513,7 +1942,13 @@ export function rloc(mtmp, rlocflags) {
             if (!cptr.ldI16(backupcc) && goodpos(x, y, mtmp, NHM.NO_MM_FLAGS))
                 cptr.stI16(backupcc, x), cptr.stI16o(backupcc, $nhcoord_y, y);
         }
+
+        /* we didn't find any spot acceptable to rloc_pos_ok() which avoids
+           'onscary' and honors teleport regions, but if we did find a spot
+           that was acceptable to goodpos() (which ignores 'onscary' and
+           teleport regions) we'll use that; otherwise give up */
         if (!cptr.ldI16(backupcc)) {
+            /* level either full of monsters or somehow faulty */
             if (((rlocflags & NHM.RLOC_ERR) >>> 0) != 0)
                 impossible(__s_rloc_couldn_t_relocate_monster);
             return 0;
@@ -1524,17 +1959,22 @@ export function rloc(mtmp, rlocflags) {
     return 1;
 }
 
+/* let wizard-mode player choose a teleporting monster's destination */
 /** C ref: teleport.c:1899 — @param {CPtr<struct monst>} mon @param {CPtr<coord>} cc_p @param {CUInt} rlocflags @param {CInt} via_rloc @returns {CInt} */
 export function control_mon_tele(mon, cc_p, rlocflags, via_rloc) {
     let tcbuf = new Uint8Array(256);
+
     if (!isok(cptr.ldI16(cc_p), cptr.ldI16o(cc_p, $coord_y))) {
         cptr.stI16(cc_p, cptr.ldI16o(mon, $monst_mx)), cptr.stI16o(cc_p, $coord_y, cptr.ldI16o(mon, $monst_my));
         if (!isok(cptr.ldI16(cc_p), cptr.ldI16o(cc_p, $coord_y)))
             cptr.stI16(cc_p, cptr.ldI16(u)), cptr.stI16o(cc_p, $coord_y, cptr.ldI16o(u, $you_uy));
     }
+
     if (!wizard() || !cptr.ld1so(iflags, $instance_flags_mon_telecontrol))
         return 0;
+
     pline(__s_teleport_s_d_d_where, noit_mon_nam(mon), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
+    /* getpos '?' will show "Move the cursor to <where to teleport Foo>:" */
     void cptr.sprintf(cptr.decay(tcbuf), __s_where_to_teleport_s, noit_mon_nam(mon));
     if (getpos(cc_p, 0, cptr.decay(tcbuf)) >= 0 && !((cptr.ldI16(cc_p)) == cptr.ldI16(u) && (cptr.ldI16o(cc_p, $coord_y)) == cptr.ldI16o(u, $you_uy))) {
         if (via_rloc ? rloc_pos_ok(cptr.ldI16(cc_p), cptr.ldI16o(cc_p, $coord_y), mon) : goodpos(cptr.ldI16(cc_p), cptr.ldI16o(cc_p, $coord_y), mon, rlocflags))
@@ -1553,6 +1993,7 @@ export function control_mon_tele(mon, cc_p, rlocflags, via_rloc) {
 function mvault_tele(mtmp) {
     let croom = search_special(NHC.VAULT);
     let c = cptr.alloc(4);
+
     if (croom && somexyspace(croom, c) && goodpos(cptr.ldI16(c), cptr.ldI16o(c, $nhcoord_y), mtmp, 0)) {
         rloc_to(mtmp, cptr.ldI16(c), cptr.ldI16o(c, $nhcoord_y));
         return;
@@ -1573,18 +2014,33 @@ export function tele_restrict(mon) {
 /** C ref: teleport.c:1962 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CInt} in_sight */
 export function mtele_trap(mtmp, trap, in_sight) {
     let monname;
+
+    /* don't print feedback here: a monster stepping on a trap and not
+       teleporting from it isn't visible */
     if (noteleport_level(mtmp))
         return;
+
     if (teleport_pet(mtmp, 0)) {
+        /* save name with pre-movement visibility */
         monname = Monnam(mtmp);
+
+        /* Note: don't remove the trap if a vault.  Other-
+         * wise the monster will be stuck there, since
+         * the guard isn't going to come for it...
+         */
         if ((cptr.ldI32o(trap, $trap_once) & 1))
             mvault_tele(mtmp);
         else if (isok(cptr.ldI16o(trap, $trap_launch), cptr.ldI16o(trap, $trap_launch + $nhcoord_y))) {
+            /* monster teleporting onto hero's or another monster's spot does
+             * not work the same as hero teleporting onto monster's spot where
+             * the incoming monster displaces the resident to the nearest
+             * possible space - instead it just doesn't work. */
             if (!((cptr.ldPtro3(svl, cptr.ldI16o(trap, $trap_launch), 168, cptr.ldI16o(trap, $trap_launch + $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) || ((cptr.ldI16o(trap, $trap_launch)) == cptr.ldI16(u) && (cptr.ldI16o(trap, $trap_launch + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)))) {
                 rloc_to_core(mtmp, cptr.ldI16o(trap, $trap_launch), cptr.ldI16o(trap, $trap_launch + $nhcoord_y), NHM.RLOC_MSG);
             }
         } else
             void rloc(mtmp, NHM.RLOC_NONE);
+
         if (in_sight) {
             if (canseemon(mtmp))
                 pline(__s_s_seems_disoriented, monname);
@@ -1595,14 +2051,17 @@ export function mtele_trap(mtmp, trap, in_sight) {
     }
 }
 
+/* return Trap_Effect_Finished if still on level, Trap_Moved_Mon if not */
 /** C ref: teleport.c:2006 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CInt} force_it @param {CInt} in_sight @returns {CInt} */
 export function mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
     let tt = (trap ? (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP);
+
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
-        return NHC.Trap_Effect_Finished;
+        return NHC.Trap_Effect_Finished;  /* temporary? kludge */
     if (teleport_pet(mtmp, force_it)) {
         let tolevel = cptr.alloc(4);
         let migrate_typ = NHM.MIGR_RANDOM;
+
         if (((tt) == NHC.HOLE || (tt) == NHC.TRAPDOOR)) {
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
                 assign_level(tolevel, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level));
@@ -1627,12 +2086,17 @@ export function mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
             }
         } else if (tt == NHC.LEVEL_TELEP || tt == NHC.NO_TRAP) {
             let nlev;
+
             if (mon_has_amulet(mtmp) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (tt == NHC.NO_TRAP && onscary(0, 0, mtmp))) {
                 if (in_sight)
                     pline_mon(mtmp, __s_s_seems_very_disoriented_for_a_moment, Monnam(mtmp));
                 return NHC.Trap_Effect_Finished;
             }
             if (tt == NHC.NO_TRAP) {
+                /* creature is being forced off the level to make room;
+                   it will try to return to this level (at a random spot
+                   rather than its current one) if the level is left by
+                   the hero and then revisited */
                 assign_level(tolevel, cptr.add(u, $you_uz));
             } else {
                 nlev = random_teleport_level();
@@ -1647,6 +2111,7 @@ export function mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
             impossible(__s_mlevel_tele_trap_unexpected_trap_type_d, tt);
             return NHC.Trap_Effect_Finished;
         }
+
         if (in_sight) {
             pline_mon(mtmp, __s_suddenly_s_s, mon_nam(mtmp), (tt == NHC.HOLE) ? __s_falls_into_a_hole : ((tt == NHC.TRAPDOOR) ? __s_falls_through_a_trap_door : __s_disappears_out_of_sight));
             if (trap)
@@ -1655,11 +2120,12 @@ export function mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
         if (is_xport(tt) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 67108864n) != 0n))
             cptr.stI32o(mtmp, $monst_mconf, 1);
         migrate_to_level(mtmp, ledger_no(tolevel), i16(migrate_typ), null);
-        return NHC.Trap_Moved_Mon;
+        return NHC.Trap_Moved_Mon;  /* no longer on this level */
     }
     return NHC.Trap_Effect_Finished;
 }
 
+/* place object randomly, returns False if it's gone (eg broken) */
 /** C ref: teleport.c:2102 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function rloco(obj) {
     let tx;
@@ -1668,10 +2134,12 @@ export function rloco(obj) {
     let oty;
     let restricted_fall;
     let try_limit = 4000;
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) {
         if (revive_corpse(obj))
             return 0;
     }
+
     obj_extract_self(obj);
     otx = cptr.ldI16o(obj, $obj_ox);
     oty = cptr.ldI16o(obj, $obj_oy);
@@ -1682,20 +2150,33 @@ export function rloco(obj) {
         if (!--try_limit)
             break;
     } while (!goodpos(tx, ty, null, 0) || (restricted_fall && (!((tx) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest)) && (tx) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hx)) && (ty) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_ly)) && (ty) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hy))) || (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx) && ((tx) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (tx) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (ty) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (ty) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)))))) || (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx) && On_W_tower_level(cptr.add(u, $you_uz)) && ((tx) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (tx) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (ty) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (ty) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)) ? 1 : 0) != ((otx) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (otx) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (oty) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (oty) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)) ? 1 : 0)));
+
     if (flooreffects(obj, tx, ty, __s_fall)) {
+        /* update old location (if any) since flooreffects() couldn't;
+           unblock_point() for boulder handled by obj_extract_self() */
         if (!(otx == 0 && oty == 0))
             newsym(otx, oty);
         return 0;
     } else if (otx == 0 && oty == 0) {
-        ;
+        ;  /* fell through a trap door; no update of old loc needed */
     } else {
         let shkp = find_objowner(obj, otx, oty);
         let objinshop = schar((shkp && costly_spot(otx, oty) ? 1 : 0));
         let onboundary = schar((shkp && costly_adjacent(shkp, otx, oty) ? 1 : 0));
+
+        /*
+         * If object starts inside shop or is unpaid and on shop boundary:
+         * if hero is outside the shop, treat this as theft;
+         * otherwise, if it arrives inside same shop, remove it from bill;
+         * otherwise, if it arrives on the boundary, add it to bill;
+         * if it arrives outside the shop, treat this as a theft.
+         * Billing routines deal with obj->no_charge.
+         */
         if (objinshop || ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && onboundary)) {
             let h = cptr.ld1s(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE));
             let oo = cptr.ld1s(in_rooms(otx, oty, 0));
             let hinshop = schar((h && cptr.strchr(in_rooms(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), 0), h) ? 1 : 0));
+
             if (hinshop && costly_spot(tx, ty) && oo && cptr.strchr(in_rooms(tx, ty, 0), oo)) {
                 if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
                     subfrombill(obj, shkp);
@@ -1706,24 +2187,52 @@ export function rloco(obj) {
                 void stolen_value(obj, otx, oty, 0, 0);
             }
         }
-        newsym(otx, oty);
+
+        newsym(otx, oty);  /* update old location */
     }
     place_object(obj, tx, ty);
+    /* note: block_point() for boulder handled by place_object() */
     newsym(tx, ty);
     return 1;
 }
 
+/* Returns an absolute depth */
 /** C ref: teleport.c:2191 @returns {CInt} */
 export function random_teleport_level() {
     let nlev;
     let max_depth;
     let min_depth;
     let cur_depth = depth(cptr.add(u, $you_uz));
+
+    /* [the endgame case can only occur in wizard mode] */
     if (!rn2_at(__s_teleport_c, 2196, __s_random_teleport_level, 5) || single_level_branch(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return cur_depth;
+
+    /* What I really want to do is as follows:
+     * -- If in a dungeon that goes down, the new level is to be restricted
+     *    to [top of parent, bottom of current dungeon]
+     * -- If in a dungeon that goes up, the new level is to be restricted
+     *    to [top of current dungeon, bottom of parent]
+     * -- If in a quest dungeon or similar dungeon entered by portals,
+     *    the new level is to be restricted to [top of current dungeon,
+     *    bottom of current dungeon]
+     * The current behavior is not as sophisticated as that ideal, but is
+     * still better what we used to do, which was like this for players
+     * but different for monsters for no obvious reason.  Currently, we
+     * must explicitly check for special dungeons.  We check for Knox
+     * above; endgame is handled in the caller due to its different
+     * message ("disoriented").
+     * --KAA
+     * 3.4.2: explicitly handle quest here too, to fix the problem of
+     * monsters sometimes level teleporting out of it into main dungeon.
+     * Also prevent monsters reaching the Sanctum prior to invocation.
+     */
     if (In_quest(cptr.add(u, $you_uz))) {
         let bottom = dunlevs_in_dungeon(cptr.add(u, $you_uz));
         let qlocate_depth = cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel);
+
+        /* if hero hasn't reached the middle locate level yet,
+           no one can randomly teleport past it */
         if ((cptr.ldI16o2(svd, cptr.ldI16((cptr.add(u, $you_uz))), $sizeof_dungeon, $dungeon_dunlev_ureached)) < qlocate_depth)
             bottom = qlocate_depth;
         min_depth = cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start);
@@ -1731,14 +2240,20 @@ export function random_teleport_level() {
     } else {
         min_depth = 1;
         max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) - 1) | 0)) | 0;
+        /* can't reach Sanctum if the invocation hasn't been performed */
         if (In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1))
             max_depth = (max_depth - 1) | 0;
     }
+
+    /* Get a random value relative to the current dungeon */
+    /* Range is 1 to current+3, current not counting */
     nlev = (rn2_at(__s_teleport_c, 2239, __s_random_teleport_level, (((cur_depth + 3) | 0) - min_depth) | 0) + min_depth) | 0;
     if (nlev >= cur_depth)
         nlev++;
+
     if (nlev > max_depth) {
         nlev = max_depth;
+        /* teleport up if already on bottom */
         if (Is_botlevel(cptr.add(u, $you_uz)))
             nlev = (nlev - rnd_at(__s_teleport_c, 2247, __s_random_teleport_level, 3)) | 0;
     }
@@ -1753,9 +2268,12 @@ export function random_teleport_level() {
     return nlev;
 }
 
+/* you teleport a monster (via wand, spell, or poly'd q.mechanic attack);
+   return false iff the attempt fails */
 /** C ref: teleport.c:2263 — @param {CPtr<struct monst>} mtmp @param {CInt} give_feedback @returns {CInt} */
 export function u_teleport_mon(mtmp, give_feedback) {
     let cc = cptr.alloc(4);
+
     if (cptr.ldI64o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until) >= cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         if (give_feedback)
             pline(__s_a_mysterious_force_prevents_you, mon_nam(mtmp));

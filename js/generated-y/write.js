@@ -105,10 +105,14 @@ const __s_parchment = cptr.lit("parchment");
 const __s_vellum = cptr.lit("vellum");
 const __s_cloth = cptr.lit("cloth");
 
+/*
+ * returns base cost of a scroll or a spellbook
+ */
 /** C ref: write.c:14 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* cost(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.SPBOOK_CLASS)
         return (Math.imul(10, cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2)));
+
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.SCR_MAIL:
         return 2;
@@ -147,15 +151,19 @@ function* cost(otmp) {
     return 1000;
 }
 
+/* getobj callback for object to write on */
 /** C ref: write.c:61 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function write_ok(obj) {
     if (!obj || (cptr.ld1so(obj, $obj_oclass) != NHC.SCROLL_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS))
         return NHC.GETOBJ_EXCLUDE;
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_BLANK_PAPER || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BLANK_PAPER)
         return NHC.GETOBJ_SUGGEST;
+
     return NHC.GETOBJ_DOWNPLAY;
 }
 
+/* write -- applying a magic marker */
 /** C ref: write.c:74 — @param {CPtr<struct obj>} pen @returns {CInt} */
 export function* dowrite(pen) {
     let paper;
@@ -177,6 +185,7 @@ export function* dowrite(pen) {
     let typeword;
     let spell_knowledge;
     __lbl_found: {
+
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
             (yield* You(__s_need_hands_to_be_able_to_write));
             return NHM.ECMD_OK;
@@ -185,15 +194,20 @@ export function* dowrite(pen) {
             (yield* dropx(pen));
             return NHM.ECMD_TIME;
         }
+
+        /* get paper to write on */
         paper = (yield* getobj(__s_write_on, write_ok, NHM.GETOBJ_NOFLAGS));
         if (!paper)
             return NHM.ECMD_CANCEL;
+        /* can't write on a novel (unless/until it's been converted into a blank
+           spellbook), but we want messages saying so to avoid "spellbook" */
         typeword = (cptr.ldI16o(paper, $obj_otyp) == NHC.SPE_NOVEL) ? __s_book : ((cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) ? __s_spellbook : __s_scroll);
         if (Blind()) {
             if (!(cptr.ldI32o(paper, $obj_dknown) & 1)) {
                 (yield* You(__s_don_t_know_whether_that_s_is_blank_or, typeword));
                 return NHM.ECMD_OK;
             } else if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
+                /* can't write a magic book while blind */
                 (yield* pline(__s_s_can_t_create_braille_text, upstart((yield* ysimple_name(pen)))));
                 return NHM.ECMD_OK;
             }
@@ -205,9 +219,11 @@ export function* dowrite(pen) {
             return NHM.ECMD_TIME;
         }
         (yield* discover_object(NHC.SCR_BLANK_PAPER, 1, 1, 1));
+
+        /* what to write */
         void cptr.sprintf(cptr.decay(qbuf), __s_what_type_of_s_do_you_want_to_write, typeword);
         (yield* getlin(cptr.decay(qbuf), cptr.decay(namebuf)));
-        void (yield* mungspaces(cptr.decay(namebuf)));
+        void (yield* mungspaces(cptr.decay(namebuf)));  /* remove any excess whitespace */
         if (cptr.ld1so(cptr.decay(namebuf), 0, 1) == 27 || !cptr.ld1so(cptr.decay(namebuf), 0, 1))
             return NHM.ECMD_TIME;
         nm = cptr.decay(namebuf);
@@ -217,43 +233,61 @@ export function* dowrite(pen) {
             nm = cptr.add(nm, 10);
         if (!(yield* strncmpi(nm, __s_of, 3)))
             nm = cptr.add(nm, 3);
+
         if ((bp = (yield* strstri(nm, __s_armour))) !== null) {
             cptr.memcpy(bp, __s_armor, 7n);
-            void (yield* mungspaces(cptr.add(bp, 1)));
+            void (yield* mungspaces(cptr.add(bp, 1)));  /* remove the extra space */
         }
-        deferred = (real = 0);
-        deferralchance = 0;
+
+        deferred = (real = 0);  /* not any scroll or book */
+        deferralchance = 0;  /* incremented for each oc_uname match */
         first = cptr.ldI32o2(svb, cptr.ld1so(paper, $obj_oclass), 4, $instance_globals_saved_b_bases);
         last = (cptr.ldI32o2(svb, (cptr.ld1so(paper, $obj_oclass) + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0;
+        /* first loop: look for match with name/description */
         for (i = first; i <= last; i++) {
+            /* extra shufflable descr not representing a real object */
             if (!(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)))
                 continue;
+
             if (!(yield* strncmpi(((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr))), (nm), -1))) {
                 if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
                     break __lbl_found;
                 } else {
+                    /* save item in case there are no better by_descr matches */
                     real = (deferred = i);
                     break;
                 }
             }
+
             if (!(yield* strncmpi(((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))), (nm), -1))) {
                 by_descr = 1;
                 break __lbl_found;
             }
         }
+        /* second loop: look for match with user-assigned name */
+        /* we will get here if 'nm' isn't a real scroll name/descr, or is the name
+         * of a real scroll that hasn't been formally IDed. */
         for (i = first; i <= last; i++) {
+            /* player might assign same name multiple times and if so,
+               we choose one of those matches randomly */
             if (cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname) && !(yield* strncmpi((cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname)), (nm), -1)) && !(real && (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 193, __s_dowrite), rn2(++deferralchance)) : rn2(++deferralchance))) {
                 deferred = i;
+                /* writing by user-assigned name is same as by description:
+                   fails for books, works for scrolls (having an assigned
+                   type name guarantees presence on discoveries list) */
                 by_descr = 1;
             }
         }
+
         if (deferred) {
             i = deferred;
             break __lbl_found;
         }
+
         (yield* There(__s_is_no_such_s, typeword));
         return NHM.ECMD_TIME;
     }
+
     if (i == NHC.SCR_BLANK_PAPER || i == NHC.SPE_BLANK_PAPER) {
         (yield* You_cant(__s_write_that));
         (yield* pline(__s_it_s_obscene));
@@ -261,6 +295,7 @@ export function* dowrite(pen) {
     } else if (i == NHC.SPE_NOVEL) {
         let fanfic = schar((!rn2_at(__s_write_c, 216, __s_dowrite, 3)));
         let tearup = schar((!rn2_at(__s_write_c, 216, __s_dowrite, 3)));
+
         if (!fanfic) {
             (yield* You(__s_s_to_write_the_great_yendorian_novel, !tearup ? __s_prepare : __s_try, !Hallucination() ? __s_lack : __s_have_too_much));
         } else {
@@ -277,29 +312,42 @@ export function* dowrite(pen) {
         (yield* pline(__s_no_mere_dungeon_adventurer_could_write));
         return NHM.ECMD_TIME;
     } else if (by_descr && cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS && !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
+        /* can't write unknown spellbooks by description */
         (yield* pline(__s_unfortunately_you_don_t_have_enough));
         return NHM.ECMD_TIME;
     }
+
+    /* KMH, conduct */
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
         (yield* livelog_printf(32n, __s_became_literate_by_writing_s, (yield* an(typeword))));
+
     new_obj = (yield* mksobj(i, 0, 0));
     cptr.stI32o(new_obj, $obj_bknown, ((cptr.ldI32o(paper, $obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, $obj_bknown) & 1) | 0 ? 1 : 0) >>> 0);
+
+    /* shk imposes a flat rate per use, not based on actual charges used */
     (yield* check_unpaid(pen));
+
+    /* see if there's enough ink */
     basecost = (yield* cost(new_obj));
     if (cptr.ld1so(pen, $obj_spe) < ((basecost / 2) | 0)) {
         (yield* Your(__s_marker_is_too_dry_to_write_that));
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
+
+    /* we're really going to write now, so calculate cost
+     */
     actualcost = ((rn2_at(__s_write_c, 265, __s_dowrite, (basecost / 2) | 0) + ((basecost / 2) | 0)) | 0);
     curseval = (bcsign(pen) + bcsign(paper)) | 0;
     (yield* exercise(NHC.A_WIS, 1));
+    /* dry out marker */
     if (cptr.ld1so(pen, $obj_spe) < actualcost) {
         cptr.st1o(pen, $obj_spe, 0);
         (yield* Your(__s_marker_dries_out));
+        /* scrolls disappear, spellbooks don't */
         if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
             (yield* pline_The(__s_spellbook_is_left_unfinished_and_your));
-            (yield* update_inventory());
+            (yield* update_inventory());  /* pen charges */
         } else {
             (yield* pline_The(__s_scroll_is_now_useless_and_disappears));
             (yield* useup(paper));
@@ -308,16 +356,41 @@ export function* dowrite(pen) {
         return NHM.ECMD_TIME;
     }
     cptr.st1o(pen, $obj_spe, cptr.ld1so(pen, $obj_spe) - actualcost);
+
+    /*
+     * Writing by name requires that the hero knows the scroll or
+     * book type.  One has previously been read (and its effect
+     * was evident) or been ID'd via scroll/spell/throne (or skill
+     * for Wizards) and it will be on the discoveries list.
+     * Unknown spellbooks can also be written by name if the hero
+     * has fresh knowledge of the spell, or if the spell is almost
+     * forgotten and the hero is Lucky (with a greater chance than
+     * if the spell is unknown or forgotten).
+     * (Previous versions allowed scrolls and books to be written
+     * by type name if they were on the discoveries list via being
+     * given a user-assigned name, even though doing the latter
+     * doesn't--and shouldn't--make the actual type become known.)
+     *
+     * Writing by description requires that the hero knows the
+     * description (a scroll's label, that is, since books by_descr
+     * are rejected above).  This is done by checking to see if a
+     * scroll with the same description has been encountered.
+     *
+     * Normal requirements can be overridden if hero is Lucky.
+     */
+
     if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
         spell_knowledge = known_spell(cptr.ldI16o(new_obj, $obj_otyp));
     } else {
         spell_knowledge = NHC.spe_Unknown;
     }
+    /* if known, then either by-name or by-descr works */
     if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && rnl_at(__s_write_c, 321, __s_dowrite, (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) {
         (yield* You(__s_s_to_write_that, by_descr ? __s_fail : __s_don_t_know_how));
+        /* scrolls disappear, spellbooks don't */
         if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
             (yield* You(__s_write_in_your_best_handwriting_my_diary));
-            (yield* update_inventory());
+            (yield* update_inventory());  /* pen charges */
         } else {
             if (by_descr) {
                 void cptr.strcpy(cptr.decay(namebuf), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)));
@@ -330,28 +403,55 @@ export function* dowrite(pen) {
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
+    /* can write scrolls when blind, but requires luck too;
+       attempts to write books when blind are caught above */
     if (Blind() && rnl_at(__s_write_c, 342, __s_dowrite, 3)) {
+        /* writing while blind usually fails regardless of
+           whether the target scroll is known; even if we
+           have passed the write-an-unknown scroll test
+           above we can still fail this one, so it's doubly
+           hard to write an unknown scroll while blind */
         (yield* You(__s_fail_to_write_the_scroll_correctly_and));
         (yield* useup(paper));
         (yield* obfree(new_obj, null));
         return NHM.ECMD_TIME;
     }
+
+    /* use up old scroll / spellbook */
     (yield* useup(paper));
+
+    /* success */
     if (cptr.ld1so(new_obj, $obj_oclass) == NHC.SPBOOK_CLASS) {
+        /* acknowledge the change in the object's description... */
         (yield* pline_The(__s_spellbook_warps_strangely_then_turns_s, (yield* new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf)))));
     }
     cptr.stI32o(new_obj, $obj_blessed, (curseval > 0) >>> 0);
     cptr.stI32o(new_obj, $obj_cursed, (curseval < 0) >>> 0);
     if (cptr.ldI16o(new_obj, $obj_otyp) == NHC.SCR_MAIL)
+        /* 0: delivered in-game via external event (or randomly for fake mail);
+           1: from bones or wishing; 2: written with marker */
         cptr.st1o(new_obj, $obj_spe, 2);
+    /* unlike alchemy, for example, a successful result yields the
+       specifically chosen item so hero recognizes it even if blind;
+       the exception is for being lucky writing an undiscovered scroll,
+       where the label associated with the type-name isn't known yet;
+       but if writing by description, the description is always known */
     cptr.stI32o(new_obj, $obj_dknown, 0);
     if ((cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || by_descr)
         (yield* observe_object(new_obj));
+
     new_obj = (yield* hold_another_object(new_obj, __s_oops_s_out_of_your_grasp, (yield* The((yield* aobjnam(new_obj, __s_slip)))), null));
-    (void (new_obj));
+    (void (new_obj));  /* try to avoid complaint about dead assignment */
     return NHM.ECMD_TIME;
 }
 
+/* most book descriptions refer to cover appearance, so we can issue a
+   message for converting a plain book into one of those with something
+   like "the spellbook turns red" or "the spellbook turns ragged";
+   but some descriptions refer to composition and "the book turns vellum"
+   looks funny, so we want to insert "into " prior to such descriptions;
+   even that's rather iffy, indicating that such descriptions probably
+   ought to be eliminated (especially "cloth"!) */
 const __static_new_book_description_compositions = cptr.alloc(4 * 8);
 cptr.stPtro(__static_new_book_description_compositions, 0, __s_parchment);
 cptr.stPtro(__static_new_book_description_compositions, 8, __s_vellum);
@@ -362,10 +462,12 @@ cptr.stPtro(__static_new_book_description_compositions, 24, null); /** C ref: wr
 function* new_book_description(booktype, outbuf) {
     let descr;
     let comp_p;
+
     descr = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, booktype, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr));
     for (comp_p = __static_new_book_description_compositions; cptr.ldPtr(comp_p); comp_p = cptr.add(comp_p, 1, 8))
         if (!(yield* strncmpi((descr), (cptr.ldPtr(comp_p)), -1)))
             break;
+
     void cptr.sprintf(outbuf, __s_s_s, cptr.ldPtr(comp_p) ? __s_into : __s_empty, descr);
     return outbuf;
 }

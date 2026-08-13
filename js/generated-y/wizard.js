@@ -162,6 +162,13 @@ const __s_angel_cuss = cptr.lit("angel_cuss");
 const __s_s_casts_aspersions_on_your_ancestry = cptr.lit("%s casts aspersions on your ancestry.");
 const __s_demon_cuss = cptr.lit("demon_cuss");
 
+/* adding more neutral creatures will tend to reduce the number of monsters
+   summoned by nasty(); adding more lawful creatures will reduce the number
+   of monsters summoned by lawfuls; adding more chaotic creatures will reduce
+   the number of monsters summoned by chaotics; prior to 3.6.1, there were
+   only four lawful candidates, so lawful summoners tended to summon more
+   (trying to get lawful or neutral but obtaining chaotic instead) than
+   their chaotic counterparts */
 /** C ref: wizard.c:31 — int[44] */
 const nasties = cptr.alloc(44 * 4);
 cptr.stI32o(nasties, 0, NHC.PM_COCKATRICE);
@@ -224,6 +231,8 @@ cptr.stI32o(wizapp, 36, NHC.PM_FLOATING_EYE);
 cptr.stI32o(wizapp, 40, NHC.PM_GUARDIAN_NAGA);
 cptr.stI32o(wizapp, 44, NHC.PM_TRAPPER);
 
+/* If you've found the Amulet, make the Wizard appear after some time */
+/* Also, give hints about portal locations, if amulet is worn/wielded -dlc */
 /** C ref: wizard.c:61 */
 export function* amulet() {
     let mtmp;
@@ -239,12 +248,15 @@ export function* amulet() {
                     (yield* pline(__s_s_very_warm, (yield* Tobjnam(amu, __s_feel))));
                 else if (du <= 144)
                     (yield* pline(__s_s_warm, (yield* Tobjnam(amu, __s_feel))));
+                /* else, the amulet feels normal */
                 break;
             }
         }
     }
+
     if (!cptr.ldI32o(svc, $context_info_no_of_wizards))
         return;
+    /* find Wizard, and wake him if necessary */
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -260,6 +272,7 @@ export function* amulet() {
 /** C ref: wizard.c:106 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mon_has_amulet(mtmp) {
     let otmp;
+
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR)
             return 1;
@@ -269,6 +282,7 @@ export function mon_has_amulet(mtmp) {
 /** C ref: wizard.c:117 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mon_has_special(mtmp) {
     let otmp;
+
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR || (cptr.ld1so((otmp), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) || cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING || cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD)
             return 1;
@@ -287,14 +301,20 @@ function which_arti(mask) {
         case NHM.M3_WANTSBOOK:
         return NHC.SPE_BOOK_OF_THE_DEAD;
         default:
-        break;
+        break;  /* 0 signifies quest artifact */
     }
     return 0;
 }
 
+/*
+ *      If "otyp" is zero, it triggers a check for the quest_artifact,
+ *      since bell, book, candle, and amulet are all objects, not really
+ *      artifacts right now.  [MRS]
+ */
 /** C ref: wizard.c:165 — @param {CPtr<struct monst>} mtmp @param {CInt} otyp @returns {CInt} */
 function mon_has_arti(mtmp, otyp) {
     let otmp;
+
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
         if (otyp) {
             if (cptr.ldI16o(otmp, $obj_otyp) == otyp)
@@ -305,19 +325,31 @@ function mon_has_arti(mtmp, otyp) {
     return 0;
 }
 
+/*
+ * Returns some monster other than mtmp that
+ * has artifact, or NULL monst pointer.
+ */
 /** C ref: wizard.c:184 — @param {CPtr<struct monst>} mtmp @param {CInt} otyp @returns {CPtr<struct monst>} */
 function other_mon_has_arti(mtmp, otyp) {
     let mtmp2;
+
     for (mtmp2 = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp2; mtmp2 = cptr.ldPtr(mtmp2))
+        /* no need for !DEADMONSTER check here since they have no inventory */
         if (!cptr.eq(mtmp2, mtmp))
             if (mon_has_arti(mtmp2, otyp))
                 return mtmp2;
+
     return null;
 }
 
+/*
+ * Returns obj of type specified if there is one
+ * on the ground, otherwise returns NULL obj pointer.
+ */
 /** C ref: wizard.c:202 — @param {CInt} otyp @returns {CPtr<struct obj>} */
 function on_ground(otyp) {
     let otmp;
+
     for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); otmp; otmp = cptr.ldPtr(otmp))
         if (otyp) {
             if (cptr.ldI16o(otmp, $obj_otyp) == otyp)
@@ -351,8 +383,10 @@ function* target_on(mask, mtmp) {
     let otyp;
     let otmp;
     let mtmp2;
+
     if (!(cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_mflags3) & (mask)))
         return 0n;
+
     otyp = which_arti(mask);
     if (!mon_has_arti(mtmp, otyp)) {
         if (you_have(mask)) {
@@ -377,8 +411,10 @@ function* target_on(mask, mtmp) {
 function* strategy(mtmp) {
     let strat;
     let dstrat;
+
     if (!((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags3) & NHM.M3_COVETOUS)) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (yield* inhishop(mtmp))) || ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && (yield* inhistemple(mtmp))))
         return 0n;
+
     switch (((Math.imul(cptr.ldI32o(mtmp, $monst_mhp), 3)) / cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) {
         default:
         case 0:
@@ -395,9 +431,11 @@ function* strategy(mtmp) {
         dstrat = 0n;
         break;
     }
+
     if (cptr.ld1so(svc, $context_info_made_amulet))
         if ((strat = (yield* target_on(NHM.M3_WANTSAMUL, mtmp))) != 0n)
             return strat;
+
     if ((cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1)) {
         if ((strat = (yield* target_on(NHM.M3_WANTSARTI, mtmp))) != 0n)
             return strat;
@@ -420,24 +458,36 @@ function* strategy(mtmp) {
     return dstrat;
 }
 
+/* pick a destination for a covetous monster to flee to so that it can
+   heal or for guardians (Kops) to congregate at to block hero's progress */
 /** C ref: wizard.c:332 — @param {CPtr<coordxy>} sx @param {CPtr<coordxy>} sy @param {CInt} dir */
 export function* choose_stairs(sx, sy, dir) {
     let stway;
     let stdir = schar(((yield* builds_up(cptr.add(u, $you_uz))) ? dir : !dir));
+
+    /* look for stairs in direction 'stdir' (True: up, False: down) */
     stway = stairway_find_type_dir(0, stdir);
     if (!stway) {
+        /* no stairs; look for ladder it that direction */
         stway = stairway_find_type_dir(1, stdir);
         if (!stway) {
+            /* no ladder either; look for branch stairs or ladder in any
+               direction */
             for (stway = cptr.ldPtro(gs, $instance_globals_s_stairs); stway; stway = cptr.ldPtro(stway, $stairway_next))
                 if (cptr.ldI16o(stway, $stairway_tolev) != cptr.ldI16o(u, $you_uz))
                     break;
+            /* if no branch stairs/ladder, check for regular stairs in
+               opposite direction, then for regular ladder if necessary */
             if (!stway) {
                 stway = stairway_find_type_dir(0, schar((!stdir)));
                 if (!stway)
                     stway = stairway_find_type_dir(1, schar((!stdir)));
             }
         }
+        /* [note: 'stway' could still be Null if the only access to this
+           level is via magic portal] */
     }
+
     if (stway)
         cptr.stI16(sx, cptr.ldI16(stway)), cptr.stI16(sy, cptr.ldI16o(stway, $stairway_sy));
 }
@@ -449,24 +499,33 @@ export function* tactics(mtmp) {
     let sy = cptr.box(0);
     let mx;
     let my;
+
     cptr.stU64o(mtmp, $monst_mstrategy, (cptr.ldU64o(mtmp, $monst_mstrategy) & 2952790016n) | strat);
+
     switch (strat) {
         case 134217728n:
         mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
+
         if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp))
             (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1));
+
+        /* if wounded, hole up on or near the stairs (to block them) */
         (yield* choose_stairs(sx, sy, schar((u32mod(cptr.ldI32o(mtmp, $monst_m_id), 2)))));
-        cptr.stI32o(mtmp, $monst_mavenge, 1);
+        cptr.stI32o(mtmp, $monst_mavenge, 1);  /* covetous monsters attack while fleeing */
         if ((yield* In_W_tower(mx, my, cptr.add(u, $you_uz))) || ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && !sx.v && !mon_has_amulet(mtmp))) {
             if (!(yield* noteleport_level(mtmp)) && !rn2_at(__s_wizard_c, 390, __s_tactics, (3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0))
                 void (yield* rloc(mtmp, NHM.RLOC_MSG));
         } else if (sx.v && (mx != sx.v || my != sy.v)) {
             if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, sx.v, sy.v, 1, NHM.RLOC_MSG))) {
+                /* couldn't move to the target spot for some reason,
+                   so stay where we are (don't actually need rloc_to()
+                   because mtmp is still on the map at <mx,my>... */
                 (yield* rloc_to(mtmp, mx, my));
                 return 0;
             }
-            mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
+            mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);  /* update cached location */
         }
+        /* if you're not around, cast healing spells */
         if (dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 64)
             if (cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 8) | 0)) {
                 (yield* healmon(mtmp, rnd_at(__s_wizard_c, 406, __s_tactics, 8), 0));
@@ -485,20 +544,24 @@ export function* tactics(mtmp) {
             let ty = cptr.ldI16o(mtmp, $monst_mgoal + $nhcoord_y);
             let targ = Number(BigInt.asIntN(32, (strat & 255n)));
             let otmp;
+
             if (!targ || !isok(tx, ty)) {
                 return 0;
             }
             if ((yield* noteleport_level(mtmp)) && !monnear(mtmp, tx, ty))
                 return 0;
             if (((tx) == cptr.ldI16(u) && (ty) == cptr.ldI16o(u, $you_uy)) || where == 16777216n) {
+                /* player is standing on it (or has it) */
                 mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
                 if ((yield* noteleport_level(mtmp)) || !(yield* mnearto(mtmp, tx, ty, 0, NHM.RLOC_MSG)))
-                    (yield* rloc_to(mtmp, mx, my));
+                    (yield* rloc_to(mtmp, mx, my));  /* no room? stay put */
                 return 0;
             }
             if (where == 67108864n) {
                 if (!(cptr.ldPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) || (cptr.ldI16o(mtmp, $monst_mx) == tx && cptr.ldI16o(mtmp, $monst_my) == ty)) {
-                    (yield* rloc_to(mtmp, tx, ty));
+                    /* teleport to it and pick it up */
+                    (yield* rloc_to(mtmp, tx, ty));  /* clean old pos */
+
                     if ((otmp = on_ground(which_arti(targ))) !== null) {
                         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0))
                             (yield* pline(__s_s_picks_up_s, (yield* Monnam(mtmp)), (yield* distant_name(otmp, doname))));
@@ -508,6 +571,7 @@ export function* tactics(mtmp) {
                     } else
                         return 0;
                 } else {
+                    /* a monster is standing on it - cause some trouble */
                     if (!rn2_at(__s_wizard_c, 453, __s_tactics, 5) && !(yield* noteleport_level(mtmp)))
                         (yield* mnexto(mtmp, NHM.RLOC_MSG));
                     return 0;
@@ -515,20 +579,24 @@ export function* tactics(mtmp) {
             } else {
                 mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
                 if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, tx, ty, 0, NHM.RLOC_MSG)))
-                    (yield* rloc_to(mtmp, mx, my));
+                    (yield* rloc_to(mtmp, mx, my));  /* no room? stay put */
                 return 0;
             }
-        }
-    }
+        }  /* default case */
+    }  /* switch */
+    /*NOTREACHED*/
     return 0;
 }
 
+/* are there any monsters mon could aggravate? */
 /** C ref: wizard.c:474 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* has_aggravatables(mon) {
     let mtmp;
     let in_w_tower = (yield* In_W_tower(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), cptr.add(u, $you_uz)));
+
     if (in_w_tower != (yield* In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz))))
         return 0;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -544,6 +612,7 @@ export function* has_aggravatables(mon) {
 export function* aggravate() {
     let mtmp;
     let in_w_tower = (yield* In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz)));
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -558,9 +627,13 @@ export function* aggravate() {
     }
 }
 
+/* "Double Trouble" spell cast by the Wizard; caller is responsible for
+   only casting this when there is currently one wizard in existence;
+   the clone can't use it unless/until its creator has been killed off */
 /** C ref: wizard.c:517 */
 export function* clonewiz() {
     let mtmp2;
+
     if ((mtmp2 = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT))) !== null) {
         cptr.stI32o(mtmp2, $monst_msleeping, cptr.st1o(mtmp2, $monst_mtame, schar(cptr.stI32o(mtmp2, $monst_mpeaceful, 0))));
         if (!(cptr.ldI32o(u, $you_uhave) & 1) && rn2_at(__s_wizard_c, 524, __s_clonewiz, 2)) {
@@ -574,24 +647,48 @@ export function* clonewiz() {
     }
 }
 
+/* also used by newcham() */
 /** C ref: wizard.c:538 — @param {CInt} difcap @returns {CInt} */
 export function pick_nasty(difcap) {
     let alt;
     let res = cptr.ldI32o(nasties, rn2_at(__s_wizard_c, 541, __s_pick_nasty, 44), 4);
+
+    /* To do?  Possibly should filter for appropriate forms when
+     * in the elemental planes or surrounded by water or lava.
+     *
+     * We want monsters represented by uppercase on rogue level,
+     * but we don't try very hard.
+     */
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && !(65 <= (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym)) && (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym)) <= 90))
         res = cptr.ldI32o(nasties, rn2_at(__s_wizard_c, 551, __s_pick_nasty, 44), 4);
+
+    /* if genocided or too difficult or out of place, try a substitute
+       when a suitable one exists
+           arch-lich -> master lich,
+           master mind flayer -> mind flayer,
+       but the substitutes are likely to be genocided too */
     alt = res;
     if ((cptr.ld1uo2(svm, res, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo2(mons, res, $sizeof_permonst, $permonst_difficulty) >= difcap) || (cptr.ldU16o2(mons, res, $sizeof_permonst, $permonst_geno) & (In_hell(cptr.add(u, $you_uz)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0)
         alt = big_to_little(res);
     if (alt != res && (cptr.ld1uo2(svm, alt, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) == 0) {
         let mnam = cptr.ldPtro3(mons, alt, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
         let lastspace = cptr.strrchr(mnam, 32);
+
+        /* only non-juveniles can become alternate choice */
         if (cptr.strncmp(mnam, __s_baby, 5n) && (!lastspace || (strcmp(lastspace, __s_hatchling) && strcmp(lastspace, __s_pup) && strcmp(lastspace, __s_cub))))
             res = alt;
     }
+
     return res;
 }
 
+/* create some nasty monsters, aligned with the caster or neutral; chaotic
+   and unaligned are treated as equivalent; if summoner is Null, this is
+   for late-game harassment (after the Wizard has been killed at least once
+   or the invocation ritual has been performed), in which case we treat
+   'summoner' as neutral, since that will produce the greatest number of
+   creatures on average (in 3.6.0 and earlier, Null was treated as chaotic);
+   returns the number of monsters created */
 /** C ref: wizard.c:591 — @param {CPtr<struct monst>} summoner @returns {CInt} */
 export function* nasty(summoner) {
     let mtmp;
@@ -607,72 +704,123 @@ export function* nasty(summoner) {
     let difcap;
     let trylimit;
     let castalign;
+    /* when a monster casts the "summon nasties" spell, it gives feedback;
+       when random post-Wizard harassment casts that, we give feedback */
     let mmflags = Number(BigInt.asUintN(32, (summoner ? 131072n : 0n)));
+
+    /* some candidates may be created in groups, so simple count
+       of non-null makemon() return is inadequate */
     census = monster_census(0);
+
     if (!rn2_at(__s_wizard_c, 607, __s_nasty, 10) && In_hell(cptr.add(u, $you_uz))) {
-        count = (yield* msummon(null));
+        /* this might summon a demon prince or lord */
+        count = (yield* msummon(null));  /* summons like WoY */
     } else {
         count = 0;
         s_cls = summoner ? cptr.ld1so(cptr.ldPtro(summoner, $monst_data), $permonst_mlet) : 0;
-        difcap = summoner ? cptr.ld1uo(cptr.ldPtro(summoner, $monst_data), $permonst_difficulty) : 0;
+        difcap = summoner ? cptr.ld1uo(cptr.ldPtro(summoner, $monst_data), $permonst_difficulty) : 0;  /* spellcasters */
         castalign = summoner ? sgn(cptr.ld1so(cptr.ldPtro(summoner, $monst_data), $permonst_maligntyp)) : 0;
         tmp = (cptr.ldI32o(u, $you_ulevel) > 3) ? (cptr.ldI32o(u, $you_ulevel) / 3) | 0 : 1;
+        /* if we don't have a casting monster, nasties appear around hero,
+           otherwise they'll appear around spot summoner thinks she's at */
         cptr.stI16(bypos, cptr.ldI16(u));
         cptr.stI16o(bypos, $nhcoord_y, cptr.ldI16o(u, $you_uy));
         for (i = rnd_at(__s_wizard_c, 620, __s_nasty, tmp); i > 0 && count < 10; --i) {
+            /* Of the 44 nasties[], 10 are lawful, 14 are chaotic,
+             * and 20 are neutral.  [These numbers are up date for
+             * 5.0.0; the ones in the next paragraph are not....]
+             *
+             * Neutral caster, used for late-game harassment,
+             * has 18/42 chance to stop the inner loop on each
+             * critter, 24/42 chance for another iteration.
+             * Lawful caster has 28/42 chance to stop unless the
+             * summoner is an angel or demon, in which case the
+             * chance is 26/42.
+             * Chaotic or unaligned caster has 32/42 chance to
+             * stop, so will summon fewer creatures on average.
+             *
+             * The outer loop potentially gives chaotic/unaligned
+             * a chance to even things up since others will hit
+             * MAXNASTIES sooner, but its number of iterations is
+             * randomized so it won't always do so.
+             */
             for (j = 0; j < 20; j++) {
                 __lbl_nextj: {
-                    trylimit = 11;
+                    /* Don't create more spellcasters of the monster's level or
+                     * higher--avoids chain summoners filling up the level.
+                     */
+                    trylimit = 11;  /* 10 tries */
                     do {
                         if (!--trylimit)
-                            break __lbl_nextj;
+                            break __lbl_nextj;  /* break this loop, continue outer one */
                         makeindex = pick_nasty(difcap);
                         m_cls = cptr.ld1so2(mons, makeindex, $sizeof_permonst, $permonst_mlet);
                     } while ((difcap > 0 && cptr.ld1uo2(mons, makeindex, $sizeof_permonst, $permonst_difficulty) >= difcap && attacktype(cptr.add(mons, makeindex, $sizeof_permonst), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON));
+                    /* do this after picking the monster to place */
                     if (summoner && !(yield* enexto(bypos, cptr.ldI16o(summoner, $monst_mux), cptr.ldI16o(summoner, $monst_muy), cptr.add(mons, makeindex, $sizeof_permonst))))
                         continue;
+                    /* this honors genocide but overrides extinction; it ignores
+                       inside-hell-only (G_HELL) & outside-hell-only (G_NOHELL) */
                     if ((mtmp = (yield* makemon(cptr.add(mons, makeindex, $sizeof_permonst), cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), mmflags))) !== null) {
                         cptr.stI32o(mtmp, $monst_msleeping, cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0)));
                         set_malign(mtmp);
                     } else {
+                        /* random monster to substitute for geno'd selection;
+                           unlike direct choice, not forced to be hostile [why?];
+                           limit spellcasters to inhibit chain summoning */
                         if ((mtmp = (yield* makemon(null, cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), mmflags))) !== null) {
                             m_cls = cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet);
                             if ((difcap > 0 && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_difficulty) >= difcap && rn2_at(__s_wizard_c, 673, __s_nasty, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON))
-                                mtmp = (yield* unmakemon(mtmp, NHM.NO_MM_FLAGS));
+                                mtmp = (yield* unmakemon(mtmp, NHM.NO_MM_FLAGS));  /* Null */
                         }
                     }
+
                     if (mtmp) {
+                        /* if creating an arch-lich or Archon, further directly
+                           selected nasties will have to be less difficult, and
+                           substitues for geno victims will usually be less
+                           (note: Archon is not in nasties[] but could be chosen
+                           as random replacement for a genocided selection) */
                         if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCH_LICH, $sizeof_permonst)) || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCHON, $sizeof_permonst))) {
-                            tmp = min(cptr.ld1uo2(mons, NHC.PM_ARCHON, $sizeof_permonst, $permonst_difficulty), cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, $sizeof_permonst, $permonst_difficulty));
+                            tmp = min(cptr.ld1uo2(mons, NHC.PM_ARCHON, $sizeof_permonst, $permonst_difficulty), cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, $sizeof_permonst, $permonst_difficulty));  /* A:26 */
                             if (!difcap || difcap > tmp)
-                                difcap = tmp;
+                                difcap = tmp;  /* rest must be lower difficulty */
                         }
+                        /* delay first use of spell or breath attack */
                         cptr.stI32o(mtmp, $monst_mspec_used, rnd_at(__s_wizard_c, 695, __s_nasty, 4));
+
                         if (++count >= 10 || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp) == 0 || sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)) == castalign)
                             break;
                     }
                 }
-                ;
-            }
-        }
+                ;  /* empty; label must be followed by a statement */
+            }  /* for j */
+        }  /* for i */
     }
+
     if (count)
         count = (monster_census(0) - census) | 0;
     return count;
 }
 
+/* Let's resurrect the Wizard, for some unexpected fun. */
 /** C ref: wizard.c:715 */
 export function* resurrect() {
     let mtmp;
     let mmtmp;
     let elapsed;
     let verb;
+
     if (!cptr.ldI32o(svc, $context_info_no_of_wizards)) {
+        /* make a new Wizard */
         verb = __s_kill;
         mtmp = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT));
+        /* affects experience; he's not coming back from a corpse
+           but is subject to repeated killing like a revived corpse */
         if (mtmp)
             cptr.stI32o(mtmp, $monst_mrevived, 1);
     } else {
+        /* look for a migrating Wizard */
         verb = __s_elude;
         mmtmp = cptr.add(gm, $instance_globals_m_migrating_mons);
         while ((mtmp = cptr.ldPtr(mmtmp)) !== null) {
@@ -687,18 +835,31 @@ export function* resurrect() {
                     cptr.stI32o(mtmp, $monst_mfrozen, 0), cptr.stI32o(mtmp, $monst_mcanmove, 1);
                 if (!helpless(mtmp)) {
                     cptr.stPtr(mmtmp, cptr.ldPtr(mtmp));
-                    (yield* mon_arrive(mtmp, -1));
+                    (yield* mon_arrive(mtmp, -1));  /* -1: Wiz_arrive (dog.c) */
+                    /* mx: mon_arrive() might have sent mtmp into limbo */
                     if (!cptr.ldI16o(mtmp, $monst_mx))
                         mtmp = null;
+                    /* note: there might be a second Wizard; if so,
+                       he'll have to wait until the next resurrection */
                     break;
                 }
             }
             mmtmp = mtmp;
         }
     }
+
     if (mtmp) {
+        /* FIXME: when a new wizard is created by makemon(), it gives
+           a "<mon> appears" message, delivered after he's been placed
+           on the map; however, when an existing wizard comes off
+           migrating_mons, he ends up triggering "<mon> vanishes and
+           reappears" on his first move (tactics when hero is carrying
+           the Amulet); setting STRAT_WAITMASK suppresses that but then
+           he just sits wherever he is, "meditating", contradicting the
+           threatening message below */
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
-        cptr.st1o(mtmp, $monst_mtame, 0), cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+
+        cptr.st1o(mtmp, $monst_mtame, 0), cptr.stI32o(mtmp, $monst_mpeaceful, 0);  /* paranoia */
         set_malign(mtmp);
         if (!Deaf()) {
             (yield* pline(__s_a_voice_booms_out));
@@ -708,9 +869,13 @@ export function* resurrect() {
     }
 }
 
+/* Here, we make trouble for the poor shmuck who actually
+   managed to do in the Wizard. */
 /** C ref: wizard.c:785 */
 export function* intervene() {
     let which = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? rnd_at(__s_wizard_c, 787, __s_intervene, 4) : rn2_at(__s_wizard_c, 787, __s_intervene, 6);
+
+    /* cases 0 and 5 don't apply on the Astral level */
     switch (which) {
         case 0:
         case 1:
@@ -733,6 +898,8 @@ export function* intervene() {
     }
 }
 
+/* Wizard of Yendor is being removed from play (dead or escaped the dungeon);
+   keep the bookkeeping for him up to date */
 /** C ref: wizard.c:815 */
 export function wizdeadorgone() {
     (cptr.stI32o(svc, $context_info_no_of_wizards, cptr.ldI32o(svc, $context_info_no_of_wizards) + -1)) - (-1);
@@ -787,6 +954,7 @@ cptr.stPtro(random_malediction, 64, __s_thou_art_doomed);
 cptr.stPtro(random_malediction, 72, __s_thy_fate_is_sealed);
 cptr.stPtro(random_malediction, 80, __s_verily_thou_shalt_be_one_dead);
 
+/* Insult or intimidate the player */
 /** C ref: wizard.c:846 — @param {CPtr<struct monst>} mtmp */
 export function* cuss(mtmp) {
     if (Deaf())
@@ -808,7 +976,9 @@ export function* cuss(mtmp) {
             (yield* verbalize(__s_s_s, cptr.ldPtro(random_malediction, rn2_at(__s_wizard_c, 868, __s_cuss, 11), 8), cptr.ldPtro(random_insult, rn2_at(__s_wizard_c, 869, __s_cuss, 28), 8)));
         }
     } else if (is_lminion(mtmp) && !((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_renegade))) {
-        (yield* com_pager(__s_angel_cuss));
+        (yield* com_pager(__s_angel_cuss));  /* TODO: the Hallucination msg */
+        /*com_pager(rn2(QTN_ANGELIC - 1 + (Hallucination ? 1 : 0))
+          + QT_ANGELIC);*/
     } else {
         if (!rn2_at(__s_wizard_c, 877, __s_cuss, ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5))
             (yield* pline(__s_s_casts_aspersions_on_your_ancestry, (yield* Monnam(mtmp))));

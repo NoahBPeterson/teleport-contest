@@ -188,6 +188,10 @@ export function free_epri(mtmp) {
     cptr.stI32o(mtmp, $monst_ispriest, 0);
 }
 
+/*
+ * Move for priests and shopkeepers.  Called from shk_move() and pri_move().
+ * Valid returns are  1: moved  0: didn't  -1: let m_move do it  -2: died.
+ */
 /** C ref: priest.c:42 — @param {CPtr<struct monst>} mtmp @param {CInt} in_his_shop @param {CInt} appr @param {CInt} uondoor @param {CInt} avoid @param {CInt} omx @param {CInt} omy @param {CInt} ggx @param {CInt} ggy @returns {CInt} */
 export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, ggx, ggy) {
     let nx;
@@ -201,16 +205,19 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
     let ninfo = 0n;
     let allowflags;
     __skip_pick_move: {
+
         if (omx == ggx && omy == ggy)
             return 0;
         if ((cptr.ldI32o(mtmp, $monst_mconf) & 1)) {
             avoid = 0;
             appr = 0;
         }
+
         nix = omx;
         niy = omy;
         allowflags = mon_allowflags(mtmp);
         cnt = schar(mfndpos(mtmp, mfp, allowflags));
+
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && avoid && uondoor) {
             for (i = 0; i < cnt; i++)
                 if (!(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 2097152n))
@@ -234,21 +241,29 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
             }
         }
         if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && avoid && nix == omx && niy == omy && online2((omx), (omy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+            /* might as well move closer as long it's going to stay
+             * lined up */
             avoid = 0;
             continue __lbl_pick_move;
         }
+
         if (nix != omx || niy != omy) {
+
             if (ninfo & 33554432n) {
                 m_break_boulder(mtmp, nix, niy);
                 return 1;
             } else if (ninfo & 524288n) {
+                /* mtmp is deciding it would like to attack this turn.
+                 * Returns from m_move_aggress don't correspond to the same things
+                 * as this function should return, so we need to translate. */
                 switch (m_move_aggress(mtmp, nix, niy)) {
                     case 2:
-                    return -2;
+                    return -2;  /* died making the attack */
                     case 3:
-                    return 1;
+                    return 1;  /* attacked and spent this move */
                 }
             }
+
             if ((cptr.ldPtro3(svl, nix, 168, niy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) || ((nix) == cptr.ldI16(u) && (niy) == cptr.ldI16o(u, $you_uy)))
                 return 0;
             cptr.stPtro3(svl, omx, 168, omy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
@@ -265,6 +280,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
 /** C ref: priest.c:142 — @param {CPtr<char>} array @returns {CInt} */
 export function temple_occupied(array) {
     let ptr;
+
     for (ptr = array; cptr.ld1s(ptr); ptr = cptr.add(ptr, 1))
         if (cptr.ld1so2(svr, (cptr.ld1s(ptr) - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == NHC.TEMPLE)
             return cptr.ld1s(ptr);
@@ -278,13 +294,19 @@ function histemple_at(priest, x, y) {
 
 /** C ref: priest.c:161 — @param {CPtr<struct monst>} priest @returns {CInt} */
 export function inhistemple(priest) {
+    /* make sure we have a priest */
     if (!priest || !(cptr.ldI32o(priest, $monst_ispriest) & 1))
         return 0;
+    /* priest must be on right level and in right room */
     if (!histemple_at(priest, cptr.ldI16o(priest, $monst_mx), cptr.ldI16o(priest, $monst_my)))
         return 0;
+    /* temple room must still contain properly aligned altar */
     return has_shrine(priest);
 }
 
+/*
+ * pri_move: return 1: moved  0: didn't  -1: let m_move do it  -2: died
+ */
 /** C ref: priest.c:177 — @param {CPtr<struct monst>} priest @returns {CInt} */
 export function pri_move(priest) {
     let ggx;
@@ -293,15 +315,21 @@ export function pri_move(priest) {
     let omy;
     let temple;
     let avoid = 1;
+
     omx = cptr.ldI16o(priest, $monst_mx);
     omy = cptr.ldI16o(priest, $monst_my);
+
     if (!histemple_at(priest, omx, omy))
         return -1;
+
     temple = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shroom);
+
     ggx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos);
     ggy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y);
-    ggx = i16(ggx + ((rn2_at(__s_priest_c, 194, __s_pri_move, 3) + -1) | 0));
+
+    ggx = i16(ggx + ((rn2_at(__s_priest_c, 194, __s_pri_move, 3) + -1) | 0));  /* mill around the altar */
     ggy = i16(ggy + ((rn2_at(__s_priest_c, 195, __s_pri_move, 3) + -1) | 0));
+
     if (!(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || (Conflict() && !resist_conflict(priest))) {
         if (monnear(priest, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             if (Displaced())
@@ -309,6 +337,7 @@ export function pri_move(priest) {
             void mattacku(priest);
             return 0;
         } else if (cptr.strchr(cptr.add(u, $you_urooms), temple)) {
+            /* chase player if inside temple & can see him */
             if ((cptr.ldI32o(priest, $monst_mcansee) & 1) | 0 && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((priest), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((priest), $monst_my), 8), cptr.ldI16o((priest), $monst_mx)) & NHM.COULD_SEE) != 0))) {
                 ggx = cptr.ldI16(u);
                 ggy = cptr.ldI16o(u, $you_uy);
@@ -317,9 +346,11 @@ export function pri_move(priest) {
         }
     } else if (Invis())
         avoid = 0;
+
     return move_special(priest, 0, 1, 0, avoid, omx, omy, ggx, ggy);
 }
 
+/* exclusively for mktemple() */
 /** C ref: priest.c:220 — @param {CPtr<d_level>} lvl @param {CPtr<struct mkroom>} sroom @param {CInt} sx @param {CInt} sy @param {CInt} sanctum */
 export function priestini(lvl, sroom, sx, sy, sanctum) {
     let priest;
@@ -330,6 +361,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     let i;
     let si = rn2_at(__s_priest_c, 229, __s_priestini, ((NHC.N_DIRS_Z - 2) | 0));
     let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, $sizeof_permonst);
+
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
         px = (sx + cptr.ld1so(cptr.decay(xdir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1)) | 0;
         py = (sy + cptr.ld1so(cptr.decay(ydir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1)) | 0;
@@ -338,8 +370,10 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     }
     if (i == ((NHC.N_DIRS_Z - 2) | 0))
         px = sx, py = sy;
+
     if ((cptr.ldPtro3(svl, px, 168, py, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        void rloc((cptr.ldPtro3(svl, px, 168, py, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);
+        void rloc((cptr.ldPtro3(svl, px, 168, py, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);  /* insurance */
+
     priest = makemon(prim, i16(px), i16(py), NHM.MM_EPRI);
     if (priest) {
         cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shroom, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
@@ -347,18 +381,22 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
         cptr.stI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos, i16(sx));
         cptr.stI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y, i16(sy));
         assign_level(cptr.add((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrlevel), lvl);
-        mon_learns_traps(priest, NHC.ALL_TRAPS);
+        mon_learns_traps(priest, NHC.ALL_TRAPS);  /* traps are known */
         cptr.stI32o(priest, $monst_mpeaceful, 1);
         cptr.stI32o(priest, $monst_ispriest, 1);
         cptr.stI32o(priest, $monst_isminion, 0);
         cptr.stI32o(priest, $monst_msleeping, 0);
-        set_malign(priest);
+        set_malign(priest);  /* mpeaceful may have changed */
+
+        /* now his/her goodies... */
         if (sanctum && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shralign) == -128 && on_level(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level), cptr.add(u, $you_uz))) {
             void mongets(priest, NHC.AMULET_OF_YENDOR);
         }
+        /* 2 to 4 spellbooks */
         for (cnt = ((rn2_at(__s_priest_c, 265, __s_priestini, 3) + 2) | 0); cnt > 0; --cnt) {
             void mpickobj(priest, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
+        /* robe [via makemon()] */
         if (rn2_at(__s_priest_c, 269, __s_priestini, 2) && (otmp = which_armor(priest, 2n)) !== null) {
             if (p_coaligned(priest))
                 uncurse(otmp);
@@ -368,14 +406,26 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     }
 }
 
+/* get a monster's alignment type without caller needing EPRI & EMIN */
 /** C ref: priest.c:280 — @param {CPtr<struct monst>} mon @returns {*} */
 export function mon_aligntyp(mon) {
     let algn = schar(((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_epri)), $epri_shralign) : ((cptr.ldI32o(mon, $monst_isminion) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_min_align) : cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_maligntyp))));
+
     if (algn == -128)
-        return -128;
+        return -128;  /* negative but differs from chaotic */
     return schar(((algn > 0) ? NHM.A_LAWFUL : ((algn < 0) ? -1 : NHM.A_NEUTRAL)));
 }
 
+/*
+ * Specially aligned monsters are named specially.
+ *      - aligned priests with ispriest and high priests have shrines
+ *              they retain ispriest and epri when polymorphed
+ *      - aligned priests without ispriest are roamers
+ *              they have isminion set and use emin rather than epri
+ *      - minions do not have ispriest but have isminion and emin
+ *      - caller needs to inhibit Hallucination if it wants to force
+ *              the true name even when under that influence
+ */
 /** C ref: priest.c:302 — @param {CPtr<struct monst>} mon @param {CInt} article @param {CInt} reveal_high_priest @param {CPtr<char>} pname @returns {CPtr<char>} */
 export function priestname(mon, article, reveal_high_priest, pname) {
     let do_hallu = schar((cptr.ldI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops)) ? 1 : 0));
@@ -383,10 +433,15 @@ export function priestname(mon, article, reveal_high_priest, pname) {
     let high_priest = schar(cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)));
     let whatcode = cptr.box(0);
     let what = do_hallu ? rndmonnam(whatcode) : mon_pmname(mon);
+
     if (!(cptr.ldI32o(mon, $monst_ispriest) & 1) && !(cptr.ldI32o(mon, $monst_isminion) & 1))
-        return cptr.strcpy(pname, what);
+        return cptr.strcpy(pname, what);  /* caller must be confused */
+
+    /* for high priest(ess), "high" (or "grand" for poohbah) will be inserted
+       [this was done near the end but we want 'what' to be updated sooner] */
     if ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 || aligned_priest || high_priest)
         what = do_hallu ? __s_poohbah : ((cptr.ldI32o(mon, $monst_female) & 1) | 0 ? __s_priestess : __s_priest);
+
     cptr.st1(pname, 0);
     if (article != NHM.ARTICLE_NONE && (!do_hallu || !bogon_is_pname(whatcode.v))) {
         if (article == NHM.ARTICLE_YOUR || (article == NHM.ARTICLE_A && high_priest))
@@ -394,21 +449,27 @@ export function priestname(mon, article, reveal_high_priest, pname) {
         if (article == NHM.ARTICLE_THE) {
             void cptr.strcpy(pname, __s_the);
         } else if (!strcmp(what, __s_angel)) {
+            /* bypass just_an(); it would yield "" due to treating capital A
+               as indicating a personal name */
             void cptr.strcpy(pname, __s_an);
         } else {
             void just_an(pname, what);
         }
     }
+    /* pname[] contains "" or {"a ","an ","the "} */
     if ((cptr.ldI32o(mon, $monst_minvis) & 1)) {
+        /* avoid "a invisible priest" */
         if (!strcmp(pname, __s_a_sp))
             void cptr.strcpy(pname, __s_an);
         void cptr.strcat(pname, __s_invisible);
     }
     if ((cptr.ldI32o(mon, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_renegade)) {
+        /* avoid "an renegade Angel" */
         if (!strcmp(pname, __s_an) && !(cptr.ldI32o(mon, $monst_minvis) & 1))
             void cptr.strcpy(pname, __s_a_sp);
         void cptr.strcat(pname, __s_renegade);
     }
+
     if ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 || aligned_priest) {
         if (high_priest)
             void cptr.strcat(pname, do_hallu ? __s_grand : __s_high);
@@ -416,7 +477,9 @@ export function priestname(mon, article, reveal_high_priest, pname) {
         if (cptr.ld1so(mon, $monst_mtame) && !strncmpi((what), (__s_angel), -1))
             void cptr.strcat(pname, __s_guardian);
     }
+
     void cptr.strcat(pname, what);
+    /* same as distant_monnam(), more or less... */
     if (do_hallu || !high_priest || reveal_high_priest || !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || m_next2u(mon) || cptr.ldI32(program_state)) {
         void cptr.strcat(pname, __s_of);
         void cptr.strcat(pname, halu_gname(mon_aligntyp(mon)));
@@ -433,6 +496,7 @@ export function p_coaligned(priest) {
 function has_shrine(pri) {
     let lev;
     let epri_p;
+
     if (!pri || !(cptr.ldI32o(pri, $monst_ispriest) & 1))
         return 0;
     epri_p = (cptr.ldPtro(cptr.ldPtro((pri), $monst_mextra), $mextra_epri));
@@ -445,6 +509,7 @@ function has_shrine(pri) {
 /** C ref: priest.c:392 — @param {CInt} roomno @returns {CPtr<struct monst>} */
 export function findpriest(roomno) {
     let mtmp;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -454,6 +519,7 @@ export function findpriest(roomno) {
     return null;
 }
 
+/* called from check_special_room() when the player enters the temple room */
 /** C ref: priest.c:410 — @param {CInt} roomno */
 export function intemple(roomno) {
     let priest;
@@ -467,31 +533,45 @@ export function intemple(roomno) {
     let msg1;
     let msg2;
     let buf = new Uint8Array(256);
+
+    /* don't do anything if hero is already in the room */
     if (temple_occupied(cptr.add(u, $you_urooms0)))
         return;
+
     if ((priest = findpriest(schar(roomno))) !== null) {
+        /* tended */
         record_achievement(NHC.ACH_TMPL);
+
         epri_p = (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri));
         shrined = has_shrine(priest);
         sanctum = schar((cptr.eq(cptr.ldPtro(priest, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) ? 1 : 0));
         can_speak = schar((!helpless(priest)));
         if (can_speak && !Deaf() && cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, $epri_intone_time)) {
             let save_priest = (cptr.ldI32o(priest, $monst_ispriest) & 1);
+
+            /* don't reveal the altar's owner upon temple entry in
+               the endgame; for the Sanctum, the next message names
+               Moloch so suppress the "of Moloch" for him here too */
             if (sanctum && !Hallucination())
                 cptr.stI32o(priest, $monst_ispriest, 0);
             pline(__s_s_intones, canseemon(priest) ? Monnam(priest) : __s_a_nearby_voice);
             cptr.stI32o(priest, $monst_ispriest, save_priest);
-            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 443, __s_intemple, 10, 500))));
+            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 443, __s_intemple, 10, 500))));  /* ~2505 */
+            /* make sure that we don't suppress entry message when
+               we've just given its "priest intones" introduction */
             cptr.stI64o(epri_p, $epri_enter_time, 0n);
         }
         msg1 = (msg2 = null);
         if (sanctum && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))))) {
             if ((cptr.ldI32o(priest, $monst_mpeaceful) & 1)) {
+                /* first time inside */
                 msg1 = __s_infidel_you_have_entered_moloch_s;
                 msg2 = __s_be_gone;
                 cptr.stI32o(priest, $monst_mpeaceful, 0);
+                /* became angry voluntarily; no penalty for attacking him */
                 set_malign(priest);
             } else {
+                /* repeat visit, or attacked priest before entering */
                 msg1 = __s_you_desecrate_this_place_by_your;
             }
         } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, $epri_enter_time)) {
@@ -503,7 +583,7 @@ export function intemple(roomno) {
             verbalize(__s_pct_s, msg1);
             if (msg2)
                 verbalize(__s_pct_s, msg2);
-            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 471, __s_intemple, 10, 100))));
+            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 471, __s_intemple, 10, 100))));  /* ~505 */
         }
         if (!sanctum) {
             if (!shrined || !p_coaligned(priest) || cptr.ldI32o(u, $you_ualign + $align_record) <= -4) {
@@ -517,15 +597,24 @@ export function intemple(roomno) {
                 this_time = cptr.add(epri_p, $epri_peaceful_time);
                 other_time = cptr.add(epri_p, $epri_hostile_time);
             }
+            /* give message if we haven't seen it recently or
+               if alignment update has caused it to switch from
+               forbidding to sense-of-peace or vice versa */
             if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64(this_time) || cptr.ldI64(other_time) >= cptr.ldI64(this_time)) {
                 You(msg1, msg2);
-                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 491, __s_intemple, 10, 20))));
+                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 491, __s_intemple, 10, 20))));  /* ~55 */
+                /* avoid being tricked by the RNG:  switch might have just
+                   happened and previous random threshold could be larger */
                 if (cptr.ldI64(this_time) <= cptr.ldI64(other_time))
                     cptr.stI64(other_time, BigInt.asIntN(64, cptr.ldI64(this_time) - 1n));
             }
         }
+        /* recognize the Valley of the Dead and Moloch's Sanctum
+           once hero has encountered the temple priest on those levels */
         mapseen_temple(priest);
     } else {
+        /* untended */
+
         switch (rn2_at(__s_priest_c, 504, __s_intemple, 4)) {
             case 0:
             You(__s_have_an_eerie_feeling);
@@ -556,9 +645,12 @@ export function intemple(roomno) {
     }
 }
 
+/* reset the move counters used to limit temple entry feedback;
+   leaving the level and then returning yields a fresh start */
 /** C ref: priest.c:545 — @param {CPtr<struct monst>} priest */
 export function forget_temple_entry(priest) {
     let epri_p = (cptr.ldI32o(priest, $monst_ispriest) & 1) | 0 ? (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)) : null;
+
     if (!epri_p) {
         impossible(__s_attempting_to_manipulate_shrine_data);
         return;
@@ -578,14 +670,26 @@ export function priest_talk(priest) {
     let cheapskate = null;
     if ((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)))
         cheapskate = cptr.add((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_cheapskate_count);
+
+    /*
+     * Note: we won't be called if hero is Deaf [since dochat() will
+     * return before calling domonnoise()], so we don't need to check
+     * for that before the various calls to verbalize() here.
+     */
+
+    /* KMH, conduct */
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_gnostic, cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n)) - (1n)))
         livelog_printf(32n, __s_rejected_atheism_by_consulting_with_s, mon_nam(priest));
+
     if ((cptr.ldI32o(priest, $monst_mflee) & 1) | 0 || (!(cptr.ldI32o(priest, $monst_ispriest) & 1) && coaligned && strayed)) {
         pline(__s_s_doesn_t_want_anything_to_do_with_you, Monnam(priest));
         cptr.stI32o(priest, $monst_mpeaceful, 0);
         return;
     }
+
+    /* priests don't chat unless peaceful and in their own temple */
     if (!inhistemple(priest) || !(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || helpless(priest)) {
+
         if (helpless(priest)) {
             pline(__s_s_breaks_out_of_s_reverie, Monnam(priest), (cptr.ldPtro2(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)));
             cptr.stI32o(priest, $monst_mfrozen, cptr.stI32o(priest, $monst_msleeping, 0));
@@ -596,6 +700,8 @@ export function priest_talk(priest) {
         verbalize(__s_pct_s, cptr.ldPtro(__static_priest_talk_cranky_msg, rn2_at(__s_priest_c, 599, __s_priest_talk, 3), 8));
         return;
     }
+
+    /* you desecrated the temple and now you want to chat? */
     if ((cptr.ldI32o(priest, $monst_mpeaceful) & 1) | 0 && cptr.ld1s(in_rooms(cptr.ldI16o(priest, $monst_mx), cptr.ldI16o(priest, $monst_my), NHC.TEMPLE)) && !has_shrine(priest)) {
         ;
         verbalize(__s_begone_thou_desecratest_this_holy_place);
@@ -608,6 +714,7 @@ export function priest_talk(priest) {
             if (pmoney > 0n) {
                 let bits;
                 bits = (Hallucination()) ? currency(pmoney) : ((pmoney == 1n) ? __s_bit : __s_bits);
+                /* Note: two bits is actually 25 cents.  Hmm. */
                 pline(__s_s_gives_you_s_s_for_an_ale, Monnam(priest), (pmoney == 1n) ? __s_one : __s_two, bits);
                 money2u(priest, BigInt((pmoney > 1n ? 2 : 1)));
             } else
@@ -617,13 +724,22 @@ export function priest_talk(priest) {
             pline(__s_s_is_not_interested, Monnam(priest));
         return;
     } else {
+        /* there's now some randomization in how much you need to donate, but
+           you are given suggested donation values that will guarantee
+           clairvoyance and protection respectively; with more gold visible
+           you need to donate more but get a greater effect; and if you
+           cheapskate out to rerandomize the donation amounts they will be
+           higher next time */
         let offer;
         let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, (((rn2_at(__s_priest_c, 638, __s_priest_talk, 101) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
         let quan = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) / (BigInt.asIntN(64, suggested * 3n));
         let buf = new Uint8Array(256);
+
         if (quan < 1n)
             quan = 1n;
+
         void cptr.sprintf(cptr.decay(buf), __s_how_much_will_you_offer_suggested_ld_or, BigInt.asIntN(64, suggested * quan), BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n));
+
         if (cptr.ld1so(flags, $flag_debug))
             pline(__s_s_asks_you_for_a_contribution_for_the, Monnam(priest), suggested);
         else
@@ -644,6 +760,7 @@ export function priest_talk(priest) {
             } else {
                 ;
                 verbalize(__s_i_thank_thee_for_thy_contribution);
+                /* give player some token */
                 exercise(NHC.A_WIS, 1);
             }
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n)) {
@@ -657,10 +774,16 @@ export function priest_talk(priest) {
             incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt(rn2_at(__s_priest_c, 680, __s_priest_talk, Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, $you_ublessed);
+
+            /* u.ublessed is only active when Protection is enabled via
+               something other than worn gear (theft by gremlin clears the
+               intrinsic but not its former magnitude, making it
+               recoverable) */
             if (!(HProtection() & 117440512n)) {
                 cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-                orig_ublessed = -1;
+                orig_ublessed = -1;  /* force "rewarded" message */
             }
+
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
                 if (!cptr.ldI32o(u, $you_ublessed))
                     cptr.stI32o(u, $you_ublessed, ((rn2_at(__s_priest_c, 695, __s_priest_talk, 3) + 2) | 0));
@@ -676,9 +799,11 @@ export function priest_talk(priest) {
         } else {
             ;
             verbalize(__s_thy_selfless_generosity_is_deeply);
+            /* money_cnt check is preserved for futureproofing but probably
+               can't fail in the current code */
             if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) < (BigInt.asIntN(64, offer * 2n)) && coaligned) {
                 if (strayed && (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(u, $you_ucleansed))) > 5000n) {
-                    cptr.stI32o(u, $you_ualign + $align_record, 0);
+                    cptr.stI32o(u, $you_ualign + $align_record, 0);  /* cleanse thee */
                     cptr.stI64o(u, $you_ucleansed, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
                 } else {
                     adjalign(2);
@@ -692,18 +817,23 @@ export function priest_talk(priest) {
 export function mk_roamer(ptr, alignment, x, y, peaceful) {
     let roamer;
     let coaligned = schar((cptr.ld1so(u, $you_ualign) == alignment));
+
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        void rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);
+        void rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);  /* insurance */
+
     if (!(roamer = makemon(ptr, x, y, 132112)))
         return null;
+
     cptr.st1o((cptr.ldPtro(cptr.ldPtro((roamer), $monst_mextra), $mextra_emin)), $emin_min_align, alignment);
     cptr.st1o((cptr.ldPtro(cptr.ldPtro((roamer), $monst_mextra), $mextra_emin)), $emin_renegade, schar((coaligned && !peaceful ? 1 : 0)));
     cptr.stI32o(roamer, $monst_ispriest, 0);
     cptr.stI32o(roamer, $monst_isminion, 1);
-    mon_learns_traps(roamer, NHC.ALL_TRAPS);
+    mon_learns_traps(roamer, NHC.ALL_TRAPS);  /* traps are known */
     cptr.stI32o(roamer, $monst_mpeaceful, peaceful);
     cptr.stI32o(roamer, $monst_msleeping, 0);
-    set_malign(roamer);
+    set_malign(roamer);  /* peaceful may have changed */
+
+    /* MORE TO COME */
     return roamer;
 }
 
@@ -713,6 +843,7 @@ export function reset_hostility(roamer) {
         return;
     if (!cptr.eq(cptr.ldPtro(roamer, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, $sizeof_permonst)) && !cptr.eq(cptr.ldPtro(roamer, $monst_data), cptr.add(mons, NHC.PM_ANGEL, $sizeof_permonst)))
         return;
+
     if (cptr.ld1so((cptr.ldPtro(cptr.ldPtro((roamer), $monst_mextra), $mextra_emin)), $emin_min_align) != cptr.ld1so(u, $you_ualign)) {
         cptr.stI32o(roamer, $monst_mpeaceful, cptr.st1o(roamer, $monst_mtame, 0));
         set_malign(roamer);
@@ -724,6 +855,7 @@ export function reset_hostility(roamer) {
 export function in_your_sanctuary(mon, x, y) {
     let roomno;
     let priest;
+
     if (mon) {
         if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4096n) != 0n) || is_rider(cptr.ldPtro(mon, $monst_data)))
             return 0;
@@ -738,6 +870,7 @@ export function in_your_sanctuary(mon, x, y) {
     return schar((has_shrine(priest) && p_coaligned(priest) && (cptr.ldI32o(priest, $monst_mpeaceful) & 1) | 0 ? 1 : 0));
 }
 
+/* when attacking "priest" in his temple */
 /** C ref: priest.c:796 — @param {CPtr<struct monst>} priest */
 export function ghod_hitsu(priest) {
     let troom;
@@ -748,11 +881,14 @@ export function ghod_hitsu(priest) {
     let ax;
     let ay;
     let roomno = temple_occupied(cptr.add(u, $you_urooms));
+
     if (!roomno || !has_shrine(priest))
         return;
+
     ax = (x = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos));
     ay = (y = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y));
     troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom);
+
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || !linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1)) {
         if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
             if (cptr.ldI16(u) == ((cptr.ldI16(troom) - 1) | 0)) {
@@ -791,6 +927,7 @@ export function ghod_hitsu(priest) {
         if (!linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1))
             return;
     }
+
     switch (rn2_at(__s_priest_c, 850, __s_ghod_hitsu, 3)) {
         case 0:
         pline(__s_s_roars_in_anger_thou_shalt_suffer, a_gname_at(ax, ay));
@@ -802,6 +939,8 @@ export function ghod_hitsu(priest) {
         pline(__s_s_roars_thou_dost_profane_my_shrine, a_gname_at(ax, ay));
         break;
     }
+
+    /* bolt of lightning cast by unspecified monster */
     oldcurrwand = cptr.ldPtro(gc, $instance_globals_c_current_wand);
     cptr.stPtro(gc, $instance_globals_c_current_wand, null);
     oldbuzzer = cptr.ldPtro(gb, $instance_globals_b_buzzer);
@@ -816,27 +955,45 @@ export function ghod_hitsu(priest) {
 export function angry_priest() {
     let priest;
     let lev;
+
     if ((priest = findpriest(temple_occupied(cptr.add(u, $you_urooms)))) !== null) {
         let eprip = (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri));
+
         wakeup(priest, 0);
         setmangry(priest, 0);
+        /*
+         * If the altar has been destroyed or converted, let the
+         * priest run loose.
+         * (When it's just a conversion and there happens to be
+         * a fresh corpse nearby, the priest ought to have an
+         * opportunity to try converting it back; maybe someday...)
+         */
         lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(eprip, $epri_shrpos), $sizeof_rm_x21), cptr.ldI16o(eprip, $epri_shrpos + $nhcoord_y), $sizeof_rm);
         if (!((cptr.ld1so(lev, $rm_typ)) == NHC.ALTAR) || ((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))) != cptr.ld1so(eprip, $epri_shralign))) {
             if (!(cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)))
                 newemin(priest);
-            cptr.stI32o(priest, $monst_ispriest, 0);
+            cptr.stI32o(priest, $monst_ispriest, 0);  /* now a roaming minion */
             cptr.stI32o(priest, $monst_isminion, 1);
             (__builtin_expect(BigInt((!(has_emin(priest)))), 0n) ? __assert_rtn(__s_angry_priest, __s_priest_c, 902, __s_has_emin_priest) : void 0);
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)), $emin_min_align, cptr.ld1so(eprip, $epri_shralign));
             cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)), $emin_renegade, 0);
+            /* discard priest's memory of his former shrine;
+               if we ever implement the re-conversion mentioned
+               above, this will need to be removed */
             free_epri(priest);
         }
     }
 }
 
+/*
+ * When saving bones, find priests that aren't on their shrine level,
+ * and remove them.  This avoids big problems when restoring bones.
+ * [Perhaps we should convert them into roamers instead?]
+ */
 /** C ref: priest.c:919 */
 export function clearpriests() {
     let mtmp;
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -845,6 +1002,7 @@ export function clearpriests() {
     }
 }
 
+/* munge priest-specific structure when restoring -dlc */
 /** C ref: priest.c:933 — @param {CPtr<struct monst>} mtmp @param {CInt} ghostly */
 export function restpriest(mtmp, ghostly) {
     if (cptr.ldI16o(u, $you_uz + $d_level_dlevel)) {

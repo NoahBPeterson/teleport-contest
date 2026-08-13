@@ -45,6 +45,13 @@ let suppress_history = 0;
 
 /** C ref: getline.c:21 — typedef getlin_hook_proc (type alias only, no runtime output) */
 
+/*
+ * Read a line closed with '\n' into the array char bufp[BUFSZ].
+ * (The '\n' is not stored. The string is closed with a '\0'.)
+ * Reading can be interrupted by an escape ('\033').  If there is already
+ * some text, it is removed and prompting continues as if from the start.
+ * However, if there is no text yet (or anymore) then "\033" is returned.
+ */
 /** C ref: getline.c:36 — @param {CPtr<char>} query @param {CPtr<char>} bufp */
 export function tty_getlin(query, bufp) {
     suppress_history = 0;
@@ -57,13 +64,25 @@ function hooked_tty_getlin(query, bufp, hook) {
     let c;
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let doprev = 0;
+
     if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE && !(cptr.ldI32(cw) & NHM.WIN_STOP))
         more();
     cptr.stI32(cw, cptr.ldI32(cw) & -2);
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_SPECIAL_PROMPT);
     (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1)) - (1);
+
+    /*
+     * Issue the prompt.
+     *
+     * custompline() will call vpline() which calls flush_screen() which
+     * calls bot(). The core now disables bot() processing while inside
+     * getlin, so the screen won't be modified during whatever this prompt
+     * is for.
+     */
     custompline(6, __s_pct_s_sp, query);
+    /* !EDIT_GETLIN: bufp is output only; init it to empty */
     cptr.st1(bufp, 0);
+
     for (; ; ) {
         void fflush(__stdoutp);
         void cptr.strcat(cptr.strcat(cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), query), __s_sp), obufp);
@@ -93,15 +112,20 @@ function hooked_tty_getlin(query, bufp, hook) {
         }
         if (c == 16) {
             let sav = cptr.ldI32o(ttyDisplay, $DisplayDesc_inread);
+
             cptr.stI32o(ttyDisplay, $DisplayDesc_inread, 0);
             if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 115 || (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 99 && !doprev)) {
+                /* msg_window:single, or msg_window:combination while it's
+                   behaving like msg_window:single */
                 if (!doprev)
-                    void tty_doprev_message();
+                    void tty_doprev_message();  /* need two initially */
                 void tty_doprev_message();
                 cptr.stI32o(ttyDisplay, $DisplayDesc_inread, sav);
                 doprev = 1;
                 continue;
             } else {
+                /* msg_window:full or reverse, or msg_window:combination while
+                   it's behaving like msg_window:full */
                 void tty_doprev_message();
                 cptr.stI32o(ttyDisplay, $DisplayDesc_inread, sav);
                 doprev = 0;
@@ -143,10 +167,13 @@ function hooked_tty_getlin(query, bufp, hook) {
             bufp = cptr.add(bufp, 1);
             if (hook && (hook)(obufp)) {
                 putsyms(bufp);
+                /* pointer and cursor left where they were */
                 for (i = bufp; cptr.ld1s(i); i = cptr.add(i, 1))
                     putsyms(__s_bs);
             } else if (cptr.cmp(i, bufp) > 0) {
                 let s = i;
+
+                /* erase rest of prior guess */
                 for (; cptr.cmp(i, bufp) > 0; i = cptr.add(i, -1))
                     putsyms(__s_sp);
                 for (; cptr.cmp(s, bufp) > 0; s = cptr.add(s, -1))
@@ -163,10 +190,14 @@ function hooked_tty_getlin(query, bufp, hook) {
     }
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
     (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1)) - (-1);
-    clear_nhwindow()(WIN_MESSAGE.v);
+    clear_nhwindow()(WIN_MESSAGE.v);  /* clean up after ourselves */
+
     if (suppress_history) {
+        /* prevent next message from pushing current query+answer into
+           tty message history */
         cptr.st1o(gt, $instance_globals_t_toplines, 0);
     } else {
+        /* needed because we've bypassed pline() */
         dumplogmsg(cptr.add(gt, $instance_globals_t_toplines));
     }
 }
@@ -175,10 +206,12 @@ function hooked_tty_getlin(query, bufp, hook) {
 export function xwaitforspace(s) {
     let c;
     let x = ttyDisplay ? cptr.ld1so(ttyDisplay, $DisplayDesc_dismiss_more) : 10;
+
     morc.v = 0;
     while (!cptr.ldI32o(program_state, $sinfo_done_hup) && (c = tty_nhgetch()) != -1) {
         if (c == 10 || c == 13)
             break;
+
         if (cptr.ld1so(iflags, $instance_flags_cbreak)) {
             if (c == 27) {
                 if (ttyDisplay)
@@ -195,18 +228,37 @@ export function xwaitforspace(s) {
     }
 }
 
+/*
+ * Implement extended command completion by using this hook into
+ * tty_getlin.  Check the characters already typed, if they uniquely
+ * identify an extended command, expand the string to the whole
+ * command.
+ *
+ * Return TRUE if we've extended the string at base.  Otherwise return FALSE.
+ * Assumptions:
+ *
+ *      + we don't change the characters that are already in base
+ *      + base has enough room to hold our string
+ */
 /** C ref: getline.c:272 — @param {CPtr<char>} base @returns {CInt} */
 function ext_cmd_getlin_hook(base) {
     let ecmatches = cptr.box(0);
     let nmatches = extcmds_match(base, NHM.ECM_NOFLAGS, ecmatches);
+
     if (nmatches == 1) {
         let ec = extcmds_getentry(cptr.ldI32o(ecmatches.v, 0, 4));
+
         void cptr.strcpy(base, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
         return 1;
     }
-    return 0;
+
+    return 0;  /* didn't match anything */
 }
 
+/*
+ * Read in an extended command, doing command line completion.  We
+ * stop when we have found enough characters to make a unique command.
+ */
 /** C ref: getline.c:292 @returns {CInt} */
 export function tty_get_ext_cmd() {
     let buf = new Uint8Array(256);
@@ -214,19 +266,29 @@ export function tty_get_ext_cmd() {
     let ecmatches = cptr.box(null);
     let no_hook = null;
     let extcmd_char = new Uint8Array(2);
+
     if (cptr.ld1so(iflags, $instance_flags_extmenu))
         return extcmd_via_menu();
+
     suppress_history = 1;
+    /* maybe a runtime option?
+     * hooked_tty_getlin("#", buf,
+     *                   (flags.cmd_comp && !gi.in_doagain)
+     *                      ? ext_cmd_getlin_hook
+     *                      : (getlin_hook_proc) 0);
+     */
     cptr.st1o(cptr.decay(extcmd_char), 0, extcmd_initiator(), 1), cptr.st1o(cptr.decay(extcmd_char), 1, 0, 1);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     hooked_tty_getlin(cptr.decay(extcmd_char), cptr.decay(buf), !cptr.ldI32(gi) ? ext_cmd_getlin_hook : no_hook);
     void mungspaces(cptr.decay(buf));
+
     nmatches = (cptr.ld1so(cptr.decay(buf), 0, 1) == 0 || cptr.ld1so(cptr.decay(buf), 0, 1) == 27) ? -1 : extcmds_match(cptr.decay(buf), 3, ecmatches);
     if (nmatches != 1) {
         if (nmatches != -1)
             pline(__s_s_60s_unknown_extended_command, visctrl(cptr.ld1so(cptr.decay(extcmd_char), 0, 1)), cptr.decay(buf));
         return -1;
     }
+
     return cptr.ldI32o(ecmatches.v, 0, 4);
 }
 

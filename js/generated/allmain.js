@@ -234,9 +234,11 @@ const __s_buc_d_known_d_dknown_d_bknown_d = cptr.lit(",\"buc\":%d,\"known\":%d,\
 const __s_eroded_d_eroded2_d = cptr.lit(",\"eroded\":%d,\"eroded2\":%d}");
 const __s_rbrack_rbrace_nl = cptr.lit("]}\n");
 
+/*ARGSUSED*/
 /** C ref: allmain.c:33 — @param {CInt} argc @param {CPtr<char *>} argv */
 export function early_init(argc, argv) {
     program_state_init();
+    /* Do this as early as possible, but let ports do other things first. */
     crashreport_init(argc, argv);
     decl_globals_init();
     objects_globals_init();
@@ -247,8 +249,13 @@ export function early_init(argc, argv) {
 
 /** C ref: allmain.c:48 — @param {CInt} resuming */
 function moveloop_preamble(resuming) {
+    /* if a save file created in normal mode is now being restored in
+       explore mode, treat it as normal restore followed by 'X' command
+       to use up the save file and require confirmation for explore mode */
     if (resuming && cptr.ld1so(iflags, $instance_flags_deferred_X))
         void enter_explore_mode();
+
+    /* side-effects from the real world */
     cptr.stI32o(flags, $flag_moonphase, phase_of_the_moon() >>> 0);
     if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON) {
         You(__s_are_lucky_full_moon_tonight);
@@ -261,33 +268,46 @@ function moveloop_preamble(resuming) {
         pline(__s_watch_out_bad_things_can_happen_on);
         change_luck(-1);
     }
+
     if (!resuming) {
-        cptr.stI32o(program_state, $sinfo_beyond_savefile_load, 1);
+        cptr.stI32o(program_state, $sinfo_beyond_savefile_load, 1);  /* for TTY_PERM_INVENT */
         cptr.stI32o(svc, $context_info_rndencode, rnd_at(__s_allmain_c, 72, __s_moveloop_preamble, 9000));
-        set_wear(null);
+        set_wear(null);  /* for side-effects of starting gear */
         reset_justpicked(cptr.ldPtro(gi, $instance_globals_i_invent));
-        void pickup(1);
+        void pickup(1);  /* autopickup at initial location */
+        /* only matters if someday a character is able to start with
+           clairvoyance (wizard with cornuthaum perhaps?); without this,
+           first "random" occurrence would always kick in on turn 1 */
         cptr.stI64o(svc, $context_info_seer_turn, BigInt(rnd_at(__s_allmain_c, 79, __s_moveloop_preamble, 30)));
+        /* give hero initial movement points; new game only--for restore,
+           pending movement points were included in the save file */
         cptr.stI16o(u, $you_umovement, NHM.NORMAL_SPEED);
         initrack();
     }
-    cptr.st1o(disp, $display_hints_botlx, 1);
+    cptr.st1o(disp, $display_hints_botlx, 1);  /* for STATUS_HILITES */
     if (resuming) {
-        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* subset of pickup() */
         fix_shop_damage();
     }
-    encumber_msg();
+
+    encumber_msg();  /* in case they auto-picked up something */
     if (cptr.ld1so(gd, $instance_globals_d_defer_see_monsters)) {
         cptr.st1o(gd, $instance_globals_d_defer_see_monsters, 0);
         see_monsters();
     }
+
     cptr.stI16o(u, $you_uz0 + $d_level_dlevel, cptr.ldI16o(u, $you_uz + $d_level_dlevel));
     cptr.st1o(svc, $context_info_move, 0);
+
+    /* finish processing "--debug:fuzzer" from the command line */
     if (cptr.ld1so(iflags, $instance_flags_fuzzerpending)) {
         cptr.st1o(iflags, $instance_flags_debug_fuzzer, NHC.fuzzer_impossible_panic);
         cptr.st1o(iflags, $instance_flags_fuzzerpending, 0);
     }
+
     cptr.stI32o(program_state, $sinfo_in_moveloop, 1);
+    /* for perm_invent preset at startup, display persistent inventory after
+       invent is fully populated and the in_moveloop flag has been set */
     if (cptr.ld1so(iflags, $instance_flags_perm_invent))
         update_inventory();
 }
@@ -295,18 +315,25 @@ function moveloop_preamble(resuming) {
 /** C ref: allmain.c:114 — @param {CInt} wtcap */
 function u_calc_moveamt(wtcap) {
     let moveamt = 0;
+
+    /* calculate how much time passed. */
     if (cptr.ldPtro(u, $you_usteed) && cptr.ld1so(u, $you_umoved)) {
+        /* your speed doesn't augment steed's speed */
         moveamt = mcalcmove(cptr.ldPtro(u, $you_usteed), 1);
     } else {
         moveamt = cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mmove);
+
         if (Very_fast()) {
+            /* gain a free action on 2/3 of turns */
             if (rn2_at(__s_allmain_c, 127, __s_u_calc_moveamt, 3) != 0)
                 moveamt = (moveamt + NHM.NORMAL_SPEED) | 0;
         } else if (Fast()) {
+            /* gain a free action on 1/3 of turns */
             if (rn2_at(__s_allmain_c, 131, __s_u_calc_moveamt, 3) == 0)
                 moveamt = (moveamt + NHM.NORMAL_SPEED) | 0;
         }
     }
+
     switch (wtcap) {
         case NHC.UNENCUMBERED:
         break;
@@ -325,11 +352,13 @@ function u_calc_moveamt(wtcap) {
         default:
         break;
     }
+
     cptr.stI16o(u, $you_umovement, cptr.ldI16o(u, $you_umovement) + moveamt);
     if (cptr.ldI16o(u, $you_umovement) < 0)
         cptr.stI16o(u, $you_umovement, 0);
 }
 
+/* small chance of generating a new random monster */
 /** C ref: allmain.c:162 */
 function maybe_generate_rnd_mon() {
     if (!rn2_at(__s_allmain_c, 166, __s_maybe_generate_rnd_mon, (cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 ? 25 : ((depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))) ? 50 : 70)))
@@ -350,74 +379,135 @@ export function moveloop_core() {
     get_nh_event()();
     if (cptr.ld1so(iflags, $instance_flags_pending_customizations))
         maybe_shuffle_customizations();
+
     dobjsfree();
+
     if (cptr.ld1so(svc, $context_info_bypasses))
         clear_bypasses();
+
     if (cptr.ld1so(iflags, $instance_flags_sanity_check) || cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         sanity_check();
+
     if (cptr.ld1so(svc, $context_info_resume_wish))
-        makewish();
+        makewish();  /* clears resume_wish */
+
     if (cptr.ld1so(svc, $context_info_move)) {
+        /* actual time passed */
         cptr.stI16o(u, $you_umovement, cptr.ldI16o(u, $you_umovement) - NHM.NORMAL_SPEED);
+
         do {
             encumber_msg();
+
             cptr.st1o(svc, $context_info_mon_moving, 1);
             do {
                 monscanmove = schar(movemon());
                 if (cptr.ldI16o(u, $you_umovement) >= NHM.NORMAL_SPEED)
-                    break;
+                    break;  /* it's now your turn */
             } while (monscanmove);
             cptr.st1o(svc, $context_info_mon_moving, 0);
+
+            /* this needs to be after the monster movement loop in
+               case monster actions affected burden, e.g. rehumanize */
             mvl_wtcap = near_capacity();
+
             if (!monscanmove && cptr.ldI16o(u, $you_umovement) < NHM.NORMAL_SPEED) {
+                /* both hero and monsters are out of steam this round */
                 let mtmp;
+
+                /* set up for a new turn */
                 cptr.stI64o(gw, $instance_globals_w_were_changes, 0n);
-                mcalcdistress();
+                mcalcdistress();  /* adjust monsters' trap, blind, etc */
+
+                /* reallocate movement rations to monsters; don't need
+                   to skip dead monsters here because they will have
+                   been purged at end of their previous round of moving */
                 for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
                     cptr.stI16o(mtmp, $monst_movement, cptr.ldI16o(mtmp, $monst_movement) + mcalcmove(mtmp, 1));
+
+                /* occasionally add another monster; since this takes
+                   place after movement has been allotted, the new
+                   monster effectively loses its first turn */
                 maybe_generate_rnd_mon();
+
                 u_calc_moveamt(mvl_wtcap);
                 settrack();
+
                 (cptr.stI64o(svm, $instance_globals_saved_m_moves, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1n)) - (1n);
+                /*
+                 * Never allow 'moves' to grow big enough to wrap.
+                 * We don't care what the maximum possible 'long int'
+                 * is for the current configuration, we want a value
+                 * that is the same for all viable configurations.
+                 * When imposing the limit, use a mystic decimal value
+                 * instead of a magic binary one such as 0x7fffffffL.
+                 */
                 if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= 1000000000n) {
                     display_nhwindow()(WIN_MESSAGE.v, 1);
                     urgent_pline(__s_the_dungeon_capitulates);
                     done(NHC.ESCAPED);
                 }
+                /* 'moves' is misnamed; it represents turns; hero_seq is
+                   a value that is distinct every time the hero moves */
                 cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n);
+
                 if (cptr.ld1so(flags, $flag_time) && !cptr.ldI32o(svc, $context_info_run))
-                    cptr.st1o(disp, $display_hints_time_botl, 1);
+                    cptr.st1o(disp, $display_hints_time_botl, 1);  /* 'moves' just changed */
+
+                /********************************/
+                /* once-per-turn things go here */
+                /********************************/
+
                 l_nhcore_call(NHC.NHCORE_MOVELOOP_TURN);
+
                 if (Glib())
                     glibr();
                 nh_timeout();
                 run_regions();
+
                 if (cptr.ldI32o(u, $you_ublesscnt))
                     (cptr.stI32o(u, $you_ublesscnt, cptr.ldI32o(u, $you_ublesscnt) + -1)) - (-1);
+
+                /* One possible result of prayer is healing.  Whether or
+                 * not you get healed depends on your current hit points.
+                 * If you are allowed to regenerate during the prayer,
+                 * the end-of-prayer calculation messes up on this.
+                 * Another possible result is rehumanization, which
+                 * requires that encumbrance and movement rate be
+                 * recalculated.
+                 */
                 if ((cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                    /* for the moment at least, you're in tiptop shape */
                     mvl_wtcap = NHC.UNENCUMBERED;
                 } else if (!Upolyd() ? (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax)) : (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax) || cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL ? 1 : 0)) {
+                    /* maybe heal */
                     regen_hp(mvl_wtcap);
                 }
+
+                /* moving around while encumbered is hard work */
                 if (mvl_wtcap > NHC.MOD_ENCUMBER && cptr.ld1so(u, $you_umoved)) {
                     if (!(mvl_wtcap < NHC.EXT_ENCUMBER ? cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 30n : cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 10n)) {
                         overexert_hp();
                     }
                 }
+
                 regen_pw(mvl_wtcap);
+
                 if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
                     if (Teleportation() && !rn2_at(__s_allmain_c, 308, __s_moveloop_core, 85)) {
                         let old_ux = cptr.ldI16(u);
                         let old_uy = cptr.ldI16o(u, $you_uy);
+
                         tele();
                         if (cptr.ldI16(u) != old_ux || cptr.ldI16o(u, $you_uy) != old_uy) {
                             if (!next_to_u()) {
                                 check_leash(old_ux, old_uy);
                             }
+                            /* clear doagain keystrokes */
                             cmdq_clear(NHC.CQ_CANNED);
                             cmdq_clear(NHC.CQ_REPEAT);
                         }
                     }
+                    /* delayed change may not be valid anymore */
                     if ((mvl_change == 1 && !Polymorph()) || (mvl_change == 2 && cptr.ldI32o(u, $you_ulycn) == NHC.NON_PM))
                         mvl_change = 0;
                     if (Polymorph() && !rn2_at(__s_allmain_c, 325, __s_moveloop_core, 100))
@@ -435,11 +525,13 @@ export function moveloop_core() {
                         }
                     }
                 }
+
                 if (Searching() && !(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noautosearch) & 1) && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
                     void dosearch0(1);
                 if (Warning())
                     warnreveal();
                 if (cptr.ldI64o(gw, $instance_globals_w_were_changes)) {
+                    /* update innate intrinsics (mainly Drain_resistance) */
                     set_uasmon();
                 }
                 mkot_trap_warn();
@@ -461,48 +553,87 @@ export function moveloop_core() {
                         cptr.stI32o(u, $you_udg_cnt, ((rn2_at(__s_allmain_c, 367, __s_moveloop_core, 200) + 50) | 0) >>> 0);
                     }
                 }
+                /* XXX This should be recoded to use something like regions - a list of
+                 * things that are active and need to be handled that is dynamically
+                 * maintained and not a list of special cases. */
+                /* vision will be updated as bubbles move */
                 if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
                     movebubbles();
                 else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles) & 1))
                     fumaroles();
+
+                /* when immobile, count is in turns */
                 if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
                     runmode_delay_output();
                     if (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + 1n) == 0n) {
                         unmul(null);
+                        /* if unmul caused a level change, take it now */
                         if (cptr.ld1uo(u, $you_utotype))
                             deferred_goto();
                     }
                 }
             }
-        } while (cptr.ldI16o(u, $you_umovement) < NHM.NORMAL_SPEED);
-        (cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 1n)) - (1n);
+        } while (cptr.ldI16o(u, $you_umovement) < NHM.NORMAL_SPEED);  /* hero can't move */
+
+        /******************************************/
+        /* once-per-hero-took-time things go here */
+        /******************************************/
+
+        (cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 1n)) - (1n);  /* moves*8 + n for n == 1..7 */
+
+        /* although we checked for encumbrance above, we need to
+           check again for message purposes, as the weight of
+           inventory may have changed in, e.g., nh_timeout(); we do
+           need two checks here so that the player gets feedback
+           immediately if their own action encumbered them */
         encumber_msg();
         if (cptr.ldI64o(iflags, $instance_flags_hilite_delta))
             status_eval_next_unhilite();
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_seer_turn)) {
             if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !BClairvoyant())
                 do_vicinity_map(null);
-            cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(((rn2_at(__s_allmain_c, 415, __s_moveloop_core, 31) + 15) | 0))));
+            /* we maintain this counter even when clairvoyance isn't
+               taking place; on average, go again 30 turns from now */
+            cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(((rn2_at(__s_allmain_c, 415, __s_moveloop_core, 31) + 15) | 0))));  /*15..45*/
+            /* [it used to be that on every 15th turn, there was a 50%
+               chance of farsight, so it could happen as often as every
+               15 turns or theoretically never happen at all; but when
+               a fast hero got multiple moves on that 15th turn, it
+               could actually happen more than once on the same turn!] */
         }
+        /* [fast hero who gets multiple moves per turn ends up sinking
+           multiple times per turn; is that what we really want?] */
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)
             sink_into_lava();
         else if (!cptr.ld1so(u, $you_umoved))
             void pooleffects(0);
+
+        /* vision while buried or underwater is updated here */
         if (Underwater())
             under_water(0);
         else if ((cptr.ldI32o(u, $you_uburied) & 1))
             under_ground(0);
+
         see_nearby_monsters();
-    }
+    }  /* actual time passed */
+
+    /****************************************/
+    /* once-per-player-input things go here */
+    /****************************************/
+
     clear_splitobjs();
+
+    /* the Amulet of Yendor gives a wish when initially picked up */
     if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !(cptr.ldI32o(u, $you_uevent + $u_event_amulet_wish) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_amulet_wish, 1);
         display_nhwindow()(WIN_MESSAGE.v, 1);
         urgent_pline(__s_the_amulet_is_bestowing_a_wish_upon_you);
         makewish();
     }
+
     find_ac();
     if (!cptr.ld1so(svc, $context_info_mv) || Blind()) {
+        /* redo monsters if hallu or wearing a helm of telepathy */
         if (Hallucination()) {
             see_monsters();
             see_objects();
@@ -513,7 +644,7 @@ export function moveloop_core() {
             see_monsters();
         }
         if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
-            vision_recalc(0);
+            vision_recalc(0);  /* vision! */
     }
     if (cptr.ld1s(disp) || cptr.ld1so(disp, $display_hints_botlx)) {
         bot();
@@ -522,8 +653,11 @@ export function moveloop_core() {
         timebot();
         curs_on_u();
     }
+
     m_everyturn_effect(cptr.add(gy, $instance_globals_y_youmonst));
+
     cptr.st1o(svc, $context_info_move, 1);
+
     if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n && cptr.ldPtro(go, $instance_globals_o_occupation)) {
         if ((cptr.ldPtro(go, $instance_globals_o_occupation))() == 0)
             cptr.stPtro(go, $instance_globals_o_occupation, null);
@@ -534,11 +668,14 @@ export function moveloop_core() {
         runmode_delay_output();
         return;
     }
+
     cptr.st1o(u, $you_umoved, 0);
+
     if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n) {
         lookaround();
         runmode_delay_output();
         if (!cptr.ldI64o(gm, $instance_globals_m_multi)) {
+            /* lookaround may clear multi */
             cptr.st1o(svc, $context_info_move, 0);
             return;
         }
@@ -556,15 +693,21 @@ export function moveloop_core() {
         rhack(0);
     }
     if (cptr.ld1uo(u, $you_utotype))
-        deferred_goto();
+        deferred_goto();  /* after rhack() */
+
     if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
-        vision_recalc(0);
+        vision_recalc(0);  /* vision! */
+    /* after rhack() and vision_recalc() so that the map is redrawn
+       once with correct vision data, not twice (overshoot+correct) */
     cliparound()(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+    /* when running in non-tport mode, this gets done through domove() */
     if ((!cptr.ldI32o(svc, $context_info_run) || cptr.ldI32o(flags, $flag_runmode) == NHC.RUN_TPORT) && (cptr.ldI64o(gm, $instance_globals_m_multi) && (!cptr.ld1so(svc, $context_info_travel) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) % 7n) : !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 7n)))) {
         if (cptr.ld1so(flags, $flag_time) && cptr.ldI32o(svc, $context_info_run))
             cptr.st1(disp, 1);
+        /* [should this be flush_screen() instead?] */
         display_nhwindow()(WIN_MAP.v, 0);
     }
+
     if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_END_TURN, 4)) {
         lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nh_callback_run);
         lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(nhcb_name, NHC.NHCB_END_TURN, 8));
@@ -576,8 +719,10 @@ export function moveloop_core() {
 /** C ref: allmain.c:567 */
 function maybe_do_tutorial() {
     let sp = find_level(__s_tut_1);
+
     if (!sp)
         return;
+
     if (ask_do_tutorial()) {
         assign_level(cptr.add(u, $you_ucamefrom), cptr.add(u, $you_uz));
         cptr.st1o(iflags, $instance_flags_nofollowers, 1);
@@ -592,8 +737,10 @@ function maybe_do_tutorial() {
 /** C ref: allmain.c:587 — @param {CInt} resuming */
 export function moveloop(resuming) {
     moveloop_preamble(resuming);
+
     if (!resuming)
         maybe_do_tutorial();
+
     for (; ; ) {
         moveloop_core();
     }
@@ -603,8 +750,10 @@ export function moveloop(resuming) {
 function regen_pw(wtcap) {
     if (cptr.ldI32o(u, $you_uen) < cptr.ldI32o(u, $you_uenmax) && ((wtcap < NHC.MOD_ENCUMBER && (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % BigInt(((Math.imul(((38 - cptr.ldI32o(u, $you_ulevel)) | 0), ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 3 : 4)) / 6) | 0))))) || Energy_regeneration())) {
         let upper = ((((((acurr(NHC.A_WIS)) + (acurr(NHC.A_INT))) | 0) / 15) | 0) + 1) | 0;
+
         if (EMagical_breathing())
             upper = (upper + 2) | 0;
+
         cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + ((rn2_at(__s_allmain_c, 612, __s_regen_pw, upper) + 1) | 0)) | 0);
         if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
             cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));
@@ -614,15 +763,19 @@ function regen_pw(wtcap) {
     }
 }
 
+/* maybe recover some lost health (or lose some when an eel out of water) */
 /** C ref: allmain.c:625 — @param {CInt} wtcap */
 function regen_hp(wtcap) {
     let heal = 0;
     let reached_full = 0;
     let encumbrance_ok = schar((wtcap < NHC.MOD_ENCUMBER || !cptr.ld1so(u, $you_umoved) ? 1 : 0));
+
     if (Upolyd()) {
         if (cptr.ldI32o(u, $you_mh) < 1) {
             rehumanize();
         } else if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !Breathless()) {
+            /* eel out of water loses hp, similar to monster eels;
+               as hp gets lower, rate of further loss slows down */
             if (cptr.ldI32o(u, $you_mh) > 1 && !Regeneration() && rn2_at(__s_allmain_c, 639, __s_regen_hp, cptr.ldI32o(u, $you_mh)) > rn2_at(__s_allmain_c, 639, __s_regen_hp, 8) && (!Half_physical_damage() || !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 2n)))
                 heal = -1;
         } else if (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax)) {
@@ -634,22 +787,32 @@ function regen_hp(wtcap) {
             cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + heal) | 0);
             reached_full = schar((cptr.ldI32o(u, $you_mh) == cptr.ldI32o(u, $you_mhmax)));
         }
+
+        /* !Upolyd */
     } else {
+        /* [when this code was in-line within moveloop(), there was
+           no !Upolyd check here, so poly'd hero recovered lost u.uhp
+           once u.mh reached u.mhmax; that may have been convenient
+           for the player, but it didn't make sense for gameplay...] */
         if (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax) && (encumbrance_ok || (Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))) {
             heal = ((cptr.ldI32o(u, $you_ulevel) + (acurr(NHC.A_CON))) | 0) > rn2_at(__s_allmain_c, 659, __s_regen_hp, 100);
+
             if ((Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))
                 heal = (heal + 1) | 0;
             if (Sleepy() && cptr.ldI64o(u, $you_usleep))
                 heal++;
+
             if (heal) {
                 cptr.st1(disp, 1);
                 cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) + heal) | 0);
                 if (cptr.ldI32o(u, $you_uhp) > cptr.ldI32o(u, $you_uhpmax))
                     cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
+                /* stop voluntary multi-turn activity if now fully healed */
                 reached_full = schar((cptr.ldI32o(u, $you_uhp) == cptr.ldI32o(u, $you_uhpmax)));
             }
         }
     }
+
     if (reached_full)
         interrupt_multi(__s_you_are_in_full_health);
 }
@@ -660,7 +823,7 @@ export function stop_occupation() {
         if (!maybe_finished_meal(1))
             You(__s_stop_s, cptr.ldPtro(go, $instance_globals_o_occtxt));
         cptr.stPtro(go, $instance_globals_o_occupation, null);
-        cptr.st1(disp, 1);
+        cptr.st1(disp, 1);  /* in case u.uhs changed */
         nomul(0);
     } else if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
         nomul(0);
@@ -671,12 +834,16 @@ export function stop_occupation() {
 /** C ref: allmain.c:699 */
 export function init_sound_disp_gamewindows() {
     let menu_behavior = NHM.MENU_BEHAVE_STANDARD;
+
     activate_chosen_soundlib();
+
     if (cptr.ld1so(iflags, $instance_flags_wc_splash_screen) && !cptr.ldI32o(flags, $flag_randomall)) {
         ;
+        /* ToDo: new splash screen invocation will go here */
     } else {
         ;
     }
+
     WIN_MESSAGE.v = create_nhwindow()(NHM.NHW_MESSAGE);
     if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n)) {
         status_initialize(0);
@@ -687,6 +854,8 @@ export function init_sound_disp_gamewindows() {
     WIN_INVEN.v = create_nhwindow()(NHM.NHW_MENU);
     if (WIN_INVEN.v != -1)
         adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, $instance_flags_menu_headings));
+    /* in case of early quit where WIN_INVEN could be destroyed before
+       ever having been used, use it here to pacify the Qt interface */
     start_menu()(WIN_INVEN.v, BigInt.asUintN(64, BigInt(menu_behavior))), end_menu()(WIN_INVEN.v, null);
     display_nhwindow()(WIN_MESSAGE.v, 0);
     clear_glyph_buffer();
@@ -697,35 +866,46 @@ export function init_sound_disp_gamewindows() {
 export function newgame() {
     let i;
     {
+
+        /* make sure welcome messages are given before noticing monsters */
         (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
     }
     cptr.st1o(disp, $display_hints_botlx, 1);
-    cptr.stI32(svc, 2);
+    cptr.stI32(svc, 2);  /* id 1 is reserved for gy.youmonst */
     cptr.stI32o(svc, $context_info_warnlevel, 1);
-    cptr.stI64o(svc, $context_info_next_attrib_check, 600n);
-    cptr.st1o(svc, $context_info_tribute + $tribute_info_enabled, 1);
+    cptr.stI64o(svc, $context_info_next_attrib_check, 600n);  /* arbitrary first setting */
+    cptr.st1o(svc, $context_info_tribute + $tribute_info_enabled, 1);  /* turn on 3.6 tributes    */
     cptr.stU64o(svc, $context_info_tribute, 24n);
     get_nhuuid();
+
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
         cptr.st1o2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, uchar((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_NOCORPSE)));
-    init_objects();
-    cptr.stI32o(flags, $flag_pantheon, -1);
+
+    init_objects();  /* must be before u_init() */
+
+    cptr.stI32o(flags, $flag_pantheon, -1);  /* role_init() will reset this */
     role_init();
+
     init_dungeons();
     init_artifacts();
     u_init_misc();
-    l_nhcore_init();
+
+    l_nhcore_init();  /* create a Lua state that lasts until end of game */
     reset_glyphmap(NHC.gm_newgame);
     void signal(2, done1);
     if (cptr.ld1so(iflags, $instance_flags_news))
         display_file()(__s_news, 0);
+    /* quest_init();  --  Now part of role_init() */
+
     mklev();
     u_on_upstairs();
-    vision_reset();
+    vision_reset();  /* set up internals for level (after mklev) */
     check_special_room(0);
+
     if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
         mnexto((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);
     void makedog();
+
     u_init_inventory_attrs();
     docrt();
     flush_screen(1);
@@ -735,21 +915,26 @@ export function newgame() {
         bot();
     }
     u_init_skills_discoveries();
+
     if (wizard()) {
         read_wizkit();
-        obj_delivery(0);
+        obj_delivery(0);  /* finish wizkit */
     }
+
     if (cptr.ld1so(flags, $flag_legacy)) {
         com_pager(cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper) ? __s_pauper_legacy : __s_legacy);
     }
+
     cptr.stI64(urealtime, 0n);
     cptr.stI64o(urealtime, $u_realtime_start_timing, getnow());
     save_currentstate();
-    (cptr.stI32o(program_state, $sinfo_something_worth_saving, cptr.ldI32o(program_state, $sinfo_something_worth_saving) + 1)) - (1);
+    (cptr.stI32o(program_state, $sinfo_something_worth_saving, cptr.ldI32o(program_state, $sinfo_something_worth_saving) + 1)) - (1);  /* useful data now exists */
+
+    /* Success! */
     welcome(1);
     {
         if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
-            impossible(__s_mon_notices_blocked_0);
+            impossible(__s_mon_notices_blocked_0);  /* now we can notice monsters */
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
     }
@@ -760,29 +945,64 @@ export function newgame() {
     return;
 }
 
+/* show "welcome [back] to NetHack" message at program startup */
 /** C ref: allmain.c:854 — @param {CInt} new_game */
 export function welcome(new_game) {
     let buf = new Uint8Array(256);
     let currentgend = schar((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)));
     let adrift = schar((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
+
     l_nhcore_call(new_game ? NHC.NHCORE_START_NEW_GAME : NHC.NHCORE_RESTORE_OLD_GAME);
+
+    /* skip "welcome back" if restoring a doomed character */
     if (!new_game && Upolyd() && ugenocided()) {
+        /* death via self-genocide is pending */
         pline(__s_you_re_back_but_you_still_feel_s_inside, udeadinside());
         return;
     }
+
     if (Hallucination())
         pline(__s_nethack_is_filmed_in_front_of_an_undead);
+
+    /*
+     * The "welcome back" message always describes your innate form
+     * even when polymorphed or wearing a helm of opposite alignment.
+     * Alignment is shown unconditionally for new games; for restores
+     * it's only shown if it has changed from its original value.
+     * Sex is shown for new games except when it is redundant; for
+     * restores it's only shown if different from its original value.
+     */
     cptr.st1(cptr.decay(buf), 0);
+    /*
+     * 2026-04-24
+     * GitHub issue https://github.com/NetHack/NetHack/issues/537
+     * "Judging by the comment above, it should display your new alignment
+     *  if it was changed, so align_str(u.ualignbase[A_CURRENT]) would
+     *  probably be more appropriate. This won't affect the new game message."
+     *
+     * That is followed by a suggestion to revisit the matter (paraphrased):
+     * "That's actually intentional; the comment oversimplifies.
+     *  When it was implemented, it may have been the only way to tell that
+     *  you had converted alignment. Now ^X mentions your starting alignment
+     *  if base alignment has been changed, so revisiting this welcome back
+     *  message."
+     */
     if (new_game || cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) || adrift)
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, adrift ? __s_adrift : __s_empty, adrift ? align_str(cptr.ld1so(u, $you_ualign)) : align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
     if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) && (new_game ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) == 12288 : currentgend != cptr.ldI32o(flags, $flag_initgend)))
         void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_pct_s, cptr.ldPtro(genders, currentgend, $sizeof_Gender));
     void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s__2, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj), (currentgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole));
+
     pline(new_game ? __s_s_s_welcome_to_nethack_you_are_a_s : __s_s_s_the_s_welcome_back_to_nethack, Hello(null), svp, cptr.decay(buf));
+
     if (new_game) {
+        /* guarantee that 'major' event category is never empty */
         livelog_printf(2n, __s_s_the_s_entered_the_dungeon, svp, cptr.decay(buf));
     } else {
+        /* if restoring in Gehennom, give same hot/smoky message as when
+           first entering it */
         hellish_smoke_mesg();
+        /* remind player of the level annotation, like in goto_level() */
         print_level_annotation();
     }
 }
@@ -796,13 +1016,19 @@ function interrupt_multi(msg) {
     }
 }
 
+/* convert from time_t to number of seconds */
 /** C ref: allmain.c:987 — @param {CLongLong} ttim @returns {CLongLong} */
 export function timet_to_seconds(ttim) {
+    /* for Unix-based and Posix-compliant systems, a cast to 'long' would
+       suffice but the C Standard doesn't require time_t to be that simple */
     return timet_delta(ttim, 0n);
 }
 
+/* calculate the difference in seconds between two time_t values */
 /** C ref: allmain.c:996 — @param {CLongLong} etim @param {CLongLong} stim @returns {CLongLong} */
 export function timet_delta(etim, stim) {
+    /* difftime() is a STDC routine which returns the number of seconds
+       between two time_t values as a 'double' */
     return BigInt.asIntN(64, BigInt(Math.trunc(difftime(etim, stim))));
 }
 
@@ -818,6 +1044,7 @@ export function teleport_state_dump() {
     let otmp;
     let path;
     let first;
+
     if (!tp_sdinit) {
         tp_sdinit = 1;
         path = getenv(__s_nethack_statedump);
@@ -826,6 +1053,7 @@ export function teleport_state_dump() {
     }
     if (!tp_sdfp)
         return;
+
     fprintf(tp_sdfp, __s_moves_ld, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     fprintf(tp_sdfp, __s_dnum_d_dlevel_d, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel));
     fprintf(tp_sdfp, __s_hero_x_d_y_d_hp_d_hpmax_d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI32o(u, $you_uhp), cptr.ldI32o(u, $you_uhpmax));
@@ -835,6 +1063,9 @@ export function teleport_state_dump() {
     fprintf(tp_sdfp, __s_luck_d, Luck());
     fprintf(tp_sdfp, __s_str_d_dex_d_con_d_int_d_wis_d_cha_d, (acurr(NHC.A_STR)), (acurr(NHC.A_DEX)), (acurr(NHC.A_CON)), (acurr(NHC.A_INT)), (acurr(NHC.A_WIS)), (acurr(NHC.A_CHA)));
     fprintf(tp_sdfp, __s_rbrace);
+
+    /* fmon in chain order -- order itself is gameplay semantics
+     * (monster scheduling walks this list). */
     fprintf(tp_sdfp, __s_mons);
     first = 1;
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
@@ -847,6 +1078,7 @@ export function teleport_state_dump() {
         fprintf(tp_sdfp, __s_speed_d_mux_d_muy_d_strat_lu, (cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy), cptr.ldU64o(mtmp, $monst_mstrategy));
     }
     fprintf(tp_sdfp, __s_rbrack);
+
     fprintf(tp_sdfp, __s_inv);
     first = 1;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {

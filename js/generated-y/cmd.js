@@ -891,18 +891,23 @@ let timed_occ_fn = null;
 /** C ref: cmd.c:153 — char * */
 let readchar_queue = __s_empty;
 
+/* for rejecting attempts to use wizard mode commands
+ * Also used in wizcmds.c  */
 /** C ref: cmd.c:157 — char[26] */
 export const unavailcmd = cptr.bytes("Unavailable command '%s'.");
 
+/* for rejecting #if !SHELL, !SUSPEND */
 /** C ref: cmd.c:160 — char[28] */
 const cmdnotavail = cptr.bytes("'%s' command not available.");
 
+/* the #prevmsg command */
 /** C ref: cmd.c:164 @returns {CInt} */
 function* doprev_message() {
     void (yield* Y.icall(nh_doprev_message()()));
     return NHM.ECMD_OK;
 }
 
+/* Count down by decrementing multi */
 /** C ref: cmd.c:172 @returns {CInt} */
 function* timed_occupation() {
     (yield* Y.icall((timed_occ_fn)()));
@@ -911,6 +916,20 @@ function* timed_occupation() {
     return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n;
 }
 
+/* If you have moved since initially setting some occupations, they
+ * now shouldn't be able to restart.
+ *
+ * The basic rule is that if you are carrying it, you can continue
+ * since it is with you.  If you are acting on something at a distance,
+ * your orientation to it must have changed when you moved.
+ *
+ * The exception to this is taking off items, since they can be taken
+ * off in a number of ways in the intervening time, screwing up ordering.
+ *
+ *      Currently:      Take off all armor.
+ *                      Picking Locks / Forcing Chests.
+ *                      Setting traps.
+ */
 /** C ref: cmd.c:195 */
 export function reset_occupations() {
     reset_remarm();
@@ -918,6 +937,9 @@ export function reset_occupations() {
     reset_trapset();
 }
 
+/* If a time is given, use it to timeout this function, otherwise the
+ * function times out by its own means.
+ */
 /** C ref: cmd.c:206 — @param {CPtr} fn @param {CPtr<char>} txt @param {CLongLong} xtime */
 export function set_occupation(fn, txt, xtime) {
     if (xtime) {
@@ -930,88 +952,145 @@ export function set_occupation(fn, txt, xtime) {
     return;
 }
 
+/*
+void
+cmdq_print(int q)
+{
+    char buf[QBUFSZ];
+    struct _cmd_queue *cq = gc.command_queue[q];
+
+    pline("CQ:%i", q);
+    while (cq) {
+        switch (cq->typ) {
+        case CMDQ_KEY:
+            pline("(key:%s)", key2txt(cq->key, buf));
+            break;
+        case CMDQ_EXTCMD:
+            pline("(extcmd:#%s)", cq->ec_entry->ef_txt);
+            break;
+        case CMDQ_DIR:
+            pline("(dir:%i,%i,%i)", cq->dirx, cq->diry, cq->dirz);
+            break;
+        case CMDQ_USER_INPUT:
+            pline("(userinput)");
+            break;
+        case CMDQ_INT:
+            pline("(int:%i)", cq->intval);
+            break;
+        default:
+            pline("(ERROR:%i)",cq->typ);
+            break;
+        }
+        cq = cq->next;
+    }
+}
+*/
+
+/* add extended command function to the command queue */
 /** C ref: cmd.c:254 — @param {CInt} q @param {CPtr} fn */
 export function* cmdq_add_ec(q, fn) {
     let tmp = (yield* alloc(32));
     let cq = cptr.ldPtro(gc, q, 8);
+
     cptr.stI32(tmp, NHC.CMDQ_EXTCMD);
     cptr.stPtro(tmp, $_cmd_queue_ec_entry, ext_func_tab_from_func(fn));
     cptr.stPtro(tmp, $_cmd_queue_next, null);
+
     while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
+
     if (cq)
         cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
 
+/* add a key to the command queue */
 /** C ref: cmd.c:274 — @param {CInt} q @param {CInt} key */
 export function* cmdq_add_key(q, key) {
     let tmp = (yield* alloc(32));
     let cq = cptr.ldPtro(gc, q, 8);
+
     cptr.stI32(tmp, NHC.CMDQ_KEY);
     cptr.st1o(tmp, $_cmd_queue_key, key);
     cptr.stPtro(tmp, $_cmd_queue_next, null);
+
     while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
+
     if (cq)
         cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
 
+/* add a direction to the command queue */
 /** C ref: cmd.c:294 — @param {CInt} q @param {CInt} dx @param {CInt} dy @param {CInt} dz */
 export function* cmdq_add_dir(q, dx, dy, dz) {
     let tmp = (yield* alloc(32));
     let cq = cptr.ldPtro(gc, q, 8);
+
     cptr.stI32(tmp, NHC.CMDQ_DIR);
     cptr.st1o(tmp, $_cmd_queue_dirx, dx);
     cptr.st1o(tmp, $_cmd_queue_diry, dy);
     cptr.st1o(tmp, $_cmd_queue_dirz, dz);
     cptr.stPtro(tmp, $_cmd_queue_next, null);
+
     while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
+
     if (cq)
         cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
 
+/* add placeholder to the command queue, allows user input there */
 /** C ref: cmd.c:316 — @param {CInt} q */
 export function* cmdq_add_userinput(q) {
     let tmp = (yield* alloc(32));
     let cq = cptr.ldPtro(gc, q, 8);
+
     cptr.stI32(tmp, NHC.CMDQ_USER_INPUT);
     cptr.stPtro(tmp, $_cmd_queue_next, null);
+
     while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
+
     if (cq)
         cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
 
+/* add integer to the command queue */
 /** C ref: cmd.c:335 — @param {CInt} q @param {CInt} val */
 export function* cmdq_add_int(q, val) {
     let tmp = (yield* alloc(32));
     let cq = cptr.ldPtro(gc, q, 8);
+
     cptr.stI32(tmp, NHC.CMDQ_INT);
     cptr.stI32o(tmp, $_cmd_queue_intval, val);
     cptr.stPtro(tmp, $_cmd_queue_next, null);
+
     while (cq && cptr.ldPtro(cq, $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
+
     if (cq)
         cptr.stPtro(cq, $_cmd_queue_next, tmp);
     else
         cptr.stPtro(gc, q, tmp, 8);
 }
 
+/* shift the last entry in command queue to first */
 /** C ref: cmd.c:355 — @param {CInt} q */
 export function cmdq_shift(q) {
     let tmp = null;
     let cq = cptr.ldPtro(gc, q, 8);
+
     while (cq && cptr.ldPtro(cq, $_cmd_queue_next) && cptr.ldPtro(cptr.ldPtro(cq, $_cmd_queue_next), $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
+
     if (cq)
         tmp = cptr.ldPtro(cq, $_cmd_queue_next);
     if (tmp) {
@@ -1026,6 +1105,7 @@ export function cmdq_reverse(head) {
     let prev = null;
     let curr = head;
     let next;
+
     while (curr) {
         next = cptr.ldPtro(curr, $_cmd_queue_next);
         cptr.stPtro(curr, $_cmd_queue_next, prev);
@@ -1039,21 +1119,29 @@ export function cmdq_reverse(head) {
 export function* cmdq_copy(q) {
     let tmp = null;
     let cq = cptr.ldPtro(gc, q, 8);
+
     while (cq) {
         let tmp2 = (yield* alloc(32));
+
         cptr.memcpy(tmp2, cq, 32);
         cptr.stPtro(tmp2, $_cmd_queue_next, tmp);
         tmp = tmp2;
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
     }
+
     tmp = cmdq_reverse(tmp);
+
     return tmp;
 }
 
+/* pop off the topmost command from the command queue.
+ * caller is responsible for freeing the returned _cmd_queue.
+ */
 /** C ref: cmd.c:410 @returns {CPtr<struct _cmd_queue>} */
 export function cmdq_pop() {
     let q = (cptr.ldI32(gi)) ? NHC.CQ_REPEAT : NHC.CQ_CANNED;
     let tmp = cptr.ldPtro(gc, q, 8);
+
     if (tmp) {
         cptr.stPtro(gc, q, cptr.ldPtro(tmp, $_cmd_queue_next), 8);
         cptr.stPtro(tmp, $_cmd_queue_next, null);
@@ -1061,15 +1149,18 @@ export function cmdq_pop() {
     return tmp;
 }
 
+/* get the top entry without popping it */
 /** C ref: cmd.c:424 — @param {CInt} q @returns {CPtr<struct _cmd_queue>} */
 export function cmdq_peek(q) {
     return cptr.ldPtro(gc, q, 8);
 }
 
+/* clear all commands from the command queue */
 /** C ref: cmd.c:431 — @param {CInt} q */
 export function cmdq_clear(q) {
     let tmp = cptr.ldPtro(gc, q, 8);
     let tmp2;
+
     while (tmp) {
         tmp2 = cptr.ldPtro(tmp, $_cmd_queue_next);
         cptr.free(tmp);
@@ -1081,12 +1172,14 @@ export function cmdq_clear(q) {
 /** C ref: cmd.c:445 @returns {CInt} */
 export function* pgetchar() {
     let ch = 0;
+
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         return randomkey();
     ch = (yield* Y.icall(nhgetch()()));
     return schar(ch);
 }
 
+/* '#' or whatever has been bound to doextcmd() in its place */
 /** C ref: cmd.c:457 @returns {CInt} */
 export function extcmd_initiator() {
     return cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_extcmd_char);
@@ -1095,6 +1188,7 @@ export function extcmd_initiator() {
 /** C ref: cmd.c:463 — @param {CPtr<struct ext_func_tab>} extcmd @returns {CInt} */
 function* can_do_extcmd(extcmd) {
     let ecflags = cptr.ldI32o(extcmd, $ext_func_tab_flags) | 0;
+
     if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_CMD_BEFORE, 4)) {
         (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nh_callback_run));
         (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(nhcb_name, NHC.NHCB_CMD_BEFORE, 8)));
@@ -1106,6 +1200,7 @@ function* can_do_extcmd(extcmd) {
         }
         (yield* lua_settop(cptr.ldPtro(gl, $instance_globals_l_luacore), 0));
     }
+
     if (!wizard() && (ecflags & NHM.WIZMODECMD)) {
         (yield* pline(cptr.decay(unavailcmd), cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)));
         return 0;
@@ -1118,15 +1213,19 @@ function* can_do_extcmd(extcmd) {
     return 1;
 }
 
+/* here after # - now read a full-word command */
 /** C ref: cmd.c:493 @returns {CInt} */
 export function* doextcmd() {
     let idx;
     let retval;
     let func;
+
+    /* keep repeating until we don't run help or quit */
     do {
         idx = (yield* Y.icall(get_ext_cmd()()));
         if (idx < 0)
-            return NHM.ECMD_OK;
+            return NHM.ECMD_OK;  /* quit */
+
         func = cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_funct);
         if (!(yield* can_do_extcmd(cptr.add(extcmdlist, idx, $sizeof_ext_func_tab))))
             return NHM.ECMD_OK;
@@ -1134,18 +1233,26 @@ export function* doextcmd() {
             (yield* pline(__s_s_prefix_has_no_effect_for_the_s_command, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)));
             cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         }
+        /* tell rhack() what command is actually executing */
         cptr.stPtro(ge, $instance_globals_e_ext_tlist, cptr.add(extcmdlist, idx, $sizeof_ext_func_tab));
+
         retval = (yield* Y.icall((func)()));
     } while (func === doextlist);
+
     return retval;
 }
 
+/* format extended command flags for display */
 const __static_doc_extcmd_flagstr_Abuf = new Uint8Array(10); /** C ref: cmd.c:528 — char[10] (function-static) */
 
 /** C ref: cmd.c:524 — @param {CInt} menuwin @param {CPtr<struct ext_func_tab>} efp @returns {CPtr<char>} */
 function* doc_extcmd_flagstr(menuwin, efp) {
+
+    /* note: tag shown for menu prefix is 'm' even if m-prefix action
+       has been bound to some other key */
     if (!efp) {
         let qbuf = new Uint8Array(128);
+
         (yield* add_menu_str(menuwin, __s_a_command_autocompletes));
         void cptr.sprintf(cptr.decay(qbuf), __s_m_command_accepts_s_prefix, visctrl(cmd_from_func(do_reqmenu)));
         (yield* add_menu_str(menuwin, cptr.decay(qbuf)));
@@ -1154,6 +1261,8 @@ function* doc_extcmd_flagstr(menuwin, efp) {
         let mprefix = accept_menu_prefix(efp);
         let autocomplete = schar((((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) != 0));
         let p = cptr.decay(__static_doc_extcmd_flagstr_Abuf);
+
+        /* "" or "[m]" or "[A]" or "[mA]" */
         if (mprefix || autocomplete) {
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), 91);
             if (mprefix)
@@ -1167,6 +1276,8 @@ function* doc_extcmd_flagstr(menuwin, efp) {
     }
 }
 
+/* here after #? - now list all full-word commands and provide
+   some navigation capability through the long list */
 const __static_doextlist_headings = cptr.alloc(2 * 8);
 cptr.stPtro(__static_doextlist_headings, 0, __s_extended_commands);
 cptr.stPtro(__static_doextlist_headings, 8, __s_debugging_extended_commands); /** C ref: cmd.c:573 — char *[2] (function-static) */
@@ -1190,25 +1301,39 @@ export function* doextlist() {
     let redisplay = 1;
     let search = 0;
     let clr = NHM.NO_COLOR;
+
     cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
     menuwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+
     while (redisplay) {
         redisplay = 0;
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         (yield* Y.icall(start_menu()(menuwin, 0n)));
         (yield* add_menu_str(menuwin, __s_extended_commands_list));
         (yield* add_menu_str(menuwin, __s_empty));
+
         void cptr.sprintf(cptr.decay(buf), __s_switch_to_s_commands_that_don_t, menumode ? __s_including : __s_excluding);
         cptr.stI32(any, 1);
         (yield* add_menu(menuwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+
         if (!cptr.ld1s(cptr.decay(searchbuf))) {
             cptr.stI32(any, 2);
+            /* was 's', but then using ':' handling within the interface
+               would only examine the two or three meta entries, not the
+               actual list of extended commands shown via separator lines;
+               having ':' as an explicit selector overrides the default
+               menu behavior for it; we retain 's' as a group accelerator */
             (yield* add_menu(menuwin, nul_glyphinfo.v, any, 58, 115, NHM.ATR_NONE, clr, __s_search_extended_commands, NHM.MENU_ITEMFLAGS_NONE));
         } else {
             void cptr.strcpy(cptr.decay(buf), __s_switch_back_from_search);
             if (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + cptr.strlen(cptr.decay(searchbuf))) + cptr.strlen(__s_sp_lparen_quot2_rparen)) < 128n)
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_quot_pct_s_quot_rparen, cptr.decay(searchbuf));
             cptr.stI32(any, 3);
+            /* specifying ':' as a group accelerator here is mostly a
+               statement of intent (we'd like to accept it as a synonym but
+               also want to hide it from general menu use) because it won't
+               work for interfaces which support ':' to search; use as a
+               general menu command takes precedence over group accelerator */
             (yield* add_menu(menuwin, nul_glyphinfo.v, any, 115, 58, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
         }
         if (wizard()) {
@@ -1219,29 +1344,47 @@ export function* doextlist() {
         cptr.stI32o(menushown, 0, cptr.stI32o(menushown, 1, 0, 4), 4);
         n = 0;
         for (pass = 0; pass <= 1; ++pass) {
+            /* skip second pass if not in wizard mode or wizard mode
+               commands are being integrated into a single list */
             if (pass == 1 && (onelist || !wizard()))
                 break;
             for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
                 let wizc;
+
                 if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) != 0)
                     continue;
+                /* if hiding non-autocomplete commands, skip such */
                 if (menumode == 1 && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) == 0)
                     continue;
+                /* skip wizard mode commands if not in wizard mode;
+                   when showing two sections, skip wizard mode commands
+                   in pass==0 and skip other commands in pass==1 */
                 wizc = ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0;
                 if (wizc && !wizard())
                     continue;
                 if (!onelist && pass != wizc)
                     continue;
+                /* command description might get modified on the fly */
                 cmd_desc = cptr.ldPtro(efp, $ext_func_tab_ef_desc);
+                /* suppress part of the description for #genocided if it
+                   doesn't apply during the current game */
                 if (!wizard() && !discover() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.GENERALCMD) >>> 0) != 0 && (yield* strstri(cmd_desc, __s_extinct)))
                     cmd_desc = strsubst(cptr.strcpy(cptr.decay(descbuf), cmd_desc), __s_been_genocided_or_become_extinct, __s_been_genocided);
+                /* if searching, skip this command if it doesn't match */
                 if (cptr.ld1s(cptr.decay(searchbuf)) && !(yield* strstri(cptr.ldPtro(efp, $ext_func_tab_ef_txt), cptr.decay(searchbuf))) && !(yield* strstri(cmd_desc, cptr.decay(searchbuf))) && !(yield* pmatchi(cptr.decay(searchbuf), cptr.ldPtro(efp, $ext_func_tab_ef_txt))) && !(yield* pmatchi(cptr.decay(searchbuf), cmd_desc)))
                     continue;
+
+                /* We're about to show an item, have we shown the menu yet?
+                   Doing menu in inner loop like this on demand avoids a
+                   heading with no subordinate entries on the search
+                   results menu. */
                 if (!cptr.ldI32o(menushown, pass, 4)) {
                     void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(__static_doextlist_headings, pass, 8));
                     (yield* add_menu_heading(menuwin, cptr.decay(buf)));
                     cptr.stI32o(menushown, pass, 1, 4);
                 }
+                /* longest ef_txt at present is "wizrumorcheck" (13 chars);
+                   2nd field will be "    " or " [A]" or " [m]" or "[mA]" */
                 void cptr.sprintf(cptr.decay(buf), __s_14s_4s_s, cptr.ldPtro(efp, $ext_func_tab_ef_txt), (yield* doc_extcmd_flagstr(menuwin, efp)), cmd_desc);
                 (yield* add_menu_str(menuwin, cptr.decay(buf)));
                 ++n;
@@ -1253,12 +1396,13 @@ export function* doextlist() {
             (yield* add_menu_str(menuwin, __s_no_matches));
         else
             void (yield* doc_extcmd_flagstr(menuwin, null));
+
         (yield* Y.icall(end_menu()(menuwin, null)));
         n = (yield* select_menu(menuwin, NHM.PICK_ONE, selected));
         if (n > 0) {
             switch (cptr.ldI32o(selected.v, 0, $sizeof_menu_item)) {
                 case 1:
-                menumode = (1 - menumode) | 0;
+                menumode = (1 - menumode) | 0;  /* toggle 0 -> 1, 1 -> 0 */
                 redisplay = 1;
                 break;
                 case 2:
@@ -1272,7 +1416,7 @@ export function* doextlist() {
                 case 4:
                 search = 0;
                 cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
-                onelist = (1 - onelist) | 0;
+                onelist = (1 - onelist) | 0;  /* toggle 0 -> 1, 1 -> 0 */
                 redisplay = 1;
                 break;
             }
@@ -1297,6 +1441,16 @@ export function* doextlist() {
     return NHM.ECMD_OK;
 }
 
+/*
+ * This is currently used only by the tty interface and is
+ * controlled via runtime option 'extmenu'.  (Most other interfaces
+ * already use a menu all the time for extended commands.)
+ *
+ * ``# ?'' is counted towards the limit of the number of commands,
+ * so we actually support MAX_EXT_CMD-1 "real" extended commands.
+ *
+ * Here after # - now show pick-list of possible commands.
+ */
 /** C ref: cmd.c:752 @returns {CInt} */
 export function* extcmd_via_menu() {
     let efp;
@@ -1321,12 +1475,14 @@ export function* extcmd_via_menu() {
     let wastoolong;
     let one_per_line;
     let clr = NHM.NO_COLOR;
+
     ret = 0;
     cptr.st1o(cptr.decay(cbuf), 0, 0, 1);
     biggest = 0;
     while (!ret) {
         i = (n = 0);
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+        /* populate choices */
         for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
             if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) || !((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) || (!wizard() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0)))
                 continue;
@@ -1342,15 +1498,19 @@ export function* extcmd_via_menu() {
         }
         cptr.stPtro(choices, i, null, 8);
         nchoices = i;
+        /* if we're down to one, we have our selection so get out of here */
         if (nchoices <= 1) {
             ret = (nchoices == 1) ? Number(BigInt.asIntN(32, (cptr.diff(cptr.ldPtro(choices, 0, 8), extcmdlist) / 48n))) : -1;
             break;
         }
+
+        /* otherwise... */
         win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(win, 0n)));
         void cptr.sprintf(cptr.decay(fmtstr), __s_ds, (biggest + 15) | 0);
         cptr.st1o(cptr.decay(prompt), 0, 0, 1);
         wastoolong = 0;
+        /* -3: two line menu header, 1 line menu footer (for prompt) */
         one_per_line = schar((nchoices < 18));
         prevaccelerator = 0;
         acount = 0;
@@ -1360,6 +1520,7 @@ export function* extcmd_via_menu() {
                 wastoolong = 0;
             if (accelerator != prevaccelerator || one_per_line || (acount >= 2 && (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) + cptr.strlen(cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt))) >= 74n))) {
                 if (acount) {
+                    /* flush extended cmds for that letter already in buf */
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
                     cptr.st1(any, schar(prevaccelerator));
                     (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
@@ -1380,6 +1541,7 @@ export function* extcmd_via_menu() {
             ++acount;
         }
         if (acount) {
+            /* flush buf */
             void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
             cptr.st1(any, schar(prevaccelerator));
             (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
@@ -1408,11 +1570,13 @@ export function* extcmd_via_menu() {
     return ret;
 }
 
+/* #monster command - use special monster ability while polymorphed */
 /** C ref: cmd.c:890 @returns {CInt} */
 export function* domonability() {
     let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
     let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
     let c = 0;
+
     if (might_hide && webmaker(uptr)) {
         c = (yield* yn_function(__s_hide_h_or_spin_a_web_s, cptr.decay(hidespinchars), 113, 1));
         if (c == 113 || c == 27)
@@ -1439,6 +1603,8 @@ export function* domonability() {
             if ((yield* split_mon(cptr.add(gy, $instance_globals_y_youmonst), null)))
                 (yield* dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1));
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+            /* is_pool: might be wearing water walking boots or amulet of
+               magical breathing */
             void (yield* split_mon(cptr.add(gy, $instance_globals_y_youmonst), null));
         } else {
             (yield* There(__s_is_no_fountain_here));
@@ -1471,12 +1637,14 @@ export function* enter_explore_mode() {
         (yield* You(__s_are_already_in_explore_mode));
     } else {
         let oldmode = !wizard() ? __s_normal_game : __s_debug_mode;
+
         if (!authorize_explore_mode()) {
             if (!wizard()) {
                 (yield* You(__s_cannot_access_explore_mode));
                 return NHM.ECMD_OK;
             } else {
                 (yield* pline(__s_note_normally_you_wouldn_t_be_allowed));
+                /* keep going */
             }
         }
         (yield* pline(__s_beware_from_explore_mode_there_will_be, oldmode));
@@ -1499,10 +1667,15 @@ const __static_makemap_prepost_Unachieve = cptr.bytes("%s achievement revoked.")
 export function* makemap_prepost(pre, wiztower) {
     let tmpnhfp;
     let mtmp;
+
     if (pre) {
         (yield* makemap_remove_mons());
-        rm_mapseen(ledger_no(cptr.add(u, $you_uz)));
+        rm_mapseen(ledger_no(cptr.add(u, $you_uz)));  /* discard overview info for level */
         {
+
+            /* achievement tracking; if replacing a level that has a
+               special prize, lose credit for previously finding it and
+               reset for the new instance of that prize */
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
                 if (remove_achievement(NHC.ACH_MINE_PRIZE))
                     (yield* pline(cptr.decay(__static_makemap_prepost_Unachieve), __s_mine_s_end));
@@ -1517,21 +1690,27 @@ export function* makemap_prepost(pre, wiztower) {
             (yield* ballrelease(0));
             (yield* unplacebc());
         }
+        /* reset lock picking unless it's for a carried container */
         maybe_reset_pick(null);
+        /* reset interrupted digging if it was taking place on this level */
         if (on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz)))
             void __builtin___memset_chk(cptr.add(svc, $context_info_digging), 0, 32n, __builtin_object_size(cptr.add(svc, $context_info_digging), 0));
-        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
-        cptr.stPtro(svc, $context_info_polearm, null);
+        /* reset cached targets */
+        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));  /* travel destination */
+        cptr.stPtro(svc, $context_info_polearm, null);  /* polearm target */
+        /* escape from trap */
         (yield* reset_utrap(0));
-        (yield* check_special_room(1));
+        (yield* check_special_room(1));  /* room exit */
         void __builtin___memset_chk(cptr.add(svd, $instance_globals_saved_d_dndest), 0, 16n, __builtin_object_size(cptr.add(svd, $instance_globals_saved_d_dndest), 0));
         void __builtin___memset_chk(svu, 0, 16n, __builtin_object_size(svu, 0));
         cptr.stPtro(u, $you_ustuck, null);
         cptr.stI32o(u, $you_uswallow, cptr.stI32o(u, $you_uswldtim, 0));
-        (yield* set_uinwater(0));
-        cptr.stI32o(u, $you_uundetected, 0);
-        (yield* dmonsfree());
+        (yield* set_uinwater(0));  /* u.uinwater = 0 */
+        cptr.stI32o(u, $you_uundetected, 0);  /* not hidden, even if means are available */
+        (yield* dmonsfree());  /* purge dead monsters from 'fmon' */
         (yield* dobjsfree());
+
+        /* discard current level; "saving" is used to release dynamic data */
         tmpnhfp = (yield* get_freeing_nhfile());
         (yield* savelev(tmpnhfp, schar(ledger_no(cptr.add(u, $you_uz)))));
         (yield* close_nhfile(tmpnhfp));
@@ -1539,9 +1718,14 @@ export function* makemap_prepost(pre, wiztower) {
         (yield* vision_reset());
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
         (yield* cls());
+        /* was using safe_teleds() but that doesn't honor arrival region
+           on levels which have such; we don't force stairs, just area */
         (yield* u_on_rndspot(((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? 1 : 0) | (wiztower ? 2 : 0)));
         (yield* losedogs());
         (yield* kill_genocided_monsters());
+        /* u_on_rndspot() might pick a spot that has a monster, or losedogs()
+           might pick the hero's spot (only if there isn't already a monster
+           there), so we might have to move hero or the co-located monster */
         if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null)
             (yield* u_collide_m(mtmp));
         initrack();
@@ -1551,12 +1735,15 @@ export function* makemap_prepost(pre, wiztower) {
         }
         (yield* docrt());
         (yield* flush_screen(1));
-        (yield* deliver_splev_message());
-        (yield* check_special_room(0));
+        (yield* deliver_splev_message());  /* level entry */
+        (yield* check_special_room(0));  /* room entry */
         (yield* save_currentstate());
     }
 }
 
+/* temporary? hack, since level type codes aren't the same as screen
+   symbols and only the latter have easily accessible descriptions.
+   Also used by wizcmds.c */
 /** C ref: cmd.c:1072 — char *[39] */
 export const levltyp = cptr.alloc(39 * 8);
 cptr.stPtro(levltyp, 0, __s_stone);
@@ -1606,6 +1793,7 @@ export function levltyp_to_name(typ) {
     return null;
 }
 
+/* #terrain command -- show known map, inspired by crawl's '|' command */
 /** C ref: cmd.c:1098 @returns {CInt} */
 function* doterrain() {
     let men;
@@ -1614,7 +1802,21 @@ function* doterrain() {
     let n;
     let which;
     let clr = NHM.NO_COLOR;
+
+    /* this used to be done each time vision was recalculated, so would
+       always be up to date (hopefully); now we do it on demand instead */
     (yield* recalc_mapseen());
+
+    /*
+     * normal play: choose between known map without mons, obj, and traps
+     *  (to see underlying terrain only), or
+     *  known map without mons and objs (to see traps under mons and objs), or
+     *  known map without mons (to see objects under monsters);
+     * explore mode: normal choices plus full map (w/o mons, objs, traps);
+     * wizard mode: normal and explore choices plus
+     *  a dump of the internal levl[][].typ codes w/ level flags, or
+     *  a legend for the levl[][].typ codes dump
+     */
     men = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(men, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -1635,13 +1837,21 @@ function* doterrain() {
         }
     }
     (yield* Y.icall(end_menu()(men, __s_view_which)));
+
     n = (yield* select_menu(men, NHM.PICK_ONE, sel));
     (yield* Y.icall(destroy_nhwindow()(men)));
+    /*
+     * n <  0: player used ESC to cancel;
+     * n == 0: preselected entry was explicitly chosen and got toggled off;
+     * n == 1: preselected entry was implicitly chosen via <space>|<enter>;
+     * n == 2: another entry was explicitly chosen, so skip preselected one.
+     */
     which = (n < 0) ? -1 : ((n == 0) ? 1 : cptr.ldI32o(sel.v, 0, $sizeof_menu_item));
     if (n > 1 && which == 1)
         which = cptr.ldI32o(sel.v, 1, $sizeof_menu_item);
     if (n > 0)
         cptr.free(sel.v);
+
     switch (which) {
         case 1:
         (yield* reveal_terrain(NHM.TER_MAP));
@@ -1664,28 +1874,35 @@ function* doterrain() {
         default:
         break;
     }
-    return NHM.ECMD_OK;
+    return NHM.ECMD_OK;  /* no time elapses */
 }
 
+/* has hero seen all locations in selection? */
 /** C ref: cmd.c:1195 — @param {CPtr<struct selectionvar>} sel @returns {CInt} */
 function u_have_seen_whole_selection(sel) {
     let x;
     let y;
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     selection_getbounds(sel, rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
                 return 0;
+
     return 1;
 }
 
+/* has hero seen all location of the rectangular outline in the selection */
 /** C ref: cmd.c:1213 — @param {CPtr<struct selectionvar>} sel @returns {CInt} */
 function u_have_seen_bounds_selection(sel) {
     let x;
     let y;
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     selection_getbounds(sel, rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++) {
         y = cptr.ldI16o(rect, $nhrect_ly);
         if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
@@ -1702,41 +1919,53 @@ function u_have_seen_bounds_selection(sel) {
         if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
     }
+
     return 1;
 }
 
+/* can hero currently see all locations in the selection */
 /** C ref: cmd.c:1246 — @param {CPtr<struct selectionvar>} sel @returns {CInt} */
 function u_can_see_whole_selection(sel) {
     let x;
     let y;
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     selection_getbounds(sel, rect);
+
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (isok(x, y) && selection_getpoint(x, y, sel) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                 return 0;
+
     return 1;
 }
 
+/* selection_floofill callback to get all locations in a room */
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
     let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+
     if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || IS_TREE(typ) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
         return 0;
     return 1;
 }
 
+/* describe the room at x,y */
 /** C ref: cmd.c:1276 — @param {CInt} x @param {CInt} y */
 function* lookaround_known_room(x, y) {
     let sel = (yield* selection_new());
     let rmno = (cptr.ld1so2(u, 0, 1, $you_urooms) - NHM.ROOMOFFSET) | 0;
     let qbuf = new Uint8Array(128);
+
     set_selection_floodfillchk(dolookaround_floodfill_findroom);
     (yield* selection_floodfill(sel, x, y, 1));
+
     if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         set_msg_xy(x, y);
+
     if (u_have_seen_whole_selection(sel)) {
         let u_in = schar(selection_getpoint(x, y, sel));
+
         (yield* You(__s_s_s_s__2, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && u_in && u_can_see_whole_selection(sel) ? __s_are_in : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) ? __s_remember_this_as : __s_remember_that_as), (yield* an(selection_size_description(sel, cptr.decay(qbuf)))), rmno >= 0 ? __s_room : __s_area));
     } else if (u_have_seen_bounds_selection(sel)) {
         (yield* You(__s_guess_s_to_be_s_s, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_this : __s_that, (yield* an(selection_size_description(sel, cptr.decay(qbuf)))), rmno >= 0 ? __s_room : __s_area));
@@ -1746,6 +1975,7 @@ function* lookaround_known_room(x, y) {
     selection_free(sel, 1);
 }
 
+/* #lookaround - describe what the hero can see, in text */
 /** C ref: cmd.c:1310 @returns {CInt} */
 export function* dolookaround() {
     let x;
@@ -1753,11 +1983,17 @@ export function* dolookaround() {
     let tmp_getloc_filter = cptr.ldI32o(iflags, $instance_flags_getloc_filter);
     let tmp_accessiblemsg = cptr.ld1s(a11y);
     let corr_next2u = 0;
+
     cptr.st1(a11y, 1);
     if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
+        /* In a corridor, mention corridors next to you. */
         corr_next2u = 1;
+        /* TODO: if we know, describe where the corridor goes,
+           perhaps by describing the rooms? */
     } else if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+        /* In a doorway, describe the rooms next to you */
         let i;
+
         for (i = NHC.DIR_W; i < ((NHC.N_DIRS_Z - 2) | 0); i = (i + 2) | 0) {
             x = i16(((cptr.ldI16(u) + cptr.ld1so(cptr.decay(xdir), i, 1)) | 0));
             y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ld1so(cptr.decay(ydir), i, 1)) | 0));
@@ -1768,27 +2004,38 @@ export function* dolookaround() {
     } else {
         (yield* lookaround_known_room(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     }
+
+    /* TODO: maybe describe stuff outside the current room differently? */
+
     cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_VIEW);
     for (y = 0; y < NHM.ROWNO; y++)
         for (x = 1; x < NHM.COLNO; x++) {
             let glyph;
             let mapsym;
             let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && glyph_is_cmap(glyph) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
+
             if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && ((yield* gather_locs_interesting(x, y, NHC.GLOC_INTERESTING)) || iscorr)) {
                 let buf = new Uint8Array(256);
                 let cc = cptr.alloc(4);
                 let sym = 0;
                 let firstmatch = cptr.box(null);
+
                 cptr.stI16(cc, x), cptr.stI16o(cc, $nhcoord_y, y);
                 (yield* do_screen_description(cc, 1, sym, cptr.decay(buf), firstmatch, null));
                 (yield* pline_xy(x, y, __s_pct_s_dot, firstmatch.v));
             }
         }
+
     cptr.stI32o(iflags, $instance_flags_getloc_filter, tmp_getloc_filter);
     cptr.st1(a11y, tmp_accessiblemsg);
+
     return NHM.ECMD_OK;
 }
 
+/* #toggle extended command
+
+   BIND=':toggle(price_quotes)
+   BIND=@:toggle(autopickup) */
 /** C ref: cmd.c:1376 @returns {CInt} */
 export function* dotoggleoption() {
     if (cptr.ldPtro(gc, $instance_globals_c_cmd_bind) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_param)) {
@@ -1804,6 +2051,7 @@ export function set_move_cmd(dir, run) {
     cptr.stI32o(u, $you_dz, cptr.ld1so(cptr.decay(zdir), dir, 1));
     cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), dir, 1));
     cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), dir, 1));
+    /* #reqmenu -prefix disables autopickup during movement */
     if (cptr.ld1so(iflags, $instance_flags_menu_requested))
         cptr.st1o(svc, $context_info_nopick, 1);
     cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
@@ -1813,6 +2061,7 @@ export function set_move_cmd(dir, run) {
     }
 }
 
+/* move or attack */
 /** C ref: cmd.c:1404 @returns {CInt} */
 export function do_move_west() {
     set_move_cmd(NHC.DIR_W, 0);
@@ -1861,6 +2110,7 @@ export function do_move_southwest() {
     return NHM.ECMD_TIME;
 }
 
+/* rush */
 /** C ref: cmd.c:1461 @returns {CInt} */
 export function do_rush_west() {
     set_move_cmd(NHC.DIR_W, 3);
@@ -1909,6 +2159,7 @@ export function do_rush_southwest() {
     return NHM.ECMD_TIME;
 }
 
+/* run */
 /** C ref: cmd.c:1518 @returns {CInt} */
 export function do_run_west() {
     set_move_cmd(NHC.DIR_W, 1);
@@ -1957,6 +2208,7 @@ export function do_run_southwest() {
     return NHM.ECMD_TIME;
 }
 
+/* #reqmenu, prefix command to modify some others */
 /** C ref: cmd.c:1575 @returns {CInt} */
 export function* do_reqmenu() {
     if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
@@ -1964,10 +2216,12 @@ export function* do_reqmenu() {
         cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         return NHM.ECMD_CANCEL;
     }
+
     cptr.st1o(iflags, $instance_flags_menu_requested, 1);
     return NHM.ECMD_OK;
 }
 
+/* #rush */
 /** C ref: cmd.c:1590 @returns {CInt} */
 export function* do_rush() {
     if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n)) {
@@ -1976,11 +2230,13 @@ export function* do_rush() {
         cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
         return NHM.ECMD_CANCEL;
     }
+
     cptr.stI32o(svc, $context_info_run, 2);
     cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
     return NHM.ECMD_OK;
 }
 
+/* #run */
 /** C ref: cmd.c:1606 @returns {CInt} */
 export function* do_run() {
     if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n)) {
@@ -1989,11 +2245,13 @@ export function* do_run() {
         cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
         return NHM.ECMD_CANCEL;
     }
+
     cptr.stI32o(svc, $context_info_run, 3);
     cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
     return NHM.ECMD_OK;
 }
 
+/* #fight */
 /** C ref: cmd.c:1622 @returns {CInt} */
 export function* do_fight() {
     if (cptr.ld1so(svc, $context_info_forcefight)) {
@@ -2002,23 +2260,27 @@ export function* do_fight() {
         cptr.stI64o(gd, $instance_globals_d_domove_attempting, 0n);
         return NHM.ECMD_CANCEL;
     }
+
     cptr.st1o(svc, $context_info_forcefight, 1);
     cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 1n);
     return NHM.ECMD_OK;
 }
 
+/* #repeat */
 /** C ref: cmd.c:1638 @returns {CInt} */
 export function* do_repeat() {
     let res = NHM.ECMD_OK;
+
     if (!cptr.ldI32(gi)) {
         let repeat_copy;
+
         if (!cmdq_peek(NHC.CQ_REPEAT)) {
             (yield* Norep(__s_there_is_no_command_available_to_repeat));
             return NHM.ECMD_FAIL;
         }
         repeat_copy = (yield* cmdq_copy(NHC.CQ_REPEAT));
         cptr.stI32(gi, 1);
-        (yield* rhack(0));
+        (yield* rhack(0));  /* read and execute command */
         cptr.stI32(gi, 0);
         cmdq_clear(NHC.CQ_REPEAT);
         cptr.stPtro(gc, NHC.CQ_REPEAT, repeat_copy, 8);
@@ -2029,6 +2291,11 @@ export function* do_repeat() {
     return res;
 }
 
+/* extcmdlist: full command list, ordered by command name;
+   commands with no keystroke or with only a meta keystroke generally
+   need to be flagged as autocomplete and ones with a regular keystroke
+   or control keystroke generally should not be; there are a few exceptions
+   such as ^O/#overview and C/N/#name */
 /** C ref: cmd.c:1667 — struct ext_func_tab[171] */
 export const extcmdlist = cptr.alloc(171 * $sizeof_ext_func_tab);
 cptr.st1o(extcmdlist, 0, 35);
@@ -3058,6 +3325,7 @@ cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_ef_funct, donull);
 cptr.stI32o(extcmdlist, 8160 + $ext_func_tab_flags, 0);
 cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_f_text, null);
 
+/* mapping direction and move mode to extended command function */
 /** C ref: cmd.c:2070 — int (*[10][3])(void) */
 const move_funcs = (function () { const flat = new Uint8Array(10 * 3 * 8); const a = []; for (let r = 0; r < 10; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
 cptr.stPtro(cptr.decay(move_funcs[0]), 0, do_move_west);
@@ -3091,6 +3359,7 @@ cptr.stPtro(cptr.decay(move_funcs[9]), 0, doup);
 cptr.stPtro(cptr.decay(move_funcs[9]), 8, doup);
 cptr.stPtro(cptr.decay(move_funcs[9]), 16, doup);
 
+/* used by dokeylist() and by key2extcmddesc() for dowhatdoes() */
 /** C ref: cmd.c:2086 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: cmd.c:2090 — struct (unnamed struct at cmd.c:2086:14)[3] */
@@ -3108,6 +3377,7 @@ cptr.st1o(misc_keys, 64, 0);
 /** C ref: cmd.c:2097 — int */
 let extcmdlist_length = (171 - 1) | 0;
 
+/* get entry i in the extended commands list. for windowport use. */
 /** C ref: cmd.c:2101 — @param {CInt} i @returns {CPtr<struct ext_func_tab>} */
 export function extcmds_getentry(i) {
     if (i < 0 || i > extcmdlist_length)
@@ -3115,11 +3385,14 @@ export function extcmds_getentry(i) {
     return cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
 }
 
+/* get the command bound to a key */
 /** C ref: cmd.c:2110 — @param {CUInt} key @returns {CPtr<struct Cmd_bind>} */
 function cmdbind_get(key) {
     let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
+
     if (!key)
         return null;
+
     while (bind) {
         if (cptr.ld1u(bind) == key)
             return bind;
@@ -3131,12 +3404,15 @@ function cmdbind_get(key) {
 /** C ref: cmd.c:2126 — @param {CUInt} key @param {CPtr<struct ext_func_tab>} extcmd @param {CInt} user */
 function* cmdbind_add(key, extcmd, user) {
     let bind = cmdbind_get(key);
+
     if (!key)
         return;
     if (!extcmd && bind) {
         cmdbind_remove(key);
         return;
     }
+
+    /* binding exists, set it to this command */
     if (bind) {
         cptr.stPtro(bind, $Cmd_bind_cmd, extcmd);
         cptr.st1o(bind, $Cmd_bind_userbind, user);
@@ -3160,6 +3436,7 @@ function* cmdbind_add(key, extcmd, user) {
 function cmdbind_remove(key) {
     let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let prev = null;
+
     while (bind) {
         if (cptr.ld1u(bind) == key) {
             if (prev)
@@ -3179,6 +3456,7 @@ function cmdbind_remove(key) {
 /** C ref: cmd.c:2180 */
 export function cmdbind_freeall() {
     let next;
+
     while (cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds)) {
         next = cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_next);
         if (cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_param))
@@ -3188,23 +3466,29 @@ export function cmdbind_freeall() {
     }
 }
 
+/* swap key bindings for key1 and key2. both bindings must exist. */
 /** C ref: cmd.c:2195 — @param {CUInt} key1 @param {CUInt} key2 */
 function cmdbind_swapkeys(key1, key2) {
     let bind1 = cmdbind_get(key1);
     let bind2 = cmdbind_get(key2);
+
     if (bind1 && bind2) {
         cptr.st1(bind1, key2);
         cptr.st1(bind2, key1);
     }
 }
 
+/* return number of extended commands bound to a non-default key */
 /** C ref: cmd.c:2208 @returns {CInt} */
 export function count_bind_keys() {
     let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let i;
     let nbinds = 0;
     let keys = new Uint8Array(256);
+
     void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
+
+    /* commands bound to different key */
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
         if (cptr.ld1so(bind, $Cmd_bind_userbind) && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
@@ -3212,12 +3496,16 @@ export function count_bind_keys() {
         }
         bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
+
+    /* commands which should be bound to a key, but aren't */
     for (i = 0; i < extcmdlist_length; i++)
         if (cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab), 1))
             nbinds++;
+
     return nbinds;
 }
 
+/* show changed key bindings in text, or if sbuf is non-null, append to it */
 /** C ref: cmd.c:2235 — @param {CPtr<strbuf_t>} sbuf */
 export function* get_changed_key_binds(sbuf) {
     let win = -1;
@@ -3226,9 +3514,13 @@ export function* get_changed_key_binds(sbuf) {
     let buf2 = new Uint8Array(128);
     let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let keys = new Uint8Array(256);
+
     void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
+
     if (!sbuf)
         win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
+
+    /* commands bound to different key */
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
         if (cptr.ld1so(bind, $Cmd_bind_userbind) && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
@@ -3243,8 +3535,11 @@ export function* get_changed_key_binds(sbuf) {
         }
         bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
+
+    /* commands which should be bound to a key, but aren't */
     for (i = 0; i < extcmdlist_length; i++) {
         let ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
+
         if (cptr.ld1u(ec) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1u(ec), 1)) {
             void cptr.sprintf(cptr.decay(buf), __s_bind_s_nothing_s, key2txt(cptr.ld1u(ec), cptr.decay(buf2)), sbuf ? __s_nl : __s_empty);
             if (sbuf)
@@ -3259,6 +3554,7 @@ export function* get_changed_key_binds(sbuf) {
     }
 }
 
+/* interactive key binding */
 /** C ref: cmd.c:2291 — @param {CInt} keyfirst */
 function* handler_rebind_keys_add(keyfirst) {
     let ec;
@@ -3271,17 +3567,22 @@ function* handler_rebind_keys_add(keyfirst) {
     let buf2 = new Uint8Array(128);
     let key = 0;
     let clr = NHM.NO_COLOR;
+
     if (keyfirst) {
         (yield* pline(__s_bind_which_key));
         key = uchar((yield* pgetchar()));
+
         if (!key || key == 27)
             return;
     }
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
     if (key) {
         let bind = cmdbind_get(key);
+
         if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd)) {
             void cptr.sprintf(cptr.decay(buf), __s_key_s_is_currently_bound_to_s, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt));
         } else {
@@ -3290,13 +3591,18 @@ function* handler_rebind_keys_add(keyfirst) {
         (yield* add_menu_str(win, cptr.decay(buf)));
         (yield* add_menu_str(win, __s_empty));
     }
+
     cptr.stI32(any, -1);
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_nothing_unbind_the_key, NHM.MENU_ITEMFLAGS_NONE));
+
     (yield* add_menu_str(win, __s_empty));
+
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
+
         if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 1104) >>> 0) != 0)
             continue;
+
         cptr.stI32(any, ((i + 1) | 0));
         void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.ldPtro(ec, $ext_func_tab_ef_desc));
         (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
@@ -3312,17 +3618,21 @@ function* handler_rebind_keys_add(keyfirst) {
         let prevcmd;
         let cmdstr = new Uint8Array(256);
         __lbl_bindit: {
+
             i = cptr.ldI32(picks.v);
             cptr.free(picks.v);
+
             if (i == -1) {
                 ec = null;
                 void cptr.strcat(cptr.decay(cmdstr), __s_nothing);
                 break __lbl_bindit;
             } else {
                 ec = cptr.add(extcmdlist, (i - 1) | 0, $sizeof_ext_func_tab);
+
                 if (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0) {
                     let parambuf = new Uint8Array(256);
                     let querybuf = new Uint8Array(256);
+
                     cptr.st1o(cptr.decay(parambuf), 0, 0, 1);
                     void cptr.sprintf(cptr.decay(querybuf), __s_command_s_requires_a_parameter, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
                     (yield* getlin(cptr.decay(querybuf), cptr.decay(parambuf)));
@@ -3337,10 +3647,13 @@ function* handler_rebind_keys_add(keyfirst) {
         if (!key) {
             (yield* pline(__s_bind_which_key));
             key = uchar((yield* pgetchar()));
+
             if (!key || key == 27)
                 return;
         }
+
         prevcmd = cmdbind_get(key);
+
         if ((yield* bind_key(key, cptr.decay(cmdstr), 1))) {
             if (prevcmd && !cptr.eq(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), ec)) {
                 (yield* pline(__s_changed_key_s_from_s_to_s, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.decay(cmdstr)));
@@ -3365,6 +3678,7 @@ export function* handler_rebind_keys() {
         win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(win, 0n)));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
         cptr.stI32(any, 1);
         (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_bind_key_to_a_command, NHM.MENU_ITEMFLAGS_NONE));
         cptr.stI32(any, 2);
@@ -3379,6 +3693,7 @@ export function* handler_rebind_keys() {
         if (npick > 0) {
             i = cptr.ldI32(picks.v);
             cptr.free(picks.v);
+
             if (i == 1 || i == 2) {
                 (yield* handler_rebind_keys_add(schar((i == 1))));
             } else if (i == 3) {
@@ -3400,31 +3715,41 @@ export function* handler_change_autocompletions() {
     let clr = NHM.NO_COLOR;
     let ec;
     let buf = new Uint8Array(256);
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
     for (i = 0; i < extcmdlist_length; i++) {
         ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
+
         if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 80) >>> 0) != 0)
             continue;
         if (cptr.strlen(cptr.ldPtro(ec, $ext_func_tab_ef_txt)) < 2n)
             continue;
+
         cptr.stI32(any, ((i + 1) | 0));
         void cptr.sprintf(cptr.decay(buf), __s_c_s_s, ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) ? 42 : 32, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.ldPtro(ec, $ext_func_tab_ef_desc));
         (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
+
     (yield* Y.icall(end_menu()(win, __s_which_commands_autocomplete)));
     n = (yield* select_menu(win, NHM.PICK_ANY, picks));
     if (n >= 0) {
         let j;
+
         for (i = 0; i < extcmdlist_length; i++) {
             let setit = 0;
+
             ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
+
             if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 80) >>> 0) != 0)
                 continue;
             if (cptr.strlen(cptr.ldPtro(ec, $ext_func_tab_ef_txt)) < 2n)
                 continue;
+
             void cptr.sprintf(cptr.decay(buf), __s_pct_s, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
+
             for (j = 0; j < n; ++j) {
                 if (cptr.eq(ec, cptr.add(extcmdlist, ((cptr.ldI32o(picks.v, j, $sizeof_menu_item) - 1) | 0), $sizeof_ext_func_tab))) {
                     (yield* parseautocomplete(cptr.decay(buf), 1));
@@ -3432,6 +3757,7 @@ export function* handler_change_autocompletions() {
                     break;
                 }
             }
+
             if (!setit) {
                 (yield* parseautocomplete(cptr.decay(buf), 0));
             }
@@ -3439,9 +3765,15 @@ export function* handler_change_autocompletions() {
         if (n > 0)
             cptr.free(picks.v);
     }
+
     (yield* Y.icall(destroy_nhwindow()(win)));
 }
 
+/* find extended command entries matching findstr.
+   if findstr is NULL, returns all available entries.
+   returns: number of matching extended commands,
+            and the entry indexes in matchlist.
+   for windowport use. */
 const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4);
 cptr.stI32o(__static_extcmds_match_retmatchlist, 0, 0); /** C ref: cmd.c:2525 — int[171] (function-static) */
 
@@ -3453,6 +3785,7 @@ export function* extcmds_match(findstr, ecmflags, matchlist) {
     let ignoreac = schar(((ecmflags & NHM.ECM_IGNOREAC) != 0));
     let exactmatch = schar(((ecmflags & NHM.ECM_EXACTMATCH) != 0));
     let no1charcmd = schar(((ecmflags & NHM.ECM_NO1CHARCMD) != 0));
+
     for (i = 0; cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt); i++) {
         if ((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & 80) >>> 0)
             continue;
@@ -3474,8 +3807,10 @@ export function* extcmds_match(findstr, ecmflags, matchlist) {
             }
         }
     }
+
     if (matchlist)
         cptr.stPtr(matchlist, __static_extcmds_match_retmatchlist);
+
     return mi;
 }
 
@@ -3490,9 +3825,13 @@ export function* key2extcmddesc(key) {
     let M_5 = 181;
     let M_0 = 176;
     let cmdbind;
+
+    /* need to check for movement commands before checking the extended
+       commands table because it contains entries for number_pad commands
+       that match !number_pad movement (like 'j' for "jump") */
     cptr.st1o(cptr.decay(__static_key2extcmddesc_key2cmdbuf), 0, 0, 1);
     if (movecmd(schar((k = key)), NHC.MV_WALK))
-        void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_move);
+        void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_move);  /* "move or attack"? */
     else if (movecmd(schar((k = key)), NHC.MV_RUSH))
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_rush);
     else if (movecmd(schar((k = key)), NHC.MV_RUN))
@@ -3508,6 +3847,7 @@ export function* key2extcmddesc(key) {
         if (cptr.ld1s(cptr.decay(__static_key2extcmddesc_key2cmdbuf)))
             return cptr.decay(__static_key2extcmddesc_key2cmdbuf);
     }
+    /* check prefixes before regular commands; includes ^A pseudo-command */
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
         if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
             continue;
@@ -3515,10 +3855,18 @@ export function* key2extcmddesc(key) {
         if (key == uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys)))
             return cptr.ldPtro2(misc_keys, i, 24, 8);
     }
+    /* finally, check whether 'key' is a command */
     if ((cmdbind = cmdbind_get(key)) !== null && cptr.ldPtro(cmdbind, $Cmd_bind_cmd) && (txt = cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_txt)) !== null) {
         void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_s_s__3, cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_desc), txt);
+
+        /* special case: for reqmenu prefix (normally 'm'), replace
+           "prefix: request menu or modify command (#reqmenu)"
+           with two-line "movement prefix:...\nnon-movement prefix:..." */
         if (!(yield* strncmpi(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_prefix, 7)) && !(yield* strncmpi((txt), (__s_reqmenu), -1)))
-            void strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_prefix, __s_movement_prefix_move_without_autopickup);
+            void strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_prefix, __s_movement_prefix_move_without_autopickup);  /* and rest of buf */
+
+        /* another special case: 'txt' for '#' is "#" and showing that as
+           "perform an extended command (##)" looks silly; strip "(##)" off */
         return strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_sp_lparen_hash2_rparen, __s_empty);
     }
     return null;
@@ -3527,15 +3875,19 @@ export function* key2extcmddesc(key) {
 /** C ref: cmd.c:2624 — @param {CInt} btn @param {CPtr<char>} command @returns {CInt} */
 export function* bind_mousebtn(btn, command) {
     let extcmd;
+
     if (btn < 1 || btn > NHM.NUM_MOUSE_BUTTONS) {
         (yield* config_error_add(__s_wrong_mouse_button_valid_are_1_i, NHM.NUM_MOUSE_BUTTONS));
         return 0;
     }
     btn--;
+
+    /* special case: "nothing" is reserved for unbinding */
     if (!(yield* strncmpi((command), (__s_nothing), -1))) {
         cptr.stPtro2(gc, btn, 8, $instance_globals_c_Cmd + $cmd_mousebtn, null);
         return 1;
     }
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
         if ((yield* strncmpi((command), (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)), -1)))
             continue;
@@ -3544,6 +3896,7 @@ export function* bind_mousebtn(btn, command) {
         cptr.stPtro2(gc, btn, 8, $instance_globals_c_Cmd + $cmd_mousebtn, extcmd);
         return 1;
     }
+
     return 0;
 }
 
@@ -3554,30 +3907,40 @@ export function* bind_key(key, command, user) {
     let buf;
     let p = null;
     let lastp = null;
+
+    /* special case: "nothing" is reserved for unbinding */
     if (!(yield* strncmpi((command), (__s_nothing), -1))) {
         cmdbind_remove(key);
         return 1;
     }
+
+    /* copy command to buf for modification */
     len = BigInt.asIntN(64, BigInt.asUintN(64, cptr.strlen(command) + 1n));
     buf = (yield* alloc(Number(BigInt.asUintN(32, len))));
     void __builtin___strncpy_chk(buf, command, BigInt.asUintN(64, len), __builtin_object_size(buf, 1));
+
+    /* does buf have a parameter in parenthesis? */
     if ((p = cptr.strchr(buf, 40)) !== null && (lastp = cptr.strrchr(buf, 41)) !== null && (cptr.cmp(lastp, p) > 0)) {
         cptr.st1(p, 0);
         cptr.st1(lastp, 0);
+        /* p points to the parameter */
         p = cptr.add(p, 1);
     }
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
         if ((yield* strncmpi((buf), (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)), -1)))
             continue;
         if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.INTERNALCMD) >>> 0) != 0)
             continue;
         (yield* cmdbind_add(key, extcmd, user));
+
         if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0) {
             if (!p) {
                 (yield* config_error_add(__s_s_requires_a_parameter, buf));
             } else {
                 let bind = cmdbind_get(key);
                 let maxlen = Number(BigInt.asIntN(32, BigInt.asUintN(64, (30n < (cptr.strlen(p)) ? 30n : (cptr.strlen(p))) + 1n)));
+
                 if (maxlen <= 1) {
                     (yield* config_error_add(__s_required_parameter_cannot_be_empty));
                 } else {
@@ -3591,13 +3954,16 @@ export function* bind_key(key, command, user) {
         cptr.free(buf);
         return 1;
     }
+
     cptr.free(buf);
     return 0;
 }
 
+/* bind key by ext cmd function */
 /** C ref: cmd.c:2732 — @param {CUInt} key @param {CPtr} fn @returns {CInt} */
 function* bind_key_fn(key, fn) {
     let extcmd;
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) !== fn)
             continue;
@@ -3606,17 +3972,23 @@ function* bind_key_fn(key, fn) {
         (yield* cmdbind_add(key, extcmd, 0));
         return 1;
     }
+
     return 0;
 }
 
+/* initialize all keyboard commands */
 /** C ref: cmd.c:2750 */
 function* commands_init() {
     let extcmd;
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (cptr.ld1u(extcmd))
             (yield* cmdbind_add(cptr.ld1u(extcmd), extcmd, 0));
+
     void (yield* bind_mousebtn(1, __s_therecmdmenu));
     void (yield* bind_mousebtn(2, __s_clicklook));
+
+    /* number_pad */
     void (yield* bind_key(12, __s_redraw, 0));
     void (yield* bind_key(104, __s_help, 0));
     void (yield* bind_key(106, __s_jump, 0));
@@ -3628,6 +4000,8 @@ function* commands_init() {
     void (yield* bind_key(53, __s_run, 0));
     void (yield* bind_key(181, __s_rush, 0));
     void (yield* bind_key(45, __s_fight, 0));
+
+    /* alt keys: */
     void (yield* bind_key(207, __s_overview, 0));
     void (yield* bind_key(178, __s_twoweapon, 0));
     void (yield* bind_key(206, __s_name, 0));
@@ -3637,9 +4011,11 @@ function* commands_init() {
 function keylist_func_has_key(extcmd, skip_keys_used) {
     let i;
     let bind;
+
     for (i = 0; i < 256; ++i) {
         if (cptr.ld1so(skip_keys_used, i))
             continue;
+
         if (((bind = cmdbind_get(uchar(i))) !== null) && (cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), extcmd)))
             return 1;
     }
@@ -3652,11 +4028,13 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
     let i;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(128);
-    let keys_already_used = new Uint8Array(256);
+    let keys_already_used = new Uint8Array(256);  /* copy of keys_used[] before updates */
     let count = 0;
     let bind;
+
     for (i = 0; i < 256; i++) {
         let key = uchar(i);
+
         cptr.st1o(cptr.decay(keys_already_used), i, cptr.ld1so(keys_used, i), 1);
         if (cptr.ld1so(keys_used, i))
             continue;
@@ -3678,21 +4056,30 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
             cptr.st1o(keys_used, i, 1);
         }
     }
+    /* also list commands that lack key assignments; most are wizard mode */
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
         if ((incl_flags && !((cptr.ldI32o(extcmd, $ext_func_tab_flags) & incl_flags >>> 0) >>> 0)) || (excl_flags && ((cptr.ldI32o(extcmd, $ext_func_tab_flags) & excl_flags >>> 0) >>> 0)))
             continue;
+        /* can't just check for non-Null extcmd->key; it holds the
+           default assignment and a user-specified binding might hijack
+           this command's default key for some other command; or this
+           command might have been assigned a key being used for
+           movement or as a prefix, intercepting that keystroke */
         if (keylist_func_has_key(extcmd, cptr.decay(keys_already_used)))
             continue;
+        /* found a command for current category without any key assignment */
         if (docount) {
             count++;
             continue;
         }
+        /* '#'+20 for one column here == 7+' '+13 for two columns above */
         void cptr.sprintf(cptr.decay(buf), __s_20s_s, cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), cptr.ldPtro(extcmd, $ext_func_tab_ef_desc));
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     return count;
 }
 
+/* list all keys and their bindings, like dat/hh but dynamic */
 /** C ref: cmd.c:2867 */
 export function* dokeylist() {
     let extcmd;
@@ -3706,11 +4093,18 @@ export function* dokeylist() {
     let i;
     let j;
     let pfx_seen = cptr.alloc(256 * 4);
+
     void __builtin___memset_chk(cptr.decay(keys_used), 0, 256n, __builtin_object_size(cptr.decay(keys_used), 0));
     void __builtin___memset_chk(pfx_seen, 0, 1024n, __builtin_object_size(pfx_seen, 0));
+    /* this is actually ambiguous; tty raw mode will override SIGINT;
+       when enabled, treat it like a movement command since assigning
+       other commands to this keystroke would be unwise... */
     key = 3;
     cptr.st1o(cptr.decay(keys_used), key, 1, 1);
+
+    /* movement keys have been flagged in keys_used[]; clone them */
     void cptr.memcpy(cptr.decay(mov_seen), cptr.decay(keys_used), 256n);
+
     spkey_gap = 0;
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
         if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
@@ -3723,6 +4117,7 @@ export function* dokeylist() {
         } else
             spkey_gap = 1;
     }
+
     datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     void cptr.sprintf(cptr.decay(buf), __s_7s_s, __s_empty, __s_full_current_key_bindings_list);
@@ -3733,23 +4128,28 @@ export function* dokeylist() {
             (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             break;
         }
+
+    /* directional keys */
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     (yield* Y.icall(putstr()(datawin, 0, __s_directional_keys)));
-    (yield* show_direction_keys(datawin, 46, 0));
+    (yield* show_direction_keys(datawin, 46, 0));  /* '.'==self in direct'n grid */
+
     if (!cptr.ld1so(iflags, $instance_flags_num_pad)) {
         (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
         (yield* Y.icall(putstr()(datawin, 0, __s_ctrl_direction_will_run_in_specified)));
         void cptr.sprintf(cptr.decay(buf), __s_7s_s, __s_empty, __s_interesting_is_seen);
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
-        void cptr.strcpy(cptr.decay(buf), __s_shift);
+        void cptr.strcpy(cptr.decay(buf), __s_shift);  /* append the rest below */
     } else {
+        /* num_pad */
         (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
-        void cptr.strcpy(cptr.decay(buf), __s_meta);
+        void cptr.strcpy(cptr.decay(buf), __s_meta);  /* append the rest next */
     }
     void cptr.strcat(cptr.decay(buf), __s_direction_will_run_in_specified);
     (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     void cptr.sprintf(cptr.decay(buf), __s_7s_s, __s_empty, __s_an_obstacle);
     (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
+
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     (yield* Y.icall(putstr()(datawin, 0, __s_miscellaneous_keys)));
     for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
@@ -3762,10 +4162,13 @@ export function* dokeylist() {
             (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
         }
     }
+    /* (see above) */
     key = 3;
+    /* last of the special keys */
     void cptr.sprintf(cptr.decay(buf), __s_7s, key2txt(key, cptr.decay(buf2)));
     void cptr.strcat(cptr.decay(buf), __s_interrupt_break_out_of_nethack_sigint);
     (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
+    /* keyless special key commands, if any */
     if (spkey_gap) {
         for (i = 0; cptr.ldPtro2(misc_keys, i, 24, 8); ++i) {
             if (cptr.ld1so2(misc_keys, i, 24, 16) && !cptr.ld1so(iflags, $instance_flags_num_pad))
@@ -3774,28 +4177,35 @@ export function* dokeylist() {
             key = uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys));
             if (!key || (cptr.ldI32o(pfx_seen, key, 4) != j)) {
                 void cptr.sprintf(cptr.decay(buf2), __s_lbrack_pct_s_rbrack, spkey_name(j));
+                /* lines up with the other unassigned commands which use
+                   "#%-20s ", but not with the other special keys */
                 nh_snprintf(__s_dokeylist, 2976, cptr.decay(buf), 256n, __s_21s_s, cptr.decay(buf2), cptr.ldPtro2(misc_keys, i, 24, 8));
                 (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             }
         }
     }
+
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     (yield* show_menu_controls(datawin, 1));
+
     if ((yield* keylist_putcmds(datawin, 1, NHM.GENERALCMD, 1092, cptr.decay(keys_used)))) {
         (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
         (yield* Y.icall(putstr()(datawin, 0, __s_general_commands)));
         void (yield* keylist_putcmds(datawin, 0, NHM.GENERALCMD, 1092, cptr.decay(keys_used)));
     }
+
     if ((yield* keylist_putcmds(datawin, 1, 0, 1100, cptr.decay(keys_used)))) {
         (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
         (yield* Y.icall(putstr()(datawin, 0, __s_game_commands)));
         void (yield* keylist_putcmds(datawin, 0, 0, 1100, cptr.decay(keys_used)));
     }
+
     if (wizard() && (yield* keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)))) {
         (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
         (yield* Y.icall(putstr()(datawin, 0, __s_debug_mode_commands)));
         void (yield* keylist_putcmds(datawin, 0, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)));
     }
+
     (yield* Y.icall(display_nhwindow()(datawin, 0)));
     (yield* Y.icall(destroy_nhwindow()(datawin)));
 }
@@ -3803,28 +4213,38 @@ export function* dokeylist() {
 /** C ref: cmd.c:3016 — @param {CPtr} fn @returns {CPtr<struct ext_func_tab>} */
 export function ext_func_tab_from_func(fn) {
     let extcmd;
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn)
             return extcmd;
+
     return null;
 }
 
+/* returns the key bound to a movement command for given DIR_ and MV_ mode */
 /** C ref: cmd.c:3029 — @param {CInt} dir @param {CInt} mode @returns {CInt} */
 export function cmd_from_dir(dir, mode) {
     return cmd_from_func(cptr.ldPtro(cptr.decay(move_funcs[dir]), mode, 8));
 }
 
+/* return the key bound to extended command */
 /** C ref: cmd.c:3036 — @param {CPtr} fn @returns {CInt} */
 export function cmd_from_func(fn) {
     let i;
     let ret = 0;
     let bind;
+
     for (bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds); bind; bind = cptr.ldPtro(bind, $Cmd_bind_next)) {
         i = cptr.ld1u(bind);
+        /* skip space; we'll use it below as last resort if no other
+           keystroke invokes space's command */
         if (i == 32)
             continue;
+        /* skip digits if number_pad is Off; also skip '-' unless it has
+           been bound to something other than what number_pad assigns */
         if (((i >= 48 && i <= 57) || (i == 45 && fn === do_fight)) && !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
             continue;
+
         if (cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn) {
             if (i >= 32 && i <= 126)
                 return schar(i);
@@ -3838,20 +4258,25 @@ export function cmd_from_func(fn) {
     return ret;
 }
 
+/* return visual interpretation of the key bound to extended command,
+   or the ext cmd name if not bound to any key. */
 const __static_cmd_from_ecname_cmdnamebuf = new Uint8Array(128); /** C ref: cmd.c:3073 — char[128] (function-static) */
 
 /** C ref: cmd.c:3071 — @param {CPtr<char>} ecname @returns {CPtr<char>} */
 export function cmd_from_ecname(ecname) {
     let extcmd;
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (!strcmp(cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), ecname)) {
             let key = cmd_from_func(cptr.ldPtro(extcmd, $ext_func_tab_ef_funct));
+
             if (key)
                 void cptr.sprintf(cptr.decay(__static_cmd_from_ecname_cmdnamebuf), __s_pct_s, visctrl(key));
             else
                 void cptr.sprintf(cptr.decay(__static_cmd_from_ecname_cmdnamebuf), __s_hash_pct_s, ecname);
             return cptr.decay(__static_cmd_from_ecname_cmdnamebuf);
         }
+
     cptr.st1o(cptr.decay(__static_cmd_from_ecname_cmdnamebuf), 0, 0, 1);
     return cptr.decay(__static_cmd_from_ecname_cmdnamebuf);
 }
@@ -3860,6 +4285,7 @@ export function cmd_from_ecname(ecname) {
 export function ecname_from_fn(fn) {
     let extcmd;
     let cmdptr = null;
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn) {
             cmdptr = extcmd;
@@ -3868,25 +4294,33 @@ export function ecname_from_fn(fn) {
     return null;
 }
 
+/* return extended command name (without leading '#') for command (*fn)() */
 /** C ref: cmd.c:3106 — @param {CPtr} fn @param {CPtr<char>} outbuf @param {CInt} fullname @returns {CPtr<char>} */
 export function* cmdname_from_func(fn, outbuf, fullname) {
     let extcmd;
     let cmdptr = null;
     let res = null;
+
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn) {
             cmdptr = extcmd;
             res = cptr.ldPtro(cmdptr, $ext_func_tab_ef_txt);
             break;
         }
+
     if (!res) {
+        /* make sure output buffer doesn't contain junk or stale data;
+           return Null below */
         cptr.st1o(outbuf, 0, 0);
     } else if (fullname) {
+        /* easy; the entire command name */
         res = cptr.strcpy(outbuf, res);
     } else {
         let matchcmd = extcmdlist;
         let len = 0;
         let maxlen = (yield* Strlen_(res, __s_cmdname_from_func, 3130));
+
+        /* find the shortest leading substring which is unambiguous */
         do {
             if (++len >= maxlen)
                 break;
@@ -3904,6 +4338,8 @@ export function* cmdname_from_func(fn, outbuf, fullname) {
         (yield* copynchars(outbuf, res, len | 0));
         {
             if ((yield* debugcore(__s_cmd_c, 1))) {
+                /* [note: for Qt, this debugpline writes a couple dozen lines to
+                    stdout during menu setup when message window isn't ready yet] */
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__s_shortened_s_s, res, outbuf));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -4009,6 +4445,7 @@ cptr.stPtro(spkeys_binds, 456, __s_getpos_menu);
 /** C ref: cmd.c:3194 — @param {CUInt} key @param {CPtr<char>} command @returns {CInt} */
 export function bind_specialkey(key, command) {
     let i;
+
     for (i = 0; i < 29; i++) {
         if (!cptr.ldPtro2(spkeys_binds, i, 16, 8) || strcmp(command, cptr.ldPtro2(spkeys_binds, i, 16, 8)))
             continue;
@@ -4022,6 +4459,7 @@ export function bind_specialkey(key, command) {
 function spkey_name(nhkf) {
     let name = null;
     let i;
+
     for (i = 0; i < 29; i++) {
         if (cptr.ldI32o(spkeys_binds, i, 16) == nhkf) {
             name = (nhkf == NHC.NHKF_ESC) ? __s_escape : cptr.ldPtro2(spkeys_binds, i, 16, 8);
@@ -4031,16 +4469,20 @@ function spkey_name(nhkf) {
     return name;
 }
 
+/* returns the text for a one-byte encoding;
+ * must be shorter than a tab for proper formatting */
 /** C ref: cmd.c:3225 — @param {CUInt} c @param {CPtr<char>} txt @returns {CPtr<char>} */
 export function key2txt(c, txt) {
+    /* should probably switch to "SPC", "ESC", "RET"
+       since nethack's documentation uses ESC for <escape> */
     if (c == 32)
         void cptr.sprintf(txt, __s_space);
     else if (c == 27)
-        void cptr.sprintf(txt, __s_esc);
+        void cptr.sprintf(txt, __s_esc);  /* "<escape>" won't fit */
     else if (c == 10)
-        void cptr.sprintf(txt, __s_enter);
+        void cptr.sprintf(txt, __s_enter);  /* "<return>" won't fit */
     else if (c == 127)
-        void cptr.sprintf(txt, __s_del);
+        void cptr.sprintf(txt, __s_del);  /* "<delete>" won't fit */
     else
         void cptr.strcpy(txt, visctrl(schar(c)));
     return txt;
@@ -4050,18 +4492,29 @@ export function key2txt(c, txt) {
 export function* parseautocomplete(autocomplete, condition) {
     let efp;
     let autoc;
+
+    /* break off first autocomplete from the rest; parse the rest */
     if ((autoc = cptr.strchr(autocomplete, 44)) !== null || (autoc = cptr.strchr(autocomplete, 58)) !== null) {
         cptr.st1(cptr.postinc(() => autoc, (v) => { autoc = v; }), 0);
         (yield* parseautocomplete(autoc, condition));
     }
+
+    /* strip leading and trailing white space */
     autocomplete = (yield* trimspaces(autocomplete));
+
     if (!cptr.ld1s(autocomplete))
         return;
+
+    /* take off negation */
     if (cptr.ld1s(autocomplete) == 33) {
+        /* unlike most options, a leading "no" might actually be a part of
+         * the extended command.  Thus you have to use ! */
         autocomplete = cptr.add(autocomplete, 1);
         autocomplete = (yield* trimspaces(autocomplete));
         condition = schar((!condition));
     }
+
+    /* find and modify the extended command */
     for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
         if (!strcmp(autocomplete, cptr.ldPtro(efp, $ext_func_tab_ef_txt))) {
             if (condition == (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? 0 : 1)) {
@@ -4077,14 +4530,18 @@ export function* parseautocomplete(autocomplete, condition) {
             return;
         }
     }
+
+    /* not a real extended command */
     (yield* raw_printf(__s_bad_autocomplete_invalid_extended, autocomplete));
     (yield* Y.icall(wait_synch()()));
 }
 
+/* add changed autocompletions to the string buffer in config file format */
 /** C ref: cmd.c:3296 — @param {CPtr<strbuf_t>} sbuf */
 export function* all_options_autocomplete(sbuf) {
     let efp;
     let buf = new Uint8Array(256);
+
     for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48))
         if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) != 0) {
             void cptr.sprintf(cptr.decay(buf), __s_autocomplete_s_s, ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? __s_empty : __s_bang, cptr.ldPtro(efp, $ext_func_tab_ef_txt));
@@ -4092,22 +4549,27 @@ export function* all_options_autocomplete(sbuf) {
         }
 }
 
+/* return the number of changed autocompletions */
 /** C ref: cmd.c:3312 @returns {CInt} */
 export function count_autocompletions() {
     let efp;
     let n = 0;
+
     for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48))
         if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) != 0)
             n++;
+
     return n;
 }
 
+/* save&clear the mouse button actions, or restore the saved ones */
 const __static_lock_mouse_buttons_mousebtn = cptr.alloc(2 * 8);
 cptr.stPtro(__static_lock_mouse_buttons_mousebtn, 0, null); /** C ref: cmd.c:3328 — struct ext_func_tab *[2] (function-static) */
 
 /** C ref: cmd.c:3326 — @param {CInt} savebtns */
 export function lock_mouse_buttons(savebtns) {
     let i;
+
     if (savebtns) {
         for (i = 0; i < NHM.NUM_MOUSE_BUTTONS; i++) {
             cptr.stPtro(__static_lock_mouse_buttons_mousebtn, i, cptr.ldPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn), 8);
@@ -4119,6 +4581,7 @@ export function lock_mouse_buttons(savebtns) {
     }
 }
 
+/* called at startup and after number_pad is twiddled */
 const __static_reset_commands_sdir = cptr.bytes("hykulnjb><"); /** C ref: cmd.c:3346 — char[11] (function-static) */
 const __static_reset_commands_sdir_swap_yz = cptr.bytes("hzkulnjb><"); /** C ref: cmd.c:3347 — char[11] (function-static) */
 const __static_reset_commands_ndir = cptr.bytes("47896321><"); /** C ref: cmd.c:3348 — char[11] (function-static) */
@@ -4142,6 +4605,7 @@ export function* reset_commands(initial) {
     let updated = 0;
     let dir;
     let mode;
+
     if (initial) {
         updated = 1;
         cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_num_pad, 0);
@@ -4157,50 +4621,66 @@ export function* reset_commands(initial) {
                 }
             }
         }
+
+        /* basic num_pad */
         flagtemp = cptr.ld1so(iflags, $instance_flags_num_pad);
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_num_pad, flagtemp);
             ++updated;
         }
+        /* swap_yz mode (only applicable for !num_pad); intended for
+           QWERTZ keyboard used in Central Europe, particularly Germany */
         flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1) ? !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_swap_yz, flagtemp);
             ++updated;
+            /* FIXME? should Cmd.spkeys[] be scanned for y and/or z to swap?
+               Cmd.swap_yz has been toggled;
+               perform the swap (or reverse previous one) */
             for (i = 0; i < 6; i++) {
                 c = cptr.ldI32o(__static_reset_commands_ylist, i, 4) & 255;
                 cmdbind_swapkeys(uchar(c), uchar(((c + 1) | 0)));
             }
         }
+        /* MSDOS compatibility mode (only applicable for num_pad) */
         flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1) ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat, flagtemp);
             ++updated;
+            /* FIXME: NHKF_DOINV2 ought to be implemented instead of this */
             c = 176;
             if (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat))
                 (yield* cmdbind_add(uchar(c), ext_func_tab_from_func(dotypeinv), 0));
             else
                 cmdbind_remove(uchar(c));
         }
+        /* phone keypad layout (only applicable for num_pad) */
         flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 2) ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_phone_layout, flagtemp);
             ++updated;
+            /* phone_layout has been toggled */
             for (i = 0; i < 3; i++) {
-                c = (49 + i) | 0;
+                c = (49 + i) | 0;  /* 1,2,3 <-> 7,8,9 */
                 cmdbind_swapkeys(uchar(c), uchar(((c + 6) | 0)));
-                c = (177 + i) | 0;
+                c = (177 + i) | 0;  /* M-1,M-2,M-3 <-> M-7,M-8,M-9 */
                 cmdbind_swapkeys(uchar(c), uchar(((c + 6) | 0)));
             }
         }
-    }
+    }  /*?initial*/
+
+    /* choose updated movement keys */
     if (updated)
         (cptr.stI32o(gc, $instance_globals_c_Cmd, cptr.ldI32o(gc, $instance_globals_c_Cmd) + 1)) - (1);
     cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars, !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz) ? cptr.decay(__static_reset_commands_sdir) : cptr.decay(__static_reset_commands_sdir_swap_yz)) : (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout) ? cptr.decay(__static_reset_commands_ndir) : cptr.decay(__static_reset_commands_ndir_phone_layout)));
     cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_alphadirchars, !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars) : cptr.decay(__static_reset_commands_sdir));
+
+    /* back up the commands & keys overwritten by new movement keys */
     for (dir = 0; dir < ((NHC.N_DIRS_Z - 2) | 0); dir++) {
         for (mode = NHC.MV_WALK; mode < NHC.N_MOVEMODES; mode++) {
             let di = uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), dir));
             let bind;
+
             if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
                 if (mode == NHC.MV_RUN)
                     di = uchar(highc(schar(di)));
@@ -4221,19 +4701,27 @@ export function* reset_commands(initial) {
         }
     }
     __static_reset_commands_backed_dir_cmd = 1;
+
+    /* bind the new keys to movement commands */
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
         void (yield* bind_key_fn(uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_WALK, 8)));
         if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
             void (yield* bind_key_fn(uchar(highc(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)));
             void (yield* bind_key_fn(uchar((31 & (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8)));
         } else {
+            /* M(number) works when altmeta is on */
             void (yield* bind_key_fn(uchar((((cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)) - 128) | 0)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)));
+            /* can't bind highc() or C() of digits. just use the 5 prefix. */
         }
     }
     (yield* update_rest_on_space());
     cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_extcmd_char, cmd_from_func(doextcmd));
 }
 
+/* called when 'rest_on_space' is toggled, also called by reset_commands()
+   from initoptions_init() which takes place before key bindings have been
+   processed, and by initoptions_finish() after key bindings so that we
+   can remember anything bound to <space> in 'unrestonspace' */
 let __static_update_rest_on_space_restonspace = cptr.alloc($sizeof_ext_func_tab); /** C ref: cmd.c:3489 — struct ext_func_tab (function-static) */
 cptr.st1(__static_update_rest_on_space_restonspace, 32);
 cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_txt, __s_wait);
@@ -4246,24 +4734,37 @@ let __static_update_rest_on_space_unrestonspace = null; /** C ref: cmd.c:3493 �
 /** C ref: cmd.c:3483 */
 export function* update_rest_on_space() {
     let bind = cmdbind_get(32);
+
+    /* when 'rest_on_space' is On, <space> will run the #wait command;
+       when it is Off, <space> will use 'unrestonspace' which will either
+       be Null and elicit "Unknown command ' '." or have some non-Null
+       command bound in player's RC file */
     if (bind && !cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), __static_update_rest_on_space_restonspace))
         __static_update_rest_on_space_unrestonspace = cptr.ldPtro(bind, $Cmd_bind_cmd);
     (yield* cmdbind_add(32, cptr.ld1so(flags, $flag_rest_on_space) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, 0));
 }
 
+/* commands which accept 'm' prefix to request menu operation or other
+   alternate behavior; it's also overloaded for move-without-autopickup;
+   there is no overlap between the two groups of commands */
 /** C ref: cmd.c:3509 — @param {CPtr<struct ext_func_tab>} ec @returns {CInt} */
 function accept_menu_prefix(ec) {
     return schar((ec && (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_M_PREFIX) >>> 0) != 0) ? 1 : 0));
 }
 
+/* choose a random character, biased towards movement commands, primarily
+   for debug-fuzzer testing */
 let __static_randomkey_i = 0; /** C ref: cmd.c:3519 — unsigned int (function-static) */
 let __static_randomkey_last_c = 0; /** C ref: cmd.c:3520 — char (function-static) */
 
 /** C ref: cmd.c:3517 @returns {CInt} */
 export function randomkey() {
     let c;
+
+    /* give ^A and ^P a high probability of being repeated */
     if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && rn2_at(__s_cmd_c, 3525, __s_randomkey, 5))
         return __static_randomkey_last_c;
+
     switch (rn2_at(__s_cmd_c, 3528, __s_randomkey, 16)) {
         default:
         c = 27;
@@ -4298,6 +4799,7 @@ export function randomkey() {
         {
             let d = rn2_at(__s_cmd_c, 3560, __s_randomkey, ((NHC.N_DIRS_Z - 2) | 0));
             let m = rn2_at(__s_cmd_c, 3561, __s_randomkey, 7) ? NHC.MV_WALK : (!rn2_at(__s_cmd_c, 3561, __s_randomkey, 3) ? NHC.MV_RUSH : NHC.MV_RUN);
+
             c = cmd_from_dir(d, m);
         }
         break;
@@ -4305,9 +4807,11 @@ export function randomkey() {
         c = schar(((rn2_at(__s_cmd_c, 3567, __s_randomkey, 10) + 48) | 0));
         break;
         case 14:
+        /* any char, but avoid '\0' because it's used for mouse click */
         c = schar(rnd_at(__s_cmd_c, 3571, __s_randomkey, cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127));
         break;
     }
+
     if (cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp)
         __static_randomkey_last_c = c;
     return c;
@@ -4317,6 +4821,7 @@ export function randomkey() {
 export function random_response(buf, sz) {
     let c;
     let count = 0;
+
     for (; ; ) {
         c = randomkey();
         if (c == 10)
@@ -4369,6 +4874,7 @@ export function* rhack(key) {
         prefix_seen = null;
         was_m_prefix = 0;
         func = dummyfunction;
+
         cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         cptr.st1o(svc, $context_info_nopick, 0);
         __pc = 1;
@@ -4381,6 +4887,7 @@ export function* rhack(key) {
         __pc = 5; continue;
         }
         case 4: {
+        /* doing queued commands */
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
         if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD && (cmdq_ec = cptr.ldPtro(cq, $_cmd_queue_ec_entry)) !== null) { __pc = 7; continue; }
@@ -4390,6 +4897,9 @@ export function* rhack(key) {
         { __pc = 2; continue; }
         }
         case 6: {
+        /* already handled a queued command (goto do_cmdq_extcmd);
+           if something other than a key is queued, we'll drop down
+           to the !*cmd handling which clears out the command-queue */
         key = (cptr.ldI32(cq) == NHC.CMDQ_KEY) ? cptr.ld1so(cq, $_cmd_queue_key) : 0;
         __pc = 3;
         continue;
@@ -4415,15 +4925,23 @@ export function* rhack(key) {
         continue;
         }
         case 3: {
+
+        /* if there's no command, there's nothing to do except reset */
         if (!key || key == -1 || key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
             if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys))
+                /* don't perform next sanity check if player typed ESC for
+                   the current command, similar to handling for CMD_INSANE
+                   flag below (^P and ^R) */
                 cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
             else
                 (yield* Y.icall(nhbell()()));
             reset_cmd_vars(1);
             return;
         }
+
+        /* handle most movement commands */
         cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
+
         cptr.stPtro(gc, $instance_globals_c_cmd_bind, cmdbind_get(uchar((key & 255))));
         __pc = 2;
         continue;
@@ -4441,6 +4959,7 @@ export function* rhack(key) {
         __pc = 16; continue;
         }
         case 15: {
+        /* can_do_extcmd() already gave a message */
         reset_cmd_vars(1);
         res = NHM.ECMD_OK;
         __pc = 14;
@@ -4453,12 +4972,20 @@ export function* rhack(key) {
         case 18: {
         pfxidx = cmd_from_func(cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct));
         which = (pfxidx != 0) ? visctrl(pfxidx) : ((cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct) === do_reqmenu) ? __s_move_no_pickup_or_request_menu : cptr.ldPtro(prefix_seen, $ext_func_tab_ef_txt));
+
+        /*
+         * We got a prefix previously and looped for another
+         * command instead of returning, but the command we got
+         * doesn't accept a prefix.  The feedback here supersedes
+         * the former call to help_dir() (for 'bad_command' below).
+         */
         if (was_m_prefix) {
             (yield* custompline(NHM.SUPPRESS_HISTORY, __s_the_s_command_does_not_accept_s_prefix, cptr.ldPtro(tlist, $ext_func_tab_ef_txt), which));
         } else {
             ch = cptr.ld1u(tlist);
             up = schar((ch == 60 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === doup ? 1 : 0));
             down = schar((ch == 62 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === dodown ? 1 : 0));
+
             (yield* pline(__s_the_s_prefix_should_be_followed_by_a, which, (up || down) ? __s_other_than_up_or_down : __s_empty));
         }
         res = NHM.ECMD_FAIL;
@@ -4467,10 +4994,13 @@ export function* rhack(key) {
         continue;
         }
         case 19: {
+        /* we discard 'const' because some compilers seem to have
+           trouble with the pointer passed to set_occupation() */
         func = cptr.ldPtro((tlist), $ext_func_tab_ef_funct);
         if (cptr.ldPtro(tlist, $ext_func_tab_f_text) && !cptr.ldPtro(go, $instance_globals_o_occupation) && cptr.ldI64o(gm, $instance_globals_m_multi))
             set_occupation(func, cptr.ldPtro(tlist, $ext_func_tab_f_text), cptr.ldI64o(gm, $instance_globals_m_multi));
         cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+
         if (!cptr.ldI32(gi) && func !== do_repeat && func !== doextcmd) {
             if (!prefix_seen)
                 cmdq_clear(NHC.CQ_REPEAT);
@@ -4480,19 +5010,31 @@ export function* rhack(key) {
                 cmdq_clear(NHC.CQ_REPEAT);
             }
         }
+        /* some commands shouldn't trigger sanity_check() because
+           if it produces output that might interfere with them;
+           note: if sanity_check is False, this has no effect */
         if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.CMD_INSANE) >>> 0) != 0)
             cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
-        res = (yield* Y.icall((func)()));
+
+        res = (yield* Y.icall((func)()));  /* perform the command */
+        /* if 'func' is doextcmd(), 'tlist' is for Cmd.commands['#']
+           rather than for the command that doextcmd() just ran;
+           doextcmd() notifies us what that was via ext_tlist;
+           other commands leave it Null */
         if (cptr.ldPtro(ge, $instance_globals_e_ext_tlist)) {
             tlist = cptr.ldPtro(ge, $instance_globals_e_ext_tlist), cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+            /* Add the command post-execution */
             (yield* cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct)));
+            /* shift the command to first */
             cmdq_shift(NHC.CQ_REPEAT);
         }
         if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) != 0) { __pc = 21; continue; }
         __pc = 22; continue;
         }
         case 21: {
+        /* it was a prefix command, mark and get another cmd */
         if ((res & NHM.ECMD_CANCEL) != 0) {
+            /* prefix commands cancel if pressed twice */
             reset_cmd_vars(1);
             return;
         }
@@ -4504,8 +5046,10 @@ export function* rhack(key) {
         }
         case 22: {
         if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) && cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
-            ;
+            /* not a movement command, but a move prefix earlier? */
+            ;  /* just do nothing */
         } else if (((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 3n) != 0n) && !cptr.ld1so(svc, $context_info_travel) && !dxdy_moveok()) {
+            /* trying to move diagonally as a grid bug */
             (yield* You_cant(__s_get_there_from_here));
             reset_cmd_vars(1);
             return;
@@ -4540,27 +5084,41 @@ export function* rhack(key) {
         continue;
         }
         case 14: {
+        /* it is possible to have a result of (ECMD_TIME|ECMD_CANCEL)
+           [for example, using 'f'ire, manually filling quiver with
+           wielded weapon or dual-wielded swap-weapon, then cancelling
+           at the direction prompt; using time to unwield should take
+           precedence over general cancellation] */
         if ((res & 6) != 0) {
+            /* command was canceled by user, maybe they declined to
+               pick an object to act on, or command failed to finish */
             reset_cmd_vars(1);
         } else if ((res & 1) == NHM.ECMD_OK) {
             reset_cmd_vars(schar((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)));
         }
+        /* reset_cmd_vars() sets context.move to False so we might
+           need to change it [back] to True */
         if ((res & NHM.ECMD_TIME) != 0) {
             cptr.st1o(svc, $context_info_move, 1);
             if (func !== dokick) {
+                /* hero did something else than kicking a location;
+                   reset the location, so pets don't avoid it */
                 cptr.stI16(gk, 0), cptr.stI16o(gk, $nhcoord_y, 0);
             }
         }
         return;
         }
         case 12: {
+        /* if we reach here, cmd wasn't found in cmdlist[] */
         bad_command = 1;
+
         if (bad_command) {
             (yield* custompline(NHM.SUPPRESS_HISTORY, __s_unknown_command_s, visctrl(schar(key))));
             cmdq_clear(NHC.CQ_CANNED);
             cmdq_clear(NHC.CQ_REPEAT);
-            cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
+            cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));  /* skip sanity check */
         }
+        /* didn't move */
         cptr.st1o(svc, $context_info_move, 0);
         cptr.stI64o(gm, $instance_globals_m_multi, 0n);
         return;
@@ -4570,15 +5128,18 @@ export function* rhack(key) {
     }
 }
 
+/* convert an x,y pair into a direction code */
 /** C ref: cmd.c:3847 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function xytodir(x, y) {
     let dd;
+
     for (dd = 0; dd < ((NHC.N_DIRS_Z - 2) | 0); dd++)
         if (x == cptr.ld1so(cptr.decay(xdir), dd, 1) && y == cptr.ld1so(cptr.decay(ydir), dd, 1))
             return dd;
     return NHC.DIR_ERR;
 }
 
+/* convert a direction code into an x,y pair */
 /** C ref: cmd.c:3859 — @param {CPtr<coord>} cc @param {CInt} dd */
 export function dirtocoord(cc, dd) {
     if (dd > NHC.DIR_ERR && dd < NHC.N_DIRS_Z) {
@@ -4587,12 +5148,15 @@ export function dirtocoord(cc, dd) {
     }
 }
 
+/* also sets u.dz, but returns false for <> */
 /** C ref: cmd.c:3869 — @param {CInt} sym @param {CInt} mode @returns {CInt} */
 export function movecmd(sym, mode) {
     let d = NHC.DIR_ERR;
     let bind = cmdbind_get(uchar(sym));
+
     if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd)) {
         let fnc = cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct);
+
         if (mode == NHC.MV_ANY) {
             for (d = ((NHC.N_DIRS_Z - 1) | 0); d > NHC.DIR_ERR; d--)
                 if (fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_WALK, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUN, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUSH, 8))
@@ -4603,6 +5167,7 @@ export function movecmd(sym, mode) {
                     break;
         }
     }
+
     if (d != NHC.DIR_ERR) {
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), d, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), d, 1));
@@ -4613,6 +5178,7 @@ export function movecmd(sym, mode) {
     return 0;
 }
 
+/* grid bug handling */
 /** C ref: cmd.c:3902 @returns {CInt} */
 export function dxdy_moveok() {
     if (cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
@@ -4620,13 +5186,25 @@ export function dxdy_moveok() {
     return cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) ? 1 : 0;
 }
 
+/* decide whether character (user input keystroke) requests screen repaint */
 /** C ref: cmd.c:3911 — @param {CInt} c @returns {CInt} */
 export function redraw_cmd(c) {
     let uc = uchar(c);
     let bind = cmdbind_get(uc);
+
     return schar((bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doredraw ? 1 : 0));
 }
 
+/*
+ * uses getdir() but unlike getdir() it specifically
+ * produces coordinates using the direction from getdir()
+ * and verifies that those coordinates are ok.
+ *
+ * If the call to getdir() returns 0, Never_mind is displayed.
+ * If the resulting coordinates are not okay, emsg is displayed.
+ *
+ * Returns non-zero if coordinates in cc are valid.
+ */
 /** C ref: cmd.c:3931 — @param {CPtr<char>} prompt @param {CPtr<char>} emsg @param {CInt} x @param {CInt} y @param {CPtr<coord>} cc @returns {CInt} */
 export function* get_adjacent_loc(prompt, emsg, x, y, cc) {
     let new_x;
@@ -4648,6 +5226,8 @@ export function* get_adjacent_loc(prompt, emsg, x, y, cc) {
     return 1;
 }
 
+/* prompt for a direction (specified via movement keystroke) and return it
+   in u.dx, u.dy, and u.dz; function return value is 1 for ok, 0 otherwise */
 /** C ref: cmd.c:3958 — @param {CPtr<char>} s @returns {CInt} */
 export function* getdir(s) {
     let dirsym, is_mov, cmdq, qbuf, cc, pos, mod, did_help, help_requested;
@@ -4686,6 +5266,12 @@ export function* getdir(s) {
             dirsym = (yield* readchar());
         } else {
             dirsym = (yield* yn_function((s && cptr.ld1s(s) != 94) ? s : __s_in_what_direction, null, 0, 0));
+
+            /* for the fuzzer, usually force the result to be a valid direction,
+               but sometimes let it exercise the invalid direction code; we
+               don't try to enforce no-diagonal for hero in grid bug form since
+               things like '^' to look at adjacent trap shouldn't be bound by
+               that (caller is expected to handle situations where it matters) */
             if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2_at(__s_cmd_c, 3996, __s_getdir, 20)) {
                 switch (rn2_at(__s_cmd_c, 3997, __s_getdir, 20)) {
                     case 0:
@@ -4700,12 +5286,13 @@ export function* getdir(s) {
                 }
             }
         }
+        /* remove the prompt string so caller won't have to */
         (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
         if (redraw_cmd(dirsym)) { __pc = 6; continue; }
         __pc = 5; continue;
         }
         case 6: {
-        (yield* docrt_flags(NHC.docrtRefresh));
+        (yield* docrt_flags(NHC.docrtRefresh));  /* redraw */
         { __pc = 1; continue; }
         }
         case 5: {
@@ -4730,20 +5317,45 @@ export function* getdir(s) {
         case 11: {
         qbuf = new Uint8Array(128);
         cc = cptr.alloc(4);
+
+        /*
+         * For #therecmdmenu:
+         * Player has entered the 'simulated mouse' key ('_' by default)
+         * at the "which direction?" prompt so we use getpos() to get a
+         * simulated click after moving cursor to the desired location.
+         *
+         * getpos() returns 0..3 for period, comma, semi-colon, colon.
+         * We treat "," as left click and "." as right click due to
+         * their positions relative to each other on the keyboard.
+         * Using ";" as synonym for "," and ":" for "." is due to their
+         * shapes rather than to their keyboard location.
+         *
+         * Those keys aren't separately bindable for being treated as
+         * clicks but we do honor their getpos bindings if player has
+         * changed them.  (Bound values might have scrambled keyboard
+         * locations relative to each other so ruin the memory aid of
+         * "," being left of ".".)
+         */
         void cptr.sprintf(cptr.decay(qbuf), __s_desired_location_then_type_s_for_left, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
-        cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+        cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* starting cursor location for getpos() */
         pos = (yield* getpos(cc, 1, cptr.decay(qbuf)));
+
         if (pos < 0) {
+            /* ESC or other rejection */
             cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
-            mod = 0;
+            mod = 0;  /* neither CLICK_1 nor CLICK_2 */
         } else {
+            /* caller expects simulated click to be relative to hero's spot */
             cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) - cptr.ldI16(u)) | 0);
             cptr.stI32o(u, $you_dy, (cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0);
+            /* non-zero getdir_click actually means ok to click farther than
+               one spot away from hero; adjacent click is always allowed */
             if (!cptr.ldI32o(iflags, $instance_flags_getdir_click)) {
                 cptr.stI32o(u, $you_dx, sgn(cptr.ldI32o(u, $you_dx)));
                 cptr.stI32o(u, $you_dy, sgn(cptr.ldI32o(u, $you_dy)));
             }
             cptr.stI32o(u, $you_dz, 0);
+
             switch ((pos + NHC.NHKF_GETPOS_PICK) | 0) {
                 case NHC.NHKF_GETPOS_PICK_Q:
                 case NHC.NHKF_GETPOS_PICK_O:
@@ -4754,9 +5366,12 @@ export function* getdir(s) {
                 mod = NHM.CLICK_2;
                 break;
                 default:
+                /* could plug in bound values for spkeys[NHKF_GETPOS_PICK],&c
+                   but that feels like overkill for something which should
+                   never happen; just show their default values */
                 (yield* impossible(__s_getpos_successful_but_not_one_of_d, pos));
-                mod = 0;
-                pos = -1;
+                mod = 0;  /* neither CLICK_1 nor CLICK_2 */
+                pos = -1;  /* return failure */
                 break;
             }
         }
@@ -4828,8 +5443,10 @@ export function* getdir(s) {
 /** C ref: cmd.c:4122 — @param {CInt} win @param {CInt} centerchar @param {CInt} nodiag */
 function* show_direction_keys(win, centerchar, nodiag) {
     let buf = new Uint8Array(256);
+
     if (!centerchar)
         centerchar = 32;
+
     if (nodiag) {
         void cptr.sprintf(cptr.decay(buf), __s_sp13_pct_s_sp3, visctrl(cmd_from_func(do_move_north)));
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
@@ -4852,6 +5469,9 @@ function* show_direction_keys(win, centerchar, nodiag) {
     ;
 }
 
+/* explain choices if player has asked for getdir() help or has given
+   an invalid direction after a prefix key ('F', 'g', 'm', &c), which
+   might be bogus but could be up, down, or self when not applicable */
 const __static_help_dir_wiz_only_list = cptr.bytes("EFGIVW"); /** C ref: cmd.c:4176 — char[7] (function-static) */
 
 /** C ref: cmd.c:4171 — @param {CInt} sym @param {CUInt} spkey @param {CPtr<char>} msg @returns {CInt} */
@@ -4863,14 +5483,26 @@ function* help_dir(sym, spkey, msg) {
     let explain;
     let dothat;
     let prefixhandling;
+
+    /* NHKF_ESC indicates that player asked for help at getdir prompt */
+    /* viawindow = (spkey == gc.Cmd.spkeys[NHKF_ESC] || iflags.cmdassist); */
     prefixhandling = schar((spkey != cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+    /*
+     * Handling for prefix keys that don't want special directions.
+     * Delivered via pline if 'cmdassist' is off, or instead of the
+     * general message if it's on.
+     */
     dothat = __s_do_that;
+
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     (void (prefixhandling));
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     if (!win)
         return 0;
+
     if (cptr.ld1s(cptr.decay(buf))) {
+        /* show bad-prefix message instead of general invalid-direction one */
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
     } else if (msg) {
@@ -4878,9 +5510,11 @@ function* help_dir(sym, spkey, msg) {
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
     }
+
     if (!prefixhandling && (letter(sym) || sym == 91)) {
-        sym = highc(sym);
-        ctrl = schar(((((sym - 65) | 0) + 1) | 0));
+        /* '[': old 'cmdhelp' showed ESC as ^[ */
+        sym = highc(sym);  /* @A-Z[ (note: letter() accepts '@') */
+        ctrl = schar(((((sym - 65) | 0) + 1) | 0));  /* 0-27 (note: 28-31 aren't applicable) */
         if ((explain = (yield* dowhatdoes_core(ctrl, cptr.decay(buf2)))) !== null && (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || wizard())) {
             void cptr.sprintf(cptr.decay(buf), __s_are_you_trying_to_use_c_s, sym, cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) ? __s_empty : __s_as_specified_in_the_guidebook);
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
@@ -4893,20 +5527,29 @@ function* help_dir(sym, spkey, msg) {
             (yield* Y.icall(putstr()(win, 0, __s_empty)));
         }
     }
+
     void cptr.sprintf(cptr.decay(buf), __s_valid_direction_keys_s_s_s_are, prefixhandling ? __s_to : __s_empty, prefixhandling ? dothat : __s_empty, ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? __s_in_your_current_form : __s_empty);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     (yield* show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))));
+
     if (!prefixhandling) {
+        /* NOPICKUP: unlike the other prefix keys, 'm' allows up/down for
+           stair traversal; we won't get here when "m<" or "m>" has been
+           given but we include up and down for 'm'+invalid_direction;
+           self is excluded as a viable direction for every prefix */
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
         (yield* Y.icall(putstr()(win, 0, __s_up__2)));
         (yield* Y.icall(putstr()(win, 0, __s_down__2)));
         if (!prefixhandling) {
             let selfi = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? NHC.NHKF_GETDIR_SELF2 : NHC.NHKF_GETDIR_SELF;
+
             void cptr.sprintf(cptr.decay(buf), __s_4s_direct_at_yourself, visctrl(cptr.ld1so2(gc, selfi, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     }
+
     if (msg) {
+        /* non-null msg means that this wasn't an explicit user request */
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
         (yield* Y.icall(putstr()(win, 0, __s_suppress_this_message_with_cmdassist_in)));
     }
@@ -4915,11 +5558,13 @@ function* help_dir(sym, spkey, msg) {
     return 1;
 }
 
+/* if hero is impaired, pick random movement direction */
 /** C ref: cmd.c:4300 — @param {CInt} force_impairment */
 export function confdir(force_impairment) {
     if (force_impairment || u_maybe_impaired()) {
         let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
         let k = cptr.ld1so(cptr.decay(dirs_ord), rn2_at(__s_cmd_c, 4304, __s_confdir, kmax), 1);
+
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), k, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), k, 1));
     }
@@ -4940,6 +5585,7 @@ cptr.stPtro(__static_directionname_dirnames, 72, __s_up); /** C ref: cmd.c:4315 
 
 /** C ref: cmd.c:4313 — @param {CInt} dir @returns {CPtr<char>} */
 export function directionname(dir) {
+
     if (dir < 0 || dir >= NHC.N_DIRS_Z)
         return __s_invalid;
     return cptr.ldPtro(__static_directionname_dirnames, dir, 8);
@@ -4947,15 +5593,19 @@ export function directionname(dir) {
 
 /** C ref: cmd.c:4326 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function isok(x, y) {
+    /* x corresponds to curx, so x==1 is the first column. Ach. %% */
     return x >= 1 && x <= 79 && y >= 0 && y <= 20 ? 1 : 0;
 }
 
+/* #herecmdmenu command */
 /** C ref: cmd.c:4334 @returns {CInt} */
 function* doherecmdmenu() {
     let ch = (yield* here_cmd_menu());
+
     return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
+/* #therecmdmenu command, a way to test there_cmd_menu without mouse */
 /** C ref: cmd.c:4343 @returns {CInt} */
 function* dotherecmdmenu() {
     let ch;
@@ -4963,7 +5613,9 @@ function* dotherecmdmenu() {
     let click;
     let x = cptr.ldI16o(gc, $instance_globals_c_clicklook_cc);
     let y = cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y);
-    cptr.stI32o(iflags, $instance_flags_getdir_click, 3);
+
+    cptr.stI32o(iflags, $instance_flags_getdir_click, 3);  /* allow 'far' click */
+
     if (isok(x, y)) {
         if (x == cptr.ldI16(u) && y == cptr.ldI16o(u, $you_uy))
             ch = (yield* here_cmd_menu());
@@ -4973,18 +5625,23 @@ function* dotherecmdmenu() {
         cptr.stI32o(iflags, $instance_flags_getdir_click, 0);
         return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
+
     dir = (yield* getdir(null));
     click = cptr.ldI32o(iflags, $instance_flags_getdir_click);
     cptr.stI32o(iflags, $instance_flags_getdir_click, 0);
+
     if (!dir || !isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))))
         return NHM.ECMD_CANCEL;
+
     if (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy))
         ch = (yield* there_cmd_menu(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)), click));
     else
         ch = (yield* here_cmd_menu());
+
     return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
+/* commands for [t]herecmdmenu */
 /** C ref: cmd.c:4378 — enum */
 export const MCMD_NOTHING = 0;
 export const MCMD_OPEN_DOOR = 1;
@@ -5028,11 +5685,14 @@ export const MCMD_TRAVEL = 36;
 function* mcmd_addmenu(win, act, txt) {
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
+
+    /* TODO: fixed letters for the menu entries? */
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, act);
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, txt, NHM.MENU_ITEMFLAGS_NONE));
 }
 
+/* command menu entries when targeting self */
 /** C ref: cmd.c:4435 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CPtr<int>} act @returns {CInt} */
 function* there_cmd_menu_self(win, x, y, act) {
     let K = 0;
@@ -5040,8 +5700,10 @@ function* there_cmd_menu_self(win, x, y, act) {
     let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     let stway = stairway_at(x, y);
     let ttmp;
+
     if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         return K;
+
     if ((((typ) == NHC.FOUNTAIN) || ((typ) == NHC.SINK)) && can_reach_floor(0)) {
         void cptr.sprintf(cptr.decay(buf), __s_drink_from_the_s, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, $sizeof_symdef, $symdef_explanation));
         (yield* mcmd_addmenu(win, NHC.MCMD_QUAFF, cptr.decay(buf))), ++K;
@@ -5052,6 +5714,7 @@ function* there_cmd_menu_self(win, x, y, act) {
         (yield* mcmd_addmenu(win, NHC.MCMD_SIT, __s_sit_on_the_throne)), ++K;
     if (((typ) == NHC.ALTAR))
         (yield* mcmd_addmenu(win, NHC.MCMD_OFFER, __s_sacrifice_something_on_the_altar)), ++K;
+
     if (stway && cptr.ld1so(stway, $stairway_up)) {
         void cptr.sprintf(cptr.decay(buf), __s_go_up_the_s, cptr.ld1so(stway, $stairway_isladder) ? __s_ladder : __s_stairs);
         (yield* mcmd_addmenu(win, NHC.MCMD_UP, cptr.decay(buf))), ++K;
@@ -5064,13 +5727,17 @@ function* there_cmd_menu_self(win, x, y, act) {
         void cptr.sprintf(cptr.decay(buf), __s_dismount_s, (yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0)));
         (yield* mcmd_addmenu(win, NHC.MCMD_DISMOUNT, cptr.decay(buf))), ++K;
     }
+
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
         let otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+
         void cptr.sprintf(cptr.decay(buf), __s_pick_up_s, cptr.ldPtro(otmp, $obj_v) ? __s_items : (yield* doname(otmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_PICKUP, cptr.decay(buf))), ++K;
+
         if (Is_container(otmp)) {
             void cptr.sprintf(cptr.decay(buf), __s_loot_s, (yield* doname(otmp)));
             (yield* mcmd_addmenu(win, NHC.MCMD_LOOT, cptr.decay(buf))), ++K;
+
             void cptr.sprintf(cptr.decay(buf), __s_tip_s, (yield* doname(otmp)));
             (yield* mcmd_addmenu(win, NHC.MCMD_TIP, cptr.decay(buf))), ++K;
         }
@@ -5079,6 +5746,7 @@ function* there_cmd_menu_self(win, x, y, act) {
             (yield* mcmd_addmenu(win, NHC.MCMD_EAT, cptr.decay(buf))), ++K;
         }
     }
+
     if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         (yield* mcmd_addmenu(win, NHC.MCMD_INVENTORY, __s_inventory__2)), ++K;
         (yield* mcmd_addmenu(win, NHC.MCMD_DROP, __s_drop_items)), ++K;
@@ -5086,8 +5754,10 @@ function* there_cmd_menu_self(win, x, y, act) {
     (yield* mcmd_addmenu(win, NHC.MCMD_REST, __s_rest_one_turn)), ++K;
     (yield* mcmd_addmenu(win, NHC.MCMD_SEARCH, __s_search_around_you)), ++K;
     (yield* mcmd_addmenu(win, NHC.MCMD_LOOK_HERE, __s_look_at_what_is_here__2)), ++K;
+
     if (num_spells() > 0)
         (yield* mcmd_addmenu(win, NHC.MCMD_CAST_SPELL, __s_cast_a_spell)), ++K;
+
     if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
         if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
             (yield* mcmd_addmenu(win, NHC.MCMD_UNTRAP_HERE, __s_attempt_to_disarm_trap)), ++K;
@@ -5095,6 +5765,7 @@ function* there_cmd_menu_self(win, x, y, act) {
     return K;
 }
 
+/* add entries to there_cmd_menu, when x,y is next to hero */
 /** C ref: cmd.c:4524 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr<int>} act @returns {CInt} */
 function* there_cmd_menu_next2u(win, x, y, mod, act) {
     let K = 0;
@@ -5102,41 +5773,54 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
     let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     let ttmp;
     let mtmp;
+
     if (!(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
         return K;
+
     if (((typ) == NHC.DOOR)) {
         let key_or_pick;
         let card;
         let dm = (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
+
         if ((dm & 12)) {
             (yield* mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __s_open_the_door)), ++K;
+            /* unfortunately there's no lknown flag for doors to
+               remember the locked/unlocked state */
             key_or_pick = schar((carrying(NHC.SKELETON_KEY) || carrying(NHC.LOCK_PICK) ? 1 : 0));
             card = schar((carrying(NHC.CREDIT_CARD) !== null));
             if (key_or_pick || card) {
                 void cptr.sprintf(cptr.decay(buf), __s_sunlock_the_door, key_or_pick ? __s_lock_or : __s_empty);
                 (yield* mcmd_addmenu(win, NHC.MCMD_LOCK_DOOR, upstart(cptr.decay(buf)))), ++K;
             }
+            /* unfortunately there's no tknown flag for doors (or chests)
+               to remember whether a trap had been found */
             (yield* mcmd_addmenu(win, NHC.MCMD_UNTRAP_DOOR, __s_search_the_door_for_a_trap)), ++K;
+            /* [what about #force?] */
             (yield* mcmd_addmenu(win, NHC.MCMD_KICK_DOOR, __s_kick_the_door)), ++K;
         } else if ((dm & NHM.D_ISOPEN) && (mod == NHM.CLICK_2)) {
             (yield* mcmd_addmenu(win, NHC.MCMD_CLOSE_DOOR, __s_close_the_door)), ++K;
         }
     }
+
     if (typ <= NHC.SCORR)
         (yield* mcmd_addmenu(win, NHC.MCMD_SEARCH, __s_search_for_secret_doors)), ++K;
+
     if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0) {
         (yield* mcmd_addmenu(win, NHC.MCMD_LOOK_TRAP, __s_examine_trap)), ++K;
         if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE)
             (yield* mcmd_addmenu(win, NHC.MCMD_UNTRAP_TRAP, __s_attempt_to_disarm_trap)), ++K;
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_move_on_the_trap)), ++K;
     }
+
     if (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_push_the_boulder)), ++K;
+
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mtmp && !canspotmon(mtmp))
         mtmp = null;
     if (mtmp && (yield* which_armor(mtmp, 1048576n))) {
         let mnam = (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0));
+
         if (!cptr.ldPtro(u, $you_usteed)) {
             void cptr.sprintf(cptr.decay(buf), __s_ride_s, mnam);
             (yield* mcmd_addmenu(win, NHC.MCMD_RIDE, cptr.decay(buf))), ++K;
@@ -5151,16 +5835,21 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
     if (mtmp && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) {
         void cptr.sprintf(cptr.decay(buf), __s_talk_to_s, (yield* mon_nam(mtmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_TALK, cptr.decay(buf))), ++K;
+
         void cptr.sprintf(cptr.decay(buf), __s_swap_places_with_s, (yield* mon_nam(mtmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, cptr.decay(buf))), ++K;
+
         void cptr.sprintf(cptr.decay(buf), __s_s_s__4, !has_mgivenname(mtmp) ? __s_name__2 : __s_rename, (yield* mon_nam(mtmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_NAME, cptr.decay(buf))), ++K;
     }
+
     if ((mtmp && !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) || ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.sprintf(cptr.decay(buf), __s_attack_s, mtmp ? (yield* mon_nam(mtmp)) : __s_unseen_creature);
         (yield* mcmd_addmenu(win, NHC.MCMD_ATTACK_NEXT2U, cptr.decay(buf))), ++K;
+        /* attacking overrides any other automatic action */
         cptr.stI32(act, NHC.MCMD_ATTACK_NEXT2U);
     } else {
+        /* "Move %s", direction - handled below */
     }
     return K;
 }
@@ -5168,9 +5857,11 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
 /** C ref: cmd.c:4624 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @returns {CInt} */
 function* there_cmd_menu_far(win, x, y, mod) {
     let K = 0;
+
     if (mod == NHM.CLICK_1) {
         if (linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1) && dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) < 324)
             (yield* mcmd_addmenu(win, NHC.MCMD_THROW_OBJ, __s_throw_something__2)), ++K;
+
         (yield* mcmd_addmenu(win, NHC.MCMD_TRAVEL, __s_travel_here)), ++K;
     }
     return K;
@@ -5179,29 +5870,42 @@ function* there_cmd_menu_far(win, x, y, mod) {
 /** C ref: cmd.c:4639 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr<int>} act @returns {CInt} */
 function* there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
+
     if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2) {
+        /* for self, only include "look at map symbol" if it isn't the
+           ordinary hero symbol (steed, invisible w/o see invisible, ?) */
         if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || Upolyd() || glyph_at(x, y) != ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
             (yield* mcmd_addmenu(win, NHC.MCMD_LOOK_AT, __s_look_at_map_symbol)), ++K;
     }
     return K;
 }
 
+/* queue up command(s) to perform #therecmdmenu action */
 /** C ref: cmd.c:4658 — @param {CInt} act @param {CInt} dx @param {CInt} dy */
 function* act_on_act(act, dx, dy) {
     let otmp;
     let dir;
+
+    /* a few there_cmd_menu_far() actions use dx,dy differently */
     switch (act) {
         case NHC.MCMD_THROW_OBJ:
         case NHC.MCMD_TRAVEL:
         case NHC.MCMD_LOOK_AT:
+        /* keep dx,dy as-is */
         break;
         default:
+        /* force dx and dy to be +1, 0, or -1 */
         dx = i16(sgn(dx));
         dy = i16(sgn(dy));
         break;
     }
+
     switch (act) {
         case NHC.MCMD_TRAVEL:
+        /* FIXME: player has explicitly picked "travel to this location"
+           from the menu but it will only work if flags.travelcmd is True.
+           That option is intended as way to guard against stray mouse
+           clicks and shouldn't inhibit explicit travel. */
         cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + dx) | 0))));
         cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0))));
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dotravel_target));
@@ -5225,7 +5929,7 @@ function* act_on_act(act, dx, dy) {
             (yield* cmdq_add_ec(NHC.CQ_CANNED, doapply));
             (yield* cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet)));
             (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Lock it?" */
         }
         break;
         case NHC.MCMD_UNTRAP_DOOR:
@@ -5260,10 +5964,11 @@ function* act_on_act(act, dx, dy) {
         (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
         break;
         case NHC.MCMD_REMOVE_SADDLE:
+        /* m-prefix for #loot: skip any floor containers */
         (yield* cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu));
         (yield* cmdq_add_ec(NHC.CQ_CANNED, doloot));
         (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));
+        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Do you want to remove saddle? */
         break;
         case NHC.MCMD_APPLY_SADDLE:
         if ((otmp = carrying(NHC.SADDLE)) !== null) {
@@ -5282,17 +5987,17 @@ function* act_on_act(act, dx, dy) {
         break;
         case NHC.MCMD_NAME:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, docallcmd));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 109));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+        (yield* cmdq_add_key(NHC.CQ_CANNED, 109));  /* name a monster */
+        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));  /* getpos() uses u.ux+dx,u.uy+dy */
         break;
         case NHC.MCMD_QUAFF:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrink));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));
+        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Drink from the fountain?" */
         break;
         case NHC.MCMD_DIP:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dodip));
         (yield* cmdq_add_userinput(NHC.CQ_CANNED));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));
+        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Dip foo into the fountain?" */
         break;
         case NHC.MCMD_SIT:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dosit));
@@ -5317,11 +6022,11 @@ function* act_on_act(act, dx, dy) {
         break;
         case NHC.MCMD_TIP:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dotip));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));
+        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "There is foo here; tip it?" */
         break;
         case NHC.MCMD_EAT:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, doeat));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));
+        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "There is foo here; eat it?" */
         break;
         case NHC.MCMD_DROP:
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrop));
@@ -5356,6 +6061,8 @@ function* act_on_act(act, dx, dy) {
     }
 }
 
+/* offer choice of actions to perform at adjacent location <x,y>;
+   a few choices can be farther away */
 /** C ref: cmd.c:4843 — @param {CInt} x @param {CInt} y @param {CInt} mod @returns {CInt} */
 function* there_cmd_menu(x, y, mod) {
     let win;
@@ -5363,11 +6070,14 @@ function* there_cmd_menu(x, y, mod) {
     let npick = 0;
     let K = 0;
     let picks = cptr.box(null);
+    /*int dx = sgn(x - u.ux), dy = sgn(y - u.uy);*/
     let dx = i16(((x - cptr.ldI16(u)) | 0));
     let dy = i16(((y - cptr.ldI16o(u, $you_uy)) | 0));
     let act = cptr.box(NHC.MCMD_NOTHING);
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
+
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         K = (K + (yield* there_cmd_menu_self(win, x, y, act))) | 0;
     else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
@@ -5375,9 +6085,12 @@ function* there_cmd_menu(x, y, mod) {
     else
         K = (K + (yield* there_cmd_menu_far(win, x, y, mod))) | 0;
     K = (K + (yield* there_cmd_menu_common(win, x, y, mod, act))) | 0;
+
     if (!K) {
+        /* no menu options, try to move */
         if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && (yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), dx, dy, NHM.TEST_MOVE))) {
             let dir = xytodir(dx, dy);
+
             (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
         } else if (cptr.ld1so(flags, $flag_travelcmd)) {
             cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, x));
@@ -5388,6 +6101,7 @@ function* there_cmd_menu(x, y, mod) {
         ch = 0;
     } else if (K == 1 && act.v != NHC.MCMD_NOTHING && act.v != NHC.MCMD_TRAVEL) {
         (yield* Y.icall(destroy_nhwindow()(win)));
+
         (yield* act_on_act(act.v, dx, dy));
         return 0;
     } else {
@@ -5399,6 +6113,7 @@ function* there_cmd_menu(x, y, mod) {
     if (npick > 0) {
         act.v = cptr.ldI32(picks.v);
         cptr.free(picks.v);
+
         (yield* act_on_act(act.v, dx, dy));
         return 0;
     }
@@ -5415,6 +6130,7 @@ function* here_cmd_menu() {
 export function* click_to_cmd(x, y, mod) {
     cptr.stI16o(gc, $instance_globals_c_clicklook_cc, x);
     cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, y);
+
     if (cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn))
         (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn), $ext_func_tab_ef_funct)));
 }
@@ -5425,8 +6141,10 @@ function* domouseaction() {
     let y;
     let o;
     let dir;
+
     x = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc) - cptr.ldI16(u)) | 0));
     y = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0));
+
     if (cptr.ld1so(flags, $flag_travelcmd)) {
         if (Math.abs(x) <= 1 && Math.abs(y) <= 1) {
             x = i16(sgn(x)), y = i16(sgn(y));
@@ -5436,7 +6154,9 @@ function* domouseaction() {
             (yield* cmdq_add_ec(NHC.CQ_CANNED, dotravel_target));
             return NHM.ECMD_OK;
         }
+
         if (x == 0 && y == 0) {
+            /* here */
             if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrink));
                 return NHM.ECMD_OK;
@@ -5453,13 +6173,17 @@ function* domouseaction() {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, Is_container(o) ? doloot : dopickup));
                 return NHM.ECMD_OK;
             } else {
-                (yield* cmdq_add_ec(NHC.CQ_CANNED, donull));
+                (yield* cmdq_add_ec(NHC.CQ_CANNED, donull));  /* just rest */
                 return NHM.ECMD_OK;
             }
         }
+
+        /* directional commands */
+
         dir = xytodir(x, y);
         if (!(cptr.ldPtro3(svl, (cptr.ldI16(u) + x) | 0, 168, (cptr.ldI16o(u, $you_uy) + y) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) && !(yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, NHM.TEST_MOVE))) {
             if (((cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+                /* slight assistance to player: choose kick/open for them */
                 if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, dokick));
                     return NHM.ECMD_OK;
@@ -5477,6 +6201,7 @@ function* domouseaction() {
             return NHM.ECMD_OK;
         }
     } else {
+        /* convert without using floating point, allowing sloppy clicking */
         if (x > Math.imul(2, Math.abs(y)))
             x = 1, y = 0;
         else if (y > Math.imul(2, Math.abs(x)))
@@ -5487,16 +6212,21 @@ function* domouseaction() {
             x = 0, y = -1;
         else
             x = i16(sgn(x)), y = i16(sgn(y));
+
         if (x == 0 && y == 0) {
+            /* map click on player to "rest" command */
             (yield* cmdq_add_ec(NHC.CQ_CANNED, donull));
             return NHM.ECMD_OK;
         }
         dir = xytodir(x, y);
     }
+
+    /* move, attack, etc. */
     (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
     return NHM.ECMD_OK;
 }
 
+/* gather typed digits into a number in *count; return the next non-digit */
 /** C ref: cmd.c:5010 — @param {CPtr<char>} allowchars @param {CInt} inkey @param {CLongLong} maxcount @param {CPtr<cmdcount_nht>} count @param {CUInt} gc_flags @returns {CInt} */
 export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let qbuf = new Uint8Array(128);
@@ -5509,22 +6239,29 @@ export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let historicmsg = schar((((gc_flags & NHM.GC_SAVEHIST) >>> 0) != 0));
     let conditionalmsg = schar((((gc_flags & NHM.GC_CONDHIST) >>> 0) != 0));
     let echoalways = schar((((gc_flags & NHM.GC_ECHOFIRST) >>> 0) != 0));
+
     cptr.stI64(count, 0n);
     for (; ; ) {
         if (inkey) {
             key = inkey;
             inkey = 0;
         } else {
+            /* if readchar() has already been called in this loop, it will
+               have reset input_state; put that back to its previous value */
             cptr.stI32o(program_state, $sinfo_input_state, save_input_state);
             key = (yield* readchar());
         }
+
         if (digit(schar(key))) {
             let dgt = BigInt(((key - 48) | 0));
+
+            /* cnt = (10 * cnt) + (key - '0'); */
             cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n)) ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt)) : -1n);
             if (cnt < 0n)
                 cnt = 0n;
             else if (maxcount > 0n && cnt > maxcount)
                 cnt = maxcount;
+            /* if we've backed up to nothing, then typed 0, show that 0 */
             showzero = schar((key == 48));
         } else if (key == 8 || key == 127) {
             if (!cnt && !echoalways)
@@ -5540,6 +6277,7 @@ export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
                 (yield* impossible(__s_get_count_cmdcount_nht));
             break;
         }
+
         if (cnt > 9n || backspaced || echoalways) {
             (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             if (backspaced && !cnt && !showzero) {
@@ -5552,28 +6290,45 @@ export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
             (yield* Y.icall(mark_synch()()));
         }
     }
+
     if (historicmsg || (conditionalmsg && cptr.ldI64(count) != first)) {
         void cptr.sprintf(cptr.decay(qbuf), __s_count_ld__2, cptr.ldI64(count));
         void key2txt(uchar(key), eos(cptr.decay(qbuf)));
         (yield* Y.icall(putmsghistory()(cptr.decay(qbuf), 0)));
     }
+
     return schar(key);
 }
 
+/* main command input routine when not repeating and not executing canned
+   commands; input comes via get_count() which collects repeat count if one
+   is present and returns next non-digit to us */
 /** C ref: cmd.c:5096 @returns {CInt} */
 function* parse() {
     let foo;
     let bind;
+
     cptr.st1o(iflags, $instance_flags_in_parse, 1);
     cptr.stI64o(gc, $instance_globals_c_command_count, 0n);
-    cptr.st1o(svc, $context_info_move, 1);
-    (yield* flush_screen(1));
+    cptr.st1o(svc, $context_info_move, 1);  /* assume next command will take game time */
+    (yield* flush_screen(1));  /* Flush screen buffer. Put the cursor on the hero. */
+
+    /* affects readchar() behavior for ESC iff 'altmeta' option is On;
+       is always reset to otherInp by readchar() */
     cptr.stI32o(program_state, $sinfo_input_state, NHC.commandInp);
+
     if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) || (foo = (yield* readchar())) == cptr.ld1so2(gc, NHC.NHKF_COUNT, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+        /* if 'num_pad' is On then readchar() has just reset input_state;
+           set it back to commandInp, so that get_count() supports 'altmeta';
+           otherwise "n<count>ESC<character>" becomes "n<count>ESC" (with
+           <character> not read from keyboard yet) rather than intended count
+           and meta keystroke "n<count>M-<character>" */
         cptr.stI32o(program_state, $sinfo_input_state, NHC.commandInp);
+
         foo = (yield* get_count(null, 0, 32767n, cptr.add(gc, $instance_globals_c_command_count), NHM.GC_NOFLAGS));
     }
     cptr.stI64(gl, cptr.ldI64o(gc, $instance_globals_c_command_count));
+
     if (foo == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
         (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
         cptr.stI64o(gc, $instance_globals_c_command_count, 0n);
@@ -5581,23 +6336,39 @@ function* parse() {
     } else if (cptr.ldI32(gi)) {
         cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
     } else if (foo && (bind = cmdbind_get(uchar((foo & 255)))) !== null && bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && (cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === do_repeat || cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doprev_message || cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doextcmd)) {
+        /* gc.command_count will be set again when we
+           re-enter with gi.in_doagain set true */
         cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
     }
+
     cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gc, $instance_globals_c_command_count));
     if (cptr.ldI64o(gm, $instance_globals_m_multi))
         (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n)) - (-1n);
+
     cptr.stI32o(gc, $instance_globals_c_cmd_key, foo);
     (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
+
     cptr.st1o(iflags, $instance_flags_in_parse, 0);
     return cptr.ldI32o(gc, $instance_globals_c_cmd_key);
 }
 
+/* some very old systems, or descendents of such systems, expect signal
+   handlers to have return type `int', but they don't actually inspect
+   the return value so we should be safe using `void' unconditionally */
+/*ARGUSED*/
 /** C ref: cmd.c:5159 — @param {CInt} sig_unused */
 export function* hangup(sig_unused) {
     if (cptr.ldI32o(program_state, $sinfo_exiting))
         cptr.stI32o(program_state, $sinfo_in_moveloop, 0);
     nhwindows_hangup();
+    /* When using SAFERHANGUP, the done_hup flag is tested in rhack
+       and a couple of other places; actual hangup handling occurs then.
+       This is 'safer' because it disallows certain cheats and also
+       protects against losing objects in the process of being thrown,
+       but also potentially riskier because the disconnected program
+       must continue running longer before attempting a hangup save. */
     (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) - (1);
+    /* defer hangup iff game appears to be in progress */
     if (cptr.ldI32o(program_state, $sinfo_in_moveloop) && cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         return;
     (yield* end_of_input());
@@ -5605,8 +6376,9 @@ export function* hangup(sig_unused) {
 
 /** C ref: cmd.c:5183 */
 export function* end_of_input() {
+
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()))
-        cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
+        cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);  /* don't save in tutorial */
     if (cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         void (yield* dosave0());
     if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
@@ -5622,6 +6394,7 @@ export function* end_of_input() {
 function* readchar_core(x, y, mod) {
     let sym;
     __lbl_readchar_done: {
+
         if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             sym = randomkey();
             break __lbl_readchar_done;
@@ -5634,59 +6407,91 @@ function* readchar_core(x, y, mod) {
             sym = (yield* Y.icall(nh_poskey()(x, y, mod)));
         if (sym == -1) {
             let cnt = 20;
+            /*
+             * Some SYSV systems seem to return EOFs for various reasons
+             * (?like when one hits break or for interrupted systemcalls?),
+             * and we must see several before we quit.
+             */
             do {
-                clearerr(__stdinp);
+                clearerr(__stdinp);  /* omit if clearerr is undefined */
                 sym = (yield* pgetchar());
             } while (--cnt && sym == -1);
         }
+
         if (sym == -1) {
-            (yield* hangup(0));
+            (yield* hangup(0));  /* call end_of_input() or set program_state.done_hup */
             sym = 27;
         } else if (sym == 27 && cptr.ld1so(iflags, $instance_flags_altmeta) && cptr.ldI32o(program_state, $sinfo_input_state) != NHC.otherInp) {
+            /* iflags.altmeta: treat two character ``ESC c'' as single `M-c' but
+               only when we're called by parse() [possibly via get_count()]
+               or getpos() [to support Alt+digit] or getdir() [for arrow keys
+               under curses] */
             sym = cptr.ld1s(readchar_queue) ? cptr.ld1s(cptr.postinc(() => readchar_queue, (v) => { readchar_queue = v; })) : (yield* pgetchar());
             if (sym == -1 || sym == 0)
                 sym = 27;
             else if (sym != 27)
-                sym |= 128;
+                sym |= 128;  /* force 8th bit on */
         } else if (sym == 0) {
+            /* click event */
             cptr.stI16o(gc, $instance_globals_c_clicklook_cc, cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1));
             (yield* click_to_cmd(cptr.ldI16(x), cptr.ldI16(y), cptr.ldI32(mod)));
         }
     }
+    /* next readchar() will be for an ordinary char unless parse()
+       sets this back to non-zero */
     cptr.stI32o(program_state, $sinfo_input_state, NHC.otherInp);
     return schar(sym);
 }
 
+/* get a character */
 /** C ref: cmd.c:5276 @returns {CInt} */
 export function* readchar() {
     let ch;
     let x = cptr.box(cptr.ldI16(u));
     let y = cptr.box(cptr.ldI16o(u, $you_uy));
     let mod = cptr.box(0);
+
     ch = (yield* readchar_core(x, y, mod));
     return ch;
 }
 
+/* used by getpos() to accept mouse input as well as keyboard input */
 /** C ref: cmd.c:5288 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 export function* readchar_poskey(x, y, mod) {
     let ch;
+
     cptr.stI32o(program_state, $sinfo_input_state, NHC.getposInp);
     ch = (yield* readchar_core(x, y, mod));
     return ch;
 }
 
+/* '_' command, #travel, via keyboard rather than mouse click */
 /** C ref: cmd.c:5299 @returns {CInt} */
 function* dotravel() {
     let cc = cptr.alloc(4);
+
+    /*
+     * Traveling used to be a no-op if user toggled 'travel' option
+     * Off.  However, travel was initially implemented as a mouse-only
+     * command and the original purpose of the option was to be able
+     * to prevent clicks on the map from initiating travel.
+     *
+     * Travel via '_' came later.  Since it requires a destination--
+     * which offers the user a chance to cancel if it was accidental--
+     * there's no reason for the option to disable travel-by-keys.
+     */
+
     cptr.stI16(cc, cptr.ldI16o(iflags, $instance_flags_travelcc));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y));
     if (cptr.ldI16(cc) == 0 && cptr.ldI16o(cc, $nhcoord_y) == 0) {
+        /* No cached destination, start attempt from current position */
         cptr.stI16(cc, cptr.ldI16(u));
         cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     }
     cptr.st1o(iflags, $instance_flags_getloc_travelmode, 1);
     if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
         let gfilt = cptr.ldI32o(iflags, $instance_flags_getloc_filter);
+
         cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_VIEW);
         if (!(yield* getpos_menu(cc, NHC.GLOC_INTERESTING))) {
             cptr.stI32o(iflags, $instance_flags_getloc_filter, gfilt);
@@ -5697,48 +6502,62 @@ function* dotravel() {
     } else {
         (yield* pline(__s_where_do_you_want_to_travel_to));
         if ((yield* getpos(cc, 1, __s_the_desired_destination)) < 0) {
+            /* user pressed ESC */
             cptr.st1o(iflags, $instance_flags_getloc_travelmode, 0);
             return NHM.ECMD_CANCEL;
         }
     }
     cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, cptr.ldI16(cc)));
     cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, cptr.ldI16o(cc, $nhcoord_y)));
+
     return (yield* dotravel_target());
 }
 
+/* #retravel, travel to iflags.travelcc, which must be set */
 /** C ref: cmd.c:5348 @returns {CInt} */
 function* dotravel_target() {
     if (!isok(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
+        /* assume <0,0>, the value assigned when travel reaches destination */
         (yield* pline(__s_no_travel_destination_set));
         return NHM.ECMD_OK;
     } else if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
+        /* maybe interrupted while traveling then just walked rest of way
+           so destination hasn't been reset yet */
         (yield* You(__s_are_already_here));
         cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
         return NHM.ECMD_OK;
     }
+
     cptr.st1o(iflags, $instance_flags_getloc_travelmode, 0);
+
     cptr.st1o(svc, $context_info_travel, 1);
     cptr.st1o(svc, $context_info_travel1, 1);
     cptr.stI32o(svc, $context_info_run, 8);
     cptr.st1o(svc, $context_info_nopick, 1);
     cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
+
     if (!cptr.ldI64o(gm, $instance_globals_m_multi))
         cptr.stI64o(gm, $instance_globals_m_multi, 80n);
     cptr.stI32o(u, $you_last_str_turn, 0);
     cptr.st1o(svc, $context_info_mv, 1);
+
     (yield* domove());
     return NHM.ECMD_TIME;
 }
 
+/* mouse click look command */
 /** C ref: cmd.c:5381 @returns {CInt} */
 function* doclicklook() {
     if (!isok(cptr.ldI16o(gc, $instance_globals_c_clicklook_cc), cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)))
         return NHM.ECMD_OK;
+
     cptr.st1o(svc, $context_info_move, 0);
     (yield* auto_describe(cptr.ldI16o(gc, $instance_globals_c_clicklook_cc), cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)));
+
     return NHM.ECMD_OK;
 }
 
+/* can we use menu entries to respond to a query? */
 /** C ref: cmd.c:5394 — @param {CPtr<char>} resp @returns {CInt} */
 function yn_menuable_resp(resp) {
     return schar((cptr.ld1so(iflags, $instance_flags_query_menu) && cptr.ld1so(iflags, $instance_flags_window_inited) && (cptr.eq(resp, cptr.decay(ynchars)) || cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(rightleftchars)) || cptr.eq(resp, cptr.decay(hidespinchars))) ? 1 : 0));
@@ -5747,11 +6566,16 @@ function yn_menuable_resp(resp) {
 /** C ref: cmd.c:5402 — @param {CInt} win @param {CInt} key @param {CPtr<char>} text @param {CInt} def */
 function* yn_func_menu_opt(win, key, text, def) {
     let any = cptr.alloc(8);
+
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, key);
     (yield* add_menu(win, nul_glyphinfo.v, any, key, 0, NHM.ATR_NONE, NHM.NO_COLOR, text, (def == key) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+
 }
 
+/* use a menu to ask a specific response to a query.
+   returns TRUE if the menu was shown to the user.
+   puts the response char into res. */
 /** C ref: cmd.c:5419 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @param {CPtr<char>} res @returns {CInt} */
 function* yn_function_menu(query, resp, def, res) {
     if (yn_menuable_resp(resp)) {
@@ -5759,6 +6583,7 @@ function* yn_function_menu(query, resp, def, res) {
         let sel = cptr.box(0);
         let n;
         let keybuf = new Uint8Array(128);
+
         (yield* Y.icall(start_menu()(win, 0n)));
         if (cptr.eq(resp, cptr.decay(rightleftchars))) {
             (yield* yn_func_menu_opt(win, 114, __s_right, def));
@@ -5779,6 +6604,7 @@ function* yn_function_menu(query, resp, def, res) {
         (yield* Y.icall(destroy_nhwindow()(win)));
         if (n > 0) {
             cptr.st1(res, cptr.ld1so(sel.v, 0, $sizeof_menu_item));
+            /* two were selected? use the one that wasn't the default */
             if (n > 1 && cptr.ld1s(res) == def)
                 cptr.st1(res, cptr.ld1so(sel.v, 1, $sizeof_menu_item));
             cptr.free(sel.v);
@@ -5792,6 +6618,11 @@ function* yn_function_menu(query, resp, def, res) {
     return 0;
 }
 
+/*
+ *   Parameter validator for generic yes/no function to prevent
+ *   the core from sending too long a prompt string to the
+ *   window port causing a buffer overflow there.
+ */
 /** C ref: cmd.c:5471 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @param {CInt} addcmdq @returns {CInt} */
 export function* yn_function(query, resp, def, addcmdq) {
     let res = cptr.box(27);
@@ -5799,39 +6630,56 @@ export function* yn_function(query, resp, def, addcmdq) {
     let cq = cptr.alloc(32);
     let cmdq;
     let idx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);
-    let dumplog_buf = new Uint8Array(144);
-    cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
+    /* buffer to hold query+space+formatted_single_char_response */
+    let dumplog_buf = new Uint8Array(144);  /* [QBUFSZ+1+7] should suffice */
+
+    cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);  /* most recent pline is clobbered */
+
+    /* maximum acceptable length is QBUFSZ-1 */
     if (cptr.strlen(query) >= 128n) {
+        /* caller shouldn't have passed anything this long */
         (yield* paniclog(__s_query_truncated, query));
         void __builtin___strncpy_chk(cptr.decay(qbuf), query, 124n, __builtin_object_size(cptr.decay(qbuf), 1));
         void cptr.strcpy(cptr.add(cptr.decay(qbuf), 124, 1), __s_dot3);
         query = cptr.decay(qbuf);
     }
+
     if (addcmdq && (cmdq = cmdq_pop()) !== null) {
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
     } else {
         cptr.stI32(cq, NHC.CMDQ_USER_INPUT);
-        cptr.st1o(cq, $_cmd_queue_key, 0);
+        cptr.st1o(cq, $_cmd_queue_key, 0);  /* lint suppression */
     }
+
     if (cptr.ldI32(cq) != NHC.CMDQ_USER_INPUT) {
         if (cptr.ldI32(cq) == NHC.CMDQ_KEY)
             res.v = cptr.ld1so(cq, $_cmd_queue_key);
         else
-            cmdq_clear(NHC.CQ_CANNED);
+            cmdq_clear(NHC.CQ_CANNED);  /* 'res' is ESC */
         addcmdq = 0;
+
+        /* for the fuzzer, usually force a valid response, but sometimes let
+           it exercise windowport yn_function and invalid response handling */
     } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && rn2_at(__s_cmd_c, 5513, __s_yn_function, 20)) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));
         let ridx = rn2_at(__s_cmd_c, 5514, __s_yn_function, ln);
+
         res.v = cptr.ld1so(resp, ridx);
+        /* if valid-responses includes ESC followed by unshown candidates
+           and we randomly picked the ESC, try again with only whatever is
+           before it; be careful to avoid rn2(0) */
         if (res.v == 27) {
             if (ln > 1) {
+                /* if ESC is at start (ridx==0), pick something after it */
                 ridx = (ridx == 0) ? ((1 + rn2_at(__s_cmd_c, 5523, __s_yn_function, (ln - 1) | 0)) | 0) : rn2_at(__s_cmd_c, 5523, __s_yn_function, ridx);
                 res.v = cptr.ld1so(resp, ridx);
             } else {
-                res.v = def;
+                /* ESC is the only thing (ln==1); something is strange... */
+                res.v = def;  /* might be '\0' */
             }
         }
+
     } else {
         if (!(yield* yn_function_menu(query, resp, def, res))) {
             res.v = (yield* Y.icall((cptr.ldPtro(windowprocs, $window_procs_win_yn_function))(query, resp, def)));
@@ -5840,15 +6688,27 @@ export function* yn_function(query, resp, def, addcmdq) {
     if (addcmdq)
         (yield* cmdq_add_key(NHC.CQ_REPEAT, res.v));
     if (idx == cptr.ldI32o(gs, $instance_globals_s_saved_pline_index)) {
+        /* when idx is still the same as gs.saved_pline_index, the interface
+           didn't put the prompt into gs.saved_plines[]; we put a simplified
+           version in there now (without response choices or default) */
         void cptr.sprintf(cptr.decay(dumplog_buf), __s_pct_s_sp, query);
         void key2txt(uchar(res.v), eos(cptr.decay(dumplog_buf)));
         (yield* dumplogmsg(cptr.decay(dumplog_buf)));
     }
+    /* should not happen but cq.key has been observed to not obey 'resp';
+       it is most likely caused by saving a keystroke that was just used
+       to answer a context-sensitive prompt, then using the do-again
+       command with context that has changed */
     if (resp && cptr.ld1s(resp) && res.v && !cptr.strchr(resp, res.v)) {
+        /* this probably needs refinement since caller is expecting something
+           within 'resp' and ESC won't be (it could be present, but as a flag
+           for unshown possibilities rather than as acceptable input) */
         let altres = def ? def : 27;
+
         if (!cptr.ldI32(gi) || wizard()) {
             let fuzzing = cptr.ld1so(iflags, $instance_flags_debug_fuzzer);
             let dbg_buf = new Uint8Array(256);
+
             nh_snprintf(__s_yn_function, 5570, cptr.decay(dbg_buf), 256n, __s_s_s_s__4, query, resp ? resp : __s_empty, def ? visctrl(def) : __s_empty);
             (yield* paniclog(__s_yn_debug, cptr.decay(dbg_buf)));
             cptr.st1o(iflags, $instance_flags_debug_fuzzer, NHC.fuzzer_impossible_continue);
@@ -5857,13 +6717,20 @@ export function* yn_function(query, resp, def, addcmdq) {
         }
         res.v = schar(altres);
     }
+    /* in case we're called via getdir() which sets input_state */
     cptr.stI32o(program_state, $sinfo_input_state, NHC.otherInp);
     return res.v;
 }
 
+/* for paranoid_confirm:quit,die,attack,&c prompting; allows yes, n|no,
+   or q|quit; result is one of 'y' or 'n' or 'q'; ESC yields 'q' */
 /** C ref: cmd.c:5588 — @param {CInt} be_paranoid @param {CPtr<char>} prompt @param {CInt} accept_q @returns {CInt} */
 export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
-    let c = 110;
+    let c = 110;  /* default result */
+
+    /* when paranoid, player must respond with "yes" rather than just 'y'
+       to give the go-ahead for this query; default is "no" unless the
+       ParanoidConfirm flag is set in which case there's no default */
     if (be_paranoid) {
         let pbuf = new Uint8Array(256);
         let qbuf = new Uint8Array(128);
@@ -5871,13 +6738,22 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
         let promptprefix = __s_empty;
         let responsetype = ParanoidConfirm() ? (accept_q ? __s_yes_no_quit : __s_yes_no) : (accept_q ? __s_yes_n_q_n : __s_yes_n_n);
         let k;
-        let trylimit = 6;
+        let trylimit = 6;  /* 1 normal, 5 more with "Yes or No:" prefix */
+
         (yield* copynchars(cptr.decay(pbuf), prompt, 255));
+        /* in addition to being paranoid about this particular
+           query, we might be even more paranoid about all paranoia
+           responses (ie, ParanoidConfirm is set) in which case we
+           require "no" to reject in addition to "yes" to confirm
+           (except we won't loop if response is ESC; it means no) */
         do {
+            /* make sure we won't overflow a QBUFSZ sized buffer */
             k = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(promptprefix) + 1n) + cptr.strlen(responsetype)))));
             if (((Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(pbuf)))) + k) | 0) > 127) {
-                void cptr.strcpy(cptr.add(cptr.add(cptr.add(cptr.decay(pbuf), 127), -(k)), -(4)), __s_dot3_query);
+                /* chop off some at the end */
+                void cptr.strcpy(cptr.add(cptr.add(cptr.add(cptr.decay(pbuf), 127), -(k)), -(4)), __s_dot3_query);  /* -4: "...?" */
             }
+
             nh_snprintf(__s_paranoid_ynq, 5624, cptr.decay(qbuf), 128n, __s_s_s_s__5, promptprefix, cptr.decay(pbuf), responsetype);
             cptr.st1(cptr.decay(ans), 0);
             (yield* getlin(cptr.decay(qbuf), cptr.decay(ans)));
@@ -5890,11 +6766,15 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
                 c = 113;
                 break;
             }
+            /* we don't bother adding "or \"Quit\"" for the accept_q case */
             promptprefix = __s_yes_or_no;
+            /* for empty input, return value c will already be 'n' */
         } while (ParanoidConfirm() && (yield* strncmpi(cptr.decay((ans)), (__s_no__2), -1)) && --trylimit);
     } else if (accept_q) {
+        /* 'y', 'n', or 'q' */
         c = (yield* yn_function(prompt, cptr.decay(ynqchars), 110, 0));
     } else {
+        /* 'y' or 'n' */
         c = (yield* yn_function(prompt, cptr.decay(ynchars), 110, 0));
     }
     if (c != 121 && (c != 113 || !accept_q))
@@ -5902,29 +6782,38 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
     return c;
 }
 
+/* for paranoid_confirm:quit,die,attack,&c prompting; allows yes or n|no;
+   result is True for yes; n|no and ESC yield False */
 /** C ref: cmd.c:5655 — @param {CInt} be_paranoid @param {CPtr<char>} prompt @returns {CInt} */
 export function* paranoid_query(be_paranoid, prompt) {
     return schar(((yield* paranoid_ynq(be_paranoid, prompt, 0)) == 121));
 }
 
+/* ^Z command, #suspend */
 /** C ref: cmd.c:5662 @returns {CInt} */
 function* dosuspend_core() {
+    /* Does current window system support suspend? */
     if ((yield* Y.icall((cptr.ldPtro(windowprocs, $window_procs_win_can_suspend))()))) {
         let now = (yield* getnow());
+
         cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
-        cptr.stI64o(urealtime, $u_realtime_start_timing, now);
+        cptr.stI64o(urealtime, $u_realtime_start_timing, now);  /* as a safeguard against panic save */
+        /* NB: SYSCF SHELLERS handled in port code. */
         (yield* dosuspend());
-        cptr.stI64o(urealtime, $u_realtime_start_timing, (yield* getnow()));
+        cptr.stI64o(urealtime, $u_realtime_start_timing, (yield* getnow()));  /* resume keeping track of time */
     } else
         (yield* Norep(cptr.decay(cmdnotavail), __s_suspend__2));
     return NHM.ECMD_OK;
 }
 
+/* '!' command, #shell */
 /** C ref: cmd.c:5682 @returns {CInt} */
 function* dosh_core() {
     let now = (yield* getnow());
+
     cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
-    cptr.stI64o(urealtime, $u_realtime_start_timing, now);
+    cptr.stI64o(urealtime, $u_realtime_start_timing, now);  /* (see dosuspend_core) */
+    /* access restrictions, if any, are handled in port code */
     (yield* dosh());
     cptr.stI64o(urealtime, $u_realtime_start_timing, (yield* getnow()));
     return NHM.ECMD_OK;

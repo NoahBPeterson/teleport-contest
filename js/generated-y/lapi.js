@@ -71,6 +71,10 @@ const __s_no_name = cptr.lit("(no name)");
 /** C ref: lapi.c:35 — char[129] */
 export const lua_ident = cptr.bytes("$LuaVersion: Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio $$LuaAuthors: R. Ierusalimschy, L. H. de Figueiredo, W. Celes $");
 
+/*
+** Convert an acceptable index to a pointer to its respective value.
+** Non-valid indices return the special nil value 'G(L)->nilvalue'.
+*/
 /** C ref: lapi.c:60 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<TValue>} */
 function index2value(L, idx) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
@@ -94,11 +98,14 @@ function index2value(L, idx) {
             return (idx <= cptr.ld1uo(func, $CClosure_nupvalues)) ? cptr.add(cptr.add(func, $CClosure_upvalue), (idx - 1) | 0, $sizeof_TValue) : cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue);
         } else {
             (void L, (void 0));
-            return cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue);
+            return cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue);  /* no upvalues */
         }
     }
 }
 
+/*
+** Convert a valid actual index (not a pseudo-index) to its address.
+*/
 /** C ref: lapi.c:95 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {*} */
 function index2stack(L, idx) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
@@ -121,11 +128,11 @@ export function* lua_checkstack(L, n) {
     ci = cptr.ldPtro(L, $lua_State_ci);
     (void L, (void 0));
     if (cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n > BigInt(n))
-        res = 1;
+        res = 1;  /* yes; check is OK */
     else
         res = (yield* luaD_growstack(L, n, 0));
     if (res && cptr.cmp(cptr.ldPtro(ci, $CallInfo_top), cptr.add(cptr.ldPtro(L, $lua_State_top), n, 16)) < 0)
-        cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(L, $lua_State_top), n, 16));
+        cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(L, $lua_State_top), n, 16));  /* adjust frame top */
     (void 0);
     return res;
 }
@@ -150,7 +157,7 @@ export function* lua_xmove(from, to, n) {
             (void 0);
         }
         ;
-        cptr.postinc(() => cptr.ldPtro(to, $lua_State_top), (v) => { cptr.stPtro(to, $lua_State_top, v); }, 16);
+        cptr.postinc(() => cptr.ldPtro(to, $lua_State_top), (v) => { cptr.stPtro(to, $lua_State_top, v); }, 16);  /* stack already checked by previous 'api_check' */
     }
     (void 0);
 }
@@ -171,6 +178,13 @@ export function lua_version(L) {
     return 504;
 }
 
+/*
+** basic stack manipulation
+*/
+
+/*
+** convert an acceptable stack index into an absolute index
+*/
 /** C ref: lapi.c:169 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_absindex(L, idx) {
     return (idx > 0 || ((idx) <= -1001000)) ? idx : ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci))) / 16n))))) + idx) | 0;
@@ -186,7 +200,7 @@ export function* lua_settop(L, idx) {
     let ci;
     let func;
     let newtop;
-    let diff;
+    let diff;  /* difference for new top */
     (void 0);
     ci = cptr.ldPtro(L, $lua_State_ci);
     func = cptr.ldPtr(ci);
@@ -194,10 +208,10 @@ export function* lua_settop(L, idx) {
         (void L, (void 0));
         diff = cptr.diff((cptr.add((cptr.add(func, 1, 16)), idx, 16)), cptr.ldPtro(L, $lua_State_top)) / 16n;
         for (; diff > 0n; diff--)
-            (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16)))), $TValue_tt_, 0));
+            (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16)))), $TValue_tt_, 0));  /* clear new slots */
     } else {
         (void L, (void 0));
-        diff = BigInt(((idx + 1) | 0));
+        diff = BigInt(((idx + 1) | 0));  /* will "subtract" index (as it is negative) */
     }
     (void L, (void 0));
     newtop = cptr.add(cptr.ldPtro(L, $lua_State_top), diff, 16);
@@ -205,7 +219,7 @@ export function* lua_settop(L, idx) {
         (void 0);
         newtop = (yield* luaF_close(L, newtop, -1, 0));
     }
-    cptr.stPtro(L, $lua_State_top, newtop);
+    cptr.stPtro(L, $lua_State_top, newtop);  /* correct top only after closing any upvalue */
     (void 0);
 }
 
@@ -220,6 +234,12 @@ export function* lua_closeslot(L, idx) {
     (void 0);
 }
 
+/*
+** Reverse the stack segment from 'from' to 'to'
+** (auxiliary to 'lua_rotate')
+** Note that we move(copy) only the value inside the stack.
+** (We do not move additional fields that may exist.)
+*/
 /** C ref: lapi.c:227 — @param {CPtr<lua_State>} L @param {CPtr} from @param {CPtr} to */
 function reverse(L, from, to) {
     for (; cptr.cmp(from, to) < 0; from = cptr.add(from, 1, 16), to = cptr.add(to, -1, 16)) {
@@ -254,19 +274,23 @@ function reverse(L, from, to) {
     }
 }
 
+/*
+** Let x = AB, where A is a prefix of length 'n'. Then,
+** rotate x n == BA. But BA == (A^r . B^r)^r.
+*/
 /** C ref: lapi.c:241 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CInt} n */
 export function lua_rotate(L, idx, n) {
     let p;
     let t;
     let m;
     (void 0);
-    t = cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16);
-    p = index2stack(L, idx);
+    t = cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16);  /* end of stack segment being rotated */
+    p = index2stack(L, idx);  /* start of segment */
     (void L, (void 0));
-    m = (n >= 0 ? cptr.add(t, -(n), 16) : cptr.add(cptr.add(p, -(n), 16), -(1), 16));
-    reverse(L, p, m);
-    reverse(L, cptr.add(m, 1, 16), t);
-    reverse(L, p, t);
+    m = (n >= 0 ? cptr.add(t, -(n), 16) : cptr.add(cptr.add(p, -(n), 16), -(1), 16));  /* end of prefix */
+    reverse(L, p, m);  /* reverse the prefix with length 'n' */
+    reverse(L, cptr.add(m, 1, 16), t);  /* reverse the suffix */
+    reverse(L, p, t);  /* reverse the entire segment */
     (void 0);
 }
 
@@ -289,6 +313,8 @@ export function lua_copy(L, fromidx, toidx) {
     ;
     if (((toidx) < -1001000))
         (((cptr.ld1uo((fr), $TValue_tt_)) & 64) ? ((((cptr.ld1uo((((((((cptr.ldPtr(((((cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)))))))))))))), $CClosure_marked)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((fr))))), $GCObject_marked)) & 24)) ? luaC_barrier_(L, ((((((((((cptr.ldPtr(((((cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci))))))))))))))))), (((((cptr.ldPtr(((fr))))))))) : (void 0)) : (void 0));
+    /* LUA_REGISTRYINDEX does not need gc barrier
+       (collector revisits it before finishing collection) */
     (void 0);
 }
 
@@ -311,6 +337,10 @@ export function* lua_pushvalue(L, idx) {
     ;
     (void 0);
 }
+
+/*
+** access functions (stack -> C)
+*/
 
 /** C ref: lapi.c:284 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_type(L, idx) {
@@ -367,7 +397,7 @@ export function* lua_rawequal(L, index1, index2) {
 export function* lua_arith(L, op) {
     (void 0);
     if (op != 12 && op != 13)
-        (void L, (void 0));
+        (void L, (void 0));  /* all other operations expect two operands */
     else {
         (void L, (void 0));
         {
@@ -385,8 +415,9 @@ export function* lua_arith(L, op) {
         }
         ;
     }
+    /* first operand at top - 2, second at top - 1; result go to top - 2 */
     (yield* luaO_arith(L, op, ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))), ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))), cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16)));
-    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* remove second operand */
     (void 0);
 }
 
@@ -395,7 +426,7 @@ export function* lua_compare(L, index1, index2, op) {
     let o1;
     let o2;
     let i = 0;
-    (void 0);
+    (void 0);  /* may call tag method */
     o1 = index2value(L, index1);
     o2 = index2value(L, index2);
     if ((!(((((cptr.ld1uo(((o1)), $TValue_tt_))) & 15)) == 0) || !cptr.eq(o1, cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue))) && (!(((((cptr.ld1uo(((o2)), $TValue_tt_))) & 15)) == 0) || !cptr.eq(o2, cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue)))) {
@@ -477,7 +508,7 @@ export function* lua_tolstring(L, idx, len) {
             (void 0);
         }
         ;
-        o = index2value(L, idx);
+        o = index2value(L, idx);  /* previous call may reallocate the stack */
     }
     if (!cptr.eq(len, (null)))
         cptr.stU64(len, (cptr.ld1uo((((((((cptr.ldPtr(((o)))))))))), $TString_shrlen) != 255 ? BigInt(cptr.ld1uo((((((((cptr.ldPtr(((o)))))))))), $TString_shrlen) >>> 0) : cptr.ldU64o((((((((cptr.ldPtr(((o)))))))))), $TString_u)));
@@ -510,7 +541,7 @@ export function lua_tocfunction(L, idx) {
     else if (((cptr.ld1uo(((o)), $TValue_tt_)) == 102))
         return cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $CClosure_f);
     else
-        return null;
+        return null;  /* not a C function */
 }
 
 /** C ref: lapi.c:447 — @param {CPtr<TValue>} o @returns {CPtr<void>} */
@@ -537,6 +568,13 @@ export function lua_tothread(L, idx) {
     return (!((cptr.ld1uo(((o)), $TValue_tt_)) == 72)) ? null : ((((((cptr.ldPtr(((o)))))))));
 }
 
+/*
+** Returns a pointer to the internal representation of an object.
+** Note that ANSI C does not allow the conversion of a pointer to
+** function to a 'void*', so the conversion here goes through
+** a 'size_t'. (As the returned pointer is only informative, this
+** conversion should not be a problem.)
+*/
 /** C ref: lapi.c:475 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<void>} */
 export function lua_topointer(L, idx) {
     let o = index2value(L, idx);
@@ -555,6 +593,10 @@ export function lua_topointer(L, idx) {
         }
     }
 }
+
+/*
+** push functions (C -> stack)
+*/
 
 /** C ref: lapi.c:497 — @param {CPtr<lua_State>} L */
 export function* lua_pushnil(L) {
@@ -602,6 +644,11 @@ export function* lua_pushinteger(L, n) {
     (void 0);
 }
 
+/*
+** Pushes on the stack a string with given length. Avoid using 's' when
+** 'len' == 0 (as 's' can be NULL in that case), due to later use of
+** 'memcmp' and 'memcpy'.
+*/
 /** C ref: lapi.c:526 — @param {CPtr<lua_State>} L @param {CPtr<char>} s @param {CLongLong} len @returns {CPtr<char>} */
 export function* lua_pushlstring(L, s, len) {
     let ts;
@@ -650,7 +697,7 @@ export function* lua_pushstring(L, s) {
             (void L, (void 0));
         }
         ;
-        s = (cptr.add((ts), $TString_contents));
+        s = (cptr.add((ts), $TString_contents));  /* internal copy's address */
     }
     {
         cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
@@ -744,6 +791,7 @@ export function* lua_pushcclosure(L, fn, n) {
                 (void 0);
             }
             ;
+            /* does not need barrier because closure is white */
             (void 0);
         }
         {
@@ -824,6 +872,10 @@ export function* lua_pushthread(L) {
     (void 0);
     return (cptr.eq(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread), L));
 }
+
+/*
+** get functions (Lua -> stack)
+*/
 
 /** C ref: lapi.c:639 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<char>} k @returns {CInt} */
 function* auxgetstr(L, t, k) {
@@ -972,7 +1024,7 @@ export function* lua_rawget(L, idx) {
     (void L, (void 0));
     t = gettable(L, idx);
     val = luaH_get(t, ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
-    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* remove key */
     return (yield* finishrawget(L, val));
 }
 
@@ -1101,6 +1153,13 @@ export function* lua_getiuservalue(L, idx, n) {
     return t;
 }
 
+/*
+** set functions (stack -> Lua)
+*/
+
+/*
+** t[k] = value at the top of the stack (where 'k' is a string)
+*/
 /** C ref: lapi.c:829 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<char>} k */
 function* auxsetstr(L, t, k) {
     let slot;
@@ -1120,10 +1179,10 @@ function* auxsetstr(L, t, k) {
             (((cptr.ld1uo((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))), $TValue_tt_)) & 64) ? ((((cptr.ld1uo(((cptr.ldPtr(((t))))), $GCObject_marked)) & 32) && ((cptr.ld1uo(((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))))))), $GCObject_marked)) & 24)) ? luaC_barrierback_(L, (cptr.ldPtr(((t))))) : (void 0)) : (void 0));
         }
         ;
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop value */
     } else {
         {
-            let io = (((cptr.ldPtro(L, $lua_State_top))));
+            let io = (((cptr.ldPtro(L, $lua_State_top))));  /* push 'str' (to make it a TValue) */
             let x_ = (str);
             cptr.stPtr(((io)), ((((x_)))));
             (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
@@ -1136,15 +1195,15 @@ function* auxsetstr(L, t, k) {
         }
         ;
         (yield* luaV_finishset(L, t, ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))), ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))), slot));
-        cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), 2, 16));
+        cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), 2, 16));  /* pop value and key */
     }
-    (void 0);
+    (void 0);  /* lock done by caller */
 }
 
 /** C ref: lapi.c:847 — @param {CPtr<lua_State>} L @param {CPtr<char>} name */
 export function* lua_setglobal(L, name) {
     let G;
-    (void 0);
+    (void 0);  /* unlock done in 'auxsetstr' */
     G = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, $sizeof_TValue));
     (yield* auxsetstr(L, G, name));
 }
@@ -1172,13 +1231,13 @@ export function* lua_settable(L, idx) {
         ;
     } else
         (yield* luaV_finishset(L, t, ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))), ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))), slot));
-    cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), 2, 16));
+    cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), 2, 16));  /* pop index and value */
     (void 0);
 }
 
 /** C ref: lapi.c:871 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<char>} k */
 export function* lua_setfield(L, idx, k) {
-    (void 0);
+    (void 0);  /* unlock done in 'auxsetstr' */
     (yield* auxsetstr(L, index2value(L, idx), k));
 }
 
@@ -1213,7 +1272,7 @@ export function* lua_seti(L, idx, n) {
         ;
         (yield* luaV_finishset(L, t, aux, ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))), slot));
     }
-    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop value */
     (void 0);
 }
 
@@ -1311,7 +1370,7 @@ export function* lua_setiuservalue(L, idx, n) {
     o = index2value(L, idx);
     (void L, (void 0));
     if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldU16o(((((((cptr.ldPtr(((o))))))))), $Udata_nuvalue))))))
-        res = 0;
+        res = 0;  /* 'n' not in [1, uvalue(o)->nuvalue] */
     else {
         {
             let io1 = (cptr.add(cptr.add(((((((cptr.ldPtr(((o))))))))), $Udata_uv), (n - 1) | 0, $sizeof_UValue));
@@ -1340,11 +1399,11 @@ export function* lua_callk(L, nargs, nresults, ctx, k) {
     (void L, (void 0));
     func = cptr.add(cptr.ldPtro(L, $lua_State_top), -(((nargs + 1) | 0)), 16);
     if (k !== (null) && (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0)) {
-        cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u, k);
-        cptr.stI64o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u + 16, ctx);
-        (yield* luaD_call(L, func, nresults));
+        cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u, k);  /* save continuation */
+        cptr.stI64o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u + 16, ctx);  /* save context */
+        (yield* luaD_call(L, func, nresults));  /* do the call */
     } else
-        (yield* luaD_callnoyield(L, func, nresults));
+        (yield* luaD_callnoyield(L, func, nresults));  /* just do the call */
     {
         if ((nresults) <= -1 && cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top), cptr.ldPtro(L, $lua_State_top)) < 0)
             cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top, cptr.ldPtro(L, $lua_State_top));
@@ -1353,6 +1412,9 @@ export function* lua_callk(L, nargs, nresults, ctx, k) {
     (void 0);
 }
 
+/*
+** Execute a protected call.
+*/
 /** C ref: lapi.c:1030 — struct CallS { func, nresults } (memory model v0.5) */
 
 /** C ref: lapi.c:1036 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
@@ -1378,23 +1440,24 @@ export function* lua_pcallk(L, nargs, nresults, errfunc, ctx, k) {
         (void L, (void 0));
         func = (cptr.diff((((o))), (((cptr.ldPtro(L, $lua_State_stack))))));
     }
-    cptr.stPtr(c, cptr.add(cptr.ldPtro(L, $lua_State_top), -(((nargs + 1) | 0)), 16));
+    cptr.stPtr(c, cptr.add(cptr.ldPtro(L, $lua_State_top), -(((nargs + 1) | 0)), 16));  /* function to be called */
     if (k === (null) || !(((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0)) {
-        cptr.stI32o(c, $CallS_nresults, nresults);
+        cptr.stI32o(c, $CallS_nresults, nresults);  /* do a 'conventional' protected call */
         status = (yield* luaD_pcall(L, f_call, c, (cptr.diff((((cptr.ldPtr(c)))), (((cptr.ldPtro(L, $lua_State_stack)))))), func));
     } else {
         let ci = cptr.ldPtro(L, $lua_State_ci);
-        cptr.stPtro(ci, $CallInfo_u, k);
-        cptr.stI64o(ci, $CallInfo_u + 16, ctx);
+        cptr.stPtro(ci, $CallInfo_u, k);  /* save continuation */
+        cptr.stI64o(ci, $CallInfo_u + 16, ctx);  /* save context */
+        /* save information for error recovery */
         cptr.stI32o(ci, $CallInfo_u2, (Number(BigInt.asIntN(32, (((cptr.diff((((cptr.ldPtr(c)))), (((cptr.ldPtro(L, $lua_State_stack))))))))))));
         cptr.stI64o(ci, $CallInfo_u + 8, cptr.ldI64o(L, $lua_State_errfunc));
         cptr.stI64o(L, $lua_State_errfunc, func);
-        (cptr.stI16o(ci, $CallInfo_callstatus, u16((((cptr.ldU16o(ci, $CallInfo_callstatus)) & -2) | (cptr.ld1uo(L, $lua_State_allowhook))))));
-        cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | 16);
-        (yield* luaD_call(L, cptr.ldPtr(c), nresults));
+        (cptr.stI16o(ci, $CallInfo_callstatus, u16((((cptr.ldU16o(ci, $CallInfo_callstatus)) & -2) | (cptr.ld1uo(L, $lua_State_allowhook))))));  /* save value of 'allowhook' */
+        cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | 16);  /* function can do error recovery */
+        (yield* luaD_call(L, cptr.ldPtr(c), nresults));  /* do the call */
         cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & -17);
         cptr.stI64o(L, $lua_State_errfunc, cptr.ldI64o(ci, $CallInfo_u + 8));
-        status = 0;
+        status = 0;  /* if it is here, there were no errors */
     }
     {
         if ((nresults) <= -1 && cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top), cptr.ldPtro(L, $lua_State_top)) < 0)
@@ -1415,10 +1478,12 @@ export function* lua_load(L, reader, data, chunkname, mode) {
     luaZ_init(L, z, reader, data);
     status = (yield* luaD_protectedparser(L, z, chunkname, mode));
     if (status == 0) {
-        let f = ((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))));
+        let f = ((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))));  /* get new function */
         if (cptr.ld1uo(f, $LClosure_nupvalues) >= 1) {
+            /* get global table from registry */
             let gt = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, $sizeof_TValue));
             {
+                /* set global table as 1st upvalue of 'f' (may be LUA_ENV) */
                 let io1 = (cptr.ldPtro(cptr.ldPtro2(f, 0, 8, $LClosure_upvals), $UpVal_v));
                 let io2 = (gt);
                 cptr.memcpy(io1, io2, 8);
@@ -1454,25 +1519,28 @@ export function lua_status(L) {
     return cptr.ld1uo(L, $lua_State_status);
 }
 
+/*
+** Garbage-collection function
+*/
 /** C ref: lapi.c:1133 — @param {CPtr<lua_State>} L @param {CInt} what @returns {CInt} */
 export function* lua_gc(L, what, ...__va) {
     let argp;
     let res = 0;
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (cptr.ld1uo(g, $global_State_gcstp) & 2)
-        return -1;
+        return -1;  /* all options are invalid when stopped */
     (void 0);
     argp = cptr.vaList(__va);
     switch (what) {
         case 0:
         {
-            cptr.st1o(g, $global_State_gcstp, 1);
+            cptr.st1o(g, $global_State_gcstp, 1);  /* stopped by the user */
             break;
         }
         case 1:
         {
             luaE_setdebt(g, 0n);
-            cptr.st1o(g, $global_State_gcstp, 0);
+            cptr.st1o(g, $global_State_gcstp, 0);  /* (GCSTPGC must be already zero here) */
             break;
         }
         case 2:
@@ -1482,6 +1550,7 @@ export function* lua_gc(L, what, ...__va) {
         }
         case 3:
         {
+            /* GC values are expressed in Kbytes: #bytes/2^10 */
             res = (Number(BigInt.asIntN(32, (((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) >> 10n)))));
             break;
         }
@@ -1493,11 +1562,11 @@ export function* lua_gc(L, what, ...__va) {
         case 5:
         {
             let data = cptr.vaArg(argp, 'i32');
-            let debt = 1n;
+            let debt = 1n;  /* =1 to signal that it did an actual step */
             let oldstp = cptr.ld1uo(g, $global_State_gcstp);
-            cptr.st1o(g, $global_State_gcstp, 0);
+            cptr.st1o(g, $global_State_gcstp, 0);  /* allow GC to run (GCSTPGC must be zero here) */
             if (data == 0) {
-                luaE_setdebt(g, 0n);
+                luaE_setdebt(g, 0n);  /* do a basic step */
                 (yield* luaC_step(L));
             } else {
                 debt = BigInt.asIntN(64, BigInt.asIntN(64, (BigInt((data))) * 1024n) + cptr.ldI64o(g, $global_State_GCdebt));
@@ -1513,9 +1582,9 @@ export function* lua_gc(L, what, ...__va) {
                 }
                 ;
             }
-            cptr.st1o(g, $global_State_gcstp, oldstp);
+            cptr.st1o(g, $global_State_gcstp, oldstp);  /* restore previous state */
             if (debt > 0n && cptr.ld1uo(g, $global_State_gcstate) == 8)
-                res = 1;
+                res = 1;  /* signal it */
             break;
         }
         case 6:
@@ -1565,12 +1634,16 @@ export function* lua_gc(L, what, ...__va) {
             break;
         }
         default:
-        res = -1;
+        res = -1;  /* invalid option */
     }
     argp = null;
     (void 0);
     return res;
 }
+
+/*
+** miscellaneous functions
+*/
 
 /** C ref: lapi.c:1238 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lua_error(L) {
@@ -1578,11 +1651,13 @@ export function* lua_error(L) {
     (void 0);
     errobj = ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)));
     (void L, (void 0));
+    /* error object is the memory error message? */
     if (((cptr.ld1uo(((errobj)), $TValue_tt_)) == 68) && (cptr.eq((((((((cptr.ldPtr(((errobj)))))))))), (cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_memerrmsg)))))
-        (yield* luaD_throw(L, 4));
+        (yield* luaD_throw(L, 4));  /* raise a memory error */
     else
-        (yield* luaG_errormsg(L));
-    return 0;
+        (yield* luaG_errormsg(L));  /* raise a regular error */
+    /* code unreachable; will unlock when control actually leaves the kernel */
+    return 0;  /* to avoid warnings */
 }
 
 /** C ref: lapi.c:1253 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
@@ -1600,7 +1675,7 @@ export function* lua_next(L, idx) {
         }
         ;
     } else
-        cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), 1, 16));
+        cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), 1, 16));  /* remove key */
     (void 0);
     return more;
 }
@@ -1613,9 +1688,9 @@ export function* lua_toclose(L, idx) {
     o = index2stack(L, idx);
     nresults = cptr.ldI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_nresults);
     (void L, (void 0));
-    (yield* luaF_newtbcupval(L, o));
+    (yield* luaF_newtbcupval(L, o));  /* create new to-be-closed upvalue */
     if (!((nresults) < -1))
-        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_nresults, i16(((-(nresults) - 3) | 0)));
+        cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_nresults, i16(((-(nresults) - 3) | 0)));  /* mark it */
     (void 0);
     (void 0);
 }
@@ -1628,7 +1703,7 @@ export function* lua_concat(L, n) {
         (yield* luaV_concat(L, n));
     else {
         {
-            let io = (((cptr.ldPtro(L, $lua_State_top))));
+            let io = (((cptr.ldPtro(L, $lua_State_top))));  /* push empty string */
             let x_ = ((yield* luaS_newlstr(L, __s_empty, 0n)));
             cptr.stPtr(((io)), ((((x_)))));
             (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
@@ -1742,7 +1817,7 @@ function aux_upvalue(fi, n, val, owner) {
         {
             let f = ((((((cptr.ldPtr(((fi)))))))));
             if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ld1uo(f, $CClosure_nupvalues))))))
-                return null;
+                return null;  /* 'n' not in [1, f->nupvalues] */
             cptr.stPtr(val, cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue));
             if (owner)
                 cptr.stPtr(owner, ((((f)))));
@@ -1754,7 +1829,7 @@ function aux_upvalue(fi, n, val, owner) {
             let name;
             let p = cptr.ldPtro(f, $LClosure_p);
             if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldI32o(p, $Proto_sizeupvalues))) >>> 0)))
-                return null;
+                return null;  /* 'n' not in [1, p->sizeupvalues] */
             cptr.stPtr(val, cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v));
             if (owner)
                 cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
@@ -1762,14 +1837,14 @@ function aux_upvalue(fi, n, val, owner) {
             return (cptr.eq(name, (null))) ? __s_no_name : (cptr.add((name), $TString_contents));
         }
         default:
-        return null;
+        return null;  /* not a closure */
     }
 }
 
 /** C ref: lapi.c:1384 — @param {CPtr<lua_State>} L @param {CInt} funcindex @param {CInt} n @returns {CPtr<char>} */
 export function* lua_getupvalue(L, funcindex, n) {
     let name;
-    let val = cptr.box(null);
+    let val = cptr.box(null);  /* to avoid warnings */
     (void 0);
     name = aux_upvalue(index2value(L, funcindex), n, val, null);
     if (name) {
@@ -1795,8 +1870,8 @@ export function* lua_getupvalue(L, funcindex, n) {
 /** C ref: lapi.c:1398 — @param {CPtr<lua_State>} L @param {CInt} funcindex @param {CInt} n @returns {CPtr<char>} */
 export function* lua_setupvalue(L, funcindex, n) {
     let name;
-    let val = cptr.box(null);
-    let owner = cptr.box(null);
+    let val = cptr.box(null);  /* to avoid warnings */
+    let owner = cptr.box(null);  /* to avoid warnings */
     let fi;
     (void 0);
     fi = index2value(L, funcindex);
@@ -1830,7 +1905,7 @@ function getupvalref(L, fidx, n, pf) {
     if (pf)
         cptr.stPtr(pf, f);
     if (1 <= n && n <= cptr.ldI32o(cptr.ldPtro(f, $LClosure_p), $Proto_sizeupvalues))
-        return cptr.add(cptr.add(f, $LClosure_upvals), (n - 1) | 0, 8);
+        return cptr.add(cptr.add(f, $LClosure_upvals), (n - 1) | 0, 8);  /* get its upvalue pointer */
     else
         return __static_getupvalref_nullup;
 }
@@ -1848,9 +1923,10 @@ export function lua_upvalueid(L, fidx, n) {
             let f = ((((((cptr.ldPtr(((fi)))))))));
             if (1 <= n && n <= cptr.ld1uo(f, $CClosure_nupvalues))
                 return cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue);
-        }
+            /* else */
+        }  /* FALLTHROUGH */
         case 22:
-        return (null);
+        return (null);  /* light C functions have no upvalues */
         default:
         {
             (void L, (void 0));

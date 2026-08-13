@@ -305,6 +305,58 @@ export let decgraphics_mode_callback = cptr.box(null);
 /** C ref: symbols.c:28 — void (*)(void) */
 export let utf8graphics_mode_callback = cptr.box(null);
 
+/*
+ * Explanations of the functions found below:
+ *
+ * init_symbols()
+ *                     Sets the current display symbols, the
+ *                     loadable symbols to the default NetHack
+ *                     symbols, including the rogue_syms rogue level
+ *                     symbols. This would typically be done
+ *                     immediately after execution begins. Any
+ *                     previously loaded external symbol sets are
+ *                     discarded.
+ *
+ * switch_symbols(arg)
+ *                     Called to swap in new current display symbols
+ *                     (showsyms) from either the default symbols,
+ *                     or from the loaded symbols.
+ *
+ *                     If (arg == 0) then showsyms are taken from
+ *                     defsyms, def_oc_syms, and def_monsyms.
+ *
+ *                     If (arg != 0), which is the normal expected
+ *                     usage, then showsyms are taken from the
+ *                     adjustable display symbols found in gp.primary_syms.
+ *                     gp.primary_syms may have been loaded from an external
+ *                     symbol file by config file options or interactively
+ *                     in the Options menu.
+ *
+ * assign_graphics(arg)
+ *
+ *                     This is used in the game core to toggle in and
+ *                     out of other {rogue} level display modes.
+ *
+ *                     If arg is ROGUESET, this places the rogue level
+ *                     symbols from gr.rogue_syms into gs.showsyms.
+ *
+ *                     If arg is PRIMARYSET, this places the symbols
+ *                     from gp.primary_syms into gs.showsyms.
+ *
+ * update_primary_symset()
+ *                     Update a member of the primary(primary_*) symbol set.
+ *
+ * update_rogue_symset()
+ *                     Update a member of the rogue (rogue_*) symbol set.
+ *
+ * update_ov_primary_symset()
+ *                     Update a member of the overrides for primary symbol set.
+ *
+ * update_ov_rogue_symset()
+ *                     Update a member of the overrides for rogue symbol set.
+ *
+ */
+
 /** C ref: symbols.c:85 */
 export function init_symbols() {
     init_ov_primary_symbols();
@@ -317,6 +369,7 @@ export function init_symbols() {
 /** C ref: symbols.c:95 */
 export function init_showsyms() {
     let i;
+
     for (i = 0; i < NHC.MAXPCHARS; i++)
         cptr.st1o2(gs, (i + NHM.SYM_OFF_P) | 0, 1, $instance_globals_s_showsyms, cptr.ld1uo(defsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
@@ -329,16 +382,20 @@ export function init_showsyms() {
         cptr.st1o2(gs, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, $instance_globals_s_showsyms, get_othersym(i, NHC.PRIMARYSET));
 }
 
+/* initialize defaults for the overrides to the rogue symset */
 /** C ref: symbols.c:113 */
 export function init_ov_rogue_symbols() {
     let i;
+
     for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
         cptr.st1o2(go, i, 1, $instance_globals_o_ov_rogue_syms, 0);
 }
 
+/* initialize defaults for the overrides to the primary symset */
 /** C ref: symbols.c:122 */
 export function init_ov_primary_symbols() {
     let i;
+
     for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
         cptr.st1o2(go, i, 1, $instance_globals_o_ov_primary_syms, 0);
 }
@@ -347,6 +404,7 @@ export function init_ov_primary_symbols() {
 export function get_othersym(idx, which_set) {
     let sym = 0;
     let oidx = (idx + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0;
+
     if (which_set == NHC.ROGUESET)
         sym = uchar((cptr.ld1uo2(go, oidx, 1, $instance_globals_o_ov_rogue_syms) ? cptr.ld1uo2(go, oidx, 1, $instance_globals_o_ov_rogue_syms) : cptr.ld1uo(gr, oidx, 1)));
     else
@@ -368,9 +426,11 @@ export function get_othersym(idx, which_set) {
     return sym;
 }
 
+/* initialize defaults for the primary symset */
 /** C ref: symbols.c:167 */
 export function init_primary_symbols() {
     let i;
+
     for (i = 0; i < NHC.MAXPCHARS; i++)
         cptr.st1o2(gp, (i + NHM.SYM_OFF_P) | 0, 1, $instance_globals_p_primary_syms, cptr.ld1uo(defsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
@@ -381,16 +441,23 @@ export function init_primary_symbols() {
         cptr.st1o2(gp, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, $instance_globals_p_primary_syms, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o2(gp, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, $instance_globals_p_primary_syms, get_othersym(i, NHC.PRIMARYSET));
+
     clear_symsetentry(NHC.PRIMARYSET, 0);
 }
 
+/* initialize defaults for the rogue symset */
 /** C ref: symbols.c:187 */
 export function init_rogue_symbols() {
     let i;
+
+    /* These are defaults that can get overwritten
+       later by the roguesymbols option */
+
     for (i = 0; i < NHC.MAXPCHARS; i++)
         cptr.st1o(gr, (i + NHM.SYM_OFF_P) | 0, cptr.ld1uo(defsyms, i, $sizeof_symdef), 1);
     cptr.st1o(gr, NHC.S_vodoor, cptr.st1o(gr, NHC.S_hodoor, cptr.st1o(gr, NHC.S_ndoor, 43, 1), 1), 1);
     cptr.st1o(gr, NHC.S_upstair, cptr.st1o(gr, NHC.S_dnstair, 37, 1), 1);
+
     for (i = 0; i < NHC.MAXOCLASSES; i++)
         cptr.st1o(gr, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, cptr.ld1uo(cptr.decay(def_r_oc_syms), i, 1), 1);
     for (i = 0; i < NHC.MAXMCLASSES; i++)
@@ -399,15 +466,22 @@ export function init_rogue_symbols() {
         cptr.st1o(gr, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef), 1);
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o(gr, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, get_othersym(i, NHC.ROGUESET), 1);
+
     clear_symsetentry(NHC.ROGUESET, 0);
+    /* default on Rogue level is no color
+     * but some symbol sets can override that
+     */
     cptr.stI32o2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor, 1);
 }
 
 /** C ref: symbols.c:217 — @param {CInt} whichset */
 export function assign_graphics(whichset) {
     let i;
+
     switch (whichset) {
         case NHC.ROGUESET:
+        /* Adjust graphics display characters on Rogue levels */
+
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
             cptr.st1o2(gs, i, 1, $instance_globals_s_showsyms, uchar((cptr.ld1uo2(go, i, 1, $instance_globals_o_ov_rogue_syms) ? cptr.ld1uo2(go, i, 1, $instance_globals_o_ov_rogue_syms) : cptr.ld1uo(gr, i, 1))));
         cptr.stI32o(gc, $instance_globals_c_currentgraphics, NHC.ROGUESET);
@@ -425,9 +499,13 @@ export function assign_graphics(whichset) {
 /** C ref: symbols.c:253 — @param {CInt} nondefault */
 export function* switch_symbols(nondefault) {
     let i;
+
     if (nondefault) {
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
             cptr.st1o2(gs, i, 1, $instance_globals_s_showsyms, uchar((cptr.ld1uo2(go, i, 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, i, 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gp, i, 1, $instance_globals_p_primary_syms))));
+        /* curses doesn't assign any routine to dec..._callback but
+           probably does the expected initialization under the hood
+           for terminals capable of rendering DECgraphics */
         if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC) && decgraphics_mode_callback.v)
             (yield* Y.icall((decgraphics_mode_callback.v)()));
         if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8) && utf8graphics_mode_callback.v)
@@ -462,24 +540,31 @@ export function update_rogue_symset(symp, val) {
 export function clear_symsetentry(which_set, name_too) {
     let other_set = (which_set == NHC.PRIMARYSET) ? NHC.ROGUESET : NHC.PRIMARYSET;
     let old_handling = cptr.ldI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling);
+
     if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_desc))
         cptr.free(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_desc));
     cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_desc, null);
+
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor, 0);
+    /* initialize restriction bits */
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_primary, 0);
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_rogue, 0);
+
     if (name_too) {
         if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
             cptr.free(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name));
         cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
     }
+    /* if 'which_set' was using UTF8, it isn't anymore; if the other set
+       isn't using UTF8, discard the data for that */
     if (old_handling == NHC.H_UTF8 && cptr.ldI32o2(gs, other_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) != NHC.H_UTF8)
         free_all_glyphmap_u();
     purge_custom_entries(which_set);
     clear_all_glyphmap_colors();
 }
 
+/* called from windmain.c */
 /** C ref: symbols.c:353 — @param {*} handling @param {CLongLong} wincap2 @returns {CInt} */
 export function symset_is_compatible(handling, wincap2) {
     if (handling == NHC.H_UTF8 && ((wincap2 & 131072n) != 131072n))
@@ -487,6 +572,13 @@ export function symset_is_compatible(handling, wincap2) {
     return 1;
 }
 
+/*
+ * If you are adding code somewhere to be able to recognize
+ * particular types of symset "handling", define a
+ * H_XXX macro in include/sym.h and add the name
+ * to this array at the matching offset.
+ * Externally referenced from files.c, options.c, utf8map.c.
+ */
 /** C ref: symbols.c:376 — char *[7] */
 export const known_handling = cptr.alloc(7 * 8);
 cptr.stPtro(known_handling, 0, __s_unknown);
@@ -497,6 +589,19 @@ cptr.stPtro(known_handling, 32, __s_mac);
 cptr.stPtro(known_handling, 40, __s_utf8);
 cptr.stPtro(known_handling, 48, null);
 
+/*
+ * Accepted keywords for symset restrictions.
+ * These can be virtually anything that you want to
+ * be able to test in the code someplace.
+ * Be sure to:
+ *    - add a corresponding Bitfield to the symsetentry struct in sym.h
+ *    - initialize the field to zero in parse_sym_line in the SYM_CONTROL
+ *      case 0 section of the idx switch. The location is prefaced with
+ *      with a comment stating "initialize restriction bits".
+ *    - set the value appropriately based on the index of your keyword
+ *      under the case 5 sections of the same SYM_CONTROL idx switches.
+ *    - add the field to clear_symsetentry()
+ */
 /** C ref: symbols.c:399 — char *[3] */
 export const known_restrictions = cptr.alloc(3 * 8);
 cptr.stPtro(known_restrictions, 0, __s_primary);
@@ -1102,6 +1207,7 @@ export function* proc_symset_line(buf) {
     return schar((!(schar((yield* parse_sym_line(buf, cptr.ldI32o(gs, $instance_globals_s_symset_which_set)))))));
 }
 
+/* returns 0 on error */
 /** C ref: symbols.c:438 — @param {CPtr<char>} buf @param {CInt} which_set @returns {CInt} */
 export function* parse_sym_line(buf, which_set) {
     let val;
@@ -1113,17 +1219,31 @@ export function* parse_sym_line(buf, which_set) {
     let glyph = cptr.box(NHC.MAX_GLYPH);
     let enhanced_unavailable = 0;
     let is_glyph = 0;
+
     if (cptr.strlen(buf) >= 256n)
         cptr.st1o(buf, 255, 0);
+    /* convert each instance of whitespace (tabs, consecutive spaces)
+       into a single space; leading and trailing spaces are stripped */
     (yield* mungspaces(buf));
+
+    /* remove trailing comment, if any (this isn't strictly needed for
+       individual symbols, and it won't matter if "X#comment" without
+       separating space slips through; for handling or set description,
+       symbol set creator is responsible for preceding '#' with a space
+       and that comment itself doesn't contain " #") */
     if ((commentp = cptr.strrchr(buf, 35)) !== null && cptr.ld1so(commentp, -1) == 32)
         cptr.st1o(commentp, -1, 0);
+
+    /* find the '=' or ':' */
     bufp = cptr.strchr(buf, 61);
     altp = cptr.strchr(buf, 58);
+
     if (!bufp || (altp && cptr.cmp(altp, bufp) < 0))
         bufp = altp;
+
     if (!bufp) {
         if ((yield* strncmpi(buf, __s_finish, 6)) == 0) {
+            /* end current graphics set */
             if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start))
                 cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 1);
             cptr.st1o(gc, $instance_globals_c_chosen_symset_start, 0);
@@ -1132,15 +1252,17 @@ export function* parse_sym_line(buf, which_set) {
         (yield* config_error_add(__s_no_finish));
         return 0;
     }
+    /* skip '=' and space which follows, if any */
     bufp = cptr.add(bufp, 1);
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
+
     symp = (yield* match_sym(buf));
     if (!symp && cptr.ld1so(buf, 0) == 71 && cptr.ld1so(buf, 1) == 95) {
         if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start)) {
             is_glyph = schar((yield* match_glyph(buf)));
         } else {
-            is_glyph = 1;
+            is_glyph = 1;  /* report error only once */
         }
         enhanced_unavailable = 0;
     }
@@ -1150,9 +1272,13 @@ export function* parse_sym_line(buf, which_set) {
     }
     if (symp) {
         if (!cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
+            /* A null symset name indicates that we're just
+               building a pick-list of possible symset
+               values from the file, so only do that */
             if (cptr.ldI32(symp) == NHC.SYM_CONTROL) {
                 let tmpsp;
                 let lastsp;
+
                 for (lastsp = cptr.ldPtro(gs, $instance_globals_s_symset_list); lastsp; lastsp = cptr.ldPtr(lastsp))
                     if (!cptr.ldPtr(lastsp))
                         break;
@@ -1168,26 +1294,30 @@ export function* parse_sym_line(buf, which_set) {
                     cptr.stPtro(tmpsp, $symsetentry_name, (yield* dupstr(bufp)));
                     cptr.stPtro(tmpsp, $symsetentry_desc, null);
                     cptr.stI32o(tmpsp, $symsetentry_handling, NHC.H_UNK);
+                    /* initialize restriction bits */
                     cptr.stI32o(tmpsp, $symsetentry_nocolor, 0);
                     cptr.stI32o(tmpsp, $symsetentry_primary, 0);
                     cptr.stI32o(tmpsp, $symsetentry_rogue, 0);
                     break;
                     case 2:
-                    tmpsp = lastsp;
+                    /* handler type identified */
+                    tmpsp = lastsp;  /* most recent symset */
                     for (i = 0; cptr.ldPtro(known_handling, i, 8); ++i)
                         if (!(yield* strncmpi((cptr.ldPtro(known_handling, i, 8)), (bufp), -1))) {
                             if (tmpsp)
                                 cptr.stI32o(tmpsp, $symsetentry_handling, i);
-                            break;
+                            break;  /* for loop */
                         }
                     break;
                     case 3:
-                    tmpsp = lastsp;
+                    /* description:something */
+                    tmpsp = lastsp;  /* most recent symset */
                     if (tmpsp && !cptr.ldPtro(tmpsp, $symsetentry_desc))
                         cptr.stPtro(tmpsp, $symsetentry_desc, (yield* dupstr(bufp)));
                     break;
                     case 5:
-                    tmpsp = lastsp;
+                    /* restrictions: xxxx*/
+                    tmpsp = lastsp;  /* most recent symset */
                     for (i = 0; cptr.ldPtro(known_restrictions, i, 8); ++i) {
                         if (!(yield* strncmpi((cptr.ldPtro(known_restrictions, i, 8)), (bufp), -1))) {
                             if (tmpsp) {
@@ -1200,7 +1330,7 @@ export function* parse_sym_line(buf, which_set) {
                                     break;
                                 }
                             }
-                            break;
+                            break;  /* while loop */
                         }
                     }
                     break;
@@ -1211,8 +1341,11 @@ export function* parse_sym_line(buf, which_set) {
         if (cptr.ldI32(symp) && cptr.ldI32(symp) == NHC.SYM_CONTROL) {
             switch (cptr.ldI32o(symp, $symparse_idx)) {
                 case 0:
+                /* start of symset */
                 if (!(yield* strncmpi((bufp), (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), -1))) {
+                    /* matches desired one */
                     cptr.st1o(gc, $instance_globals_c_chosen_symset_start, 1);
+                    /* these init_*() functions clear symset fields too */
                     if (which_set == NHC.ROGUESET)
                         init_rogue_symbols();
                     else if (which_set == NHC.PRIMARYSET)
@@ -1220,11 +1353,13 @@ export function* parse_sym_line(buf, which_set) {
                 }
                 break;
                 case 1:
+                /* finish symset */
                 if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start))
                     cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 1);
                 cptr.st1o(gc, $instance_globals_c_chosen_symset_start, 0);
                 break;
                 case 2:
+                /* handler type identified */
                 if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start))
                     (yield* set_symhandling(bufp, which_set));
                 break;
@@ -1241,6 +1376,7 @@ export function* parse_sym_line(buf, which_set) {
                 case 5:
                 if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start)) {
                     let n = 0;
+
                     while (cptr.ldPtro(known_restrictions, n, 8)) {
                         if (!(yield* strncmpi((cptr.ldPtro(known_restrictions, n, 8)), (bufp), -1))) {
                             switch (n) {
@@ -1251,7 +1387,7 @@ export function* parse_sym_line(buf, which_set) {
                                 cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_rogue, 1);
                                 break;
                             }
-                            break;
+                            break;  /* while loop */
                         }
                         n++;
                     }
@@ -1259,6 +1395,7 @@ export function* parse_sym_line(buf, which_set) {
                 break;
             }
         } else {
+            /* Not SYM_CONTROL */
             if (cptr.ldI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) != NHC.H_UTF8) {
                 if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start)) {
                     val = (yield* sym_val(bufp));
@@ -1275,6 +1412,7 @@ export function* parse_sym_line(buf, which_set) {
             }
         }
     } else if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start)) {
+        /* glyph, not symbol */
         void (yield* glyphrep_to_custom_map_entries(buf, glyph));
     }
     return 1;
@@ -1283,6 +1421,7 @@ export function* parse_sym_line(buf, which_set) {
 /** C ref: symbols.c:657 — @param {CPtr<char>} handling @param {CInt} which_set */
 export function* set_symhandling(handling, which_set) {
     let i = 0;
+
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
     while (cptr.ldPtro(known_handling, i, 8)) {
         if (!(yield* strncmpi((cptr.ldPtro(known_handling, i, 8)), (handling), -1))) {
@@ -1293,12 +1432,15 @@ export function* set_symhandling(handling, which_set) {
     }
 }
 
+/* bundle some common usage into one easy-to-use routine */
 /** C ref: symbols.c:673 — @param {CPtr<char>} s @param {CInt} which_set @returns {CInt} */
 export function* load_symset(s, which_set) {
     clear_symsetentry(which_set, 1);
+
     if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
         cptr.free(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name));
     cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(s)));
+
     if ((yield* read_sym_file(which_set))) {
         (yield* switch_symbols(1));
         (yield* apply_customizations(cptr.ldI32o(gc, $instance_globals_c_currentgraphics), (NHC.do_custom_symbols | NHC.do_custom_colors)));
@@ -1313,6 +1455,10 @@ export function* load_symset(s, which_set) {
 export function free_symsets() {
     clear_symsetentry(NHC.PRIMARYSET, 1);
     clear_symsetentry(NHC.ROGUESET, 1);
+
+    /* symset_list is cleaned up as soon as it's used, so we shouldn't
+       have to anything about it here */
+    /* assert( symset_list == NULL ); */
 }
 
 /** C ref: symbols.c:703 — struct _savedsym { name, val, which_set, next } (memory model v0.5) */
@@ -1324,6 +1470,7 @@ export let saved_symbols = null;
 export function savedsym_free() {
     let tmp = saved_symbols;
     let tmp2;
+
     while (tmp) {
         tmp2 = cptr.ldPtro(tmp, $_savedsym_next);
         cptr.free(cptr.ldPtr(tmp));
@@ -1336,6 +1483,7 @@ export function savedsym_free() {
 /** C ref: symbols.c:726 — @param {CPtr<char>} name @param {CInt} which_set @returns {CPtr<struct _savedsym>} */
 function savedsym_find(name, which_set) {
     let tmp = saved_symbols;
+
     while (tmp) {
         if (which_set == cptr.ldI32o(tmp, $_savedsym_which_set) && !strcmp(name, cptr.ldPtr(tmp)))
             return tmp;
@@ -1347,6 +1495,7 @@ function savedsym_find(name, which_set) {
 /** C ref: symbols.c:739 — @param {CPtr<char>} name @param {CPtr<char>} val @param {CInt} which_set */
 function* savedsym_add(name, val, which_set) {
     let tmp = null;
+
     if ((tmp = savedsym_find(name, which_set)) !== null) {
         cptr.free(cptr.ldPtro(tmp, $_savedsym_val));
         cptr.stPtro(tmp, $_savedsym_val, (yield* dupstr(val)));
@@ -1364,6 +1513,7 @@ function* savedsym_add(name, val, which_set) {
 export function* savedsym_strbuf(sbuf) {
     let tmp = saved_symbols;
     let buf = new Uint8Array(256);
+
     while (tmp) {
         void cptr.sprintf(cptr.decay(buf), __s_ssymbols_s_s, (cptr.ldI32o(tmp, $_savedsym_which_set) == NHC.ROGUESET) ? __s_rogue__2 : __s_empty, cptr.ldPtr(tmp), cptr.ldPtro(tmp, $_savedsym_val));
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
@@ -1371,6 +1521,7 @@ export function* savedsym_strbuf(sbuf) {
     }
 }
 
+/* Parse the value of a SYMBOLS line from a config file */
 /** C ref: symbols.c:773 — @param {CPtr<char>} opts @param {CInt} which_set @returns {CInt} */
 export function* parsesymbols(opts, which_set) {
     let val;
@@ -1381,9 +1532,12 @@ export function* parsesymbols(opts, which_set) {
     let first_unquoted_colon = null;
     let symp;
     let is_glyph = 0;
+
+    /* are there any commas or colons that aren't quoted? */
     for (ch = cptr.add(opts, 1); cptr.ld1s(ch); ch = cptr.add(ch, 1)) {
         let prech;
         let postch;
+
         prech = cptr.add(ch, -(1));
         postch = cptr.add(ch, 1);
         if (!cptr.ld1s(postch))
@@ -1408,6 +1562,8 @@ export function* parsesymbols(opts, which_set) {
         if (!(yield* parsesymbols(first_unquoted_comma, which_set)))
             return 0;
     }
+
+    /* S_sample:string */
     symname = opts;
     strval = first_unquoted_colon;
     if (!strval)
@@ -1415,8 +1571,11 @@ export function* parsesymbols(opts, which_set) {
     if (!strval)
         return 0;
     cptr.st1(cptr.postinc(() => strval, (v) => { strval = v; }), 0);
+
+    /* strip leading and trailing white space from symname and strval */
     (yield* mungspaces(symname));
     (yield* mungspaces(strval));
+
     symp = (yield* match_sym(symname));
     if (!symp && cptr.ld1so(symname, 0) == 71 && cptr.ld1so(symname, 1) == 95) {
         is_glyph = schar((yield* match_glyph(symname)));
@@ -1428,6 +1587,7 @@ export function* parsesymbols(opts, which_set) {
             if (cptr.ldI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43)) {
                 let buf = new Uint8Array(256);
                 let glyph = cptr.box(0);
+
                 nh_snprintf(__s_parsesymbols, 836, cptr.decay(buf), 256n, __s_s_s, opts, strval);
                 (yield* glyphrep_to_custom_map_entries(cptr.decay(buf), glyph));
             } else {
@@ -1472,11 +1632,16 @@ export function* match_sym(buf) {
     let p = cptr.strchr(buf, 58);
     let q = cptr.strchr(buf, 61);
     let sp = loadsyms;
+
+    /* G_ lines will never match here */
     if ((cptr.ld1so(buf, 0) == 71 || cptr.ld1so(buf, 0) == 103) && cptr.ld1so(buf, 1) == 95)
         return null;
+
     if (!p || (q && cptr.cmp(q, p) < 0))
         p = q;
     if (p) {
+        /* note: there will be at most one space before the '='
+           because caller has condensed buf[] with mungspaces() */
         if (cptr.cmp(p, buf) > 0 && cptr.ld1so(p, -1) == 32)
             p = cptr.add(p, -1);
         len = BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, (cptr.diff(p, buf))))));
@@ -1499,6 +1664,9 @@ export function* match_sym(buf) {
     return null;
 }
 
+/*
+ * this is called from options.c to do the symset work.
+ */
 /** C ref: symbols.c:909 — @param {CInt} rogueflag @returns {CInt} */
 export function* do_symset(rogueflag) {
     let tmpwin;
@@ -1517,22 +1685,30 @@ export function* do_symset(rogueflag) {
     let chosen = -2;
     let defindx = 0;
     let clr = NHM.NO_COLOR;
+
     which_set = rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET;
     cptr.stPtro(gs, $instance_globals_s_symset_list, null);
+    /* clear symset[].name as a flag to read_sym_file() to build list */
     symset_name = cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name);
     cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
+
     res = (yield* read_sym_file(which_set));
+    /* put symset name back */
     cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, symset_name);
+
     if (res && cptr.ldPtro(gs, $instance_globals_s_symset_list)) {
         let thissize;
         let biggest = 15;
         let big_desc = 0;
+
         for (sl = cptr.ldPtro(gs, $instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl)) {
+            /* check restrictions */
             if (rogueflag ? (cptr.ldI32o(sl, $symsetentry_primary) & 1) | 0 : (cptr.ldI32o(sl, $symsetentry_rogue) & 1) | 0)
                 continue;
             if (cptr.ldI32o(sl, $symsetentry_handling) == NHC.H_MAC)
                 continue;
             setcount++;
+            /* find biggest name */
             thissize = cptr.ldPtro(sl, $symsetentry_name) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sl, $symsetentry_name)))) : 0;
             if (thissize > biggest)
                 biggest = thissize;
@@ -1544,20 +1720,26 @@ export function* do_symset(rogueflag) {
             (yield* There(__s_are_no_appropriate_s_symbol_sets, rogueflag ? __s_rogue_level : __s_primary));
             return 1;
         }
+
         void cptr.sprintf(cptr.decay(fmtstr), __s_ds_s, (biggest + 2) | 0);
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(tmpwin, 0n)));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-        cptr.stI32(any, 1);
+        cptr.stI32(any, 1);  /* -1 + 2 [see 'if (sl->name) {' below]*/
         if (!symset_name)
             defindx = cptr.ldI32(any);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_default_symbols, (cptr.ldI32(any) == defindx) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+
         for (sl = cptr.ldPtro(gs, $instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl)) {
+            /* check restrictions */
             if (rogueflag ? (cptr.ldI32o(sl, $symsetentry_primary) & 1) | 0 : (cptr.ldI32o(sl, $symsetentry_rogue) & 1) | 0)
                 continue;
             if (cptr.ldI32o(sl, $symsetentry_handling) == NHC.H_MAC)
                 continue;
             if (cptr.ldPtro(sl, $symsetentry_name)) {
+                /* +2: sl->idx runs from 0 to N-1 for N symsets;
+                   +1 because Defaults are implicitly in slot [0];
+                   +1 again so that valid data is never 0 */
                 cptr.stI32(any, (cptr.ldI32o(sl, $symsetentry_idx) + 2) | 0);
                 if (symset_name && !(yield* strncmpi((cptr.ldPtro(sl, $symsetentry_name)), (symset_name), -1)))
                     defindx = cptr.ldI32(any);
@@ -1570,6 +1752,8 @@ export function* do_symset(rogueflag) {
         n = (yield* select_menu(tmpwin, NHM.PICK_ONE, symset_pick));
         if (n > 0) {
             chosen = cptr.ldI32o(symset_pick.v, 0, $sizeof_menu_item);
+            /* if picking non-preselected entry yields 2, make sure
+               that we're going with the non-preselected one */
             if (n == 2 && chosen == defindx)
                 chosen = cptr.ldI32o(symset_pick.v, 1, $sizeof_menu_item);
             chosen = (chosen - 2) | 0;
@@ -1578,26 +1762,37 @@ export function* do_symset(rogueflag) {
             chosen = (defindx - 2) | 0;
         }
         (yield* Y.icall(destroy_nhwindow()(tmpwin)));
+
         if (chosen > -1) {
+            /* chose an actual symset name from file */
             for (sl = cptr.ldPtro(gs, $instance_globals_s_symset_list); sl; sl = cptr.ldPtr(sl))
                 if (cptr.ldI32o(sl, $symsetentry_idx) == chosen)
                     break;
             if (sl) {
+                /* free the now stale attributes */
                 clear_symsetentry(which_set, 1);
+
+                /* transfer only the name of the symbol set */
                 cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(cptr.ldPtro(sl, $symsetentry_name))));
                 ready_to_switch = 1;
             }
         } else if (chosen == -1) {
+            /* explicit selection of defaults */
+            /* free the now stale symset attributes */
             clear_symsetentry(which_set, 1);
         } else
             nothing_to_do = 1;
     } else if (!res) {
+        /* The symbols file could not be accessed */
         (yield* pline(__s_unable_to_access_s_file, __s_symbols));
         return 1;
     } else if (!cptr.ldPtro(gs, $instance_globals_s_symset_list)) {
+        /* The symbols file was empty */
         (yield* There(__s_were_no_symbol_sets_found_in_s, __s_symbols));
         return 1;
     }
+
+    /* clean up */
     while ((sl = cptr.ldPtro(gs, $instance_globals_s_symset_list)) !== null) {
         cptr.stPtro(gs, $instance_globals_s_symset_list, cptr.ldPtr(sl));
         if (cptr.ldPtro(sl, $symsetentry_name))
@@ -1606,13 +1801,18 @@ export function* do_symset(rogueflag) {
             cptr.free(cptr.ldPtro(sl, $symsetentry_desc)), cptr.stPtro(sl, $symsetentry_desc, null);
         cptr.free(sl);
     }
+
     if (nothing_to_do)
         return 1;
+
+    /* Set default symbols and clear the handling value */
     if (rogueflag)
         init_rogue_symbols();
     else
         init_primary_symbols();
+
     if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
+        /* non-default symbols */
         let ok;
         if (!glyphid_cache_status()) {
             (yield* fill_glyphid_cache());
@@ -1628,8 +1828,10 @@ export function* do_symset(rogueflag) {
             return 1;
         }
     }
+
     if (ready_to_switch)
         (yield* switch_symbols(1));
+
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         if (rogueflag)
             assign_graphics(NHC.ROGUESET);

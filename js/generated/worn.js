@@ -214,30 +214,42 @@ cptr.stI64o(worn, 384, 0n);
 cptr.stPtro(worn, 384 + $worn_w_obj, null);
 cptr.stPtro(worn, 384 + $worn_w_what, null);
 
+/* note: monsters don't have clairvoyance, so dependency on hero's role here
+   has no significant effect on their use of w_blocks() */
+
+/* calc the range of hero's unblind telepathy */
 /** C ref: worn.c:50 */
 export function recalc_telepat_range() {
     let wp;
     let nobjs = 0;
+
     for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24)) {
         let oobj = cptr.ldPtr((cptr.ldPtro(wp, $worn_w_obj)));
+
         if (oobj && cptr.ld1uo2(objects, cptr.ldI16o(oobj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == NHC.TELEPAT)
             nobjs++;
     }
+    /* count all artifacts with SPFX_ESP as one */
     if (ETelepat() & 4096n)
         nobjs++;
+
     if (nobjs)
         cptr.stI32o(u, $you_unblind_telepat_range, Math.imul(64, nobjs));
     else
         cptr.stI32o(u, $you_unblind_telepat_range, -1);
 }
 
+/* Updated to use the extrinsic and blocked fields. */
 /** C ref: worn.c:73 — @param {CPtr<struct obj>} obj @param {CLongLong} mask */
 export function setworn(obj, mask) {
     let wp;
     let oobj;
     let p;
+
     if ((mask & 536870913n) == 536870913n) {
+        /* restoring saved game; no properties are conferred via skin */
         uskin.v = obj;
+        /* assert( !uarm ); */
     } else {
         for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24)) {
             if (cptr.ldI64(wp) & mask) {
@@ -246,22 +258,34 @@ export function setworn(obj, mask) {
                     impossible(__s_setworn_mask_0x_08lx, cptr.ldI64(wp));
                 if (oobj) {
                     if (cptr.ld1so(u, $you_twoweap) && (cptr.ldI64o(oobj, $obj_owornmask) & 1280n))
-                        set_twoweap(0);
+                        set_twoweap(0);  /* u.twoweap = FALSE */
                     cptr.stI64o(oobj, $obj_owornmask, cptr.ldI64o(oobj, $obj_owornmask) & BigInt.asIntN(64, ~cptr.ldI64(wp)));
                     if (cptr.ldI64(wp) & -1537n) {
+                        /* leave as "x = x <op> y", here and below, for broken
+                         * compilers */
                         p = cptr.ld1uo2(objects, cptr.ldI16o(oobj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop);
                         cptr.stI64o2(u, p, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, p, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~cptr.ldI64(wp)));
+                        /* if the hero removed an extrinsic-granting item,
+                           nearby monsters will notice and attempt attacks of
+                           that type again */
                         monstunseesu(cvt_prop_to_mseenres(uchar(p)));
                         if ((p = ((cptr.ldI16o(oobj, $obj_otyp) == NHC.MUMMY_WRAPPING && ((mask) & 2n) != 0n) ? NHC.INVIS : ((cptr.ldI16o(oobj, $obj_otyp) == NHC.CORNUTHAUM && ((mask) & 4n) != 0n && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) ? NHC.CLAIRVOYANT : ((is_art(oobj, NHC.ART_EYES_OF_THE_OVERWORLD) && ((mask) & 524288n) != 0n) ? NHC.BLINDED : 0)))) != 0)
                             cptr.stI64o2(u, p, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, p, $sizeof_prop, $you_uprops + $prop_blocked) & BigInt.asIntN(64, ~cptr.ldI64(wp)));
                         if (cptr.ld1so(oobj, $obj_oartifact))
                             set_artifact_intrinsic(oobj, 0, mask);
                     }
+                    /* in case wearing or removal is in progress or removal
+                       is pending (via 'A' command for multiple items) */
                     cancel_doff(oobj, cptr.ldI64(wp));
                 }
                 cptr.stPtr((cptr.ldPtro(wp, $worn_w_obj)), obj);
                 if (obj) {
                     cptr.stI64o(obj, $obj_owornmask, cptr.ldI64o(obj, $obj_owornmask) | cptr.ldI64(wp));
+                    /* Prevent getting/blocking intrinsics from wielding
+                     * potions, through the quiver, etc.
+                     * Allow weapon-tools, too.
+                     * wp_mask should be same as mask at this point.
+                     */
                     if (cptr.ldI64(wp) & -1537n) {
                         if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || mask != 256n) {
                             p = cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop);
@@ -277,6 +301,7 @@ export function setworn(obj, mask) {
         }
         if (obj && (cptr.ldI64o(obj, $obj_owornmask) & 127n) != 0n)
             cptr.st1o(u, $you_uroleplay + $u_roleplay_nudist, 0);
+        /* tux -> tuxedo -> "monkey suit" -> monk's suit */
         cptr.st1o(iflags, $instance_flags_tux_penalty, schar((uarm.v && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) && cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr) ? 1 : 0)));
     }
     if ((cptr.ld1so(flags, $flag_weaponstatus) && (mask & 256n) != 0n) || (cptr.ld1so(flags, $flag_armorstatus) && (mask & 127n) != 0n))
@@ -285,23 +310,29 @@ export function setworn(obj, mask) {
     recalc_telepat_range();
 }
 
+/* called e.g. when obj is destroyed */
+/* Updated to use the extrinsic and blocked fields. */
 /** C ref: worn.c:150 — @param {CPtr<struct obj>} obj */
 export function setnotworn(obj) {
     let wp;
     let p;
     let unworn = 0n;
+
     if (!obj)
         return;
     if (cptr.ld1so(u, $you_twoweap) && (cptr.eq(obj, uwep.v) || cptr.eq(obj, uswapwep.v)))
-        set_twoweap(0);
+        set_twoweap(0);  /* u.twoweap = FALSE */
     for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24))
         if (cptr.eq(obj, cptr.ldPtr((cptr.ldPtro(wp, $worn_w_obj))))) {
+            /* in case wearing or removal is in progress or removal
+               is pending (via 'A' command for multiple items) */
             cancel_doff(obj, cptr.ldI64(wp));
+
             cptr.stPtr((cptr.ldPtro(wp, $worn_w_obj)), null);
             unworn |= cptr.ldI64(wp);
             p = cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop);
             cptr.stI64o2(u, p, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, p, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~cptr.ldI64(wp)));
-            monstunseesu(cvt_prop_to_mseenres(uchar(p)));
+            monstunseesu(cvt_prop_to_mseenres(uchar(p)));  /* remove this extrinsic from seenres */
             cptr.stI64o(obj, $obj_owornmask, cptr.ldI64o(obj, $obj_owornmask) & BigInt.asIntN(64, ~cptr.ldI64(wp)));
             if (cptr.ld1so(obj, $obj_oartifact))
                 set_artifact_intrinsic(obj, 0, cptr.ldI64(wp));
@@ -316,27 +347,38 @@ export function setnotworn(obj) {
     recalc_telepat_range();
 }
 
+/* called when saving with FREEING flag set has just discarded inventory */
 /** C ref: worn.c:188 */
 export function allunworn() {
     let wp;
-    cptr.st1o(u, $you_twoweap, 0);
+
+    cptr.st1o(u, $you_twoweap, 0);  /* uwep and uswapwep are going away */
+    /* remove stale pointers; called after the objects have been freed
+       (without first being unworn) while saving invent during game save;
+       note: uball and uchain might not be freed yet but we clear them
+       here anyway (savegamestate() and its callers deal with them) */
     for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24)) {
+        /* object is already gone so we don't/can't update is owornmask */
         cptr.stPtr((cptr.ldPtro(wp, $worn_w_obj)), null);
     }
 }
 
+/* return item worn in slot indicated by wornmask; needed by poly_obj() */
 /** C ref: worn.c:206 — @param {CLongLong} wornmask @returns {CPtr<struct obj>} */
 export function wearmask_to_obj(wornmask) {
     let wp;
+
     for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24))
         if (cptr.ldI64(wp) & wornmask)
             return cptr.ldPtr(cptr.ldPtro(wp, $worn_w_obj));
     return null;
 }
 
+/* convert an armor wornmask to corresponding category */
 /** C ref: worn.c:218 — @param {CLongLong} mask @returns {CInt} */
 export function wornmask_to_armcat(mask) {
     let cat = 0;
+
     switch (mask & 127n) {
         case 1n:
         cat = NHC.ARM_SUIT;
@@ -363,9 +405,11 @@ export function wornmask_to_armcat(mask) {
     return cat;
 }
 
+/* convert an armor category to corresponding wornmask */
 /** C ref: worn.c:250 — @param {CInt} cat @returns {CLongLong} */
 export function armcat_to_wornmask(cat) {
     let mask = 0n;
+
     switch (cat) {
         case NHC.ARM_SUIT:
         mask = 1n;
@@ -392,40 +436,44 @@ export function armcat_to_wornmask(cat) {
     return mask;
 }
 
+/* return a bitmask of the equipment slot(s) a given item might be worn in */
 /** C ref: worn.c:282 — @param {CPtr<struct obj>} obj @returns {CLongLong} */
 export function wearslot(obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
-    let res = 0n;
+    /* practically any item can be wielded or quivered; it's up to
+       our caller to handle such things--we assume "normal" usage */
+    let res = 0n;  /* default: can't be worn anywhere */
+
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.AMULET_CLASS:
-        res = 65536n;
+        res = 65536n;  /* WORN_AMUL */
         break;
         case NHC.RING_CLASS:
-        res = 393216n;
+        res = 393216n;  /* W_RING, BOTH_SIDES */
         break;
         case NHC.ARMOR_CLASS:
         switch (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp)) {
             case NHC.ARM_SUIT:
             res = 1n;
-            break;
+            break;  /* WORN_ARMOR */
             case NHC.ARM_SHIELD:
             res = 8n;
-            break;
+            break;  /* WORN_SHIELD */
             case NHC.ARM_HELM:
             res = 4n;
-            break;
+            break;  /* WORN_HELMET */
             case NHC.ARM_GLOVES:
             res = 16n;
-            break;
+            break;  /* WORN_GLOVES */
             case NHC.ARM_BOOTS:
             res = 32n;
-            break;
+            break;  /* WORN_BOOTS */
             case NHC.ARM_CLOAK:
             res = 2n;
-            break;
+            break;  /* WORN_CLOAK */
             case NHC.ARM_SHIRT:
             res = 64n;
-            break;
+            break;  /* WORN_SHIRT */
         }
         break;
         case NHC.WEAPON_CLASS:
@@ -435,7 +483,7 @@ export function wearslot(obj) {
         break;
         case NHC.TOOL_CLASS:
         if (otyp == NHC.BLINDFOLD || otyp == NHC.TOWEL || otyp == NHC.LENSES)
-            res = 524288n;
+            res = 524288n;  /* WORN_BLINDF */
         else if (is_weptool(obj) || otyp == NHC.TIN_OPENER)
             res = 1280n;
         else if (otyp == NHC.SADDLE)
@@ -460,6 +508,7 @@ export function wearslot(obj) {
     return res;
 }
 
+/* for 'sanity_check' option, called by you_sanity_check() */
 /** C ref: worn.c:355 */
 export function check_wornmask_slots() {
     let whybuf = new Uint8Array(256);
@@ -467,12 +516,15 @@ export function check_wornmask_slots() {
     let o;
     let otmp;
     let m;
+
     for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24)) {
         m = cptr.ldI64(wp);
         if ((m & 7352320n) != 0n && (m & -7352321n) == 0n)
             continue;
         if ((o = cptr.ldPtr(cptr.ldPtro(wp, $worn_w_obj))) !== null) {
             cptr.st1o(cptr.decay(whybuf), 0, 0, 1);
+            /* slot pointer (uarm, uwep, &c) is populated; check that object
+               is in inventory and has the relevant owornmask bit set */
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.eq(otmp, o))
                     break;
@@ -484,14 +536,19 @@ export function check_wornmask_slots() {
                 void cptr.sprintf(cptr.decay(whybuf), __s_s_wrong_bit_set_in_owornmask_0x_08lx, cptr.ldPtro(wp, $worn_w_what), cptr.ldI64o(o, $obj_owornmask));
             if (cptr.ld1so(cptr.decay(whybuf), 0, 1))
                 impossible(__s_worn_slot_insanity_s, cptr.decay(whybuf));
-        }
+        }  /* o != NULL */
+
+        /* check whether any item other than the one in the slot pointer
+           claims to be worn/wielded in this slot; make this test whether
+           'o' is Null or not; [sanity_check_worn(mkobj.c) for object by
+           object checking will most likely have already caught this] */
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
             if (!cptr.eq(otmp, o) && (cptr.ldI64o(otmp, $obj_owornmask) & m) != 0n && (m != 1n || !cptr.eq(otmp, uskin.v) || (cptr.ldI64o(otmp, $obj_owornmask) & 536870912n) == 0n)) {
                 void cptr.sprintf(cptr.decay(whybuf), __s_s_0x_08lx_has_s_mask_0x_08lx_bit_set, simpleonames(otmp), cptr.ldI64o(otmp, $obj_owornmask), cptr.ldPtro(wp, $worn_w_what), m);
                 impossible(__s_worn_slot_insanity_s, cptr.decay(whybuf));
             }
         }
-    }
+    }  /* for wp in worn[] */
     return;
 }
 
@@ -500,9 +557,9 @@ export function mon_set_minvis(mon, cursed_potion) {
     cptr.stI32o(mon, $monst_perminvis, (!cursed_potion ? 1 : 0) >>> 0);
     if (!(cptr.ldI32o(mon, $monst_invis_blkd) & 1)) {
         cptr.stI32o(mon, $monst_minvis, (cptr.ldI32o(mon, $monst_perminvis) & 1));
-        newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
+        newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));  /* make it disappear */
         if ((cptr.ldI32o(mon, $monst_wormno) & 31))
-            see_wsegs(mon);
+            see_wsegs(mon);  /* and any tail too */
     }
 }
 
@@ -512,10 +569,11 @@ export function mon_adjust_speed(mon, adjust, obj) {
     let give_msg = schar((!cptr.ld1so(gi, $instance_globals_i_in_mklev)));
     let petrify = 0;
     let oldspeed = (cptr.ldI32o(mon, $monst_mspeed) & 3);
+
     switch (adjust) {
         case 2:
         cptr.stI32o(mon, $monst_permspeed, NHM.MFAST);
-        give_msg = 0;
+        give_msg = 0;  /* special-case monster creation */
         break;
         case 1:
         if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MSLOW)
@@ -533,9 +591,10 @@ export function mon_adjust_speed(mon, adjust, obj) {
         break;
         case -2:
         cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
-        give_msg = 0;
+        give_msg = 0;  /* (not currently used) */
         break;
         case -3:
+        /* take away intrinsic speed but don't reduce normal speed */
         if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
             cptr.stI32o(mon, $monst_permspeed, 0);
         petrify = 1;
@@ -546,6 +605,7 @@ export function mon_adjust_speed(mon, adjust, obj) {
         give_msg = 0;
         break;
     }
+
     for (otmp = cptr.ldPtro(mon, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ldI64o(otmp, $obj_owornmask) && cptr.ld1uo2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == NHC.FAST)
             break;
@@ -553,20 +613,29 @@ export function mon_adjust_speed(mon, adjust, obj) {
         cptr.stI32o(mon, $monst_mspeed, NHM.MFAST);
     else
         cptr.stI32o(mon, $monst_mspeed, (cptr.ldI32o(mon, $monst_permspeed) & 3));
+
+    /* no message if monster is immobile (temp or perm) or unseen */
     if (give_msg && ((cptr.ldI32o(mon, $monst_mspeed) & 3) != oldspeed || petrify) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) && !((cptr.ldI32o(mon, $monst_mfrozen) & 127) | 0 || (cptr.ldI32o(mon, $monst_msleeping) & 1) | 0) && canseemon(mon)) {
+        /* fast to slow (skipping intermediate state) or vice versa */
         let howmuch = (((cptr.ldI32o(mon, $monst_mspeed) & 3) + oldspeed) >>> 0 == 3) ? __s_much : __s_empty;
+
         if (petrify) {
+            /* mimic the player's petrification countdown; "slowing down"
+               even if fast movement rate retained via worn speed boots */
             if (cptr.ld1so(flags, $flag_verbose))
                 pline_mon(mon, __s_s_is_slowing_down, Monnam(mon));
         } else if (adjust > 0 || ((cptr.ldI32o(mon, $monst_mspeed) & 3) | 0) == NHM.MFAST)
             pline_mon(mon, __s_s_is_suddenly_moving_sfaster, Monnam(mon), howmuch);
         else
             pline_mon(mon, __s_s_seems_to_be_moving_sslower, Monnam(mon), howmuch);
+
+        /* might discover an object if we see the speed change happen */
         if (obj !== null)
             learnwand(obj);
     }
 }
 
+/* armor put on or taken off; might be magical variety */
 /** C ref: worn.c:579 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} on @param {CInt} silently */
 export function update_mon_extrinsics(mon, obj, on, silently) {
     let unseen, mask, otmp, which, altwhich, save_in_mklev;
@@ -576,6 +645,7 @@ export function update_mon_extrinsics(mon, obj, on, silently) {
         case 0: {
         which = cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop);
         altwhich = ((cptr.ldI16o((obj), $obj_otyp) == NHC.ALCHEMY_SMOCK) ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) - cptr.ld1uo2(objects, cptr.ldI16o((obj), $obj_otyp), $sizeof_objclass, $objclass_oc_oprop)) | 0) : 0);
+
         unseen = !canseemon(mon);
         if (!which && !altwhich) { __pc = 4; continue; }
         __pc = 3; continue;
@@ -644,12 +714,27 @@ export function update_mon_extrinsics(mon, obj, on, silently) {
                 case NHC.POISON_RES:
                 case NHC.ACID_RES:
                 case NHC.STONE_RES:
+                /*
+                 * Update monster's extrinsics (for worn objects only;
+                 * 'obj' itself might still be worn or already unworn).
+                 *
+                 * If an alchemy smock is being taken off, this code will
+                 * be run twice (via 'goto again') and other worn gear
+                 * gets tested for conferring poison resistance on the
+                 * first pass and acid resistance on the second.
+                 *
+                 * If some other item is being taken off, there will be
+                 * only one pass but a worn alchemy smock will be an
+                 * alternate source for either of those two resistances.
+                 */
                 mask = uchar(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES) ? uchar((1 << (((which) - 1) | 0))) : 0));
                 for (otmp = cptr.ldPtro(mon, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
                     if (cptr.eq(otmp, obj) || !cptr.ldI64o(otmp, $obj_owornmask))
                         continue;
                     if (cptr.ld1uo2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == which)
                         break;
+                    /* check whether 'otmp' confers target property as an extra
+                       one rather than as the one specified for it in objects[] */
                     if (((cptr.ldI16o((otmp), $obj_otyp) == NHC.ALCHEMY_SMOCK) ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) - cptr.ld1uo2(objects, cptr.ldI16o((otmp), $obj_otyp), $sizeof_objclass, $objclass_oc_oprop)) | 0) : 0) == which)
                         break;
                 }
@@ -672,6 +757,9 @@ export function update_mon_extrinsics(mon, obj, on, silently) {
         continue;
         }
         case 2 /* maybe_blocks: */: {
+        /* obj->owornmask has been cleared by this point, so we can't use it.
+           However, since monsters don't wield armor, we don't have to guard
+           against that and can get away with a blanket worn-mask value. */
         switch (((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1) ? NHC.INVIS : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM && 1 && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) ? NHC.CLAIRVOYANT : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 1) ? NHC.BLINDED : 0)))) {
             case NHC.INVIS:
             cptr.stI32o(mon, $monst_invis_blkd, (on ? 1 : 0) >>> 0);
@@ -680,8 +768,11 @@ export function update_mon_extrinsics(mon, obj, on, silently) {
             default:
             break;
         }
+
         if (!on && cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) && cptr.ldI16o(obj, $obj_otyp) == NHC.SADDLE)
             dismount_steed(NHC.DISMOUNT_FELL);
+
+        /* if couldn't see it but now can, or vice versa, update display */
         if (!silently && (unseen ^ !canseemon(mon)))
             newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
         __pc = -1;
@@ -697,30 +788,63 @@ export function find_mac(mon) {
     let obj;
     let base = cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_ac);
     let mwflags = cptr.ldI64o(mon, $monst_misc_worn_check);
+
     for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
         if (cptr.ldI64o(obj, $obj_owornmask) & mwflags) {
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_GUARDING)
-                base = (base - 2) | 0;
+                base = (base - 2) | 0;  /* fixed amount, not impacted by erosion */
             else
                 base = (base - ARM_BONUS(obj)) | 0;
+            /* since ARM_BONUS is positive, subtracting it increases AC */
         }
     }
+    /* same cap as for hero [find_ac(do_wear.c)] */
     if (Math.abs(base) > NHM.AC_MAX)
         base = Math.imul(sgn(base), NHM.AC_MAX);
     return base;
 }
 
+/*
+ * weapons are handled separately;
+ * rings and eyewear aren't used by monsters
+ */
+
+/* Wear the best object of each type that the monster has.  During creation,
+ * the monster can put everything on at once; otherwise, wearing takes time.
+ * This doesn't affect monster searching for objects--a monster may very well
+ * search for objects it would not want to wear, because we don't want to
+ * check which_armor() each round.
+ *
+ * We'll let monsters put on shirts and/or suits under worn cloaks, but
+ * not shirts under worn suits.  This is somewhat arbitrary, but it's
+ * too tedious to have them remove and later replace outer garments,
+ * and preventing suits under cloaks makes it a little bit too easy for
+ * players to influence what gets worn.  Putting on a shirt underneath
+ * already worn body armor is too obviously buggy...
+ */
 /** C ref: worn.c:757 — @param {CPtr<struct monst>} mon @param {CInt} creation */
 export function m_dowear(mon, creation) {
     let can_wear_armor;
+    /* Note the restrictions here are the same as in dowear in do_wear.c
+     * except for the additional restriction on intelligence.  (Players
+     * are always intelligent, even if polymorphed).
+     */
     if ((cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 262144n) != 0n))
         return;
+    /* give mummies a chance to wear their wrappings
+     * and let skeletons wear their initial armor */
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n) && (!creation || (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) != NHC.S_MUMMY && !cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_SKELETON, $sizeof_permonst)))))
         return;
+
     m_dowear_type(mon, 65536n, creation, 0);
-    can_wear_armor = schar((!cantweararm(cptr.ldPtro(mon, $monst_data))));
+    can_wear_armor = schar((!cantweararm(cptr.ldPtro(mon, $monst_data))));  /* for suit, cloak, shirt */
+    /* can't put on shirt if already wearing suit */
     if (can_wear_armor && !(cptr.ldI64o(mon, $monst_misc_worn_check) & 1n))
         m_dowear_type(mon, 64n, creation, 0);
+    /* WrappingAllowed() makes any size between small and huge eligible;
+       treating small as a special case allows hobbits, gnomes, and
+       kobolds to wear all cloaks; large and huge allows giants and such
+       to wear mummy wrappings but not other cloaks */
     if (can_wear_armor || WrappingAllowed(cptr.ldPtro(mon, $monst_data)))
         m_dowear_type(mon, 2n, creation, 0);
     m_dowear_type(mon, 4n, creation, 0);
@@ -747,26 +871,34 @@ function m_dowear_type(mon, flag, creation, racialexception) {
     let autocurse;
     let nambuf = new Uint8Array(256);
     __lbl_outer_break: {
+
         if ((cptr.ldI32o(mon, $monst_mfrozen) & 127))
-            return;
+            return;  /* probably putting previous item on */
+
+        /* Get a copy of monster's name before altering its visibility */
         void cptr.strcpy(cptr.decay(nambuf), See_invisible() ? Monnam(mon) : mon_nam(mon));
+
         old = which_armor(mon, flag);
         if (old && (cptr.ldI32o(old, $obj_cursed) & 1) | 0)
             return;
         if (old && flag == 65536n && cptr.ldI16o(old, $obj_otyp) != NHC.AMULET_OF_GUARDING)
-            return;
+            return;  /* no amulet better than life-saving or reflection */
         best = old;
+
         for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
             switch (flag) {
                 case 65536n:
                 if (cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS || (cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_LIFE_SAVING && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_REFLECTION && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_GUARDING))
                     continue;
+                /* for 'best' to be non-Null, it must be an amulet of guarding;
+                   life-saving and reflection don't get here due to early return
+                   and other amulets of guarding can't be any better */
                 if (!best || cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_GUARDING) {
                     best = obj;
                     if (cptr.ldI16o(best, $obj_otyp) != NHC.AMULET_OF_GUARDING)
-                        break __lbl_outer_break;
+                        break __lbl_outer_break;  /* life-saving or reflection; use it */
                 }
-                continue;
+                continue;  /* skip post-switch armor handling */
                 case 64n:
                 if (!is_shirt(obj))
                     continue;
@@ -774,16 +906,23 @@ function m_dowear_type(mon, flag, creation, racialexception) {
                 case 2n:
                 if (!is_cloak(obj))
                     continue;
+                /* mummy wrapping is only cloak allowed when bigger than human */
                 if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) > NHM.MZ_MEDIUM && cptr.ldI16o(obj, $obj_otyp) != NHC.MUMMY_WRAPPING)
                     continue;
+                /* avoid mummy wrapping if it will allow hero to see mon (unless
+                   this is a new mummy; an invisible one is feasible via ^G) */
                 if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 && ((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1) ? NHC.INVIS : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM && 0 && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) ? NHC.CLAIRVOYANT : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 0) ? NHC.BLINDED : 0))) == NHC.INVIS && !See_invisible() && !creation)
                     continue;
                 break;
                 case 4n:
                 if (!is_helmet(obj))
                     continue;
+                /* changing alignment is not implemented for monsters;
+                   priests and minions could change alignment but wouldn't
+                   want to, so they reject helms of opposite alignment */
                 if (cptr.ldI16o(obj, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT && ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mon, $monst_isminion) & 1) | 0))
                     continue;
+                /* (flimsy exception matches polyself handling) */
                 if ((num_horns(cptr.ldPtro(mon, $monst_data)) > 0) && !is_flimsy(obj))
                     continue;
                 break;
@@ -808,6 +947,12 @@ function m_dowear_type(mon, flag, creation, racialexception) {
             }
             if (cptr.ldI64o(obj, $obj_owornmask))
                 continue;
+            /* I'd like to define a VISIBLE_ARM_BONUS which doesn't assume the
+             * monster knows obj->spe, but if I did that, a monster would keep
+             * switching forever between two -2 caps since when it took off one
+             * it would forget spe and once again think the object is better
+             * than what it already has.
+             */
             if (best && (((ARM_BONUS(best) + extra_pref(mon, best)) | 0) >= ((ARM_BONUS(obj) + extra_pref(mon, obj)) | 0)))
                 continue;
             best = obj;
@@ -815,19 +960,30 @@ function m_dowear_type(mon, flag, creation, racialexception) {
     }
     if (!best || cptr.eq(best, old))
         return;
+
+    /* same auto-cursing behavior as for hero */
     autocurse = schar(((cptr.ldI16o(best, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT || cptr.ldI16o(best, $obj_otyp) == NHC.DUNCE_CAP) && !(cptr.ldI32o(best, $obj_cursed) & 1) ? 1 : 0));
+    /* if wearing a cloak, account for the time spent removing
+       and re-wearing it when putting on a suit or shirt */
     if ((flag == 1n || flag == 64n) && (cptr.ldI64o(mon, $monst_misc_worn_check) & 2n))
         m_delay = (m_delay + 2) | 0;
+    /* when upgrading a piece of armor, account for time spent
+       taking off current one */
     if (old) {
         m_delay = (m_delay + cptr.ld1so2(objects, cptr.ldI16o(old, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) | 0;
-        oldmask = cptr.ldI64o(old, $obj_owornmask);
-        cptr.stI64o(old, $obj_owornmask, 0n);
+
+        oldmask = cptr.ldI64o(old, $obj_owornmask);  /* needed later by artifact_light() */
+        cptr.stI64o(old, $obj_owornmask, 0n);  /* avoid doname() showing "(being worn)" */
     }
+
     if (!creation) {
         if (sawmon) {
             let buf = new Uint8Array(256);
             let oldarm = new Uint8Array(256);
             let newarm = new Uint8Array(265);
+
+            /* "<Mon> [removes <oldarm> and ]puts on <newarm>."
+               uses accessory verbs for armor but we can live with that */
             if (old) {
                 void cptr.strcpy(cptr.decay(oldarm), distant_name(old, doname));
                 nh_snprintf(__s_m_dowear_type, 932, cptr.decay(buf), 256n, __s_removes_s_and, cptr.decay(oldarm));
@@ -835,7 +991,13 @@ function m_dowear_type(mon, flag, creation, racialexception) {
                 cptr.st1o(cptr.decay(buf), 0, cptr.st1o(cptr.decay(oldarm), 0, 0, 1), 1);
             }
             void cptr.strcpy(cptr.decay(newarm), distant_name(best, doname));
+            /* a monster will swap an item of the same type as the one it
+               is replacing when the enchantment is better;
+               if newarm and oldarm have identical descriptions, substitute
+               "another <newarm>" for "a|an <newarm>" */
             if (!strncmpi(cptr.decay((newarm)), cptr.decay((oldarm)), -1)) {
+                /* size of newarm[] has been overallocated to guarantee
+                   enough room to insert "another " */
                 if (!strncmpi(cptr.decay(newarm), __s_a_sp, 2))
                     void strsubst(cptr.decay(newarm), __s_a_sp, __s_another);
                 else if (!strncmpi(cptr.decay(newarm), __s_an, 3))
@@ -845,7 +1007,7 @@ function m_dowear_type(mon, flag, creation, racialexception) {
             pline_mon(mon, __s_s_s_puts_on_s, Monnam(mon), cptr.decay(buf), cptr.decay(newarm));
             if (autocurse)
                 pline(__s_s_s_s_s_for_a_moment, s_suffix(Monnam(mon)), simpleonames(best), otense(best, __s_glow), hcolor(cptr.ldPtr(c_color_names)));
-        }
+        }  /* can see it */
         m_delay = (m_delay + cptr.ld1so2(objects, cptr.ldI16o(best, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) | 0;
         cptr.stI32o(mon, $monst_mfrozen, m_delay >>> 0);
         if ((cptr.ldI32o(mon, $monst_mfrozen) & 127))
@@ -853,6 +1015,8 @@ function m_dowear_type(mon, flag, creation, racialexception) {
     }
     if (old) {
         update_mon_extrinsics(mon, old, 0, creation);
+
+        /* owornmask was cleared above but artifact_light() expects it */
         cptr.stI64o(old, $obj_owornmask, oldmask);
         if ((cptr.ldI32o(old, $obj_lamplit) & 1) | 0 && artifact_light(old))
             end_burn(old, 0);
@@ -867,6 +1031,7 @@ function m_dowear_type(mon, flag, creation, racialexception) {
         vision_recalc(1);
         if (!creation && (cptr.ldI32o(best, $obj_lamplit) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
             let adesc = arti_light_description(best);
+
             if (sawmon)
                 pline(__s_s_s_to_shine_s, Yname2(best), otense(best, __s_begin), adesc);
             else if (canseemon(mon))
@@ -878,10 +1043,13 @@ function m_dowear_type(mon, flag, creation, racialexception) {
         }
     }
     update_mon_extrinsics(mon, best, 1, creation);
+    /* if couldn't see it but now can, or vice versa */
     if (!creation && (sawmon ^ canseemon(mon))) {
         if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 && !See_invisible()) {
             pline(__s_suddenly_you_cannot_see_s, cptr.decay(nambuf));
             discover_object((cptr.ldI16o(best, $obj_otyp)), 1, 1, 1);
+            /* } else if (!mon->minvis) {
+             *     pline("%s suddenly appears!", Amonnam(mon)); */
         }
     }
 }
@@ -910,6 +1078,7 @@ export function which_armor(mon, flag) {
         }
     } else {
         let obj;
+
         for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = cptr.ldPtr(obj))
             if (cptr.ldI64o(obj, $obj_owornmask) & flag)
                 return obj;
@@ -917,18 +1086,22 @@ export function which_armor(mon, flag) {
     }
 }
 
+/* remove an item of armor and then drop it */
 /** C ref: worn.c:1040 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} polyspot */
 function m_lose_armor(mon, obj, polyspot) {
     extract_from_minvent(mon, obj, 1, 0);
     place_object(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
     if (polyspot)
         bypass_obj(obj);
+    /* call stackobj() if we ever drop anything that can merge */
     newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
 }
 
+/* clear bypass bits for an object chain, plus contents if applicable */
 /** C ref: worn.c:1055 — @param {CPtr<struct obj>} objchn */
 function clear_bypass(objchn) {
     let o;
+
     for (o = objchn; o; o = cptr.ldPtr(o)) {
         cptr.stI32o(o, $obj_bypass, 0);
         if ((cptr.ldPtro((o), $obj_cobj) !== null))
@@ -936,9 +1109,20 @@ function clear_bypass(objchn) {
     }
 }
 
+/* all objects with their bypass bit set should now be reset to normal;
+   this can be a relatively expensive operation so is only called if
+   svc.context.bypasses is set */
 /** C ref: worn.c:1070 */
 export function clear_bypasses() {
     let mtmp;
+
+    /*
+     * 'Object' bypass is also used for one monster function:
+     * polymorph control of long worms.  Activated via setting
+     * svc.context.bypasses even if no specific object has been
+     * bypassed.
+     */
+
     clear_bypass(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
     clear_bypass(cptr.ldPtro(gi, $instance_globals_i_invent));
     clear_bypass(cptr.ldPtro(gm, $instance_globals_m_migrating_objs));
@@ -949,18 +1133,30 @@ export function clear_bypasses() {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         clear_bypass(cptr.ldPtro(mtmp, $monst_minvent));
+        /* long worm created by polymorph has mon->mextra->mcorpsenm set
+           to PM_LONG_WORM to flag it as not being subject to further
+           polymorph (so polymorph zap won't hit monster to transform it
+           into a long worm, then hit that worm's tail and transform it
+           again on same zap); clearing mcorpsenm reverts worm to normal */
         if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)) && has_mcorpsenm(mtmp))
             cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
     }
     for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         clear_bypass(cptr.ldPtro(mtmp, $monst_minvent));
+        /* no MCORPSENM(mtmp)==PM_LONG_WORM check here; long worms can't
+           be just created by polymorph and migrating at the same time */
     }
+    /* this is a no-op since mydogs is only non-Null during level change or
+       final ascension and we aren't called at those times, but be thorough */
     for (mtmp = cptr.ldPtro(gm, $instance_globals_m_mydogs); mtmp; mtmp = cptr.ldPtr(mtmp))
         clear_bypass(cptr.ldPtro(mtmp, $monst_minvent));
+    /* ball and chain can be "floating", not on any object chain (when
+       hero is swallowed by an engulfing monster, for instance) */
     if (uball.v)
         cptr.stI32o(uball.v, $obj_bypass, 0);
     if (uchain.v)
         cptr.stI32o(uchain.v, $obj_bypass, 0);
+
     cptr.st1o(svc, $context_info_bypasses, 0);
 }
 
@@ -970,6 +1166,7 @@ export function bypass_obj(obj) {
     cptr.st1o(svc, $context_info_bypasses, 1);
 }
 
+/* set or clear the bypass bit in a list of objects */
 /** C ref: worn.c:1127 — @param {CPtr<struct obj>} objchain @param {CInt} on */
 export function bypass_objlist(objchain, on) {
     if (on && objchain)
@@ -980,6 +1177,8 @@ export function bypass_objlist(objchain, on) {
     }
 }
 
+/* return the first object without its bypass bit set; set that bit
+   before returning so that successive calls will find further objects */
 /** C ref: worn.c:1142 — @param {CPtr<struct obj>} objchain @returns {CPtr<struct obj>} */
 export function nxt_unbypassed_obj(objchain) {
     while (objchain) {
@@ -992,10 +1191,15 @@ export function nxt_unbypassed_obj(objchain) {
     return objchain;
 }
 
+/* like nxt_unbypassed_obj() but operates on sortloot_item array rather
+   than an object linked list; the array contains obj==Null terminator;
+   there's an added complication that the array may have stale pointers
+   for deleted objects (see Multiple-Drop case in askchain(invent.c)) */
 /** C ref: worn.c:1159 — @param {CPtr<Loot>} lootarray @param {CPtr<struct obj>} listhead @returns {CPtr<struct obj>} */
 export function nxt_unbypassed_loot(lootarray, listhead) {
     let o;
     let obj;
+
     while ((obj = cptr.ldPtr(lootarray)) !== null) {
         for (o = listhead; o; o = cptr.ldPtr(o))
             if (cptr.eq(o, obj))
@@ -1018,6 +1222,7 @@ export function mon_break_armor(mon, polyspot) {
     let noride = 0;
     let pronoun = (cptr.ldPtro2(genders, pronoun_gender(mon, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_him));
     let ppronoun = (cptr.ldPtro2(genders, pronoun_gender(mon, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his));
+
     if (breakarm(mdat)) {
         if ((otmp = which_armor(mon, 1n)) !== null) {
             if ((Is_dragon_scales(otmp) && cptr.eq(mdat, cptr.add(mons, (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((otmp), $obj_otyp)) | 0) - NHC.GRAY_DRAGON_SCALES) | 0, $sizeof_permonst))) || (Is_dragon_mail(otmp) && cptr.eq(mdat, cptr.add(mons, (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((otmp), $obj_otyp)) | 0) - NHC.GRAY_DRAGON_SCALE_MAIL) | 0, $sizeof_permonst)))) {
@@ -1053,7 +1258,9 @@ export function mon_break_armor(mon, polyspot) {
             m_useup(mon, otmp);
         }
     } else if (sliparm(mdat)) {
+        /* sliparm checks whirly, noncorporeal, and small or under */
         let passes_thru_clothes = schar((!(cptr.ld1uo(mdat, $permonst_msize) <= NHM.MZ_SMALL)));
+
         if ((otmp = which_armor(mon, 1n)) !== null) {
             ;
             if (vis)
@@ -1082,6 +1289,7 @@ export function mon_break_armor(mon, polyspot) {
         }
     }
     if (handless_or_tiny) {
+        /* [caller needs to handle weapon checks] */
         if ((otmp = which_armor(mon, 16n)) !== null) {
             if (vis)
                 pline_mon(mon, __s_s_drops_s_gloves_s, Monnam(mon), ppronoun, (cptr.ldPtro((mon), $monst_mw)) ? __s_and_weapon : __s_empty);
@@ -1129,6 +1337,7 @@ export function mon_break_armor(mon, polyspot) {
         You(__s_can_no_longer_ride_s, mon_nam(mon));
         if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && rnl_at(__s_worn_c, 1324, __s_mon_break_armor, 3)) {
             let buf = new Uint8Array(256);
+
             You(__s_touch_s, mon_nam(cptr.ldPtro(u, $you_usteed)));
             void cptr.sprintf(cptr.decay(buf), __s_falling_off_s, an(pmname(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), Mgender(cptr.ldPtro(u, $you_usteed)))));
             instapetrify(cptr.decay(buf));
@@ -1138,8 +1347,12 @@ export function mon_break_armor(mon, polyspot) {
     return;
 }
 
+/* bias a monster's preferences towards armor that has special benefits. */
 /** C ref: worn.c:1339 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 function extra_pref(mon, obj) {
+    /* currently only does speed boots, but might be expanded if monsters
+     * get to use more armor abilities
+     */
     if (obj) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPEED_BOOTS && ((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) != NHM.MFAST)
             return 20;
@@ -1147,23 +1360,50 @@ function extra_pref(mon, obj) {
     return 0;
 }
 
+/*
+ * Exceptions to things based on race.
+ * Correctly checks polymorphed player race.
+ * Returns:
+ *       0 No exception, normal rules apply.
+ *       1 If the race/object combination is acceptable.
+ *      -1 If the race/object combination is unacceptable.
+ */
 /** C ref: worn.c:1360 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function racial_exception(mon, obj) {
     let ptr = raceptr(mon);
+
+    /* Acceptable Exceptions: */
+    /* Allow hobbits to wear elven armor - LoTR */
     if (cptr.eq(ptr, cptr.add(mons, NHC.PM_HOBBIT, $sizeof_permonst)) && is_elven_armor(obj))
         return 1;
+    /* Unacceptable Exceptions: */
+    /* Checks for object that certain races should never use go here */
+    /*  return -1; */
+
     return 0;
 }
 
+/* Remove an object from a monster's inventory. */
 /** C ref: worn.c:1377 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} do_extrinsics @param {CInt} silently */
 export function extract_from_minvent(mon, obj, do_extrinsics, silently) {
     let unwornmask = cptr.ldI64o(obj, $obj_owornmask);
+
+    /*
+     * At its core this is just obj_extract_self(), but it also handles
+     * any updates that need to happen if the gear is equipped or in
+     * some other sort of state that needs handling.
+     * Note that like obj_extract_self(), this leaves obj free.
+     */
+
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_MINVENT) {
         impossible(__s_extract_from_minvent_called_on_object);
         return;
     }
+    /* handle gold dragon scales/scale-mail (lit when worn) before clearing
+       obj->owornmask because artifact_light() expects that to be W_ARM */
     if ((unwornmask & 1n) != 0n && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && artifact_light(obj))
         end_burn(obj, 0);
+
     obj_extract_self(obj);
     cptr.stI64o(obj, $obj_owornmask, 0n);
     if (unwornmask) {
@@ -1171,11 +1411,13 @@ export function extract_from_minvent(mon, obj, do_extrinsics, silently) {
             update_mon_extrinsics(mon, obj, 0, silently);
         }
         cptr.stI64o(mon, $monst_misc_worn_check, cptr.ldI64o(mon, $monst_misc_worn_check) & BigInt.asIntN(64, ~unwornmask));
+        /* give monster a chance to wear other equipment on its next
+           move instead of waiting until it picks something up */
         check_gear_next_turn(mon);
     }
     obj_no_longer_held(obj);
     if (unwornmask & 256n) {
-        mwepgone(mon);
+        mwepgone(mon);  /* unwields and sets weapon_check to NEED_WEAPON */
     }
 }
 

@@ -327,6 +327,7 @@ const __s_through_the_hole = cptr.lit("through the hole");
 /** C ref: dokick.c:30 — char[31] */
 const kick_passes_thru = cptr.bytes("kick passes harmlessly through");
 
+/* kicking damage when not poly'd into a form with a kick attack */
 /** C ref: dokick.c:34 — @param {CPtr<struct monst>} mon @param {CInt} clumsy */
 function kickdmg(mon, clumsy) {
     let mdx;
@@ -335,22 +336,37 @@ function kickdmg(mon, clumsy) {
     let specialdmg;
     let kick_skill = NHC.P_NONE;
     let trapkilled = 0;
+
     if (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)
         dmg = (dmg + 5) | 0;
+
+    /* excessive wt affects dex, so it affects dmg */
     if (clumsy)
         dmg = (dmg / 2) | 0;
+
+    /* kicking a dragon or an elephant will not harm it */
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2097152n) != 0n))
         dmg = 0;
+
+    /* attacking a shade is normally useless */
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)))
         dmg = 0;
+
     specialdmg = special_dmgval(cptr.add(gy, $instance_globals_y_youmonst), mon, 32n, null);
+
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)) && !specialdmg) {
         pline_The(__s_pct_s_dot, cptr.decay(kick_passes_thru));
+        /* doesn't exercise skill or abuse alignment or frighten pet,
+           and shades have no passive counterattack */
         return;
     }
+
     if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
         seemimic(mon);
+
     check_caitiff(mon);
+
+    /* squeeze some guilt feelings... */
     if (cptr.ld1so(mon, $monst_mtame)) {
         abuse_dog(mon);
         if (cptr.ld1so(mon, $monst_mtame))
@@ -358,24 +374,29 @@ function kickdmg(mon, clumsy) {
         else
             cptr.stI32o(mon, $monst_mflee, 0);
     }
+
     if (dmg > 0) {
+        /* convert potential damage to actual damage */
         dmg = rnd_at(__s_dokick_c, 81, __s_kickdmg, dmg);
         if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS))) {
             if (dmg > 1)
                 kick_skill = NHC.P_BARE_HANDED_COMBAT;
             dmg = (dmg + (rng_log_enabled() ? (rng_log_set_caller(__s_dokick_c, 85, __s_kickdmg), rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0)) : rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0))) | 0;
         }
+        /* a good kick exercises your dex */
         exercise(NHC.A_DEX, 1);
     }
-    dmg = (dmg + specialdmg) | 0;
+    dmg = (dmg + specialdmg) | 0;  /* for blessed (or hypothetically, silver) boots */
     if (uarmf.v)
         dmg = (dmg + cptr.ld1so(uarmf.v, $obj_spe)) | 0;
-    dmg = (dmg + cptr.ld1so(u, $you_udaminc)) | 0;
+    dmg = (dmg + cptr.ld1so(u, $you_udaminc)) | 0;  /* add ring(s) of increase damage */
     if (dmg > 0)
         cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - dmg) | 0);
     if (!(cptr.ldI32o((mon), $monst_mhp) < 1) && (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !(cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) && !rn2_at(__s_dokick_c, 96, __s_kickdmg, 3) && (cptr.ldI32o(mon, $monst_mcanmove) & 1) | 0 && !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) && !(cptr.ldI32o(mon, $monst_mtrapped) & 1)) {
+        /* see if the monster has a place to move into */
         mdx = (cptr.ldI16o(mon, $monst_mx) + cptr.ldI32o(u, $you_dx)) | 0;
         mdy = (cptr.ldI16o(mon, $monst_my) + cptr.ldI32o(u, $you_dy)) | 0;
+        /* TODO: replace with mhurtle? */
         if (goodpos(i16(mdx), i16(mdy), mon, 0)) {
             pline(__s_s_reels_from_the_blow, Monnam(mon));
             if (m_in_out_region(mon, i16(mdx), i16(mdy))) {
@@ -389,9 +410,12 @@ function kickdmg(mon, clumsy) {
             }
         }
     }
+
     void passive(mon, uarmf.v, 1, schar((!(cptr.ldI32o((mon), $monst_mhp) < 1))), NHM.AT_KICK, 0);
     if ((cptr.ldI32o((mon), $monst_mhp) < 1) && !trapkilled)
         killed(mon);
+
+    /* may bring up a dialog, so put this after all messages */
     if (kick_skill != NHC.P_NONE)
         use_skill(kick_skill, 1);
 }
@@ -400,12 +424,16 @@ function kickdmg(mon, clumsy) {
 function maybe_kick_monster(mon, x, y) {
     if (mon) {
         let save_forcefight = cptr.ld1so(svc, $context_info_forcefight);
+
         cptr.stI16o(gb, $instance_globals_b_bhitpos, x);
         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, y);
         if (!(cptr.ldI32o(mon, $monst_mpeaceful) & 1) || !canspotmon(mon))
-            cptr.st1o(svc, $context_info_forcefight, 1);
+            cptr.st1o(svc, $context_info_forcefight, 1);  /* attack even if invisible */
+        /* kicking might be halted by discovery of hidden monster,
+           by player declining to attack peaceful monster,
+           or by passing out due to encumbrance */
         if (attack_checks(mon, null) || overexertion())
-            mon = null;
+            mon = null;  /* don't kick after all */
         cptr.st1o(svc, $context_info_forcefight, save_forcefight);
     }
     return schar((mon !== null));
@@ -417,13 +445,19 @@ function kick_monster(mon, x, y) {
     let i;
     let j;
     __lbl_doit: {
+
+        /* anger target even if wild miss will occur */
         setmangry(mon, 1);
+
         if (Levitation() && !rn2_at(__s_dokick_c, 154, __s_kick_monster, 3) && (cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) && !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 1n) != 0n)) {
             pline(__s_floating_in_the_air_you_miss_wildly);
             exercise(NHC.A_DEX, 0);
             void passive(mon, uarmf.v, 0, 1, NHM.AT_KICK, 0);
             return;
         }
+
+        /* reveal hidden target even if kick ends up missing (note: being
+           hidden doesn't affect chance to hit so neither does this reveal) */
         if ((cptr.ldI32o(mon, $monst_mundetected) & 1) | 0 || ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER)) {
             if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
                 seemimic(mon);
@@ -434,6 +468,13 @@ function kick_monster(mon, x, y) {
                 newsym(x, y);
             There(__s_is_s_here, canspotmon(mon) ? a_monnam(mon) : __s_something_hidden);
         }
+
+        /* Kick attacks by kicking monsters are normal attacks, not special.
+         * This is almost always worthless, since you can either take one turn
+         * and do all your kicks, or else take one turn and attack the monster
+         * normally, getting all your attacks _including_ all your kicks.
+         * If you have >1 kick attack, you get all of them.
+         */
         if (Upolyd() && attacktype(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), NHM.AT_KICK)) {
             let uattk;
             let sum;
@@ -443,23 +484,31 @@ function kick_monster(mon, x, y) {
             let attknum = cptr.box(0);
             let tmp = find_roll_to_hit(mon, NHM.AT_KICK, null, attknum, armorpenalty);
             mon_maybe_unparalyze(mon);
+
             for (i = 0; i < NHM.NATTK; i++) {
+                /* first of two kicks might have provoked counterattack
+                   that has incapacitated the hero (ie, floating eye) */
                 if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)
                     break;
+
                 uattk = cptr.add(cptr.add(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mattk), i, $sizeof_attack);
+                /* we only care about kicking attacks here */
                 if (cptr.ld1u(uattk) != NHM.AT_KICK)
                     continue;
+
                 kickdieroll = rnd_at(__s_dokick_c, 202, __s_kick_monster, 20);
                 specialdmg = special_dmgval(cptr.add(gy, $instance_globals_y_youmonst), mon, 32n, null);
                 if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)) && !specialdmg) {
+                    /* doesn't matter whether it would have hit or missed,
+                       and shades have no passive counterattack */
                     Your(__s_s_s, cptr.decay(kick_passes_thru), mon_nam(mon));
-                    break;
+                    break;  /* skip any additional kicks */
                 } else if (tmp > kickdieroll) {
                     You(__s_kick_s, mon_nam(mon));
                     sum = damageum(mon, uattk, specialdmg);
                     void passive(mon, uarmf.v, schar((sum != NHM.M_ATTK_MISS)), schar((!(sum & NHM.M_ATTK_DEF_DIED))), NHM.AT_KICK, 0);
                     if ((sum & NHM.M_ATTK_DEF_DIED))
-                        break;
+                        break;  /* Defender died */
                 } else {
                     missum(mon, uattk, schar((((tmp + armorpenalty.v) | 0) > kickdieroll)));
                     void passive(mon, uarmf.v, 0, 1, NHM.AT_KICK, 0);
@@ -467,8 +516,18 @@ function kick_monster(mon, x, y) {
             }
             return;
         }
+
         i = -inv_weight();
         j = weight_cap();
+
+        /* What the following confusing if statements mean:
+         * If you are over 70% of carrying capacity, you go through a "deal no
+         * damage" check, and if that fails, a "clumsy kick" check.
+         * At this % of carrycap | Chance of no damage | Chance of clumsiness
+         *             [70%-80%) |                 1/4 |                  1/3
+         *             [80%-90%) |                 1/3 |                  1/2
+         *            [90%-100%) |                 1/2 |                   1
+         */
         if (i < (((Math.imul(j, 3)) / 10) | 0)) {
             if (!rn2_at(__s_dokick_c, 237, __s_kick_monster, (i < ((j / 10) | 0)) ? 2 : ((i < ((j / 5) | 0)) ? 3 : 4))) {
                 if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)))
@@ -482,6 +541,7 @@ function kick_monster(mon, x, y) {
             else if (!rn2_at(__s_dokick_c, 246, __s_kick_monster, (i < ((j / 5) | 0)) ? 2 : 3))
                 clumsy = 1;
         }
+
         if (Fumbling())
             clumsy = 1;
         else if (uarm.v && (cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), $sizeof_objclass, $objclass_oc_big) & 1) | 0 && (acurr(NHC.A_DEX)) < rnd_at(__s_dokick_c, 253, __s_kick_monster, 25))
@@ -506,12 +566,18 @@ function kick_monster(mon, x, y) {
     kickdmg(mon, clumsy);
 }
 
+/*
+ *  Return TRUE if caught (the gold taken care of), FALSE otherwise.
+ *  The gold object is *not* attached to the fobj chain!
+ */
 /** C ref: dokick.c:295 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} gold @returns {CInt} */
 export function ghitm(mtmp, gold) {
     let msg_given = 0;
+
     if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) && !(cptr.ldI32o(mtmp, $monst_isshk) & 1) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1) && !(cptr.ldI32o(mtmp, $monst_isgd) & 1) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n)) {
         wakeup(mtmp, 1);
     } else if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1)) {
+        /* too light to do real damage */
         if (canseemon(mtmp)) {
             pline_The(__s_s_harmlessly_s_s, xname(gold), otense(gold, __s_hit), mon_nam(mtmp));
             msg_given = 1;
@@ -520,16 +586,19 @@ export function ghitm(mtmp, gold) {
         let was_sleeping = (cptr.ldI32o(mtmp, $monst_msleeping) & 1);
         let umoney;
         let value = BigInt.asIntN(64, cptr.ldI64o(gold, $obj_quan) * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(gold, $obj_otyp), $sizeof_objclass, $objclass_oc_cost)));
+
         cptr.stI32o(mtmp, $monst_msleeping, 0);
         finish_meating(mtmp);
         if (!(cptr.ldI32o(mtmp, $monst_isgd) & 1) && !rn2_at(__s_dokick_c, 317, __s_ghitm, 4))
             setmangry(mtmp, 1);
+        /* greedy monsters catch gold */
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0))
             pline(__s_s_scatches_the_gold, Monnam(mtmp), was_sleeping ? __s_awakens_and : __s_empty);
         void mpickobj(mtmp, gold);
-        gold = null;
+        gold = null;  /* obj has been freed */
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
             let robbed = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_robbed);
+
             if (robbed) {
                 robbed -= value;
                 if (robbed < 0n)
@@ -554,11 +623,17 @@ export function ghitm(mtmp, gold) {
                 verbalize(__s_thanks_scum);
         } else if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
             umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
+            /* Some of these are iffy, because a hostile guard
+               won't become peaceful and resume leading hero
+               out of the vault.  If he did do that, player
+               could try fighting, then weasel out of being
+               killed by throwing his/her gold when losing. */
             ;
             verbalize(umoney ? __s_drop_the_rest_and_follow_me : (hidden_gold(1) ? __s_you_still_have_hidden_gold_drop_it_now : ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_i_ll_take_care_of_that_please_move_along : __s_i_ll_take_that_now_get_moving)));
         } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n)) {
             let was_angry = schar((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)));
             let goldreqd = 0n;
+
             if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)))
                 goldreqd = 100n;
             else if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_SERGEANT, $sizeof_permonst)))
@@ -567,12 +642,14 @@ export function ghitm(mtmp, gold) {
                 goldreqd = 500n;
             else if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_CAPTAIN, $sizeof_permonst)))
                 goldreqd = 750n;
+
             if (goldreqd && rn2_at(__s_dokick_c, 379, __s_ghitm, 3)) {
                 umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
                 goldreqd += (BigInt.asIntN(64, umoney + BigInt(Math.imul(cptr.ldI32o(u, $you_ulevel), rn2_at(__s_dokick_c, 381, __s_ghitm, 5))))) / BigInt((acurr(NHC.A_CHA)));
                 if (value > goldreqd)
                     cptr.stI32o(mtmp, $monst_mpeaceful, 1);
             }
+
             if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
                 ;
                 if (goldreqd)
@@ -589,11 +666,14 @@ export function ghitm(mtmp, gold) {
         }
         return 1;
     }
+
     if (!msg_given)
         miss(xname(gold), mtmp);
     return 0;
 }
 
+/* container is kicked, dropped, thrown or otherwise impacted by player.
+ * Assumes container is on floor.  Checks contents for possible damage. */
 /** C ref: dokick.c:412 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function container_impact_dmg(obj, x, y) {
     let shkp;
@@ -604,13 +684,19 @@ export function container_impact_dmg(obj, x, y) {
     let insider;
     let frominv;
     let wchange = 0;
+
+    /* only consider normal containers */
     if (!Is_container(obj) || !(cptr.ldPtro((obj), $obj_cobj) !== null) || Is_mbag(obj))
         return;
+
     costly = schar(((shkp = shop_keeper(cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)))) && costly_spot(x, y) ? 1 : 0));
     insider = schar((cptr.ld1so(u, $you_ushops) && inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)) == cptr.ld1so(u, $you_ushops) ? 1 : 0));
+    /* if dropped or thrown, shop ownership flags are set on this obj */
     frominv = schar((!cptr.eq(obj, cptr.ldPtro(gk, $instance_globals_k_kickedobj))));
+
     for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = otmp2) {
         let result = null;
+
         otmp2 = cptr.ldPtr(otmp);
         if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so(otmp, $obj_oclass) != NHC.GEM_CLASS && !obj_resists(otmp, 33, 100)) {
             result = __s_shatter;
@@ -620,6 +706,9 @@ export function container_impact_dmg(obj, x, y) {
         if (result) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MIRROR)
                 change_luck(-2);
+
+            /* eggs laid by you.  penalty is -1 per egg, max 5,
+             * but it's always exactly 1 that breaks */
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && cptr.ld1so(otmp, $obj_spe) && ismnum(cptr.ldI32o(otmp, $obj_corpsenm)))
                 change_luck(-1);
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG) {
@@ -639,6 +728,7 @@ export function container_impact_dmg(obj, x, y) {
                 obj_extract_self(otmp);
                 obfree(otmp, null);
             }
+            /* contents of this container are no longer known */
             cptr.stI32o(obj, $obj_cknown, 0);
             wchange = 1;
         }
@@ -655,19 +745,25 @@ export function container_impact_dmg(obj, x, y) {
     }
 }
 
+/* jacket around really_kick_object */
 /** C ref: dokick.c:489 — @param {CInt} x @param {CInt} y @param {CPtr<char>} kickobjnam @returns {CInt} */
 function kick_object(x, y, kickobjnam) {
     let res = 0;
+
     cptr.st1(kickobjnam, 0);
+    /* if a pile, the "top" object gets kicked */
     cptr.stPtro(gk, $instance_globals_k_kickedobj, cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects));
     if (cptr.ldPtro(gk, $instance_globals_k_kickedobj)) {
+        /* formatted object name matters iff res==0 */
         void cptr.strcpy(kickobjnam, killer_xname(cptr.ldPtro(gk, $instance_globals_k_kickedobj)));
+        /* kick object; if fatal, done() will clean up kickedobj */
         res = really_kick_object(x, y);
         cptr.stPtro(gk, $instance_globals_k_kickedobj, null);
     }
     return res;
 }
 
+/* guts of kick_object */
 const __static_really_kick_object_flyingcoinmsg = cptr.alloc(3 * 8);
 cptr.stPtro(__static_really_kick_object_flyingcoinmsg, 0, __s_scatter_the_coins);
 cptr.stPtro(__static_really_kick_object_flyingcoinmsg, 8, __s_knock_coins_all_over_the_place);
@@ -683,8 +779,11 @@ function really_kick_object(x, y) {
     let costly;
     let isgold;
     let slide = 0;
+
+    /* gk.kickedobj should always be set due to conditions of call */
     if (!cptr.ldPtro(gk, $instance_globals_k_kickedobj) || cptr.ldI16o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_otyp) == NHC.BOULDER || cptr.eq(cptr.ldPtro(gk, $instance_globals_k_kickedobj), uball.v) || cptr.eq(cptr.ldPtro(gk, $instance_globals_k_kickedobj), uchain.v))
         return 0;
+
     if ((trap = t_at(x, y)) !== null) {
         if ((is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) && !Passes_walls()) || ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.WEB) {
             if (!(cptr.ldI32o(trap, $trap_tseen) & 1))
@@ -697,35 +796,51 @@ function really_kick_object(x, y) {
             return 1;
         }
     }
+
     if (Fumbling() && !rn2_at(__s_dokick_c, 537, __s_really_kick_object, 3)) {
         Your(__s_clumsy_kick_missed);
         return 1;
     }
+
     if (!uarmf.v && cptr.ldI16o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_corpsenm), $sizeof_permonst)) && !Stone_resistance()) {
         You(__s_kick_s_with_your_bare_s, corpse_xname(cptr.ldPtro(gk, $instance_globals_k_kickedobj), null, NHM.CXN_PFX_THE), makeplural(body_part(NHC.FOOT)));
         if (poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && polymon(NHC.PM_STONE_GOLEM)) {
-            ;
+            ;  /* hero has been transformed but kick continues */
         } else {
+            /* normalize body shape here; foot, not body_part(FOOT) */
             void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_kicking_s_barefoot, killer_xname(cptr.ldPtro(gk, $instance_globals_k_kickedobj)));
             instapetrify(cptr.add(svk, $kinfo_name));
         }
     }
+
     isgold = schar((cptr.ld1so(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_oclass) == NHC.COIN_CLASS));
     {
         let k_owt = cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_owt) | 0;
+
+        /* for non-gold stack, 1 item will be split off below (unless an
+           early return occurs, so we aren't moving the split to here);
+           calculate the range for that 1 rather than for the whole stack */
         if (cptr.ldI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan) > 1n && !isgold) {
             let save_quan = cptr.ldI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan);
+
             cptr.stI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan, 1n);
             k_owt = weight(cptr.ldPtro(gk, $instance_globals_k_kickedobj));
             cptr.stI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan, save_quan);
         }
+
+        /* range < 2 means the object will not move
+           (maybe dexterity should also figure here) */
         range = (((((acurrstr())) / 2) | 0) - ((k_owt / 40) | 0)) | 0;
     }
+
     if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)))
         range = (range + rnd_at(__s_dokick_c, 579, __s_really_kick_object, 3)) | 0;
+
     if (is_pool(x, y)) {
-        range = (((range / 3) | 0) + 1) | 0;
+        /* you're in the water too; significantly reduce range */
+        range = (((range / 3) | 0) + 1) | 0;  /* {1,2}=>1, {3,4,5}=>2, {6,7,8}=>3 */
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+        /* you're in air, since is_pool did not match */
         range = (range + rnd_at(__s_dokick_c, 586, __s_really_kick_object, 3)) | 0;
     } else {
         if (is_ice(x, y))
@@ -733,13 +848,24 @@ function really_kick_object(x, y) {
         if ((cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_greased) & 1))
             range = (range + rnd_at(__s_dokick_c, 591, __s_really_kick_object, 3)) | 0, slide = 1;
     }
+
+    /* Mjollnir is magically too heavy to kick */
     if (is_art(cptr.ldPtro(gk, $instance_globals_k_kickedobj), NHC.ART_MJOLLNIR))
         range = 1;
+
+    /* see if the object has a place to move into */
     if (!isok(i16(((x + cptr.ldI32o(u, $you_dx)) | 0)), i16(((y + cptr.ldI32o(u, $you_dy)) | 0))) || !((cptr.ld1so3(svl, (x + cptr.ldI32o(u, $you_dx)) | 0, $sizeof_rm_x21, (y + cptr.ldI32o(u, $you_dy)) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL) || closed_door(i16(((x + cptr.ldI32o(u, $you_dx)) | 0)), i16(((y + cptr.ldI32o(u, $you_dy)) | 0))))
         range = 1;
+
+    /* 5.0: this used to skip 'costly' handling if kickedobj->no_charge
+       was set but that optimization could result in no_charge staying set
+       for objects kicked out of the shop */
     shkp = find_objowner(cptr.ldPtro(gk, $instance_globals_k_kickedobj), x, y);
     costly = schar((shkp && (costly_spot(x, y) || (costly_adjacent(shkp, x, y) && (cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_unpaid) & 1) | 0)) ? 1 : 0));
+    /* 5.0: give feedback about the item being kicked; some follow-on
+       messages refer to "it" */
     Norep(__s_you_kick_s, !isgold ? singular(cptr.ldPtro(gk, $instance_globals_k_kickedobj), doname) : doname(cptr.ldPtro(gk, $instance_globals_k_kickedobj)));
+
     if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(x, y)) {
         if ((!(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && rn2_at(__s_dokick_c, 616, __s_really_kick_object, 20) > (acurr(NHC.A_DEX))) || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             if (Blind())
@@ -768,8 +894,11 @@ function really_kick_object(x, y) {
         }
         return 1;
     }
+
+    /* a box gets a chance of breaking open here */
     if (Is_box(cptr.ldPtro(gk, $instance_globals_k_kickedobj))) {
         let otrp = schar((cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_otrapped) & 1));
+
         if (range < 2)
             pline(__s_thud);
         container_impact_dmg(cptr.ldPtro(gk, $instance_globals_k_kickedobj), x, y);
@@ -792,19 +921,29 @@ function really_kick_object(x, y) {
         }
         if (range < 2)
             return 1;
+        /* else let it fall through to the next cases... */
     }
+
+    /* fragile objects should not be kicked */
     if (hero_breaks(cptr.ldPtro(gk, $instance_globals_k_kickedobj), cptr.ldI16o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_ox), cptr.ldI16o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_oy), 0))
         return 1;
+
+    /* too heavy to move.  range is calculated as potential distance from
+     * player, so range == 2 means the object may move up to one square
+     * from its current position
+     */
     if (range < 2) {
         if (!Is_box(cptr.ldPtro(gk, $instance_globals_k_kickedobj)))
             pline(__s_thump);
         return (!rn2_at(__s_dokick_c, 689, __s_really_kick_object, 3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
     }
+
     if (cptr.ldI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan) > 1n) {
         if (!isgold) {
             cptr.stPtro(gk, $instance_globals_k_kickedobj, splitobj(cptr.ldPtro(gk, $instance_globals_k_kickedobj), 1n));
         } else {
             if (rn2_at(__s_dokick_c, 696, __s_really_kick_object, 20)) {
+
                 if (!Deaf())
                     pline(__s_pct_s, __s_thwwpingg);
                 You(__s_pct_s_bang, cptr.ldPtro(__static_really_kick_object_flyingcoinmsg, rn2_at(__s_dokick_c, 704, __s_really_kick_object, 3), 8));
@@ -818,6 +957,7 @@ function really_kick_object(x, y) {
             }
         }
     }
+
     if (slide && !Blind())
         pline(__s_whee_s_s_across_the_s, Doname2(cptr.ldPtro(gk, $instance_globals_k_kickedobj)), otense(cptr.ldPtro(gk, $instance_globals_k_kickedobj), __s_slide), surface(x, y));
     obj_extract_self(cptr.ldPtro(gk, $instance_globals_k_kickedobj));
@@ -825,30 +965,43 @@ function really_kick_object(x, y) {
     newsym(x, y);
     mon = bhit(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), range, NHC.KICKED_WEAPON, null, null, cptr.add(gk, $instance_globals_k_kickedobj));
     if (!cptr.ldPtro(gk, $instance_globals_k_kickedobj))
-        return 1;
+        return 1;  /* object broken */
+
     if (mon) {
         if ((cptr.ldI32o(mon, $monst_isshk) & 1) | 0 && cptr.ld1so(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_where) == NHM.OBJ_MINVENT && cptr.eq(cptr.ldPtro(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_v), mon))
-            return 1;
+            return 1;  /* alert shk caught it */
         cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI16o(mon, $monst_mx) != cptr.ldI16o(gb, $instance_globals_b_bhitpos) || cptr.ldI16o(mon, $monst_my) != cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) ? 1 : 0)));
         if (isgold ? ghitm(mon, cptr.ldPtro(gk, $instance_globals_k_kickedobj)) : thitmonst(mon, cptr.ldPtro(gk, $instance_globals_k_kickedobj)))
             return 1;
     }
+
+    /* the object might have fallen down a hole;
+       ship_object() will have taken care of shop billing */
     if (cptr.ld1so(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_where) == NHM.OBJ_MIGRATING)
         return 1;
+
     bhitroom = cptr.ld1s(in_rooms(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), NHC.SHOPBASE));
+    /* if obj is marked no_charge, stolen_value() won't blame hero for
+       theft but will clear that flag */
     if (costly && (!costly_spot(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) || cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)) != bhitroom)) {
+        /* kicked from inside shop to somewhere outside shop */
         if (isgold)
             costly_gold(x, y, cptr.ldI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan), 0);
         else
             void stolen_value(cptr.ldPtro(gk, $instance_globals_k_kickedobj), x, y, schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)), 0);
-        costly = 0;
+        costly = 0;  /* already billed */
     }
+
     if (flooreffects(cptr.ldPtro(gk, $instance_globals_k_kickedobj), cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), __s_fall))
         return 1;
     if (costly) {
         let gtg = 0n;
+
+        /* costly + landed outside shop handled above; must be inside shop */
         if ((cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_unpaid) & 1))
             subfrombill(cptr.ldPtro(gk, $instance_globals_k_kickedobj), shkp);
+
+        /* if billed for contained gold during kick, get a refund now */
         if ((cptr.ldPtro((cptr.ldPtro(gk, $instance_globals_k_kickedobj)), $obj_cobj) !== null) && (gtg = contained_gold(cptr.ldPtro(gk, $instance_globals_k_kickedobj), 1)) > 0n)
             donate_gold(gtg, shkp, 0);
     }
@@ -859,9 +1012,11 @@ function really_kick_object(x, y) {
     return 1;
 }
 
+/* cause of death if kicking kills kicker */
 /** C ref: dokick.c:794 — @param {CPtr<char>} buf @param {CPtr<char>} kickobjnam @returns {CPtr<char>} */
 function kickstr(buf, kickobjnam) {
     let what;
+
     if (cptr.ld1s(kickobjnam))
         what = kickobjnam;
     else if (cptr.eq(cptr.ldPtro(gm, $instance_globals_m_maploc), cptr.add(gn, $instance_globals_n_nowhere)))
@@ -944,14 +1099,16 @@ function kick_ouch(x, y, kickobjnam) {
     y = cptr.box(y);
     let dmg;
     let buf = new Uint8Array(256);
+
     pline(__s_ouch_that_hurts);
     exercise(NHC.A_DEX, 0);
     exercise(NHC.A_STR, 0);
     if (isok(x.v, y.v)) {
         if (Blind())
-            feel_location(x.v, y.v);
+            feel_location(x.v, y.v);  /* we know we hit it */
         if (is_drawbridge_wall(x.v, y.v) >= 0) {
             pline_The(__s_drawbridge_is_unaffected);
+            /* update maploc to refer to the drawbridge */
             void find_drawbridge(x, y);
             cptr.stPtro(gm, $instance_globals_m_maploc, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x.v, $sizeof_rm_x21), y.v, $sizeof_rm));
         }
@@ -962,24 +1119,32 @@ function kick_ouch(x, y, kickobjnam) {
     dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_dokick_c, 902, __s_kick_ouch), rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5)) : rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5));
     losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), kickstr(cptr.decay(buf), kickobjnam), NHM.KILLED_BY);
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation())
-        hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), ((rn2_at(__s_dokick_c, 905, __s_kick_ouch, 2) + 4) | 0), 1);
+        hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), ((rn2_at(__s_dokick_c, 905, __s_kick_ouch, 2) + 4) | 0), 1);  /* assume it's heavy */
 }
 
+/* kick a door */
 /** C ref: dokick.c:910 — @param {CInt} x @param {CInt} y @param {CInt} avrg_attrib */
 function kick_door(x, y, avrg_attrib) {
     let doorbuster;
+
     if (((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) == NHM.D_ISOPEN || ((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) == NHM.D_BROKEN || ((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
         kick_dumb(x, y);
-        return;
+        return;  /* uses a turn */
     }
+
+    /* not enough leverage to kick open doors while levitating */
     if (Levitation()) {
         kick_ouch(x, y, __s_empty);
         return;
     }
+
     exercise(NHC.A_DEX, 1);
     doorbuster = schar((Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 8192n) != 0n) ? 1 : 0));
+    /* door is known to be CLOSED or LOCKED */
     if (doorbuster || (rnl_at(__s_dokick_c, 930, __s_kick_door, 35) < ((avrg_attrib + (!(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 0 : (acurr(NHC.A_DEX)))) | 0))) {
         let shopdoor = schar((cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)) ? 1 : 0));
+
+        /* break the door */
         if (((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
             if (cptr.ld1so(flags, $flag_verbose))
                 You(__s_kick_the_door);
@@ -997,8 +1162,8 @@ function kick_door(x, y, avrg_attrib) {
             exercise(NHC.A_STR, 1);
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, NHM.D_BROKEN);
         }
-        feel_newsym(x, y);
-        recalc_block_point(x, y);
+        feel_newsym(x, y);  /* we know we broke it */
+        recalc_block_point(x, y);  /* vision */
         if (shopdoor) {
             add_damage(x, y, 400n);
             pay_for_damage(__s_break, 0);
@@ -1007,19 +1172,23 @@ function kick_door(x, y, avrg_attrib) {
             void get_iter_mons(watchman_thief_arrest);
     } else {
         if (Blind())
-            feel_location(x, y);
+            feel_location(x, y);  /* we know we hit it */
         exercise(NHC.A_STR, 1);
+        /* note: this used to be unconditional "WHAMMM!!!" but that has a
+           fairly strong connotation of noise that a deaf hero shouldn't
+           hear; we've kept the extra 'm's and one of the extra '!'s */
         pline(__s_pct_s_bang2, (Deaf() || !rn2_at(__s_dokick_c, 966, __s_kick_door, 3)) ? __s_thwack : __s_whammm);
         if (in_town(x, y))
             void get_iter_mons_xy(watchman_door_damage, x, y);
     }
 }
 
+/* kick non-door terrain */
 /** C ref: dokick.c:974 — @param {CInt} x @param {CInt} y @param {CInt} avrg_attrib @returns {CInt} */
 function kick_nondoor(x, y, avrg_attrib) {
     if (cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ) == NHC.SDOOR) {
         if (!Levitation() && rn2_at(__s_dokick_c, 977, __s_kick_nondoor, 30) < avrg_attrib) {
-            cvt_sdoor_to_door(cptr.ldPtro(gm, $instance_globals_m_maploc));
+            cvt_sdoor_to_door(cptr.ldPtro(gm, $instance_globals_m_maploc));  /* ->typ = DOOR */
             ;
             pline(__s_crash_s_a_secret_door, ((((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & 24) == NHM.D_LOCKED) ? __s_your_kick_uncovers : __s_you_kick_open);
             exercise(NHC.A_DEX, 1);
@@ -1028,9 +1197,9 @@ function kick_nondoor(x, y, avrg_attrib) {
                 b_trapped(__s_door, NHC.FOOT);
             } else if (((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) != NHM.D_NODOOR && !(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.D_LOCKED))
                 cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, NHM.D_ISOPEN);
-            feel_newsym(x, y);
+            feel_newsym(x, y);  /* we know it's gone */
             if (((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) == NHM.D_ISOPEN || ((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) == NHM.D_NODOOR)
-                unblock_point(x, y);
+                unblock_point(x, y);  /* vision */
             return NHM.ECMD_TIME;
         } else {
             kick_ouch(x, y, __s_empty);
@@ -1043,8 +1212,8 @@ function kick_nondoor(x, y, avrg_attrib) {
             pline(__s_crash_you_kick_open_a_secret_passage);
             exercise(NHC.A_DEX, 1);
             cptr.st1o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ, NHC.CORR);
-            feel_newsym(x, y);
-            unblock_point(x, y);
+            feel_newsym(x, y);  /* we know it's gone */
+            unblock_point(x, y);  /* vision */
             return NHM.ECMD_TIME;
         } else {
             kick_ouch(x, y, __s_empty);
@@ -1058,7 +1227,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             return NHM.ECMD_TIME;
         }
         if ((Luck() < 0 || (cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) && !rn2_at(__s_dokick_c, 1022, __s_kick_nondoor, 3)) {
-            cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, 0);
+            cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, 0);  /* don't leave loose ends.. */
             cptr.st1o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ, NHC.ROOM);
             void mkgold(BigInt(rnd_at(__s_dokick_c, 1025, __s_kick_nondoor, 200)), x, y);
             ;
@@ -1083,6 +1252,7 @@ function kick_nondoor(x, y, avrg_attrib) {
                 You(__s_kick_loose_some_ornamental_coins_and);
                 newsym(x, y);
             }
+            /* prevent endless milking */
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, NHM.T_LOOTED);
             return NHM.ECMD_TIME;
         } else if (!rn2_at(__s_dokick_c, 1053, __s_kick_nondoor, 4)) {
@@ -1121,9 +1291,11 @@ function kick_nondoor(x, y, avrg_attrib) {
             kick_ouch(x, y, __s_empty);
             return NHM.ECMD_TIME;
         }
+        /* make metal boots rust */
         if (uarmf.v && rn2_at(__s_dokick_c, 1090, __s_kick_nondoor, 3))
             if (water_damage(uarmf.v, __s_metal_boots, 1) == NHM.ER_NOTHING) {
                 Your(__s_boots_get_wet);
+                /* could cause short-lived fumbling here */
             }
         exercise(NHC.A_DEX, 1);
         return NHM.ECMD_TIME;
@@ -1132,19 +1304,26 @@ function kick_nondoor(x, y, avrg_attrib) {
         if (Levitation()) {
             kick_dumb(x, y);
         } else if (rn2_at(__s_dokick_c, 1101, __s_kick_nondoor, 4)) {
+            /* minor injury */
             kick_ouch(x, y, __s_empty);
         } else if (!(cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_horizontal) & 1) && !rn2_at(__s_dokick_c, 1104, __s_kick_nondoor, 2)) {
+            /* disturb the grave: summon a ghoul (once only), same as
+               when engraving */
             disturb_grave(x, y);
         } else {
+            /* destroy the headstone, implicitly destroying any
+               not-yet-created contents (including zombie or mummy);
+               any already created contents will still be buried here */
             exercise(NHC.A_WIS, 0);
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL && cptr.ldI32o(u, $you_ualign + $align_record) > -10))
                 adjalign(-sgn(cptr.ld1so(u, $you_ualign)));
             cptr.st1o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ, NHC.ROOM);
-            cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, 0);
-            cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_horizontal, 0);
+            cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, 0);  /* clear 'flags' */
+            cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_horizontal, 0);  /* clear 'horizontal' */
             void mksobj_at(NHC.ROCK, x, y, 1, 0);
             del_engr_at(x, y);
             if (Blind()) {
+                /* [feel this happen if Deaf?] */
                 pline(__s_crack_s_broke, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
             } else {
                 pline_The(__s_headstone_topples_over_and_breaks);
@@ -1159,9 +1338,11 @@ function kick_nondoor(x, y, avrg_attrib) {
     }
     if (IS_TREE(cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ))) {
         let treefruit;
+
+        /* nothing, fruit or trouble? 75:23.5:1.5% */
         if (rn2_at(__s_dokick_c, 1139, __s_kick_nondoor, 3)) {
             if (!rn2_at(__s_dokick_c, 1140, __s_kick_nondoor, 6) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
-                You_hear(__s_a_low_buzzing);
+                You_hear(__s_a_low_buzzing);  /* a warning */
             kick_ouch(x, y, __s_empty);
             return NHM.ECMD_TIME;
         }
@@ -1169,6 +1350,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             let nfruit = BigInt.asIntN(64, 8n - BigInt(rnl_at(__s_dokick_c, 1147, __s_kick_nondoor, 7)));
             let nfall;
             let frtype = cptr.ldI16o(treefruit, $obj_otyp);
+
             cptr.stI64o(treefruit, $obj_quan, nfruit);
             cptr.stI32o(treefruit, $obj_owt, weight(treefruit) >>> 0);
             if (is_plural(treefruit))
@@ -1177,13 +1359,15 @@ function kick_nondoor(x, y, avrg_attrib) {
                 pline(__s_s_falls_from_the_tree, An(xname(treefruit)));
             nfall = scatter(x, y, 2, 6, treefruit);
             if (nfall != nfruit) {
+                /* scatter left some in the tree, but treefruit
+                 * may not refer to the correct object */
                 treefruit = mksobj(frtype, 1, 0);
                 cptr.stI64o(treefruit, $obj_quan, BigInt.asIntN(64, nfruit - nfall));
                 pline(__s_ld_s_got_caught_in_the_branches, BigInt.asIntN(64, nfruit - nfall), xname(treefruit));
                 dealloc_obj(treefruit);
             }
             exercise(NHC.A_DEX, 1);
-            exercise(NHC.A_WIS, 1);
+            exercise(NHC.A_WIS, 1);  /* discovered a new food source! */
             newsym(x, y);
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) | NHM.TREE_LOOTED);
             return NHM.ECMD_TIME;
@@ -1191,6 +1375,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             let cnt = (rnl_at(__s_dokick_c, 1172, __s_kick_nondoor, 4) + 2) | 0;
             let made = 0;
             let mm = cptr.alloc(4);
+
             cptr.stI16(mm, x);
             cptr.stI16o(mm, $nhcoord_y, y);
             while (cnt--) {
@@ -1209,6 +1394,7 @@ function kick_nondoor(x, y, avrg_attrib) {
     }
     if (((cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ)) == NHC.SINK)) {
         let gend = poly_gender();
+
         if (Levitation()) {
             kick_dumb(x, y);
             return NHM.ECMD_TIME;
@@ -1235,6 +1421,7 @@ function kick_nondoor(x, y, avrg_attrib) {
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) | NHM.S_LPUDDING);
             return NHM.ECMD_TIME;
         } else if (!(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.S_LDWASHER) && !rn2_at(__s_dokick_c, 1224, __s_kick_nondoor, 3) && !(cptr.ld1uo2(svm, NHC.PM_AMOROUS_DEMON, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
+            /* can't resist... */
             pline(__s_s_returns, (Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_Something) : __s_the_dish_washer));
             if (makemon(cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst), x, y, Number(BigInt.asUintN(32, (131072n | ((gend == 1 || (gend == 2 && rn2_at(__s_dokick_c, 1229, __s_kick_nondoor, 2))) ? 32768n : 65536n))))))
                 newsym(x, y);
@@ -1260,6 +1447,7 @@ function kick_nondoor(x, y, avrg_attrib) {
     return NHM.ECMD_TIME;
 }
 
+/* the #kick command */
 /** C ref: dokick.c:1257 @returns {CInt} */
 export function dokick() {
     let x;
@@ -1269,6 +1457,7 @@ export function dokick() {
     let oldglyph = -1;
     let mtmp;
     let no_kick = 0;
+
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 524288n) != 0n)) {
         You(__s_have_no_legs_to_kick_with);
         no_kick = 1;
@@ -1315,21 +1504,28 @@ export function dokick() {
         pline(__s_there_s_not_enough_room_to_kick_in_here);
         no_kick = 1;
     }
+
     if (no_kick) {
-        display_nhwindow()(WIN_MESSAGE.v, 1);
+        /* ignore direction typed before player notices kick failed */
+        display_nhwindow()(WIN_MESSAGE.v, 1);  /* --More-- */
         return NHM.ECMD_FAIL;
     }
+
     if (!getdir(null))
         return NHM.ECMD_CANCEL;
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy))
         return NHM.ECMD_CANCEL;
+
     x = i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0));
     y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0));
     cptr.stI16(gk, x), cptr.stI16o(gk, $nhcoord_y, y);
+
+    /* KMH -- Kicking boots always succeed */
     if (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)
         avrg_attrib = 99;
     else
         avrg_attrib = ((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0;
+
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         switch (rn2_at(__s_dokick_c, 1334, __s_dokick, 3)) {
             case 0:
@@ -1348,49 +1544,85 @@ export function dokick() {
         }
         return NHM.ECMD_TIME;
     } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
+        /* must be Passes_walls */
         You(__s_kick_at_the_side_of_the_pit);
         return NHM.ECMD_TIME;
     }
     if (Levitation()) {
         let xx;
         let yy;
+
         xx = i16(((cptr.ldI16(u) - cptr.ldI32o(u, $you_dx)) | 0));
         yy = i16(((cptr.ldI16o(u, $you_uy) - cptr.ldI32o(u, $you_dy)) | 0));
+        /* doors can be opened while levitating, so they must be
+         * reachable for bracing purposes
+         * Possible extension: allow bracing against stuff on the side?
+         */
         if (isok(xx, yy) && !((cptr.ld1so3(svl, xx, $sizeof_rm_x21, yy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && !((cptr.ld1so3(svl, xx, $sizeof_rm_x21, yy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || !(cptr.ldPtro3(svl, xx, 168, yy, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null))) {
             You(__s_have_nothing_to_brace_yourself_against);
             return NHM.ECMD_OK;
         }
     }
+
     mtmp = isok(x, y) ? (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) : null;
+    /* might not kick monster if it is hidden and becomes revealed,
+       if it is peaceful and player declines to attack, or if the
+       hero passes out due to encumbrance with low hp; svc.context.move
+       will be 1 unless player declines to kick peaceful monster */
     if (mtmp) {
         oldglyph = glyph_at(x, y);
         if (!maybe_kick_monster(mtmp, x, y))
             return (cptr.ld1so(svc, $context_info_move) ? NHM.ECMD_TIME : NHM.ECMD_OK);
     }
+
     wake_nearby(0);
     u_wipe_engr(2);
+
     if (!isok(x, y)) {
         cptr.stPtro(gm, $instance_globals_m_maploc, cptr.add(gn, $instance_globals_n_nowhere));
         kick_ouch(x, y, __s_empty);
         return NHM.ECMD_TIME;
     }
     cptr.stPtro(gm, $instance_globals_m_maploc, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));
+
+    /*
+     * The next five tests should stay in their present order:
+     * monsters, pools, objects, non-doors, doors.
+     *
+     * [FIXME:  Monsters who are hidden underneath objects or
+     * in pools should lead to hero kicking the concealment
+     * rather than the monster, probably exposing the hidden
+     * monster in the process.  And monsters who are hidden on
+     * ceiling shouldn't be kickable (unless hero is flying?);
+     * kicking toward them should just target whatever is on
+     * the floor at that spot.]
+     */
+
     if (mtmp) {
+        /* save mtmp->data (for recoil) in case mtmp gets killed */
         let mdat = cptr.ldPtro(mtmp, $monst_data);
+
         kick_monster(mtmp, x, y);
         glyph = glyph_at(x, y);
+        /* see comment in attack_checks() */
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
+            /* if we mapped an invisible monster and immediately
+               killed it, we don't want to forget what we thought
+               was there before the kick */
             if (glyph != oldglyph && ((glyph) == NHC.GLYPH_INVIS_OFF))
                 show_glyph(x, y, oldglyph);
         } else if (!canspotmon(mtmp) && cptr.ldI16o(mtmp, $monst_mx) == x && cptr.ldI16o(mtmp, $monst_my) == y && !((glyph) == NHC.GLYPH_INVIS_OFF) && !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))))) {
             map_invisible(x, y);
         }
+        /* recoil if floating */
         if (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation()) && cptr.ld1so(svc, $context_info_move)) {
             let range;
+
             range = (((cptr.ldI32o(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_cwt) | 0) + ((weight_cap() + inv_weight()) | 0)) | 0);
             if (range < 1)
-                range = 1;
+                range = 1;  /* divide by zero avoidance */
             range = ((Math.imul(3, cptr.ldI32o(mdat, $permonst_cwt) | 0)) / range) | 0;
+
             if (range < 1)
                 range = 1;
             hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), range, 1);
@@ -1399,19 +1631,24 @@ export function dokick() {
     }
     void unmap_invisible(x, y);
     if ((is_pool(x, y) || cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ) == NHC.LAVAWALL ? 1 : 0) ^ !!(cptr.ldI32o(u, $you_uinwater) & 1)) {
+        /* objects normally can't be removed from water by kicking */
         You(__s_splash_some_s_around, hliquid(is_pool(x, y) ? __s_water : __s_lava));
+        /* pretend the kick is fast enough for lava not to burn */
         return NHM.ECMD_TIME;
     }
+
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && (!Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || sobj_at(NHC.BOULDER, x, y))) {
         let kickobjnam = new Uint8Array(256);
+
         if (kick_object(x, y, cptr.decay(kickobjnam))) {
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
-                hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1);
+                hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1);  /* assume it's light */
             return NHM.ECMD_TIME;
         }
         kick_ouch(x, y, cptr.decay(kickobjnam));
         return NHM.ECMD_TIME;
     }
+
     if (((cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ)) == NHC.DOOR))
         kick_door(x, y, avrg_attrib);
     else
@@ -1422,6 +1659,8 @@ export function dokick() {
 /** C ref: dokick.c:1473 — @param {CPtr<coord>} cc @param {CInt} loc @param {CInt} x @param {CInt} y */
 function drop_to(cc, loc, x, y) {
     let stway = stairway_at(x, y);
+
+    /* cover all the MIGR_xxx choices generated by down_gate() */
     switch (loc) {
         case NHM.MIGR_RANDOM:
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))))) {
@@ -1447,11 +1686,13 @@ function drop_to(cc, loc, x, y) {
         break;
         default:
         case -1:
+        /* y==0 means "nowhere", in which case x doesn't matter */
         cptr.stI16o(cc, $coord_y, cptr.stI16(cc, 0));
         break;
     }
 }
 
+/* player or missile impacts location, causing objects to fall down */
 /** C ref: dokick.c:1511 — @param {CPtr<struct obj>} missile @param {CInt} x @param {CInt} y @param {CInt} dlev */
 export function impact_drop(missile, x, y, dlev) {
     let toloc;
@@ -1467,20 +1708,33 @@ export function impact_drop(missile, x, y, dlev) {
     let costly;
     let isrock;
     let cc = cptr.alloc(4);
+
     if (!(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null))
         return;
+
     toloc = down_gate(x, y);
     drop_to(cc, toloc, x, y);
     if (!cptr.ldI16o(cc, $nhcoord_y))
         return;
+
     if (dlev) {
+        /* send objects next to player falling through trap door.
+         * checked in obj_delivery().
+         */
         toloc = NHM.MIGR_WITH_HERO;
         cptr.stI16o(cc, $nhcoord_y, dlev);
     }
+
     costly = costly_spot(x, y);
     price = (debit = (robbed = 0n));
     angry = 0;
     shkp = null;
+    /* if 'costly', we must keep a record of ESHK(shkp) before
+     * it undergoes changes through the calls to stolen_value.
+     * the angry bit must be reset, if needed, in this fn, since
+     * stolen_value is called under the 'silent' flag to avoid
+     * unsavory pline repetitions.
+     */
     if (costly) {
         if ((shkp = shop_keeper(cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)))) !== null) {
             debit = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit);
@@ -1488,33 +1742,43 @@ export function impact_drop(missile, x, y, dlev) {
             angry = schar((!(cptr.ldI32o(shkp, $monst_mpeaceful) & 1)));
         }
     }
+
     isrock = schar((missile && cptr.ldI16o(missile, $obj_otyp) == NHC.ROCK ? 1 : 0));
     oct = (dct = 0n);
     for (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = obj2) {
         obj2 = cptr.ldPtro(obj, $obj_v);
         if (cptr.eq(obj, missile))
             continue;
+        /* number of objects in the pile */
         oct += cptr.ldI64o(obj, $obj_quan);
         if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v))
             continue;
+        /* boulders can fall too, but rarely & never due to rocks */
         if ((isrock && cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER) || rn2_at(__s_dokick_c, 1569, __s_impact_drop, cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER ? 30 : 3))
             continue;
         obj_extract_self(obj);
+
         if (costly) {
             price += stolen_value(obj, x, y, schar((costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && cptr.strchr(cptr.add(u, $you_urooms), cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE))) ? 1 : 0)), 1);
+            /* set obj->no_charge to 0 */
             if ((cptr.ldPtro((obj), $obj_cobj) !== null))
-                picked_container(obj);
+                picked_container(obj);  /* does the right thing */
             if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS)
                 cptr.stI32o(obj, $obj_no_charge, 0);
         }
+
         add_to_migration(obj);
         cptr.stI16o(obj, $obj_ox, cptr.ldI16(cc));
         cptr.stI16o(obj, $obj_oy, cptr.ldI16o(cc, $nhcoord_y));
         cptr.stI64o(obj, $obj_owornmask, BigInt(toloc));
+
+        /* number of fallen objects */
         dct += cptr.ldI64o(obj, $obj_quan);
     }
+
     if (dct && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
         let what = (dct == 1n ? __s_object_falls : __s_objects_fall);
+
         if (missile)
             pline(__s_from_the_impact_sother_s, dct == oct ? __s_the : (dct == 1n ? __s_an : __s_empty), what);
         else if (oct == dct)
@@ -1522,6 +1786,7 @@ export function impact_drop(missile, x, y, dlev) {
         else
             pline(__s_s_adjacent_s_s, dct == 1n ? __s_one_of_the : __s_some_of_the, dct == 1n ? __s_objects_falls : what, cptr.ldPtro(gg, $instance_globals_g_gate_str));
     }
+
     if (costly && shkp && price) {
         if (cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_robbed) > robbed) {
             You(__s_removed_ld_s_worth_of_goods, price, currency(price));
@@ -1545,6 +1810,10 @@ export function impact_drop(missile, x, y, dlev) {
     }
 }
 
+/* NOTE: ship_object assumes otmp was FREED from fobj or invent.
+ * <x,y> is the point of drop.  otmp is _not_ an <x,y> resident:
+ * otmp is either a kicked, dropped, or thrown object.
+ */
 /** C ref: dokick.c:1639 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @param {CInt} shop_floor_obj @returns {CInt} */
 export function ship_object(otmp, x, y, shop_floor_obj) {
     let toloc;
@@ -1559,6 +1828,7 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
     let impact = 0;
     let chainthere = 0;
     let n = 0n;
+
     if (!otmp)
         return 0;
     if ((toloc = down_gate(x, y)) == -1)
@@ -1566,9 +1836,14 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
     drop_to(cc, toloc, x, y);
     if (!cptr.ldI16o(cc, $nhcoord_y))
         return 0;
+
+    /* objects other than attached iron ball always fall down ladder,
+       but have a chance of staying otherwise */
     nodrop = schar(((cptr.eq(otmp, uball.v)) || (cptr.eq(otmp, uchain.v)) || (toloc != NHM.MIGR_LADDER_UP && rn2_at(__s_dokick_c, 1660, __s_ship_object, 3)) ? 1 : 0));
+
     container = schar((cptr.ldPtro((otmp), $obj_cobj) !== null));
     unpaid = is_unpaid(otmp);
+
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
         for (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v)) {
             if (cptr.eq(obj, uchain.v))
@@ -1579,13 +1854,17 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
         if (n)
             impact = 1;
     }
+    /* boulders never fall through trap doors, but they might knock
+       other things down before plugging the hole */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER && ((t = t_at(x, y)) !== null) && is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))) {
         if (impact)
             impact_drop(otmp, x, y, 0);
-        return 0;
+        return 0;  /* let caller finish the drop */
     }
+
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
         otransit_msg(otmp, nodrop, chainthere, n);
+
     if (nodrop) {
         if (impact) {
             impact_drop(otmp, x, y, 0);
@@ -1593,6 +1872,7 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
         }
         return 0;
     }
+
     if (unpaid || shop_floor_obj) {
         if (unpaid) {
             void stolen_value(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1, 0);
@@ -1601,20 +1881,26 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
             oy = cptr.ldI16o(otmp, $obj_oy);
             void stolen_value(otmp, ox, oy, schar((costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && cptr.strchr(cptr.add(u, $you_urooms), cptr.ld1s(in_rooms(ox, oy, NHC.SHOPBASE))) ? 1 : 0)), 0);
         }
+        /* set otmp->no_charge to 0 */
         if (container)
-            picked_container(otmp);
+            picked_container(otmp);  /* happens to do the right thing */
         if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
             cptr.stI32o(otmp, $obj_no_charge, 0);
     }
+
     if (cptr.ldI64o(otmp, $obj_owornmask))
         remove_worn_item(otmp, 1);
+
+    /* some things break rather than ship */
     if (breaktest(otmp)) {
         let result;
+
         if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.EXPENSIVE_CAMERA) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MIRROR)
                 change_luck(-2);
             result = __s_crash;
         } else {
+            /* penalty for breaking eggs laid by you */
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && cptr.ld1so(otmp, $obj_spe) && ismnum(cptr.ldI32o(otmp, $obj_corpsenm)))
                 change_luck(Number(BigInt.asIntN(8, (-((cptr.ldI64o(otmp, $obj_quan)) < 5n ? (cptr.ldI64o(otmp, $obj_quan)) : 5n)))));
             result = __s_splat;
@@ -1629,13 +1915,26 @@ export function ship_object(otmp, x, y, shop_floor_obj) {
         obfree(otmp, null);
         return 1;
     }
+
     add_to_migration(otmp);
     cptr.stI16o(otmp, $obj_ox, cptr.ldI16(cc));
     cptr.stI16o(otmp, $obj_oy, cptr.ldI16o(cc, $nhcoord_y));
     cptr.stI64o(otmp, $obj_owornmask, BigInt(toloc));
+
+    /* boulder from rolling boulder trap, no longer part of the trap */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER)
         cptr.stI32o(otmp, $obj_otrapped, 0);
+
     if (impact) {
+        /* the objs impacted may be in a shop other than
+         * the one in which the hero is located.  another
+         * check for a shk is made in impact_drop.  it is, e.g.,
+         * possible to kick/throw an object belonging to one
+         * shop into another shop through a gap in the wall,
+         * and cause objects belonging to the other shop to
+         * fall down a trap door--thereby getting two shopkeepers
+         * angry at the hero in one shot.
+         */
         impact_drop(otmp, x, y, 0);
         newsym(x, y);
     }
@@ -1654,23 +1953,30 @@ export function obj_delivery(near_hero) {
     let stway;
     let fromdlev = cptr.alloc(4);
     let isladder;
+
     for (otmp = cptr.ldPtro(gm, $instance_globals_m_migrating_objs); otmp; otmp = otmp2) {
         otmp2 = cptr.ldPtr(otmp);
         if (cptr.ldI16o(otmp, $obj_ox) != cptr.ldI16o(u, $you_uz) || cptr.ldI16o(otmp, $obj_oy) != cptr.ldI16o(u, $you_uz + $d_level_dlevel))
             continue;
-        where = Number(BigInt.asIntN(32, (cptr.ldI64o(otmp, $obj_owornmask) & 32767n)));
+
+        where = Number(BigInt.asIntN(32, (cptr.ldI64o(otmp, $obj_owornmask) & 32767n)));  /* destination code */
         if ((where & NHM.MIGR_TO_SPECIES) != 0)
             continue;
+
         nobreak = schar(((where & NHM.MIGR_NOBREAK) != 0));
         noscatter = schar(((where & NHM.MIGR_WITH_HERO) != 0));
         where &= -3073;
+
         if (!near_hero ^ (where == NHM.MIGR_WITH_HERO))
             continue;
+
         obj_extract_self(otmp);
         cptr.stI64o(otmp, $obj_owornmask, 0n);
         cptr.stI16(fromdlev, cptr.ldI16o(otmp, $obj_omigr_from_dnum));
         cptr.stI16o(fromdlev, $d_level_dlevel, cptr.ldI16o(otmp, $obj_omigr_from_dlevel));
+
         isladder = 0;
+
         switch (where) {
             case NHM.MIGR_LADDER_UP:
             isladder = 1;
@@ -1700,6 +2006,7 @@ export function obj_delivery(near_hero) {
                     if (breaks(otmp, i16(nx), i16(ny)))
                         continue;
                 } else if (breaktest(otmp)) {
+                    /* assume it broke before player arrived, no messages */
                     delobj(otmp);
                     continue;
                 }
@@ -1710,8 +2017,11 @@ export function obj_delivery(near_hero) {
             else
                 newsym(i16(nx), i16(ny));
         } else {
+            /* set dummy coordinates because there's no
+               current position for rloco() to update */
             cptr.stI16o(otmp, $obj_ox, cptr.stI16o(otmp, $obj_oy, 0));
             if (rloco(otmp) && !nobreak && breaktest(otmp)) {
+                /* assume it broke before player arrived, no messages */
                 delobj(otmp);
             }
         }
@@ -1725,22 +2035,27 @@ export function deliver_obj_to_mon(mtmp, cnt, deliverflags) {
     let where;
     let maxobj = 1;
     let at_crime_scene = In_mines(cptr.add(u, $you_uz));
+
     if ((deliverflags & 1n) && cnt > 1)
         maxobj = rnd_at(__s_dokick_c, 1861, __s_deliver_obj_to_mon, cnt);
     else if (deliverflags & 4n)
         maxobj = 0;
     else
         maxobj = 1;
+
     cnt = 0;
     for (otmp = cptr.ldPtro(gm, $instance_globals_m_migrating_objs); otmp; otmp = otmp2) {
         otmp2 = cptr.ldPtr(otmp);
-        where = Number(BigInt.asIntN(32, (cptr.ldI64o(otmp, $obj_owornmask) & 32767n)));
+        where = Number(BigInt.asIntN(32, (cptr.ldI64o(otmp, $obj_owornmask) & 32767n)));  /* destination code */
         if ((where & NHM.MIGR_TO_SPECIES) == 0)
             continue;
+
         if (cptr.ldI32o(otmp, $obj_corpsenm) != NHC.NON_PM && ((cptr.ldU64o(cptr.ldPtro(mtmp, $monst_data), $permonst_mflags2) & 8702n) == BigInt((cptr.ldI32o(otmp, $obj_corpsenm) >>> 0) >>> 0))) {
             obj_extract_self(otmp);
             cptr.stI64o(otmp, $obj_owornmask, 0n);
             cptr.stI16o(otmp, $obj_ox, cptr.stI16o(otmp, $obj_oy, 0));
+
+            /* special treatment for orcs and their kind */
             if ((BigInt(cptr.ldI32o(otmp, $obj_corpsenm)) & 128n) != 0n && has_oname(otmp)) {
                 if (!has_mgivenname(mtmp)) {
                     if (at_crime_scene || !rn2_at(__s_dokick_c, 1887, __s_deliver_obj_to_mon, 2))
@@ -1755,6 +2070,7 @@ export function deliver_obj_to_mon(mtmp, cnt, deliverflags) {
             cnt++;
             if (maxobj && cnt >= maxobj)
                 break;
+            /* getting here implies DF_ALL */
         }
     }
 }
@@ -1764,13 +2080,19 @@ function otransit_msg(otmp, nodrop, chainthere, num) {
     let optr = null;
     let obuf = new Uint8Array(256);
     let xbuf = new Uint8Array(256);
+
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE) {
+        /* Tobjnam() calls xname() and would yield "The corpse";
+           we want more specific "The newt corpse" or "Medusa's corpse" */
         optr = upstart(corpse_xname(otmp, null, NHM.CXN_PFX_THE));
     } else {
         optr = Tobjnam(otmp, null);
     }
     void cptr.strcpy(cptr.decay(obuf), optr);
+
     if (num || chainthere) {
+        /* As of 3.6.2: use a separate buffer for the suffix to avoid risk of
+           overrunning obuf[] (let pline() handle truncation if necessary) */
         if (num) {
             void cptr.sprintf(cptr.decay(xbuf), __s_s_s_object_s, otense(otmp, __s_hit), (num == 1n) ? __s_another : __s_other, (num > 1n) ? __s_s : __s_empty);
         } else {
@@ -1785,11 +2107,14 @@ function otransit_msg(otmp, nodrop, chainthere, num) {
         pline(__s_s_s_s, cptr.decay(obuf), otense(otmp, __s_fall), cptr.ldPtro(gg, $instance_globals_g_gate_str));
 }
 
+/* migration destination for objects which fall down to next level */
 /** C ref: dokick.c:1943 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function down_gate(x, y) {
     let ttmp;
     let stway = stairway_at(x, y);
+
     cptr.stPtro(gg, $instance_globals_g_gate_str, null);
+    /* this matches the player restriction in goto_level() */
     if (on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)) && !ok_to_quest()) {
         return -1;
     }
@@ -1801,6 +2126,7 @@ export function down_gate(x, y) {
         cptr.stPtro(gg, $instance_globals_g_gate_str, __s_down_the_ladder);
         return NHM.MIGR_LADDER_UP;
     }
+    /* hole will always be flagged as seen; trap drop might or might not */
     if ((ttmp = t_at(x, y)) !== null && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 && is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
         cptr.stPtro(gg, $instance_globals_g_gate_str, (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR) ? __s_through_the_trap_door : __s_through_the_hole);
         return NHM.MIGR_RANDOM;

@@ -1316,6 +1316,19 @@ const __s_artifacts_nums = cptr.lit("artifacts_nums");
 const __s_mcast_spells = cptr.lit("mcast_spells");
 const __s_mcast = cptr.lit("MCAST_");
 
+/*
+ * Argument processing helpers - for xxmain() to share
+ * and call.
+ *
+ * These should return TRUE if the argument matched,
+ * whether the processing of the argument was
+ * successful or not.
+ *
+ * Most of these do their thing, then after returning
+ * to xxmain(), the code exits without starting a game.
+ *
+ */
+
 /** C ref: earlyarg.c:36 — struct early_opt[8] */
 const earlyopts = cptr.alloc(8 * $sizeof_early_opt);
 cptr.stI32o(earlyopts, 0, NHC.ARG_DEBUG);
@@ -1365,6 +1378,8 @@ export const ArgErrSilent = 0;
 export const ArgErrComplain = 8;
 export const ArgErr_mask = 8;
 
+/* approximate 'getopt_long()' for one option; all the comments refer to
+   "-windowtype" but the code isn't specific to that  */
 /** C ref: earlyarg.c:71 — @param {CPtr<char>} arg @param {CInt} lflags @param {CPtr<char>} optname @param {CPtr<char>} origarg @param {CPtr<int>} argc_p @param {CPtr<char **>} argv_p @returns {CPtr<char>} */
 function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let argc = cptr.ldI32(argc_p);
@@ -1375,11 +1390,14 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let opttype = (lflags & NHC.ArgVal_mask);
     let oneletterok = schar(((lflags & NHC.ArgNam_mask) == NHC.ArgNamOneLetter));
     let complain = schar(((lflags & NHC.ArgErr_mask) == NHC.ArgErrComplain));
+
+    /* first letter must match */
     if (cptr.ld1so(arg, 1) != cptr.ld1so(optname, 1)) {
         if (complain)
             config_error_add(__s_unknown_option_60s, origarg);
         return null;
     }
+
     if ((p = cptr.strchr(arg, 61)) === null)
         p = cptr.strchr(arg, 58);
     if (p && opttype == NHC.ArgValDisallowed)
@@ -1388,18 +1406,22 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
                 config_error_add(__s_value_not_allowed_60s, origarg);
             return null;
         }
+
     l = Number(BigInt.asIntN(32, (p ? (cptr.diff(p, arg)) : BigInt.asIntN(64, cptr.strlen(arg)))));
     if ((l > 2 || oneletterok) && !cptr.strncmp(arg, optname, BigInt.asUintN(64, BigInt(l)))) {
+        /* "-windowtype[=foo]" */
         if (p)
-            p = cptr.add(p, 1);
+            p = cptr.add(p, 1);  /* past '=' or ':' */
         else if (opttype == NHC.ArgValRequired)
             p = eos(arg);
         else
             return cptr.decay(ArgVal_novalue);
     } else if (oneletterok) {
+        /* "-w..." but not "-w[indowtype[=foo]]" */
         if (!p) {
-            p = cptr.add(arg, 2);
+            p = cptr.add(arg, 2);  /* past 'w' of "-wfoo" */
         } else {
+            /* "-w...=foo" but not "-w[indowtype]=foo" */
             {
                 if (complain)
                     config_error_add(__s_unknown_option_60s, origarg);
@@ -1414,6 +1436,8 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
         }
     }
     if (!p || !cptr.ld1s(p)) {
+        /* "-w[indowtype]" w/o '='/':' if there is a next element, use
+           it for "foo"; if not, supply a non-Null bogus value */
         if (nextarg && (opttype == NHC.ArgValRequired || opttype == NHC.ArgValOptional))
             p = nextarg, cptr.stI32(argc_p, cptr.ldI32(argc_p) + -1), cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
         else if (opttype == NHC.ArgValRequired)
@@ -1423,17 +1447,22 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
                 return null;
             }
         else
-            p = cptr.decay(ArgVal_novalue);
+            p = cptr.decay(ArgVal_novalue);  /* there is no next element */
     }
     return p;
 }
 
+/* move argv[ndx] to end of argv[] array, then reduce argc to hide it;
+   prevents process_options() from encountering it after early_options()
+   has processed it; elements get reordered but all remain intact */
 /** C ref: earlyarg.c:149 — @param {CInt} ndx @param {CPtr<int>} ac_p @param {CPtr<char **>} av_p */
 function consume_arg(ndx, ac_p, av_p) {
     let gone;
     let av = cptr.ldPtr(av_p);
     let i;
     let ac = cptr.ldI32(ac_p);
+
+    /* "-one -two -three -four" -> "-two -three -four -one" */
     if (ac > 2) {
         gone = cptr.ldPtro(av, ndx, 8);
         for (i = (ndx + 1) | 0; i < ac; ++i)
@@ -1443,14 +1472,20 @@ function consume_arg(ndx, ac_p, av_p) {
     cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
 }
 
+/* consume two tokens for '-argname value' w/o '=' or ':' */
 /** C ref: earlyarg.c:166 — @param {CInt} ndx @param {CPtr<int>} ac_p @param {CPtr<char **>} av_p */
 function consume_two_args(ndx, ac_p, av_p) {
+    /* when consuming "-two arg" from "-two arg -three -four",
+       the *ac_p manipulation results in "-three -four -two arg"
+       rather than the "-three -four arg -two" that would happen
+       with just two ordinary consume_arg() calls */
     consume_arg(ndx, ac_p, av_p);
-    cptr.stI32(ac_p, cptr.ldI32(ac_p) + 1);
+    cptr.stI32(ac_p, cptr.ldI32(ac_p) + 1);  /* bring the final slot back into view */
     consume_arg(ndx, ac_p, av_p);
-    cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
+    cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);  /* take away restored slot */
 }
 
+/* process some command line arguments before loading options */
 /** C ref: earlyarg.c:180 — @param {CPtr<int>} argc_p @param {CPtr<char **>} argv_p @param {CPtr<char *>} hackdir_p */
 export function early_options(argc_p, argv_p, hackdir_p) {
     let argv = cptr.box(0);
@@ -1462,22 +1497,40 @@ export function early_options(argc_p, argv_p, hackdir_p) {
     let consumed = 0;
     if (argcheck(cptr.ldI32(argc_p), cptr.ldPtr(argv_p), NHC.ARG_DUMPGLYPHIDS) == 2)
         opt_terminate();
+
     config_error_init(0, __s_command_line, 0);
+
+    /* treat "nethack ?" as a request for usage info; due to shell
+       processing, player likely has to use "nethack \?" or "nethack '?'"
+       [won't work if used as "nethack -dpath ?" or "nethack -d path ?"] */
     if (cptr.ldI32(argc_p) > 1 && !strcmp(cptr.ldPtro((cptr.ldPtr(argv_p)), 1, 8), __s_query))
-        opt_usage(cptr.ldPtr(hackdir_p));
+        opt_usage(cptr.ldPtr(hackdir_p));  /* doesn't return */
+
+    /*
+     * Both *argc_p and *argv_p account for the program name as (*argv_p)[0];
+     * local argc and argv implicitly discard that (by starting 'ndx' at 1).
+     * argcheck() doesn't mind, prscore() (via scores_only()) does (for the
+     * number of args it gets passed, not for the value of argv[0]).
+     */
     for (ndx = 1; ndx < cptr.ldI32(argc_p); ndx = (ndx + (consumed ? 0 : 1)) | 0) {
         consumed = 0;
         argc.v = (cptr.ldI32(argc_p) - ndx) | 0;
         argv.v = cptr.add(cptr.ldPtr(argv_p), ndx, 8);
+
         arg = (origarg = cptr.ldPtro(argv.v, 0, 8));
+        /* skip any args intended for deferred options */
         if (cptr.ld1s(arg) != 45)
             continue;
+        /* allow second dash if arg name is longer than one character */
         if (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 && cptr.ld1so(arg, 2) != 0 && (cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 && cptr.ld1so(arg, 3) != 58))
             arg = cptr.add(arg, 1);
+
         switch (cptr.ld1so(arg, 1)) {
             case 98:
+            // --bidshow
             if (argcheck(argc.v, argv.v, NHC.ARG_BIDSHOW) == 2) {
                 opt_terminate();
+                /*NOTREACHED*/
             }
             break;
             case 100:
@@ -1487,8 +1540,10 @@ export function early_options(argc_p, argv_p, hackdir_p) {
                 opt_terminate();
             } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPMONGEN) == 2) {
                 opt_terminate();
+                /*NOTREACHED*/
             } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPWEIGHTS) == 2) {
                 opt_terminate();
+                /*NOTREACHED*/
             } else {
                 oldargc = argc.v;
                 arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent), __s_directory, origarg, argc, argv);
@@ -1506,7 +1561,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             case 104:
             case 63:
             if (lopt(arg, NHC.ArgValDisallowed, __s_help, origarg, argc, argv) || lopt(arg, (NHC.ArgValDisallowed | NHC.ArgNamOneLetter), __s_dash_query, origarg, argc, argv))
-                opt_usage(cptr.ldPtr(hackdir_p));
+                opt_usage(cptr.ldPtr(hackdir_p));  /* doesn't return */
             break;
             case 110:
             oldargc = argc.v;
@@ -1529,8 +1584,17 @@ export function early_options(argc_p, argv_p, hackdir_p) {
                 config_error_done();
                 return;
             }
+            /* check for "-s" request to show scores */
             if (lopt(arg, ((NHC.ArgValDisallowed | NHC.ArgErrComplain) | ((cptr.ld1so(origarg, 1) != 45) ? NHC.ArgNamOneLetter : 0)), __s_scores, origarg, argc, argv)) {
+                /* at this point, argv[0] contains "-scores" or a leading
+                   substring of it; prscore() (via scores_only()) expects
+                   that to be in argv[1] so we adjust the pointer to make
+                   that be the case; if there are any non-early args waiting
+                   to be passed along to process_options(), the resulting
+                   argv[0] will be one of those rather than the program
+                   name but prscore() doesn't care */
                 scores_only((argc.v + 1) | 0, cptr.add(argv.v, -(1), 8), cptr.ldPtr(hackdir_p));
+                /*NOTREACHED*/
             }
             break;
             case 117:
@@ -1540,6 +1604,7 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             case 118:
             if (argcheck(argc.v, argv.v, NHC.ARG_VERSION) == 2) {
                 opt_terminate();
+                /*NOTREACHED*/
             }
             break;
             case 119:
@@ -1552,45 +1617,68 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             break;
         }
     }
+    /* empty or "N errors on command line" */
     config_error_done();
     return;
 }
 
+/* for command-line options that perform some immediate action and then
+   terminate the program without starting play, like 'nethack --version'
+   or 'nethack -s Zelda'; do some cleanup before that termination */
 /** C ref: earlyarg.c:366 */
 function opt_terminate() {
     cptr.stI32o(program_state, $sinfo_early_options, 0);
-    config_error_done();
+    config_error_done();  /* free memory allocated by config_error_init() */
+
     nh_terminate(0);
+    /*NOTREACHED*/
 }
 
 /** C ref: earlyarg.c:376 — @param {CPtr<char>} hackdir */
 function opt_usage(hackdir) {
     chdirx(hackdir, 1);
     ;
+
     genl_display_file(__s_usagehlp, 1);
     opt_terminate();
 }
 
+/* show the sysconf file name, playground directory, run-time configuration
+   file name, dumplog file name if applicable, and some other things */
 /** C ref: earlyarg.c:391 — @param {CPtr<char>} dir */
 export function after_opt_showpaths(dir) {
     chdirx(dir, 0);
     opt_terminate();
+    /*NOTREACHED*/
 }
 
+/* handle "-s <score options> [character-names]" to show all the entries
+   in the high scores file ('record') belonging to particular characters;
+   nethack will end after doing so without starting play */
 /** C ref: earlyarg.c:406 — @param {CInt} argc @param {CPtr<char *>} argv @param {CPtr<char>} dir */
 function scores_only(argc, argv, dir) {
+    /* do this now rather than waiting for final termination, in case there
+       is an error summary coming */
     config_error_done();
     chdirx(dir, 0);
     cptr.st1o(iflags, $instance_flags_initoptions_noterminate, 1);
-    initoptions();
+    initoptions();  /* sysconf options affect whether panictrace is enabled */
     cptr.st1o(iflags, $instance_flags_initoptions_noterminate, 0);
-    ARGV0.v = cptr.ldPtr(gh);
+    ARGV0.v = cptr.ldPtr(gh);  /* save for possible stack trace */
     panictrace_setsignals(1);
-    void whoami();
+    void whoami();  /* set up default plname[] */
     prscore(argc, argv);
-    nh_terminate(0);
+
+    nh_terminate(0);  /* bypass opt_terminate() */
+    /*NOTREACHED*/
 }
 
+/*
+ * Returns:
+ *    0 = no match
+ *    1 = found and skip past this argument
+ *    2 = found and trigger immediate exit
+ */
 /** C ref: earlyarg.c:450 — @param {CInt} argc @param {CPtr<char *>} argv @param {*} e_arg @returns {CInt} */
 export function argcheck(argc, argv, e_arg) {
     let i;
@@ -1598,6 +1686,7 @@ export function argcheck(argc, argv, e_arg) {
     let match = 0;
     let userea = null;
     let dashdash = __s_empty;
+
     for (idx = 0; idx < 8; idx++) {
         if (cptr.ldI32o(earlyopts, idx, $sizeof_early_opt) == e_arg) {
             break;
@@ -1605,6 +1694,7 @@ export function argcheck(argc, argv, e_arg) {
     }
     if (idx >= 8 || argc < 1)
         return 0;
+
     for (i = 0; i < argc; ++i) {
         if (cptr.ld1so(cptr.ldPtro(argv, i, 8), 0) != 45)
             continue;
@@ -1618,14 +1708,17 @@ export function argcheck(argc, argv, e_arg) {
         if (match)
             break;
     }
+
     if (match) {
         let extended_opt = cptr.strchr(userea, 58);
+
         if (!extended_opt)
             extended_opt = cptr.strchr(userea, 61);
         switch (e_arg) {
             case NHC.ARG_DEBUG:
             if (extended_opt) {
                 let cpy_extended_opt;
+
                 cpy_extended_opt = dupstr(extended_opt);
                 debug_fields(cptr.add(cpy_extended_opt, 1));
                 cptr.free(cpy_extended_opt);
@@ -1634,17 +1727,25 @@ export function argcheck(argc, argv, e_arg) {
             case NHC.ARG_VERSION:
             {
                 let insert_into_pastebuf = 0;
+
                 if (extended_opt) {
                     extended_opt = cptr.add(extended_opt, 1);
+                    /* Deprecated in favor of "copy" - remove no later
+                       than  next major version */
                     if (match_optname(extended_opt, __s_paste, 5, 0)) {
                         insert_into_pastebuf = 1;
                     } else if (match_optname(extended_opt, __s_copy, 4, 0)) {
                         insert_into_pastebuf = 1;
                     } else if (match_optname(extended_opt, __s_dump, 4, 0)) {
+                        /* version number plus enabled features and sanity
+                           values that the program compares against the same
+                           thing recorded in save and bones files to check
+                           whether they're being used compatibly */
                         dump_version_info();
-                        return 2;
+                        return 2;  /* done */
                     } else if (!match_optname(extended_opt, __s_show, 4, 0)) {
                         raw_printf(__s_sversion_can_only_be_extended_with, dashdash, dashdash);
+                        /* exit after we've reported bad command line argument */
                         return 2;
                     }
                 }
@@ -1676,22 +1777,41 @@ export function argcheck(argc, argv, e_arg) {
     return 0;
 }
 
+/*
+ * These are internal controls to aid developers with
+ * testing and debugging particular aspects of the code.
+ * They are not player options and the only place they
+ * are documented is right here. No gameplay is altered.
+ *
+ * test             - test whether this parser is working
+ * ttystatus        - TTY:
+ * immediateflips   - WIN32: turn off display performance
+ *                    optimization so that display output
+ *                    can be debugged without buffering.
+ * fuzzer           - enable fuzzer without debugger intervention.
+ */
 /** C ref: earlyarg.c:576 — @param {CPtr<char>} opts */
 function debug_fields(opts) {
     let op;
     let negated = 0;
+
     while ((op = cptr.strchr(opts, 44)) !== null) {
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), 0);
+        /* recurse */
         debug_fields(op);
     }
     if (cptr.strlen(opts) > 128n)
         return;
+
+    /* strip leading and trailing white space */
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
     op = eos(opts);
     while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
+
     if (!cptr.ld1s(opts)) {
+        /* empty */
         return;
     }
     while ((cptr.ld1s(opts) == 33) || !strncmpi(opts, __s_no, 2)) {
@@ -4272,16 +4392,18 @@ cptr.stI32o(__static_dump_enums_edmp, 320 + $de_params_szd, 20); /** C ref: earl
 
 /** C ref: earlyarg.c:706 */
 function dump_enums() {
+
     let nmprefix;
     let i;
     let j;
     let nmwidth;
     let comment = new Uint8Array(256);
+
     for (i = 0; i < NHC.NUM_ENUM_DUMPS; ++i) {
         raw_printf(__s_enum_s, cptr.ldPtro(__static_dump_enums_edmp, i, $sizeof_de_params));
         for (j = 0; j < cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd); ++j) {
-            nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd) - cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_unprefixed_count)) | 0)) ? __s_empty : cptr.ldPtro2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_pfx);
-            nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;
+            nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd) - cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_unprefixed_count)) | 0)) ? __s_empty : cptr.ldPtro2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_pfx);  /* "" or "PM_" */
+            nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;  /* 27 or 24 */
             if (cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_dumpflgs) > 0) {
                 nh_snprintf(__s_dump_enums, 788, cptr.decay(comment), 256n, __s_sp4_slash_star_sp_apos_pct_c_apos_sp, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) <= 126) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) : 32);
             } else {

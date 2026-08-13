@@ -163,6 +163,7 @@ cptr.stPtro(artifact_names, 256, __s_the_orb_of_fate);
 cptr.stPtro(artifact_names, 264, __s_the_eye_of_the_aethiopica);
 cptr.stPtro(artifact_names, 272, null);
 
+/* REPRODUCIBLE_BUILD will change this to TRUE */
 /** C ref: mdlib.c:56 — signed char */
 let date_via_env = 0;
 
@@ -198,6 +199,14 @@ cptr.st1o(window_opts, 24 + $win_information_valid, 0);
 
 /** C ref: mdlib.c:169 — struct soundlib_information { id, text_id, Url, valid } (memory model v0.5) */
 
+/*
+ * soundlibs
+ *
+ * None of these are endorsements or recommendations of one library
+ * or another, in any way. They are just preprocessor conditionals
+ * in the event that glue code for such a library is ever added into
+ * NetHack.
+ */
 /** C ref: mdlib.c:184 — struct soundlib_information[2] */
 const soundlib_opts = cptr.alloc(2 * $sizeof_soundlib_information);
 cptr.stI32o(soundlib_opts, 0, NHC.soundlib_nosound);
@@ -217,8 +226,23 @@ export function md_ignored_features() {
 /** C ref: mdlib.c:248 */
 function make_version() {
     let i;
+
+    /*
+     * integer version number
+     */
     cptr.stU64(version, 83886080n);
+    /*
+     * encoded feature list
+     * Note:  if any of these magic numbers are changed or reassigned,
+     * EDITLEVEL in patchlevel.h should be incremented at the same time.
+     * The actual values have no special meaning, and the category
+     * groupings are just for convenience.
+     */
     cptr.stU64o(version, $version_info_feature_set, 393280n);
+    /*
+     * Value used for object & monster sanity check.
+     *    (NROFARTIFACTS<<24) | (NUM_OBJECTS<<12) | (NUMMONS<<0)
+     */
     for (i = 1; cptr.ldPtro(artifact_names, i, 8); i++)
         continue;
     cptr.stU64o(version, $version_info_entity_count, BigInt.asUintN(64, BigInt(((i - 1) | 0))));
@@ -226,6 +250,7 @@ function make_version() {
     cptr.stU64o(version, $version_info_entity_count, (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
     i = NHC.NUMMONS;
     cptr.stU64o(version, $version_info_entity_count, (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    /* free bits in here */
     return;
 }
 
@@ -242,15 +267,20 @@ export function version_id_string(outbuf, bufsz, build_date) {
     let statusbuf = new Uint8Array(64);
     cptr.st1o(cptr.decay(statusbuf), 0, 0, 1);
     cptr.st1o(cptr.decay(subbuf), 0, 0, 1);
+
     nh_snprintf(__s_version_id_string, 342, outbuf, bufsz, __s_s_nethack_s_version_s_s_last_s_s, __s_macos, cptr.decay(subbuf), mdlib_version_string(cptr.decay(versbuf), __s_dot), cptr.decay(statusbuf), date_via_env ? __s_revision : __s_build, build_date);
     return outbuf;
 }
+
+/* still within #if MAKDEFS_C || FOR_RUNTIME */
 
 /** C ref: mdlib.c:349 — @param {CPtr<char>} outbuf @param {CLongLong} bufsz @param {CPtr<char>} build_date @returns {CPtr<char>} */
 export function bannerc_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
+
     cptr.st1o(cptr.decay(subbuf), 0, 0, 1);
+
     nh_snprintf(__s_bannerc_string, 368, outbuf, bufsz, __s_version_s_s_s_s_s, mdlib_version_string(cptr.decay(versbuf), __s_dot), __s_macos, cptr.decay(subbuf), date_via_env ? __s_revised : __s_built, build_date);
     return outbuf;
 }
@@ -260,6 +290,7 @@ const save_bones_compat_buf = new Uint8Array(256);
 
 /** C ref: mdlib.c:393 */
 function build_savebones_compat_string() {
+
     void cptr.strcpy(cptr.decay(save_bones_compat_buf), __s_save_and_bones_files_accepted_from);
     void cptr.sprintf(eos(cptr.decay(save_bones_compat_buf)), __s_d_d_d_only, NHM.VERSION_MAJOR, NHM.VERSION_MINOR, NHM.PATCHLEVEL);
 }
@@ -297,6 +328,8 @@ cptr.stPtro(build_opts, 200, __s_and_basic_nethack_features);
 function count_and_validate_winopts() {
     let i;
     let cnt = 0;
+
+    /* window_opts has a fencepost entry at the end */
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
         cptr.st1o2(window_opts, i, $sizeof_win_information, $win_information_valid, 1);
@@ -308,6 +341,8 @@ function count_and_validate_winopts() {
 function count_and_validate_soundlibopts() {
     let i;
     let cnt = 0;
+
+    /* soundlib_opts has a fencepost entry at the end */
     for (i = 0; i < ((2 - 1) | 0); i++) {
         ++cnt;
         cptr.st1o2(soundlib_opts, i, $sizeof_soundlib_information, $soundlib_information_valid, 1);
@@ -318,6 +353,7 @@ function count_and_validate_soundlibopts() {
 /** C ref: mdlib.c:641 — @param {CPtr<char>} str @param {CPtr<int>} length_p */
 function opt_out_words(str, length_p) {
     let word;
+
     while (cptr.ld1s(str)) {
         word = cptr.strchr(str, 32);
         if (word)
@@ -366,7 +402,7 @@ function build_options() {
     void cptr.sprintf(cptr.decay(optbuf), __s_options_compiled_into_this_edition);
     (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
-    length.v = 81;
+    length.v = 81;  /* force 1st item onto new line */
     void cptr.strcat(cptr.strcpy(cptr.decay(buf), datamodel(0)), __s_data_model);
     opt_out_words(cptr.decay(buf), length);
     for (i = 0; i < 26; i++) {
@@ -380,18 +416,27 @@ function build_options() {
     void cptr.sprintf(cptr.decay(optbuf), __s_supported_windowing_system_s, (winsyscnt > 1) ? __s_s : __s_empty);
     (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
-    length.v = 81;
+    length.v = 81;  /* force 1st item onto new line */
+
     for (i = 0; i < ((2 - 1) | 0); i++) {
         if (!cptr.ld1so2(window_opts, i, $sizeof_win_information, $win_information_valid))
             continue;
         void cptr.sprintf(cptr.decay(buf), __s_quot_pct_s_quot, cptr.ldPtro(window_opts, i, $sizeof_win_information));
         if (strcmp(cptr.ldPtro2(window_opts, i, $sizeof_win_information, $win_information_name), cptr.ldPtro(window_opts, i, $sizeof_win_information)))
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_s_rparen, cptr.ldPtro2(window_opts, i, $sizeof_win_information, $win_information_name));
-        void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __s_dot : ((winsyscnt == 2 && cnt == 0) ? __s_and : ((cnt == ((winsyscnt - 2) | 0)) ? __s_and__2 : __s_comma)));
+        /*
+         * 1 : foo.
+         * 2 : foo and bar,
+         * 3+: for, bar, and quux,
+         *
+         * 2+ will be followed by " with a default of..."
+         */
+        void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __s_dot : ((winsyscnt == 2 && cnt == 0) ? __s_and : ((cnt == ((winsyscnt - 2) | 0)) ? __s_and__2 : __s_comma)));  /* no 'default' */
         opt_out_words(cptr.decay(buf), length);
         cnt++;
     }
     if (cnt > 1) {
+        /* loop ended with a comma; opt_out_words() will insert a space */
         void cptr.sprintf(cptr.decay(buf), __s_with_a_default_of_s, defwinsys);
         opt_out_words(cptr.decay(buf), length);
     }
@@ -403,26 +448,38 @@ function build_options() {
     void cptr.sprintf(cptr.decay(optbuf), __s_supported_soundlib_s, (soundlibcnt > 1) ? __s_s : __s_empty);
     (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
-    length.v = 81;
+    length.v = 81;  /* force 1st item onto new line */
     for (i = 0; i < ((2 - 1) | 0); i++) {
         let soundlib;
+
         if (!cptr.ld1so2(soundlib_opts, i, $sizeof_soundlib_information, $soundlib_information_valid))
             continue;
         soundlib = cptr.ldPtro2(soundlib_opts, i, $sizeof_soundlib_information, $soundlib_information_text_id);
         if (!cptr.strncmp(soundlib, __s_soundlib, 9n))
             soundlib = cptr.add(soundlib, 9);
         void cptr.sprintf(cptr.decay(buf), __s_quot_pct_s_quot, soundlib);
+        /*
+         * 1 : foo.
+         * 2 : foo and bar.
+         * 3+: for, bar, and quux.
+         */
         void cptr.strcat(cptr.decay(buf), (soundlibcnt == 1 || cnt == ((soundlibcnt - 1) | 0)) ? __s_dot : ((soundlibcnt == 2 && cnt == 0) ? __s_and : ((cnt == ((soundlibcnt - 2) | 0)) ? __s_and__2 : __s_comma)));
         opt_out_words(cptr.decay(buf), length);
         cnt++;
     }
+
     (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.decay(optbuf)), 8)) : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     {
+
+        /* add lua copyright notice;
+           ":TAG:" substitutions are deferred to caller */
         for (i = 0; cptr.ldPtro(__static_build_options_lua_info, i, 8); ++i) {
             (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(cptr.ldPtro(__static_build_options_lua_info, i, 8)), 8)) : null));
         }
     }
+
+    /* end with a blank line */
     (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, dupstr(__s_empty), 8)) : null));
     return;
 }
@@ -432,8 +489,9 @@ export function runtime_info_init() {
     if (!done_runtime_opt_init_once) {
         done_runtime_opt_init_once = 1;
         build_savebones_compat_string();
+        /* construct the current version number */
         make_version();
-        populate_nomakedefs(version);
+        populate_nomakedefs(version);  /* date.c */
         idxopttext = 0;
         build_options();
     }
@@ -442,6 +500,7 @@ export function runtime_info_init() {
 /** C ref: mdlib.c:849 — @param {CPtr<int>} rtcontext @returns {CPtr<char>} */
 export function do_runtime_info(rtcontext) {
     let retval = null;
+
     if (!done_runtime_opt_init_once)
         runtime_info_init();
     if (idxopttext && rtcontext)

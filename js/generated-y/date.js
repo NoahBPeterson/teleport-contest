@@ -54,6 +54,7 @@ const __s_aug_3_2026_19_27_05 = cptr.lit("Aug  3 2026 19:27:05");
 const __s_may_2_2026_12_00_00 = cptr.lit("May  2 2026 12:00:00");
 const __s_dot = cptr.lit(".");
 
+/* nomakedefs_populated: flag for whether 'nomakedefs' should be freed */
 /** C ref: date.c:23 — int */
 let nomakedefs_populated = 0;
 
@@ -81,14 +82,44 @@ export function* populate_nomakedefs(version) {
     let mth = cptr.alloc(12 * 8); cptr.stPtro(mth, 0, __s_jan); cptr.stPtro(mth, 8, __s_feb); cptr.stPtro(mth, 16, __s_mar); cptr.stPtro(mth, 24, __s_apr); cptr.stPtro(mth, 32, __s_may); cptr.stPtro(mth, 40, __s_jun); cptr.stPtro(mth, 48, __s_jul); cptr.stPtro(mth, 56, __s_aug); cptr.stPtro(mth, 64, __s_sep); cptr.stPtro(mth, 72, __s_oct); cptr.stPtro(mth, 80, __s_nov); cptr.stPtro(mth, 88, __s_dec);
     let t = cptr.alloc(56); cptr.stI32(t, 0);
     let timeresult;
+
+    /*
+     * In a cross-compiled environment, you can't execute
+     * the target binaries during the build, so we can't
+     * use makedefs to write the values of the build
+     * date and time to a file for retrieval. Not for
+     * information meaningful to the target execution
+     * environment.
+     *
+     * How can we capture the build date/time of the target
+     * binaries in such a situation?  We need to rely on the
+     * cross-compiler itself to do it for us during the
+     * cross-compile.
+     *
+     * To that end, we are going to make use of the
+     * following pre-defined preprocessor macros for this:
+     *    gcc, msvc, clang   __DATE__  "Feb 12 1996"
+     *    gcc, msvc, clang   __TIME__  "23:59:01"
+     *
+     */
+
+    /* Deterministic build banner: pin the "build date" string to a
+     * fixed value so the rendered version banner matches across
+     * recordings made on different machines / different days. The
+     * format must be 20 chars "Mon DD YYYY HH:MM:SS" — same shape as
+     * __DATE__ " " __TIME__ — because the surrounding code parses
+     * fixed offsets out of it (year at 7, mday at 4, hour at 12, …).
+     * Set NETHACK_REAL_BUILD_DATE in env to opt out of pinning. */
     nh_snprintf(__s_populate_nomakedefs, 90, cptr.decay(tmpbuf1), 256n, __s_pct_s, getenv(__s_nethack_real_build_date) ? __s_aug_3_2026_19_27_05 : __s_may_2_2026_12_00_00);
+    /* "Feb 12 1996 23:59:01"
+        01234567890123456789  */
     if (Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(tmpbuf1)))) == 20) {
         {
             for (i = 0; i < 4; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1), 1);
+                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1), 1);  /* year */
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
-        cptr.stI32o(t, $tm_tm_year, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);
+        cptr.stI32o(t, $tm_tm_year, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);  /* mon */
         {
             for (i = 0; i < 3; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 0) | 0, 1), 1);
@@ -98,7 +129,7 @@ export function* populate_nomakedefs(version) {
             if (!case_insensitive_comp(cptr.decay(tmpbuf2), cptr.ldPtro(mth, i, 8))) {
                 cptr.stI32o(t, $tm_tm_mon, i);
                 break;
-            }
+            }  /* mday */
         {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 4) | 0, 1), 1);
@@ -107,19 +138,19 @@ export function* populate_nomakedefs(version) {
         strp = cptr.decay(tmpbuf2);
         if (cptr.ld1s(strp) == 32)
             strp = cptr.add(strp, 1);
-        cptr.stI32o(t, $tm_tm_mday, atoi(strp));
+        cptr.stI32o(t, $tm_tm_mday, atoi(strp));  /* hour */
         {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 12) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
-        cptr.stI32o(t, $tm_tm_hour, atoi(cptr.decay(tmpbuf2)));
+        cptr.stI32o(t, $tm_tm_hour, atoi(cptr.decay(tmpbuf2)));  /* min  */
         {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 15) | 0, 1), 1);
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
-        cptr.stI32o(t, $tm_tm_min, atoi(cptr.decay(tmpbuf2)));
+        cptr.stI32o(t, $tm_tm_min, atoi(cptr.decay(tmpbuf2)));  /* sec  */
         {
             for (i = 0; i < 2; ++i)
                 cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 18) | 0, 1), 1);
@@ -129,6 +160,7 @@ export function* populate_nomakedefs(version) {
         timeresult = mktime(t);
         cptr.stU64o(nomakedefs, $nomakedefs_s_build_time, BigInt.asUintN(64, timeresult));
         cptr.stPtr(nomakedefs, (yield* dupstr(cptr.decay(tmpbuf1))));
+
     }
     cptr.stU64o(nomakedefs, $nomakedefs_s_version_number, cptr.ldU64(version));
     cptr.stU64o(nomakedefs, $nomakedefs_s_version_features, cptr.ldU64o(version, $version_info_feature_set));
@@ -137,14 +169,20 @@ export function* populate_nomakedefs(version) {
     cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, (yield* dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __s_dot))));
     cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, (yield* dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))));
     cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, (yield* dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))));
+
     nomakedefs_populated = 1;
     return;
+
 }
 
 /** C ref: date.c:142 */
 export function free_nomakedefs() {
+    /* can't just free non-Null values because they're initialized at
+       compile-time with static strings and won't have dynamic values
+       unless populate_nomakedefs() has been called */
     if (!nomakedefs_populated)
         return;
+
     if (cptr.ldPtr(nomakedefs))
         cptr.free(cptr.ldPtr(nomakedefs)), cptr.stPtr(nomakedefs, null);
     if (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string))
@@ -153,8 +191,11 @@ export function free_nomakedefs() {
         cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_id)), cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, null);
     if (cptr.ldPtro(nomakedefs, $nomakedefs_s_copyright_banner_c))
         cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_copyright_banner_c)), cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, null);
+
+    /* values are Null now; dynamic vs static doesn't really matter anymore */
     nomakedefs_populated = 0;
     return;
+
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

@@ -6165,6 +6165,7 @@ const defopt = cptr.bytes("default");
 /** C ref: options.c:126 — char[4] */
 const defbrief = cptr.bytes("def");
 
+/* paranoia[] - used by parseoptions() and handler_paranoid_confirmation() */
 /** C ref: options.c:129 — struct paranoia_opts { flagmask, argname, argMinLen, synonym, synMinLen, explain } (memory model v0.5) */
 
 /** C ref: options.c:136 — struct paranoia_opts[15] */
@@ -6290,6 +6291,7 @@ cptr.stPtro(cptr.decay(msgwind[3]), 0, __s_reversed);
 cptr.stPtro(cptr.decay(msgwind[3]), 8, __s_show_all_available_messages);
 cptr.stPtro(cptr.decay(msgwind[3]), 16, __s_most_recent_first);
 
+/* autounlock settings */
 /** C ref: options.c:207 — char *[4][2] */
 const unlocktypes = (function () { const flat = new Uint8Array(4 * 2 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
 cptr.stPtro(cptr.decay(unlocktypes[0]), 0, __s_untrap);
@@ -6323,6 +6325,8 @@ cptr.stPtro(sortltype, 0, __s_none);
 cptr.stPtro(sortltype, 8, __s_loot);
 cptr.stPtro(sortltype, 16, __s_full);
 
+/* second column is an alias for the first; third is brief explanation;
+   entries 5 and 6 are 1|4 and 2|4 (tty only) */
 /** C ref: options.c:225 — char *[9][3] */
 const perminv_modes = (function () { const flat = new Uint8Array(9 * 3 * 8); const a = []; for (let r = 0; r < 9; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
 cptr.stPtro(cptr.decay(perminv_modes[0]), 0, __s_none);
@@ -6355,6 +6359,31 @@ cptr.stPtro(cptr.decay(perminv_modes[8]), 16, __s_subset_items_currently_in_use)
 
 /** C ref: options.c:242 — struct objsymopt { num, nam, descr } (memory model v0.5) */
 
+/*
+ * menuobjsyms:
+ *   Inventory display for the various values of menuobjsyms.
+ *   4' and 5' represent !sortpack which lacks headers; they
+ *   produce the same result.
+ *
+ *   0:                         1:
+ *        Weapons                    Weapons  (')')
+ *        a - 15 darts               a - 15 darts
+ *        Armor                      Armor    ('[')
+ *        b - Hawaiian shirt         b - Hawaiian shirt
+ *   2:                         3:
+ *        Weapons                    Weapons  (')')
+ *        a ) 15 darts               a ) 15 darts
+ *        Armor                      Armor    ('[')
+ *        b [ Hawaiian shirt         b [ Hawaiian shirt
+ *   4:                         5:
+ *        Weapons                    Weapons  (')')
+ *        a - 15 darts               a - 15 darts
+ *        Armor                      Armor    ('[')
+ *        b - Hawaiian shirt         b - Hawaiian shirt
+ *   4':                        5':
+ *        a ) 15 darts               a ) 15 darts
+ *        b [ Hawaiian shirt         b [ Hawaiian shirt
+ */
 /** C ref: options.c:273 — struct objsymopt[6] */
 const objsymvals = cptr.alloc(6 * $sizeof_objsymopt);
 cptr.stI32o(objsymvals, 0, 0);
@@ -6376,6 +6405,32 @@ cptr.stI32o(objsymvals, 120, 5);
 cptr.stPtro(objsymvals, 120 + $objsymopt_nam, __s_one_or_other);
 cptr.stPtro(objsymvals, 120 + $objsymopt_descr, __s_show_objsyms_in_header_in_entries_if_no);
 
+/*
+ * Default menu manipulation command accelerators.  These may _not_ be:
+ *
+ *      + a number or '#' - reserved for counts
+ *      + an upper or lower case US ASCII letter - used for accelerators
+ *      + ESC - reserved for escaping the menu
+ *      + NULL, CR or LF - reserved for committing the selection(s).  NULL
+ *        is kind of odd, but the tty's xwaitforspace() will return it if
+ *        someone hits a <ret>.
+ *      + a default object class symbol - used for object class accelerators
+ *
+ * Standard letters (for now) are:
+ *
+ *              <  back 1 page
+ *              >  forward 1 page
+ *              ^  first page
+ *              |  last page
+ *              :  search
+ *
+ *              page            all
+ *               ,    select     .
+ *               \    deselect   -
+ *               ~    invert     @
+ *
+ * The command name list is duplicated in the compopt array.
+ */
 /** C ref: options.c:308 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: options.c:312 — typedef menu_cmd_t (type alias only, no runtime output) */
@@ -6428,9 +6483,13 @@ cptr.stPtro(default_menu_cmd_info, 312 + $menu_cmd_t_desc, null);
 /** C ref: options.c:340 — char[19] */
 const n_currently_set = cptr.bytes("(%d currently set)");
 
+/* ask user if they want a tutorial, except if tutorial boolean option has
+   been set in config - either on or off - in which case just obey that
+   setting without asking */
 /** C ref: options.c:430 @returns {CInt} */
 export function* ask_do_tutorial() {
     let dotut = cptr.ld1so(flags, $flag_tutorial);
+
     if (!cptr.ld1so(cptr.decay(opt_set_in_config), NHC.opt_tutorial, 1)) {
         let win;
         let sel = cptr.box(0);
@@ -6440,6 +6499,7 @@ export function* ask_do_tutorial() {
         let norc;
         let n;
         let pass = 0;
+
         rc = nh_basename(get_configfile(), 1);
         norc = schar((!strcmp(get_configfile(), __s_dev_null)));
         nh_snprintf(__s_ask_do_tutorial, 447, cptr.decay(buf), 256n, __s_put_options_tutorial_in_s_to_skip_this, (rc && cptr.ld1s(rc) && !norc) ? rc : __s_your_configuration_file);
@@ -6451,11 +6511,14 @@ export function* ask_do_tutorial() {
             (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_yes_do_a_tutorial, NHM.MENU_ITEMFLAGS_NONE));
             cptr.st1(any, 110);
             (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_no_just_start_play, NHM.MENU_ITEMFLAGS_NONE));
+
             (yield* add_menu_str(win, __s_empty));
             (yield* add_menu_str(win, cptr.decay(buf)));
             if (pass++)
                 (yield* add_menu_str(win, __s_please_choose_y_or_n));
+
             (yield* Y.icall(end_menu()(win, __s_do_you_want_a_tutorial)));
+
             n = (yield* select_menu(win, NHM.PICK_ONE, sel));
             (yield* Y.icall(destroy_nhwindow()(win)));
         } while (!n);
@@ -6469,6 +6532,13 @@ export function* ask_do_tutorial() {
     return dotut;
 }
 
+/*
+ **********************************
+ *
+ *   parseoptions
+ *
+ **********************************
+ */
 /** C ref: options.c:489 — @param {CPtr<char>} opts @param {CInt} tinitial @param {CInt} tfrom_file @returns {CInt} */
 export function* parseoptions(opts, tinitial, tfrom_file) {
     let op;
@@ -6481,12 +6551,24 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     let optlen;
     let optlen_wo_val;
     let retval = 1;
+
     duplicate = 0;
     using_alias = 0;
     cptr.st1o(go, $instance_globals_o_opt_initial, tinitial);
     cptr.st1o(go, $instance_globals_o_opt_from_file, tfrom_file);
+    /*
+     * Process elements of comma-separated list in right to left order.
+     * When some options are set interactively--notably various compound
+     * options that issue a prompt for a value--they use parseoptions()
+     * to handle setting the new value.  For those, 'tinitial' is False
+     * and if user tries to supply a comma-separated list, it will be
+     * treated as part of the current option, probably failing to parse.
+     */
     if (tinitial && (op = cptr.strchr(opts, 44)) !== null) {
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), 0);
+        /* current element remains pending while the rest of the line gets
+           handled recursively; if the rest of line contains any commas,
+           then the process will recurse deeper as it is processed */
         if (!(yield* parseoptions(op, cptr.ld1so(go, $instance_globals_o_opt_initial), cptr.ld1so(go, $instance_globals_o_opt_from_file))))
             retval = 0;
     }
@@ -6494,11 +6576,14 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         (yield* config_error_add(__s_option_too_long_max_length_is_i, 128));
         return 0;
     }
+
+    /* strip leading and trailing white space */
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
     op = eos(opts);
     while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
+
     if (!cptr.ld1s(opts)) {
         (yield* config_error_add(__s_empty_statement));
         return 0;
@@ -6513,14 +6598,24 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     if (optlen_wo_val < optlen) {
         optlen = optlen_wo_val;
     }
+
     for (i = 0; i < NHC.OPTCOUNT; ++i) {
         got_match = 0;
+
         if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_pfx)) {
             if (str_start_is(opts, cptr.ldPtro(allopt, i, $sizeof_allopt_t), 1)) {
                 matchidx = i;
                 got_match = (pfx_match = 1);
             }
         }
+        /*
+         * During option initialization, the function
+         *     determine_ambiguities()
+         * figured out exactly how many characters are required to
+         * unambiguously differentiate one option from all others, and it
+         * placed that number into each option's allopt[n].minmatch.
+         *
+         */
         if (!got_match && cptr.ldPtro(allopt, i, $sizeof_allopt_t))
             got_match = (yield* match_optname(opts, cptr.ldPtro(allopt, i, $sizeof_allopt_t), cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch), 1));
         if (got_match) {
@@ -6532,7 +6627,14 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
             break;
         }
     }
+
     if (!got_match) {
+        /* spin through the aliases to see if there's a match in those.
+           Note that if multiple delimited aliases for the same option
+           becomes desirable in the future, this is where you'll need
+           to split a delimited allopt[i].alias field into each
+           individual alias */
+
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
             if (!cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias))
                 continue;
@@ -6544,15 +6646,25 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
             }
         }
     }
+
+    /* allow optfn's to test whether they were called from parseoptions() */
     (cptr.stI32o(program_state, $sinfo_in_parseoptions, cptr.ldI32o(program_state, $sinfo_in_parseoptions) + 1)) - (1);
+
     if (got_match && (matchidx >= 0 && matchidx < NHC.OPTCOUNT) && !cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) {
         duplicate = duplicate_opt_detection(matchidx);
         if (duplicate && !cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_dupeok))
             (yield* complain_about_duplicate(matchidx));
+
+        /* check for bad negation, so option functions don't have to */
         if (negated && !cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_negateok)) {
             (yield* bad_negation(cptr.ldPtro(allopt, matchidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
+
+        /*
+         * Now call the option's associated function via the function
+         * pointer for it in the allopt[] array, specifying a 'do_set' req.
+         */
         if (cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn)) {
             op = (yield* string_for_opt(opts, 1));
             optresult = (yield* Y.icall((cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_idx), NHC.do_set, negated, opts, op)));
@@ -6560,20 +6672,25 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
                 cptr.st1o(cptr.decay(opt_set_in_config), matchidx, 1, 1);
         }
     }
+
     if (cptr.ldI32o(program_state, $sinfo_in_parseoptions) > 0)
         (cptr.stI32o(program_state, $sinfo_in_parseoptions, cptr.ldI32o(program_state, $sinfo_in_parseoptions) + -1)) - (-1);
+
     if (!got_match) {
+        /* Is it a symbol? */
         if (cptr.eq(cptr.strstr(opts, __s_s_us), opts) && (yield* parsesymbols(opts, NHC.PRIMARYSET))) {
             (yield* switch_symbols(1));
             check_gold_symbol();
             optresult = NHC.optn_ok;
         }
     }
+
     if (optresult == NHC.optn_silenterr || (got_match && cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) || (!got_match && config_unmatched_ignored()))
         return 0;
     if (pfx_match && optresult == NHC.optn_err) {
         let pfxbuf = new Uint8Array(256);
         let pfxp;
+
         nh_snprintf(__s_parseoptions, 677, cptr.decay(pfxbuf), 256n, __s_pct_s, opts);
         if ((pfxp = cptr.strchr(cptr.decay(pfxbuf), 58)) !== null)
             cptr.st1(pfxp, 0);
@@ -6584,6 +6701,8 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         return 0;
     if (optresult == NHC.optn_ok)
         return retval;
+
+    /* out of valid options */
     (yield* config_error_add(__s_unknown_option_s, opts));
     return 0;
 }
@@ -6592,6 +6711,8 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
 function* check_misc_menu_command(opts, op) {
     let i;
     let name_to_check;
+
+    /* check for menu command mapping */
     for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t); i++) {
         name_to_check = cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t);
         if ((yield* match_optname(opts, name_to_check, Number(BigInt.asIntN(32, cptr.strlen(name_to_check))), 1)))
@@ -6607,6 +6728,7 @@ cptr.stI32o(roleopt2opt, 4, NHC.opt_race);
 cptr.stI32o(roleopt2opt, 8, NHC.opt_gender);
 cptr.stI32o(roleopt2opt, 12, NHC.opt_alignment);
 
+/* role => 0, race => 1, gender => 2, alignment =>3 */
 /** C ref: options.c:715 — @param {CInt} roleopt @returns {CInt} */
 function opt2roleopt(roleopt) {
     switch (roleopt) {
@@ -6624,11 +6746,16 @@ function opt2roleopt(roleopt) {
     return 0;
 }
 
+/* fetch saved option string for a particular option phase */
 /** C ref: options.c:734 — @param {CInt} optidx @param {CInt} ophase @returns {CPtr<char>} */
 function* getoptstr(optidx, ophase) {
     let roleoptindx = opt2roleopt(optidx);
+
     if (ophase == NHC.num_opt_phases) {
         let phase;
+
+        /* find non-Null, in order optvals[][play_opt], [cmdline_opt],
+           [environ_opt], [rc_file_opt], [syscf_opt], [builtin_opt] */
         for (phase = ((NHC.num_opt_phases - 1) | 0); phase >= 0; --phase)
             if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), phase, 8)) {
                 ophase = phase;
@@ -6638,43 +6765,54 @@ function* getoptstr(optidx, ophase) {
     if ((roleoptindx >= 0 && roleoptindx < NHC.MAX_ROLEOPT && ophase >= 0 && ophase < NHC.num_opt_phases))
         return cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8);
     (yield* panic(__s_bad_index_roleoptvals_d_d, roleoptindx, ophase));
+    /*NOTREACHED*/
 }
 
+/* to track some unparsed option settings in case #saveoptions needs them */
 /** C ref: options.c:758 — @param {CInt} optidx @param {CPtr<char>} optstr */
 function* saveoptstr(optidx, optstr) {
     let phase = cptr.ldI32o(go, $instance_globals_o_opt_phase);
     let roleoptindx = opt2roleopt(optidx);
     let p = cptr.strchr(optstr, 58);
     let q = cptr.strchr(optstr, 61);
+
+    /* strip away "optname:" from optname:optstr */
     if (!p || (q && cptr.cmp(q, p) < 0))
         p = q;
     if (p)
         optstr = cptr.add(p, 1);
+
     if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), phase, 8))
         cptr.free(cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), phase, 8));
     cptr.stPtro(cptr.decay(roleoptvals[roleoptindx]), phase, (yield* dupstr(optstr)), 8);
 }
 
+/* discard specific saved option string */
 /** C ref: options.c:776 — @param {CInt} optidx @param {CInt} ophase */
 function unsaveoptstr(optidx, ophase) {
     let roleoptindx = opt2roleopt(optidx);
+
     if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8))
         cptr.free(cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8)), cptr.stPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, null, 8);
 }
 
+/* discard all saved option strings */
 /** C ref: options.c:787 */
 export function freeroleoptvals() {
     let i;
     let j;
+
     for (i = 0; i < 4; ++i)
         for (j = 0; j < NHC.num_opt_phases; ++j)
             unsaveoptstr(cptr.ldI32o(roleopt2opt, i, 4), j);
 }
 
+/* common to optfn_catname(), optfn_dogname(), optfn_horsename() */
 /** C ref: options.c:848 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* petname_optfn(optidx, req, negated, opts, op) {
     let failsafe = new Uint8Array(64);
     let petname = (optidx == NHC.opt_catname) ? cptr.add(gc, $instance_globals_c_catname) : ((optidx == NHC.opt_dogname) ? cptr.add(gd, $instance_globals_d_dogname) : ((optidx == NHC.opt_horsename) ? cptr.add(gh, $instance_globals_h_horsename) : cptr.decay(failsafe)));
+
     if (req == NHC.do_init) {
         ;
     } else if (req == NHC.do_set) {
@@ -6691,6 +6829,14 @@ function* petname_optfn(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/*
+ **********************************
+ *
+ *   Per-option Functions
+ *
+ **********************************
+ */
+
 /** C ref: options.c:885 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_alignment(optidx, req, negated, opts, op) {
     op = cptr.box(op);
@@ -6698,8 +6844,10 @@ function* optfn_alignment(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* alignment:string */
         if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
+
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initalign, (yield* str2align(op.v)))) == -1) {
                 (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
@@ -6727,6 +6875,8 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP align_message:[left|top|right|bottom] */
+
         op = (yield* string_for_opt(opts, negated));
         if ((!cptr.eq(op, cptr.decay(empty_optstr))) && !negated) {
             if (!(yield* strncmpi(op, __s_left, 4)))
@@ -6749,6 +6899,7 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let which;
+
         which = cptr.ldI32o(iflags, $instance_flags_wc_align_message);
         void cptr.sprintf(opts, __s_pct_s, (which == NHM.ALIGN_TOP) ? __s_top : ((which == NHM.ALIGN_LEFT) ? __s_left : ((which == NHM.ALIGN_BOTTOM) ? __s_bottom : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt)))));
         return NHC.optn_ok;
@@ -6765,6 +6916,7 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP align_status:[left|top|right|bottom] */
         op = (yield* string_for_opt(opts, negated));
         if ((!cptr.eq(op, cptr.decay(empty_optstr))) && !negated) {
             if (!(yield* strncmpi(op, __s_left, 4)))
@@ -6787,6 +6939,7 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let which;
+
         which = cptr.ldI32o(iflags, $instance_flags_wc_align_status);
         void cptr.sprintf(opts, __s_pct_s, (which == NHM.ALIGN_TOP) ? __s_top : ((which == NHM.ALIGN_LEFT) ? __s_left : ((which == NHM.ALIGN_BOTTOM) ? __s_bottom : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt)))));
         return NHC.optn_ok;
@@ -6823,10 +6976,16 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* autounlock:none or autounlock:untrap+apply-key+kick+force;
+           autounlock without a value is same as autounlock:apply-key and
+           !autounlock is same as autounlock:none; multiple values can be
+           space separated or plus-sign separated but the same separation
+           must be used for each element, not mix&match */
         let sep;
         let nxt;
         let newflags;
         let i;
+
         if (cptr.eq((op = (yield* string_for_opt(opts, 1))), cptr.decay(empty_optstr))) {
             cptr.stI32o(flags, $flag_autounlock, (negated ? 0 : NHM.AUTOUNLOCK_APPLY_KEY) >>> 0);
             return NHC.optn_ok;
@@ -6835,7 +6994,7 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
         sep = schar((cptr.strchr(op, 43) ? 43 : 32));
         while (op) {
             let matched = 0;
-            op = (yield* trimspaces(op));
+            op = (yield* trimspaces(op));  /* might have leading space */
             if ((nxt = cptr.strchr(op, sep)) !== null) {
                 cptr.st1(cptr.postinc(() => nxt, (v) => { nxt = v; }), 0);
                 op = (yield* trimspaces(op));
@@ -6882,6 +7041,7 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
             void cptr.strcpy(opts, __s_none);
         } else {
             let p = __s_empty;
+
             cptr.st1(opts, 0);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
                 void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
@@ -6890,7 +7050,7 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0)
                 void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_FORCE) >>> 0)
-                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8));
+                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8));  /*no more p*/
         }
         return NHC.optn_ok;
     }
@@ -6903,13 +7063,20 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
 /** C ref: options.c:1171 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_boulder(optidx, req, negated, opts, op) {
     let clash = 0;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+
+        /* if ((opts = string_for_env_opt(allopt[optidx].name, opts, FALSE))
+               == empty_optstr)
+         */
         if (cptr.eq((opts = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr)))
             return 0;
         (yield* escapes(opts, opts));
+        /* note: dummy monclass #0 has symbol value '\0'; we allow that--
+           attempting to set bouldersym to '^@'/'\0' will reset to default */
         if (def_char_to_monclass(cptr.ld1so(opts, 0)) != NHC.MAXMCLASSES)
             clash = cptr.ld1so(opts, 0) ? 1 : 0;
         else if (cptr.ld1so(opts, 0) >= 49 && cptr.ld1so(opts, 0) < 54)
@@ -6918,12 +7085,21 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
             (yield* config_error_add(__s_boulder_symbol_cannot_be_a_control));
             return NHC.optn_ok;
         } else if (clash) {
+            /* symbol chosen matches a used monster or warning
+               symbol which is not good - reject it */
             (yield* config_error_add(__s_badoption_boulder_symbol_s_would, visctrl(cptr.ld1so(opts, 0)), (clash == 1) ? __s_monster : __s_warning));
         } else {
+            /*
+             * Override the default boulder symbol.
+             */
             cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms, uchar(cptr.ld1so(opts, 0)));
             cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_rogue_syms, uchar(cptr.ld1so(opts, 0)));
+            /* for 'initial', update of BOULDER symbol is done in
+               initoptions_finish(), after all symset options
+               have been processed */
             if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
                 let sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+
                 if (sym)
                     cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
@@ -6998,6 +7174,7 @@ function* optfn_crash_urlmax(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             let temp = atoi(op);
+
             if (temp < 75) {
                 (yield* config_error_add(__s_invalid_value_d_for_crash_urlmax, temp));
                 return NHC.optn_err;
@@ -7019,11 +7196,13 @@ function* optfn_crash_urlmax(optidx, req, negated, opts, op) {
 /** C ref: options.c:1394 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_DECgraphics(optidx, req, negated, opts, op) {
     let badflag = 0;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         if (!negated) {
+            /* There is no rogue level DECgraphics-specific set */
             if (cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
                 badflag = 1;
             } else {
@@ -7056,15 +7235,44 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
     let idx;
     let prefix_val;
     let num;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* things to disclose at end of game */
+
+        /*
+         * The order that the end_disclose options are stored:
+         *      inventory, attribs, vanquished, genocided,
+         *      conduct, overview.
+         * There is an array in flags:
+         *      end_disclose[NUM_DISCLOSURE_OPT];
+         * with option settings for the each of the following:
+         * iagvc [see disclosure_options in decl.c]:
+         * Allowed setting values in that array are:
+         *      DISCLOSE_PROMPT_DEFAULT_YES  ask with default answer yes
+         *      DISCLOSE_PROMPT_DEFAULT_NO   ask with default answer no
+         *      DISCLOSE_YES_WITHOUT_PROMPT  always disclose and don't ask
+         *      DISCLOSE_NO_WITHOUT_PROMPT   never disclose and don't ask
+         *      DISCLOSE_PROMPT_DEFAULT_SPECIAL  for 'vanq'/'genod' only...
+         *      DISCLOSE_SPECIAL_WITHOUT_PROMPT  ...to set up sort order.
+         *
+         * Those setting values can be used in the option
+         * string as a prefix to get the desired behavior.
+         *
+         * For backward compatibility, no prefix is required,
+         * and the presence of a i,a,g,v, or c without a prefix
+         * sets the corresponding value to DISCLOSE_YES_WITHOUT_PROMPT.
+         */
+
         op = (yield* string_for_opt(opts, 1));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
+        /* "disclose" without a value means "all with prompting"
+           and negated means "none without prompting" */
         if (cptr.eq(op, cptr.decay(empty_optstr)) || !(yield* strncmpi((op), (__s_all), -1)) || !(yield* strncmpi((op), (__s_none), -1))) {
             if (!cptr.eq(op, cptr.decay(empty_optstr)) && !(yield* strncmpi((op), (__s_none), -1)))
                 negated = 1;
@@ -7072,16 +7280,18 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
                 cptr.st1o2(flags, num, 1, $flag_end_disclose, schar((negated ? 45 : 121)));
             return NHC.optn_ok;
         }
+
         num = 0;
         prefix_val = -1;
         while (cptr.ld1s(op) && BigInt(num >>> 0) < 6n) {
             let c;
             let dop;
+
             c = lowc(cptr.ld1s(op));
             if (c == 107)
-                c = 118;
+                c = 118;  /* killed -> vanquished */
             if (c == 100)
-                c = 111;
+                c = 111;  /* dungeon -> overview */
             dop = cptr.strchr(cptr.decay(disclosure_options), c);
             if (dop) {
                 idx = Number(BigInt.asIntN(32, (cptr.diff(dop, cptr.decay(disclosure_options)))));
@@ -7103,7 +7313,7 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
             } else if (cptr.strchr(cptr.decay(__static_optfn_disclose_valid_settings), c)) {
                 prefix_val = c;
             } else if (c == 32) {
-                ;
+                ;  /* do nothing */
             } else {
                 (yield* config_error_add(__s_unknown_s_parameter_c, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.ld1s(op)));
                 return NHC.optn_err;
@@ -7173,57 +7383,68 @@ function optfn_effects(optidx, req, negated, opts, op) {
 
 /** C ref: options.c:1616 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_map(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1625 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_menu(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1634 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_message(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1643 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_size_map(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1652 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_size_menu(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1661 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_size_message(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_size_status(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1679 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_size_text(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1688 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_status(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1697 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_font_text(optidx, req, negated, opts, op) {
+    /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
 /** C ref: options.c:1706 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_fruit(optidx, req, negated, opts, op) {
     let forig = null;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -7240,14 +7461,19 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
             }
             if (cptr.eq(op, cptr.decay(empty_optstr)))
                 return NHC.optn_err;
+            /* strip leading/trailing spaces, condense internal ones (3.6.2) */
             (yield* mungspaces(op));
             if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
                 let f;
                 let fnum = cptr.box(0);
+
+                /* count number of named fruits; if 'op' is found among them,
+                   then the count doesn't matter because we won't be adding it */
                 f = (yield* fruit_from_name(op, 0, fnum));
                 if (!f) {
                     if (!cptr.ld1so(flags, $flag_made_fruit))
                         forig = (yield* fruit_from_name(cptr.add(svp, $instance_globals_saved_p_pl_fruit), 0, null));
+
                     if (!forig && fnum.v >= 100) {
                         (yield* config_error_add(__s_doing_that_so_many_times_isn_t_very));
                         return NHC.optn_ok;
@@ -7257,13 +7483,23 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
         }
         (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), op, NHM.PL_FSIZ));
         sanitize_name(cptr.add(svp, $instance_globals_saved_p_pl_fruit));
+        /* OBJ_NAME(objects[SLIME_MOLD]) won't work for this after
+           initialization; it gets changed to generic "fruit" */
         if (!cptr.ld1so(svp, $instance_globals_saved_p_pl_fruit))
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_slime_mold, NHM.PL_FSIZ));
         if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
+            /* if 'forig' is nonNull, we replace it rather than add
+               a new fruit; it can only be nonNull if no fruits have
+               been created since the previous name was put in place */
             void (yield* fruitadd(cptr.add(svp, $instance_globals_saved_p_pl_fruit), forig));
             if (give_opt_msg)
                 (yield* pline(__s_fruit_is_now_s, cptr.add(svp, $instance_globals_saved_p_pl_fruit)));
         }
+        /* If initial, then initoptions is allowed to do it instead
+         * of here (initoptions always has to do it even if there's
+         * no fruit option at all.  Also, we don't want people
+         * setting multiple fruits in their options.)
+         */
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -7280,8 +7516,10 @@ function* optfn_gender(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* gender:string */
         if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
+
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initgend, (yield* str2gend(op.v)))) == -1) {
                 (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
@@ -7307,10 +7545,12 @@ function* optfn_gender(optidx, req, negated, opts, op) {
 /** C ref: options.c:1815 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_glyph(optidx, req, negated, opts, op) {
     let glyph = cptr.box(0);
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* OPTION=glyph:G_glyph/U+NNNN/r-g-b */
         if (negated) {
             if (!cptr.eq(op, cptr.decay(empty_optstr))) {
                 (yield* bad_negation(__s_glyph, 1));
@@ -7319,6 +7559,7 @@ function* optfn_glyph(optidx, req, negated, opts, op) {
         }
         if (cptr.eq(op, cptr.decay(empty_optstr)))
             return NHC.optn_err;
+        /* strip leading/trailing spaces, condense internal ones (3.6.2) */
         (yield* mungspaces(op));
         if (!(yield* glyphrep_to_custom_map_entries(op, glyph)))
             return NHC.optn_err;
@@ -7372,10 +7613,12 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
     let sym_name = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let badflag = 0;
     let i;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+
         if (!negated) {
             for (i = 0; i < NHC.NUM_GRAPHICS; ++i) {
                 if (cptr.ldPtro2(gs, i, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
@@ -7412,13 +7655,21 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
 /** C ref: options.c:1963 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_map_mode(optidx, req, negated, opts, op) {
     let i;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP
+         *
+         *  map_mode:[tiles|ascii4x6|ascii6x8|ascii8x8|ascii16x8|ascii7x12
+         *            |ascii8x12|ascii16x12|ascii12x16|ascii10x18|fit_to_screen
+         *            |ascii_fit_to_screen|tiles_fit_to_screen]
+         */
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && !negated) {
             let save_map_mode = cptr.ldI32o(iflags, $instance_flags_wc_map_mode);
+
             if (!(yield* strncmpi((op), (__s_tiles), -1)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_TILES);
             else if (!(yield* strncmpi(op, __s_ascii4x6, 8)))
@@ -7467,6 +7718,8 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/* all the key assignment options for menu_* commands are identical
+   but optlist.h treats them as distinct rather than sharing one */
 /** C ref: options.c:2052 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* shared_menu_optfn(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
@@ -7474,6 +7727,7 @@ function* shared_menu_optfn(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         let res = (yield* check_misc_menu_command(opts, op));
+
         if (res < 0)
             return NHC.optn_err;
         return (yield* spcfn_misc_menu_cmd(res, req, negated, opts, op));
@@ -7554,6 +7808,8 @@ function* optfn_menu_shift_right(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
+/* end of shared key assignments for menu commands */
+
 /** C ref: options.c:2183 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_menu_headings(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
@@ -7561,7 +7817,10 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         let ca = cptr.alloc(8);
+
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
+            /* OPTIONS=menu_headings w/o value => no-color&inverse;
+               OPTIONS=!menu_headings => no-color&none */
             cptr.stI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr, negated ? NHM.ATR_NONE : NHM.ATR_INVERSE);
             cptr.stI32o(iflags, $instance_flags_menu_headings, NHM.NO_COLOR);
             return NHC.optn_ok;
@@ -7576,7 +7835,9 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ca_buf = new Uint8Array(256);
+
         void cptr.strcpy(cptr.decay(ca_buf), color_attr_to_str(cptr.add(iflags, $instance_flags_menu_headings)));
+        /* change "no color" to "no-color" or "light blue" to "light-blue" */
         void (yield* strNsubst(cptr.decay(ca_buf), __s_sp, __s_dash, 0));
         void cptr.strcpy(opts, cptr.decay(ca_buf));
         return NHC.optn_ok;
@@ -7592,6 +7853,9 @@ const __static_optfn_menu_objsyms_alt5 = cptr.bytes("one-or-the-other"); /** C r
 /** C ref: options.c:2225 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
+        /* set iflags.menu_objsyms to 4, "conditional"; also sets
+           iflags.menu_head_objsym to False and
+           iflags.use_menu_glyphs True */
         set_menuobjsyms_flags(4);
         return NHC.optn_ok;
     }
@@ -7600,9 +7864,15 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         let l;
         let i;
         let osyms;
+
         if (negated) {
+            /* allow '!menu_objsyms' (and '!use_menu_glyphs') as
+               'menu_objsyms:none' (0) */
             osyms = 0;
         } else if (cptr.eq(op, cptr.decay(empty_optstr))) {
+            /* treat boolean 'menu_objsyms' as 'menu_objsyms:headers' (1)
+               accept obsolete boolean 'use_menu_glyphs' as a synonym
+               for 'menu_objsyms:entries' (2) */
             osyms = !cptr.strncmp(opts, __s_use_menu_glyphs, 15n) ? 2 : 1;
         } else if (digit(cptr.ld1s(op))) {
             i = atoi(op);
@@ -7613,6 +7883,7 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
             osyms = i;
         } else {
             let l5 = 16;
+
             osyms = 0;
             k = Number(BigInt.asUintN(32, cptr.strlen(op)));
             for (i = 0; i < 6; ++i) {
@@ -7644,8 +7915,10 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* menuinvertmode=0 or 1 or 2 (2 is experimental) */
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let mode = atoi(op);
+
             if (mode < 0 || mode > 2) {
                 (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
@@ -7665,14 +7938,17 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
 function* optfn_menustyle(optidx, req, negated, opts, op) {
     let tmp;
     let val_required;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* menustyle:traditional or combination or full or partial */
+
         val_required = schar((cptr.strlen(opts) > 5n && !negated ? 1 : 0));
         if (cptr.eq((op = (yield* string_for_opt(opts, schar((!val_required))))), cptr.decay(empty_optstr))) {
             if (val_required)
-                return NHC.optn_err;
+                return NHC.optn_err;  /* string_for_opt gave feedback */
             tmp = negated ? 110 : 102;
         } else {
             tmp = lowc(cptr.ld1s(op));
@@ -7733,6 +8009,7 @@ cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 8, __s_o_s_u
 /** C ref: options.c:2396 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_mouse_support(optidx, req, negated, opts, op) {
     let compat;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -7741,10 +8018,13 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
         op = (yield* string_for_opt(opts, schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             if (compat || negated || cptr.ld1so(go, $instance_globals_o_opt_initial)) {
+                /* for backwards compatibility, "mouse_support" without a
+                   value is a synonym for mouse_support:1 */
                 cptr.stI32o(iflags, $instance_flags_wc_mouse_support, !negated);
             }
         } else {
             let mode = atoi(op);
+
             if (mode < 0 || mode > 2 || (mode == 0 && cptr.ld1s(op) != 48)) {
                 (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
@@ -7756,6 +8036,7 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val) {
         let ms = cptr.ldI32o(iflags, $instance_flags_wc_mouse_support);
+
         if (ms >= 0 && ms <= 2)
             void cptr.sprintf(opts, __s_s_s, cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8), cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8));
         return NHC.optn_ok;
@@ -7771,6 +8052,7 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
 function* optfn_msg_window(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let tmp;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -7841,6 +8123,8 @@ function* optfn_name(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* name:string */
+
         if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             (yield* nmcpy(svp, op, NHM.PL_NSIZ));
         } else
@@ -7865,6 +8149,7 @@ cptr.stPtro(__static_optfn_number_pad_numpadmodes, 40, __s_1_off_y_z_swapped); /
 /** C ref: options.c:2574 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_number_pad(optidx, req, negated, opts, op) {
     let compat;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -7873,6 +8158,8 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
         op = (yield* string_for_opt(opts, schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             if (compat || negated || cptr.ld1so(go, $instance_globals_o_opt_initial)) {
+                /* for backwards compatibility, "number_pad" without a
+                   value is a synonym for number_pad:1 */
                 cptr.st1o(iflags, $instance_flags_num_pad, schar((!negated)));
                 cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
             }
@@ -7881,17 +8168,21 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
             return NHC.optn_err;
         } else {
             let mode = atoi(op);
+
             if (mode < -1 || mode > 4 || (mode == 0 && cptr.ld1s(op) != 48)) {
                 (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             } else if (mode <= 0) {
                 cptr.st1o(iflags, $instance_flags_num_pad, 0);
-                cptr.st1o(iflags, $instance_flags_num_pad_mode, uchar((mode < 0)));
+                /* German keyboard; y and z keys swapped */
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, uchar((mode < 0)));  /* 0 or 1 */
             } else {
                 cptr.st1o(iflags, $instance_flags_num_pad, 1);
                 cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
+                /* PC Hack / MSDOS compatibility */
                 if (mode == 2 || mode == 4)
                     cptr.st1o(iflags, $instance_flags_num_pad_mode, cptr.ld1uo(iflags, $instance_flags_num_pad_mode) | 1);
+                /* phone keypad layout */
                 if (mode == 3 || mode == 4)
                     cptr.st1o(iflags, $instance_flags_num_pad_mode, cptr.ld1uo(iflags, $instance_flags_num_pad_mode) | 2);
             }
@@ -7902,6 +8193,7 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let indx = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout) ? (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ? 4 : 3) : (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ? 2 : 1)) : (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz) ? 5 : 0);
+
         if (req == NHC.get_val)
             void cptr.strcpy(opts, cptr.ldPtro(__static_optfn_number_pad_numpadmodes, indx, 8));
         else {
@@ -7948,6 +8240,7 @@ function* optfn_packorder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ocl = new Uint8Array(19);
+
         (yield* oc_to_str(cptr.add(flags, $flag_inv_order), cptr.decay(ocl)));
         void cptr.sprintf(opts, __s_pct_s, cptr.decay(ocl));
         return NHC.optn_ok;
@@ -7955,10 +8248,34 @@ function* optfn_packorder(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/* for "paranoid_confirmation:foo" and alias "[!]prayconfirm" */
 /** C ref: options.c:2818 — @param {CInt} optidx @param {CInt} req @param {CInt} opt_negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
     let fld_negated;
     let i;
+    /*
+     * Player can change required response for some prompts (quit, die,
+     * attack, save-bones, continue-eating, break-wand, Were-change to
+     * need to be "yes<return>" instead of just 'y' keystroke to accept.
+     *
+     * For paranoid_confirm:Confirm, these prompts also need "no<return>"
+     * instead of 'n' or <space> or <return> to reject.  (<escape> always
+     * works as a way to reject.)
+     *
+     * Player can add an extra prompt (pray, AutoAll) that isn't
+     * ordinarily there.  (They ask for 'y' keystroke unless Confirm is
+     * also set, then they'll switch to "yes<return>", "no<return>".)
+     *
+     * Player can also change game's behavior.  paranoid_confirm:swim
+     * can be used to prevent accidentally stepping into water or lava;
+     * player must use the 'm' movement prefix to do that intentionally.
+     * paranoid_confirm:Remove [with synonym parnoid_confirm:Takeoff]
+     * changes the 'R' and 'T' commands [which have differing criteria
+     * for "only one candidate item"] to prompt for inventory item to
+     * remove/takeoff when there is only one candidate, so allows player
+     * a chance to cancel at the pick-an-item prompt or menu.
+     */
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -7966,16 +8283,41 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         let prayconfirm = new Uint8Array(6);
         let pp;
         let plus_or_minus = 0;
+
+        /*
+         * "prayconfirm" used to be a separate boolean option,
+         * now it is a synonym for paranoid_confirm:+pray and
+         * "!prayconfirm" has become one for paranoid_confirm:-pray.
+         */
         if (!(yield* strncmpi(opts, __s_prayconfirm, 4))) {
             if (cptr.ld1s(op)) {
+                /* presence of any value is treated as an error whether
+                   complaining about the 'prayconfirm' deprecation or not;
+                   this will erroneously reject "prayconfirm:true"; too
+                   bad; back when prayconfirm was in active use, tacking on
+                   an explicit value to a boolean option wasn't supported */
                 (yield* config_error_add(__s_deprecated_sprayconfirm_option_takes_no, opt_negated ? __s_bang : __s_empty, op));
                 return NHC.optn_silenterr;
             }
+            /* config file summary of complaints includes this in the count
+               of errors; we'd prefer that it be described as a warning but
+               that isn't supported [not important since this is considered
+               temporary until 'prayconfirm' gets removed altogether] */
             (yield* config_error_add(__s_sprayconfirm_option_is_deprecated, opt_negated ? __s_bang : __s_empty, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opt_negated ? 45 : 43));
+            /* convert prayconfirm to paranoid_confirm:+pray and
+               !prayconfirm to paranoid_confirm:-pray */
             void cptr.sprintf(cptr.decay(prayconfirm), __s_cpray, opt_negated ? 45 : 43);
             op = cptr.decay(prayconfirm);
+            /* possibly changing !prayconfirm to paranoid_confirm:-pray
+               which clears a paranoia bit but isn't a negated option */
             opt_negated = 0;
+            /*
+             * end of 'prayconfirm' processing
+             */
+
         } else if (opt_negated) {
+            /* "!paranoid_confirm" w/o args is same as paranoid_confirm:none;
+               "!paranoid_confirm:anything" is disallowed */
             if (!cptr.ld1s(op)) {
                 cptr.stI32o(flags, $flag_paranoia_bits, 0);
                 return NHC.optn_ok;
@@ -7984,37 +8326,91 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 return NHC.optn_silenterr;
             }
         } else if (!cptr.ld1s(op)) {
+            /* "paranoid_confirm" without any arguments is disallowed */
             (yield* config_error_add(__s_s_requires_a_value_use_none_to_cancel, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
             return NHC.optn_silenterr;
         }
+
+        /*
+         * Multiple settings for paranoid_confirmation are allowed.
+         * When a new instance is processed, the behavior depends on the
+         * first character of its value:
+         *
+         * paranoid_confirm:foo bar
+         *   clears all confirmation bits (from previous settings, including
+         *   default), then sets the bits for foo and bar;
+         *
+         * paranoid_confirm:+foo bar
+         *   existing bits are kept, plus those for foo and bar are set;
+         *
+         * paranoid_confirm:-foo bar
+         *   existing bits are kept except those for foo and bar get cleared;
+         *
+         * paranoid_confirm:+foo !bar
+         *   combination of paranoid_confirm:+foo,paranoid_confirm:-bar;
+         *
+         * paranoid_confirm:-foo !bar
+         *   the negation in '!bar' is ignored, treated as if '-foo bar';
+         *
+         * !paranoid_confirm
+         *   without a value is treated as paranoid_confirm:none and clears
+         *   all bits;
+         * !paranoid_confirm:anything
+         *   (including +anything_else or -anything_else) is disallowed;
+         *
+         * paranoid_confirm:+all is the same as paranoid_confirm:all;
+         * paranoid_confirm:-all is the same as paranoid_confirm:none;
+         * paranoid_confirm:+none and paranoid_confirm:-none are no-ops.
+         */
         void (yield* mungspaces(op));
         if (cptr.ld1s(op) != 43 && cptr.ld1s(op) != 45) {
+            /* new value; first clear all old bits */
             cptr.stI32o(flags, $flag_paranoia_bits, 0);
         } else {
-            plus_or_minus = 1;
-            opt_negated = schar((cptr.ld1s(op) == 45));
+            /* augmenting existing value; keep old bits */
+            plus_or_minus = 1;  /* only used for "+none" and "-none" */
+            opt_negated = schar((cptr.ld1s(op) == 45));  /* context is changed */
             if (cptr.ld1s(cptr.preinc(() => op, (v) => { op = v; })) == 32)
                 op = cptr.add(op, 1);
         }
+
         for (; ; ) {
             fld_negated = schar((cptr.ld1s(op) == 33));
             if (fld_negated) {
+                /* there shouldn't be a space after '!' because then
+                   "! foo bar" looks like it might be intended to mean
+                   "!foo !bar" but if there is one, skip it to prevent
+                   a lookup attempt for "" which will fail and result in
+                   an unhelpful error message; accepting the space is
+                   simpler than another special case error message */
                 if (cptr.ld1s(cptr.preinc(() => op, (v) => { op = v; })) == 32)
                     op = cptr.add(op, 1);
             } else {
+                /* accept "nofoo" to be same as "!foo", unless "no" is
+                   followed by a space or 'foo' begins with "n" (to avoid
+                   confusion for "none" */
                 if (lowc(cptr.ld1so(op, 0)) == 110 && lowc(cptr.ld1so(op, 1)) == 111 && lowc(schar((cptr.ld1so(op, 2) != 110 && lowc(cptr.ld1so(op, 2)) != 0 ? 1 : 0)))) {
                     fld_negated = 1;
-                    op = cptr.add(op, 2);
+                    op = cptr.add(op, 2);  /* skip "no"; we know next char isn't space  */
                 }
             }
+            /* We're looking to parse
+               "paranoid_confirm:whichone wheretwo whothree"
+               and "paranoid_confirm:" prefix has already
+               been stripped off by the time we get here */
             pp = cptr.strchr(op, 32);
             if (pp)
                 cptr.st1(pp, 0);
+            /* we aren't matching option names but match_optname()
+               does what we want once we've broken the space
+               delimited aggregate into separate tokens */
             for (i = 0; i < 15; ++i) {
                 if ((yield* match_optname(op, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname), cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argMinLen), 0)) || (cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym) && (yield* match_optname(op, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym), cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synMinLen), 0)))) {
                     if (!cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) {
+                        /* flagmask==0 is "none", clear all bits
+                           but "+none" and "-none" are no-ops */
                         if (!plus_or_minus)
-                            cptr.stI32o(flags, $flag_paranoia_bits, 0);
+                            cptr.stI32o(flags, $flag_paranoia_bits, 0);  /* clear all */
                     } else if (opt_negated || fld_negated) {
                         cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) & ((~cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) >>> 0));
                     } else {
@@ -8024,23 +8420,28 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 }
             }
             if (i == 15) {
+                /* didn't match anything, so arg is bad;
+                   any flags already modified will stay modified */
                 (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_silenterr;
             }
+            /* move on to next token */
             if (pp)
                 op = cptr.add(pp, 1);
             else
-                break;
-        }
+                break;  /* no next token */
+        }  /* for(;;) */
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let tmpbuf = new Uint8Array(256);
+
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
             if (((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != NHM.PARANOID_BONES || wizard() || req == NHC.get_cnf_val))
                 nh_snprintf(__s_optfn_paranoid_confirmation, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __s_sp_pct_s, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname));
         }
+        /* note: always leaves enough room for caller to tack on '\n' */
         cptr.st1o(opts, 0, 0);
         void __builtin___strncat_chk(opts, cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __s_none, 255n, __builtin_object_size(opts, 1));
         return NHC.optn_ok;
@@ -8056,6 +8457,7 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
     let old_perm_invent = cptr.ld1so(iflags, $instance_flags_perm_invent);
     let old_perminv_mode = cptr.ld1uo(iflags, $instance_flags_perminv_mode);
     let retval = NHC.optn_ok;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     } else if (req == NHC.do_set) {
@@ -8067,7 +8469,8 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
             let pi0;
             let pi1;
             let i;
-            let ln = Number(BigInt.asUintN(32, cptr.strlen(op)));
+            let ln = Number(BigInt.asUintN(32, cptr.strlen(op)));  /* guaranteed > 0 */
+
             for (i = 0; i < perminv_modes.length; ++i) {
                 if (!(pi0 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)))
                     continue;
@@ -8097,10 +8500,15 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
         }
     } else if (req == NHC.do_handler) {
+        /* use a menu to choose new value for perminv_mode */
         retval = (yield* handler_perminv_mode());
     } else if (req == NHC.get_val) {
+        /* value shown when examining current option settings; enclosed
+           within square brackets for 'O', shown as-is when setting value */
         void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 2, 8));
         if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != NHC.InvOptNone && !cptr.ld1so(iflags, $instance_flags_perm_invent) && op) {
+            /* perminv_mode is set but isn't useful because perm_invent is
+               Off; say so after squeezing out enough for it to barely fit */
             if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) == NHC.InvOptInUse)
                 void strsubst(opts, __s_currently, __s_empty);
             else
@@ -8116,16 +8524,20 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
 /** C ref: options.c:3138 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_petattr(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP2 petattr:string */
+
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             retval = NHC.optn_err;
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let itmp = (yield* match_str2attr(op, 0));
+
             if (itmp == -1) {
                 (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
                 retval = NHC.optn_err;
@@ -8174,6 +8586,8 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
                 break;
                 case 104:
                 case 113:
+                /* avoids giving "unrecognized type of pet" but
+                   pet_type(dog.c) won't actually honor this */
                 cptr.st1o(gp, $instance_globals_p_preferred_pet, 104);
                 break;
                 case 110:
@@ -8211,6 +8625,8 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* maximum burden picked up before prompt (Warren Cheung) */
+
         if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             switch (lowc(cptr.ld1s(op))) {
                 case 117:
@@ -8261,15 +8677,21 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
     let badopt = 0;
     let compat = schar((cptr.strlen(opts) <= 6n));
     let use_menu;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* types of objects to pick up automatically */
+
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(tbuf)));
-        cptr.st1o2(flags, 0, 1, $flag_pickup_types, 0);
+        cptr.st1o2(flags, 0, 1, $flag_pickup_types, 0);  /* all */
         op = (yield* string_for_opt(opts, schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             if (compat || negated || cptr.ld1so(go, $instance_globals_o_opt_initial)) {
+                /* for backwards compatibility, "pickup" without a
+                   value is a synonym for autopickup of all types
+                   (and during initialization, we can't prompt yet) */
                 cptr.st1o(flags, $flag_pickup, schar((!negated)));
                 return NHC.optn_ok;
             }
@@ -8277,18 +8699,21 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             use_menu = 1;
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
                 let wasspace;
+
                 use_menu = 0;
                 void cptr.sprintf(cptr.decay(qbuf), __s_new_s_s_am_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __s_all);
                 cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                 (yield* getlin(cptr.decay(qbuf), cptr.decay(abuf)));
-                wasspace = schar((cptr.ld1so(cptr.decay(abuf), 0, 1) == 32));
+                wasspace = schar((cptr.ld1so(cptr.decay(abuf), 0, 1) == 32));  /* before mungspaces */
                 op = (yield* mungspaces(cptr.decay(abuf)));
                 if (wasspace && !cptr.ld1so(cptr.decay(abuf), 0, 1))
-                    ;
+                    ;  /* one or more spaces will remove old value */
                 else if (!cptr.ld1so(cptr.decay(abuf), 0, 1) || cptr.ld1so(cptr.decay(abuf), 0, 1) == 27)
-                    op = cptr.decay(tbuf);
+                    op = cptr.decay(tbuf);  /* restore */
                 else if (cptr.ld1so(cptr.decay(abuf), 0, 1) == 109)
                     use_menu = 1;
+                /* note: abuf[0]=='a' is already handled via clearing
+                   the old value (above) as a default action */
             }
             if (use_menu) {
                 if (wizard() && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
@@ -8307,6 +8732,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             num = 0;
             while (cptr.ld1s(op)) {
                 oc_sym = def_char_to_objclass(cptr.ld1s(op));
+                /* make sure all are valid obj symbols occurring once */
                 if (oc_sym != NHC.MAXOCLASSES && !cptr.strchr(cptr.add(flags, $flag_pickup_types), oc_sym)) {
                     cptr.st1o2(flags, num, 1, $flag_pickup_types, schar(oc_sym));
                     cptr.st1o2(flags, ++num, 1, $flag_pickup_types, 0);
@@ -8338,6 +8764,10 @@ function* optfn_pile_limit(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* pile limit: when walking over objects, number which triggers
+           "there are several/many objects here" instead of listing them
+         */
+
         op = (yield* string_for_opt(opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr))))
             cptr.stI32o(flags, $flag_pile_limit, negated ? 0 : atoi(op));
@@ -8346,6 +8776,7 @@ function* optfn_pile_limit(optidx, req, negated, opts, op) {
             return NHC.optn_err;
         } else
             cptr.stI32o(flags, $flag_pile_limit, 5);
+        /* sanity check */
         if (cptr.ldI32o(flags, $flag_pile_limit) < 0)
             cptr.stI32o(flags, $flag_pile_limit, 5);
         return NHC.optn_ok;
@@ -8363,6 +8794,8 @@ function* optfn_player_selection(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP player_selection: dialog | prompt/prompts/prompting */
+
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && !negated) {
             if (!(yield* strncmpi(op, __s_dialog, 6))) {
@@ -8389,6 +8822,8 @@ function* optfn_playmode(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* play mode: normal, explore/discovery, or debug/wizard */
+
         if (duplicate || negated)
             return NHC.optn_err;
         if (cptr.eq(op, cptr.decay(empty_optstr)))
@@ -8419,14 +8854,16 @@ function* optfn_race(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* race:string */
         if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
+
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrace, (yield* str2race(op.v)))) == -1) {
                 (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
                 return NHC.optn_err;
             }
-            cptr.st1o(gp, $instance_globals_p_pl_race, cptr.ld1s(op.v));
+            cptr.st1o(gp, $instance_globals_p_pl_race, cptr.ld1s(op.v));  /* Backwards compatibility */
             (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
         }
         return NHC.optn_ok;
@@ -8486,14 +8923,16 @@ function* optfn_role(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* role:string */
         if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
+
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrole, (yield* str2role(op.v)))) == -1) {
                 (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
                 return NHC.optn_err;
             }
-            (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_character), op.v, NHM.PL_NSIZ));
+            (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_character), op.v, NHM.PL_NSIZ));  /* Backwards compat */
             (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
         }
         return NHC.optn_ok;
@@ -8553,16 +8992,27 @@ function* optfn_scores(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* scores:5t[op] 5a[round] o[wn] */
+
         if (cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr)))
             return NHC.optn_err;
+
+        /* 5.0: earlier versions left old values for unspecified arguments
+           if player's scores:foo option only specified some of the three;
+           in particular, attempting to use 'scores:own' rather than
+           'scores:0 top/0 around/own' didn't work as intended */
         cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)), cptr.st1o(flags, $flag_end_own, 0);
+
         if (negated)
             op = eos(op);
+
         while (cptr.ld1s(op)) {
             let inum = 1;
+
             negated = schar(((cptr.ld1s(op) == 33) || !(yield* strncmpi(op, __s_no, 2)) ? 1 : 0));
             if (negated)
                 op = cptr.add(op, (cptr.ld1s(op) == 33) ? 1 : ((cptr.ld1so(op, 2) != 45) ? 2 : 3));
+
             if (digit(cptr.ld1s(op))) {
                 inum = atoi(op);
                 while (digit(cptr.ld1s(op)))
@@ -8570,6 +9020,7 @@ function* optfn_scores(optidx, req, negated, opts, op) {
             }
             while (cptr.ld1s(op) == 32)
                 op = cptr.add(op, 1);
+
             switch (lowc(cptr.ld1s(op))) {
                 case 116:
                 cptr.stI32o(flags, $flag_end_top, negated ? 0 : inum);
@@ -8594,8 +9045,10 @@ function* optfn_scores(optidx, req, negated, opts, op) {
                 (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_silenterr;
             }
+            /* "3a" is sufficient but accept "3around" (or "3abracadabra") */
             while (letter(cptr.ld1s(op)))
                 op = cptr.add(op, 1);
+            /* t, a, and o can be separated by space(s) or slash or both */
             while (cptr.ld1s(op) == 32)
                 op = cptr.add(op, 1);
             if (cptr.ld1s(op) == 47)
@@ -8624,6 +9077,8 @@ function* optfn_scroll_amount(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP scroll_amount:nn */
+
         op = (yield* string_for_opt(opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_scroll_amount, negated ? 1 : atoi(op));
@@ -8649,6 +9104,7 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP scroll_margin:nn */
         op = (yield* string_for_opt(opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_scroll_margin, negated ? 5 : atoi(op));
@@ -8671,12 +9127,22 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
 /** C ref: options.c:3824 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_soundlib(optidx, req, negated, opts, op) {
     let soundlibbuf = new Uint8Array(16);
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /*
+         * soundlib:  option to choose the interface for binaries built
+         * with support for more than the default interface (nosound).
+         *
+         * Option processing sets gc.chosen_soundlib. A later call
+         * to activate_chosen_soundlib() actually activates it, and
+         * sets gc.active_soundlib.
+         */
         if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             let option_id;
+
             (yield* get_soundlib_name(cptr.decay(soundlibbuf), NHM.WINTYPELEN));
             option_id = soundlib_id_from_opt(op);
             cptr.stI32o(gc, $instance_globals_c_chosen_soundlib, option_id);
@@ -8734,7 +9200,8 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
-        void (yield* choose_disco_sort(0));
+        /* return handler_sortdiscoveries(); */
+        void (yield* choose_disco_sort(0));  /* o_init.c */
     }
     return NHC.optn_ok;
 }
@@ -8742,6 +9209,7 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
 /** C ref: options.c:3914 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_sortloot(optidx, req, negated, opts, op) {
     let i;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -8749,6 +9217,7 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
         op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0));
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
+
             switch (c) {
                 case 110:
                 case 108:
@@ -8782,17 +9251,19 @@ const __static_optfn_sortvanquished_vanqmodes = cptr.bytes("tdaACcnz"); /** C re
 /** C ref: options.c:3958 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_sortvanquished(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
+
     if (req == NHC.do_init) {
-        cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);
+        cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);  /* 0 => 't' */
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0));
         if (negated) {
-            cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);
+            cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);  /* 0 => 't' */
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let p;
             let vndx = 0;
+
             if ((p = cptr.strchr(cptr.decay(__static_optfn_sortvanquished_vanqmodes), cptr.ld1s(op))) !== null) {
                 vndx = Number(BigInt.asIntN(32, (cptr.diff(p, cptr.decay(__static_optfn_sortvanquished_vanqmodes)))));
             } else if (cptr.strchr(__s_01234567, cptr.ld1s(op))) {
@@ -8814,7 +9285,9 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_handler) {
         let prev_sortmode = cptr.ld1uo(flags, $flag_vanq_sortmode);
-        void (yield* set_vanq_order(1));
+
+        /* return handler_sortvanquished(); */
+        void (yield* set_vanq_order(1));  /* insight.c */
         (yield* pline(__s_s_s_s_s, optname, (cptr.ld1uo(flags, $flag_vanq_sortmode) == prev_sortmode) ? __s_not_changed_still : __s_changed_to, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8), cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)));
     }
     return NHC.optn_ok;
@@ -8855,10 +9328,14 @@ function* optfn_statushilites(optidx, req, negated, opts, op) {
 function* optfn_statuslines(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let itmp = 0;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP2
+         * statuslines:n */
+
         op = (yield* string_for_opt(opts, negated));
         if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -8952,11 +9429,14 @@ function* optfn_symset(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_handler) {
         let reslt;
+
         if (!glyphid_cache_status())
             (yield* fill_glyphid_cache());
         reslt = (yield* handler_symset(optidx));
         if (glyphid_cache_status())
             free_glyphid_cache();
+        /* apply_customizations(gc.currentgraphics,
+                        (do_custom_colors | do_custom_symbols)); */
         return reslt;
     }
     return NHC.optn_ok;
@@ -8966,12 +9446,18 @@ function* optfn_symset(optidx, req, negated, opts, op) {
 function* optfn_term_cols(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let ltmp;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP2
+         * term_cols:amount */
+
         if (!cptr.eq((op = (yield* string_for_opt(opts, negated))), cptr.decay(empty_optstr))) {
             ltmp = atol(op);
+            /* just checks atol() sanity, not logical window size sanity
+             */
             if (ltmp <= 0n || ltmp >= 32767n) {
                 (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), ltmp));
                 retval = NHC.optn_err;
@@ -8997,12 +9483,18 @@ function* optfn_term_cols(optidx, req, negated, opts, op) {
 function* optfn_term_rows(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let ltmp;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP2
+         * term_rows:amount */
+
         if (!cptr.eq((op = (yield* string_for_opt(opts, negated))), cptr.decay(empty_optstr))) {
             ltmp = atol(op);
+            /* just checks atol() sanity, not logical window size sanity
+             */
             if (ltmp <= 0n || ltmp >= 32767n) {
                 (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), ltmp));
                 retval = NHC.optn_err;
@@ -9030,6 +9522,7 @@ function* optfn_tile_file(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP tile_file:name */
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             if (cptr.ldPtro(iflags, $instance_flags_wc_tile_file))
                 cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_tile_file));
@@ -9058,6 +9551,7 @@ function* optfn_tile_height(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP tile_height:nn */
         op = (yield* string_for_opt(opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_tile_height, negated ? 0 : atoi(op));
@@ -9085,6 +9579,7 @@ function* optfn_tile_width(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP tile_width:nn */
         op = (yield* string_for_opt(opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_tile_width, negated ? 0 : atoi(op));
@@ -9131,6 +9626,7 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP vary_msgcount:nn */
         op = (yield* string_for_opt(opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_vary_msgcount, negated ? 0 : atoi(op));
@@ -9156,13 +9652,21 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
 function* optfn_versinfo(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let vi = cptr.ldI32o(flags, $flag_versinfo);
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* versinfo: what to include when 'showvers' displays version
+           on status lines; bitmask with up to three bits:
+           (1) x.y.z number, (2) program name, (4) git branch if available.
+           If branch is requested but unavailable, status_version will
+           treat 4 as 1.
+         */
         let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch)) ? 1 : 0));
         let val;
         let dflt = have_branch ? NHM.VI_BRANCH : NHM.VI_NUMBER;
+
         if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_silenterr;
@@ -9179,6 +9683,7 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
         }
         cptr.stI32o(flags, $flag_versinfo, val >>> 0);
     } else if (req == NHC.do_handler) {
+        /* return handler_versinfo(); */
         void (yield* handler_versinfo());
         (yield* pline(__s_s_s_u, optname, (cptr.ldI32o(flags, $flag_versinfo) == vi) ? __s_not_changed_still : __s_changed_to, cptr.ldI32o(flags, $flag_versinfo)));
     } else if (req == NHC.get_val) {
@@ -9186,6 +9691,7 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
         let g = schar((((vi & NHM.VI_NAME) >>> 0) != 0));
         let b = schar((((vi & NHM.VI_BRANCH) >>> 0) != 0));
         let n = schar((((vi & NHM.VI_NUMBER) >>> 0) != 0));
+
         void cptr.sprintf(opts, __s_u_s_s_s_s_s_99s, cptr.ldI32o(flags, $flag_versinfo), g ? __s_name : __s_empty, (b && g) ? __s_plus : __s_empty, b ? __s_branch : __s_empty, (n && (b || g)) ? __s_plus : __s_empty, n ? __s_number : __s_empty, (yield* status_version(cptr.decay(vbuf), 128n, 0)));
     } else if (req == NHC.get_cnf_val) {
         void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(flags, $flag_versinfo));
@@ -9198,6 +9704,7 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
 /** C ref: options.c:4682 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_warnings(optidx, req, negated, opts, op) {
     let reslt;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -9225,6 +9732,7 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
             return NHC.optn_ok;
         } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
+
             if (c && cptr.strchr(cptr.decay(__static_optfn_whatis_coord_gpcoords), c))
                 cptr.stI32o(iflags, $instance_flags_getpos_coords, c);
             else {
@@ -9256,6 +9764,7 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
             return NHC.optn_ok;
         } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
+
             switch (c) {
                 case 110:
                 cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_NONE);
@@ -9289,6 +9798,7 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
 /** C ref: options.c:4797 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_windowborders(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
@@ -9299,12 +9809,14 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
             retval = NHC.optn_err;
         } else {
             let itmp;
+
             if (negated)
-                itmp = 0;
+                itmp = 0;  /* Off */
             else if (cptr.eq(op, cptr.decay(empty_optstr)))
-                itmp = 1;
+                itmp = 1;  /* On */
             else
                 itmp = atoi(op);
+
             if (itmp < 0 || itmp > 4) {
                 (yield* config_error_add(__s_invalid_s_should_be_within_0_to_4_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
                 retval = NHC.optn_silenterr;
@@ -9328,6 +9840,7 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/* Win GUI and curses */
 /** C ref: options.c:4885 — char *[4] */
 const wcnames = cptr.alloc(4 * 8);
 cptr.stPtro(wcnames, 0, __s_menu);
@@ -9348,6 +9861,7 @@ export const wcolors_opt = cptr.alloc(4 * 4);
 /** C ref: options.c:4894 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_windowcolors(optidx, req, negated, opts, op) {
     let wccount;
+
     if (req == NHC.do_init) {
         for (wccount = 0; wccount < NHC.WC_COUNT; ++wccount) {
             cptr.stI32o(wcolors_opt, wccount, 0, 4);
@@ -9355,6 +9869,10 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /* WINCAP
+         * setting window colors
+         * syntax: windowcolors=menu foregrnd/backgrnd text foregrnd/backgrnd
+         */
         if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             if (!(yield* wc_set_window_colors(op))) {
                 (yield* config_error_add(__s_could_not_set_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
@@ -9366,6 +9884,8 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let fg;
         let bg;
+
+        /* TODO: wide 'get_val' may need to be wrapped in the menu display */
         cptr.st1o(opts, 0, 0);
         for (wccount = 0; wccount < NHC.WC_COUNT; ++wccount) {
             fg = cptr.ldPtro2(iflags, wccount, $sizeof_windowcolors_struct, $instance_flags_wcolors);
@@ -9387,9 +9907,24 @@ function* optfn_windowtype(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
+        /*
+         * windowtype:  option to choose the interface for binaries built
+         * with support for more than one interface (tty + X11, for
+         * instance).
+         *
+         * Ideally, 'windowtype' should be processed first, because it
+         * causes the wc_ and wc2_ flags to be set up.
+         * For user, making it be first in a config file is trivial, use
+         * OPTIONS=windowtype:Foo
+         * as the first non-comment line of the file.
+         * Making it first in NETHACKOPTIONS requires it to be at the
+         * _end_ because comma-separated option strings are processed from
+         * right to left.
+         */
         if (!cptr.ld1so(iflags, $instance_flags_window_inited)) {
             if (cptr.ld1so(iflags, $instance_flags_windowtype_locked))
                 return NHC.optn_ok;
+
             if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
                 (yield* nmcpy(cptr.add(gc, $instance_globals_c_chosen_windowtype), op, NHM.WINTYPELEN));
                 if (!cptr.ld1so(iflags, $instance_flags_windowtype_deferred)) {
@@ -9408,14 +9943,19 @@ function* optfn_windowtype(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/*
+ *    Prefix-handling functions
+ */
+
 /** C ref: options.c:4994 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* pfxfn_cond_(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
-        (yield* condopt(0, null, 0));
+        (yield* condopt(0, null, 0));  /* make the choices match defaults */
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         let reslt = (yield* parse_cond_option(negated, opts));
+
         switch (reslt) {
             case 0:
             cptr.st1o(cptr.decay(opt_set_in_config), NHC.pfx_cond_, 1, 1);
@@ -9431,6 +9971,7 @@ function* pfxfn_cond_(optidx, req, negated, opts, op) {
         }
         if (reslt != 0)
             return NHC.optn_err;
+        /* [FIXME?  redraw seems like overkill; botl update should suffice] */
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
         return NHC.optn_ok;
     }
@@ -9439,7 +9980,7 @@ function* pfxfn_cond_(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
-        void (yield* cond_menu());
+        void (yield* cond_menu());  /* in botl.c */
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -9448,10 +9989,13 @@ function* pfxfn_cond_(optidx, req, negated, opts, op) {
 /** C ref: options.c:5039 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* pfxfn_font(optidx, req, negated, opts, op) {
     let opttype = -1;
+
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
+
     if (req == NHC.do_set) {
+        /* WINCAP setting font options  */
         if (optidx == NHC.opt_font_map)
             opttype = NHC.MAP_OPTION;
         else if (optidx == NHC.opt_font_message)
@@ -9554,6 +10098,11 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/*
+ *    General boolean option handler
+ *    (Use optidx to reference the specific option)
+ */
+
 /** C ref: options.c:5192 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 export function* optfn_boolean(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
@@ -9562,18 +10111,25 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         let nosexchange = 0;
         let ln = 0;
+
         if (!cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr))
-            return NHC.optn_ok;
+            return NHC.optn_ok;  /* silent retreat */
+
+        /* option that must come from config file? */
         if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_config))
             return NHC.optn_err;
+
+        /* options that must NOT come from config file */
         if (cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz)
             return NHC.optn_err;
+
         op = (yield* string_for_opt(opts, 1));
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             if (negated) {
                 (yield* config_error_add(__s_negated_boolean_s_should_not_have_a, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                 return NHC.optn_silenterr;
             }
+            /* length is greater than 0 or we wouldn't have gotten here */
             ln = Number(BigInt.asIntN(32, cptr.strlen(op)));
             if (!(yield* strncmpi(op, __s_true, ln)) || !(yield* strncmpi(op, __s_yes, ln)) || !(yield* strncmpi((op), (__s_on), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 1)) {
                 negated = 0;
@@ -9585,9 +10141,11 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             }
         }
         if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && !cptr.ld1so(go, $instance_globals_o_opt_initial)) {
+            /* don't randomly toggle this/these */
             if ((optidx == NHC.opt_silent) || (optidx == NHC.opt_perm_invent))
                 return NHC.optn_ok;
         }
+        /* Before the change */
         switch (optidx) {
             case NHC.opt_female:
             if (!(yield* strncmpi(opts, __s_female, ((ln) > 3 ? (ln) : 3)))) {
@@ -9614,13 +10172,26 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             default:
             break;
         }
+        /* this dates from when 'O' prompted for a line of options text
+           rather than use a menu to control access to which options can
+           be modified during play; it was possible to attempt to use
+           'O' to specify female or negate male when playing as male or
+           to specify male or negate female when playing as female;
+           options processing rejects that for !opt_initial; not possible
+           now but kept in case someone brings the old 'O' behavior back */
         if (nosexchange) {
+            /* can't arbitrarily change sex after game has started;
+               magic (amulet or polymorph) is required for that */
             (yield* config_error_add(__s_s_is_not_anatomically_possible, opts));
             return NHC.optn_silenterr;
         }
-        cptr.st1((cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr)), schar((!negated)));
+
+        cptr.st1((cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr)), schar((!negated)));  /* <==== SET IT HERE */
+
+        /* After the change */
         switch (optidx) {
             case NHC.opt_pauper:
+            /* pauper implies nudist */
             cptr.st1o(u, $you_uroleplay + $u_roleplay_nudist, cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper));
             break;
             case NHC.opt_ascii_map:
@@ -9631,6 +10202,10 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             break;
             case NHC.opt_hilite_pet:
             if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
+                /* if we're enabling hilite_pet and petattr isn't set,
+                   set it to Inverse; if we're disabling, leave petattr
+                   alone so that re-enabling will get current value back
+                 */
                 if (cptr.ld1so(iflags, $instance_flags_wc_hilite_pet) && !cptr.ldI32o(iflags, $instance_flags_wc2_petattr))
                     cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_INVERSE);
             }
@@ -9644,16 +10219,21 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             default:
             break;
         }
+
+        /* only do processing below if setting with doset() */
+
         if (cptr.ld1so(go, $instance_globals_o_opt_initial))
             return NHC.optn_ok;
+
         switch (optidx) {
             case NHC.opt_terrainstatus:
-            classify_terrain();
+            classify_terrain();  /* bring iflags.terrain_typ up to date */
             // @FallThrough
             ;
             case NHC.opt_weaponstatus:
             case NHC.opt_armorstatus:
             if (!wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))) {
+                /* not actually an error */
                 (yield* config_error_add(__s_s_is_not_supported, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                 return NHC.optn_ok;
             }
@@ -9678,10 +10258,17 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             break;
             case NHC.opt_lit_corridor:
             case NHC.opt_dark_room:
-            (yield* vision_recalc(2));
-            cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
+            /*
+             * All corridor squares seen via night vision or
+             * candles & lamps change.  Update them by calling
+             * newsym() on them.  Don't do this if we are
+             * initializing the options --- the vision system
+             * isn't set up yet.
+             */
+            (yield* vision_recalc(2));  /* shut down vision */
+            cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* delayed recalc */
             if (cptr.ld1so(iflags, $instance_flags_wc_color))
-                cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
+                cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);  /* darkroom refresh */
             break;
             case NHC.opt_wizmgender:
             case NHC.opt_showrace:
@@ -9695,6 +10282,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             break;
             case NHC.opt_hitpointbar:
             if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n)) {
+                /* [is reassessment really needed here?] */
                 (yield* status_initialize(1));
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
             }
@@ -9726,8 +10314,13 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             default:
             break;
         }
+
+        /* boolean value has been toggled but some option changes can
+           still be pending at this point (mainly for opt_need_redraw);
+           give the toggled message now regardless */
         if (give_opt_msg)
             (yield* pline(__s_s_option_toggled_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), !negated ? __s_on : __s_off));
+
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -9748,6 +10341,7 @@ function* spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
             return NHC.optn_err;
         } else if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             let c = schar((yield* txt2key(op)));
+
             if ((yield* illegal_menu_cmd_key(uchar(c))))
                 return NHC.optn_err;
             (yield* add_menu_cmd_alias(c, cptr.ld1so2(default_menu_cmd_info, midx, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)));
@@ -9761,12 +10355,27 @@ function* spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/*
+ **********************************
+ *
+ *   Special per-option handlers
+ *
+ **********************************
+ */
+
+/* test whether 'perm_invent' can be toggled On */
 /** C ref: options.c:5488 @returns {CInt} */
 function can_set_perm_invent() {
+    /*
+     * Assumption: only called when iflags.perm_invent is False
+     * and is about to be changed to True.
+     */
     let old_perminv_mode = cptr.ld1uo(iflags, $instance_flags_perminv_mode);
+
     if (!(cptr.ldU64o(windowprocs, $window_procs_wincap) & 134217728n)) {
         return 0;
     }
+
     if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) == NHC.InvOptNone)
         cptr.st1o(iflags, $instance_flags_perminv_mode, NHC.InvOptOn);
     (void (old_perminv_mode));
@@ -9785,6 +10394,7 @@ function* handler_menustyle() {
     let sep = schar((cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32));
     let style_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -9792,6 +10402,7 @@ function* handler_menustyle() {
         void cptr.sprintf(cptr.decay(buf), __s_12_12s_c_60s, cptr.ldPtro(cptr.decay(menutype[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(menutype[i]), 1, 8));
         cptr.stI32(any, (i + 1) | 0);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (i == cptr.ld1so(flags, $flag_menu_style)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        /* second line is prefixed by spaces that "c - " would use */
         void cptr.sprintf(cptr.decay(buf), __s_4s_12_12s_c_60s, __s_empty, __s_empty, sep, cptr.ldPtro(cptr.decay(menutype[i]), 2, 8));
         (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     }
@@ -9799,6 +10410,7 @@ function* handler_menustyle() {
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, style_pick));
     if (n > 0) {
         i = (cptr.ldI32o(style_pick.v, 0, $sizeof_menu_item) - 1) | 0;
+        /* if there are two picks, use the one that wasn't pre-selected */
         if (n > 1 && i == old_menu_style)
             i = (cptr.ldI32o(style_pick.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.st1o(flags, $flag_menu_style, schar(i));
@@ -9818,6 +10430,7 @@ function* handler_align_misc(optidx) {
     let window_pick = cptr.box(null);
     let abuf = new Uint8Array(256);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -9857,6 +10470,7 @@ function* handler_autounlock(optidx) {
     let presel;
     let res = NHC.optn_ok;
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -9871,11 +10485,15 @@ function* handler_autounlock(optidx) {
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, window_pick));
     if (n > 0) {
         let newflags = 0;
+
         for (i = 0; i < n; ++i)
             newflags |= (1 << ((cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1) | 0)) >>> 0;
         cptr.stI32o(flags, $flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
+        /* something that was preselected got unselected, leaving nothing;
+           treat that as picking 'none' (even though 'none' is no longer
+           among the choices) */
         cptr.stI32o(flags, $flag_autounlock, 0);
     }
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -9909,6 +10527,7 @@ function* handler_disclose() {
     let c;
     let disclosure_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -9929,6 +10548,7 @@ function* handler_disclose() {
         disclosure_pick.v = null;
     }
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
+
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
         if (cptr.ldI32o(disc_cat, i, 4)) {
             c = cptr.ld1so2(flags, i, 1, $flag_end_disclose);
@@ -9936,12 +10556,13 @@ function* handler_disclose() {
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+            /* 'y','n',and '+' work as alternate selectors; '-' doesn't */
             cptr.st1(any, 45);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_never_disclose_without_prompting, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             cptr.st1(any, 43);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_always_disclose_without_prompting, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 || cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 103) {
-                cptr.st1(any, 35);
+                cptr.st1(any, 35);  /* '#' */
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_always_disclose_pick_sort_order_from, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             }
             cptr.st1(any, 110);
@@ -9949,7 +10570,7 @@ function* handler_disclose() {
             cptr.st1(any, 121);
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_yes, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 || cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 103) {
-                cptr.st1(any, 63);
+                cptr.st1(any, 63);  /* '?' */
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_ask_to, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
             }
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
@@ -9969,7 +10590,9 @@ function* handler_disclose() {
 /** C ref: options.c:5780 @returns {CInt} */
 function* handler_menu_headings() {
     let gotca = (yield* query_color_attr(cptr.add(iflags, $instance_flags_menu_headings), __s_how_to_highlight_menu_headings));
+
     if (gotca) {
+        /* header highlighting affects persistent inventory display */
         if (cptr.ld1so(iflags, $instance_flags_perm_invent))
             (yield* update_inventory());
     }
@@ -9988,6 +10611,7 @@ function* handler_menu_objsyms() {
     let j;
     let n;
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10001,6 +10625,7 @@ function* handler_menu_objsyms() {
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, picklist));
     if (n > 0) {
         i = (cptr.ldI32o(picklist.v, 0, $sizeof_menu_item) - 1) | 0;
+        /* if there are two picks, use the one that wasn't pre-selected */
         if (n > 1 && i == cptr.ldI32o(iflags, $instance_flags_menuobjsyms))
             i = (cptr.ldI32o(picklist.v, 1, $sizeof_menu_item) - 1) | 0;
         set_menuobjsyms_flags(i);
@@ -10017,7 +10642,9 @@ function* handler_msg_window() {
     let is_tty = schar((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty));
     let is_curses = schar((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses));
     let clr = NHM.NO_COLOR;
+
     if (is_tty || is_curses) {
+        /* by Christian W. Cooper */
         let chngd;
         let i;
         let n;
@@ -10026,15 +10653,18 @@ function* handler_msg_window() {
         let sep = schar((cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32));
         let old_prevmsg_window = cptr.ld1so(iflags, $instance_flags_prevmsg_window);
         let window_pick = cptr.box(null);
+
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(tmpwin, 0n)));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
         for (i = 0; i < menutype.length; i++) {
             if (i < 2 && is_curses)
                 continue;
             void cptr.sprintf(cptr.decay(buf), __s_12_12s_c_60s, cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8));
             cptr.st1(any, c = cptr.ld1s(cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8)));
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (c == cptr.ld1so(iflags, $instance_flags_prevmsg_window)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            /* second line is prefixed by spaces that "c - " would use */
             void cptr.sprintf(cptr.decay(buf), __s_4s_12_12s_c_60s, __s_empty, __s_empty, sep, cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8));
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
         }
@@ -10042,6 +10672,7 @@ function* handler_msg_window() {
         n = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick));
         if (n > 0) {
             c = cptr.ld1so(window_pick.v, 0, $sizeof_menu_item);
+            /* if there are two picks, use the one that wasn't pre-selected */
             if (n > 1 && c == old_prevmsg_window)
                 c = cptr.ld1so(window_pick.v, 1, $sizeof_menu_item);
             cptr.st1o(iflags, $instance_flags_prevmsg_window, c);
@@ -10073,6 +10704,7 @@ function* handler_number_pad() {
     let i;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10129,16 +10761,20 @@ function* handler_paranoid_confirmation() {
     let cmdnm;
     let paranoia_picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
         if (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) == NHM.PARANOID_BONES && !wizard())
             continue;
+        /* the 'swim' choice mentions the 'm' movement prefix in its
+           explanation; if that's been bound to something else or been
+           unbound altogether, substitute the replacement in the text */
         explain = cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_explain);
         if ((yield* strstri(explain, __s_apos_m_apos)) && (mkey = cmd_from_func(do_reqmenu)) != 109) {
             if (mkey) {
-                void cptr.sprintf(cptr.decay(mbuf), __s_9s, visctrl(mkey));
+                void cptr.sprintf(cptr.decay(mbuf), __s_9s, visctrl(mkey));  /* .5 is enough */
             } else {
                 cmdnm = (yield* cmdname_from_func(do_reqmenu, cptr.decay(cbuf), 1));
                 if (!cmdnm)
@@ -10153,8 +10789,12 @@ function* handler_paranoid_confirmation() {
     (yield* Y.icall(end_menu()(tmpwin, __s_actions_requiring_extra_confirmation)));
     i = (yield* select_menu(tmpwin, NHM.PICK_ANY, paranoia_picks));
     if (i >= 0) {
+        /* player didn't cancel; we reset all the paranoia options
+           here even if there were no items picked, since user
+           could have toggled off preselected ones to end up with 0 */
         cptr.stI32o(flags, $flag_paranoia_bits, 0);
         if (i > 0) {
+            /* at least 1 item set, either preselected or newly picked */
             while (--i >= 0)
                 cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia_picks.v, i, $sizeof_menu_item) >>> 0));
             cptr.free(paranoia_picks.v);
@@ -10179,7 +10819,8 @@ function* handler_perminv_mode() {
     let n;
     let old_pi = cptr.ld1uo(iflags, $instance_flags_perminv_mode);
     let new_pi = old_pi;
-    let widest = !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ? 8 : 11;
+    let widest = !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ? 8 : 11;  /* "in-use__" or "full+grid__" */
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10189,6 +10830,7 @@ function* handler_perminv_mode() {
         pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) {
             let numspaces = (widest - Number(BigInt.asIntN(32, cptr.strlen(pi0)))) | 0;
+
             void cptr.sprintf(cptr.decay(sepbuf), __s_pct_star_s, ((numspaces) > 1 ? (numspaces) : 1), __s_sp);
         } else {
             void cptr.strcpy(cptr.decay(sepbuf), __s_tab);
@@ -10216,6 +10858,7 @@ function* handler_perminv_mode() {
             cptr.st1o(iflags, $instance_flags_perm_invent, can_set_perm_invent());
         else if (new_pi == NHC.InvOptNone && old_perm_invent)
             cptr.st1o(iflags, $instance_flags_perm_invent, 0);
+
         if (new_pi != old_pi || cptr.ld1so(iflags, $instance_flags_perm_invent) != old_perm_invent) {
             cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
         }
@@ -10232,6 +10875,7 @@ function* handler_pickup_burden() {
     let burden_letters = __s_ubsntl;
     let burden_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10252,6 +10896,8 @@ function* handler_pickup_burden() {
 /** C ref: options.c:6114 @returns {CInt} */
 function* handler_pickup_types() {
     let buf = new Uint8Array(256);
+
+    /* parseoptions will prompt for the list of types */
     void (yield* parseoptions(cptr.strcpy(cptr.decay(buf), __s_pickup_types), 0, 0));
     return NHC.optn_ok;
 }
@@ -10264,6 +10910,7 @@ function* handler_runmode() {
     let mode_name;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10284,6 +10931,7 @@ function* handler_runmode() {
 /** C ref: options.c:6152 @returns {CInt} */
 function* handler_petattr() {
     let tmp = (yield* query_attr(__s_select_pet_highlight_attribute, cptr.ldI32o(iflags, $instance_flags_wc2_petattr)));
+
     if (tmp != -1) {
         cptr.stI32o(iflags, $instance_flags_wc2_petattr, tmp);
         cptr.st1o(iflags, $instance_flags_wc_hilite_pet, schar((cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != NHM.ATR_NONE)));
@@ -10302,6 +10950,7 @@ function* handler_sortloot() {
     let sortl_name;
     let sortl_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10314,9 +10963,11 @@ function* handler_sortloot() {
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, sortl_pick));
     if (n > 0) {
         let c = cptr.ld1so(sortl_pick.v, 0, $sizeof_menu_item);
+
         if (n > 1 && c == cptr.ld1so(flags, $flag_sortloot))
             c = cptr.ld1so(sortl_pick.v, 1, $sizeof_menu_item);
         cptr.st1o(flags, $flag_sortloot, c);
+        /* changing to or from 'f' affects persistent inventory display */
         if (cptr.ld1so(iflags, $instance_flags_perm_invent))
             (yield* update_inventory());
         cptr.free(sortl_pick.v);
@@ -10334,6 +10985,7 @@ function* handler_whatis_coord() {
     let pick_cnt;
     let gpc = schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords));
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10358,6 +11010,8 @@ function* handler_whatis_coord() {
     (yield* Y.icall(end_menu()(tmpwin, __s_select_coordinate_display_when_auto)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
         cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, $sizeof_menu_item));
+        /* PICK_ONE doesn't unselect preselected entry when
+           selecting another one */
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getpos_coords) == gpc)
             cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 1, $sizeof_menu_item));
         cptr.free(window_pick.v);
@@ -10374,6 +11028,7 @@ function* handler_whatis_filter() {
     let pick_cnt;
     let gfilt = schar(cptr.ldI32o(iflags, $instance_flags_getloc_filter));
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10386,6 +11041,8 @@ function* handler_whatis_filter() {
     (yield* Y.icall(end_menu()(tmpwin, __s_select_location_filtering_when_going)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
         cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, $sizeof_menu_item) - 1) | 0));
+        /* PICK_ONE doesn't unselect preselected entry when
+           selecting another one */
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getloc_filter) == gfilt)
             cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 1, $sizeof_menu_item) - 1) | 0));
         cptr.free(window_pick.v);
@@ -10397,7 +11054,8 @@ function* handler_whatis_filter() {
 /** C ref: options.c:6321 — @param {CInt} optidx @returns {CInt} */
 function* handler_symset(optidx) {
     let reslt;
-    reslt = (yield* do_symset(schar((optidx == NHC.opt_roguesymset))));
+
+    reslt = (yield* do_symset(schar((optidx == NHC.opt_roguesymset))));  /* symbols.c */
     cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
     return reslt;
 }
@@ -10409,7 +11067,7 @@ function* handler_autopickup_exception() {
     let i;
     let opt_idx;
     let numapes = 0;
-    let apebuf = new Uint8Array(258);
+    let apebuf = new Uint8Array(258);  /* so &apebuf[1] is BUFSZ long for getlin() */
     let ape;
     let clr = NHM.NO_COLOR;
     __lbl_ape_again: while (true) {
@@ -10418,13 +11076,18 @@ function* handler_autopickup_exception() {
         if (opt_idx == 3) {
             return 1;
         } else if (opt_idx == 0) {
+            /* EDIT_GETLIN:  assume user doesn't user want previous
+               exception used as default input string for this one... */
             cptr.st1o(cptr.decay(apebuf), 0, cptr.st1o(cptr.decay(apebuf), 1, 0, 1), 1);
             (yield* getlin(__s_what_new_autopickup_exception_pattern, cptr.add(cptr.decay(apebuf), 1, 1)));
-            (yield* mungspaces(cptr.add(cptr.decay(apebuf), 1, 1)));
+            (yield* mungspaces(cptr.add(cptr.decay(apebuf), 1, 1)));  /* regularize whitespace */
             if (cptr.ld1so(cptr.decay(apebuf), 1, 1) == 27)
                 return 1;
             if (cptr.ld1so(cptr.decay(apebuf), 1, 1)) {
                 cptr.st1o(cptr.decay(apebuf), 0, 34, 1);
+                /* guarantee room for \" prefix and \"\0 suffix;
+                   -2 is good enough for apebuf[] but -3 makes
+                   sure the whole thing fits within normal BUFSZ */
                 cptr.st1o(cptr.decay(apebuf), 256n, 0, 1);
                 void cptr.strcat(cptr.decay(apebuf), __s_quot);
                 (yield* add_autopickup_exception(cptr.decay(apebuf)));
@@ -10434,6 +11097,7 @@ function* handler_autopickup_exception() {
             let pick_idx;
             let pick_cnt;
             let pick_list = cptr.box(null);
+
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(tmpwin, 0n)));
             if (numapes) {
@@ -10442,6 +11106,8 @@ function* handler_autopickup_exception() {
                 (yield* add_menu_heading(tmpwin, __s_always_pickup_never_pickup));
                 for (i = 0; i < numapes && ape; i++) {
                     cptr.stPtr(any, (opt_idx == 1) ? null : ape);
+                    /* length of pattern plus quotes (plus '<'/'>') is
+                       less than BUFSZ */
                     void cptr.sprintf(cptr.decay(apebuf), __s_c_s, cptr.ld1so(ape, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(ape, $autopickup_exception_pattern));
                     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(apebuf), NHM.MENU_ITEMFLAGS_NONE));
                     ape = cptr.ldPtro(ape, $autopickup_exception_next);
@@ -10478,11 +11144,17 @@ function* handler_menu_colors() {
         nmc = count_menucolors();
         opt_idx = (yield* handle_add_list_remove(__s_menucolor, nmc));
         if (opt_idx == 3) {
+            /* in case we've made a change which impacts current persistent
+               inventory window; we don't track whether an actual changed
+               occurred, so just assume there was one and that it matters;
+               if we're wrong, a redundant update is cheap... */
             if (cptr.ld1so(iflags, $instance_flags_use_menu_color)) {
                 if (cptr.ld1so(iflags, $instance_flags_perm_invent))
                     (yield* update_inventory());
+
             }
             return NHC.optn_ok;
+
         } else if (opt_idx == 0) {
             cptr.st1o(cptr.decay(mcbuf), 0, 0, 1);
             (yield* getlin(__s_what_new_menucolor_pattern, cptr.decay(mcbuf)));
@@ -10499,6 +11171,7 @@ function* handler_menu_colors() {
                 (yield* Y.icall(wait_synch()()));
             }
             continue __lbl_menucolors_again;
+
         } else {
             let pick_idx;
             let pick_cnt;
@@ -10509,6 +11182,7 @@ function* handler_menu_colors() {
             let pick_list = cptr.box(null);
             let tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings);
             let clrbuf = new Uint8Array(128);
+
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10518,14 +11192,17 @@ function* handler_menu_colors() {
                 sclr = cptr.strcpy(cptr.decay(clrbuf), clr2colorname(cptr.ldI32o(tmp, $menucoloring_color)));
                 void (yield* strNsubst(cptr.decay(clrbuf), __s_sp, __s_dash, 0));
                 cptr.stI32(any, ++mc_idx);
+                /* construct suffix */
                 void cptr.sprintf(cptr.decay(buf), __s_s_s_s__3, sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty);
-                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(buf), __s_handler_menu_colors, 6470)) >>> 0)) - 1n)));
+                /* now main string */
+                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(buf), __s_handler_menu_colors, 6470)) >>> 0)) - 1n)));  /* length available */
                 void cptr.strcpy(cptr.decay(mcbuf), __s_quot);
                 if (cptr.strlen(cptr.ldPtro(tmp, $menucoloring_origstr)) > BigInt(ln >>> 0))
                     void cptr.strcat(__builtin___strncat_chk(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mcbuf), 1)), __s_dot3);
                 else
                     void cptr.strcat(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr));
-                void cptr.strcat(cptr.decay(mcbuf), cptr.add(cptr.decay(buf), 1, 1));
+                /* combine main string and suffix */
+                void cptr.strcat(cptr.decay(mcbuf), cptr.add(cptr.decay(buf), 1, 1));  /* skip buf[]'s initial quote */
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mcbuf), NHM.MENU_ITEMFLAGS_NONE));
                 tmp = cptr.ldPtro(tmp, $menucoloring_next);
             }
@@ -10577,6 +11254,7 @@ function* handler_msgtype() {
             let pick_list = cptr.box(null);
             let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
             let clr = NHM.NO_COLOR;
+
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -10617,20 +11295,24 @@ function* handler_versinfo() {
     let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch)) ? 1 : 0));
     let n;
     let vi = cptr.ldI32o(flags, $flag_versinfo) | 0;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    cptr.stI32(any, n = NHM.VI_NUMBER);
+
+    cptr.stI32(any, n = NHM.VI_NUMBER);  /* 1 */
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __s_version_number, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    cptr.stI32(any, n = NHM.VI_NAME);
+    cptr.stI32(any, n = NHM.VI_NAME);  /* 2 */
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 103, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __s_game_name, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-    cptr.stI32(any, n = NHM.VI_BRANCH);
+    cptr.stI32(any, n = NHM.VI_BRANCH);  /* 4 */
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, (have_branch ? __s_development_branch : __s_not_applicable), (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+
     (yield* Y.icall(end_menu()(tmpwin, __s_select_version_information_flags)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, vi_pick));
     if (n > 0) {
         let i;
         let newval = 0;
+
         for (i = 0; i < n; ++i)
             newval |= cptr.ldI32o(vi_pick.v, i, $sizeof_menu_item);
         newval &= 7;
@@ -10657,12 +11339,15 @@ function* handler_windowborders() {
     let mode_name;
     let mode_pick = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 5; i++) {
         mode_name = cptr.ldPtro(__static_handler_windowborders_windowborders_text, i, 8);
         cptr.stI32(any, (i + 1) | 0);
+        /* index 'i' matches the numeric setting for windowborders,
+           so allow corresponding digit as group accelerator */
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_window_borders_mode)));
@@ -10674,14 +11359,24 @@ function* handler_windowborders() {
     return NHC.optn_ok;
 }
 
+/*
+ **********************************
+ *
+ *   Parsing Support Functions
+ *
+ **********************************
+ */
+
 /** C ref: options.c:6665 — @param {CPtr<char>} opts @param {CInt} val_optional @returns {CPtr<char>} */
 function* string_for_opt(opts, val_optional) {
     let colon;
     let equals;
+
     colon = cptr.strchr(opts, 58);
     equals = cptr.strchr(opts, 61);
     if (!colon || (equals && cptr.cmp(equals, colon) < 0))
         colon = equals;
+
     if (!colon || !cptr.ld1s(cptr.preinc(() => colon, (v) => { colon = v; }))) {
         if (!val_optional)
             (yield* config_error_add(__s_missing_parameter_for_s, opts));
@@ -10704,6 +11399,9 @@ function* bad_negation(optname, with_parameter) {
     (yield* config_error_add(__s_the_s_option_may_not_sbe_negated, optname, with_parameter ? __s_both_have_a_value_and : __s_empty));
 }
 
+/* go through all of the options and set the minmatch value
+   based on what is needed for uniqueness of each individual
+   option. Set a minimum of 3 characters. */
 /** C ref: options.c:6703 */
 function* determine_ambiguities() {
     let i;
@@ -10713,14 +11411,17 @@ function* determine_ambiguities() {
     let needed = cptr.alloc(218 * 4);
     let p1;
     let p2;
+
     for (i = 0; i < ((218 - 1) | 0); ++i) {
         cptr.stI32o(needed, i, 0, 4);
     }
+
     for (i = 0; i < ((218 - 1) | 0); ++i) {
         for (j = 0; j < ((218 - 1) | 0); ++j) {
             if (j == i)
                 continue;
-            p1 = cptr.ldPtro(allopt, i, $sizeof_allopt_t);
+
+            p1 = cptr.ldPtro(allopt, i, $sizeof_allopt_t);  /* back to the start */
             p2 = cptr.ldPtro(allopt, j, $sizeof_allopt_t);
             tmpneeded = 1;
             while (cptr.ld1s(p1) && cptr.ld1s(p2) && lowc(cptr.ld1s(p1)) == lowc(cptr.ld1s(p2))) {
@@ -10744,9 +11445,12 @@ function* determine_ambiguities() {
 function length_without_val(user_string, len) {
     let p = cptr.strchr(user_string, 58);
     let q = cptr.strchr(user_string, 61);
+
     if (!p || (q && cptr.cmp(q, p) < 0))
         p = q;
     if (p) {
+        /* 'user_string' hasn't necessarily been through mungspaces()
+           so might have tabs or consecutive spaces */
         while (cptr.cmp(p, user_string) > 0 && isspace(uchar(cptr.ld1s((cptr.add(p, -(1)))))))
             p = cptr.add(p, -1);
         len = Number(BigInt.asIntN(32, (cptr.diff(p, user_string))));
@@ -10754,17 +11458,23 @@ function length_without_val(user_string, len) {
     return len;
 }
 
+/* check whether a user-supplied option string is a proper leading
+   substring of a particular option name; option string might have
+   a colon or equals sign and arbitrary value appended to it */
 /** C ref: options.c:6760 — @param {CPtr<char>} user_string @param {CPtr<char>} optn_name @param {CInt} min_length @param {CInt} val_allowed @returns {CInt} */
 export function* match_optname(user_string, optn_name, min_length, val_allowed) {
     let len = Number(BigInt.asIntN(32, cptr.strlen(user_string)));
+
     if (val_allowed)
         len = length_without_val(user_string, len);
+
     return schar((len >= min_length && !(yield* strncmpi(optn_name, user_string, len)) ? 1 : 0));
 }
 
 /** C ref: options.c:6773 */
 export function reset_duplicate_opt_detection() {
     let k;
+
     for (k = 0; k < NHC.OPTCOUNT; ++k)
         cptr.st1o2(allopt, k, $sizeof_allopt_t, $allopt_t_dupdetected, 0);
 }
@@ -10791,57 +11501,117 @@ function* rejectoption(optname) {
     (yield* pline(__s_s_can_be_set_only_from_nethackoptions, optname, get_configfile()));
 }
 
+/*
+
+# errors:
+OPTIONS=aaaaaaaaaa[ more than 247 (255 - 8 for 'OPTIONS=') total ]aaaaaaaaaa
+OPTIONS
+OPTIONS=
+MSGTYPE=stop"You swap places with "
+MSGTYPE=st.op "You swap places with "
+MSGTYPE=stop "You swap places with \"
+MENUCOLOR=" blessed "green&none
+MENUCOLOR=" holy " = green&reverse
+MENUCOLOR=" cursed " = red&uline
+MENUCOLOR=" unholy " = reed
+OPTIONS=!legacy:true,fooo
+OPTIONS=align:!pin
+OPTIONS=gender
+
+*/
+/* most environment variables will eventually be printed in an error
+ * message if they don't work, and most error message paths go through
+ * BUFSZ buffers, which could be overflowed by a maliciously long
+ * environment variable.  If a variable can legitimately be long, or
+ * if it's put in a smaller buffer, the responsible code will have to
+ * bounds-check itself.
+ */
 /** C ref: options.c:6848 — @param {CPtr<char>} ev @returns {CPtr<char>} */
 export function nh_getenv(ev) {
     let getev = getenv(ev);
+
     if (getev && cptr.strlen(getev) <= 128n)
         return getev;
     else
         return null;
 }
 
+/* copy up to maxlen-1 characters; 'dest' must be able to hold maxlen;
+   treat comma as alternate end of 'src' */
 /** C ref: options.c:6861 — @param {CPtr<char>} dest @param {CPtr<char>} src @param {CInt} maxlen */
 function* nmcpy(dest, src, maxlen) {
     let count;
+
     for (count = 1; count < maxlen; count++) {
         if (cptr.ld1s(src) == 44 || cptr.ld1s(src) == 0)
-            break;
+            break;  /*exit on \0 terminator*/
         cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; })));
     }
     cptr.st1(dest, 0);
 }
 
+/*
+ * escapes(): escape expansion for showsyms.  C-style escapes understood
+ * include \n, \b, \t, \r, \xnnn (hex), \onnn (octal), \nnn (decimal).
+ * (Note: unlike in C, leading digit 0 is not used to indicate octal;
+ * the letter o (either upper or lower case) is used for that.
+ * The ^-prefix for control characters is also understood, and \[mM]
+ * has the effect of 'meta'-ing the value which follows (so that the
+ * alternate character set will be enabled).
+ *
+ * X     normal key X
+ * ^X    control-X
+ * \mX   meta-X
+ *
+ * For 3.4.3 and earlier, input ending with "\M", backslash, or caret
+ * prior to terminating '\0' would pull that '\0' into the output and then
+ * keep processing past it, potentially overflowing the output buffer.
+ * Now, trailing \ or ^ will act like \\ or \^ and add '\\' or '^' to the
+ * output and stop there; trailing \M will fall through to \<other> and
+ * yield 'M', then stop.  Any \X or \O followed by something other than
+ * an appropriate digit will also fall through to \<other> and yield 'X'
+ * or 'O', plus stop if the non-digit is end-of-string.
+ */
 const __static_escapes_oct = cptr.bytes("01234567"); /** C ref: options.c:6899 — char[9] (function-static) */
 const __static_escapes_dec = cptr.bytes("0123456789"); /** C ref: options.c:6899 — char[11] (function-static) */
 
 /** C ref: options.c:6896 — @param {CPtr<char>} cp @param {CPtr<char>} tp */
 function* escapes(cp, tp) {
+    /* hexdd[] is defined in decl.c */
+
     let dp;
     let cval;
     let meta;
     let dcount;
+
     while (cptr.ld1s(cp)) {
+        /* \M has to be followed by something to do meta conversion,
+           otherwise it will just be \M which ultimately yields 'M' */
         meta = (cptr.ld1s(cp) == 92 && (cptr.ld1so(cp, 1) == 109 || cptr.ld1so(cp, 1) == 77) && cptr.ld1so(cp, 2) ? 1 : 0);
         if (meta)
             cp = cptr.add(cp, 2);
-        cval = (dcount = 0);
+
+        cval = (dcount = 0);  /* for decimal, octal, hexadecimal cases */
         if ((cptr.ld1s(cp) != 92 && cptr.ld1s(cp) != 94) || !cptr.ld1so(cp, 1)) {
+            /* simple character, or nothing left for \ or ^ to escape */
             cval = cptr.ld1s(cptr.postinc(() => cp, (v) => { cp = v; }));
         } else if (cptr.ld1s(cp) == 94) {
             cval = (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) & 31);
             cp = cptr.add(cp, 1);
+
+            /* remaining cases are all for backslash; we know cp[1] is not \0 */
         } else if (cptr.strchr(cptr.decay(__static_escapes_dec), cptr.ld1so(cp, 1))) {
-            cp = cptr.add(cp, 1);
+            cp = cptr.add(cp, 1);  /* move past backslash to first digit */
             do {
                 cval = ((Math.imul(cval, 10)) + ((cptr.ld1s(cp) - 48) | 0)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && cptr.strchr(cptr.decay(__static_escapes_dec), cptr.ld1s(cp)) && ++dcount < 3);
         } else if ((cptr.ld1so(cp, 1) == 111 || cptr.ld1so(cp, 1) == 79) && cptr.ld1so(cp, 2) && cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1so(cp, 2))) {
-            cp = cptr.add(cp, 2);
+            cp = cptr.add(cp, 2);  /* move past backslash and 'O' */
             do {
                 cval = ((Math.imul(cval, 8)) + ((cptr.ld1s(cp) - 48) | 0)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1s(cp)) && ++dcount < 3);
         } else if ((cptr.ld1so(cp, 1) == 120 || cptr.ld1so(cp, 1) == 88) && cptr.ld1so(cp, 2) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
-            cp = cptr.add(cp, 2);
+            cp = cptr.add(cp, 2);  /* move past backslash and 'X' */
             do {
                 cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null && ++dcount < 2);
@@ -10867,6 +11637,7 @@ function* escapes(cp, tp) {
             }
             cp = cptr.add(cp, 1);
         }
+
         if (meta)
             cval |= 128;
         cptr.st1(cptr.postinc(() => tp, (v) => { tp = v; }), schar(cval));
@@ -10874,31 +11645,52 @@ function* escapes(cp, tp) {
     cptr.st1(tp, 0);
 }
 
+/* returns a one-byte character from the text; may change txt[];
+   moved from cmd.c in order to get access to escapes() */
 /** C ref: options.c:6971 — @param {CPtr<char>} txt @returns {*} */
 export function* txt2key(txt) {
     let uc;
     let makemeta = 0;
+
     txt = (yield* trimspaces(txt));
     if (!cptr.ld1s(txt))
         return 0;
+
+    /* simple character */
     if (!cptr.ld1so(txt, 1))
         return uchar(cptr.ld1so(txt, 0));
+
+    /* a few special entries */
     if (!strcmp(txt, __s_enter))
         return 10;
     if (!strcmp(txt, __s_space))
         return 32;
     if (!strcmp(txt, __s_esc))
         return 27;
+
+    /* handle things like \b and \7 and \mX */
     if (cptr.ld1s(txt) == 92) {
         let tbuf = new Uint8Array(128);
+
         if (cptr.strlen(txt) >= 128n)
             cptr.st1o(txt, 127n, 0);
         (yield* escapes(txt, cptr.decay(tbuf)));
         return uchar(cptr.ld1s(cptr.decay(tbuf)));
     }
+
+    /* control and meta keys */
     if (highc(cptr.ld1s(txt)) == 77) {
+        /*
+         * M <nothing>             return 'M'
+         * M - <nothing>           return M-'-'
+         * M <other><nothing>      return M-<other>
+         * otherwise M is pending until after ^/C- processing.
+         * Since trailing spaces are discarded, the only way to
+         * specify M-' ' is via "160".
+         */
         if (!cptr.ld1so(txt, 1))
             return uchar(cptr.ld1s(txt));
+        /* skip past 'M' or 'm' and maybe '-' */
         txt = cptr.add(txt, 1);
         if (cptr.ld1s(txt) == 45 && cptr.ld1so(txt, 1))
             txt = cptr.add(txt, 1);
@@ -10907,22 +11699,41 @@ export function* txt2key(txt) {
         makemeta = 1;
     }
     if (cptr.ld1s(txt) == 94 || highc(cptr.ld1s(txt)) == 67) {
+        /*
+         * C <nothing>             return 'C' or M-'C'
+         * C - <nothing>           return '-' or M-'-'
+         * C [-] <other><nothing>  return C-<other> or M-C-<other>
+         * C [-] ?                 return <rubout>
+         * otherwise return C-<other> or M-C-<other>
+         */
         uc = uchar(cptr.ld1s(txt));
         if (!cptr.ld1so(txt, 1))
             return uchar((makemeta ? (((uc) - 128) | 0) : uc));
         txt = cptr.add(txt, 1);
+        /* unlike M-x, lots of values of x are invalid for C-x;
+           checking and rejecting them is not worthwhile; GIGO;
+           we do accept "^-x" as synonym for "^x" or "C-x" */
         if (cptr.ld1s(txt) == 45 && cptr.ld1so(txt, 1))
             txt = cptr.add(txt, 1);
+        /* and accept ^?, which gets used despite not being a control char */
         if (cptr.ld1s(txt) == 63)
-            return uchar((makemeta ? 4294967295 : 127));
+            return uchar((makemeta ? 4294967295 : 127));  /* rubout/delete */
         uc = uchar((31 & (uchar(cptr.ld1s(txt)))));
         return uchar((makemeta ? (((uc) - 128) | 0) : uc));
     }
     if (makemeta && cptr.ld1s(txt))
         return uchar((((uchar(cptr.ld1s(txt))) - 128) | 0));
+
+    /* FIXME: should accept single-quote single-character single-quote
+       and probably single-quote backslash octal-digits single-quote;
+       if we do that, the M- and C- results should be pending until
+       after, so that C-'X' becomes valid for ^X */
+
+    /* ascii codes: must be three-digit decimal */
     if (cptr.ld1s(txt) >= 48 && cptr.ld1s(txt) <= 57) {
         let key = 0;
         let i;
+
         for (i = 0; i < 3; i++) {
             if (cptr.ld1so(txt, i) < 48 || cptr.ld1so(txt, i) > 57)
                 return 0;
@@ -10930,79 +11741,138 @@ export function* txt2key(txt) {
         }
         return key;
     }
+
     return 0;
 }
 
+/*
+ **********************************
+ *
+ *   Options Initialization
+ *
+ **********************************
+ */
+
+/* process options, possibly including SYSCF */
 /** C ref: options.c:7079 */
 export function* initoptions() {
+    /*
+     * Most places that call initoptions_init()/initoptions() would
+     * have the calls next to each other, so instead of adding
+     * initoptions_init() everywhere, just add it where it's needed in
+     * a non-adjacent place and call it here for all the other cases.
+     */
     if (cptr.ldI32o(go, $instance_globals_o_opt_phase) != NHC.builtin_opt)
         (yield* initoptions_init());
+    /* If SYSCF_FILE is specified, it _must_ exist... */
     (yield* assure_syscf_file());
     (yield* config_error_init(1, __s_sysconf, 0));
+
+    /* ... and _must_ parse correctly. */
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.syscf_opt);
     if (!(yield* read_config_file(__s_sysconf, NHC.set_in_sysconf))) {
         if ((yield* config_error_done()) && !cptr.ld1so(iflags, $instance_flags_initoptions_noterminate))
             (yield* nh_terminate(1));
     }
     (yield* config_error_done());
+
+    /* Carry out options that got deferred from early_options */
     if (cptr.ld1so(gd, $instance_globals_d_deferred_showpaths))
-        (yield* do_deferred_showpaths(0));
+        (yield* do_deferred_showpaths(0));  /* does not return */
+
     (yield* initoptions_finish());
 }
 
+/* set up default values for options where 0 or False isn't sufficient */
 /** C ref: options.c:7119 */
 export function* initoptions_init() {
     let opts;
     let i;
     let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch)) ? 1 : 0));
-    cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.builtin_opt);
+
+    cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.builtin_opt);  /* Did I need to move this here? */
+    /* initialize the function pointers for saving the game */
     sf_init();
     (yield* allopt_array_init());
+    /* if windowtype has been specified on the command line, set it up
+       early so windowtype-specific options use it as their base */
     if (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)) {
         (yield* nmcpy(cptr.add(gc, $instance_globals_c_chosen_windowtype), cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys), NHM.WINTYPELEN));
         (yield* config_error_init(0, __s_command_line, 0));
         (yield* choose_windows(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)));
         (yield* config_error_done());
+        /*
+         * FIXME?  This continues even if setting windowtype to player's
+         * specified value fails.  It doesn't lock the windowtype in
+         * that situation though, so the game will use whatever is in
+         * RC/NETHACKOPTIONS or resort to DEFAULT_WINDOW_SYS.
+         */
         if (cptr.ldPtr(windowprocs) && !(yield* strncmpi((cptr.ldPtr(windowprocs)), (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)), -1)))
+            /* ignore any windowtype:foo in RC file or NETHACKOPTIONS */
             cptr.st1o(iflags, $instance_flags_windowtype_locked, 1);
+        /* shouldn't need cmdline_windowsys beyond here */
         cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)), cptr.stPtro(gc, $instance_globals_c_cmdline_windowsys, null);
     }
+
+    /* make any symbol parsing quicker */
     if (!glyphid_cache_status())
         (yield* fill_glyphid_cache());
-    (yield* reset_commands(1));
+
+    /* set up the command parsing */
+    (yield* reset_commands(1));  /* init */
+
+    /* initialize the random number generator(s) */
     init_random(rn2);
     init_random(rn2_on_display_rng);
+
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.builtin_opt);
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
         if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr))
             cptr.st1((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)), cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval));
     }
+
     cptr.st1o(flags, $flag_end_own, 0);
     cptr.stI32o(flags, $flag_end_top, 3);
     cptr.stI32o(flags, $flag_end_around, 2);
     cptr.stI32o(flags, $flag_paranoia_bits, 3104);
     cptr.stI32o(flags, $flag_versinfo, (have_branch ? 4 : 1) >>> 0);
-    cptr.stI32o(flags, $flag_pile_limit, 5);
+    cptr.stI32o(flags, $flag_pile_limit, 5);  /* 5 */
     cptr.stI32o(flags, $flag_runmode, NHC.RUN_LEAP);
     cptr.stI32o(iflags, $instance_flags_msg_history, 20);
     cptr.st1o(iflags, $instance_flags_prevmsg_window, 115);
+
     cptr.stI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr, NHM.ATR_INVERSE);
     cptr.stI32o(iflags, $instance_flags_menu_headings, NHM.NO_COLOR);
     cptr.stI32o(iflags, $instance_flags_getpos_coords, 110);
+
+    /* hero's role, race, &c haven't been chosen yet */
     cptr.stI32o(flags, $flag_initrole, cptr.stI32o(flags, $flag_initrace, cptr.stI32o(flags, $flag_initgend, cptr.stI32o(flags, $flag_initalign, -1))));
+
     init_ov_primary_symbols();
     init_ov_rogue_symbols();
+    /* Set the default monster and object class symbols. */
     init_symbols();
     for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1o2(gw, i, 1, $instance_globals_w_warnsyms, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef));
+
+    /* assert( sizeof flags.inv_order == sizeof def_inv_order ); */
     void cptr.memcpy(cptr.add(flags, $flag_inv_order), cptr.decay(def_inv_order), 18n);
     cptr.st1o2(flags, 0, 1, $flag_pickup_types, 0);
     cptr.stI32o(flags, $flag_pickup_burden, NHC.MOD_ENCUMBER);
-    cptr.st1o(flags, $flag_sortloot, 108);
+    cptr.st1o(flags, $flag_sortloot, 108);  /* sort only loot by default */
+
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++)
         cptr.st1o2(flags, i, 1, $flag_end_disclose, 110);
-    (yield* switch_symbols(0));
+    (yield* switch_symbols(0));  /* set default characters */
     init_rogue_symbols();
+    /*
+     * Set defaults for some options depending on what we can
+     * detect about the environment's capabilities.
+     * This has to be done after the global initialization above
+     * and before reading user-specific initialization via
+     * config file/environment variable below.
+     */
+    /* this detects the IBM-compatible console on most 386 boxes */
     if ((opts = nh_getenv(__s_term)) && !cptr.strncmp(opts, __s_at, 2n)) {
         if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
             (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
@@ -11011,22 +11881,43 @@ export function* initoptions_init() {
         (yield* switch_symbols(1));
         cptr.st1o(iflags, $instance_flags_wc_color, 1);
     }
+    /* detect whether a "vt" terminal can handle alternate charsets */
     if ((opts = nh_getenv(__s_term)) && !(yield* strncmpi(opts, __s_vt, 2)) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data), 14) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE), 15)) {
         if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
             (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
         (yield* switch_symbols(1));
     }
     cptr.st1o(flags, $flag_menu_style, NHM.MENU_FULL);
+
     cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_TOP);
     cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_BOTTOM);
+    /* used by tty and curses */
     cptr.stI32o(iflags, $instance_flags_wc2_statuslines, 2);
     cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_INVERSE);
-    cptr.stI32o(iflags, $instance_flags_wc2_windowborders, 2);
+    /* only used by curses */
+    cptr.stI32o(iflags, $instance_flags_wc2_windowborders, 2);  /* 'Auto' */
+
+    /*
+     * A few menus have certain items (typically operate-on-everything or
+     * change-subset or sort or help entries) flagged as 'skip-invert' to
+     * control how whole-page and whole-menu operations affect them.
+     * 'menuinvertmode' controls how that functions:
+     * 0: ignore 'skip-invert' flag on menu items (used to be the default);
+     * 1: don't toggle 'skip-invert' items On for set-all/set-page/invert-
+     *    all/invert-page but do toggle Off if already set (default);
+     * 2: don't toggle 'skip-invert' items either On of Off for set-all/
+     *    set-page/unset-all/unset-page/invert-all/invert-page.
+     */
     cptr.stI32o(iflags, $instance_flags_menuinvertmode, 1);
+
+    /* since this is done before init_objects(), do partial init here */
     cptr.stI16o(objects, NHC.SLIME_MOLD, NHC.SLIME_MOLD, $sizeof_objclass);
     (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, $sizeof_objclass))), $sizeof_objdescr)), NHM.PL_FSIZ));
+    /* If SYSCF_FILE is specified, it _must_ exist... */
     (yield* assure_syscf_file());
     (yield* config_error_init(1, __s_sysconf, 0));
+
+    /* ... and _must_ parse correctly. */
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.syscf_opt);
     if (!(yield* read_config_file(__s_sysconf, NHC.set_in_sysconf))) {
         if ((yield* config_error_done()) && !cptr.ld1so(iflags, $instance_flags_initoptions_noterminate))
@@ -11035,22 +11926,65 @@ export function* initoptions_init() {
     (yield* config_error_done());
 }
 
+/*
+ *  Process user's run-time configuration file:
+ *    get value of NETHACKOPTIONS;
+ *    if command line specified -nethackrc=filename, use that;
+ *      if NETHACKOPTIONS is present,
+ *        honor it if it has a list of options to set
+ *        or ignore it if it specifies a file name;
+ *    else if not specified on command line and NETHACKOPTIONS names a file,
+ *      use that as the config file;
+ *      no extra options (normal use of NETHACKOPTIONS) will be set;
+ *    otherwise (not on command line and either no NETHACKOPTIONS or that
+ *        isn't a file name),
+ *      pass Null to read_config_file() so that it will read ~/.nethackrc
+ *        by default,
+ *      then process the value of NETHACKOPTIONS as extra options.
+ */
 /** C ref: options.c:7324 */
 export function* initoptions_finish() {
     let sym = 0;
+
     (yield* rcfile());
+
     void (yield* fruitadd(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null));
+    /*
+     * Remove "slime mold" from list of object names.  This will
+     * prevent it from being wished unless it's actually present
+     * as a named (or default) fruit.  Wishing for "fruit" will
+     * result in the player's preferred fruit.  [Once upon a time
+     * the override value used was "\033" which prevented wishing
+     * for the slime mold object at all except by asking for a
+     * specific named fruit.]  Note that there are multiple fruit
+     * object types (apple, melon, &c) but the "fruit" object is
+     * slime mold or whatever custom name player assigns to that.
+     */
     cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __s_fruit, $sizeof_objdescr);
+
     sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
     if (sym)
         cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
     reglyph_darkroom();
     reset_glyphmap(NHC.gm_optionchange);
+    /*
+     * A multi-interface binary might only support status highlighting
+     * for some of the interfaces; check whether we asked for it but are
+     * using one which doesn't.
+     *
+     * Option processing can take place before a user-decided WindowPort
+     * is even initialized, so check for that too.
+     */
     if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) && !wc2_supported(__s_statushilites)) {
         (yield* raw_printf(__s_status_highlighting_not_supported_for_s, cptr.ldPtr(windowprocs)));
         cptr.stI64o(iflags, $instance_flags_hilite_delta, 0n);
     }
     (yield* update_rest_on_space());
+
+    /* these can't rely on compile-time initialization for their defaults
+       because a multi-interface binary might need different values for
+       different interfaces; if neither tiled_map nor ascii_map pass the
+       wc_supported() test, assume ascii_map */
     if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && !wc_supported(__s_tiled_map))
         cptr.st1o(iflags, $instance_flags_wc_tiled_map, 0), cptr.st1o(iflags, $instance_flags_wc_ascii_map, 1);
     else if (cptr.ld1so(iflags, $instance_flags_wc_ascii_map) && !wc_supported(__s_ascii_map) && wc_supported(__s_tiled_map))
@@ -11067,6 +12001,7 @@ let __static_allopt_array_init_options_array_inited_already = 0; /** C ref: opti
 /** C ref: options.c:7405 */
 export function* allopt_array_init() {
     let i;
+
     if (!__static_allopt_array_init_options_array_inited_already) {
         cptr.memcpy(allopt, allopt_init, 22672n);
         (yield* determine_ambiguities());
@@ -11075,6 +12010,14 @@ export function* allopt_array_init() {
                 cptr.st1((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)), cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval));
         }
         heed_all_options();
+        /*
+         * Call each option function with an init flag and give it a chance
+         * to make any preparations that it might require.  We do this
+         * whether or not the option itself is ever specified; that's
+         * irrelevant for the init call.  Doing this allows the prep code for
+         * option settings to remain adjacent to, and in the same function as,
+         * the code that processes those options.
+         */
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
             if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))
                 (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(i, NHC.do_init, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
@@ -11083,6 +12026,16 @@ export function* allopt_array_init() {
     }
 }
 
+/*
+ *******************************************
+ *
+ * Support Functions for Individual Options
+ *
+ *******************************************
+ */
+
+/* iflags.menuobjsyms also controls iflags.menu_head_objsym, and
+   iflags.use_menu_glyphs; they affect execution but are no longer options */
 /** C ref: options.c:7446 — @param {CInt} newobjsyms */
 function set_menuobjsyms_flags(newobjsyms) {
     cptr.stI32o(iflags, $instance_flags_menuobjsyms, newobjsyms);
@@ -11090,6 +12043,18 @@ function set_menuobjsyms_flags(newobjsyms) {
     cptr.st1o(iflags, $instance_flags_use_menu_glyphs, schar((((newobjsyms & 6) != 0) ? 1 : 0)));
 }
 
+/*
+ * Change the inventory order, using the given string as the new order.
+ * Missing characters in the new order are filled in at the end from
+ * the current inv_order, except for gold, which is forced to be first
+ * if not explicitly present.
+ *
+ * This routine returns 1 unless there is a duplicate or bad char in
+ * the string.
+ *
+ * Used by: optfn_packorder()
+ *
+ */
 /** C ref: options.c:7466 — @param {CPtr<char>} op @returns {CInt} */
 function* change_inv_order(op) {
     let oc_sym;
@@ -11097,17 +12062,23 @@ function* change_inv_order(op) {
     let sp;
     let buf = new Uint8Array(128);
     let retval = 1;
+
     num = 0;
     if (!cptr.strchr(op, NHC.GOLD_SYM))
         cptr.st1o(cptr.decay(buf), num++, NHC.COIN_CLASS, 1);
+
     for (sp = op; cptr.ld1s(sp); sp = cptr.add(sp, 1)) {
         let fail = 0;
         oc_sym = def_char_to_objclass(cptr.ld1s(sp));
+        /* reject bad or duplicate entries */
         if (oc_sym == NHC.MAXOCLASSES) {
             (yield* config_error_add(__s_not_an_object_class_c, cptr.ld1s(sp)));
             retval = 0;
             fail = 1;
         } else if (!cptr.strchr(cptr.add(flags, $flag_inv_order), oc_sym)) {
+            /* VENOM_CLASS, RANDOM_CLASS, and ILLOBJ_CLASS are excluded
+               because they aren't in def_inv_order[] so don't make it
+               into flags.inv_order, hence always fail this strchr() test */
             (yield* config_error_add(__s_object_class_c_not_allowed, cptr.ld1s(sp)));
             retval = 0;
             fail = 1;
@@ -11116,27 +12087,41 @@ function* change_inv_order(op) {
             retval = 0;
             fail = 1;
         }
+        /* retain good ones */
         if (!fail)
             cptr.st1o(cptr.decay(buf), num++, schar(oc_sym), 1);
     }
     cptr.st1o(cptr.decay(buf), num, 0, 1);
+
+    /* fill in any omitted classes, using previous ordering */
     for (sp = cptr.add(flags, $flag_inv_order); cptr.ld1s(sp); sp = cptr.add(sp, 1))
         if (!cptr.strchr(cptr.decay(buf), cptr.ld1s(sp)))
             void (yield* strkitten(cptr.add(cptr.decay(buf), num++, 1), cptr.ld1s(sp)));
     cptr.st1o(cptr.decay(buf), ((NHC.MAXOCLASSES - 1) | 0), 0, 1);
+
     void cptr.strcpy(cptr.add(flags, $flag_inv_order), cptr.decay(buf));
     return retval;
 }
+
+/*
+ * Support functions for "warning"
+ *
+ * Used by: optfn_warnings()
+ *
+ */
 
 /** C ref: options.c:7521 — @param {CPtr<char>} opts @param {CPtr<char>} optype @returns {CInt} */
 function* warning_opts(opts, optype) {
     let translate = new Uint8Array(6);
     let length;
     let i;
+
     if (cptr.eq((opts = (yield* string_for_env_opt(optype, opts, 0))), cptr.decay(empty_optstr)))
         return 0;
     (yield* escapes(opts, opts));
+
     length = Number(BigInt.asIntN(32, cptr.strlen(opts)));
+    /* match the form obtained from PC configuration files */
     for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1o(cptr.decay(translate), i, uchar(((i >= length) ? 0 : (cptr.ld1so(opts, i) ? uchar(cptr.ld1so(opts, i)) : cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)))), 1);
     assign_warnings(cptr.decay(translate));
@@ -11146,15 +12131,24 @@ function* warning_opts(opts, optype) {
 /** C ref: options.c:7541 — @param {CPtr<uchar>} graph_chars */
 export function assign_warnings(graph_chars) {
     let i;
+
     for (i = 0; i < NHM.WARNCOUNT; i++)
         if (cptr.ld1uo(graph_chars, i))
             cptr.st1o2(gw, i, 1, $instance_globals_w_warnsyms, cptr.ld1uo(graph_chars, i));
 }
 
+/*
+ * Support functions for "suppress_alert"
+ *
+ * Used by: optfn_suppress_alert()
+ *
+ */
+
 /** C ref: options.c:7558 — @param {CPtr<char>} op @param {CPtr<char>} optn @returns {CInt} */
 function* feature_alert_opts(op, optn) {
     let buf = new Uint8Array(256);
-    let fnv = (yield* get_feature_notice_ver(op));
+    let fnv = (yield* get_feature_notice_ver(op));  /* version.c */
+
     if (fnv == 0n)
         return 0;
     if (fnv > get_current_feature_ver()) {
@@ -11165,6 +12159,7 @@ function* feature_alert_opts(op, optn) {
         }
         return 0;
     }
+
     cptr.stU64o(flags, $flag_suppress_alert, fnv);
     if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
         void cptr.sprintf(cptr.decay(buf), __s_lu_lu_lu, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
@@ -11173,6 +12168,14 @@ function* feature_alert_opts(op, optn) {
     return 1;
 }
 
+/*
+ * This is used by parse_config_line() in files.c
+ *
+ */
+
+/* parse key:command[,key2:command2,...] after BINDINGS= prefix has been
+   stripped; returns False if any problem seen, True if every binding in
+   the comma-separated list is successful */
 const __static_parsebindings_mousebtn_names = cptr.alloc(2 * 8);
 cptr.stPtro(__static_parsebindings_mousebtn_names, 0, __s_mouse1);
 cptr.stPtro(__static_parsebindings_mousebtn_names, 8, __s_mouse2); /** C ref: options.c:7602 — char *[2] (function-static) */
@@ -11182,22 +12185,32 @@ export function* parsebindings(bindings) {
     let bind;
     let key;
     let i;
-    let ret = 1;
+    let ret = 1;  /* assume success */
+
+    /* look for first comma, then decide whether it is the key being bound
+       or a list element separator; if it's a key, find separator beyond it */
     if ((bind = cptr.strchr(bindings, 44)) !== null) {
+        /* at start so it represents a key */
         if (cptr.eq(bind, bindings))
             bind = cptr.strchr(cptr.add(bind, 1), 44);
         else if (cptr.ld1so(bind, -1) == 92 || (cptr.ld1so(bind, -1) == 39 && cptr.ld1so(bind, 1) == 39))
             bind = cptr.strchr(cptr.add(bind, 2), 44);
     }
+    /* if a comma separator has been found, break off first binding from rest;
+       parse the rest and then handle this first one when recursion returns */
     if (bind) {
         cptr.st1(cptr.postinc(() => bind, (v) => { bind = v; }), 0);
         if (!(yield* parsebindings(bind)))
             ret = 0;
     }
+
+    /* parse a single binding: first split around : */
     if (!(bind = cptr.strchr(bindings, 58)))
-        return 0;
+        return 0;  /* it's not a binding */
     cptr.st1(cptr.postinc(() => bind, (v) => { bind = v; }), 0);
+
     bind = (yield* trimspaces(bind));
+
     for (i = 0; i < 2; i++)
         if (!strcmp(bindings, cptr.ldPtro(__static_parsebindings_mousebtn_names, i, 8))) {
             if (!(yield* bind_mousebtn((i + 1) | 0, bind))) {
@@ -11206,13 +12219,19 @@ export function* parsebindings(bindings) {
                 return ret;
             }
         }
+
+    /* read the key to be bound */
     key = (yield* txt2key(bindings));
     if (!key) {
         (yield* config_error_add(__s_unknown_key_binding_key_s, bindings));
         return 0;
     }
+
+    /* is it a special key? */
     if (bind_specialkey(key, bind))
         return ret;
+
+    /* is it a menu command? */
     for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t); i++) {
         if (!strcmp(cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t), bind)) {
             if ((yield* illegal_menu_cmd_key(key))) {
@@ -11224,6 +12243,8 @@ export function* parsebindings(bindings) {
             return ret;
         }
     }
+
+    /* extended command? */
     if (!(yield* bind_key(key, bind, 1))) {
         (yield* config_error_add(__s_unknown_key_binding_command_s, bind));
         return 0;
@@ -11257,6 +12278,7 @@ cptr.stPtro(msgtype_names, 136, __s_do_not_repeat_the_message);
 /** C ref: options.c:7690 — @param {CInt} typ @returns {CPtr<char>} */
 function msgtype2name(typ) {
     let i;
+
     for (i = 0; i < 6; i++)
         if (cptr.ldPtro2(msgtype_names, i, 24, 16) && cptr.ld1so2(msgtype_names, i, 24, 8) == typ)
             return cptr.ldPtro(msgtype_names, i, 24);
@@ -11271,6 +12293,7 @@ function* query_msgtype() {
     let pick_cnt;
     let picks = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -11295,11 +12318,16 @@ let __static_msgtype_add_re_error = __s_msgtype_regex_error; /** C ref: options.
 /** C ref: options.c:7731 — @param {CInt} typ @param {CPtr<char>} pattern @returns {CInt} */
 function* msgtype_add(typ, pattern) {
     let tmp = (yield* alloc(32));
+
     cptr.stI16(tmp, i16(typ));
     cptr.stPtro(tmp, $plinemsg_type_regex, (yield* regex_init()));
+    /* test_regex_pattern() has already validated this regexp but parsing
+       it again could conceivably run out of memory */
     if (!regex_compile(pattern, cptr.ldPtro(tmp, $plinemsg_type_regex))) {
         let errbuf = new Uint8Array(256);
         let re_error_desc = regex_error_desc(cptr.ldPtro(tmp, $plinemsg_type_regex), cptr.decay(errbuf));
+
+        /* free first in case reason for failure was insufficient memory */
         regex_free(cptr.ldPtro(tmp, $plinemsg_type_regex));
         cptr.free(tmp);
         (yield* config_error_add(__s_s_s__2, __static_msgtype_add_re_error, re_error_desc));
@@ -11315,6 +12343,7 @@ function* msgtype_add(typ, pattern) {
 export function msgtype_free() {
     let tmp;
     let tmp2 = null;
+
     for (tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types); tmp; tmp = tmp2) {
         tmp2 = cptr.ldPtro(tmp, $plinemsg_type_next);
         cptr.free(cptr.ldPtro(tmp, $plinemsg_type_pattern));
@@ -11329,9 +12358,11 @@ export function msgtype_free() {
 function free_one_msgtype(idx) {
     let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
     let prev = null;
+
     while (tmp) {
         if (idx == 0) {
             let next = cptr.ldPtro(tmp, $plinemsg_type_next);
+
             regex_free(cptr.ldPtro(tmp, $plinemsg_type_regex));
             cptr.free(cptr.ldPtro(tmp, $plinemsg_type_pattern));
             cptr.free(tmp);
@@ -11350,7 +12381,10 @@ function free_one_msgtype(idx) {
 /** C ref: options.c:7797 — @param {CPtr<char>} msg @param {CInt} norepeat @returns {CInt} */
 export function msgtype_type(msg, norepeat) {
     let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
+
     while (tmp) {
+        /* we don't exclude entries with negative msgtype values
+           because then the msg might end up matching a later pattern */
         if (regex_match(msg, cptr.ldPtro(tmp, $plinemsg_type_regex)))
             return cptr.ldI16(tmp);
         tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
@@ -11358,14 +12392,18 @@ export function msgtype_type(msg, norepeat) {
     return norepeat ? NHM.MSGTYP_NOREP : NHM.MSGTYP_NORMAL;
 }
 
+/* negate one or more types of messages so that their type handling will
+   be disabled or re-enabled; MSGTYPE_NORMAL (value 0) is not affected */
 /** C ref: options.c:7815 — @param {CInt} hide @param {CInt} hide_mask */
 export function hide_unhide_msgtypes(hide, hide_mask) {
     let tmp;
     let mt;
+
+    /* negative msgtype value won't be recognized by pline, so does nothing */
     for (tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types); tmp; tmp = cptr.ldPtro(tmp, $plinemsg_type_next)) {
         mt = cptr.ldI16(tmp);
         if (!hide)
-            mt = -mt;
+            mt = -mt;  /* unhide: negate negative, yielding positive */
         if (mt > 0 && ((1 << mt) & hide_mask))
             cptr.stI16(tmp, i16((-cptr.ldI16(tmp))));
     }
@@ -11375,6 +12413,7 @@ export function hide_unhide_msgtypes(hide, hide_mask) {
 function msgtype_count() {
     let c = 0;
     let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
+
     while (tmp) {
         c++;
         tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
@@ -11386,9 +12425,11 @@ function msgtype_count() {
 export function* msgtype_parse_add(str) {
     let pattern = new Uint8Array(256);
     let msgtype = new Uint8Array(11);
+
     if (sscanf(str, __s_10s_255, cptr.decay(msgtype), cptr.decay(pattern)) == 2) {
         let typ = -1;
         let i;
+
         for (i = 0; i < 6; i++)
             if (str_start_is(cptr.ldPtro(msgtype_names, i, 24), cptr.decay(msgtype), 1)) {
                 typ = cptr.ld1so2(msgtype_names, i, 24, 8);
@@ -11404,6 +12445,8 @@ export function* msgtype_parse_add(str) {
     return 0;
 }
 
+/* parse 'str' as a regular expression to check whether it's valid;
+   compiled regexp gets thrown away regardless of the outcome */
 const __static_test_regex_pattern_def_errmsg = cptr.bytes("NHregex error"); /** C ref: options.c:7873 — char[14] (function-static) */
 
 /** C ref: options.c:7871 — @param {CPtr<char>} str @param {CPtr<char>} errmsg @returns {CInt} */
@@ -11412,36 +12455,61 @@ function* test_regex_pattern(str, errmsg) {
     let re_error_desc;
     let errbuf = new Uint8Array(256);
     let retval;
+
     if (!str)
         return 0;
     if (!errmsg)
         errmsg = cptr.decay(__static_test_regex_pattern_def_errmsg);
+
     match = (yield* regex_init());
     if (!match) {
         (yield* config_error_add(__s_pct_s, errmsg));
         return 0;
     }
+
     retval = regex_compile(str, match);
+    /* get potential error message before freeing regexp and free regexp
+       before issuing message in case the error is "ran out of memory"
+       since message delivery might need to allocate some memory */
     re_error_desc = !retval ? regex_error_desc(match, cptr.decay(errbuf)) : null;
+    /* discard regexp; caller will re-parse it after validating other stuff */
     regex_free(match);
+    /* if returning failure, tell player */
     if (!retval)
         (yield* config_error_add(__s_s_s__2, errmsg, re_error_desc));
+
     return retval;
 }
 
+/* parse 'role' or 'race' or 'gender' or 'alignment' */
 const __static_parse_role_opt_neg_opt = cptr.bytes("!"); /** C ref: options.c:7912 — char[2] (function-static) */
 
 /** C ref: options.c:7905 — @param {CInt} optidx @param {CInt} negated @param {CPtr<char>} fullname @param {CPtr<char>} opts @param {CPtr<char *>} opp @returns {CInt} */
 function* parse_role_opt(optidx, negated, fullname, opts, opp) {
     let preval;
     let op;
-    let which = (optidx == NHC.opt_role) ? NHM.RS_ROLE : ((optidx == NHC.opt_race) ? NHM.RS_RACE : ((optidx == NHC.opt_gender) ? NHM.RS_GENDER : ((optidx == NHC.opt_alignment) ? NHM.RS_ALGNMNT : NHM.RS_filter)));
+    let which = (optidx == NHC.opt_role) ? NHM.RS_ROLE : ((optidx == NHC.opt_race) ? NHM.RS_RACE : ((optidx == NHC.opt_gender) ? NHM.RS_GENDER : ((optidx == NHC.opt_alignment) ? NHM.RS_ALGNMNT : NHM.RS_filter)));  /* none of the above */
     let ok = 0;
+
+    /*
+     * Accepts multiple forms
+     *  role:priest       -- play as priest
+     *  race:!orc         -- any race other than orc
+     *  role:!cav !mon    -- any role other than caveman/cavewoman or monk
+     *  !role:tour        -- any role other than tourist
+     *  !role:tou rog wiz -- any role other than tourist or rogue or wizard
+     * TODO: add support for
+     *  role:arc bar kni  -- only role archeologist or barbarian or knight
+     * Rejected:
+     *  role:sam !val     -+ invalid; need either positive or negative subset
+     *  !role:!sam        +- not a mixture of the two and not dual negation.
+     */
     if (!cptr.eq((op = (yield* string_for_env_opt(fullname, opts, 0))), cptr.decay(empty_optstr))) {
         let sp;
         let val_negated;
         let prev_negated = 0;
         let first = 1;
+
         (yield* mungspaces(op));
         while (cptr.ld1s(op)) {
             if (cptr.ld1s(op) == 32)
@@ -11466,12 +12534,19 @@ function* parse_role_opt(optidx, negated, fullname, opts, opp) {
             }
             first = 0;
             prev_negated = val_negated;
+
+            /* hide rest of list, if any */
             sp = cptr.strchr(op, 32);
             if (sp)
                 cptr.st1(sp, 0);
+
             preval = (yield* getoptstr(optidx, cptr.ldI32o(go, $instance_globals_o_opt_phase)));
             if (val_negated || negated) {
                 let negbuf = new Uint8Array(256);
+
+                /* for negative value, clear filter if there is a prior
+                   value from a different phase; for same phase, duplicates
+                   are allowed and setrolefilter() merges them */
                 if (!preval || cptr.ld1s(preval) != 33)
                     clearrolefilter(which);
                 if (!(yield* setrolefilter(op))) {
@@ -11481,31 +12556,44 @@ function* parse_role_opt(optidx, negated, fullname, opts, opp) {
                 (yield* saveoptstr(optidx, (yield* rolefilterstring(cptr.decay(negbuf), which))));
                 cptr.stPtr(opp, cptr.decay(__static_parse_role_opt_neg_opt));
             } else {
+                /* for positive value, allow duplicate if prior value
+                   was a negative one or came from a different phase;
+                   reject if prior value was positive and from same phase */
                 if (duplicate) {
                     if (preval && cptr.ld1s(preval) == 33) {
                         (yield* complain_about_duplicate(optidx));
                         return 0;
                     }
                 }
+                /* save raw string value; caller will validate it and
+                   if it's ok, replace it with canonical form */
                 (yield* saveoptstr(optidx, op));
                 cptr.stPtr(opp, op);
+                /*ok = TRUE; // redundant*/
+                /* don't return yet; value might be a list that follows
+                   this with something else which might make it invalid */
             }
+
             if (sp) {
                 cptr.st1(sp, 32);
                 op = cptr.add(sp, 1);
             } else {
-                op = cptr.add(op, cptr.strlen(op));
+                op = cptr.add(op, cptr.strlen(op));  /* break; */
             }
         }
+        /* '!ok' without config_error_add() implies a valid negation */
         ok = 1;
     }
     return ok;
 }
 
+/* fetch a saved role|race|gender|alignment value suitable for writing into
+   a new run-time config file */
 /** C ref: options.c:8021 — @param {CInt} optidx @returns {CPtr<char>} */
 function* get_cnf_role_opt(optidx) {
     let phase;
     let op = null;
+
     for (phase = ((NHC.num_opt_phases - 1) | 0); phase >= 0 && !op; --phase) {
         if (phase == NHC.cmdline_opt || phase == NHC.environ_opt || phase == NHC.builtin_opt)
             continue;
@@ -11514,6 +12602,7 @@ function* get_cnf_role_opt(optidx) {
     return op;
 }
 
+/* Check if character c is illegal as a menu command key */
 /** C ref: options.c:8037 — @param {CUInt} c @returns {CInt} */
 function* illegal_menu_cmd_key(c) {
     if (c == 0 || c == 13 || c == 10 || c == 27 || c == 32 || digit(schar(c)) || (letter(schar(c)) && c != 64)) {
@@ -11521,6 +12610,7 @@ function* illegal_menu_cmd_key(c) {
         return 1;
     } else {
         let j;
+
         for (j = 1; j < NHC.MAXOCLASSES; j++)
             if (c == uchar(cptr.ld1so(def_oc_syms, j, $sizeof_class_sym))) {
                 (yield* config_error_add(__s_menu_command_key_s_is_an_object_class, visctrl(schar(c))));
@@ -11530,9 +12620,14 @@ function* illegal_menu_cmd_key(c) {
     return 0;
 }
 
+/*
+ * Convert the given string of object classes to a string of default object
+ * symbols.
+ */
 /** C ref: options.c:8062 — @param {CPtr<char>} src @param {CPtr<char>} dest */
 export function* oc_to_str(src, dest) {
     let i;
+
     while ((i = cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))) != 0) {
         if (i < 0 || i >= NHC.MAXOCLASSES)
             (yield* impossible(__s_oc_to_str_illegal_object_class_d, i));
@@ -11542,6 +12637,10 @@ export function* oc_to_str(src, dest) {
     cptr.st1(dest, 0);
 }
 
+/*
+ * Add the given mapping to the menu command map list.  Always keep the
+ * maps valid C strings.
+ */
 /** C ref: options.c:8080 — @param {CInt} from_ch @param {CInt} to_ch */
 export function* add_menu_cmd_alias(from_ch, to_ch) {
     if (cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped) >= NHM.MAX_MENU_MAPPED_CMDS) {
@@ -11558,23 +12657,33 @@ export function* add_menu_cmd_alias(from_ch, to_ch) {
 /** C ref: options.c:8094 — @param {CInt} ch @returns {CInt} */
 export function get_menu_cmd_key(ch) {
     let found = cptr.strchr(cptr.add(gm, $instance_globals_m_mapped_menu_op), ch);
+
     if (found) {
         let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, $instance_globals_m_mapped_menu_op)))));
+
         ch = cptr.ld1so2(gm, idx, 1, $instance_globals_m_mapped_menu_cmds);
     }
     return ch;
 }
 
+/*
+ * Map the given character to its corresponding menu command.  If it
+ * doesn't match anything, just return the original.
+ */
 /** C ref: options.c:8111 — @param {CInt} ch @returns {CInt} */
 export function map_menu_cmd(ch) {
     let found = cptr.strchr(cptr.add(gm, $instance_globals_m_mapped_menu_cmds), ch);
+
     if (found) {
         let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, $instance_globals_m_mapped_menu_cmds)))));
+
         ch = cptr.ld1so2(gm, idx, 1, $instance_globals_m_mapped_menu_op);
     }
     return ch;
 }
 
+/* get keystrokes that are used for menu scrolling operations which apply;
+   printable: for use in a prompt, non-printable: for yn_function() choices */
 const __static_collect_menu_keys_scroll_keys = cptr.alloc(6 * $sizeof_menuscrollinfo);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 0, 94);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 0 + $menuscrollinfo_maskindx, 1);
@@ -11592,10 +12701,12 @@ cptr.st1o(__static_collect_menu_keys_scroll_keys, 10 + $menuscrollinfo_maskindx,
 /** C ref: options.c:8126 — @param {CPtr<char>} outbuf @param {CUInt} scrollmask @param {CInt} printable @returns {CPtr<char>} */
 export function* collect_menu_keys(outbuf, scrollmask, printable) {
     let i;
+
     cptr.st1o(outbuf, 0, 0);
     for (i = 0; i < 6; ++i) {
         if ((scrollmask & cptr.ld1uo2(__static_collect_menu_keys_scroll_keys, i, $sizeof_menuscrollinfo, $menuscrollinfo_maskindx)) >>> 0) {
             let c = get_menu_cmd_key(cptr.ld1so(__static_collect_menu_keys_scroll_keys, i, $sizeof_menuscrollinfo));
+
             if (printable)
                 void cptr.strcat(outbuf, visctrl(c));
             else
@@ -11605,6 +12716,12 @@ export function* collect_menu_keys(outbuf, scrollmask, printable) {
     return outbuf;
 }
 
+/* Returns the fid of the fruit type; if that type already exists, it
+ * returns the fid of that one; if it does not exist, it adds a new fruit
+ * type to the chain and returns the new one.
+ * If replace_fruit is sent in, replace the fruit in the chain rather than
+ * adding a new entry--for user specified fruits only.
+ */
 /** C ref: options.c:8170 — @param {CPtr<char>} str @param {CPtr<struct fruit>} replace_fruit @returns {CInt} */
 export function* fruitadd(str, replace_fruit) {
     let i;
@@ -11615,10 +12732,28 @@ export function* fruitadd(str, replace_fruit) {
     let altname = new Uint8Array(32);
     let user_specified = schar((cptr.eq(str, cptr.add(svp, $instance_globals_saved_p_pl_fruit))));
     __lbl_nonew: {
+        /* if not user-specified, then it's a fruit name for a fruit on
+         * a bones level or from orctown raider's loot...
+         */
+
+        /* Note: every fruit has an id (kept in obj->spe) of at least 1;
+         * 0 is an error.
+         */
         if (user_specified) {
             let found = 0;
             let numeric = 0;
+
+            /* force fruit to be singular; this handling is not
+               needed--or wanted--for fruits from bones because
+               they already received it in their original game;
+               str==pl_fruit but makesingular() creates a copy
+               so we need to copy that back into pl_fruit */
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (yield* makesingular(str)), NHM.PL_FSIZ));
+
+            /* disallow naming after other foods (since it'd be impossible
+             * to tell the difference); globs might have a size prefix which
+             * needs to be skipped in order to match the object type name
+             */
             globpfx = (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_small, 6n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_large, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_medium, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_very_large, 11n)) ? 11 : 0));
             for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, $instance_globals_saved_b_bases); cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS; i++) {
                 if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), cptr.add(svp, $instance_globals_saved_p_pl_fruit)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) {
@@ -11628,6 +12763,7 @@ export function* fruitadd(str, replace_fruit) {
             }
             if (!found) {
                 let c;
+
                 for (c = cptr.add(svp, $instance_globals_saved_p_pl_fruit); cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57; c = cptr.add(c, 1))
                     continue;
                 if (!cptr.ld1s(c) || isspace(uchar(cptr.ld1s(c))))
@@ -11639,13 +12775,23 @@ export function* fruitadd(str, replace_fruit) {
                 (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 8), cptr.decay(buf), 24));
             }
             cptr.st1(cptr.decay(altname), 0);
+            /* This flag indicates that a fruit has been made since the
+             * last time the user set the fruit.  If it hasn't, we can
+             * safely overwrite the current fruit, preventing the user from
+             * setting many fruits in a row and overflowing.
+             * Possible expansion: check for specific fruit IDs, not for
+             * any fruit.
+             */
             cptr.st1o(flags, $flag_made_fruit, 0);
             if (replace_fruit) {
+                /* replace_fruit is already part of the fruit chain;
+                   update it in place rather than looking it up again */
                 f = replace_fruit;
                 (yield* copynchars(f, cptr.add(svp, $instance_globals_saved_p_pl_fruit), 31));
                 break __lbl_nonew;
             }
         } else {
+            /* not user_supplied, so assumed to be from bones (or orc gang) */
             (yield* copynchars(cptr.decay(altname), str, 31));
             sanitize_name(cptr.decay(altname));
             cptr.st1o(flags, $flag_made_fruit, 1);
@@ -11653,12 +12799,20 @@ export function* fruitadd(str, replace_fruit) {
         f = (yield* fruit_from_name(cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 0, highest_fruit_id));
         if (f)
             break __lbl_nonew;
+
+        /* Maximum number of named fruits is 127, even if obj->spe can
+           handle bigger values.  If adding another fruit would overflow,
+           use a random fruit instead... we've got a lot to choose from.
+           current_fruit remains as is. */
         if (highest_fruit_id.v >= 127)
             return rnd_at(__s_options_c, 8273, __s_fruitadd, 127);
+
         f = (yield* alloc(48));
         void __builtin___memset_chk(f, 0, 48n, __builtin_object_size(f, 0));
         (yield* copynchars(f, cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 31));
         cptr.stI32o(f, $fruit_fid, ++highest_fruit_id.v);
+        /* we used to go out of our way to add it at the end of the list,
+           but the order is arbitrary so use simpler insertion at start */
         cptr.stPtro(f, $fruit_nextf, cptr.ldPtro(gf, $instance_globals_f_ffruit));
         cptr.stPtro(gf, $instance_globals_f_ffruit, f);
     }
@@ -11768,7 +12922,7 @@ function* optfn_o_status_cond(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        ;
+        ;  /* setting status condition options goes through pfxfn_cond_() */
     }
     if (req == NHC.get_val) {
         if (!opts)
@@ -11777,7 +12931,7 @@ function* optfn_o_status_cond(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        ;
+        ;  /* handled inline by all_options_strbuf() via all_options_conds() */
     }
     if (req == NHC.do_handler) {
         if ((yield* cond_menu()))
@@ -11802,7 +12956,7 @@ function* optfn_o_status_hilites(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_handler) {
         if (!(yield* status_hilite_menu())) {
-            return NHC.optn_err;
+            return NHC.optn_err;  /*pline("Bad status hilite(s) specified.");*/
         } else {
             if (wc2_supported(__s_hilite_status))
                 (yield* Y.icall(preference_update()(__s_hilite_status)));
@@ -11812,12 +12966,16 @@ function* optfn_o_status_hilites(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
+/* Get string value of configuration option.
+ * Currently handles only boolean and compound options.
+ */
 const __static_get_option_value_retbuf = new Uint8Array(256); /** C ref: options.c:8483 — char[256] (function-static) */
 
 /** C ref: options.c:8481 — @param {CPtr<char>} optname @param {CInt} cnfvalid @returns {CPtr<char>} */
 export function* get_option_value(optname, cnfvalid) {
     let bool_p;
     let i;
+
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t) !== null; i++)
         if (!strcmp(optname, cptr.ldPtro(allopt, i, $sizeof_allopt_t))) {
             if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null) {
@@ -11825,6 +12983,7 @@ export function* get_option_value(optname, cnfvalid) {
                 return cptr.decay(__static_get_option_value_retbuf);
             } else if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
                 let reslt = NHC.optn_err;
+
                 reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx), cnfvalid ? NHC.get_cnf_val : NHC.get_val, 0, cptr.decay(__static_get_option_value_retbuf), cptr.decay(empty_optstr))));
                 if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(__static_get_option_value_retbuf), 0, 1))
                     return cptr.decay(__static_get_option_value_retbuf);
@@ -11836,11 +12995,13 @@ export function* get_option_value(optname, cnfvalid) {
 
 /** C ref: options.c:8508 — @param {CInt} startpass @param {CInt} endpass @returns {CUInt} */
 function* longest_option_name(startpass, endpass) {
+    /* spin through the options to find the longest name */
     let longest_name_len = 0;
     let i;
     let pass;
     let optflags;
     let name;
+
     for (pass = 0; pass < 2; pass++)
         for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
             if (pass == 0 && (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)))
@@ -11850,6 +13011,7 @@ function* longest_option_name(startpass, endpass) {
                 continue;
             if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                 continue;
+
             let len = (yield* Strlen_(name, __s_longest_option_name, 8527));
             if (len > longest_name_len)
                 longest_name_len = len;
@@ -11857,6 +13019,7 @@ function* longest_option_name(startpass, endpass) {
     return longest_name_len;
 }
 
+/* guts of doset_simple(); called repeatedly until no choice is made */
 const __static_doset_simple_menu_fmtstr_tab_doset_simple = cptr.bytes("%s\t[%s]"); /** C ref: options.c:8539 — char[8] (function-static) */
 
 /** C ref: options.c:8536 @returns {CInt} */
@@ -11877,6 +13040,10 @@ function* doset_simple_menu() {
     let pick_cnt;
     let reslt;
     let toggled_help = 0;
+
+    /* we do this each time we're called instead of once in doset_simple()
+       in case 'menu_tab_sep' ever gets included in the simple menu so
+       becomes subject to being changed while doset_simple() is running */
     if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
         void cptr.sprintf(cptr.decay(fmtstr_doset_simple), __s_us_s, (yield* longest_option_name(NHC.set_gameview, NHC.set_in_game)));
     else
@@ -11885,13 +13052,20 @@ function* doset_simple_menu() {
     __lbl_redo_opt_help: while (true) {
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(tmpwin, 0n)));
+
+        /* when showing 'help', also describe how to run full doset() */
         if (cptr.ld1so(gs, $instance_globals_s_simple_options_help)) {
+            /* we could look up whether #optionsfull has been bound to a key
+               and show that, or whether #reqmenu and #options are both still
+               bound to keys and show those, but if meta keys are involved
+               the player might not know how to type them; keep this simple */
             void cptr.strcpy(cptr.decay(buf), __s_use_command_optionsfull_to_get_the);
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
         }
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, -1);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ld1so(gs, $instance_globals_s_simple_options_help) ? __s_hide_help : __s_show_help, NHM.MENU_ITEMFLAGS_NONE));
+
         for (section = NHC.OptS_General; section < NHC.OptS_Advanced; section++) {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             (yield* add_menu_str(tmpwin, __s_empty));
@@ -11902,6 +13076,7 @@ function* doset_simple_menu() {
                     continue;
                 if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                     continue;
+
                 cptr.stI32(any, (i + 1) | 0);
                 switch (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp)) {
                     case NHC.BoolOpt:
@@ -11920,6 +13095,7 @@ function* doset_simple_menu() {
                         name = cptr.ldPtro(allopt, k, $sizeof_allopt_t);
                         cptr.stI32(any, (k + 1) | 0);
                     }
+
                     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
                     reslt = NHC.optn_err;
                     if (cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))
@@ -11930,6 +13106,8 @@ function* doset_simple_menu() {
                     void cptr.sprintf(cptr.decay(buf), __s_error);
                     break;
                 }
+                /* pickup_types is separated from autopickup due to the
+                   spelling of their names; emphasize what it means */
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_dropped_nopick)
                     void cptr.strcat(cptr.decay(buf), __s_for_autopickup);
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
@@ -11941,24 +13119,31 @@ function* doset_simple_menu() {
             }
         }
         (yield* Y.icall(end_menu()(tmpwin, __s_options)));
+
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 0);
         cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 0);
         cptr.st1o(go, $instance_globals_o_opt_reset_customcolors, 0);
         cptr.st1o(go, $instance_globals_o_opt_reset_customsymbols, 0);
         cptr.st1o(go, $instance_globals_o_opt_update_basic_palette, 0);
         pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list));
+        /* note:  without the complication of a preselected entry, a PICK_ONE
+           menu returning pick_cnt > 0 implies exactly 1 */
         if (pick_cnt > 0) {
             k = (cptr.ldI32o(pick_list.v, 0, $sizeof_menu_item) - 1) | 0;
+
             cptr.st1o(cptr.decay(abuf), 0, 0, 1);
             if (k == -2) {
                 cptr.st1o(gs, $instance_globals_s_simple_options_help, schar((!cptr.ld1so(gs, $instance_globals_s_simple_options_help))));
                 toggled_help = 1;
             } else if (cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt) {
+                /* boolean option */
                 void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
                 void (yield* parseoptions(cptr.decay(buf), 0, 0));
             } else {
+                /* compound option */
                 if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
                     reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                    /* if player eventually saves options, include this one */
                     if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx) != NHC.pfx_cond_)
                         cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                 } else {
@@ -11967,36 +13152,53 @@ function* doset_simple_menu() {
                     if (cptr.ld1so(cptr.decay(abuf), 0, 1) != 27) {
                         void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
                         (yield* copynchars(eos(cptr.decay(buf)), cptr.decay(abuf), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
+                        /* pass the buck */
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
+                    /* Note: using ESC to not set a new value will still return
+                       'picked 1' to caller which will loop for another choice */
                 }
             }
             if (k >= 0 && cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 && (wc_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t)) || wc2_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t))))
                 (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, k, $sizeof_allopt_t))));
+
             cptr.free(pick_list.v), pick_list.v = null;
         }
+        /* tear down this instance of the menu; if pick_cnt is 1, caller
+           will immediately call us back to put up another instance */
         (yield* Y.icall(destroy_nhwindow()(tmpwin)));
+
         if (toggled_help) {
             toggled_help = 0;
             continue __lbl_redo_opt_help;
         }
+
         return pick_cnt;
     }
 }
 
+/* #options - the user friendly version:  get one option from a subset of
+   the zillion choices, act upon it, and prompt for another */
 /** C ref: options.c:8707 @returns {CInt} */
 export function* doset_simple() {
     let pickedone = 0;
     let flush = 0;
+
     if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
+        /* doset() checks for 'm' and calls doset_simple(); clear the
+           menu-requested flag to avoid doing that recursively */
         cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         return (yield* doset());
     }
+
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.play_opt);
+    /* select and change one option at a time, then reprocess the menu
+       with updated settings to offer chance for further change */
     give_opt_msg = 0;
     do {
         pickedone = (yield* doset_simple_menu());
         flush = cptr.ld1so(go, $instance_globals_o_opt_need_redraw);
+
         (yield* reset_needed_visuals());
         if (flush) {
             (yield* flush_screen(1));
@@ -12022,6 +13224,7 @@ function term_for_boolean(idx, b) {
     let i;
     let f_t = (cptr.ld1s(b)) ? 1 : 0;
     let boolean_term;
+
     boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), 0, 8);
     i = cptr.ldI32o2(allopt, idx, $sizeof_allopt_t, $allopt_t_termpref);
     if (i > NHC.Term_False && i < NHC.num_terms && i < Number(BigInt.asIntN(32, (32n / 8n))))
@@ -12029,6 +13232,7 @@ function term_for_boolean(idx, b) {
     return boolean_term;
 }
 
+/* the #optionsfull command */
 const __static_doset_fmtstr_tab_doset = cptr.bytes("%s%s\t[%s]"); /** C ref: options.c:8760 — char[10] (function-static) */
 const __static_doset_helptext = cptr.alloc(5 * 8);
 cptr.stPtro(__static_doset_helptext, 0, __s_for_a_brief_explanation_of_how_this);
@@ -12058,14 +13262,20 @@ export function* doset() {
     let gavehelp = 0;
     let skiphelp = schar((!cptr.ld1so(iflags, $instance_flags_cmdassist)));
     let clr = NHM.NO_COLOR;
+
     if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
+        /* doset_simple() checks for 'm' and calls doset(); clear the
+           menu-requested flag to avoid doing that recursively */
         cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         return (yield* doset_simple());
     }
+
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.play_opt);
     __lbl_rerun: while (true) {
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(tmpwin, 0n)));
+
+        /* offer novices a chance to request helpful [sic] advice */
         if (!skiphelp) {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             for (i = 0; i < 5; ++i) {
@@ -12073,32 +13283,37 @@ export function* doset() {
                     void cptr.sprintf(cptr.decay(buf), __s_4s_75s, __s_empty, cptr.ldPtro(__static_doset_helptext, i, 8));
                     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
                 } else {
-                    cptr.stI32(any, ((218) + 1) | 0);
+                    cptr.stI32(any, ((218) + 1) | 0);  /* handling pick_list subtracts 1 */
                     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 63, NHM.ATR_NONE, clr, __s_view_help_for_options_menu, NHM.MENU_ITEMFLAGS_SKIPINVERT));
                 }
             }
         }
         startpass = NHC.set_gameview;
         endpass = (wizard()) ? NHC.set_wiznofuz : NHC.set_in_game;
+
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
+            /* initial "%s" is for indentation of non-selectable items */
             void cptr.sprintf(cptr.decay(fmtstr_doset), __s_s_us_s, (yield* longest_option_name(startpass, endpass)));
         else
             void cptr.strcpy(cptr.decay(fmtstr_doset), cptr.decay(__static_doset_fmtstr_tab_doset));
+
         indexoffset = 1;
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         (yield* add_menu_heading(tmpwin, __s_booleans_selecting_will_toggle_value));
         cptr.stI32(any, 0);
+        /* first list any other non-modifiable booleans, then modifiable ones */
         for (pass = 0; pass <= 1; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++)
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null && ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) >= NHC.set_in_game && pass == 1))) {
                     if (cptr.eq(bool_p, cptr.add(flags, $flag_female)))
-                        continue;
+                        continue;  /* obsolete */
                     if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard())
                         continue;
                     if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
                         continue;
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
+
                     cptr.stI32(any, (pass == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
                     indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) ? __s_sp4 : __s_empty;
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr_doset), indent, name, term_for_boolean(i, bool_p));
@@ -12106,8 +13321,10 @@ export function* doset() {
                         enhance_menu_text(cptr.decay(buf), 256n, pass, bool_p, cptr.add(allopt, i, $sizeof_allopt_t));
                     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
                 }
+
         (yield* add_menu_str(tmpwin, __s_empty));
         (yield* add_menu_heading(tmpwin, __s_compounds_selecting_will_prompt_for_new));
+
         for (pass = startpass; pass <= endpass; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt)
@@ -12115,11 +13332,14 @@ export function* doset() {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == pass) {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
+
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
                 }
             }
+
         (yield* add_menu_str(tmpwin, __s_empty));
         (yield* add_menu_heading(tmpwin, __s_other_settings));
+
         for (pass = startpass; pass <= endpass; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.OthrOpt)
@@ -12127,36 +13347,49 @@ export function* doset() {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == pass) {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
+
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
                 }
             }
         (yield* Y.icall(end_menu()(tmpwin, __s_set_what_options)));
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 0);
         cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 0);
+
         if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, pick_list))) > 0) {
+            /*
+             * Walk down the selection list and either invert the booleans
+             * or prompt for new values. In most cases, call parseoptions()
+             * to take care of options that require special attention, like
+             * redraws.
+             */
             for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
                 opt_indx = (cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1) | 0;
                 if (opt_indx == (218)) {
                     (yield* Y.icall(display_file()(__s_optmenu, 0)));
                     gavehelp = 1;
-                    continue;
+                    continue;  /* just handled '?'; there might be more picks */
                 }
                 if (opt_indx < -1)
-                    opt_indx++;
+                    opt_indx++;  /* -1 offset for select_menu() */
                 opt_indx = (opt_indx - indexoffset) | 0;
                 (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__s_doset, __s_options_c, 8924, __s_indexok_opt_indx_allopt) : void 0);
                 if (cptr.ldI32o2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt) {
+                    /* boolean option */
                     void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
                     void (yield* parseoptions(cptr.decay(buf), 0, 0));
                 } else {
+                    /* compound option */
                     let k = opt_indx;
                     let reslt;
+
                     if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
                         reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                        /* if player eventually saves options, include this one */
                         if (reslt == NHC.optn_ok)
                             cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                     } else {
                         let abuf = new Uint8Array(256);
+
                         void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
                         cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                         (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
@@ -12164,6 +13397,7 @@ export function* doset() {
                             continue;
                         void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
                         void __builtin___strncat_chk(eos(cptr.decay(buf)), cptr.decay(abuf), (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))), __builtin_object_size(eos(cptr.decay(buf)), 1));
+                        /* pass the buck */
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
                 }
@@ -12172,12 +13406,17 @@ export function* doset() {
             }
             cptr.free(pick_list.v), pick_list.v = null;
         }
+
         (yield* Y.icall(destroy_nhwindow()(tmpwin)));
+
         if (pick_cnt == 1 && gavehelp) {
+            /* when '?' is only the thing selected, go back and pick all
+               over again without it as an available choice second time */
             skiphelp = 1;
-            gavehelp = 0;
+            gavehelp = 0;  /* currently True; reset for second pass */
             continue __lbl_rerun;
         }
+
         (yield* reset_needed_visuals());
         return NHM.ECMD_OK;
     }
@@ -12215,9 +13454,10 @@ function* reset_needed_visuals() {
     cptr.st1o(go, $instance_globals_o_opt_update_basic_palette, 0);
 }
 
+/* doset(#optionsfull command) menu entries for compound options */
 /** C ref: options.c:9018 — @param {CInt} win @param {CPtr<char>} option @param {CPtr<char>} fmtstr @param {CInt} idx @param {CInt} indexoffset */
 function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
-    let value = __s_unknown;
+    let value = __s_unknown;  /* current value */
     let indent;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(256);
@@ -12225,7 +13465,8 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     let i = idx;
     let reslt = NHC.optn_err;
     let clr = NHM.NO_COLOR;
-    cptr.st1o(cptr.decay(buf2), 0, 0, 1);
+
+    cptr.st1o(cptr.decay(buf2), 0, 0, 1);  /* per opt functs may not guarantee this, so do it */
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     if (i >= 0 && i < NHC.OPTCOUNT && cptr.ldPtro(allopt, i, $sizeof_allopt_t) && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
         cptr.stI32(any, (indexoffset == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
@@ -12234,16 +13475,22 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
         if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
             value = cptr.decay(buf2);
     } else {
+        /* We are trying to add an option not found in allopt[].
+           This is almost certainly bad, but we'll let it through anyway
+           (with a zero value, so it can't be selected). */
         cptr.stI32(any, 0);
         if (!cptr.ld1so(cptr.decay(buf2), 0, 1))
             void cptr.strcpy(cptr.decay(buf2), __s_unknown);
         value = cptr.decay(buf2);
     }
+
+    /* "    " replaces "a - " -- assumes menus follow that style */
     indent = !cptr.ldI32(any) ? __s_sp4 : __s_empty;
     void cptr.sprintf(cptr.decay(buf), fmtstr, indent, option, value);
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
 }
 
+/* display keys for menu actions; used by cmd.c '?i' and pager.c '?k' */
 const __static_show_menu_controls_hardcoded = cptr.alloc(6 * 16);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __s_return);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + $xtra_cntrls_desc, __s_accept_current_choice_s_and_dismiss_menu);
@@ -12267,10 +13514,17 @@ export function* show_menu_controls(win, dolist) {
     let arg;
     let xcp;
     let has_menu_shift = wc2_supported(__s_menu_shift);
+
+    /*
+     * Relies on spaces to line things up in columns, so must be rendered
+     * with a fixed-width font or will look dreadful.
+     */
+
     (yield* Y.icall(putstr()(win, 0, __s_menu_control_keys)));
     if (dolist) {
         let i;
         let ch;
+
         fmt = __s_7s_s;
         for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc); i++) {
             ch = cptr.ld1so2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_cmd);
@@ -12279,8 +13533,9 @@ export function* show_menu_controls(win, dolist) {
             void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc));
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
-        fmt = __s_s_7s_s;
-        arg = __s_empty;
+        /* no separator before hardcoded */
+        fmt = __s_s_7s_s;  /* extra specifier to absorb 'arg' */
+        arg = __s_empty;  /* no extra prefix for 'dolist' */
     } else {
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __s_empty, __s_whole, __s_current);
@@ -12311,9 +13566,10 @@ export function* show_menu_controls(win, dolist) {
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
         void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_search, visctrl(get_menu_cmd_key(58)), __s_exter_a_target_string_and_invert_all);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
+        /* separator before hardcoded */
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
         fmt = __s_9s_8s_s;
-        arg = __s_other;
+        arg = __s_other;  /* prefix for first hardcoded[] entry, then reset */
     }
     for (xcp = __static_show_menu_controls_hardcoded; cptr.ldPtr(xcp); xcp = cptr.add(xcp, 1, 16)) {
         void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, $xtra_cntrls_desc));
@@ -12326,6 +13582,7 @@ export function* show_menu_controls(win, dolist) {
 function count_cond() {
     let i;
     let cnt = 0;
+
     for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
         if (cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_enabled))
             cnt++;
@@ -12337,13 +13594,16 @@ function count_cond() {
 function count_apes() {
     let numapes = 0;
     let ape = cptr.ldPtro(ga, $instance_globals_a_apelist);
+
     while (ape) {
         numapes++;
         ape = cptr.ldPtro(ape, $autopickup_exception_next);
     }
+
     return numapes;
 }
 
+/* common to msg-types, menu-colors, autopickup-exceptions */
 const __static_handle_add_list_remove_action_titles = cptr.alloc(4 * $sizeof_action);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 0, 97);
 cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __s_add_new_s);
@@ -12363,12 +13623,15 @@ function* handle_add_list_remove(optname, numtotal) {
     let opt_idx;
     let pick_list = cptr.box(null);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 4; i++) {
         let tmpbuf = new Uint8Array(256);
+
         (cptr.stI32(any, cptr.ldI32(any) + 1)) - (1);
+        /* omit list and remove if there aren't any yet */
         if (!numtotal && (i == 1 || i == 2))
             continue;
         void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, $sizeof_action, $action_desc), (i == 1) ? (yield* makeplural(optname)) : optname);
@@ -12381,7 +13644,7 @@ function* handle_add_list_remove(optname, numtotal) {
             opt_idx = (cptr.ldI32o(pick_list.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.free(pick_list.v);
     } else
-        opt_idx = 3;
+        opt_idx = 3;  /* none selected, exit menu */
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     return opt_idx;
 }
@@ -12390,6 +13653,7 @@ function* handle_add_list_remove(optname, numtotal) {
 export function* dotogglepickup() {
     let buf = new Uint8Array(256);
     let ocl = new Uint8Array(19);
+
     cptr.st1o(flags, $flag_pickup, schar((!cptr.ld1so(flags, $flag_pickup))));
     if (cptr.ld1so(flags, $flag_pickup)) {
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
@@ -12401,16 +13665,20 @@ export function* dotogglepickup() {
     return NHM.ECMD_OK;
 }
 
+/* toggle any (settable in-game) boolean option by name */
 /** C ref: options.c:9278 — @param {CPtr<char>} p @returns {CInt} */
 export function* toggle_bool_option(p) {
     let i;
     let ret = NHM.ECMD_FAIL;
+
     for (i = 0; i < NHC.OPTCOUNT; i++)
         if (!(yield* strncmpi(cptr.ldPtro(allopt, i, $sizeof_allopt_t), p, Number(BigInt.asIntN(32, cptr.strlen(p))))) && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr) !== null) {
             let buf = new Uint8Array(256);
+
             void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, i, $sizeof_allopt_t));
             if ((yield* parseoptions(cptr.decay(buf), 0, 0)))
                 ret = NHM.ECMD_OK;
+
             (yield* reset_needed_visuals());
         }
     return ret;
@@ -12421,11 +13689,18 @@ const __static_add_autopickup_exception_APE_syntax_error = cptr.bytes("syntax er
 
 /** C ref: options.c:9300 — @param {CPtr<char>} mapping @returns {CInt} */
 export function* add_autopickup_exception(mapping) {
+
     let ape;
     let text = new Uint8Array(256);
     let end = cptr.box(0);
     let n;
     let grab = 0;
+
+    /* scan length limit used to be 255, but smaller size allows the
+       quoted value to fit within BUFSZ, simplifying formatting elsewhere;
+       this used to ignore the possibility of trailing junk but now checks
+       for it, accepting whitespace but rejecting anything else unless it
+       starts with '#" for a comment */
     end.v = 0;
     if ((n = sscanf(mapping, __s_253_c, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
         grab = 1;
@@ -12435,11 +13710,14 @@ export function* add_autopickup_exception(mapping) {
         (yield* config_error_add(__s_pct_s, cptr.decay(__static_add_autopickup_exception_APE_syntax_error)));
         return 0;
     }
+
     ape = (yield* alloc(32));
     cptr.stPtr(ape, (yield* regex_init()));
     if (!regex_compile(cptr.decay(text), cptr.ldPtr(ape))) {
         let errbuf = new Uint8Array(256);
         let re_error_desc = regex_error_desc(cptr.ldPtr(ape), cptr.decay(errbuf));
+
+        /* free first in case reason for failure was insufficient memory */
         regex_free(cptr.ldPtr(ape));
         cptr.free(ape);
         (yield* config_error_add(__s_s_s__2, cptr.decay(__static_add_autopickup_exception_APE_regex_error), re_error_desc));
@@ -12457,6 +13735,7 @@ function remove_autopickup_exception(whichape) {
     let ape;
     let freeape;
     let prev = null;
+
     for (ape = cptr.ldPtro(ga, $instance_globals_a_apelist); ape; ) {
         if (cptr.eq(ape, whichape)) {
             freeape = ape;
@@ -12478,6 +13757,7 @@ function remove_autopickup_exception(whichape) {
 /** C ref: options.c:9372 */
 export function free_autopickup_exceptions() {
     let ape;
+
     while ((ape = cptr.ldPtro(ga, $instance_globals_a_apelist)) !== null) {
         cptr.free(cptr.ldPtro(ape, $autopickup_exception_pattern));
         regex_free(cptr.ldPtr(ape));
@@ -12489,33 +13769,46 @@ export function free_autopickup_exceptions() {
 /** C ref: options.c:9385 — @param {CPtr<char>} strval @returns {CInt} */
 export function* sym_val(strval) {
     let buf = new Uint8Array(128);
-    let tmp = new Uint8Array(128);
+    let tmp = new Uint8Array(128);  /* to hold truncated copy of 'strval' */
+
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (!cptr.ld1so(strval, 0) || !cptr.ld1so(strval, 1)) {
+        /* if single char is space or tab, leave buf[0]=='\0' */
         if (!isspace(uchar(cptr.ld1so(strval, 0))))
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 0), 1);
     } else if (cptr.ld1so(strval, 0) == 39) {
+        /* simple matching single quote; we know strval[1] isn't '\0' */
         if (cptr.ld1so(strval, 2) == 39 && !cptr.ld1so(strval, 3)) {
+            /* accepts '\' as backslash and ''' as single quote */
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 1), 1);
+
+            /* if backslash, handle single or double quote or second backslash */
         } else if (cptr.ld1so(strval, 1) == 92 && cptr.ld1so(strval, 2) && cptr.ld1so(strval, 3) == 39 && cptr.strchr(__s_apos_quot_bslash, cptr.ld1so(strval, 2)) && !cptr.ld1so(strval, 4)) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 2), 1);
+
+            /* not simple quote or basic backslash;
+               strip closing quote and let escapes() deal with it */
         } else {
             let p;
+
+            /* +1: skip opening single quote */
             void __builtin___strncpy_chk(cptr.decay(tmp), cptr.add(strval, 1), 127n, __builtin_object_size(cptr.decay(tmp), 1));
             cptr.st1o(cptr.decay(tmp), 127n, 0, 1);
             if ((p = cptr.strrchr(cptr.decay(tmp), 39)) !== null) {
                 cptr.st1(p, 0);
                 (yield* escapes(cptr.decay(tmp), cptr.decay(buf)));
-            }
+            }  /* else buf[0] stays '\0' */
         }
     } else {
         void __builtin___strncpy_chk(cptr.decay(tmp), strval, 127n, __builtin_object_size(cptr.decay(tmp), 1));
         cptr.st1o(cptr.decay(tmp), 127n, 0, 1);
         (yield* escapes(cptr.decay(tmp), cptr.decay(buf)));
     }
+
     return cptr.ld1s(cptr.decay(buf));
 }
 
+/* data for option_help() */
 /** C ref: options.c:9429 — char *[10] */
 const opt_intro = cptr.alloc(10 * 8);
 cptr.stPtro(opt_intro, 0, __s_empty);
@@ -12549,11 +13842,14 @@ export function* option_help() {
     let optname;
     let i;
     let datawin;
+
     datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     nh_snprintf(__s_option_help, 9471, cptr.decay(buf), 256n, __s_set_options_as_options_options_in_s, get_configfile());
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
         (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_intro, i, 8))));
+
+    /* Boolean options */
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
         if ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
@@ -12565,6 +13861,8 @@ export function* option_help() {
         (yield* next_opt(datawin, optname));
     }
     (yield* next_opt(datawin, __s_empty));
+
+    /* Compound options */
     (yield* Y.icall(putstr()(datawin, 0, __s_compound_options)));
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
         if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
@@ -12579,6 +13877,8 @@ export function* option_help() {
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
+
+    /* Compound options */
     (yield* Y.icall(putstr()(datawin, 0, __s_other_settings)));
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
         if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.OthrOpt)
@@ -12586,28 +13886,60 @@ export function* option_help() {
         void cptr.sprintf(cptr.decay(buf), __s_sp_pct_s, cptr.ldPtro(allopt, i, $sizeof_allopt_t));
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
+
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
+
     for (i = 0; cptr.ldPtro(opt_epilog, i, 8); i++)
         (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_epilog, i, 8))));
+
+    /*
+     * TODO:
+     *  briefly describe interface-specific option-like settings for
+     *  the currently active interface:
+     *    X11 uses X-specific "application defaults" from NetHack.ad;
+     *    Qt has menu accessible "game -> Qt settings" (non-OSX) or
+     *      "nethack -> Preferences" (OSX) to maintain a few options
+     *      (font size, map tile size, paperdoll show/hide flag and
+     *      tile size) which persist across games;
+     *    Windows GUI also has some port-specific menus;
+     *    tty and curses: anything?
+     *  Best done via a new windowprocs function rather than plugging
+     *  in details here.
+     *
+     * Maybe:
+     *  switch from text window to pick-none menu so that user can
+     *  scroll back up.  (Not necessary for Qt where text windows are
+     *  already scrollable.)
+     */
+
     (yield* Y.icall(display_nhwindow()(datawin, 0)));
     (yield* Y.icall(destroy_nhwindow()(datawin)));
     return;
 }
 
+/* gather all non-default cond_xyz options into one OPTIONS=cond_foo,!cond_bar
+   entry spread across multiple lines with backslash+newline if needed;
+   conditions with their default settings (cond_blind, !cond_glowhands, &c)
+   are excluded */
 /** C ref: options.c:9556 — @param {CPtr<strbuf_t>} sbuf */
 function* all_options_conds(sbuf) {
     let buf = new Uint8Array(256);
     let nextcond = new Uint8Array(256);
     let idx = 0;
     let gotone = 0;
+
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     while (opt_next_cond(idx, cptr.decay(nextcond))) {
+        /* 75: room for about 5 conditions, with enough space for player
+           to edit resulting file manually and insert '!' in front of them */
         if (idx == 0) {
             void cptr.strcpy(cptr.decay(buf), __s_options__2);
         } else if (((((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1) >>> 0) + (yield* Strlen_(cptr.decay(nextcond), __s_all_options_conds, 9568))) >>> 0 >= 75) {
-            void cptr.strcat(cptr.decay(buf), __s_comma_bslash_nl);
+            /* finish off previous line */
+            void cptr.strcat(cptr.decay(buf), __s_comma_bslash_nl);  /* comma and backslash+newline */
             (yield* strbuf_append(sbuf, cptr.decay(buf)));
-            void cptr.sprintf(cptr.decay(buf), __s_8s, __s_sp);
+            /* indent continuation line */
+            void cptr.sprintf(cptr.decay(buf), __s_8s, __s_sp);  /* 8: strlen("OPTIONS=") */
         } else if (cptr.ld1so(cptr.decay(nextcond), 0, 1) && gotone) {
             void cptr.strcat(cptr.decay(buf), __s_comma);
         }
@@ -12617,26 +13949,35 @@ function* all_options_conds(sbuf) {
         }
         ++idx;
     }
+    /* finish off final line; value might be empty if one or more cond_xyz
+       options were changed in such a manner that they're all back to their
+       default values--which will produce "OPTIONS=" with nothing after the
+       equals sign; only add to the output when there is more present */
     if (strcmp(cptr.decay(buf), __s_options__2)) {
         void cptr.strcat(cptr.decay(buf), __s_nl);
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
     }
 }
 
+/* append menucolor lines to strbuf */
 /** C ref: options.c:9595 — @param {CPtr<strbuf_t>} sbuf */
 function* all_options_menucolors(sbuf) {
     let i = 0;
     let ncolors = count_menucolors();
     let tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings);
-    let buf = new Uint8Array(512);
+    let buf = new Uint8Array(512);  /* see also: add_menu_coloring() */
     let arr;
+
     if (!ncolors)
         return;
+
+    /* reverse the order */
     arr = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(ncolors)) * 8n)))));
     while (tmp) {
         cptr.stPtro(arr, i++, tmp, 8);
         tmp = cptr.ldPtro(tmp, $menucoloring_next);
     }
+
     for (i = ncolors; i > 0; i--) {
         tmp = cptr.ldPtro(arr, (i - 1) | 0, 8);
         let sattr = attr2attrname(cptr.ldI32o(tmp, $menucoloring_attr));
@@ -12644,6 +13985,7 @@ function* all_options_menucolors(sbuf) {
         void cptr.sprintf(cptr.decay(buf), __s_menucolor_s_s_s_s, cptr.ldPtro(tmp, $menucoloring_origstr), sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty);
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
     }
+
     cptr.free(arr);
 }
 
@@ -12651,6 +13993,7 @@ function* all_options_menucolors(sbuf) {
 function* all_options_msgtypes(sbuf) {
     let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
     let buf = new Uint8Array(256);
+
     while (tmp) {
         let mtype = msgtype2name(cptr.ldI16(tmp));
         void cptr.sprintf(cptr.decay(buf), __s_msgtype_s_s, mtype, cptr.ldPtro(tmp, $plinemsg_type_pattern));
@@ -12663,6 +14006,7 @@ function* all_options_msgtypes(sbuf) {
 function* all_options_apes(sbuf) {
     let tmp = cptr.ldPtro(ga, $instance_globals_a_apelist);
     let buf = new Uint8Array(256);
+
     while (tmp) {
         void cptr.sprintf(cptr.decay(buf), __s_autopickup_exception_c_s, cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, $autopickup_exception_pattern));
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
@@ -12670,6 +14014,7 @@ function* all_options_apes(sbuf) {
     }
 }
 
+/* return strbuf of all options, to write to file */
 /** C ref: options.c:9678 — @param {CPtr<strbuf_t>} sbuf */
 export function* all_options_strbuf(sbuf) {
     let name;
@@ -12677,9 +14022,11 @@ export function* all_options_strbuf(sbuf) {
     let buf2;
     let bool_p;
     let i;
+
     strbuf_init(sbuf);
     void cptr.sprintf(cptr.decay(tmp), __s_nethack_config_saved_s, (yield* yyyymmddhhmmss(0n)));
     (yield* strbuf_append(sbuf, cptr.decay(tmp)));
+
     for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
         if (!cptr.ld1so(cptr.decay(opt_set_in_config), i, 1))
             continue;
@@ -12687,7 +14034,7 @@ export function* all_options_strbuf(sbuf) {
             case NHC.BoolOpt:
             bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
             if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
-                break;
+                break;  /* obsolete */
             if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)) {
                 void cptr.sprintf(cptr.decay(tmp), __s_options_s_s, cptr.ld1s(bool_p) ? __s_empty : __s_bang, name);
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
@@ -12696,10 +14043,13 @@ export function* all_options_strbuf(sbuf) {
             case NHC.CompOpt:
             if (!(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_config || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_gameview || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game))
                 break;
+            /* FIXME: get_option_value for:
+               - menu_deselect_all &c menu control keys,
+               - term_cols, term_rows */
             buf2 = (yield* get_option_value(name, 1));
             if (buf2) {
                 nh_snprintf(__s_all_options_strbuf, 9714, cptr.decay(tmp), 255n, __s_options_s_s__2, name, buf2);
-                void cptr.strcat(cptr.decay(tmp), __s_nl);
+                void cptr.strcat(cptr.decay(tmp), __s_nl);  /* guaranteed to fit */
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
             }
             break;
@@ -12707,6 +14057,11 @@ export function* all_options_strbuf(sbuf) {
             break;
         }
     }
+
+    /* cond_xyz are closer to regular options than the other 'other opts'
+       so put them next; [pfx_cond_] will be set if any cond_Foo were
+       present when RC file was read in or if player made any changes via
+       status conditions menu; ignore opt_set_in_config[opt_o_status_cond] */
     if (cptr.ld1so(cptr.decay(opt_set_in_config), NHC.pfx_cond_, 1))
         (yield* all_options_conds(sbuf));
     (yield* get_changed_key_binds(sbuf));
@@ -12716,28 +14071,36 @@ export function* all_options_strbuf(sbuf) {
     (yield* all_options_apes(sbuf));
     (yield* all_options_autocomplete(sbuf));
     (yield* all_options_statushilites(sbuf));
+
     if (cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit)) {
         void cptr.sprintf(cptr.decay(tmp), __s_wizkit_s, cptr.add(gw, $instance_globals_w_wizkit));
         (yield* strbuf_append(sbuf, cptr.decay(tmp)));
     }
 }
 
+/*
+ * prints the next boolean option, on the same line if possible, on a new
+ * line if not. End with next_opt("").
+ */
 let __static_next_opt_buf = null; /** C ref: options.c:9757 — char * (function-static) */
 
 /** C ref: options.c:9755 — @param {CInt} datawin @param {CPtr<char>} str */
 export function* next_opt(datawin, str) {
     let i;
     let s;
+
     if (!__static_next_opt_buf)
         cptr.st1((__static_next_opt_buf = (yield* alloc(NHM.BUFSZ))), 0);
+
     if (!cptr.ld1s(str)) {
         s = eos(__static_next_opt_buf);
         if (cptr.cmp(s, cptr.add(__static_next_opt_buf, 1)) > 0 && cptr.ld1so(s, -2) == 44)
-            cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);
-        i = NHM.COLNO;
+            cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);  /* replace ending ", " with "." */
+        i = NHM.COLNO;  /* (greater than COLNO - 2) */
     } else {
         i = (((((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) + (yield* Strlen_(str, __s_next_opt, 9770))) >>> 0) + 2) >>> 0) | 0;
     }
+
     if (i > 78) {
         (yield* Y.icall(putstr()(datawin, 0, __static_next_opt_buf)));
         cptr.st1o(__static_next_opt_buf, 0, 0);
@@ -12864,9 +14227,17 @@ cptr.stU64o(wc2_options, 272 + $wc_Opt_wc_bit, 4n);
 cptr.stPtro(wc2_options, 288, null);
 cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
 
+/*
+ * If a port wants to change or ensure that the set_in_sysconf,
+ * set_in_config, set_gameview, or set_in_game status of an option is
+ * correct (for controlling its display in the option menu) call
+ * set_option_mod_status()
+ * with the appropriate second argument.
+ */
 /** C ref: options.c:9855 — @param {CPtr<char>} optnam @param {CInt} status */
 export function* set_option_mod_status(optnam, status) {
     let k;
+
     if (SET__IS_VALUE_VALID(status)) {
         (yield* impossible(__s_set_option_mod_status_status_out_of, status));
         return;
@@ -12879,9 +14250,19 @@ export function* set_option_mod_status(optnam, status) {
     }
 }
 
+/*
+ * You can set several wc_options in one call to
+ * set_wc_option_mod_status() by setting
+ * the appropriate bits for each option that you
+ * are setting in the optmask argument
+ * prior to calling.
+ *    example: set_wc_option_mod_status(WC_COLOR|WC_SCROLL_MARGIN,
+ * set_in_game);
+ */
 /** C ref: options.c:9881 — @param {CLongLong} optmask @param {CInt} status */
 export function* set_wc_option_mod_status(optmask, status) {
     let k = 0;
+
     if (SET__IS_VALUE_VALID(status)) {
         (yield* impossible(__s_set_wc_option_mod_status_status_out_of, status));
         return;
@@ -12897,6 +14278,7 @@ export function* set_wc_option_mod_status(optmask, status) {
 /** C ref: options.c:9899 — @param {CPtr<char>} optnam @returns {CInt} */
 function is_wc_option(optnam) {
     let k = 0;
+
     while (cptr.ldPtro(wc_options, k, $sizeof_wc_Opt)) {
         if (strcmp(cptr.ldPtro(wc_options, k, $sizeof_wc_Opt), optnam) == 0)
             return 1;
@@ -12908,6 +14290,7 @@ function is_wc_option(optnam) {
 /** C ref: options.c:9912 — @param {CPtr<char>} optnam @returns {CInt} */
 function wc_supported(optnam) {
     let k;
+
     for (k = 0; cptr.ldPtro(wc_options, k, $sizeof_wc_Opt); ++k) {
         if (!strcmp(cptr.ldPtro(wc_options, k, $sizeof_wc_Opt), optnam))
             return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap) & cptr.ldU64o2(wc_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) ? 1 : 0));
@@ -12915,9 +14298,21 @@ function wc_supported(optnam) {
     return 0;
 }
 
+/*
+ * You can set several wc2_options in one call to
+ * set_wc2_option_mod_status() by setting
+ * the appropriate bits for each option that you
+ * are setting in the optmask argument
+ * prior to calling.
+ *    example:
+ * set_wc2_option_mod_status(WC2_FULLSCREEN|WC2_SOFTKEYBOARD|WC2_WRAPTEXT,
+ * set_in_config);
+ */
+
 /** C ref: options.c:9935 — @param {CLongLong} optmask @param {CInt} status */
 export function* set_wc2_option_mod_status(optmask, status) {
     let k = 0;
+
     if (SET__IS_VALUE_VALID(status)) {
         (yield* impossible(__s_set_wc2_option_mod_status_status_out_of, status));
         return;
@@ -12933,6 +14328,7 @@ export function* set_wc2_option_mod_status(optmask, status) {
 /** C ref: options.c:9953 — @param {CPtr<char>} optnam @returns {CInt} */
 function is_wc2_option(optnam) {
     let k = 0;
+
     while (cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt)) {
         if (strcmp(cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt), optnam) == 0)
             return 1;
@@ -12944,6 +14340,7 @@ function is_wc2_option(optnam) {
 /** C ref: options.c:9966 — @param {CPtr<char>} optnam @returns {CInt} */
 function wc2_supported(optnam) {
     let k;
+
     for (k = 0; cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt); ++k) {
         if (!strcmp(cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt), optnam))
             return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap2) & cptr.ldU64o2(wc2_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) ? 1 : 0));
@@ -12954,6 +14351,7 @@ function wc2_supported(optnam) {
 /** C ref: options.c:9979 — @param {CInt} opttype @param {CPtr<char>} fontname */
 function* wc_set_font_name(opttype, fontname) {
     let fn = null;
+
     if (!fontname)
         return;
     switch (opttype) {
@@ -13002,6 +14400,11 @@ export let options_set_window_colors_flag = 0;
 
 /** C ref: options.c:10023 — @param {CPtr<char>} op @returns {CInt} */
 function* wc_set_window_colors(op) {
+    /* syntax:
+     *  menu white/black message green/yellow status white/blue text
+     * white/black
+     */
+
     let j;
     let clr;
     let buf = new Uint8Array(256);
@@ -13009,39 +14412,55 @@ function* wc_set_window_colors(op) {
     let tfg;
     let tbg;
     let newop;
+
     void cptr.strcpy(cptr.decay(buf), op);
     newop = (yield* mungspaces(cptr.decay(buf)));
     while (cptr.ld1s(newop)) {
         wn = (tfg = (tbg = null));
+
+        /* until first non-space in case there's leading spaces - before
+           colorname*/
         if (cptr.ld1s(newop) == 32)
             newop = cptr.add(newop, 1);
         if (!cptr.ld1s(newop))
             return 0;
         wn = newop;
+
+        /* until first space - colorname*/
         while (cptr.ld1s(newop) && cptr.ld1s(newop) != 32)
             newop = cptr.add(newop, 1);
         if (!cptr.ld1s(newop))
             return 0;
         cptr.st1(cptr.postinc(() => newop, (v) => { newop = v; }), 0);
+
+        /* until first non-space - before foreground*/
         if (cptr.ld1s(newop) == 32)
             newop = cptr.add(newop, 1);
         if (!cptr.ld1s(newop))
             return 0;
         tfg = newop;
+
+        /* until slash - foreground */
         while (cptr.ld1s(newop) && cptr.ld1s(newop) != 47)
             newop = cptr.add(newop, 1);
         if (!cptr.ld1s(newop))
             return 0;
         cptr.st1(cptr.postinc(() => newop, (v) => { newop = v; }), 0);
+
+        /* until first non-space (in case there's leading space after slash) -
+         * before background */
         if (cptr.ld1s(newop) == 32)
             newop = cptr.add(newop, 1);
         if (!cptr.ld1s(newop))
             return 0;
         tbg = newop;
+
+        /* until first space - background */
         while (cptr.ld1s(newop) && cptr.ld1s(newop) != 32)
             newop = cptr.add(newop, 1);
         if (cptr.ld1s(newop))
             cptr.st1(cptr.postinc(() => newop, (v) => { newop = v; }), 0);
+
         for (j = 0; j < NHC.WC_COUNT; ++j) {
             if (!(yield* strncmpi((wn), (cptr.ldPtro(wcnames, j, 8)), -1)) || !(yield* strncmpi((wn), (cptr.ldPtro(wcshortnames, j, 8)), -1))) {
                 if (!(yield* strstri(tfg, __s_sp))) {
@@ -13074,6 +14493,7 @@ function* wc_set_window_colors(op) {
 /** C ref: options.c:10116 */
 export function options_free_window_colors() {
     let j;
+
     for (j = 0; j < NHC.WC_COUNT; ++j) {
         if (cptr.ldPtr(cptr.ldPtro(fgp, j, 8)))
             cptr.free(cptr.ldPtr(cptr.ldPtro(fgp, j, 8))), cptr.stPtr(cptr.ldPtro(fgp, j, 8), null);
@@ -13083,25 +14503,35 @@ export function options_free_window_colors() {
     options_set_window_colors_flag = 0;
 }
 
+/* set up for wizard mode if player or save file has requested it;
+   called from port-specific startup code to handle `nethack -D' or
+   OPTIONS=playmode:debug, or from dorecover()'s restgamestate() if
+   restoring a game which was saved in wizard mode */
 /** C ref: options.c:10134 */
 export function set_playmode() {
     if (wizard()) {
         if (authorize_wizard_mode())
             cptr.stI32o(gp, $instance_globals_p_plnamelen, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __s_wizard)))));
         else
-            cptr.st1o(flags, $flag_debug, 0);
+            cptr.st1o(flags, $flag_debug, 0);  /* not allowed or not available */
+        /* try explore mode if we didn't make it into wizard mode */
+        /* if requesting wizard mode when restoring a normal game, this will
+           set iflags.deferred_X and prompt to activate explore mode after the
+           save file has already been deleted */
         cptr.st1o(flags, $flag_explore, schar((!wizard())));
         cptr.st1o(iflags, $instance_flags_deferred_X, 0);
     }
     if (discover() && !authorize_explore_mode()) {
         cptr.st1o(flags, $flag_explore, cptr.st1o(iflags, $instance_flags_deferred_X, 0));
     }
+    /* don't need to do anything special for normal play */
 }
 
 /** C ref: options.c:10155 — @param {CPtr<char>} buf @param {CLongLong} sz @param {CInt} whichpass @param {CPtr<boolean>} bool_p @param {CPtr<struct allopt_t>} thisopt */
 function enhance_menu_text(buf, sz, whichpass, bool_p, thisopt) {
     let nowsz;
     let availsz;
+
     if (!buf)
         return;
     nowsz = BigInt.asUintN(64, cptr.strlen(buf) + 1n);
@@ -13115,6 +14545,7 @@ function enhance_menu_text(buf, sz, whichpass, bool_p, thisopt) {
 /** C ref: options.c:10183 */
 export function heed_all_options() {
     let i;
+
     for (i = 0; i < NHC.OPTCOUNT; i++)
         cptr.st1o2(allopt, i, $sizeof_allopt_t, $allopt_t_disregarded, 0);
 }
@@ -13122,6 +14553,7 @@ export function heed_all_options() {
 /** C ref: options.c:10192 */
 export function disregard_all_options() {
     let i;
+
     for (i = 0; i < NHC.OPTCOUNT; i++)
         cptr.st1o2(allopt, i, $sizeof_allopt_t, $allopt_t_disregarded, 1);
 }

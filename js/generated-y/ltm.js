@@ -119,16 +119,20 @@ export function* luaT_init(L) {
     let i;
     for (i = 0; i < NHC.TM_N; i++) {
         cptr.stPtro2((cptr.ldPtro(L, $lua_State_l_G)), i, 8, $global_State_tmname, (yield* luaS_new(L, cptr.ldPtro(__static_luaT_init_luaT_eventname, i, 8))));
-        luaC_fix(L, ((((cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), i, 8, $global_State_tmname))))));
+        luaC_fix(L, ((((cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), i, 8, $global_State_tmname))))));  /* never collect these names */
     }
 }
 
+/*
+** function to be used with macro "fasttm": optimized for absence of
+** tag methods
+*/
 /** C ref: ltm.c:60 — @param {CPtr<Table>} events @param {*} event @param {CPtr<TString>} ename @returns {CPtr<TValue>} */
 export function luaT_gettm(events, event, ename) {
     let tm = luaH_getshortstr(events, ename);
     (void 0);
     if ((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) {
-        cptr.st1o(events, $Table_flags, cptr.ld1uo(events, $Table_flags) | (uchar((((1 << event) >>> 0)))));
+        cptr.st1o(events, $Table_flags, cptr.ld1uo(events, $Table_flags) | (uchar((((1 << event) >>> 0)))));  /* cache this fact */
         return null;
     } else
         return tm;
@@ -150,22 +154,26 @@ export function luaT_gettmbyobj(L, o, event) {
     return (mt ? luaH_getshortstr(mt, cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), event, 8, $global_State_tmname)) : cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue));
 }
 
+/*
+** Return the name of the type of an object. For tables and userdata
+** with metatable, use their '__name' metafield, if present.
+*/
 /** C ref: ltm.c:91 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @returns {CPtr<char>} */
 export function* luaT_objtypename(L, o) {
     let mt;
     if ((((cptr.ld1uo(((o)), $TValue_tt_)) == 69) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Table_metatable)), (null))) || (((cptr.ld1uo(((o)), $TValue_tt_)) == 71) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Udata_metatable)), (null)))) {
         let name = luaH_getshortstr(mt, (yield* luaS_new(L, __s_name)));
         if ((((((cptr.ld1uo(((name)), $TValue_tt_))) & 15)) == 4))
-            return (cptr.add((((((((cptr.ldPtr(((name)))))))))), $TString_contents));
+            return (cptr.add((((((((cptr.ldPtr(((name)))))))))), $TString_contents));  /* use it as type name */
     }
-    return cptr.ldPtro(luaT_typenames_, ((((((cptr.ld1uo((o), $TValue_tt_))) & 15))) + 1) | 0, 8);
+    return cptr.ldPtro(luaT_typenames_, ((((((cptr.ld1uo((o), $TValue_tt_))) & 15))) + 1) | 0, 8);  /* else use standard type name */
 }
 
 /** C ref: ltm.c:103 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} f @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr<TValue>} p3 */
 export function* luaT_callTM(L, f, p1, p2, p3) {
     let func = cptr.ldPtro(L, $lua_State_top);
     {
-        let io1 = (((func)));
+        let io1 = (((func)));  /* push function (assume EXTRA_STACK) */
         let io2 = (f);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -174,7 +182,7 @@ export function* luaT_callTM(L, f, p1, p2, p3) {
     }
     ;
     {
-        let io1 = (((cptr.add(func, 1, 16))));
+        let io1 = (((cptr.add(func, 1, 16))));  /* 1st argument */
         let io2 = (p1);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -183,7 +191,7 @@ export function* luaT_callTM(L, f, p1, p2, p3) {
     }
     ;
     {
-        let io1 = (((cptr.add(func, 2, 16))));
+        let io1 = (((cptr.add(func, 2, 16))));  /* 2nd argument */
         let io2 = (p2);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -192,7 +200,7 @@ export function* luaT_callTM(L, f, p1, p2, p3) {
     }
     ;
     {
-        let io1 = (((cptr.add(func, 3, 16))));
+        let io1 = (((cptr.add(func, 3, 16))));  /* 3rd argument */
         let io2 = (p3);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -201,6 +209,7 @@ export function* luaT_callTM(L, f, p1, p2, p3) {
     }
     ;
     cptr.stPtro(L, $lua_State_top, cptr.add(func, 4, 16));
+    /* metamethod may yield only when called from Lua code */
     if ((!(cptr.ldU16o((cptr.ldPtro(L, $lua_State_ci)), $CallInfo_callstatus) & 10)))
         (yield* luaD_call(L, func, 0));
     else
@@ -212,7 +221,7 @@ export function* luaT_callTMres(L, f, p1, p2, res) {
     let result = (cptr.diff((((res))), (((cptr.ldPtro(L, $lua_State_stack))))));
     let func = cptr.ldPtro(L, $lua_State_top);
     {
-        let io1 = (((func)));
+        let io1 = (((func)));  /* push function (assume EXTRA_STACK) */
         let io2 = (f);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -221,7 +230,7 @@ export function* luaT_callTMres(L, f, p1, p2, res) {
     }
     ;
     {
-        let io1 = (((cptr.add(func, 1, 16))));
+        let io1 = (((cptr.add(func, 1, 16))));  /* 1st argument */
         let io2 = (p1);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -230,7 +239,7 @@ export function* luaT_callTMres(L, f, p1, p2, res) {
     }
     ;
     {
-        let io1 = (((cptr.add(func, 2, 16))));
+        let io1 = (((cptr.add(func, 2, 16))));  /* 2nd argument */
         let io2 = (p2);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -239,13 +248,14 @@ export function* luaT_callTMres(L, f, p1, p2, res) {
     }
     ;
     cptr.stPtro(L, $lua_State_top, cptr.add(cptr.ldPtro(L, $lua_State_top), 3, 16));
+    /* metamethod may yield only when called from Lua code */
     if ((!(cptr.ldU16o((cptr.ldPtro(L, $lua_State_ci)), $CallInfo_callstatus) & 10)))
         (yield* luaD_call(L, func, 1));
     else
         (yield* luaD_callnoyield(L, func, 1));
     res = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (result))));
     {
-        let io1 = (((res)));
+        let io1 = (((res)));  /* move result to its place */
         let io2 = (((cptr.predec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -257,9 +267,9 @@ export function* luaT_callTMres(L, f, p1, p2, res) {
 
 /** C ref: ltm.c:137 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr} res @param {*} event @returns {CInt} */
 function* callbinTM(L, p1, p2, res, event) {
-    let tm = luaT_gettmbyobj(L, p1, event);
+    let tm = luaT_gettmbyobj(L, p1, event);  /* try first operand */
     if ((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0))
-        tm = luaT_gettmbyobj(L, p2, event);
+        tm = luaT_gettmbyobj(L, p2, event);  /* try second operand */
     if ((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0))
         return 0;
     (yield* luaT_callTMres(L, tm, p1, p2, res));
@@ -315,12 +325,21 @@ export function* luaT_trybiniTM(L, p1, i2, flip, res, event) {
     (yield* luaT_trybinassocTM(L, p1, aux, flip, res, event));
 }
 
+/*
+** Calls an order tag method.
+** For lessequal, LUA_COMPAT_LT_LE keeps compatibility with old
+** behavior: if there is no '__le', try '__lt', based on l <= r iff
+** !(r < l) (assuming a total order). If the metamethod yields during
+** this substitution, the continuation has to know about it (to negate
+** the result of r<l); bit CIST_LEQ in the call status keeps that
+** information.
+*/
 /** C ref: ltm.c:201 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {*} event @returns {CInt} */
 export function* luaT_callorderTM(L, p1, p2, event) {
     if ((yield* callbinTM(L, p1, p2, cptr.ldPtro(L, $lua_State_top), event)))
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) || (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) & 15)) == 0));
-    (yield* luaG_ordererror(L, p1, p2));
-    return 0;
+    (yield* luaG_ordererror(L, p1, p2));  /* no metamethod found */
+    return 0;  /* to avoid warnings */
 }
 
 /** C ref: ltm.c:221 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CInt} v2 @param {CInt} flip @param {CInt} isfloat @param {*} event @returns {CInt} */
@@ -341,7 +360,7 @@ export function* luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
     }
     ;
     if (flip) {
-        p2 = p1;
+        p2 = p1;  /* correct them */
         p1 = aux;
     } else
         p2 = aux;
@@ -351,8 +370,8 @@ export function* luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
 /** C ref: ltm.c:238 — @param {CPtr<lua_State>} L @param {CInt} nfixparams @param {CPtr<CallInfo>} ci @param {CPtr<Proto>} p */
 export function* luaT_adjustvarargs(L, nfixparams, ci, p) {
     let i;
-    let actual = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtr(ci)) / 16n))))) - 1) | 0;
-    let nextra = (actual - nfixparams) | 0;
+    let actual = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtr(ci)) / 16n))))) - 1) | 0;  /* number of arguments */
+    let nextra = (actual - nfixparams) | 0;  /* number of extra arguments */
     cptr.stI32o(ci, $CallInfo_u + 12, nextra);
     if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= BigInt(((cptr.ld1uo(p, $Proto_maxstacksize) + 1) | 0))) != 0)), 0n))) {
         void 0;
@@ -363,6 +382,7 @@ export function* luaT_adjustvarargs(L, nfixparams, ci, p) {
     }
     ;
     {
+        /* copy function to the top of the stack */
         let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
         let io2 = (((cptr.ldPtr(ci))));
         cptr.memcpy(io1, io2, 8);
@@ -371,6 +391,7 @@ export function* luaT_adjustvarargs(L, nfixparams, ci, p) {
         (void 0);
     }
     ;
+    /* move fixed parameters to the top of the stack */
     for (i = 1; i <= nfixparams; i++) {
         {
             let io1 = (((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16))));
@@ -381,7 +402,7 @@ export function* luaT_adjustvarargs(L, nfixparams, ci, p) {
             (void 0);
         }
         ;
-        (cptr.st1o((((cptr.add(cptr.ldPtr(ci), i, 16)))), $TValue_tt_, 0));
+        (cptr.st1o((((cptr.add(cptr.ldPtr(ci), i, 16)))), $TValue_tt_, 0));  /* erase original parameter (for GC) */
     }
     cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), (actual + 1) | 0, 16));
     cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(ci, $CallInfo_top), (actual + 1) | 0, 16));
@@ -393,9 +414,9 @@ export function* luaT_getvarargs(L, ci, where, wanted) {
     let i;
     let nextra = cptr.ldI32o(ci, $CallInfo_u + 12);
     if (wanted < 0) {
-        wanted = nextra;
+        wanted = nextra;  /* get all extra arguments available */
         if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= BigInt((nextra))) != 0)), 0n))) {
-            let t__ = (cptr.diff((((where))), (((cptr.ldPtro(L, $lua_State_stack))))));
+            let t__ = (cptr.diff((((where))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* ensure stack space */
             {
                 if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
                     void 0;
@@ -412,7 +433,7 @@ export function* luaT_getvarargs(L, ci, where, wanted) {
             (void 0);
         }
         ;
-        cptr.stPtro(L, $lua_State_top, cptr.add(where, nextra, 16));
+        cptr.stPtro(L, $lua_State_top, cptr.add(where, nextra, 16));  /* next instruction will need top */
     }
     for (i = 0; i < wanted && i < nextra; i++) {
         let io1 = (((cptr.add(where, i, 16))));

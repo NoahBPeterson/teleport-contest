@@ -184,12 +184,22 @@ function def_raw_print(s) {
 
 /** C ref: windows.c:215 */
 function def_wait_synch() {
+    /* Config file error handling routines
+     * call wait_sync() without checking to
+     * see if it actually has a value,
+     * leading to spectacular violations
+     * when you try to execute address zero.
+     * The existence of this allows early
+     * processing to have something to execute
+     * even though it essentially does nothing
+     */
     return;
 }
 
 /** C ref: windows.c:231 — @param {CLongLong} wincap @returns {CInt} */
 export function check_tty_wincap(wincap) {
     let wc = win_choices_find(__s_tty);
+
     if (wc)
         return schar(((cptr.ldU64o(cptr.ldPtr(wc), $window_procs_wincap) & wincap) == wincap));
     return 0;
@@ -198,6 +208,7 @@ export function check_tty_wincap(wincap) {
 /** C ref: windows.c:241 — @param {CLongLong} wincap2 @returns {CInt} */
 export function check_tty_wincap2(wincap2) {
     let wc = win_choices_find(__s_tty);
+
     if (wc)
         return schar(((cptr.ldU64o(cptr.ldPtr(wc), $window_procs_wincap2) & wincap2) == wincap2));
     return 0;
@@ -206,6 +217,7 @@ export function check_tty_wincap2(wincap2) {
 /** C ref: windows.c:253 — @param {CPtr<char>} s @returns {CPtr<struct win_choices>} */
 function win_choices_find(s) {
     let i;
+
     for (i = 0; cptr.ldPtro(winchoices, i, $sizeof_win_choices); i++) {
         if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices))), -1)) {
             return cptr.add(winchoices, i, $sizeof_win_choices);
@@ -218,6 +230,7 @@ function win_choices_find(s) {
 export function choose_windows(s) {
     let i;
     let tmps = null;
+
     for (i = 0; cptr.ldPtro(winchoices, i, $sizeof_win_choices); i++) {
         if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
             continue;
@@ -225,6 +238,7 @@ export function choose_windows(s) {
             continue;
         if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices))), -1)) {
             cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, $sizeof_win_choices), 416);
+
             if (cptr.ldPtro(gl, $instance_globals_l_last_winchoice) && cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))
                 (cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))(NHM.WININIT_UNDO);
             if (cptr.ldPtro2(winchoices, i, $sizeof_win_choices, $win_choices_ini_routine))
@@ -233,10 +247,13 @@ export function choose_windows(s) {
             return;
         }
     }
+
     if (!cptr.ldPtro(windowprocs, $window_procs_win_raw_print))
         cptr.stPtro(windowprocs, $window_procs_win_raw_print, def_raw_print);
     if (!cptr.ldPtro(windowprocs, $window_procs_win_wait_synch))
+        /* early config file error processing routines call this */
         cptr.stPtro(windowprocs, $window_procs_win_wait_synch, def_wait_synch);
+
     if (!cptr.ldPtro(winchoices, 0, $sizeof_win_choices)) {
         raw_printf(__s_no_window_types_supported);
         nh_terminate(1);
@@ -247,11 +264,13 @@ export function choose_windows(s) {
         cptr.st1o(tmps, 49, 0);
         s = tmps;
     }
+
     if (!cptr.ldPtro(winchoices, 1, $sizeof_win_choices)) {
         config_error_add(__s_window_type_s_not_recognized_the_only, s, cptr.ldPtr(cptr.ldPtro(winchoices, 0, $sizeof_win_choices)));
     } else {
         let buf = new Uint8Array(256);
         let first = 1;
+
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         for (i = 0; cptr.ldPtro(winchoices, i, $sizeof_win_choices); i++) {
             if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
@@ -265,28 +284,72 @@ export function choose_windows(s) {
     }
     if (tmps)
         cptr.free(tmps);
+
     if (cptr.ldPtro(windowprocs, $window_procs_win_raw_print) === def_raw_print)
         nh_terminate(0);
 }
 
+/*
+ * tty_message_menu() provides a means to get feedback from the
+ * --More-- prompt; other interfaces generally don't need that.
+ */
+/*ARGSUSED*/
 /** C ref: windows.c:451 — @param {CInt} let @param {CInt} how @param {CPtr<char>} mesg @returns {CInt} */
 export function genl_message_menu(let$, how, mesg) {
     pline(__s_pct_s, mesg);
     return 0;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:461 — @param {CPtr<char>} pref */
 export function genl_preference_update(pref) {
+    /* window ports are expected to provide
+       their own preference update routine
+       for the preference capabilities that
+       they support.
+       Just return in this genl one. */
     return;
 }
 
 /** C ref: windows.c:472 — @param {CInt} init @returns {CPtr<char>} */
 export function genl_getmsghistory(init) {
+    /* window ports can provide
+       their own getmsghistory() routine to
+       preserve message history between games.
+       The routine is called repeatedly from
+       the core save routine, and the window
+       port is expected to successively return
+       each message that it wants saved, starting
+       with the oldest message first, finishing
+       with the most recent.
+       Return null pointer when finished.
+     */
     return null;
 }
 
 /** C ref: windows.c:489 — @param {CPtr<char>} msg @param {CInt} is_restoring */
 export function genl_putmsghistory(msg, is_restoring) {
+    /* window ports can provide
+       their own putmsghistory() routine to
+       load message history from a saved game.
+       The routine is called repeatedly from
+       the core restore routine, starting with
+       the oldest saved message first, and
+       finishing with the latest.
+       The window port routine is expected to
+       load the message recall buffers in such
+       a way that the ordering is preserved.
+       The window port routine should make no
+       assumptions about how many messages are
+       forthcoming, nor should it assume that
+       another message will follow this one,
+       so it should keep all pointers/indexes
+       intact at the end of each call.
+    */
+
+    /* this doesn't provide for reloading the message window with the
+       previous session's messages upon restore, but it does put the quest
+       message summary lines there by treating them as ordinary messages */
     if (!is_restoring)
         pline(__s_pct_s, msg);
     return;
@@ -364,23 +427,37 @@ cptr.stPtro(hup_procs, $window_procs_win_ctrl_nhwindow, hup_ctrl_nhwindow);
 /** C ref: windows.c:611 — void (*)( char *) */
 let previnterface_exit_nhwindows = null;
 
+/* hangup has occurred; switch to no-op user interface */
 /** C ref: windows.c:615 */
 export function nhwindows_hangup() {
     let previnterface_getmsghistory = null;
+    /* command processor shouldn't look for 2nd char after seeing ESC */
     cptr.st1o(iflags, $instance_flags_altmeta, 0);
+
+    /* don't call exit_nhwindows() directly here; if a hangup occurs
+       while interface code is executing, exit_nhwindows could knock
+       the interface's active data structures out from under itself */
     if (cptr.ld1so(iflags, $instance_flags_window_inited) && cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows) !== hup_exit_nhwindows)
         previnterface_exit_nhwindows = cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows);
+
+    /* also, we have to leave the old interface's getmsghistory()
+       in place because it will be called while saving the game */
     if (cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory) !== cptr.ldPtro(hup_procs, $window_procs_win_getmsghistory))
         previnterface_getmsghistory = cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory);
+
     cptr.memcpy(windowprocs, hup_procs, 416);
+
     if (previnterface_getmsghistory)
         cptr.stPtro(windowprocs, $window_procs_win_getmsghistory, previnterface_getmsghistory);
 }
 
 /** C ref: windows.c:643 — @param {CPtr<char>} lastgasp */
 function hup_exit_nhwindows(lastgasp) {
+    /* core has called exit_nhwindows(); call the previous interface's
+       shutdown routine now; xxx_exit_nhwindows() needs to call other
+       xxx_ routines directly rather than through windowprocs pointers */
     if (previnterface_exit_nhwindows) {
-        lastgasp = null;
+        lastgasp = null;  /* don't want exit routine to attempt extra output */
         (previnterface_exit_nhwindows)(lastgasp);
         previnterface_exit_nhwindows = null;
     }
@@ -389,9 +466,10 @@ function hup_exit_nhwindows(lastgasp) {
 
 /** C ref: windows.c:657 @returns {CInt} */
 function hup_nhgetch() {
-    return 27;
+    return 27;  /* ESC */
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:664 — @param {CPtr<char>} prompt @param {CPtr<char>} resp @param {CInt} deflt @returns {CInt} */
 function hup_yn_function(prompt, resp, deflt) {
     if (!deflt)
@@ -399,80 +477,99 @@ function hup_yn_function(prompt, resp, deflt) {
     return deflt;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:676 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 function hup_nh_poskey(x, y, mod) {
     return 27;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:683 — @param {CPtr<char>} prompt @param {CPtr<char>} outbuf */
 function hup_getlin(prompt, outbuf) {
     void cptr.strcpy(outbuf, __s_esc);
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:690 — @param {CPtr<int>} argc_p @param {CPtr<char *>} argv */
 function hup_init_nhwindows(argc_p, argv) {
     cptr.st1o(iflags, $instance_flags_window_inited, 1);
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:697 — @param {CInt} type @returns {*} */
 function hup_create_nhwindow(type) {
     return -1;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:704 — @param {CInt} window @param {CInt} how @param {CPtr<struct mi *>} menu_list @returns {CInt} */
 function hup_select_menu(window, how, menu_list) {
     return -1;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:714 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} sel @param {CInt} grpsel @param {CInt} attr @param {CInt} clr @param {CPtr<char>} txt @param {CUInt} itemflags */
 function hup_add_menu(window, glyphinfo, identifier, sel, grpsel, attr, clr, txt, itemflags) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:730 — @param {CInt} window @param {CPtr<char>} prompt */
 function hup_end_menu(window, prompt) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:737 — @param {CInt} window @param {CInt} attr @param {CPtr<char>} text */
 function hup_putstr(window, attr, text) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:744 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr<glyph_info>} glyphinfo @param {CPtr<glyph_info>} bkglyphinfo */
 function hup_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:755 — @param {CInt} tmpwin @param {CInt} how @param {CLongLong} when */
 function hup_outrip(tmpwin, how, when) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:762 — @param {CInt} window @param {CInt} x @param {CInt} y */
 function hup_curs(window, x, y) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:769 — @param {CInt} window @param {CInt} blocking */
 function hup_display_nhwindow(window, blocking) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:776 — @param {CPtr<char>} fname @param {CInt} complain */
 function hup_display_file(fname, complain) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:784 — @param {CInt} x @param {CInt} y */
 function hup_cliparound(x, y) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:816 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} pc @param {CInt} color @param {CPtr<unsigned long>} colormasks */
 function hup_status_update(idx, ptr, chg, pc, color, colormasks) {
     return;
 }
+
+/*
+ * Non-specific stubs.
+ */
 
 /** C ref: windows.c:829 @returns {CInt} */
 function hup_int_ndecl() {
@@ -484,30 +581,39 @@ function hup_void_ndecl() {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:842 — @param {CInt} arg */
 function hup_void_fdecl_int(arg) {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:849 — @param {CInt} window */
 function hup_void_fdecl_winid(window) {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:856 — @param {CInt} window @param {CLongLong} mbehavior */
 function hup_void_fdecl_winid_ulong(window, mbehavior) {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:865 — @param {CPtr<char>} string */
 function hup_void_fdecl_constchar_p(string) {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:872 — @param {CInt} window @param {CInt} request @param {CPtr<win_request_info>} wri @returns {CPtr<win_request_info>} */
 export function hup_ctrl_nhwindow(window, request, wri) {
     return null;
 }
+
+/****************************************************************************/
+/* genl backward compat stuff                                               */
+/****************************************************************************/
 
 /** C ref: windows.c:887 — char *[27] */
 export const status_fieldnm = cptr.alloc(27 * 8);
@@ -524,19 +630,24 @@ export const status_activefields = new Uint8Array(27);
 /** C ref: windows.c:893 */
 export function genl_status_init() {
     let i;
+
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         cptr.stPtro(status_vals, i, alloc(NHM.MAXCO), 8);
         cptr.st1(cptr.ldPtro(status_vals, i, 8), 0);
         cptr.st1o(cptr.decay(status_activefields), i, 0, 1);
         cptr.stPtro(status_fieldfmt, i, null, 8);
     }
+    /* Use a window for the genl version; backward port compatibility */
     WIN_STATUS.v = create_nhwindow()(NHM.NHW_STATUS);
     display_nhwindow()(WIN_STATUS.v, 0);
 }
 
 /** C ref: windows.c:909 */
 export function genl_status_finish() {
+    /* tear down routine */
     let i;
+
+    /* free alloc'd memory here */
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         if (cptr.ldPtro(status_vals, i, 8))
             cptr.free(cptr.ldPtro(status_vals, i, 8)), cptr.stPtro(status_vals, i, null, 8);
@@ -550,6 +661,7 @@ export function genl_status_enablefield(fieldidx, nm, fmt, enable) {
     cptr.st1o(cptr.decay(status_activefields), fieldidx, enable, 1);
 }
 
+/* call once for each field, then call with BL_FLUSH to output the result */
 const __static_genl_status_update_fieldorder = (function () { const flat = new Uint8Array(5 * 15 * 4); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * 15 * 4, (r + 1) * 15 * 4)); a.buf = flat; return a; })();
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 0, NHC.BL_TITLE);
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 4, NHC.BL_STR);
@@ -641,7 +753,12 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
     let fieldlist;
     let nb;
     let text = ptr;
+
+    /* in case interface is using genl_status_update() but has not
+       specified WC2_FLUSH_STATUS (status_update() for field values
+       is buffered so final BL_FLUSH is needed to produce output) */
     cptr.stU64o(windowprocs, $window_procs_wincap2, cptr.ldU64o(windowprocs, $window_procs_wincap2) | 128n);
+
     if (idx >= 0) {
         if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
             return;
@@ -681,17 +798,32 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
             void cptr.sprintf(cptr.ldPtro(status_vals, idx, 8), cptr.ldPtro(status_fieldfmt, idx, 8) ? cptr.ldPtro(status_fieldfmt, idx, 8) : __s_pct_s, text ? text : __s_empty);
             break;
         }
-        return;
-    }
+        return;  /* processed one field other than BL_FLUSH */
+    }  /* (idx >= 0, thus not BL_FLUSH, BL_RESET, BL_CHARACTERISTICS) */
+
+    /* does BL_RESET require any specific code to ensure all fields ? */
+
     if (!(idx == NHC.BL_FLUSH || idx == NHC.BL_RESET))
         return;
+
+    /* We've received BL_FLUSH; time to output the gathered data */
     nb = cptr.decay(newbot1);
     cptr.st1(nb, 0);
+    /* BL_FLUSH is the only pseudo-index value we need to check for
+       in the loop below because it is the only entry used to pad the
+       end of the fieldorder array. We could stop on any
+       negative (illegal) index, but this should be fine */
     for (i = 0; (idx1 = cptr.ldI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4)) != NHC.BL_FLUSH; ++i) {
         if (cptr.ld1so(cptr.decay(status_activefields), idx1, 1))
             void cptr.strcpy(nb = eos(nb), cptr.ldPtro(status_vals, idx1, 8));
     }
+    /* if '$' is encoded, buffer length of \GXXXXNNNN is 9 greater than
+       single char; we want to subtract that 9 when checking display length */
     lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) && cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __s_bslash_g)) ? 9 : 0) >>> 0;
+    /* basic bot2 formats groups of second line fields into five buffers,
+       then decides how to order those buffers based on comparing lengths
+       of [sub]sets of them to the width of the map; we have more control
+       here but currently emulate that behavior */
     for (pass = 1; pass <= 4; pass++) {
         fieldlist = cptr.decay(__static_genl_status_update_fieldorder[pass]);
         nb = cptr.decay(newbot2);
@@ -699,6 +831,7 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
         for (i = 0; (idx2 = cptr.ldI32o(fieldlist, i, 4)) != NHC.BL_FLUSH; ++i) {
             if (cptr.ld1so(cptr.decay(status_activefields), idx2, 1)) {
                 let val = cptr.ldPtro(status_vals, idx2, 8);
+
                 switch (idx2) {
                     case NHC.BL_HP:
                     case NHC.BL_XP:
@@ -707,35 +840,43 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                     void cptr.strcpy(nb = eos(nb), __s_sp);
                     break;
                     case NHC.BL_LEVELDESC:
+                    /* leveldesc has no leading space, so if we've moved
+                       it past the first position, provide one */
                     if (i != 0)
                         void cptr.strcpy(nb = eos(nb), __s_sp);
                     break;
                     case NHC.BL_HUNGER:
+                    /* hunger==" " - keep it, end up with " ";
+                       hunger!=" " - insert space and get "  hunger" */
                     if (strcmp(val, __s_sp))
                         void cptr.strcpy(nb = eos(nb), __s_sp);
                     break;
                     case NHC.BL_CAP:
+                    /* cap==" " - suppress it, retain "  hunger" or " ";
+                       cap!=" " - use it, get "  hunger cap" or "  cap" */
                     if (!strcmp(val, __s_sp))
                         val = cptr.add(val, 1);
                     break;
                     default:
                     break;
                 }
-                void cptr.strcpy(nb = eos(nb), val);
-            }
+                void cptr.strcpy(nb = eos(nb), val);  /* status_vals[idx2] */
+            }  /* status_activefields[idx2] */
+
             if (idx2 == NHC.BL_CONDITION && pass < 4 && BigInt.asUintN(64, cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)) > 80n)
-                break;
-        }
+                break;  /* switch to next order */
+        }  /* i */
+
         if (idx2 == NHC.BL_FLUSH) {
             if (pass > 1)
                 mungspaces(cptr.decay(newbot2));
             break;
         }
-    }
+    }  /* pass */
     curs()(WIN_STATUS.v, 1, 0);
     putstr()(WIN_STATUS.v, 0, cptr.decay(newbot1));
     curs()(WIN_STATUS.v, 1, 1);
-    putmixed()(WIN_STATUS.v, 0, cptr.decay(newbot2));
+    putmixed()(WIN_STATUS.v, 0, cptr.decay(newbot2));  /* putmixed() due to GOLD glyph */
 }
 
 /** C ref: windows.c:1119 — struct window_procs */
@@ -765,6 +906,7 @@ export function dump_forward_putstr(win, attr, str, no_forward) {
         putstr()(win, attr, str);
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:1286 — @param {CInt} win @param {CInt} attr @param {CPtr<char>} str */
 function dump_putstr(win, attr, str) {
     if (dumplog_file)
@@ -776,26 +918,31 @@ function dump_create_nhwindow(type) {
     return -1;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:1300 — @param {CInt} win */
 function dump_clear_nhwindow(win) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:1307 — @param {CInt} win @param {CInt} p */
 function dump_display_nhwindow(win, p) {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:1314 — @param {CInt} win */
 function dump_destroy_nhwindow(win) {
     return;
 }
 
+/*ARGUSED*/
 /** C ref: windows.c:1321 — @param {CInt} win @param {CLongLong} mbehavior */
 function dump_start_menu(win, mbehavior) {
     return;
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:1328 — @param {CInt} win @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr<char>} str @param {CUInt} itemflags */
 function dump_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     if (dumplog_file) {
@@ -806,6 +953,7 @@ function dump_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, item
     }
 }
 
+/*ARGSUSED*/
 /** C ref: windows.c:1348 — @param {CInt} win @param {CPtr<char>} str */
 function dump_end_menu(win, str) {
     if (dumplog_file) {
@@ -852,6 +1000,7 @@ export function has_color(color) {
 /** C ref: windows.c:1410 — @param {CInt} glyph @returns {CInt} */
 export function glyph2ttychar(glyph) {
     let glyphinfo = cptr.alloc(48);
+
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
     return cptr.ldI32o(glyphinfo, $glyphinfo_ttychar);
 }
@@ -859,6 +1008,7 @@ export function glyph2ttychar(glyph) {
 /** C ref: windows.c:1419 — @param {CInt} glyph @returns {CInt} */
 export function glyph2symidx(glyph) {
     let glyphinfo = cptr.alloc(48);
+
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
     return cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
 }
@@ -867,9 +1017,12 @@ const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 �
 
 /** C ref: windows.c:1428 — @param {CInt} glyph @returns {CPtr<char>} */
 export function encglyph(glyph) {
+
     void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __s_g_04x_04x, cptr.ldI32o(svc, $context_info_rndencode), glyph);
     return cptr.decay(__static_encglyph_encbuf);
 }
+
+/* hexdd[] is defined in decl.c */
 
 /** C ref: windows.c:1439 — @param {CPtr<char>} str @param {CPtr<int>} glyph_ptr @returns {CInt} */
 export function decode_glyph(str, glyph_ptr) {
@@ -877,6 +1030,7 @@ export function decode_glyph(str, glyph_ptr) {
     let dcount = 0;
     let retval = 0;
     let dp;
+
     for (; cptr.ld1s(str) && ++dcount <= 4; str = cptr.add(str, 1)) {
         if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
             retval++;
@@ -902,14 +1056,17 @@ export function decode_glyph(str, glyph_ptr) {
 export function decode_mixed(buf, str) {
     let put = buf;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
+
     if (!str)
         return cptr.strcpy(buf, __s_empty);
+
     while (cptr.ld1s(str)) {
         if (cptr.ld1s(str) == 92) {
             let dcount;
             let so;
             let ggv = cptr.box(0);
             let save_str;
+
             save_str = cptr.postinc(() => str, (v) => { str = v; });
             switch (cptr.ld1s(str)) {
                 case 71:
@@ -918,14 +1075,23 @@ export function decode_mixed(buf, str) {
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
                     so = cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
                     cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms)));
+                    /* 'str' is ready for the next loop iteration and '*str'
+                       should not be copied at the end of this iteration */
                     continue;
                 } else {
+                    /* possible forgery - leave it the way it is */
                     str = save_str;
                 }
                 break;
                 case 92:
                 break;
                 case 0:
+                /* String ended with '\\'.  This can happen when someone
+                   names an object with a name ending with '\\', drops the
+                   named object on the floor nearby and does a look at all
+                   nearby objects. */
+                /* brh - should we perhaps not allow things to have names
+                   that contain '\\' */
                 str = save_str;
                 break;
             }
@@ -936,20 +1102,38 @@ export function decode_mixed(buf, str) {
     return buf;
 }
 
+/*
+ * This differs from putstr() because the str parameter can
+ * contain a sequence of characters representing:
+ *        \GXXXXNNNN    a glyph value, encoded by encglyph().
+ *
+ * For window ports that haven't yet written their own
+ * XXX_putmixed() routine, this general one can be used.
+ * It replaces the encoded glyph sequence with a single
+ * showsyms[] char, then just passes that string onto
+ * putstr().
+ */
+
 /** C ref: windows.c:1528 — @param {CInt} window @param {CInt} attr @param {CPtr<char>} str */
 export function genl_putmixed(window, attr, str) {
     let buf = new Uint8Array(256);
+
+    /* now send it to the normal putstr */
     putstr()(window, attr, decode_mixed(cptr.decay(buf), str));
 }
 
+/* possibly called to show usage info during command line processing when
+   an interface hasn't yet been chosen and set up */
 /** C ref: windows.c:1539 — @param {CPtr<char>} fname @param {CInt} complain */
 export function genl_display_file(fname, complain) {
     let buf = new Uint8Array(256);
     let f = fopen(fname, __s_r);
+
     if (!f) {
         if (complain)
             fprintf(__stdoutp, __s_cannot_open_s, fname);
     } else {
+        /* straight copy to stdout, no pagination or other interaction */
         while (fgets(cptr.decay(buf), NHM.BUFSZ, f)) {
             if (fputs(cptr.decay(buf), __stdoutp) < 0)
                 break;
@@ -958,11 +1142,28 @@ export function genl_display_file(fname, complain) {
     }
 }
 
+/*
+ * Window port helper function for menu invert routines to move the decision
+ * logic into one place instead of 7 different window-port routines.
+ */
 /** C ref: windows.c:1562 — @param {CInt} mode @param {CUInt} itemflags @param {CInt} is_selected @returns {CInt} */
 export function menuitem_invert_test(mode, itemflags, is_selected) {
     let skipinvert = schar((((itemflags & NHM.MENU_ITEMFLAGS_SKIPINVERT) >>> 0) != 0));
+
     if (!skipinvert)
         return 1;
+    /*
+     * mode 0: inverting current on/off state;
+     *      1: unconditionally setting on;
+     *      2: unconditionally setting off.
+     * menuinvertmode 0: treat entries flagged with skipinvert as ordinary
+     *                   (same as if not flagged);
+     * menuinvertmode 1: don't toggle bulk invert or bulk select entries On;
+     *                   allow toggling to Off (for invert and deselect;
+     *                   select doesn't do Off);
+     * menuinvertmode 2: don't toggle skipinvert entries either On or Off
+     *                   when any bulk change is performed.
+     */
     if (cptr.ldI32o(iflags, $instance_flags_menuinvertmode) == 2) {
         return 0;
     } else if (cptr.ldI32o(iflags, $instance_flags_menuinvertmode) == 1) {
@@ -971,22 +1172,58 @@ export function menuitem_invert_test(mode, itemflags, is_selected) {
     return 1;
 }
 
+/*
+ * helper routine if a window port wants to extract the glyph
+ * information from a glyph number representation in the string;
+ * the returned string is the remainder of the string after
+ * extracting the \GNNNNNNNN information. The glyph details,
+ * including the utf8 representation under ENHANCED_SYMBOLS,
+ * will be stored in the glyph_info struct pointed to by gip.
+ */
 /** C ref: windows.c:1600 — @param {CPtr<char>} str @param {CPtr<glyph_info>} gip @returns {CPtr<char>} */
 export function mixed_to_glyphinfo(str, gip) {
     let dcount;
     let ggv = cptr.box(0);
+
     if (!str || !gip)
         return __s_sp;
+
     cptr.memcpy(gip, nul_glyphinfo.v, 48);
     if (cptr.ld1s(str) == 92 && cptr.ld1s((cptr.add(str, 1))) == 71) {
         if ((dcount = decode_glyph(cptr.add(str, 2), ggv))) {
             map_glyphinfo(0, 0, ggv.v, 0, gip);
+            /* 'str' is ready for the next loop iteration and
+                '*str' should not be copied at the end of this
+                iteration */
             str = cptr.add(str, ((dcount + 2) | 0));
         }
     }
     return str;
 }
 
+/*
+ * This is a somewhat generic menu for taking a list of NetHack style
+ * class choices and presenting them via a description
+ * rather than the traditional NetHack characters.
+ * (Benefits users whose first exposure to NetHack is via tiles).
+ *
+ * prompt
+ *           The title at the top of the menu.
+ *
+ * category: 0 = monster class
+ *           1 = object  class
+ *
+ * way
+ *           FALSE = PICK_ONE, TRUE = PICK_ANY
+ *
+ * class_list
+ *           a null terminated string containing the list of choices.
+ *
+ * class_selection
+ *           a null terminated string containing the selected characters.
+ *
+ * Returns number selected.
+ */
 /** C ref: windows.c:1644 — @param {CPtr<char>} prompt @param {CInt} category @param {CInt} way @param {CPtr<char>} class_list @param {CPtr<char>} class_select @returns {CInt} */
 export function choose_classes_menu(prompt, category, way, class_list, class_select) {
     let pick_list = cptr.box(null);
@@ -1001,6 +1238,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     let next_accelerator;
     let accelerator = 0;
     let clr = NHM.NO_COLOR;
+
     if (!class_list || !class_select)
         return 0;
     next_accelerator = 97;
@@ -1009,12 +1247,14 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     start_menu()(win, 0n);
     while (cptr.ld1s(class_list)) {
         let idx;
+
         selected = 0;
         switch (category) {
             case 0:
             idx = def_char_to_monclass(cptr.ld1s(class_list));
             if (!((idx) >= 0 && (idx) < 61)) {
                 panic(__s_choose_classes_menu_invalid_monclass_c, cptr.ld1s(class_list));
+                /*NOTREACHED*/
             }
             text = cptr.ldPtro2(def_monsyms, idx, $sizeof_class_sym, $class_sym_explain);
             accelerator = cptr.ld1s(class_list);
@@ -1024,6 +1264,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             idx = def_char_to_objclass(cptr.ld1s(class_list));
             if (!((idx) >= 0 && (idx) < 18)) {
                 panic(__s_choose_classes_menu_invalid_objclass_c, cptr.ld1s(class_list));
+                /*NOTREACHED*/
             }
             text = cptr.ldPtro2(def_oc_syms, idx, $sizeof_class_sym, $class_sym_explain);
             accelerator = next_accelerator;
@@ -1050,13 +1291,19 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
         class_list = cptr.add(class_list, 1);
     }
     if (category == 1 && next_accelerator <= 122) {
+        /* for objects, add "A - ' '  all classes", after a separator */
         add_menu_str(win, __s_empty);
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, 32);
         void cptr.sprintf(cptr.decay(buf), __s_c_s__2, schar(cptr.ldI32(any)), __s_all_classes_of_objects);
+        /* we won't preselect this even if the incoming list is empty;
+           having it selected means that it would have to be explicitly
+           de-selected in order to select anything else */
         add_menu(win, nul_glyphinfo.v, any, 65, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT);
         if (!strcmp(prompt, __s_autopickup_what)) {
             add_menu_str(win, __s_note_when_no_choices_are_selected_all);
+            /* for 'O', "toggle" should be intuitive; for 'm O', it would
+               probably be better to say "Set 'autopickup' to true|false" */
             add_menu_str(win, cptr.ld1so(flags, $flag_pickup) ? __s_toggle_off_autopickup_to_not_pick_up : __s_toggle_on_autopickup_to_automatically);
         }
     }
@@ -1065,10 +1312,12 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     destroy_nhwindow()(win);
     if (n > 0) {
         if (category == 1) {
+            /* for object classes, first check for 'all'; it means 'use
+               a blank list' rather than 'collect every possible choice' */
             for (i = 0; i < n; ++i)
                 if (cptr.ldI32o(pick_list.v, i, $sizeof_menu_item) == 32) {
                     cptr.stI32o(pick_list.v, 0, 32, $sizeof_menu_item);
-                    n = 1;
+                    n = 1;  /* return 1; also an implicit 'break;' */
                 }
         }
         for (i = 0; i < n; ++i)
@@ -1084,6 +1333,8 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     cptr.st1(class_select, 0);
     return ret;
 }
+
+/* enum and structs are defined in wintype.h */
 
 /** C ref: windows.c:1765 — struct win_request_info_t */
 export let zerowri = cptr.alloc($sizeof_win_request_info_t);
@@ -1105,10 +1356,16 @@ export function adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, $sizeof_win_request_info_t);
     cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, cptr.ldI32(style));
     cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, cptr.ldI32o(style, $color_attr_attr));
+    /*  relay the style change to the window port */
     void ctrl_nhwindow()(window, NHC.set_menu_promptstyle, wri);
     cptr.st1o(go, $instance_globals_o_opt_need_promptstyle, 0);
 }
 
+/*
+ *   Common code point leading into the interface-specific
+ *   add_menu() to allow single-spot adjustments to the parameters,
+ *   such as those done by menu_colors.
+ */
 /** C ref: windows.c:1785 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} color @param {CPtr<char>} str @param {CUInt} itemflags */
 export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, str, itemflags) {
     attr = cptr.box(attr);
@@ -1116,6 +1373,7 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
     if (!str) {
         {
             if (debugcore(__s_windows_c, 1)) {
+                /* if 'str' is Null, just return without adding any menu entry */
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__s_add_menu_null);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -1123,33 +1381,43 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
         }
         return;
     }
+
     if (cptr.ld1so(iflags, $instance_flags_use_menu_color)) {
         if (((itemflags & NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS) >>> 0) == 0)
             void get_menu_coloring(str, color, attr);
     }
+    /* this is the only function that cared about this flag; remove it now */
     itemflags &= ~NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS;
+
     (cptr.ldPtro(windowprocs, $window_procs_win_add_menu))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags);
 }
 
+/* insert a non-selectable, possibly highlighted line of text into a menu */
 /** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr<char>} buf */
 export function add_menu_heading(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
     let attr = cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr);
     let color = cptr.ldI32o(iflags, $instance_flags_menu_headings);
+
+    /* suppress highlighting during end-of-game disclosure */
     if (cptr.ldI32(program_state))
         attr = NHM.ATR_NONE, color = NHM.NO_COLOR;
+
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS);
 }
 
+/* insert a non-selectable, unhighlighted line of text into a menu */
 /** C ref: windows.c:1832 — @param {CInt} tmpwin @param {CPtr<char>} buf */
 export function add_menu_str(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
+
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, buf, NHM.MENU_ITEMFLAGS_NONE);
 }
 
 /** C ref: windows.c:1841 — @param {CPtr<char>} str @param {CPtr<int>} color @param {CPtr<int>} attr @returns {CInt} */
 function get_menu_coloring(str, color, attr) {
     let tmpmc;
+
     if (cptr.ld1so(iflags, $instance_flags_use_menu_color))
         for (tmpmc = cptr.ldPtro(gm, $instance_globals_m_menu_colorings); tmpmc; tmpmc = cptr.ldPtro(tmpmc, $menucoloring_next))
             if (regex_match(str, cptr.ldPtr(tmpmc))) {
@@ -1164,6 +1432,7 @@ function get_menu_coloring(str, color, attr) {
 export function select_menu(window, how, menu_list) {
     let reslt;
     let old_bot_disabled = cptr.ld1so(gb, $instance_globals_b_bot_disabled);
+
     cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
     reslt = (cptr.ldPtro(windowprocs, $window_procs_win_select_menu))(window, how, menu_list);
     cptr.st1o(gb, $instance_globals_b_bot_disabled, old_bot_disabled);
@@ -1176,6 +1445,7 @@ export function getlin(query, bufp) {
     let obufp = bufp;
     let got_cmdq = 0;
     let cmdq = null;
+
     while ((cmdq = cmdq_pop()) !== null) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             got_cmdq = 1;
@@ -1191,11 +1461,13 @@ export function getlin(query, bufp) {
     }
     if (cmdq)
         cptr.free(cmdq);
+
     if (got_cmdq) {
         cptr.st1(bufp, 0);
         pline(__s_s_s__2, query, obufp);
         return;
     }
+
     cptr.stI32o(program_state, $sinfo_in_getlin, 1);
     cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
     (cptr.ldPtro(windowprocs, $window_procs_win_getlin))(query, bufp);

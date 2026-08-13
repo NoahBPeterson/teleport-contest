@@ -84,9 +84,18 @@ const __s_setupvalue = cptr.lit("setupvalue");
 const __s_traceback = cptr.lit("traceback");
 const __s_setcstacklimit = cptr.lit("setcstacklimit");
 
+/*
+** The hook table at registry[HOOKKEY] maps threads to their current
+** hook function.
+*/
 /** C ref: ldblib.c:27 — char * */
 let HOOKKEY = __s_hookkey;
 
+/*
+** If L1 != L, L1 can be in any state, and therefore there are no
+** guarantees about its stack space; any push in L1 must be
+** checked.
+*/
 /** C ref: ldblib.c:35 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 @param {CInt} n */
 function* checkstack(L, L1, n) {
     if ((__builtin_expect(BigInt(((!cptr.eq(L, L1) && !(yield* lua_checkstack(L1, n)) ? 1 : 0) != 0)), 0n)))
@@ -103,7 +112,7 @@ function* db_getregistry(L) {
 function* db_getmetatable(L) {
     (yield* luaL_checkany(L, 1));
     if (!(yield* lua_getmetatable(L, 1))) {
-        (yield* lua_pushnil(L));
+        (yield* lua_pushnil(L));  /* no metatable */
     }
     return 1;
 }
@@ -114,7 +123,7 @@ function* db_setmetatable(L) {
     (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || (yield* luaL_typeerror(L, 2, (__s_nil_or_table))) ? 1 : 0));
     (yield* lua_settop(L, 2));
     (yield* lua_setmetatable(L, 1));
-    return 1;
+    return 1;  /* return 1st argument */
 }
 
 /** C ref: ldblib.c:65 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -140,6 +149,12 @@ function* db_setuservalue(L) {
     return 1;
 }
 
+/*
+** Auxiliary function used by several library functions: check for
+** an optional thread as function's first argument and set 'arg' with
+** 1 if this argument is present (so that functions can skip it to
+** access their other arguments)
+*/
 /** C ref: ldblib.c:94 — @param {CPtr<lua_State>} L @param {CPtr<int>} arg @returns {CPtr<lua_State>} */
 function getthread(L, arg) {
     if ((lua_type(L, 1) == 8)) {
@@ -147,10 +162,15 @@ function getthread(L, arg) {
         return lua_tothread(L, 1);
     } else {
         cptr.stI32(arg, 0);
-        return L;
+        return L;  /* function will operate over current thread */
     }
 }
 
+/*
+** Variations of 'lua_settable', used by 'db_getinfo' to put results
+** from 'lua_getinfo' into result table. Key is always a string;
+** value can be a string, an int, or a boolean.
+*/
 /** C ref: ldblib.c:111 — @param {CPtr<lua_State>} L @param {CPtr<char>} k @param {CPtr<char>} v */
 function* settabss(L, k, v) {
     (yield* lua_pushstring(L, v));
@@ -169,15 +189,28 @@ function* settabsb(L, k, v) {
     (yield* lua_setfield(L, -2, k));
 }
 
+/*
+** In function 'db_getinfo', the call to 'lua_getinfo' may push
+** results on the stack; later it creates the result table to put
+** these objects. Function 'treatstackoption' puts the result from
+** 'lua_getinfo' on top of the result table so that it can call
+** 'lua_setfield'.
+*/
 /** C ref: ldblib.c:134 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 @param {CPtr<char>} fname */
 function* treatstackoption(L, L1, fname) {
     if (cptr.eq(L, L1))
-        lua_rotate(L, -2, 1);
+        lua_rotate(L, -2, 1);  /* exchange object and table */
     else
-        (yield* lua_xmove(L1, L, 1));
-    (yield* lua_setfield(L, -2, fname));
+        (yield* lua_xmove(L1, L, 1));  /* move object to the "main" stack */
+    (yield* lua_setfield(L, -2, fname));  /* put object into table */
 }
 
+/*
+** Calls 'lua_getinfo' and collects all results in a new table.
+** L1 needs stack space for an optional input (function) plus
+** two optional outputs (function and line table) from function
+** 'lua_getinfo'.
+*/
 /** C ref: ldblib.c:149 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* db_getinfo(L) {
     let ar = cptr.alloc(136);
@@ -187,18 +220,18 @@ function* db_getinfo(L) {
     (yield* checkstack(L, L1, 3));
     (void ((__builtin_expect(BigInt(((cptr.ld1so(options, 0) != 62) != 0)), 1n)) || (yield* luaL_argerror(L, ((arg.v + 2) | 0), (__s_invalid_option))) ? 1 : 0));
     if ((lua_type(L, ((arg.v + 1) | 0)) == 6)) {
-        options = (yield* lua_pushfstring(L, __s_gt_pct_s, options));
-        (yield* lua_pushvalue(L, (arg.v + 1) | 0));
+        options = (yield* lua_pushfstring(L, __s_gt_pct_s, options));  /* add '>' to 'options' */
+        (yield* lua_pushvalue(L, (arg.v + 1) | 0));  /* move function to 'L1' stack */
         (yield* lua_xmove(L, L1, 1));
     } else {
         if (!lua_getstack(L1, Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, (arg.v + 1) | 0)))), ar)) {
-            (yield* lua_pushnil(L));
+            (yield* lua_pushnil(L));  /* level out of range */
             return 1;
         }
     }
     if (!(yield* lua_getinfo(L1, options, ar)))
         return (yield* luaL_argerror(L, (arg.v + 2) | 0, __s_invalid_option__2));
-    (yield* lua_createtable(L, 0, 0));
+    (yield* lua_createtable(L, 0, 0));  /* table to collect results */
     if (cptr.strchr(options, 83)) {
         (yield* lua_pushlstring(L, cptr.ldPtro(ar, $lua_Debug_source), cptr.ldU64o(ar, $lua_Debug_srclen)));
         (yield* lua_setfield(L, -2, __s_source));
@@ -228,18 +261,18 @@ function* db_getinfo(L) {
         (yield* treatstackoption(L, L1, __s_activelines));
     if (cptr.strchr(options, 102))
         (yield* treatstackoption(L, L1, __s_func));
-    return 1;
+    return 1;  /* return table */
 }
 
 /** C ref: ldblib.c:203 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* db_getlocal(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
-    let nvar = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, (arg.v + 2) | 0))));
+    let nvar = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, (arg.v + 2) | 0))));  /* local-variable index */
     if ((lua_type(L, ((arg.v + 1) | 0)) == 6)) {
-        (yield* lua_pushvalue(L, (arg.v + 1) | 0));
-        (yield* lua_pushstring(L, (yield* lua_getlocal(L, null, nvar))));
-        return 1;
+        (yield* lua_pushvalue(L, (arg.v + 1) | 0));  /* push function */
+        (yield* lua_pushstring(L, (yield* lua_getlocal(L, null, nvar))));  /* push local name */
+        return 1;  /* return only name (there is no value) */
     } else {
         let ar = cptr.alloc(136);
         let name;
@@ -249,12 +282,12 @@ function* db_getlocal(L) {
         (yield* checkstack(L, L1, 1));
         name = (yield* lua_getlocal(L1, ar, nvar));
         if (name) {
-            (yield* lua_xmove(L1, L, 1));
-            (yield* lua_pushstring(L, name));
-            lua_rotate(L, -2, 1);
+            (yield* lua_xmove(L1, L, 1));  /* move local value */
+            (yield* lua_pushstring(L, name));  /* push name */
+            lua_rotate(L, -2, 1);  /* re-order */
             return 2;
         } else {
-            (yield* lua_pushnil(L));
+            (yield* lua_pushnil(L));  /* no name (nor value) */
             return 1;
         }
     }
@@ -276,21 +309,24 @@ function* db_setlocal(L) {
     (yield* lua_xmove(L, L1, 1));
     name = (yield* lua_setlocal(L1, ar, nvar));
     if (cptr.eq(name, (null)))
-        (yield* lua_settop(L1, -2));
+        (yield* lua_settop(L1, -2));  /* pop value (if not popped by 'lua_setlocal') */
     (yield* lua_pushstring(L, name));
     return 1;
 }
 
+/*
+** get (if 'get' is true) or set an upvalue from a closure
+*/
 /** C ref: ldblib.c:258 — @param {CPtr<lua_State>} L @param {CInt} get @returns {CInt} */
 function* auxupvalue(L, get) {
     let name;
-    let n = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, 2))));
-    (yield* luaL_checktype(L, 1, 6));
+    let n = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, 2))));  /* upvalue index */
+    (yield* luaL_checktype(L, 1, 6));  /* closure */
     name = get ? (yield* lua_getupvalue(L, 1, n)) : (yield* lua_setupvalue(L, 1, n));
     if (cptr.eq(name, (null)))
         return 0;
     (yield* lua_pushstring(L, name));
-    lua_rotate(L, (-((get + 1) | 0)), 1);
+    lua_rotate(L, (-((get + 1) | 0)), 1);  /* no-op if get is false */
     return (get + 1) | 0;
 }
 
@@ -305,11 +341,15 @@ function* db_setupvalue(L) {
     return (yield* auxupvalue(L, 0));
 }
 
+/*
+** Check whether a given upvalue from a given closure exists and
+** returns its index
+*/
 /** C ref: ldblib.c:285 — @param {CPtr<lua_State>} L @param {CInt} argf @param {CInt} argnup @param {CPtr<int>} pnup @returns {CPtr<void>} */
 function* checkupval(L, argf, argnup, pnup) {
     let id;
-    let nup = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, argnup))));
-    (yield* luaL_checktype(L, argf, 6));
+    let nup = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, argnup))));  /* upvalue index */
+    (yield* luaL_checktype(L, argf, 6));  /* closure */
     id = lua_upvalueid(L, argf, nup);
     if (pnup) {
         (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) || (yield* luaL_argerror(L, (argnup), (__s_invalid_upvalue_index))) ? 1 : 0));
@@ -340,6 +380,10 @@ function* db_upvaluejoin(L) {
     return 0;
 }
 
+/*
+** Call hook function registered at hook table for the current
+** thread (if there is one)
+*/
 const __static_hookf_hooknames = cptr.alloc(5 * 8);
 cptr.stPtro(__static_hookf_hooknames, 0, __s_call);
 cptr.stPtro(__static_hookf_hooknames, 8, __s_return);
@@ -352,16 +396,19 @@ function* hookf(L, ar) {
     (yield* lua_getfield(L, -1001000, HOOKKEY));
     (yield* lua_pushthread(L));
     if ((yield* lua_rawget(L, -2)) == 6) {
-        (yield* lua_pushstring(L, cptr.ldPtro(__static_hookf_hooknames, cptr.ldI32(ar), 8)));
+        (yield* lua_pushstring(L, cptr.ldPtro(__static_hookf_hooknames, cptr.ldI32(ar), 8)));  /* push event name */
         if (cptr.ldI32o(ar, $lua_Debug_currentline) >= 0)
-            (yield* lua_pushinteger(L, BigInt(cptr.ldI32o(ar, $lua_Debug_currentline))));
+            (yield* lua_pushinteger(L, BigInt(cptr.ldI32o(ar, $lua_Debug_currentline))));  /* push current line */
         else
             (yield* lua_pushnil(L));
         (void 0);
-        (yield* lua_callk(L, 2, 0, 0n, null));
+        (yield* lua_callk(L, 2, 0, 0n, null));  /* call hook function */
     }
 }
 
+/*
+** Convert a string mask (for 'sethook') into a bit mask
+*/
 /** C ref: ldblib.c:342 — @param {CPtr<char>} smask @param {CInt} count @returns {CInt} */
 function makemask(smask, count) {
     let mask = 0;
@@ -376,6 +423,9 @@ function makemask(smask, count) {
     return mask;
 }
 
+/*
+** Convert a bit mask (for 'gethook') into a string mask
+*/
 /** C ref: ldblib.c:355 — @param {CInt} mask @param {CPtr<char>} smask @returns {CPtr<char>} */
 function unmakemask(mask, smask) {
     let i = 0;
@@ -398,7 +448,7 @@ function* db_sethook(L) {
     let L1 = getthread(L, arg);
     if ((lua_type(L, ((arg.v + 1) | 0)) <= 0)) {
         (yield* lua_settop(L, (arg.v + 1) | 0));
-        func = null;
+        func = null;  /* turn off hooks */
         mask = 0;
         count = 0;
     } else {
@@ -409,16 +459,17 @@ function* db_sethook(L) {
         mask = makemask(smask, count);
     }
     if (!(yield* luaL_getsubtable(L, -1001000, HOOKKEY))) {
+        /* table just created; initialize it */
         (yield* lua_pushstring(L, __s_k));
-        (yield* lua_setfield(L, -2, __s_mode));
+        (yield* lua_setfield(L, -2, __s_mode));  /** hooktable.__mode = "k" */
         (yield* lua_pushvalue(L, -1));
-        (yield* lua_setmetatable(L, -2));
+        (yield* lua_setmetatable(L, -2));  /* metatable(hooktable) = hooktable */
     }
     (yield* checkstack(L, L1, 1));
-    (yield* lua_pushthread(L1));
+    (yield* lua_pushthread(L1));  /* key (thread) */
     (yield* lua_xmove(L1, L, 1));
-    (yield* lua_pushvalue(L, (arg.v + 1) | 0));
-    (yield* lua_rawset(L, -3));
+    (yield* lua_pushvalue(L, (arg.v + 1) | 0));  /* value (hook function) */
+    (yield* lua_rawset(L, -3));  /* hooktable[L1] = new Lua hook */
     lua_sethook(L1, func, mask, count);
     return 0;
 }
@@ -440,11 +491,11 @@ function* db_gethook(L) {
         (yield* checkstack(L, L1, 1));
         (yield* lua_pushthread(L1));
         (yield* lua_xmove(L1, L, 1));
-        (yield* lua_rawget(L, -2));
-        (lua_rotate(L, -2, -1), (yield* lua_settop(L, -2)));
+        (yield* lua_rawget(L, -2));  /* 1st result = hooktable[L1] */
+        (lua_rotate(L, -2, -1), (yield* lua_settop(L, -2)));  /* remove hook table */
     }
-    (yield* lua_pushstring(L, unmakemask(mask, cptr.decay(buff))));
-    (yield* lua_pushinteger(L, BigInt(lua_gethookcount(L1))));
+    (yield* lua_pushstring(L, unmakemask(mask, cptr.decay(buff))));  /* 2nd result = mask */
+    (yield* lua_pushinteger(L, BigInt(lua_gethookcount(L1))));  /* 3rd result = count */
     return 3;
 }
 
@@ -457,7 +508,7 @@ function* db_debug(L) {
             return 0;
         if ((yield* luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __s_debug_command, null)) || (yield* lua_pcallk(L, 0, 0, 0, 0n, null)))
             (fprintf(__stderrp, (__s_pct_s_nl), ((yield* luaL_tolstring(L, -1, null)))), fflush(__stderrp));
-        (yield* lua_settop(L, 0));
+        (yield* lua_settop(L, 0));  /* remove eventual returns */
     }
 }
 
@@ -467,7 +518,7 @@ function* db_traceback(L) {
     let L1 = getthread(L, arg);
     let msg = (yield* lua_tolstring(L, ((arg.v + 1) | 0), null));
     if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0))
-        (yield* lua_pushvalue(L, (arg.v + 1) | 0));
+        (yield* lua_pushvalue(L, (arg.v + 1) | 0));  /* return it untouched */
     else {
         let level = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, (arg.v + 2) | 0, BigInt(((cptr.eq(L, L1)) ? 1 : 0))))));
         (yield* luaL_traceback(L, L1, msg, level));

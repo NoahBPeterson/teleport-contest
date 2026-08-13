@@ -182,6 +182,9 @@ const __s_not_limiting_targets = cptr.lit("Not limiting targets");
 const __s_limiting_targets_to_those_in_sight = cptr.lit("Limiting targets to those in sight");
 const __s_limiting_targets_to_those_in_same_area = cptr.lit("Limiting targets to those in same area");
 
+/* Callback function for getpos() to highlight desired map locations.
+ * Parameter TRUE: initialize and highlight, FALSE: done (remove highlights).
+ */
 /** C ref: getpos.c:27 — void (*)(boolean) */
 let getpos_hilitefunc = null;
 
@@ -204,27 +207,43 @@ export function* getpos_sethilite(gp_hilitef, gp_getvalidf) {
     let old_getvalid = getpos_getvalid;
     let old_map_frame_color = cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color);
     let sel = (yield* selection_new());
+
     defaultHiliteState = cptr.ld1so(iflags, $instance_flags_bgcolors) ? NHC.HiliteBackground : NHC.HiliteNormalMap;
     if (gp_getvalidf !== old_getvalid)
         getpos_hilite_state = defaultHiliteState;
+
     (yield* getpos_getvalids_selection(sel, getpos_getvalid));
     getpos_hilitefunc = gp_hilitef;
     getpos_getvalid = gp_getvalidf;
     (yield* getpos_getvalids_selection(sel, getpos_getvalid));
     cptr.stI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color, ((getpos_hilite_state == NHC.HiliteBackground) ? NHM.CLR_BRIGHT_BLUE : NHM.NO_COLOR) >>> 0);
+
     if (getpos_getvalid !== old_getvalid || cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color) != old_map_frame_color)
         (yield* selection_force_newsyms(sel));
     selection_free(sel, 1);
 }
 
+/* cycle 'getpos_hilite_state' to its next state;
+   when 'bgcolors' is Off, it will alternate between not showing valid
+   positions and showing them via temporary S_goodpos symbol;
+   when 'bgcolors' is On, there are three states and showing them via
+   setting background color becomes the default */
 /** C ref: getpos.c:72 */
 function* getpos_toggle_hilite_state() {
+    /* getpos_hilitefunc isn't Null */
     if (getpos_hilite_state == NHC.HiliteGoodposSymbol) {
-        (yield* Y.icall((getpos_hilitefunc)(0)));
+        /* currently on, finish */
+        (yield* Y.icall((getpos_hilitefunc)(0)));  /* tmp_at(DISP_END) */
     }
+
     getpos_hilite_state = u32mod(((getpos_hilite_state + 1) >>> 0), (cptr.ld1so(iflags, $instance_flags_bgcolors) ? 3 : 2) >>> 0);
+    /* resetting the callback functions to their current values will draw
+       valid-spots with background color if that is the new state and turn
+       off that color if it was the previous state */
     (yield* getpos_sethilite(getpos_hilitefunc, getpos_getvalid));
+
     if (getpos_hilite_state == NHC.HiliteGoodposSymbol) {
+        /* now on, begin */
         (yield* Y.icall((getpos_hilitefunc)(1)));
     }
 }
@@ -240,8 +259,10 @@ export function* mapxy_valid(x, y) {
 function* getpos_getvalids_selection(sel, validf) {
     let x;
     let y;
+
     if (!sel || !validf)
         return;
+
     for (x = 1; x < cptr.ldI32(sel); x++)
         for (y = 0; y < cptr.ldI32o(sel, $selectionvar_hei); y++)
             if ((yield* Y.icall((validf)(x, y))))
@@ -287,15 +308,21 @@ function* getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
     let fbuf = new Uint8Array(128);
     let move_cursor_to = __s_move_the_cursor_to;
     let filtertxt = cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8);
+
     if (gloc == NHC.GLOC_EXPLORE) {
+        /* default of "move to unexplored location" is inaccurate
+           because the position will be one spot short of that */
         move_cursor_to = __s_move_the_cursor_next_to_an;
         if (cptr.ld1so(iflags, $instance_flags_getloc_usemenu))
+            /* default is too wide for basic 80-column tty so shorten it
+               to avoid wrapping */
             filtertxt = strsubst(cptr.strcpy(cptr.decay(fbuf), filtertxt), __s_this_area, __s_area);
     }
     void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_to_s_s_s, k1, k2, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_get_a_menu_of : move_cursor_to, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), (2 + cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) | 0, 8), filtertxt);
     (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(sbuf))));
 }
 
+/* the response for '?' help request in getpos() */
 const __static_getpos_help_fastmovemode = cptr.alloc(2 * 8);
 cptr.stPtro(__static_getpos_help_fastmovemode, 0, __s_8_units_at_a_time);
 cptr.stPtro(__static_getpos_help_fastmovemode, 8, __s_skipping_same_glyphs); /** C ref: getpos.c:169 — char *[2] (function-static) */
@@ -309,6 +336,7 @@ function* getpos_help(force, goal) {
         case 0: {
         sbuf = new Uint8Array(256);
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+
         void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_s_s_to_move_the_cursor_to_s, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
         (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(sbuf))));
         void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_s_s_to_fast_move_the_cursor_s, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtro(__static_getpos_help_fastmovemode, cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
@@ -332,6 +360,8 @@ function* getpos_help(force, goal) {
             (yield* getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_OBJ_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_OBJ_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_OBJS));
         }
         if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MAP) >>> 0) != 0) {
+            /* these are primarily useful when choosing a travel
+               destination for the '_' command */
             (yield* getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_DOOR_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_DOOR_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_DOOR));
             (yield* getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_UNEX_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_UNEX_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_EXPLORE));
             (yield* getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_INTERESTING));
@@ -349,6 +379,7 @@ function* getpos_help(force, goal) {
         }
         case 5: {
         kbuf = new Uint8Array(256);
+
         if (getpos_getvalid) {
             void cptr.sprintf(cptr.decay(sbuf), __s_use_s_or_s_to_move_to_valid_locations, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
             (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(sbuf))));
@@ -366,6 +397,9 @@ function* getpos_help(force, goal) {
         continue;
         }
         case 1 /* skip_non_mons: */: {
+        /* disgusting hack; the alternate selection characters work for any
+           getpos call, but only matter for dowhatis (and doquickwhatis,
+           also for dotherecmdmenu's simulated mouse) */
         doing_what_is = schar((cptr.eq(goal, cptr.decay(what_is_a_location))));
         if (doing_what_is) {
             void cptr.sprintf(cptr.decay(kbuf), __s_s_or_s_or_s_or_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
@@ -409,23 +443,29 @@ function cmp_coord_distu(a, b) {
     let dy;
     let dist_1;
     let dist_2;
+
     dx = (cptr.ldI16(u) - cptr.ldI16(c1)) | 0;
     dy = (cptr.ldI16o(u, $you_uy) - cptr.ldI16o(c1, $coord_y)) | 0;
     dist_1 = ((Math.abs(dx)) > (Math.abs(dy)) ? (Math.abs(dx)) : (Math.abs(dy)));
     dx = (cptr.ldI16(u) - cptr.ldI16(c2)) | 0;
     dy = (cptr.ldI16o(u, $you_uy) - cptr.ldI16o(c2, $coord_y)) | 0;
     dist_2 = ((Math.abs(dx)) > (Math.abs(dy)) ? (Math.abs(dx)) : (Math.abs(dy)));
+
     if (dist_1 == dist_2)
         return (cptr.ldI16o(c1, $coord_y) != cptr.ldI16o(c2, $coord_y)) ? ((cptr.ldI16o(c1, $coord_y) - cptr.ldI16o(c2, $coord_y)) | 0) : ((cptr.ldI16(c1) - cptr.ldI16(c2)) | 0);
+
     return (dist_1 - dist_2) | 0;
 }
 
 /** C ref: getpos.c:341 — @param {CInt} glyph @returns {CInt} */
 function gloc_filter_classify_glyph(glyph) {
     let c;
+
     if (!glyph_is_cmap(glyph))
         return 0;
+
     c = glyph_to_cmap(glyph);
+
     if (is_cmap_room(c) || is_cmap_furniture(c))
         return 1;
     else if (is_cmap_wall(c) || c == NHC.S_tree)
@@ -442,18 +482,23 @@ function gloc_filter_classify_glyph(glyph) {
 /** C ref: getpos.c:364 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function* gloc_filter_floodfill_matcharea(x, y) {
     let glyph = (yield* back_to_glyph(x, y));
+
     if (!cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv))
         return 0;
+
     if (glyph == cptr.ldI32o(gg, $instance_globals_g_gloc_filter_floodfill_match_glyph))
         return 1;
+
     if (gloc_filter_classify_glyph(glyph) == gloc_filter_classify_glyph(cptr.ldI32o(gg, $instance_globals_g_gloc_filter_floodfill_match_glyph)))
         return 1;
+
     return 0;
 }
 
 /** C ref: getpos.c:382 — @param {CInt} x @param {CInt} y */
 function* gloc_filter_floodfill(x, y) {
     cptr.stI32o(gg, $instance_globals_g_gloc_filter_floodfill_match_glyph, (yield* back_to_glyph(x, y)));
+
     set_selection_floodfillchk(gloc_filter_floodfill_matcharea);
     (yield* selection_floodfill(cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map), x, y, 0));
 }
@@ -464,10 +509,13 @@ function* gloc_filter_init() {
         if (!cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)) {
             cptr.stPtro(gg, $instance_globals_g_gloc_filter_map, (yield* selection_new()));
         }
+        /* special case: if we're in a doorway, try to figure out which
+           direction we're moving, and use that side of the doorway */
         if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
             if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)))) {
                 (yield* gloc_filter_floodfill(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))));
             } else {
+                /* TODO: maybe add both sides of the doorway? */
             }
         } else {
             (yield* gloc_filter_floodfill(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -480,13 +528,18 @@ function gloc_filter_done() {
     if (cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)) {
         selection_free(cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map), 1);
         cptr.stPtro(gg, $instance_globals_g_gloc_filter_map, null);
+
     }
 }
 
 /** C ref: getpos.c:422 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function known_vibrating_square_at(x, y) {
+    /* note: this only acknowledges the genuine vibrating square, not
+       fake ones produced by wizard mode wishing for traps which could
+       possibly be transfered to normal play via bones file */
     if (invocation_pos(x, y)) {
         let ttmp = t_at(x, y);
+
         return schar((ttmp && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 ? 1 : 0));
     }
     return 0;
@@ -496,15 +549,19 @@ function known_vibrating_square_at(x, y) {
 export function* gather_locs_interesting(x, y, gloc) {
     let glyph;
     let sym;
+
     if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
         return 0;
     if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))))
         return 0;
+
     glyph = glyph_at(x, y);
     sym = glyph_is_cmap(glyph) ? glyph_to_cmap(glyph) : -1;
     switch (gloc) {
         default:
         case NHC.GLOC_MONS:
+        /* unlike '/M', this skips monsters revealed by
+           warning glyphs and remembered unseen ones */
         return schar((glyph_is_monster(glyph) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0));
         case NHC.GLOC_OBJS:
         return schar((glyph_is_object(glyph) && glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) && glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0) ? 1 : 0));
@@ -520,16 +577,32 @@ export function* gather_locs_interesting(x, y, gloc) {
         case NHC.GLOC_INTERESTING:
         return schar(((yield* gather_locs_interesting(x, y, NHC.GLOC_DOOR)) || !((glyph_is_cmap(glyph) && (is_cmap_wall(sym) || sym == NHC.S_tree || sym == NHC.S_bars || sym == NHC.S_ice || sym == NHC.S_air || sym == NHC.S_cloud || is_cmap_lava(sym) || is_cmap_water(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym))) || ((glyph) == NHC.GLYPH_NOTHING_OFF) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) || known_vibrating_square_at(x, y) ? 1 : 0));
     }
+    /*NOTREACHED*/
     return 0;
 }
 
+/* gather locations for monsters or objects shown on the map */
 /** C ref: getpos.c:513 — @param {CPtr<coord *>} arr_p @param {CPtr<int>} cnt_p @param {CInt} gloc */
 function* gather_locs(arr_p, cnt_p, gloc) {
     let pass;
     let idx;
     let x;
     let y;
+
+    /*
+     * We always include the hero's location even if there is no monster
+     * (invisible hero without see invisible) or object (usual case)
+     * displayed there.  That way, the count will always be at least 1,
+     * and player has a visual indicator (cursor returns to hero's spot)
+     * highlighting when successive 'm's or 'o's have cycled all the way
+     * through all monsters or objects.
+     *
+     * Hero's spot will always sort to array[0] because it will always
+     * be the shortest distance (namely, 0 units) away from <u.ux,u.uy>.
+     */
+
     (yield* gloc_filter_init());
+
     cptr.stI32(cnt_p, idx = 0);
     for (pass = 0; pass < 2; pass++) {
         for (x = 1; x < NHM.COLNO; x++)
@@ -544,11 +617,13 @@ function* gather_locs(arr_p, cnt_p, gloc) {
                     }
                 }
             }
+
         if (!pass)
             cptr.stPtr(arr_p, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cnt_p))) * 4n))))));
         else
             (yield* nh_deterministic_qsort((cptr.ldPtr(arr_p)), BigInt.asUintN(64, BigInt((cptr.ldI32(cnt_p)))), 4n, (cmp_coord_distu)));
-    }
+    }  /* pass */
+
     gloc_filter_done();
 }
 
@@ -566,12 +641,15 @@ cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 8, __s_east); /
 /** C ref: getpos.c:557 — @param {CInt} dx @param {CInt} dy @param {CInt} fulldir @returns {CPtr<char>} */
 export function dxdy_to_dist_descr(dx, dy, fulldir) {
     let dst;
+
     if (!dx && !dy) {
         void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __s_here);
     } else if ((dst = xytodir(dx, dy)) != -1) {
+        /* explicit direction; 'one step' is implicit */
         void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __s_pct_s, directionname(dst));
     } else {
         cptr.st1o(cptr.decay(__static_dxdy_to_dist_descr_buf), 0, 0, 1);
+        /* 9999: protect buf[] against overflow caused by invalid values */
         if (dy) {
             if (Math.abs(dy) > 9999)
                 dy = i16(Math.imul(sgn(dy), 9999));
@@ -586,28 +664,42 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
     return cptr.decay(__static_dxdy_to_dist_descr_buf);
 }
 
+/* coordinate formatting for 'whatis_coord' option */
 const __static_coord_desc_screen_fmt = new Uint8Array(16); /** C ref: getpos.c:597 — char[16] (function-static) */
 
 /** C ref: getpos.c:595 — @param {CInt} x @param {CInt} y @param {CPtr<char>} outbuf @param {CInt} cmode @returns {CPtr<char>} */
 export function coord_desc(x, y, outbuf, cmode) {
     let dx;
     let dy;
+
     cptr.st1o(outbuf, 0, 0);
     switch (cmode) {
         default:
         break;
         case 102:
         case 99:
+        /* "east", "3s", "2n,4w" */
         dx = (x - cptr.ldI16(u)) | 0;
         dy = (y - cptr.ldI16o(u, $you_uy)) | 0;
         void cptr.sprintf(outbuf, __s_lparen_pct_s_rparen, dxdy_to_dist_descr(i16(dx), i16(dy), schar((cmode == 102))));
         break;
         case 109:
+        /* upper left corner of map is <1,0>;
+           with default COLNO,ROWNO lower right corner is <79,20> */
         void cptr.sprintf(outbuf, __s_d_d, x, y);
         break;
         case 115:
+        /* for normal map sizes, force a fixed-width formatting so that
+           /m, /M, /o, and /O output lines up cleanly; map sizes bigger
+           than Nx999 or 999xM will still work, but not line up like normal
+           when displayed in a column setting.
+
+           The (100) is placed in brackets below to mark the [: "03"] as
+           explicit compile-time dead code for clang */
         if (!cptr.ld1s(cptr.decay(__static_coord_desc_screen_fmt)))
             void cptr.sprintf(cptr.decay(__static_coord_desc_screen_fmt), __s_sd_sd, __s_02, __s_02);
+        /* map line 0 is screen row 2;
+           map column 0 isn't used, map column 1 is screen column 1 */
         void cptr.sprintf(outbuf, cptr.decay(__static_coord_desc_screen_fmt), (y + 2) | 0, x);
         break;
     }
@@ -620,6 +712,7 @@ export function* auto_describe(cx, cy) {
     let sym = 0;
     let tmpbuf = new Uint8Array(256);
     let firstmatch = cptr.box(__s_unknown);
+
     cptr.stI16(cc, cx);
     cptr.stI16o(cc, $nhcoord_y, cy);
     if ((yield* do_screen_description(cc, 1, sym, cptr.decay(tmpbuf), firstmatch, null))) {
@@ -641,20 +734,26 @@ export function* getpos_menu(ccp, gloc) {
     let picks = cptr.box(null);
     let tmpbuf = new Uint8Array(256);
     let clr = NHM.NO_COLOR;
+
     (yield* gather_locs(garr, gcount, gloc));
+
     if (gcount.v < 2) {
         cptr.free(garr.v);
         (yield* You(__s_cannot_s_s, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __s_see : __s_detect, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8)));
         return 0;
     }
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
+    /* gather_locs returns array[0] == you. skip it. */
     for (i = 1; i < gcount.v; i++) {
         let fullbuf = new Uint8Array(256);
         let tmpcc = cptr.alloc(4);
         let firstmatch = cptr.box(__s_unknown);
         let sym = 0;
+
         cptr.stI32(any, (i + 1) | 0);
         cptr.stI16(tmpcc, cptr.ldI16o(garr.v, i, $sizeof_coord));
         cptr.stI16o(tmpcc, $nhcoord_y, cptr.ldI16o2(garr.v, i, $sizeof_coord, $nhcoord_y));
@@ -664,6 +763,7 @@ export function* getpos_menu(ccp, gloc) {
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(fullbuf), NHM.MENU_ITEMFLAGS_NONE));
         }
     }
+
     void cptr.sprintf(cptr.decay(tmpbuf), __s_pick_s_s_s, (yield* an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8))), cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8), cptr.ld1so(iflags, $instance_flags_getloc_travelmode) ? __s_for_travel_destination : __s_empty);
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(tmpbuf))));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, picks));
@@ -677,18 +777,20 @@ export function* getpos_menu(ccp, gloc) {
     return schar((pick_cnt > 0));
 }
 
+/* add dx,dy to cx,cy, truncating at map edges */
 /** C ref: getpos.c:729 — @param {CPtr<coordxy>} cx @param {CPtr<coordxy>} cy @param {CInt} dx @param {CInt} dy */
 function truncate_to_map(cx, cy, dx, dy) {
+    /* diagonal moves complicate this... */
     if (((cptr.ldI16(cx) + dx) | 0) < 1) {
         dy = schar(dy - Math.imul(sgn(dy), ((1 - ((cptr.ldI16(cx) + dx) | 0)) | 0)));
-        dx = schar(((1 - cptr.ldI16(cx)) | 0));
+        dx = schar(((1 - cptr.ldI16(cx)) | 0));  /* so that (cx+dx == 1) */
     } else if (((cptr.ldI16(cx) + dx) | 0) > 79) {
         dy = schar(dy + Math.imul(sgn(dy), ((79 - ((cptr.ldI16(cx) + dx) | 0)) | 0)));
         dx = schar(((79 - cptr.ldI16(cx)) | 0));
     }
     if (((cptr.ldI16(cy) + dy) | 0) < 0) {
         dx = schar(dx - Math.imul(sgn(dx), ((0 - ((cptr.ldI16(cy) + dy) | 0)) | 0)));
-        dy = schar(((0 - cptr.ldI16(cy)) | 0));
+        dy = schar(((0 - cptr.ldI16(cy)) | 0));  /* so that (cy+dy == 0) */
     } else if (((cptr.ldI16(cy) + dy) | 0) > 20) {
         dx = schar(dx + Math.imul(sgn(dx), ((20 - ((cptr.ldI16(cy) + dy) | 0)) | 0)));
         dy = schar(((20 - cptr.ldI16(cy)) | 0));
@@ -697,18 +799,25 @@ function truncate_to_map(cx, cy, dx, dy) {
     cptr.stI16(cy, cptr.ldI16(cy) + dy);
 }
 
+/* called when ^R typed; if '$' is being shown for valid spots, remove that;
+   if alternate background color is being shown for that, redraw it */
 /** C ref: getpos.c:753 */
 function* getpos_refresh() {
     if (getpos_hilitefunc && getpos_hilite_state == NHC.HiliteGoodposSymbol) {
-        (yield* Y.icall((getpos_hilitefunc)(0)));
+        (yield* Y.icall((getpos_hilitefunc)(0)));  /* tmp_at(DISP_END) */
         getpos_hilite_state = defaultHiliteState;
     }
+
     (yield* docrt_flags(NHC.docrtRefresh));
+
     if (getpos_hilitefunc && getpos_hilite_state == NHC.HiliteBackground) {
+        /* resetting to current values will draw valid-spots highlighting */
         (yield* getpos_sethilite(getpos_hilitefunc, getpos_getvalid));
     }
 }
 
+/* have the player use movement keystrokes to position the cursor at a
+   particular map location, then use one of [.,:;] to pick the spot */
 const __static_getpos_pick_chars_def = cptr.alloc(4 * 8);
 cptr.stI32o(__static_getpos_pick_chars_def, 0, NHC.NHKF_GETPOS_PICK);
 cptr.stI32o(__static_getpos_pick_chars_def, 4, NHC.LOOK_TRADITIONAL);
@@ -749,7 +858,7 @@ export function* getpos(ccp, force, goal) {
         result = 0;
         tx.v = cptr.ldI16(u);
         ty.v = cptr.ldI16o(u, $you_uy);
-        msg_given = 1;
+        msg_given = 1;  /* clear message window by default */
         show_goal_msg = 0;
         garr = cptr.alloc(6 * 8); cptr.stPtro(garr, 0, null);
         gcount = cptr.alloc(6 * 4); cptr.stI32o(gcount, 0, 0);
@@ -758,6 +867,9 @@ export function* getpos(ccp, force, goal) {
         udy = schar(cptr.ldI32o(u, $you_dy));
         udz = schar(cptr.ldI32o(u, $you_dz));
         rushrun = 0;
+
+        /* temporary? if we have a queued direction, return the adjacent spot
+           in that direction */
         if (!cptr.ldI32(gi)) {
             if ((cmdq = cmdq_pop()) !== null) {
                 cptr.memcpy(cq, cmdq, 32);
@@ -772,14 +884,18 @@ export function* getpos(ccp, force, goal) {
                 return result;
             }
         }
+
         for (i = 0; i < 4; i++)
             cptr.st1o(cptr.decay(pick_chars), i, cptr.ld1so2(gc, cptr.ldI32o(__static_getpos_pick_chars_def, i, 8), 1, $instance_globals_c_Cmd + $cmd_spkeys), 1);
         cptr.st1o(cptr.decay(pick_chars), 4, 0, 1);
+
         for (i = 0; i < 12; i++)
             cptr.st1o(cptr.decay(mMoOdDxX), i, cptr.ld1so2(gc, cptr.ldI32o(__static_getpos_mMoOdDxX_def, i, 4), 1, $instance_globals_c_Cmd + $cmd_spkeys), 1);
         cptr.st1o(cptr.decay(mMoOdDxX), 12, 0, 1);
+
         if ((yield* handle_tip(NHC.TIP_GETPOS)))
-            show_goal_msg = 1;
+            show_goal_msg = 1;  /* tip has overwritten prompt in mesg window */
+
         if (!goal)
             goal = __s_desired_location;
         if (cptr.ld1so(flags, $flag_verbose)) {
@@ -806,6 +922,7 @@ export function* getpos(ccp, force, goal) {
         } else if (cptr.ld1so(iflags, $instance_flags_autodescribe) && !msg_given) {
             (yield* auto_describe(cx.v, cy.v));
         }
+
         rushrun = 0;
         if ((cmdq = cmdq_pop()) !== null) { __pc = 10; continue; }
         __pc = 11; continue;
@@ -831,12 +948,16 @@ export function* getpos(ccp, force, goal) {
         }
         case 11: {
         c = (yield* readchar_poskey(tx, ty, sidx));
+        /* remember_getpos is normally False because reusing the
+           cursor positioning during ^A is almost never the right
+           thing to do, but caller could set it if that was needed */
         if (cptr.ld1so(iflags, $instance_flags_remember_getpos) && !cptr.ldI32(gi))
             (yield* cmdq_add_key(NHC.CQ_REPEAT, schar(c)));
         __pc = 9;
         continue;
         }
         case 9: {
+
         if (cptr.ld1so(iflags, $instance_flags_autodescribe))
             msg_given = 0;
         if (c == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 16; continue; }
@@ -844,7 +965,7 @@ export function* getpos(ccp, force, goal) {
         }
         case 16: {
         cx.v = (cy.v = -10);
-        msg_given = 1;
+        msg_given = 1;  /* force clear */
         result = -1;
         { __pc = 5; continue; }
         }
@@ -864,6 +985,7 @@ export function* getpos(ccp, force, goal) {
         { __pc = 8; continue; }
         }
         case 19: {
+        /* a mouse click event, just assign and return */
         cx.v = tx.v;
         cy.v = ty.v;
         { __pc = 5; continue; }
@@ -873,6 +995,7 @@ export function* getpos(ccp, force, goal) {
         __pc = 23; continue;
         }
         case 22: {
+        /* '.' => 0, ',' => 1, ';' => 2, ':' => 3 */
         result = cptr.ldI32o2(__static_getpos_pick_chars_def, Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(pick_chars))))), 8, 4);
         { __pc = 5; continue; }
         }
@@ -903,12 +1026,15 @@ export function* getpos(ccp, force, goal) {
         }
         case 1 /* do_rushrun: */: {
         if (cptr.ld1so(iflags, $instance_flags_getloc_moveskip)) {
+            /* skip same glyphs */
             glyph = glyph_at(cx.v, cy.v);
+
             dx = cptr.ldI32o(u, $you_dx);
             dy = cptr.ldI32o(u, $you_dy);
             while (isok(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) && glyph == glyph_at(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) && isok(i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0))) && glyph == glyph_at(i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0)))) {
                 dx = (dx + cptr.ldI32o(u, $you_dx)) | 0;
                 dy = (dy + cptr.ldI32o(u, $you_dy)) | 0;
+
             }
         } else {
             dx = Math.imul(8, cptr.ldI32o(u, $you_dx));
@@ -930,10 +1056,14 @@ export function* getpos(ccp, force, goal) {
         __pc = 33; continue;
         }
         case 32: {
+        /* '?' will redraw twice, first when removing popup text window
+           after showing the help text, then to reset highlighting */
         if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys))
             (yield* getpos_help(force, goal));
+        /* ^R: docrt(), hilite_state = default */
         (yield* getpos_refresh());
         (yield* Y.icall(curs()(WIN_MAP.v, cx.v, cy.v)));
+        /* update message window to reflect that we're still targeting */
         show_goal_msg = 1;
         __pc = 31;
         continue;
@@ -947,7 +1077,7 @@ export function* getpos(ccp, force, goal) {
             (yield* getpos_toggle_hilite_state());
             (yield* Y.icall(curs()(WIN_MAP.v, cx.v, cy.v)));
         }
-        show_goal_msg = 1;
+        show_goal_msg = 1;  /* we're still targeting */
         { __pc = 3; continue; }
         }
         case 36: {
@@ -967,6 +1097,7 @@ export function* getpos(ccp, force, goal) {
         __pc = 42; continue;
         }
         case 41: {
+
         cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) + 1) | 0) % NHC.NUM_GFILTER);
         for (i = 0; i < NHC.NUM_GLOCS; i++) {
             if (cptr.ldPtro(garr, i, 8)) {
@@ -994,6 +1125,8 @@ export function* getpos(ccp, force, goal) {
         __pc = 48; continue;
         }
         case 47: {
+        /* reset 'm&M', 'o&O', &c; otherwise, there's no way for player
+           to achieve that except by manually cycling through all spots */
         for (i = 0; i < NHC.NUM_GLOCS; i++)
             cptr.stI32o(gidx, i, 0, 4);
         cx.v = cptr.ldI16(u);
@@ -1015,13 +1148,15 @@ export function* getpos(ccp, force, goal) {
         __pc = 54; continue;
         }
         case 53: {
+        /* nearest or farthest monster or object or door or unexplored */
         gtmp = Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(mMoOdDxX)))));
-        gloc = gtmp >> 1;
+        gloc = gtmp >> 1;  /* 0..3 */
         if (cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) { __pc = 56; continue; }
         __pc = 55; continue;
         }
         case 56: {
         tmpcrd = cptr.alloc(4);
+
         if ((yield* getpos_menu(tmpcrd, gloc))) {
             cx.v = cptr.ldI16(tmpcrd);
             cy.v = cptr.ldI16o(tmpcrd, $nhcoord_y);
@@ -1029,9 +1164,10 @@ export function* getpos(ccp, force, goal) {
         { __pc = 3; continue; }
         }
         case 55: {
+
         if (!cptr.ldPtro(garr, gloc, 8)) {
             (yield* gather_locs(cptr.add(garr, gloc, 8), cptr.add(gcount, gloc, 4), gloc));
-            cptr.stI32o(gidx, gloc, 0, 4);
+            cptr.stI32o(gidx, gloc, 0, 4);  /* garr[][0] is hero's spot */
         }
         if (!(gtmp & 1)) {
             cptr.stI32o(gidx, gloc, ((cptr.ldI32o(gidx, gloc, 4) + 1) | 0) % cptr.ldI32o(gcount, gloc, 4), 4);
@@ -1050,8 +1186,10 @@ export function* getpos(ccp, force, goal) {
         case 58: {
         matching = new Uint8Array(105);
         k = 0;
+
         void __builtin___memset_chk(cptr.decay(matching), 0, 105n, __builtin_object_size(cptr.decay(matching), 0));
         for (sidx.v = 0; sidx.v < NHC.MAXPCHARS; sidx.v++) {
+            /* don't even try to match some terrain: walls, room... */
             if (is_cmap_wall(sidx.v) || is_cmap_room(sidx.v) || is_cmap_corr(sidx.v) || is_cmap_door(sidx.v) || sidx.v == NHC.S_ndoor)
                 continue;
             if (c == cptr.ld1uo(defsyms, sidx.v, $sizeof_symdef) || c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) || (c == 94 && is_cmap_trap(sidx.v)) || (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) && is_cmap_engraving(sidx.v)))
@@ -1069,6 +1207,8 @@ export function* getpos(ccp, force, goal) {
         __pc = 64; continue;
         }
         case 64: {
+        /* pass 0: just past current pos to lower right;
+           pass 1: upper left corner to current pos */
         lo_y = i16(((pass == 0) ? cy.v : 0));
         hi_y = i16(((pass == 0) ? 20 : cy.v));
         ty.v = lo_y;
@@ -1089,6 +1229,8 @@ export function* getpos(ccp, force, goal) {
         __pc = 72; continue;
         }
         case 72: {
+        /* first, look at what is currently visible
+           (might be monster) */
         k = glyph_at(tx.v, ty.v);
         if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 75; continue; }
         __pc = 74; continue;
@@ -1176,6 +1318,7 @@ export function* getpos(ccp, force, goal) {
         }
         case 61: {
         note = new Uint8Array(128);
+
         if (!force)
             void cptr.strcpy(cptr.decay(note), __s_aborted);
         else
@@ -1198,10 +1341,10 @@ export function* getpos(ccp, force, goal) {
         }
         case 86: {
         (yield* pline(__s_done));
-        msg_given = 0;
+        msg_given = 0;  /* suppress clear */
         cx.v = -1;
         cy.v = 0;
-        result = 0;
+        result = 0;  /* not -1 */
         { __pc = 5; continue; }
         }
         case 52: {

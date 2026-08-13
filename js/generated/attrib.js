@@ -216,6 +216,7 @@ const __s_mind_is_s = cptr.lit("mind is %s.");
 const __s_much_of_a_muchness = cptr.lit("much of a muchness");
 const __s_back_in_sync_with_your_body = cptr.lit("back in sync with your body");
 
+/* part of the output on gain or loss of attribute */
 /** C ref: attrib.c:11 — char *[6] */
 const plusattr = cptr.alloc(6 * 8);
 cptr.stPtro(plusattr, 0, __s_strong);
@@ -547,6 +548,7 @@ cptr.stPtro(hum_abil, 0 + $innate_ability, null);
 cptr.stPtro(hum_abil, 0 + $innate_gainstr, null);
 cptr.stPtro(hum_abil, 0 + $innate_losestr, null);
 
+/* adjust an attribute; return TRUE if change is made, FALSE otherwise */
 /** C ref: attrib.c:117 — @param {CInt} ndx @param {CInt} incr @param {CInt} msgflg @returns {CInt} */
 export function adjattrib(ndx, incr, msgflg) {
     let old_acurr;
@@ -555,17 +557,20 @@ export function adjattrib(ndx, incr, msgflg) {
     let decr;
     let abonflg;
     let attrstr;
+
     if (Fixed_abil() || !incr)
         return 0;
+
     if ((ndx == NHC.A_INT || ndx == NHC.A_WIS) && uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP) {
         if (msgflg == 0)
             Your(__s_cap_constricts_briefly_then_relaxes);
         return 0;
     }
+
     old_acurr = (acurr(ndx));
     old_abase = (cptr.ld1so2(u, ndx, 1, $you_acurr));
     old_amax = (cptr.ld1so2(u, ndx, 1, $you_amax));
-    cptr.st1o2(u, ndx, 1, $you_acurr, cptr.ld1so2(u, ndx, 1, $you_acurr) + incr);
+    cptr.st1o2(u, ndx, 1, $you_acurr, cptr.ld1so2(u, ndx, 1, $you_acurr) + incr);  /* when incr is negative, this reduces ABASE() */
     if (incr > 0) {
         if ((cptr.ld1so2(u, ndx, 1, $you_acurr)) > (cptr.ld1so2(u, ndx, 1, $you_amax))) {
             cptr.st1o2(u, ndx, 1, $you_amax, (cptr.ld1so2(u, ndx, 1, $you_acurr)));
@@ -576,6 +581,23 @@ export function adjattrib(ndx, incr, msgflg) {
         abonflg = schar(((cptr.ld1so2(u, ndx, 1, $you_abon)) < 0));
     } else {
         if ((cptr.ld1so2(u, ndx, 1, $you_acurr)) < (cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin))) {
+            /*
+             * If base value has dropped so low that it is trying to be
+             * taken below the minimum, reduce max value (peak reached)
+             * instead.  That means that restore ability and repeated
+             * applications of unicorn horn will not be able to recover
+             * all the lost value.  As of 3.6.2, we only take away
+             * some (average half, possibly zero) of the excess from max
+             * instead of all of it, but without intervening recovery, it
+             * can still eventually drop to the minimum allowed.  After
+             * that, it can't be recovered, only improved with new gains.
+             *
+             * This used to assign a new negative value to incr and then
+             * add it, but that could affect messages below, possibly
+             * making a large decrease be described as a small one.
+             *
+             * decr = rn2(-(ABASE - ATTRMIN) + 1);
+             */
             decr = rn2_at(__s_attrib_c, 166, __s_adjattrib, ((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) - (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0);
             cptr.st1o2(u, ndx, 1, $you_acurr, schar((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin))));
             cptr.st1o2(u, ndx, 1, $you_amax, cptr.ld1so2(u, ndx, 1, $you_amax) - decr);
@@ -590,12 +612,17 @@ export function adjattrib(ndx, incr, msgflg) {
             if ((cptr.ld1so2(u, ndx, 1, $you_acurr)) == old_abase && (cptr.ld1so2(u, ndx, 1, $you_amax)) == old_amax) {
                 pline(__s_you_re_s_as_s_as_you_can_get, abonflg ? __s_currently : __s_already, attrstr);
             } else {
+                /* current stayed the same but base value changed, or
+                   base is at minimum and reduction caused max to drop */
                 Your(__s_innate_s_has_s, cptr.ldPtro(attrname, ndx, 8), (incr > 0) ? __s_improved : __s_declined);
             }
         }
         return 0;
     }
+
+    /* Any successful change also resets abuse / exercise level */
     cptr.st1o2(u, ndx, 1, $you_aexe, 0);
+
     cptr.st1(disp, 1);
     if (msgflg <= 0)
         You_feel(__s_s_s, (incr > 1 || incr < -1) ? __s_very : __s_empty, attrstr);
@@ -604,9 +631,11 @@ export function adjattrib(ndx, incr, msgflg) {
     return 1;
 }
 
+/* strength gain */
 /** C ref: attrib.c:203 — @param {CPtr<struct obj>} otmp @param {CInt} incr @param {CInt} givemsg */
 export function gainstr(otmp, incr, givemsg) {
     let num = incr;
+
     if (!num) {
         if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < 18)
             num = (rn2_at(__s_attrib_c, 209, __s_gainstr, 4) ? 1 : rnd_at(__s_attrib_c, 209, __s_gainstr, 6));
@@ -618,6 +647,7 @@ export function gainstr(otmp, incr, givemsg) {
     void adjattrib(NHC.A_STR, (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) ? -num : num, givemsg ? -1 : 1);
 }
 
+/* strength loss, may kill you; cause may be poison or monster like 'a' */
 /** C ref: attrib.c:221 — @param {CInt} num @param {CPtr<char>} knam @param {CInt} k_format */
 export function losestr(num, knam, k_format) {
     let uhpmin = minuhpmax(1);
@@ -626,6 +656,7 @@ export function losestr(num, knam, k_format) {
     let amt;
     let dmg;
     let waspolyd = schar((cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)));
+
     if (num <= 0 || (cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < (cptr.ldI16o2(gu, NHC.A_STR, 2, $instance_globals_u_urace + $Race_attrmin))) {
         impossible(__s_losestr_d_d, (cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)), num);
         return;
@@ -634,28 +665,36 @@ export function losestr(num, knam, k_format) {
     while (ustr < (cptr.ldI16o2(gu, NHC.A_STR, 2, $instance_globals_u_urace + $Race_attrmin))) {
         ++ustr;
         --num;
-        amt = ((rn2_at(__s_attrib_c, 235, __s_losestr, 4) + 3) | 0);
+        amt = ((rn2_at(__s_attrib_c, 235, __s_losestr, 4) + 3) | 0);  /* (0..(4-1))+3 => 3..6; used to use flat 6 here */
         dmg = (dmg + amt) | 0;
     }
     if (dmg) {
+        /* in case damage is fatal and caller didn't supply killer reason */
         if (!knam || !cptr.ld1s(knam)) {
             knam = __s_terminal_frailty;
             k_format = NHM.KILLED_BY;
         }
         losehp(dmg, knam, k_format);
+
         if (Upolyd()) {
-            setuhpmax((((cptr.ldI32o(u, $you_mhmax) - dmg) | 0) > 1 ? ((cptr.ldI32o(u, $you_mhmax) - dmg) | 0) : 1), 0);
+            /* when still poly'd, reduce you-as-monst maxHP; never below 1 */
+            setuhpmax((((cptr.ldI32o(u, $you_mhmax) - dmg) | 0) > 1 ? ((cptr.ldI32o(u, $you_mhmax) - dmg) | 0) : 1), 0);  /* acts as setmhmax() */
         } else if (!waspolyd) {
+            /* not polymorphed now and didn't rehumanize when taking damage;
+               reduce max HP, but not below uhpmin */
             if (cptr.ldI32o(u, $you_uhpmax) > uhpmin)
                 setuhpmax(max((cptr.ldI32o(u, $you_uhpmax) - dmg) | 0, uhpmin), 0);
         }
         cptr.st1(disp, 1);
     }
     (void (olduhpmax));
+    /* 'num' could have been reduced to 0 in the minimum strength loop;
+       '(Upolyd || !waspolyd)' is True unless damage caused rehumanization */
     if (num > 0 && (Upolyd() || !waspolyd))
         void adjattrib(NHC.A_STR, -num, 1);
 }
 
+/* combined strength loss and damage from some poisons */
 /** C ref: attrib.c:274 — @param {CInt} strloss @param {CInt} dmg @param {CPtr<char>} knam @param {CInt} k_format */
 export function poison_strdmg(strloss, dmg, knam, k_format) {
     losestr(strloss, knam, k_format);
@@ -679,25 +718,42 @@ cptr.stPtro(poiseff, 64 + $poison_effect_message_effect_msg, __s_very_sick);
 cptr.stPtro(poiseff, 80, You);
 cptr.stPtro(poiseff, 80 + $poison_effect_message_effect_msg, __s_break_out_in_hives);
 
+/* feedback for attribute loss due to poisoning */
 /** C ref: attrib.c:294 — @param {CInt} typ @param {CInt} exclaim */
 export function poisontell(typ, exclaim) {
     let func = cptr.ldPtro(poiseff, typ, $sizeof_poison_effect_message);
     let msg_txt = cptr.ldPtro2(poiseff, typ, $sizeof_poison_effect_message, $poison_effect_message_effect_msg);
+
+    /*
+     * "You feel weaker" or "you feel very sick" aren't appropriate when
+     * wearing or wielding something (gauntlets of power, Ogresmasher)
+     * which forces the attribute to maintain its maximum value.
+     * Phrasing for other attributes which might have fixed values
+     * (dunce cap) is such that we don't need message fixups for them.
+     */
     if (typ == NHC.A_STR && (acurr(NHC.A_STR)) == 125)
         msg_txt = __s_innately_weaker;
     else if (typ == NHC.A_CON && (acurr(NHC.A_CON)) == 25)
         msg_txt = __s_sick_inside;
+
     (func)(__s_s_c, msg_txt, exclaim ? 33 : 46);
 }
 
+/* called when an attack or trap has poisoned hero (used to be in mon.c) */
 /** C ref: attrib.c:317 — @param {CPtr<char>} reason @param {CInt} typ @param {CPtr<char>} pkiller @param {CInt} fatal @param {CInt} thrown_weapon */
 export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
     let i;
     let loss;
     let kprefix = NHM.KILLED_BY_AN;
     let blast = schar((!strcmp(reason, __s_blast)));
+
+    /* inform player about being poisoned unless that's already been done;
+       "blast" has given a "blast of poison gas" message; "poison arrow",
+       "poison dart", etc have implicitly given poison messages too... */
     if (!blast && !strstri(reason, __s_poison)) {
         let plural = schar(((cptr.ld1so(reason, BigInt.asUintN(64, cptr.strlen(reason) - 1n)) == 115) ? 1 : 0));
+
+        /* avoid "The" Orcus's sting was poisoned... */
         pline(__s_s_s_s_poisoned, cptr.isupper(uchar(cptr.ld1s(reason))) ? __s_empty : __s_the, reason, plural ? __s_were : __s_was);
     }
     if (Poison_resistance()) {
@@ -706,27 +762,40 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         pline_The(__s_poison_doesn_t_seem_to_affect_you);
         return;
     }
+
+    /* suppress killer prefix if it already has one */
     i = name_to_mon(pkiller, null);
     if (ismnum(i) && (cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ)) {
         kprefix = NHM.KILLED_BY;
         if (!((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n))
             pkiller = the(pkiller);
     } else if (!strncmpi(pkiller, __s_the__2, 4) || !strncmpi(pkiller, __s_an, 3) || !strncmpi(pkiller, __s_a_sp, 2)) {
+        /*[ does this need a plural check too? ]*/
         kprefix = NHM.KILLED_BY;
     }
+
+    /*
+     * FIXME:
+     *  this operates on u.uhp[max] even when hero is polymorphed....
+     */
+
     i = !fatal ? 1 : rn2_at(__s_attrib_c, 362, __s_poisoned, (fatal + (thrown_weapon ? 20 : 0)) | 0);
     if (i == 0 && typ != NHC.A_CHA) {
-        loss = (6 + d_at(__s_attrib_c, 365, __s_poisoned, 4, 6)) | 0;
+        /* sometimes survivable instant kill */
+        loss = (6 + d_at(__s_attrib_c, 365, __s_poisoned, 4, 6)) | 0;  /* 6 + 4d6 => 10..34 */
         if (cptr.ldI32o(u, $you_uhp) <= loss) {
             cptr.stI32o(u, $you_uhp, -1);
             cptr.st1(disp, 1);
             pline_The(__s_poison_was_deadly);
         } else {
+            /* survived, but with severe reaction */
             let olduhp = cptr.ldI32o(u, $you_uhp);
             let newuhpmax = (cptr.ldI32o(u, $you_uhpmax) - ((loss / 2) | 0)) | 0;
-            setuhpmax(max(newuhpmax, minuhpmax(3)), 1);
+
+            setuhpmax(max(newuhpmax, minuhpmax(3)), 1);  /*True: see FIXME*/
             loss = adjuhploss(loss, olduhp);
-            losehp(loss, pkiller, schar(kprefix));
+
+            losehp(loss, pkiller, schar(kprefix));  /* poison damage */
             if (adjattrib(NHC.A_CON, (typ != NHC.A_CON) ? -1 : -3, 1))
                 poisontell(NHC.A_CON, 1);
             if (typ != NHC.A_CON && adjattrib(typ, -3, 1))
@@ -734,18 +803,25 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         }
     } else if (i > 5) {
         let cloud = schar((!strcmp(reason, __s_gas_cloud)));
+
+        /* HP damage; more likely--but less severe--with missiles */
         loss = thrown_weapon ? rnd_at(__s_attrib_c, 388, __s_poisoned, 6) : ((rn2_at(__s_attrib_c, 388, __s_poisoned, 10) + 6) | 0);
         if ((blast || cloud) && Half_gas_damage())
             loss = (((loss + 1) | 0) / 2) | 0;
-        losehp(loss, pkiller, schar(kprefix));
+        losehp(loss, pkiller, schar(kprefix));  /* poison damage */
     } else {
-        loss = (thrown_weapon || !fatal) ? 1 : d_at(__s_attrib_c, 395, __s_poisoned, 2, 2);
+        /* attribute loss; if typ is A_STR, reduction in current and
+           maximum HP will occur once strength has dropped down to 3 */
+        loss = (thrown_weapon || !fatal) ? 1 : d_at(__s_attrib_c, 395, __s_poisoned, 2, 2);  /* was rn1(3,3) */
+        /* check that a stat change was made */
         if (adjattrib(typ, -loss, 1))
             poisontell(typ, 1);
     }
+
     if (cptr.ldI32o(u, $you_uhp) < 1) {
         cptr.stI32o(svk, $kinfo_format, kprefix);
         void cptr.strcpy(cptr.add(svk, $kinfo_name), pkiller);
+        /* "Poisoned by a poisoned ___" is redundant */
         done(strstri(pkiller, __s_poison) ? NHC.DIED : NHC.POISONING);
     }
     encumber_msg();
@@ -760,10 +836,13 @@ export function change_luck(n) {
         cptr.st1o(u, $you_uluck, NHM.LUCKMAX);
 }
 
+/* decide whether there are more blessed luckstones (plus luck-conferring
+   artifacts) than cursed ones; optionally combine uncursed with blessed */
 /** C ref: attrib.c:423 — @param {CInt} include_uncursed @returns {CInt} */
 export function stone_luck(include_uncursed) {
     let otmp;
     let bonchance = 0n;
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (confers_luck(otmp)) {
             if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -771,12 +850,15 @@ export function stone_luck(include_uncursed) {
             else if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 || include_uncursed)
                 bonchance += cptr.ldI64o(otmp, $obj_quan);
         }
+
     return sgn(Number(BigInt.asIntN(32, bonchance)));
 }
 
+/* there has just been an inventory change affecting a luck-granting item */
 /** C ref: attrib.c:441 */
 export function set_moreluck() {
     let luckbon = stone_luck(1);
+
     if (!luckbon && !carrying(NHC.LUCKSTONE))
         cptr.st1o(u, $you_moreluck, 0);
     else if (luckbon >= 0)
@@ -785,11 +867,24 @@ export function set_moreluck() {
         cptr.st1o(u, $you_moreluck, -3);
 }
 
+/* (not used) */
 /** C ref: attrib.c:455 */
 export function restore_attrib() {
     let i;
     let equilibrium;
     ;
+
+    /*
+     * Note:  this used to get called by moveloop() on every turn but
+     * ATIME() is never set to non-zero anywhere so didn't do anything.
+     * Presumably it once supported something like potion of heroism
+     * which conferred temporary characteristics boost(s).
+     *
+     * ATEMP() is used for strength loss from hunger, which doesn't
+     * time out, and for dexterity loss from wounded legs, which has
+     * its own timeout routine.
+     */
+
     for (i = 0; i < NHC.A_MAX; i++) {
         equilibrium = ((i == NHC.A_STR && cptr.ldI32o(u, $you_uhs) >= NHC.WEAK) || (i == NHC.A_DEX && Wounded_legs())) ? -1 : 0;
         if ((cptr.ld1so2(u, i, 1, $you_atemp)) != equilibrium && (cptr.ld1so2(u, i, 1, $you_atime)) != 0) {
@@ -815,10 +910,22 @@ export function exercise(i, inc_or_dec) {
         }
     }
     if (i == NHC.A_INT || i == NHC.A_CHA)
-        return;
+        return;  /* can't exercise these */
+
+    /* no physical exercise while polymorphed; the body's temporary */
     if (Upolyd() && i != NHC.A_WIS)
         return;
+
     if (Math.abs((cptr.ld1so2(u, i, 1, $you_aexe))) < 50) {
+        /*
+         *      Law of diminishing returns (Part I):
+         *
+         *      Gain is harder at higher attribute values.
+         *      79% at "3" --> 0% at "18"
+         *      Loss is even at all levels (50%).
+         *
+         *      Note: *YES* ACURR is the right one to use.
+         */
         cptr.st1o2(u, i, 1, $you_aexe, cptr.ld1so2(u, i, 1, $you_aexe) + ((inc_or_dec) ? (rn2_at(__s_attrib_c, 509, __s_exercise__2, 19) > (acurr(i))) : -rn2_at(__s_attrib_c, 509, __s_exercise__2, 2)));
         {
             if (debugcore(__s_attrib_c, 1)) {
@@ -835,9 +942,11 @@ export function exercise(i, inc_or_dec) {
 /** C ref: attrib.c:521 */
 function exerper() {
     if (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 10n)) {
+        /* Hunger Checks */
         let hs = (cptr.ldI32o(u, $you_uhunger) > 1000) ? NHC.SATIATED : ((cptr.ldI32o(u, $you_uhunger) > 150) ? NHC.NOT_HUNGRY : ((cptr.ldI32o(u, $you_uhunger) > 50) ? NHC.HUNGRY : ((cptr.ldI32o(u, $you_uhunger) > 0) ? NHC.WEAK : NHC.FAINTING)));
         {
             if (debugcore(__s_attrib_c, 1)) {
+
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__s_exerper_hunger_checks);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -864,6 +973,8 @@ function exerper() {
         }
         {
             if (debugcore(__s_attrib_c, 1)) {
+
+                /* Encumbrance Checks */
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 pline(__s_exerper_encumber_checks);
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -883,6 +994,8 @@ function exerper() {
             break;
         }
     }
+
+    /* status checks */
     if (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 5n)) {
         {
             if (debugcore(__s_attrib_c, 1)) {
@@ -895,6 +1008,7 @@ function exerper() {
             exercise(NHC.A_WIS, 1);
         if (HRegeneration())
             exercise(NHC.A_STR, 1);
+
         if (Sick() || Vomiting())
             exercise(NHC.A_CON, 0);
         if (HConfusion() || Hallucination())
@@ -904,6 +1018,8 @@ function exerper() {
     }
 }
 
+/* exercise/abuse text (must be in attribute order, not botl order);
+   phrased as "You must have been [][0]." or "You haven't been [][1]." */
 /** C ref: attrib.c:588 — char *[6][2] */
 const exertext = (function () { const flat = new Uint8Array(6 * 2 * 8); const a = []; for (let r = 0; r < 6; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
 cptr.stPtro(cptr.decay(exertext[0]), 0, __s_exercising_diligently);
@@ -926,7 +1042,10 @@ export function exerchk() {
     let mod_val;
     let lolim;
     let hilim;
+
+    /*  Check out the periodic accumulations */
     exerper();
+
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_next_attrib_check)) {
         {
             if (debugcore(__s_attrib_c, 1)) {
@@ -936,6 +1055,7 @@ export function exerchk() {
             }
         }
     }
+    /*  Are we ready for a test? */
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_next_attrib_check) && !cptr.ldI64o(gm, $instance_globals_m_multi)) {
         {
             if (debugcore(__s_attrib_c, 1)) {
@@ -944,31 +1064,54 @@ export function exerchk() {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
+        /*
+         *      Law of diminishing returns (Part II):
+         *
+         *      The effects of "exercise" and "abuse" wear
+         *      off over time.  Even if you *don't* get an
+         *      increase/decrease, you lose some of the
+         *      accumulated effects.
+         */
         for (i = 0; i < NHC.A_MAX; ++i) {
             __lbl_nextattrib: {
                 ax = (cptr.ld1so2(u, i, 1, $you_aexe));
+                /* nothing to do here if no exercise or abuse has occurred
+                   (Int and Cha always fall into this category) */
                 if (!ax)
-                    continue;
-                mod_val = sgn(ax);
-                lolim = (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin));
-                hilim = ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax));
+                    continue;  /* ok to skip nextattrib */
+
+                mod_val = sgn(ax);  /* +1 or -1; used below */
+                /* no further effect for exercise if at max or abuse if at min;
+                   can't exceed 18 via exercise even if actual max is higher */
+                lolim = (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin));  /* usually 3; might be higher */
+                hilim = ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax));  /* usually 18; maybe lower or higher */
                 if (hilim > 18)
                     hilim = 18;
                 if ((ax < 0) ? ((cptr.ld1so2(u, i, 1, $you_acurr)) <= lolim) : ((cptr.ld1so2(u, i, 1, $you_acurr)) >= hilim))
                     break __lbl_nextattrib;
+                /* can't exercise non-Wisdom while polymorphed; previous
+                   exercise/abuse gradually wears off without impact then */
                 if (Upolyd() && i != NHC.A_WIS)
                     break __lbl_nextattrib;
                 {
                     if (debugcore(__s_attrib_c, 1)) {
+
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__s_exerchk_testing_s_d, (i == NHC.A_STR) ? __s_str : ((i == NHC.A_INT) ? __s_int : ((i == NHC.A_WIS) ? __s_wis : ((i == NHC.A_DEX) ? __s_dex : ((i == NHC.A_CON) ? __s_con : ((i == NHC.A_CHA) ? __s_cha : __s_query3))))), ax);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
+                /*
+                 *  Law of diminishing returns (Part III):
+                 *
+                 *  You don't *always* gain by exercising.
+                 *  [MRS 92/10/28 - Treat Wisdom specially for balance.]
+                 */
                 if (rn2_at(__s_attrib_c, 655, __s_exerchk, 50) > ((i != NHC.A_WIS) ? ((Math.imul(Math.abs(ax), 2) / 3) | 0) : Math.abs(ax)))
                     break __lbl_nextattrib;
                 {
                     if (debugcore(__s_attrib_c, 1)) {
+
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                         pline(__s_exerchk_changing_d, i);
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -982,10 +1125,14 @@ export function exerchk() {
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
                     }
+                    /* if you actually changed an attrib - zero accumulation */
                     cptr.st1o2(u, i, 1, $you_aexe, schar((ax = 0)));
+                    /* then print an explanation */
                     You(__s_s_s__2, (mod_val > 0) ? __s_must_have_been : __s_haven_t_been, cptr.ldPtro(cptr.decay(exertext[i]), (mod_val > 0) ? 0 : 1, 8));
                 }
             }
+            /* this used to be ``AEXE(i) /= 2'' but that would produce
+               platform-dependent rounding/truncation for negative vals */
             cptr.st1o2(u, i, 1, $you_aexe, schar(Math.imul(((Math.abs(ax) / 2) | 0), mod_val)));
         }
         cptr.stI64o(svc, $context_info_next_attrib_check, cptr.ldI64o(svc, $context_info_next_attrib_check) + BigInt(((rn2_at(__s_attrib_c, 673, __s_exerchk, 200) + 800) | 0)));
@@ -999,22 +1146,33 @@ export function exerchk() {
     }
 }
 
+/* return random hero attribute (by role's attr distribution).
+   returns A_MAX if failed. */
 /** C ref: attrib.c:682 @returns {CInt} */
 function rnd_attr() {
     let i;
     let x = rn2_at(__s_attrib_c, 684, __s_rnd_attr, 100);
+
+    /* 5.0: the x -= ... calculation used to have an off by 1 error that
+       resulted in the values being biased toward Str and away from Cha */
     for (i = 0; i < NHC.A_MAX; ++i)
         if ((x = (x - cptr.ldI16o2(gu, i, 2, $instance_globals_u_urole + $Role_attrdist)) | 0) < 0)
             break;
     return i;
 }
 
+/* add or subtract np points from random attributes,
+   adjusting the base and maximum values of the attributes.
+   if subtracting, np must be negative.
+   returns the left over points. */
 /** C ref: attrib.c:699 — @param {CInt} np @param {CInt} addition @returns {CInt} */
 function init_attr_role_redist(np, addition) {
     let tryct = 0;
     let adj = addition ? 1 : -1;
+
     while ((addition ? (np > 0) : (np < 0)) && tryct < 100) {
         let i = rnd_attr();
+
         if (i >= NHC.A_MAX || (addition ? ((cptr.ld1so2(u, i, 1, $you_acurr)) >= ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax))) : ((cptr.ld1so2(u, i, 1, $you_acurr)) <= (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin))))) {
             tryct++;
             continue;
@@ -1027,15 +1185,20 @@ function init_attr_role_redist(np, addition) {
     return np;
 }
 
+/* allocate hero's initial characteristics */
 /** C ref: attrib.c:723 — @param {CInt} np */
 export function init_attr(np) {
     let i;
+
     for (i = 0; i < NHC.A_MAX; i++) {
         cptr.st1o2(u, i, 1, $you_acurr, cptr.st1o2(u, i, 1, $you_amax, schar(cptr.ldI16o2(gu, i, 2, $instance_globals_u_urole + $Role_attrbase))));
         cptr.st1o2(u, i, 1, $you_atemp, cptr.st1o2(u, i, 1, $you_atime, 0));
         np = (np - cptr.ldI16o2(gu, i, 2, $instance_globals_u_urole + $Role_attrbase)) | 0;
     }
+
+    /* distribute leftover points */
     np = init_attr_role_redist(np, 1);
+    /* if we went over, remove points */
     np = init_attr_role_redist(np, 0);
 }
 
@@ -1043,9 +1206,11 @@ export function init_attr(np) {
 export function redist_attr() {
     let i;
     let tmp;
+
     for (i = 0; i < NHC.A_MAX; i++) {
         if (i == NHC.A_INT || i == NHC.A_WIS)
             continue;
+        /* Polymorphing doesn't change your mind */
         tmp = (cptr.ld1so2(u, i, 1, $you_amax));
         cptr.st1o2(u, i, 1, $you_amax, cptr.ld1so2(u, i, 1, $you_amax) + ((rn2_at(__s_attrib_c, 749, __s_redist_attr, 5) - 2) | 0));
         if ((cptr.ld1so2(u, i, 1, $you_amax)) > ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax)))
@@ -1053,17 +1218,22 @@ export function redist_attr() {
         if ((cptr.ld1so2(u, i, 1, $you_amax)) < (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin)))
             cptr.st1o2(u, i, 1, $you_amax, schar((cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin))));
         cptr.st1o2(u, i, 1, $you_acurr, schar(((Math.imul((cptr.ld1so2(u, i, 1, $you_acurr)), (cptr.ld1so2(u, i, 1, $you_amax))) / tmp) | 0)));
+        /* ABASE(i) > ATTRMAX(i) is impossible */
         if ((cptr.ld1so2(u, i, 1, $you_acurr)) < (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin)))
             cptr.st1o2(u, i, 1, $you_acurr, schar((cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin))));
     }
+    /* encumber_msg(); -- caller needs to do this */
 }
 
+/* apply minor variation to attributes */
 /** C ref: attrib.c:764 */
 export function vary_init_attr() {
     let i;
+
     for (i = 0; i < NHC.A_MAX; i++)
         if (!rn2_at(__s_attrib_c, 769, __s_vary_init_attr, 20)) {
-            let xd = (rn2_at(__s_attrib_c, 770, __s_vary_init_attr, 7) - 2) | 0;
+            let xd = (rn2_at(__s_attrib_c, 770, __s_vary_init_attr, 7) - 2) | 0;  /* biased variation */
+
             void adjattrib(i, xd, 1);
             if ((cptr.ld1so2(u, i, 1, $you_acurr)) < (cptr.ld1so2(u, i, 1, $you_amax)))
                 cptr.st1o2(u, i, 1, $you_amax, (cptr.ld1so2(u, i, 1, $you_acurr)));
@@ -1082,6 +1252,7 @@ function postadjabil(ability) {
 function role_abil(r) {
     let roleabils = cptr.alloc(14 * 16); cptr.stI16o(roleabils, 0, NHC.PM_ARCHEOLOGIST); cptr.stPtro(roleabils, 8, arc_abil); cptr.stI16o(roleabils, 16, NHC.PM_BARBARIAN); cptr.stPtro(roleabils, 24, bar_abil); cptr.stI16o(roleabils, 32, NHC.PM_CAVE_DWELLER); cptr.stPtro(roleabils, 40, cav_abil); cptr.stI16o(roleabils, 48, NHC.PM_HEALER); cptr.stPtro(roleabils, 56, hea_abil); cptr.stI16o(roleabils, 64, NHC.PM_KNIGHT); cptr.stPtro(roleabils, 72, kni_abil); cptr.stI16o(roleabils, 80, NHC.PM_MONK); cptr.stPtro(roleabils, 88, mon_abil); cptr.stI16o(roleabils, 96, NHC.PM_CLERIC); cptr.stPtro(roleabils, 104, pri_abil); cptr.stI16o(roleabils, 112, NHC.PM_RANGER); cptr.stPtro(roleabils, 120, ran_abil); cptr.stI16o(roleabils, 128, NHC.PM_ROGUE); cptr.stPtro(roleabils, 136, rog_abil); cptr.stI16o(roleabils, 144, NHC.PM_SAMURAI); cptr.stPtro(roleabils, 152, sam_abil); cptr.stI16o(roleabils, 160, NHC.PM_TOURIST); cptr.stPtro(roleabils, 168, tou_abil); cptr.stI16o(roleabils, 176, NHC.PM_VALKYRIE); cptr.stPtro(roleabils, 184, val_abil); cptr.stI16o(roleabils, 192, NHC.PM_WIZARD); cptr.stPtro(roleabils, 200, wiz_abil); cptr.stI16o(roleabils, 208, 0); cptr.stPtro(roleabils, 216, null);
     let i;
+
     for (i = 0; cptr.ldPtro2(roleabils, i, 16, 8) && cptr.ldI16o(roleabils, i, 16) != r; i++)
         continue;
     return cptr.ldPtro2(roleabils, i, 16, 8);
@@ -1090,6 +1261,7 @@ function role_abil(r) {
 /** C ref: attrib.c:818 — @param {CPtr<long>} ability @param {CLongLong} frommask @returns {CPtr<struct innate>} */
 function check_innate_abil(ability, frommask) {
     let abil = null;
+
     if (frommask == 16777216n)
         abil = role_abil(Role_switch());
     else if (frommask == 33554432n)
@@ -1112,6 +1284,7 @@ function check_innate_abil(ability, frommask) {
             default:
             break;
         }
+
     while (abil && cptr.ldPtro(abil, $innate_ability)) {
         if ((cptr.eq(cptr.ldPtro(abil, $innate_ability), ability)) && (cptr.ldI32o(u, $you_ulevel) >= cptr.ld1s(abil)))
             return abil;
@@ -1120,9 +1293,11 @@ function check_innate_abil(ability, frommask) {
     return null;
 }
 
+/* check whether particular ability has been obtained via innate attribute */
 /** C ref: attrib.c:864 — @param {CPtr<long>} ability @returns {CInt} */
 function innately(ability) {
     let iptr;
+
     if ((iptr = check_innate_abil(ability, 16777216n)) !== null)
         return (cptr.ld1s(iptr) == 1) ? 1 : 4;
     if ((iptr = check_innate_abil(ability, 33554432n)) !== null)
@@ -1137,10 +1312,12 @@ function innately(ability) {
 /** C ref: attrib.c:880 — @param {CInt} propidx @returns {CInt} */
 export function is_innate(propidx) {
     let innateness;
+
+    /* innately() would report FROM_FORM for this; caller wants specificity */
     if (propidx == NHC.DRAIN_RES && ismnum(cptr.ldI32o(u, $you_ulycn)))
         return 6;
     if (propidx == NHC.FAST && Very_fast())
-        return 0;
+        return 0;  /* can't become very fast innately */
     if ((innateness = innately(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop), $prop_intrinsic))) != 0)
         return innateness;
     if (propidx == NHC.JUMPING && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops))
@@ -1155,12 +1332,32 @@ const __static_from_what_because_of = cptr.bytes(" because of %s"); /** C ref: a
 
 /** C ref: attrib.c:905 — @param {CInt} propidx @returns {CPtr<char>} */
 export function from_what(propidx) {
+
     cptr.st1o(cptr.decay(__static_from_what_buf), 0, 0, 1);
+    /*
+     * Restrict the source of the attributes just to debug mode for now
+     */
     if (wizard()) {
+
         if (propidx >= 0) {
             let p;
             let obj = null;
             let innateness = is_innate(propidx);
+
+            /*
+             * Properties can be obtained from multiple sources and we
+             * try to pick the most significant one.  Classification
+             * priority is not set in stone; current precedence is:
+             * "from the start" (from role or race at level 1),
+             * "from outside" (eating corpse, divine reward, blessed potion),
+             * "from experience" (from role or race at level 2+),
+             * "from current form" (while polymorphed),
+             * "from timed effect" (potion or spell),
+             * "from worn/wielded equipment" (Firebrand, elven boots, &c),
+             * "from carried equipment" (mainly quest artifacts).
+             * There are exceptions.  Versatile jumping from spell or boots
+             * takes priority over knight's innate but limited jumping.
+             */
             if ((propidx == NHC.BLINDED && cptr.ld1so(u, $you_uroleplay)) || (propidx == NHC.DEAF && cptr.ld1so(u, $you_uroleplay + $u_roleplay_deaf)))
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), __s_from_birth);
             else if (innateness == 1 || innateness == 2)
@@ -1181,13 +1378,19 @@ export function from_what(propidx) {
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(ublindf.v));
             else if (propidx == NHC.BLINDED && cptr.ldI32o(u, $you_ucreamed) && BlindedTimeout() == BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) && !EBlinded() && !(HBlinded() & -16777216n))
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), __s_due_to_goop_covering_your_s, body_part(NHC.FACE));
+
+            /* remove some verbosity and/or redundancy */
             if ((p = strstri(cptr.decay(__static_from_what_buf), __s_pair_of)) !== null)
-                copynchars(cptr.add(p, 1), cptr.add(p, 9), NHM.BUFSZ);
+                copynchars(cptr.add(p, 1), cptr.add(p, 9), NHM.BUFSZ);  /* overlapping buffers ok */
             else if (propidx == NHC.STRANGLED && (p = strstri(cptr.decay(__static_from_what_buf), __s_of_strangulation)) !== null)
                 cptr.st1(p, 0);
+
         } else {
+            /* if more blocking capabilities get implemented we'll need to
+               replace this with what_blocks() comparable to what_gives() */
             switch (-propidx) {
                 case NHC.BLINDED:
+                /* wearing the Eyes of the Overworld overrides blindness */
                 if (BBlinded() && is_art(ublindf.v, NHC.ART_EYES_OF_THE_OVERWORLD))
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), bare_artifactname(ublindf.v));
                 break;
@@ -1201,7 +1404,8 @@ export function from_what(propidx) {
                 break;
             }
         }
-    }
+
+    }  /*wizard*/
     return cptr.decay(__static_from_what_buf);
 }
 
@@ -1211,7 +1415,9 @@ export function adjabil(oldlevel, newlevel) {
     let rabil;
     let prevabil;
     let mask = 16777216n;
+
     abil = role_abil(Role_switch());
+
     switch (Race_switch()) {
         case NHC.PM_ELF:
         rabil = elf_abil;
@@ -1226,8 +1432,11 @@ export function adjabil(oldlevel, newlevel) {
         rabil = null;
         break;
     }
+
     while (abil || rabil) {
+        /* Have we finished with the intrinsics list? */
         if (!abil || !cptr.ldPtro(abil, $innate_ability)) {
+            /* Try the race intrinsics */
             if (!rabil || !cptr.ldPtro(rabil, $innate_ability))
                 break;
             abil = rabil;
@@ -1236,6 +1445,12 @@ export function adjabil(oldlevel, newlevel) {
         }
         prevabil = cptr.ldI64((cptr.ldPtro(abil, $innate_ability)));
         if (oldlevel < cptr.ld1s(abil) && newlevel >= cptr.ld1s(abil)) {
+            /* Abilities gained at level 1 can never be lost
+             * via level loss, only via means that remove _any_
+             * sort of ability.  A "gain" of such an ability from
+             * an outside source is devoid of meaning, so we set
+             * FROMOUTSIDE to avoid such gains.
+             */
             if (cptr.ld1s(abil) == 1)
                 cptr.stI64((cptr.ldPtro(abil, $innate_ability)), cptr.ldI64((cptr.ldPtro(abil, $innate_ability))) | (mask | 67108864n));
             else
@@ -1257,6 +1472,7 @@ export function adjabil(oldlevel, newlevel) {
             postadjabil(cptr.ldPtro(abil, $innate_ability));
         abil = cptr.add(abil, 1, 32);
     }
+
     if (oldlevel > 0) {
         if (newlevel > oldlevel)
             add_weapon_skill((newlevel - oldlevel) | 0);
@@ -1265,20 +1481,27 @@ export function adjabil(oldlevel, newlevel) {
     }
 }
 
+/* called when gaining a level (before u.ulevel gets incremented);
+   also called with u.ulevel==0 during hero initialization or for
+   re-init if hero turns into a "new man/woman/elf/&c" */
 /** C ref: attrib.c:1080 @returns {CInt} */
 export function newhp() {
     let hp;
     let conplus;
+
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
+        /* Initialize hit points */
         hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd) > 0)
             hp = (hp + rnd_at(__s_attrib_c, 1088, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd) > 0)
             hp = (hp + rnd_at(__s_attrib_c, 1090, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 0n) {
+            /* Initialize alignment stuff */
             cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value));
             cptr.stI32o(u, $you_ualign + $align_record, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_initrecord));
         }
+        /* no Con adjustment for initial hit points */
     } else {
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lofix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lofix)) | 0;
@@ -1312,9 +1535,13 @@ export function newhp() {
     if (hp <= 0)
         hp = 1;
     if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV) {
+        /* remember increment; future level drain could take it away again */
         cptr.stI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_uhpinc, i16(hp));
     } else {
+        /* after level 30, throttle hit point gains from extra experience;
+           once max reaches 1200, further increments will be just 1 more */
         let lim = schar(((5 - ((cptr.ldI32o(u, $you_uhpmax) / 300) | 0)) | 0));
+
         lim = schar(((lim) > 1 ? (lim) : 1));
         if (hp > lim)
             hp = lim;
@@ -1322,6 +1549,8 @@ export function newhp() {
     return hp;
 }
 
+/* minimum value for uhpmax is ulevel but for life-saving it is always at
+   least 10 if ulevel is less than that */
 /** C ref: attrib.c:1147 — @param {CInt} altmin @returns {CInt} */
 export function minuhpmax(altmin) {
     if (altmin < 1)
@@ -1329,6 +1558,8 @@ export function minuhpmax(altmin) {
     return max(cptr.ldI32o(u, $you_ulevel), altmin);
 }
 
+/* update u.uhpmax or u.mhmax and values of other things that depend upon
+   whichever of them is relevant */
 /** C ref: attrib.c:1157 — @param {CInt} newmax @param {CInt} even_when_polyd */
 export function setuhpmax(newmax, even_when_polyd) {
     if (!Upolyd() || even_when_polyd) {
@@ -1350,6 +1581,9 @@ export function setuhpmax(newmax, even_when_polyd) {
     }
 }
 
+/* called after setuhpmax() when damage is pending;
+   if uhpmax (or mhmax) has been reduced, it might have caused uhp (or mh)
+   to be reduced too; if so, recalculate pending loss to account for that */
 /** C ref: attrib.c:1182 — @param {CInt} loss @param {CInt} olduhp @returns {CInt} */
 export function adjuhploss(loss, olduhp) {
     if (!Upolyd()) {
@@ -1362,16 +1596,30 @@ export function adjuhploss(loss, olduhp) {
     return ((loss) > 1 ? (loss) : 1);
 }
 
+/* return the current effective value of a specific characteristic
+   (the 'a' in 'acurr()' comes from outdated use of "attribute" for the
+   six Str/Dex/&c characteristics; likewise for u.abon, u.atemp, u.acurr) */
 /** C ref: attrib.c:1200 — @param {CInt} chridx @returns {CInt} */
 export function acurr(chridx) {
     let tmp;
-    let result = 0;
+    let result = 0;  /* 'result' will always be reset to positive value */
+
     (__builtin_expect(BigInt((!(chridx >= 0 && chridx < NHC.A_MAX))), 0n) ? __assert_rtn(__s_acurr, __s_attrib_c, 1204, __s_chridx_0_chridx_a_max) : void 0);
     tmp = (((cptr.ld1so2(u, chridx, 1, $you_abon) + cptr.ld1so2(u, chridx, 1, $you_atemp)) | 0) + cptr.ld1so2(u, chridx, 1, $you_acurr)) | 0;
+
+    /* for Strength:  3 <= result <= 125;
+       for all others:  3 <= result <= 25 */
     if (chridx == NHC.A_STR) {
+        /* strength value is encoded:  3..18 normal, 19..118 for 18/xx (with
+           1 <= xx <= 100), and 119..125 for other characteristics' 19..25;
+           STR18(x) yields 18 + x (intended for 0 <= x <= 100; not used here);
+           STR19(y) yields 100 + y (intended for 19 <= y <= 25) */
         if (tmp >= 125 || (uarmg.v && cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER))
-            result = 125;
+            result = 125;  /* 125 */
         else
+            /* need non-zero here to avoid 'if(result==0)' below because
+               that doesn't deal with Str encoding; the cap of 25 applied
+               there would limit Str to 18/07 [18 + 7] */
             result = ((tmp) > 3 ? (tmp) : 3);
     } else if (chridx == NHC.A_CHA) {
         if (tmp < 18 && (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_NYMPH || cptr.ldI32o(u, $you_umonnum) == NHC.PM_AMOROUS_DEMON))
@@ -1380,54 +1628,80 @@ export function acurr(chridx) {
         if (is_art(uwep.v, NHC.ART_OGRESMASHER))
             result = 25;
     } else if (chridx == NHC.A_INT || chridx == NHC.A_WIS) {
+        /* Yes, this may raise Int and/or Wis if hero is sufficiently
+           stupid.  There are lower levels of cognition than "dunce". */
         if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP)
             result = 6;
     } else if (chridx == NHC.A_DEX) {
-        ;
+        ;  /* there aren't any special cases for dexterity */
     }
+
     if (result == 0)
         result = (tmp >= 25) ? 25 : ((tmp <= 3) ? 3 : tmp);
+
     return schar(result);
 }
 
+/* condense clumsy ACURR(A_STR) value into value that fits into formulas */
 /** C ref: attrib.c:1245 @returns {CInt} */
 export function acurrstr() {
     let str = (acurr(NHC.A_STR));
-    let result;
+    let result;  /* 3..25 */
+
     if (str <= 18)
-        result = ((str) > 3 ? (str) : 3);
+        result = ((str) > 3 ? (str) : 3);  /* 3..18 */
     else if (str <= 121)
-        result = (19 + ((str / 50) | 0)) | 0;
+        /* this converts
+           18/01..18/31 into 19,
+           18/32..18/81 into 20,
+           18/82..18/100 and 19..21 into 21 */
+        result = (19 + ((str / 50) | 0)) | 0;  /* map to 19..21 */
     else
-        result = (((str) < 125 ? (str) : 125) - 100) | 0;
+        result = (((str) < 125 ? (str) : 125) - 100) | 0;  /* 22..25 */
+
     return schar(result);
 }
 
+/* when wearing (or taking off) an unID'd item, this routine is used
+   to distinguish between observable +0 result and no-visible-effect
+   due to an attribute not being able to exceed maximum or minimum */
 /** C ref: attrib.c:1268 — @param {CInt} attrindx @returns {CInt} */
 export function extremeattr(attrindx) {
+    /* Fixed_abil and racial MINATTR/MAXATTR aren't relevant here */
     let lolimit = 3;
     let hilimit = 25;
     let curval = (acurr(attrindx));
+
+    /* upper limit for Str is 25 but its value is encoded differently */
     if (attrindx == NHC.A_STR) {
-        hilimit = 125;
+        hilimit = 125;  /* 125 */
+        /* lower limit for Str can also be 25 */
         if (uarmg.v && cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER)
             lolimit = hilimit;
     } else if (attrindx == NHC.A_CON) {
         if (is_art(uwep.v, NHC.ART_OGRESMASHER))
             lolimit = hilimit;
     }
+    /* this exception is hypothetical; the only other worn item affecting
+       Int or Wis is another helmet so can't be in use at the same time */
     if (attrindx == NHC.A_INT || attrindx == NHC.A_WIS) {
         if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP)
             hilimit = (lolimit = 6);
     }
+
+    /* are we currently at either limit? */
     return schar(((curval == lolimit || curval == hilimit) ? 1 : 0));
 }
 
+/* avoid possible problems with alignment overflow, and provide a centralized
+   location for any future alignment limits */
 /** C ref: attrib.c:1298 — @param {CInt} n */
 export function adjalign(n) {
     let newalign = (cptr.ldI32o(u, $you_ualign + $align_record) + n) | 0;
+
     if (n < 0) {
         let newabuse = (cptr.ldI32o(u, $you_ualign + $align_abuse) - (n >>> 0)) >>> 0;
+
         if (newalign < cptr.ldI32o(u, $you_ualign + $align_record))
             cptr.stI32o(u, $you_ualign + $align_record, newalign);
         if (newabuse > cptr.ldI32o(u, $you_ualign + $align_abuse)) {
@@ -1441,32 +1715,40 @@ export function adjalign(n) {
     }
 }
 
+/* change hero's alignment type, possibly losing use of artifacts */
 /** C ref: attrib.c:1320 — @param {CInt} newalign @param {CInt} reason */
 export function uchangealign(newalign, reason) {
     let oldalign = cptr.ld1so(u, $you_ualign);
-    cptr.stI32o(u, $you_ublessed, 0);
-    cptr.st1(disp, 1);
+
+    cptr.stI32o(u, $you_ublessed, 0);  /* lose divine protection */
+    /* You/Your/pline message with call flush_screen(), triggering bot(),
+       so the actual data change needs to come before the message */
+    cptr.st1(disp, 1);  /* status line needs updating */
     if (reason == NHC.A_CG_CONVERT) {
+        /* conversion via altar */
         livelog_printf(512n, __s_permanently_converted_to_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, $sizeof_Align, $Align_adj));
         cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, schar(newalign));
+        /* worn helm of opposite alignment might block change */
         if (!uarmh.v || cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT)
             cptr.st1o(u, $you_ualign, cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase));
         You(__s_have_a_ssense_of_a_new_direction, (cptr.ld1so(u, $you_ualign) != oldalign) ? __s_sudden : __s_empty);
     } else {
+        /* putting on or taking off a helm of opposite alignment */
         cptr.st1o(u, $you_ualign, schar(newalign));
         if (reason == NHC.A_CG_HELM_ON) {
-            adjalign(-7);
+            adjalign(-7);  /* for abuse -- record will be cleared shortly */
             Your(__s_mind_oscillates_s, Hallucination() ? __s_wildly : __s_briefly);
             make_confused(BigInt(((rn2_at(__s_attrib_c, 1346, __s_uchangealign, 2) + 3) | 0)), 0);
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (rn2_at(__s_attrib_c, 1347, __s_uchangealign, 50) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
                 summon_furies((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 1);
+            /* don't livelog taking it back off */
             livelog_printf(512n, __s_used_a_helm_to_turn_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, $sizeof_Align, $Align_adj));
         } else if (reason == NHC.A_CG_HELM_OFF) {
             Your(__s_mind_is_s, Hallucination() ? __s_much_of_a_muchness : __s_back_in_sync_with_your_body);
         }
     }
     if (cptr.ld1so(u, $you_ualign) != oldalign) {
-        cptr.stI32o(u, $you_ualign + $align_record, 0);
+        cptr.stI32o(u, $you_ualign + $align_record, 0);  /* slate is wiped clean */
         retouch_equipment(0);
     }
 }

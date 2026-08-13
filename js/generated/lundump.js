@@ -117,6 +117,9 @@ function loadInteger(S) {
     return x.v;
 }
 
+/*
+** Load a nullable string into prototype 'p'.
+*/
 /** C ref: lundump.c:110 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} p @returns {CPtr<TString>} */
 function loadStringN(S, p) {
     let L = cptr.ldPtr(S);
@@ -126,12 +129,12 @@ function loadStringN(S, p) {
         return null;
     else if (--size <= 40n) {
         let buff = new Uint8Array(40);
-        loadBlock(S, cptr.decay(buff), BigInt.asUintN(64, (size) * 1n));
-        ts = luaS_newlstr(L, cptr.decay(buff), size);
+        loadBlock(S, cptr.decay(buff), BigInt.asUintN(64, (size) * 1n));  /* load string into buffer */
+        ts = luaS_newlstr(L, cptr.decay(buff), size);  /* create string */
     } else {
-        ts = luaS_createlngstrobj(L, size);
+        ts = luaS_createlngstrobj(L, size);  /* create string */
         {
-            let io = (((cptr.ldPtro(L, $lua_State_top))));
+            let io = (((cptr.ldPtro(L, $lua_State_top))));  /* anchor it ('loadVector' can GC) */
             let x_ = (ts);
             cptr.stPtr(((io)), ((((x_)))));
             (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
@@ -139,13 +142,16 @@ function loadStringN(S, p) {
         }
         ;
         luaD_inctop(L);
-        loadBlock(S, (cptr.add((ts), $TString_contents)), BigInt.asUintN(64, (size) * 1n));
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        loadBlock(S, (cptr.add((ts), $TString_contents)), BigInt.asUintN(64, (size) * 1n));  /* load directly in final place */
+        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop string */
     }
     ((((cptr.ld1uo((p), $Proto_marked)) & 32) && ((cptr.ld1uo((ts), $TString_marked)) & 24)) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
     return ts;
 }
 
+/*
+** Load a non-nullable string into prototype 'p'.
+*/
 /** C ref: lundump.c:136 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} p @returns {CPtr<TString>} */
 function loadString(S, p) {
     let st = loadStringN(S, p);
@@ -231,6 +237,12 @@ function loadProtos(S, f) {
     }
 }
 
+/*
+** Load the upvalues for a function. The names must be filled first,
+** because the filling of the other fields can raise read errors and
+** the creation of the error message can call an emergency collection;
+** in that case all prototypes must be consistent for the GC.
+*/
 /** C ref: lundump.c:212 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function loadUpvalues(S, f) {
     let i;
@@ -274,7 +286,7 @@ function loadDebug(S, f) {
     }
     n = loadInt(S);
     if (n != 0)
-        n = cptr.ldI32o(f, $Proto_sizeupvalues);
+        n = cptr.ldI32o(f, $Proto_sizeupvalues);  /* must be this many */
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, loadStringN(S, f), $sizeof_Upvaldesc);
 }
@@ -283,7 +295,7 @@ function loadDebug(S, f) {
 function loadFunction(S, f, psource) {
     cptr.stPtro(f, $Proto_source, loadStringN(S, f));
     if (cptr.eq(cptr.ldPtro(f, $Proto_source), (null)))
-        cptr.stPtro(f, $Proto_source, psource);
+        cptr.stPtro(f, $Proto_source, psource);  /* reuse parent's source */
     cptr.stI32o(f, $Proto_linedefined, loadInt(S));
     cptr.stI32o(f, $Proto_lastlinedefined, loadInt(S));
     cptr.st1o(f, $Proto_numparams, loadByte(S));
@@ -298,7 +310,7 @@ function loadFunction(S, f, psource) {
 
 /** C ref: lundump.c:275 — @param {CPtr<LoadState>} S @param {CPtr<char>} s @param {CPtr<char>} msg */
 function checkliteral(S, s, msg) {
-    let buff = new Uint8Array(12);
+    let buff = new Uint8Array(12);  /* larger than both */
     let len = cptr.strlen(s);
     loadBlock(S, cptr.decay(buff), BigInt.asUintN(64, (len) * 1n));
     if (memcmp(s, cptr.decay(buff), len) != 0)
@@ -313,6 +325,7 @@ function fchecksize(S, size, tname) {
 
 /** C ref: lundump.c:292 — @param {CPtr<LoadState>} S */
 function checkHeader(S) {
+    /* skip 1st char (already read and checked) */
     checkliteral(S, cptr.add(__s_lua, 1, 1), __s_not_a_binary_chunk);
     if (loadByte(S) != 84)
         error(S, __s_version_mismatch);
@@ -328,6 +341,9 @@ function checkHeader(S) {
         error(S, __s_float_format_mismatch);
 }
 
+/*
+** Load precompiled chunk.
+*/
 /** C ref: lundump.c:313 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} Z @param {CPtr<char>} name @returns {CPtr<LClosure>} */
 export function luaU_undump(L, Z, name) {
     let S = cptr.alloc(24);

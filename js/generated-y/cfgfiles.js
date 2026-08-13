@@ -227,6 +227,9 @@ let ignore_errors_on_unmatched = 0;
 /** C ref: cfgfiles.c:114 — signed char */
 let ignore_statement_errors = 0;
 
+/* ----------  BEGIN CONFIG FILE HANDLING ----------- */
+
+/* used for messaging. Also used in options.c */
 /** C ref: cfgfiles.c:126 — char * */
 let default_configfile = __s_nethackrc;
 
@@ -243,10 +246,12 @@ export function get_default_configfile() {
     return default_configfile;
 }
 
+/* #saveoptions - save config options into file */
 /** C ref: cfgfiles.c:169 @returns {CInt} */
 export function* do_write_config_file() {
     let fp;
     let tmp = new Uint8Array(256);
+
     if (!cptr.ld1so(cptr.decay(configfile), 0, 1)) {
         (yield* pline(__s_strange_could_not_figure_out_config));
         return NHM.ECMD_OK;
@@ -262,11 +267,13 @@ export function* do_write_config_file() {
     void cptr.sprintf(cptr.decay(tmp), __s_overwrite_config_file_s, 226, cptr.decay(configfile));
     if (!(yield* paranoid_query(1, cptr.decay(tmp))))
         return NHM.ECMD_OK;
+
     fp = fopen(cptr.decay(configfile), __s_w);
     if (fp) {
         let len;
         let wrote;
         let buf = cptr.alloc(272);
+
         strbuf_init(buf);
         (yield* all_options_strbuf(buf));
         len = cptr.strlen(cptr.ldPtro(buf, $strbuf_str));
@@ -279,6 +286,8 @@ export function* do_write_config_file() {
     return NHM.ECMD_OK;
 }
 
+/* remember the name of the file we're accessing;
+   if may be used in option reject messages */
 /** C ref: cfgfiles.c:216 — @param {CPtr<char>} fname */
 export function set_configfile_name(fname) {
     void __builtin___strncpy_chk(cptr.decay(configfile), fname, 255n, __builtin_object_size(cptr.decay(configfile), 1));
@@ -290,7 +299,9 @@ function* fopen_config_file(filename, src) {
     let fp;
     let tmp_config = new Uint8Array(256);
     let envp;
+
     if (src == NHC.set_in_sysconf) {
+        /* SYSCF_FILE; if we can't open it, caller will bail */
         if (filename && cptr.ld1s(filename)) {
             set_configfile_name(fqname(filename, NHM.SYSCONFPREFIX, 0));
             fp = fopen(cptr.decay(configfile), __s_r);
@@ -298,18 +309,32 @@ function* fopen_config_file(filename, src) {
             fp = null;
         return fp;
     }
+    /* If src != set_in_sysconf, "filename" is an environment variable, so it
+     * should hang around. If set, it is expected to be a full path name
+     * (if relevant)
+     */
     if (filename && cptr.ld1s(filename)) {
         set_configfile_name(filename);
         if (!cptr.strncmp(cptr.decay(configfile), __s_tilde_slash, 2n) && (envp = nh_getenv(__s_home)) !== null) {
+            /* support for command line '--nethackrc=~/path' (or for
+               NETHACKOPTIONS='@~/path'; we don't support ~user/path) */
             nh_snprintf(__s_fopen_config_file, 251, cptr.decay(tmp_config), 256n, __s_s_s, envp, cptr.add(cptr.decay(configfile), 2));
             set_configfile_name(cptr.decay(tmp_config));
         }
         if (access(cptr.decay(configfile), 4) == -1) {
+            /* nasty sneaky attempt to read file through
+             * NetHack's setuid permissions -- this is the only
+             * place a file name may be wholly under the player's
+             * control (but SYSCF_FILE is not under the player's
+             * control so it's OK).
+             */
             (yield* raw_printf(__s_access_to_s_denied_d, cptr.decay(configfile), (cptr.ldI32(__error()))));
             (yield* Y.icall(wait_synch()()));
+            /* fall through to standard names */
         } else if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null) {
             return fp;
         } else {
+            /* access() above probably caught most problems for UNIX */
             (yield* raw_printf(__s_couldn_t_open_requested_config_file_s_d, cptr.decay(configfile), (cptr.ldI32(__error()))));
             (yield* Y.icall(wait_synch()()));
         }
@@ -319,19 +344,29 @@ function* fopen_config_file(filename, src) {
         void cptr.strcpy(cptr.decay(tmp_config), __s_nethackrc);
     else
         void cptr.sprintf(cptr.decay(tmp_config), __s_s_s, envp, __s_nethackrc);
+
     set_configfile_name(cptr.decay(tmp_config));
     if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null)
         return fp;
+    /* try an alternative */
     if (envp) {
+        /* keep 'tmp_config' intact here; if alternates fail, use it to
+           restore configfile[] to its preferred setting (".nethackrc") */
         let alt_config = new Uint8Array(256);
+
+        /* OSX-style configuration settings */
         nh_snprintf(__s_fopen_config_file, 338, cptr.decay(alt_config), 256n, __s_s_s, envp, __s_library_preferences_nethack_defaults);
         set_configfile_name(cptr.decay(alt_config));
         if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null)
             return fp;
+        /* may be easier for user to edit if filename has '.txt' suffix */
         nh_snprintf(__s_fopen_config_file, 344, cptr.decay(alt_config), 256n, __s_s_s, envp, __s_library_preferences_nethack_defaults_txt);
         set_configfile_name(cptr.decay(alt_config));
         if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null)
             return fp;
+        /* couldn't open either of the alternate names; for use in
+           messages, put 'configfile' back to the normal value rather than
+           leaving it set to last alternate; retry open() to reset 'errno' */
         set_configfile_name(cptr.decay(tmp_config));
         if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null)
             return fp;
@@ -346,11 +381,18 @@ function* fopen_config_file(filename, src) {
     return null;
 }
 
+/*
+ * Retrieve a list of integers from buf into a uchar array.
+ *
+ * NOTE: zeros are inserted unless modlist is TRUE, in which case the list
+ *  location is unchanged.  Callers must handle zeros if modlist is FALSE.
+ */
 /** C ref: cfgfiles.c:381 — @param {CPtr<char>} bufp @param {CPtr<uchar>} list @param {CInt} modlist @param {CInt} size @param {CPtr<char>} name @returns {CInt} */
 function* get_uchars(bufp, list, modlist, size, name) {
     let num = 0;
     let count = 0;
     let havenum = 0;
+
     while (1) {
         switch (cptr.ld1s(bufp)) {
             case 32:
@@ -358,6 +400,7 @@ function* get_uchars(bufp, list, modlist, size, name) {
             case 9:
             case 10:
             if (havenum) {
+                /* if modifying in place, don't insert zeros */
                 if (num || !modlist)
                     cptr.st1o(list, count, uchar(num));
                 count++;
@@ -394,16 +437,20 @@ function* get_uchars(bufp, list, modlist, size, name) {
             return count;
         }
     }
+    /*NOTREACHED*/
 }
 
+/* Choose at random one of the sep separated parts from str. Mangles str. */
 /** C ref: cfgfiles.c:464 — @param {CPtr<char>} str @param {CInt} sep @returns {CPtr<char>} */
 function choose_random_part(str, sep) {
     let nsep = 1;
     let csep;
     let len = 0;
     let begin = str;
+
     if (!str)
         return null;
+
     while (cptr.ld1s(str)) {
         if (cptr.ld1s(str) == sep)
             nsep++;
@@ -443,31 +490,46 @@ function free_config_sections() {
     }
 }
 
+/* check for " [ anything-except-bracket-or-empty ] # arbitrary-comment"
+   with spaces optional; returns pointer to "anything-except..." (with
+   trailing " ] #..." stripped) if ok, otherwise Null */
 /** C ref: cfgfiles.c:523 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function* is_config_section(str) {
     let a;
     let c;
     let z;
+
+    /* remove any spaces at start and end; won't significantly interfere
+       with echoing the string in a config error message, if warranted */
     a = (yield* trimspaces(str));
+    /* first character should be open square bracket; set pointer past it */
     if (cptr.ld1s(cptr.postinc(() => a, (v) => { a = v; })) != 91)
         return null;
+    /* last character should be close bracket, ignoring any comment */
     z = cptr.strchr(a, 93);
     if (!z)
         return null;
+    /* comment, if present, can be preceded by spaces */
     for (c = cptr.add(z, 1); cptr.ld1s(c) == 32; c = cptr.add(c, 1))
         continue;
     if (cptr.ld1s(c) && cptr.ld1s(c) != 35)
         return null;
+    /* we now know that result is good; there won't be a config error
+       message so we can modify the input string */
     cptr.st1(z, 0);
+    /* 'a' points past '[' and the string ends where ']' was; remove any
+       spaces between '[' and choice-start and between choice-end and ']' */
     return (yield* trimspaces(a));
 }
 
 /** C ref: cfgfiles.c:552 — @param {CPtr<char>} buf @returns {CInt} */
 function* handle_config_section(buf) {
     let sect = (yield* is_config_section(buf));
+
     if (sect) {
         if (cptr.ldPtro(gc, $instance_globals_c_config_section_current))
             cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_current)), cptr.stPtro(gc, $instance_globals_c_config_section_current, null);
+        /* is_config_section() removed brackets from 'sect' */
         if (!cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)) {
             (yield* config_error_add(__s_section_s_without_choose, sect));
             return 1;
@@ -493,6 +555,7 @@ function* handle_config_section(buf) {
         }
         return 1;
     }
+
     if (cptr.ldPtro(gc, $instance_globals_c_config_section_current)) {
         if (!cptr.ldPtro(gc, $instance_globals_c_config_section_chosen))
             return 1;
@@ -502,21 +565,25 @@ function* handle_config_section(buf) {
     return 0;
 }
 
+/* find the '=' or ':' */
 /** C ref: cfgfiles.c:588 — @param {CPtr<char>} buf @returns {CPtr<char>} */
 function find_optparam(buf) {
     let bufp;
     let altp;
+
     bufp = cptr.strchr(buf, 61);
     altp = cptr.strchr(buf, 58);
     if (!bufp || (altp && cptr.cmp(altp, bufp) < 0))
         bufp = altp;
+
     return bufp;
 }
 
 /** C ref: cfgfiles.c:603 — @param {CPtr<char>} origbuf @returns {CInt} */
 function* cnf_line_OPTIONS(origbuf) {
     let bufp = find_optparam(origbuf);
-    bufp = cptr.add(bufp, 1);
+
+    bufp = cptr.add(bufp, 1);  /* skip '='; parseoptions() handles spaces */
     return (yield* parseoptions(bufp, 1, 1));
 }
 
@@ -605,6 +672,7 @@ function cnf_line_NAME(bufp) {
 /** C ref: cfgfiles.c:768 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_ROLE(bufp) {
     let len;
+
     if ((len = (yield* str2role(bufp))) >= 0)
         cptr.stI32o(flags, $flag_initrole, len);
     return 1;
@@ -628,6 +696,9 @@ function* cnf_line_WIZARDS(bufp) {
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_wizards));
     cptr.stPtro(sysopt, $sysopt_s_wizards, (yield* dupstr(bufp)));
     if (cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_wizards)) && strcmp(cptr.ldPtro(sysopt, $sysopt_s_wizards), __s_star)) {
+        /* pre-format WIZARDS list now; it's displayed during a panic
+           and since that panic might be due to running out of memory,
+           we don't want to risk attempting to allocate any memory then */
         if (cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list))
             cptr.free(cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list));
         cptr.stPtro(sysopt, $sysopt_s_fmtd_wizard_list, (yield* build_english_list(cptr.ldPtro(sysopt, $sysopt_s_wizards))));
@@ -661,6 +732,8 @@ function* cnf_line_EXPLORERS(bufp) {
 
 /** C ref: cfgfiles.c:839 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_DEBUGFILES(bufp) {
+    /* might already have a vaule from getenv("DEBUGFILES");
+       if so, ignore this value from SYSCF */
     if (!cptr.ldI32o(sysopt, $sysopt_s_env_dbgfl)) {
         if (cptr.ldPtro(sysopt, $sysopt_s_debugfiles))
             cptr.free(cptr.ldPtro(sysopt, $sysopt_s_debugfiles));
@@ -685,8 +758,14 @@ function* cnf_line_GENERICUSERS(bufp) {
 
 /** C ref: cfgfiles.c:874 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_BONES_POOLS(bufp) {
+    /* max value of 10 guarantees (N % bones.pools) will be one digit
+       so we don't lose control of the length of bones file names */
     let n = atoi(bufp);
+
     cptr.stI32o(sysopt, $sysopt_s_bones_pools, (n <= 0) ? 0 : ((n) < 10 ? (n) : 10));
+    /* note: right now bones_pools==0 is the same as bones_pools==1,
+       but we could change that and make bones_pools==0 become an
+       indicator to suppress bones usage altogether */
     return 1;
 }
 
@@ -709,6 +788,7 @@ function* cnf_line_RECOVER(bufp) {
 /** C ref: cfgfiles.c:906 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_CHECK_SAVE_UID(bufp) {
     let n = atoi(bufp);
+
     cptr.stI32o(sysopt, $sysopt_s_check_save_uid, n);
     return 1;
 }
@@ -716,15 +796,19 @@ function cnf_line_CHECK_SAVE_UID(bufp) {
 /** C ref: cfgfiles.c:915 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_CHECK_PLNAME(bufp) {
     let n = atoi(bufp);
+
     cptr.stI32o(sysopt, $sysopt_s_check_plname, n);
     return 1;
 }
 
 /** C ref: cfgfiles.c:924 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_SEDUCE(bufp) {
-    let n = !!atoi(bufp);
+    let n = !!atoi(bufp);  /* XXX this could be tighter */
     let src = cptr.ldI32o(iflags, $instance_flags_parse_config_file_src);
     let in_sysconf = schar((src == NHC.set_in_sysconf));
+
+    /* allow anyone to disable it but can only enable it in sysconf
+       or as a no-op for the user when sysconf hasn't disabled it */
     if (!in_sysconf && !cptr.ldI32o(sysopt, $sysopt_s_seduce) && n != 0) {
         (yield* config_error_add(__s_illegal_value_in_seduce));
         n = 0;
@@ -737,6 +821,7 @@ function* cnf_line_SEDUCE(bufp) {
 /** C ref: cfgfiles.c:946 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_HIDEUSAGE(bufp) {
     let n = !!atoi(bufp);
+
     cptr.stI32o(sysopt, $sysopt_s_hideusage, n);
     return 1;
 }
@@ -744,6 +829,8 @@ function cnf_line_HIDEUSAGE(bufp) {
 /** C ref: cfgfiles.c:955 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_MAXPLAYERS(bufp) {
     let n = atoi(bufp);
+
+    /* XXX to get more than 25, need to rewrite all lock code */
     if (n < 0 || n > 25) {
         (yield* config_error_add(__s_illegal_value_in_maxplayers_maximum_is));
         n = 5;
@@ -755,6 +842,7 @@ function* cnf_line_MAXPLAYERS(bufp) {
 /** C ref: cfgfiles.c:969 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_PERSMAX(bufp) {
     let n = atoi(bufp);
+
     if (n < 1) {
         (yield* config_error_add(__s_illegal_value_in_persmax_minimum_is_1));
         n = 0;
@@ -766,6 +854,7 @@ function* cnf_line_PERSMAX(bufp) {
 /** C ref: cfgfiles.c:982 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_PERS_IS_UID(bufp) {
     let n = atoi(bufp);
+
     if (n != 0 && n != 1) {
         (yield* config_error_add(__s_illegal_value_in_pers_is_uid_must_be_0));
         n = 0;
@@ -777,6 +866,7 @@ function* cnf_line_PERS_IS_UID(bufp) {
 /** C ref: cfgfiles.c:995 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_ENTRYMAX(bufp) {
     let n = atoi(bufp);
+
     if (n < 10) {
         (yield* config_error_add(__s_illegal_value_in_entrymax_minimum_is_10));
         n = 10;
@@ -788,6 +878,7 @@ function* cnf_line_ENTRYMAX(bufp) {
 /** C ref: cfgfiles.c:1008 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_POINTSMIN(bufp) {
     let n = atoi(bufp);
+
     if (n < 1) {
         (yield* config_error_add(__s_illegal_value_in_pointsmin_minimum_is_1));
         n = 100;
@@ -799,6 +890,7 @@ function* cnf_line_POINTSMIN(bufp) {
 /** C ref: cfgfiles.c:1021 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_MAX_STATUENAME_RANK(bufp) {
     let n = atoi(bufp);
+
     if (n < 1) {
         (yield* config_error_add(__s_illegal_value_in_max_statuename_rank));
         n = 10;
@@ -809,7 +901,11 @@ function* cnf_line_MAX_STATUENAME_RANK(bufp) {
 
 /** C ref: cfgfiles.c:1035 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_LIVELOG(bufp) {
+    /* using 0 for base accepts "dddd" as decimal provided that first 'd'
+       isn't '0', "0xhhhh" as hexadecimal, and "0oooo" as octal; ignores
+       any trailing junk, including '8' or '9' for leading '0' octal */
     let L = strtol(bufp, null, 0);
+
     if (L < 0n || L > 65535n) {
         (yield* config_error_add(__s_illegal_value_for_livelog_must_be));
         return 0;
@@ -875,6 +971,7 @@ function* cnf_line_CRASHREPORTURL(bufp) {
 /** C ref: cfgfiles.c:1121 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_ACCESSIBILITY(bufp) {
     let n = atoi(bufp);
+
     if (n < 0 || n > 1) {
         (yield* config_error_add(__s_illegal_value_in_accessibility_not_0_1));
         n = 0;
@@ -909,6 +1006,7 @@ function* cnf_line_HILITE_STATUS(bufp) {
 /** C ref: cfgfiles.c:1181 — @param {CPtr<char>} bufp @returns {CInt} */
 function* cnf_line_WARNINGS(bufp) {
     let translate = new Uint8Array(105);
+
     void (yield* get_uchars(bufp, cptr.decay(translate), 0, NHM.WARNCOUNT, __s_warnings));
     assign_warnings(cptr.decay(translate));
     return 1;
@@ -1277,29 +1375,39 @@ export function* parse_config_line(origbuf) {
     let bufp;
     let buf = new Uint8Array(1024);
     let i;
+
     while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9)
-        origbuf = cptr.add(origbuf, 1);
+        origbuf = cptr.add(origbuf, 1);  /* (caller probably already did this) */
     void __builtin___strncpy_chk(cptr.decay(buf), origbuf, 1023n, __builtin_object_size(cptr.decay(buf), 1));
-    cptr.st1o(cptr.decay(buf), 1023n, 0, 1);
+    cptr.st1o(cptr.decay(buf), 1023n, 0, 1);  /* strncpy not guaranteed to NUL terminate */
+    /* convert any tab to space, condense consecutive spaces into one,
+       remove leading and trailing spaces (exception: if there is nothing
+       but spaces, one of them will be kept even though it leads/trails) */
     (yield* mungspaces(cptr.decay(buf)));
+
+    /* find the '=' or ':' */
     bufp = find_optparam(cptr.decay(buf));
     if (!bufp) {
         if (!ignore_statement_errors)
             (yield* config_error_add(__s_not_a_config_statement_missing));
         return 0;
     }
+    /* skip past '=', then space between it and value, if any */
     bufp = cptr.add(bufp, 1);
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
+
     for (i = 0; i < 59; i++) {
         if (cptr.ld1so2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_syscnf_only) && !in_sysconf)
             continue;
         if ((yield* match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, $sizeof_match_config_line_stmt), cptr.ldI32o2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_len), 1))) {
             let parm = cptr.ld1so2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_origbuf) ? origbuf : bufp;
+
             if (!cptr.ld1so(cptr.decay(disregarded_config_lines), i, 1))
                 return (yield* Y.icall(cptr.ldPtro2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_fn)(parm)));
         }
     }
+
     if (!ignore_errors_on_unmatched)
         (yield* config_error_add(__s_unknown_config_statement));
     return 0;
@@ -1318,6 +1426,7 @@ let config_error_msg = null;
 /** C ref: cfgfiles.c:1470 — @param {CInt} from_file @param {CPtr<char>} sourcename @param {CInt} secure */
 export function* config_error_init(from_file, sourcename, secure) {
     let tmp = (yield* alloc(1304));
+
     cptr.stI32(tmp, 0);
     cptr.stI32o(tmp, $_config_error_frame_num_errors, 0);
     cptr.st1o(tmp, $_config_error_frame_origline_shown, 0);
@@ -1329,6 +1438,7 @@ export function* config_error_init(from_file, sourcename, secure) {
         cptr.st1o2(tmp, 255n, 1, $_config_error_frame_source, 0);
     } else
         cptr.st1o2(tmp, 0, 1, $_config_error_frame_source, 0);
+
     cptr.stPtro(tmp, $_config_error_frame_next, config_error_data);
     config_error_data = tmp;
     cptr.stI32o(program_state, $sinfo_config_error_ready, 1);
@@ -1337,10 +1447,13 @@ export function* config_error_init(from_file, sourcename, secure) {
 /** C ref: cfgfiles.c:1493 — @param {CPtr<char>} line @returns {CInt} */
 function config_error_nextline(line) {
     let ced = config_error_data;
+
     if (!ced)
         return 0;
+
     if (cptr.ldI32o(ced, $_config_error_frame_num_errors) && cptr.ld1so(ced, $_config_error_frame_secure))
         return 0;
+
     (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - (1);
     cptr.st1o(ced, $_config_error_frame_origline_shown, 0);
     if (line && cptr.ld1so(line, 0)) {
@@ -1348,6 +1461,7 @@ function config_error_nextline(line) {
         cptr.st1o2(ced, 1023n, 1, $_config_error_frame_origline, 0);
     } else
         cptr.st1o2(ced, 0, 1, $_config_error_frame_origline, 0);
+
     return 1;
 }
 
@@ -1356,7 +1470,9 @@ export function* l_get_config_errors(L) {
     let dat = config_error_msg;
     let tmp;
     let idx = 1;
+
     (yield* lua_createtable(L, 0, 0));
+
     while (dat) {
         (yield* lua_pushinteger(L, BigInt((idx++))));
         (yield* lua_createtable(L, 0, 0));
@@ -1370,30 +1486,42 @@ export function* l_get_config_errors(L) {
         dat = tmp;
     }
     config_error_msg = null;
+
     return 1;
 }
 
+/* varargs 'config_error_add()' moved to pline.c */
 /** C ref: cfgfiles.c:1544 — @param {CPtr<char>} buf */
 export function* config_erradd(buf) {
     let lineno = new Uint8Array(128);
     let punct;
+
     if (!buf || !cptr.ld1s(buf))
         buf = __s_unknown_error;
-    punct = cptr.add(c_eos(buf), -(1));
+
+    /* if buf[] doesn't end in a period, exclamation point, or question mark,
+       we'll include a period (in the message, not appended to buf[]) */
+    punct = cptr.add(c_eos(buf), -(1));  /* eos(buf)-1 is valid */
     punct = cptr.strchr(__s_dot_bang_query, cptr.ld1s(punct)) ? __s_empty : __s_dot;
+
     if (!cptr.ldI32o(program_state, $sinfo_config_error_ready)) {
+        /* either very early, where pline() will use raw_print(), or
+           player gave bad value when prompted by interactive 'O' command */
         (yield* pline(__s_s_s_s, !cptr.ld1so(iflags, $instance_flags_window_inited) ? __s_config_error_add : __s_empty, buf, punct));
         (yield* Y.icall(wait_synch()()));
         return;
     }
+
     if (cptr.ld1so(iflags, $instance_flags_in_lua)) {
         let dat = (yield* alloc(24));
+
         cptr.stPtro(dat, $_config_error_errmsg_next, config_error_msg);
         cptr.stI32(dat, cptr.ldI32(config_error_data));
         cptr.stPtro(dat, $_config_error_errmsg_errormsg, (yield* dupstr(buf)));
         config_error_msg = dat;
         return;
     }
+
     (cptr.stI32o(config_error_data, $_config_error_frame_num_errors, cptr.ldI32o(config_error_data, $_config_error_frame_num_errors) + 1)) - (1);
     if (!cptr.ld1so(config_error_data, $_config_error_frame_origline_shown) && !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
         (yield* pline(__s_nl_pct_s, cptr.add(config_error_data, $_config_error_frame_origline)));
@@ -1403,6 +1531,7 @@ export function* config_erradd(buf) {
         void cptr.sprintf(cptr.decay(lineno), __s_line_d, cptr.ldI32(config_error_data));
     } else
         cptr.st1o(cptr.decay(lineno), 0, 0, 1);
+
     (yield* pline(__s_s_s_s_s, cptr.ld1so(config_error_data, $_config_error_frame_secure) ? __s_error__2 : __s_sp_star, cptr.decay(lineno), buf, punct));
 }
 
@@ -1410,15 +1539,20 @@ export function* config_erradd(buf) {
 export function* config_error_done() {
     let n;
     let tmp = config_error_data;
+
     if (!config_error_data)
         return 0;
     n = cptr.ldI32o(config_error_data, $_config_error_frame_num_errors);
     if (cptr.ldI32o(gn, $instance_globals_n_no_sound_notified) > 0) {
+        /* no USER_SOUNDS; config_error_add() was called once for first
+           SOUND or SOUNDDIR entry seen, then skipped for any others;
+           include those skipped ones in the total error count */
         n = (n + ((cptr.ldI32o(gn, $instance_globals_n_no_sound_notified) - 1) | 0)) | 0;
         cptr.stI32o(gn, $instance_globals_n_no_sound_notified, 0);
     }
     if (n) {
         let cmdline = schar((!strcmp(cptr.add(config_error_data, $_config_error_frame_source), __s_command_line)));
+
         (yield* pline(__s_d_error_s_s_s, n, (((n) == 1) ? __s_empty : __s_s), cmdline ? __s_on : __s_in, cptr.ld1so(config_error_data, $_config_error_frame_source) ? cptr.add(config_error_data, $_config_error_frame_source) : cptr.decay(configfile)));
         (yield* Y.icall(wait_synch()()));
     }
@@ -1432,23 +1566,29 @@ export function* config_error_done() {
 export function* read_config_file(filename, src) {
     let fp;
     let rv = 1;
+
     if (!(fp = (yield* fopen_config_file(filename, src))))
         return 0;
+    /* begin detection of duplicate configfile options */
     reset_duplicate_opt_detection();
     free_config_sections();
     cptr.stI32o(iflags, $instance_flags_parse_config_file_src, src);
+
     rv = (yield* parse_conf_file(fp, parse_config_line));
     void fclose(fp);
+
     free_config_sections();
+    /* turn off detection of duplicate configfile options */
     reset_duplicate_opt_detection();
     return rv;
 }
 
 /** C ref: cfgfiles.c:1649 — struct _cnf_parser_state { inbuf, inbufsz, rv, ep, buf, skip, morelines, cont, pbreak } (memory model v0.5) */
 
+/* Initialize config parser data */
 /** C ref: cfgfiles.c:1662 — @param {CPtr<struct _cnf_parser_state>} parser */
 function* cnf_parser_init(parser) {
-    cptr.stI32o(parser, $_cnf_parser_state_rv, 1);
+    cptr.stI32o(parser, $_cnf_parser_state_rv, 1);  /* assume successful parse */
     cptr.stPtro(parser, $_cnf_parser_state_ep, cptr.stPtro(parser, $_cnf_parser_state_buf, null));
     cptr.st1o(parser, $_cnf_parser_state_skip, 0);
     cptr.st1o(parser, $_cnf_parser_state_morelines, 0);
@@ -1459,15 +1599,22 @@ function* cnf_parser_init(parser) {
     __builtin___memset_chk(cptr.ldPtr(parser), 0, BigInt(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0), __builtin_object_size(cptr.ldPtr(parser), 0));
 }
 
+/* caller has finished with 'parser' (except for 'rv' so leave that intact) */
 /** C ref: cfgfiles.c:1677 — @param {CPtr<struct _cnf_parser_state>} parser */
 function cnf_parser_done(parser) {
-    cptr.stPtro(parser, $_cnf_parser_state_ep, null);
+    cptr.stPtro(parser, $_cnf_parser_state_ep, null);  /* points into parser->inbuf, so becoming stale */
     if (cptr.ldPtr(parser))
         cptr.free(cptr.ldPtr(parser)), cptr.stPtr(parser, null);
     if (cptr.ldPtro(parser, $_cnf_parser_state_buf))
         cptr.free(cptr.ldPtro(parser, $_cnf_parser_state_buf)), cptr.stPtro(parser, $_cnf_parser_state_buf, null);
 }
 
+/*
+ * Parse config buffer, handling comments, empty lines, config sections,
+ * CHOOSE, and line continuation, calling proc for every valid line.
+ *
+ * Continued lines are merged together with one space in between.
+ */
 /** C ref: cfgfiles.c:1693 — @param {CPtr<struct _cnf_parser_state>} p @param {CPtr} proc */
 function* parse_conf_buf(p, proc) {
     cptr.st1o(p, $_cnf_parser_state_cont, 0);
@@ -1475,28 +1622,35 @@ function* parse_conf_buf(p, proc) {
     cptr.stPtro(p, $_cnf_parser_state_ep, cptr.strchr(cptr.ldPtr(p), 10));
     if (cptr.ld1so(p, $_cnf_parser_state_skip)) {
         if (cptr.ldPtro(p, $_cnf_parser_state_ep))
-            cptr.st1o(p, $_cnf_parser_state_skip, 0);
+            cptr.st1o(p, $_cnf_parser_state_skip, 0);  /* found newline; next line is normal */
     } else {
         if (!cptr.ldPtro(p, $_cnf_parser_state_ep)) {
             if (cptr.strlen(cptr.ldPtr(p)) < BigInt(((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 2) >>> 0) >>> 0)) {
+                /* likely the last line of file is just
+                   missing a newline; process it anyway  */
                 cptr.stPtro(p, $_cnf_parser_state_ep, eos(cptr.ldPtr(p)));
             } else {
                 (yield* config_error_add(__s_line_too_long_skipping));
-                cptr.st1o(p, $_cnf_parser_state_skip, 1);
+                cptr.st1o(p, $_cnf_parser_state_skip, 1);  /* discard next fgets */
             }
         } else {
-            cptr.st1(cptr.ldPtro(p, $_cnf_parser_state_ep), 0);
+            cptr.st1(cptr.ldPtro(p, $_cnf_parser_state_ep), 0);  /* remove newline */
         }
         if (cptr.ldPtro(p, $_cnf_parser_state_ep)) {
             let tmpbuf = null;
             let len;
             let ignoreline = 0;
             let oldline = 0;
+
+            /* line continuation (trailing '\') */
             cptr.st1o(p, $_cnf_parser_state_morelines, schar((cptr.cmp(cptr.predec(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 92 ? 1 : 0)));
             if (cptr.ld1so(p, $_cnf_parser_state_morelines))
                 cptr.st1(cptr.ldPtro(p, $_cnf_parser_state_ep), 0);
+
+            /* trim off spaces at end of line */
             while (cptr.cmp(cptr.ldPtro(p, $_cnf_parser_state_ep), cptr.ldPtr(p)) >= 0 && (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 13))
                 cptr.st1(cptr.postdec(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }), 0);
+
             if (!config_error_nextline(cptr.ldPtr(p))) {
                 cptr.stI32o(p, $_cnf_parser_state_rv, 0);
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf))
@@ -1504,17 +1658,23 @@ function* parse_conf_buf(p, proc) {
                 cptr.st1o(p, $_cnf_parser_state_pbreak, 1);
                 return;
             }
+
             cptr.stPtro(p, $_cnf_parser_state_ep, cptr.ldPtr(p));
             while (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9)
                 cptr.preinc(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); });
+
+            /* ignore empty lines and full-line comment lines */
             if (!cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 35)
                 ignoreline = 1;
+
             if (cptr.ldPtro(p, $_cnf_parser_state_buf))
                 oldline = 1;
+
+            /* merge now read line with previous ones, if necessary */
             if (!ignoreline) {
-                len = (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_ep)))) + 1) | 0;
+                len = (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_ep)))) + 1) | 0;  /* +1: final '\0' */
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf))
-                    len = (len + ((Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)))) + 1) | 0)) | 0;
+                    len = (len + ((Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)))) + 1) | 0)) | 0;  /* +1: space */
                 tmpbuf = (yield* alloc(len >>> 0));
                 cptr.st1(tmpbuf, 0);
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf)) {
@@ -1525,15 +1685,21 @@ function* parse_conf_buf(p, proc) {
                 if (cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)) >= BigInt(cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0))
                     cptr.st1o(cptr.ldPtro(p, $_cnf_parser_state_buf), (cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 1) >>> 0, 0);
             }
+
             if (cptr.ld1so(p, $_cnf_parser_state_morelines) || (ignoreline && !oldline))
                 return;
+
             if ((yield* handle_config_section(cptr.ldPtro(p, $_cnf_parser_state_buf)))) {
                 cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 return;
             }
+
+            /* from here onwards, we'll handle buf only */
+
             if ((yield* match_optname(cptr.ldPtro(p, $_cnf_parser_state_buf), __s_choose, 6, 1))) {
                 let section;
                 let bufp = find_optparam(cptr.ldPtro(p, $_cnf_parser_state_buf));
+
                 if (!bufp) {
                     (yield* config_error_add(__s_format_is_choose_section1_section2));
                     cptr.stI32o(p, $_cnf_parser_state_rv, 0);
@@ -1553,8 +1719,10 @@ function* parse_conf_buf(p, proc) {
                 cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 return;
             }
+
             if (!(yield* Y.icall((proc)(cptr.ldPtro(p, $_cnf_parser_state_buf)))))
                 cptr.stI32o(p, $_cnf_parser_state_rv, 0);
+
             cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
         }
     }
@@ -1564,6 +1732,7 @@ function* parse_conf_buf(p, proc) {
 export function* parse_conf_str(str, proc) {
     let len;
     let parser = cptr.alloc(40);
+
     (yield* cnf_parser_init(parser));
     free_config_sections();
     (yield* config_error_init(0, __s_parse_conf_str, 0));
@@ -1582,22 +1751,30 @@ export function* parse_conf_str(str, proc) {
             break;
     }
     cnf_parser_done(parser);
+
     free_config_sections();
     (yield* config_error_done());
     return schar(cptr.ldI32o(parser, $_cnf_parser_state_rv));
 }
 
+/* parse_conf_file
+ *
+ * Read from file fp, calling parse_conf_buf for each line.
+ */
 /** C ref: cfgfiles.c:1844 — @param {CPtr<FILE>} fp @param {CPtr} proc @returns {CInt} */
 export function* parse_conf_file(fp, proc) {
     let parser = cptr.alloc(40);
+
     (yield* cnf_parser_init(parser));
     free_config_sections();
+
     while (fgets(cptr.ldPtr(parser), cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) | 0, fp)) {
         (yield* parse_conf_buf(parser, proc));
         if (cptr.ld1so(parser, $_cnf_parser_state_pbreak))
             break;
     }
     cnf_parser_done(parser);
+
     free_config_sections();
     return schar(cptr.ldI32o(parser, $_cnf_parser_state_rv));
 }
@@ -1605,6 +1782,7 @@ export function* parse_conf_file(fp, proc) {
 /** C ref: cfgfiles.c:1865 — @param {CPtr<char>} str */
 export function* config_error_add(str, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     (yield* vconfig_error_add(str, the_args));
     the_args = null;
@@ -1613,7 +1791,8 @@ export function* config_error_add(str, ...__va) {
 /** C ref: cfgfiles.c:1875 — @param {CPtr<char>} str @param {CPtr} the_args */
 function* vconfig_error_add(str, the_args) {
     let vlen = 0;
-    let buf = new Uint8Array(1280);
+    let buf = new Uint8Array(1280);  /* will be chopped down to BUFSZ-1 if longer */
+
     vlen = cptr.vsnprintf(cptr.decay(buf), 1280n, str, the_args);
     (void (vlen));
     cptr.st1o(cptr.decay(buf), 255, 0, 1);
@@ -1627,47 +1806,63 @@ export function* rcfile() {
     let envname;
     let namesrc;
     let nameval;
+
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.environ_opt);
+    /* getenv() instead of nhgetenv(): let total length of options be long;
+       parseoptions() will check each individually */
     envname = __s_nethackoptions;
     opts = getenv(envname);
     if (!opts) {
+        /* fall back to original name; discouraged */
         envname = __s_hackoptions;
         opts = getenv(envname);
     }
+
     if (cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile)) {
         namesrc = __s_command_line;
         nameval = cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile);
         xtraopts = opts;
         if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64))
-            xtraopts = null;
+            xtraopts = null;  /* NETHACKOPTIONS is a file name; ignore it */
     } else if (opts && (cptr.ld1s(opts) == 47 || cptr.ld1s(opts) == 92 || cptr.ld1s(opts) == 64)) {
+        /* NETHACKOPTIONS is a file name; use that instead of the default */
         if (cptr.ld1s(opts) == 64)
-            opts = cptr.add(opts, 1);
+            opts = cptr.add(opts, 1);  /* @filename */
         namesrc = envname;
         nameval = opts;
         xtraopts = null;
     } else {
+        /* either no NETHACKOPTIONS or it wasn't a file name;
+           read the default configuration file */
         nameval = (namesrc = null);
         xtraopts = opts;
     }
+
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.rc_file_opt);
+    /* seemingly arbitrary name length restriction is to prevent error
+       messages, if any were to be delivered while accessing the file,
+       from potentially overflowing buffers */
     if (nameval && Number(BigInt.asIntN(32, cptr.strlen(nameval))) >= 128) {
         (yield* config_error_init(1, namesrc, 0));
         (yield* config_error_add(__s_nethackrc_file_name_40s_too_long_using, nameval));
         (yield* config_error_done());
-        nameval = (namesrc = null);
+        nameval = (namesrc = null);  /* revert to default nethackrc */
     }
+
     (yield* config_error_init(1, nameval, schar((nameval ? 1 : 0))));
     void (yield* read_config_file(nameval, NHC.set_in_config));
     (yield* config_error_done());
     if (xtraopts) {
+        /* NETHACKOPTIONS is present and not a file name */
         cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.environ_opt);
         (yield* config_error_init(0, envname, 0));
         void (yield* parseoptions(xtraopts, 1, 0));
         (yield* config_error_done());
     }
+
     if (cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile))
         cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile)), cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, null);
+    /*[end of nethackrc handling]*/
 }
 
 /** C ref: cfgfiles.c:1960 */
@@ -1691,6 +1886,7 @@ export function* rcfile_interface_options() {
 /** C ref: cfgfiles.c:1979 */
 export function heed_all_config_statements() {
     let i;
+
     for (i = 0; i < disregarded_config_lines.length; i++) {
         cptr.st1o(cptr.decay(disregarded_config_lines), i, 0, 1);
     }
@@ -1699,6 +1895,7 @@ export function heed_all_config_statements() {
 /** C ref: cfgfiles.c:1988 */
 export function disregard_all_config_statements() {
     let i;
+
     for (i = 0; i < disregarded_config_lines.length; i++) {
         cptr.st1o(cptr.decay(disregarded_config_lines), i, 1, 1);
     }
@@ -1738,11 +1935,12 @@ export function* assure_syscf_file() {
     let fd;
     fd = open(__s_sysconf, 0);
     if (fd >= 0) {
+        /* readable */
         close(fd);
         return;
     }
     if (cptr.ld1so(gd, $instance_globals_d_deferred_showpaths))
-        (yield* do_deferred_showpaths(1));
+        (yield* do_deferred_showpaths(1));  /* does not return */
     (yield* raw_printf(__s_unable_to_open_syscf_file));
     exit(1);
 }

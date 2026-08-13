@@ -92,11 +92,13 @@ function enermod(en) {
     }
 }
 
+/* calculate spell power/energy points for new level */
 /** C ref: exper.c:45 @returns {CInt} */
 export function newpw() {
     let en = 0;
     let enrnd;
     let enfix;
+
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
@@ -117,9 +119,13 @@ export function newpw() {
     if (en <= 0)
         en = 1;
     if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV) {
+        /* remember increment; future level drain could take it away again */
         cptr.stI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_ueninc, i16(en));
     } else {
+        /* after level 30, throttle energy gains from extra experience;
+           once max reaches 600, further increments will be just 1 more */
         let lim = schar(((4 - ((cptr.ldI32o(u, $you_uenmax) / 200) | 0)) | 0));
+
         lim = schar(((lim) > 1 ? (lim) : 1));
         if (en > lim)
             en = lim;
@@ -127,17 +133,25 @@ export function newpw() {
     return en;
 }
 
+/* return # of exp points for mtmp after nk killed */
 /** C ref: exper.c:85 — @param {CPtr<struct monst>} mtmp @param {CInt} nk @returns {CInt} */
 export function experience(mtmp, nk) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     let i;
     let tmp;
     let tmp2;
+
     tmp = (1 + Math.imul(cptr.ld1uo(mtmp, $monst_m_lev), cptr.ld1uo(mtmp, $monst_m_lev))) | 0;
+
+    /*  For higher ac values, give extra experience */
     if ((i = find_mac(mtmp)) < 3)
         tmp = (tmp + Math.imul(((7 - i) | 0), ((i < 0) ? 2 : 1))) | 0;
+
+    /*  For very fast monsters, give extra experience */
     if (cptr.ld1so(ptr, $permonst_mmove) > NHM.NORMAL_SPEED)
         tmp = (tmp + ((cptr.ld1so(ptr, $permonst_mmove) > 18) ? 5 : 3)) | 0;
+
+    /*  For each "special" attack type give extra experience */
     for (i = 0; i < NHM.NATTK; i++) {
         tmp2 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk);
         if (tmp2 > NHM.AT_BUTT) {
@@ -149,6 +163,8 @@ export function experience(mtmp, nk) {
                 tmp = (tmp + 3) | 0;
         }
     }
+
+    /*  For each "special" damage type give extra experience */
     for (i = 0; i < NHM.NATTK; i++) {
         tmp2 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
         if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND)
@@ -157,18 +173,38 @@ export function experience(mtmp, nk) {
             tmp = (tmp + 50) | 0;
         else if (tmp2 != NHM.AD_PHYS)
             tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
+        /* extra heavy damage bonus */
         if ((Math.imul(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn))) > 23)
             tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
         if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL && !Amphibious())
             tmp = (tmp + 1000) | 0;
     }
+
+    /*  For certain "extra nasty" monsters, give even more */
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n))
         tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, $monst_m_lev)))) | 0;
+
+    /*  For higher level monsters, an additional bonus is given */
     if (cptr.ld1uo(mtmp, $monst_m_lev) > 8)
         tmp = (tmp + 50) | 0;
+    /* Mail daemons put up no fight. */
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)))
         tmp = 1;
+
     if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
+        /*
+         *      Reduce experience awarded for repeated killings of
+         *      "the same monster".  Kill count includes all of this
+         *      monster's type which have been killed--including the
+         *      current monster--regardless of how they were created.
+         *        1.. 20        full experience
+         *       21.. 40        xp / 2
+         *       41.. 80        xp / 4
+         *       81..120        xp / 8
+         *      121..180        xp / 16
+         *      181..240        xp / 32
+         *      241..255+       xp / 64
+         */
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {
             tmp = (((tmp + 1) | 0) / 2) | 0;
             nk = (nk - tmp2) | 0;
@@ -176,6 +212,7 @@ export function experience(mtmp, nk) {
                 tmp2 = (tmp2 + 20) | 0;
         }
     }
+
     return (tmp);
 }
 
@@ -186,17 +223,24 @@ export function more_experienced(exper, rexp) {
     let newexp = BigInt.asIntN(64, oldexp + BigInt(exper));
     let rexpincr = BigInt(((Math.imul(4, exper) + rexp) | 0));
     let newrexp = BigInt.asIntN(64, oldrexp + rexpincr);
+
+    /* cap experience and score on wraparound */
     if (newexp < 0n && exper > 0)
         newexp = 9223372036854775807n;
     if (newrexp < 0n && rexpincr > 0n)
         newrexp = 9223372036854775807n;
+
     if (newexp != oldexp) {
         cptr.stI64o(u, $you_uexp, newexp);
         if (cptr.ld1so(flags, $flag_showexp))
             cptr.st1(disp, 1);
+        /* even when experience points aren't being shown, experience level
+           might be highlighted with a percentage highlight rule and that
+           percentage depends upon experience points */
         if (!cptr.ld1s(disp) && exp_percent_changing())
             cptr.st1(disp, 1);
     }
+    /* newrexp will always differ from oldrexp unless they're LONG_MAX */
     if (newrexp != oldrexp) {
         cptr.stI64o(u, $you_urexp, newrexp);
     }
@@ -204,19 +248,30 @@ export function more_experienced(exper, rexp) {
         cptr.st1o(flags, $flag_beginner, 0);
 }
 
+/* e.g., hit by drain life attack */
 /** C ref: exper.c:207 — @param {CPtr<char>} drainer */
 export function losexp(drainer) {
     let num;
     let uhpmin;
     let olduhpmax;
+
+    /* override life-drain resistance when handling an explicit
+       wizard mode request to reduce level; never fatal though */
     if (drainer && !strcmp(drainer, __s_levelchange))
         drainer = null;
     else if (resists_drli(cptr.add(gy, $instance_globals_y_youmonst)))
         return;
+
+    /* level-loss message; "Goodbye level 1." is fatal; divine anger
+       (drainer==NULL) resets a level 1 character to 0 experience points
+       without reducing level and that isn't fatal so suppress the message
+       in that situation */
     if (cptr.ldI32o(u, $you_ulevel) > 1 || drainer)
         pline(__s_s_level_d, Goodbye(), cptr.ldI32o(u, $you_ulevel));
+
     if (cptr.ldI32o(u, $you_ulevel) > 1) {
         cptr.stI32o(u, $you_ulevel, (cptr.ldI32o(u, $you_ulevel) - 1) | 0);
+        /* remove intrinsic abilities */
         adjabil((cptr.ldI32o(u, $you_ulevel) + 1) | 0, cptr.ldI32o(u, $you_ulevel));
         livelog_printf(4096n, __s_lost_experience_level_d, (cptr.ldI32o(u, $you_ulevel) + 1) | 0);
         ;
@@ -227,25 +282,36 @@ export function losexp(drainer) {
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), drainer);
             done(NHC.DIED);
         }
+        /* no drainer or lifesaved */
         if (cptr.ldI32o(u, $you_ulevel) > 1)
+            /* can happen during debug fuzzing if fuzzer_savelife() uses
+               a blessed potion of restore ability to restore lost levels */
             return;
         cptr.stI64o(u, $you_uexp, 0n);
         livelog_printf(4096n, __s_lost_all_experience);
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__s_losexp, __s_exper_c, 247, __s_u_ulevel_0_u_ulevel_maxulev) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__s_losexp, __s_exper_c, 247, __s_u_ulevel_0_u_ulevel_maxulev) : void 0);  /* valid array index */
+
     olduhpmax = cptr.ldI32o(u, $you_uhpmax);
-    uhpmin = minuhpmax(10);
+    uhpmin = minuhpmax(10);  /* same minimum as is used by life-saving */
     num = cptr.ldI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_uhpinc);
     cptr.stI32o(u, $you_uhpmax, (cptr.ldI32o(u, $you_uhpmax) - num) | 0);
     if (cptr.ldI32o(u, $you_uhpmax) < uhpmin)
         setuhpmax(uhpmin, 1);
+    /* uhpmax might try to go up if it has previously been reduced by
+       strength loss or by a fire trap or by an attack by Death which
+       all use a different minimum than life-saving or experience loss;
+       we don't allow it to go up because that contradicts assumptions
+       elsewhere (such as healing wielder who drains with Stormbringer) */
     if (cptr.ldI32o(u, $you_uhpmax) > olduhpmax)
         setuhpmax(olduhpmax, 1);
+
     cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) - num) | 0);
     if (cptr.ldI32o(u, $you_uhp) < 1)
         cptr.stI32o(u, $you_uhp, 1);
     else if (cptr.ldI32o(u, $you_uhp) > cptr.ldI32o(u, $you_uhpmax))
         cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
+
     num = cptr.ldI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_ueninc);
     cptr.stI32o(u, $you_uenmax, (cptr.ldI32o(u, $you_uenmax) - num) | 0);
     if (cptr.ldI32o(u, $you_uenmax) < 0)
@@ -255,8 +321,10 @@ export function losexp(drainer) {
         cptr.stI32o(u, $you_uen, 0);
     else if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
         cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));
+
     if (cptr.ldI64o(u, $you_uexp) > 0n)
         cptr.stI64o(u, $you_uexp, BigInt.asIntN(64, newuexp(cptr.ldI32o(u, $you_ulevel)) - 1n));
+
     if (Upolyd()) {
         num = monhp_per_lvl(cptr.add(gy, $instance_globals_y_youmonst));
         cptr.stI32o(u, $you_mhmax, (cptr.ldI32o(u, $you_mhmax) - num) | 0);
@@ -264,9 +332,16 @@ export function losexp(drainer) {
         if (cptr.ldI32o(u, $you_mh) <= 0)
             rehumanize();
     }
+
     cptr.st1(disp, 1);
 }
 
+/*
+ * Make experience gaining similar to AD&D(tm), whereby you can at most go
+ * up by one level at a time, extra expr possibly helping you along.
+ * After all, how much real experience does one get shooting a wand of death
+ * at a dragon created with a wand of polymorph??
+ */
 /** C ref: exper.c:300 */
 export function newexplevel() {
     if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV && cptr.ldI64o(u, $you_uexp) >= newuexp(cptr.ldI32o(u, $you_ulevel)))
@@ -277,27 +352,38 @@ export function newexplevel() {
 export function pluslvl(incr) {
     let hpinc;
     let eninc;
+
     if (!incr)
         You_feel(__s_more_experienced);
+
+    /* increase hit points (when polymorphed, do monster form first
+       in order to retain normal human/whatever increase for later) */
     if (Upolyd()) {
         hpinc = monhp_per_lvl(cptr.add(gy, $instance_globals_y_youmonst));
         cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + hpinc) | 0);
-        setuhpmax(cptr.ldI32o(u, $you_mhmax), 0);
+        setuhpmax(cptr.ldI32o(u, $you_mhmax), 0);  /* acts as setmhmax() when Upolyd */
     }
     hpinc = newhp();
     cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) + hpinc) | 0);
     setuhpmax((cptr.ldI32o(u, $you_uhpmax) + hpinc) | 0, 1);
+
+    /* increase spell power/energy points */
     eninc = newpw();
     cptr.stI32o(u, $you_uenmax, (cptr.ldI32o(u, $you_uenmax) + eninc) | 0);
     if (cptr.ldI32o(u, $you_uenmax) > cptr.ldI32o(u, $you_uenpeak))
         cptr.stI32o(u, $you_uenpeak, cptr.ldI32o(u, $you_uenmax));
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + eninc) | 0);
+
+    /* increase level (unless already maxxed) */
     if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV) {
         let old_ach_cnt;
         let newrank;
         let oldrank = xlev_to_rank(cptr.ldI32o(u, $you_ulevel));
+
+        /* increase experience points to reflect new level */
         if (incr) {
             let tmp = newuexp((cptr.ldI32o(u, $you_ulevel) + 1) | 0);
+
             if (cptr.ldI64o(u, $you_uexp) >= tmp)
                 cptr.stI64o(u, $you_uexp, BigInt.asIntN(64, tmp - 1n));
         } else {
@@ -307,12 +393,16 @@ export function pluslvl(incr) {
         pline(__s_welcome_sto_experience_level_d, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __s_empty : __s_back, cptr.ldI32o(u, $you_ulevel));
         if (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel))
             cptr.stI32o(u, $you_ulevelmax, cptr.ldI32o(u, $you_ulevel));
-        adjabil((cptr.ldI32o(u, $you_ulevel) - 1) | 0, cptr.ldI32o(u, $you_ulevel));
+        adjabil((cptr.ldI32o(u, $you_ulevel) - 1) | 0, cptr.ldI32o(u, $you_ulevel));  /* give new intrinsics */
         ;
         old_ach_cnt = count_achievements();
         newrank = xlev_to_rank(cptr.ldI32o(u, $you_ulevel));
         if (newrank > oldrank)
             record_achievement(achieve_rank(newrank));
+        /* a new rank achievement will log its own message; log a simpler
+           message here if we didn't just get an achievement (so when rank
+           hasn't changed or hero just regained a lost level and the rank
+           achievement doesn't get repeated) */
         if (count_achievements() == old_ach_cnt)
             livelog_printf(4096n, __s_sgained_experience_level_d, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __s_re : __s_empty, cptr.ldI32o(u, $you_ulevel));
         if (cptr.ldI32o(u, $you_ulevel) > cptr.ldI32o(u, $you_ulevelpeak))
@@ -321,6 +411,9 @@ export function pluslvl(incr) {
     cptr.st1(disp, 1);
 }
 
+/* compute a random amount of experience points suitable for the hero's
+   experience level:  base number of points needed to reach the current
+   level plus a random portion of what it takes to get to the next level */
 /** C ref: exper.c:378 — @param {CInt} gaining @returns {CLongLong} */
 export function rndexp(gaining) {
     let minexp;
@@ -328,14 +421,21 @@ export function rndexp(gaining) {
     let diff;
     let factor;
     let result;
+
     minexp = (cptr.ldI32o(u, $you_ulevel) == 1) ? 0n : newuexp((cptr.ldI32o(u, $you_ulevel) - 1) | 0);
     maxexp = newuexp(cptr.ldI32o(u, $you_ulevel));
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
+    /* make sure that `diff' is an argument which rn2() can handle */
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
     result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt(rn2_at(__s_exper_c, 388, __s_rndexp, Number(BigInt.asIntN(32, diff))))));
+    /* 3.4.1:  if already at level 30, add to current experience
+       points rather than to threshold needed to reach the current
+       level; otherwise blessed potions of gain level can result
+       in lowering the experience points instead of raising them */
     if (cptr.ldI32o(u, $you_ulevel) == NHM.MAXULEV && gaining) {
         result += (BigInt.asIntN(64, cptr.ldI64o(u, $you_uexp) - minexp));
+        /* avoid wrapping (over 400 blessed potions needed for that...) */
         if (result < cptr.ldI64o(u, $you_uexp))
             result = cptr.ldI64o(u, $you_uexp);
     }

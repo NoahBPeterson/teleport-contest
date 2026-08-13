@@ -41,15 +41,18 @@ const $classic_representation_symidx = FLD.classic_representation_symidx, $custo
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
 
+/* hexdd[] is defined in decl.c */
+
 /** C ref: utf8map.c:18 — @param {CPtr<char>} cp @returns {CInt} */
 export function* unicode_val(cp) {
     let dp;
     let cval = 0;
     let dcount;
+
     if (cp && cptr.ld1s(cp)) {
         cval = (dcount = 0);
         if ((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117) && cptr.ld1so(cp, 1) == 43 && cptr.ld1so(cp, 2) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
-            cp = cptr.add(cp, 2);
+            cp = cptr.add(cp, 2);  /* move past the 'U' and '+' */
             do {
                 cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null && ++dcount < 7);
@@ -61,8 +64,10 @@ export function* unicode_val(cp) {
 /** C ref: utf8map.c:37 — @param {CPtr<glyph_map>} gmap @param {CUInt} utf32ch @param {CPtr<uint8>} utf8str @returns {CInt} */
 export function* set_map_u(gmap, utf32ch, utf8str) {
     let tmpgm = gmap;
+
     if (!tmpgm || !utf32ch)
         return 0;
+
     if (cptr.ldPtro(gmap, $glyph_map_u) === null) {
         cptr.stPtro(gmap, $glyph_map_u, (yield* alloc(16)));
         cptr.stPtro(cptr.ldPtro(gmap, $glyph_map_u), $unicode_representation_utf8str, null);
@@ -81,6 +86,7 @@ export function free_all_glyphmap_u() {
     let glyph;
     let x;
     let y;
+
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         if (cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u)) {
             if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str)) {
@@ -91,6 +97,7 @@ export function free_all_glyphmap_u() {
             cptr.stPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u, null);
         }
     }
+    /* Prevent use after free from gg.gbuf */
     for (y = 0; y < NHM.ROWNO; ++y) {
         for (x = 0; x < NHM.COLNO; ++x) {
             cptr.stPtro3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u, null);
@@ -98,18 +105,24 @@ export function free_all_glyphmap_u() {
     }
 }
 
+/* helper routine if a window port wants to embed any UTF-8 sequences
+   for the glyph representation in the string in place of the \GNNNNNNNN
+   reference */
 /** C ref: utf8map.c:86 — @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CPtr<char>} str @param {CPtr<int>} retflags @returns {CPtr<char>} */
 export function* mixed_to_utf8(buf, bufsz, str, retflags) {
     let put = buf;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
+
     if (!str)
         return cptr.strcpy(buf, __s_empty);
+
     while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0) {
         if (cptr.ld1s(str) == 92) {
             let dcount;
             let so;
             let ggv = cptr.box(0);
             let save_str;
+
             save_str = cptr.postinc(() => str, (v) => { str = v; });
             switch (cptr.ld1s(str)) {
                 case 71:
@@ -118,6 +131,7 @@ export function* mixed_to_utf8(buf, bufsz, str, retflags) {
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
                     if (cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u) && cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u), $unicode_representation_utf8str)) {
                         let ucp = cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u), $unicode_representation_utf8str);
+
                         while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
                             cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; }))));
                         if (retflags)
@@ -128,14 +142,24 @@ export function* mixed_to_utf8(buf, bufsz, str, retflags) {
                         if (retflags)
                             cptr.stI32(retflags, 0);
                     }
+                    /* 'str' is ready for the next loop iteration and
+                        '*str' should not be copied at the end of this
+                        iteration */
                     continue;
                 } else {
+                    /* possible forgery - leave it the way it is */
                     str = save_str;
                 }
                 break;
                 case 92:
                 break;
                 case 0:
+                /* String ended with '\\'.  This can happen when someone
+                    names an object with a name ending with '\\', drops the
+                    named object on the floor nearby and does a look at all
+                    nearby objects. */
+                /* brh - should we perhaps not allow things to have names
+                    that contain '\\' */
                 str = save_str;
                 break;
             }
@@ -152,13 +176,14 @@ export function* add_custom_urep_entry(customization_name, glyphidx, utf32ch, ut
     let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), NHC.custom_ureps, $sizeof_symset_customization);
     let details;
     let newdetails = null;
+
     if (!cptr.ldPtro(gdc, $symset_customization_details)) {
         cptr.stPtr(gdc, (yield* dupstr(customization_name)));
         cptr.stI32o(gdc, $symset_customization_custtype, NHC.custom_ureps);
         cptr.stPtro(gdc, $symset_customization_details, null);
         cptr.stPtro(gdc, $symset_customization_details_end, null);
     }
-    details = find_matching_customization(customization_name, NHC.custom_ureps, which_set);
+    details = find_matching_customization(customization_name, NHC.custom_ureps, which_set);  /* FIXME */
     if (details) {
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
@@ -176,6 +201,7 @@ export function* add_custom_urep_entry(customization_name, glyphidx, utf32ch, ut
             details = cptr.ldPtro(details, $customization_detail_next);
         }
     }
+    /* create new details entry */
     newdetails = (yield* alloc(32));
     cptr.stI32(newdetails, glyphidx);
     if (utf8str && cptr.ld1u(utf8str)) {

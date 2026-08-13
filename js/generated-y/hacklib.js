@@ -81,14 +81,19 @@ function* nh_qsort_idx_cmp(va, vb) {
     return (cptr.ldU64(a) > cptr.ldU64(b));
 }
 
+/* Deterministic replacement for libc qsort(), preserving original order
+ * for equal-key elements regardless of platform libc behavior.
+ */
 /** C ref: hacklib.c:36 — @param {CPtr<void>} base @param {CLongLong} nmemb @param {CLongLong} size @param {CPtr} compar */
 export function* nh_deterministic_qsort(base, nmemb, size, compar) {
     let bytes = base;
     let order;
     let tmp;
     let i;
+
     if (!base || !compar || size == 0n || nmemb < 2n)
         return;
+
     order = cptr.malloc(BigInt.asUintN(64, nmemb * 8n));
     tmp = cptr.malloc(BigInt.asUintN(64, nmemb * size));
     if (!order || !tmp) {
@@ -100,55 +105,118 @@ export function* nh_deterministic_qsort(base, nmemb, size, compar) {
     }
     for (i = 0n; i < nmemb; ++i)
         cptr.stU64o(order, i, i, $sizeof_nh_qsort_index);
+
     nh_qsort_base = bytes;
     nh_qsort_size = size;
     nh_qsort_cmp_fn = compar;
     cptr.qsort(order, nmemb, 8n, Y.drive(nh_qsort_idx_cmp));
+
     for (i = 0n; i < nmemb; ++i)
         void cptr.memcpy((cptr.add(tmp, (BigInt.asUintN(64, i * size)))), (cptr.add(bytes, (BigInt.asUintN(64, cptr.ldU64o(order, i, $sizeof_nh_qsort_index) * size)))), size);
     void cptr.memcpy(bytes, tmp, BigInt.asUintN(64, nmemb * size));
+
     cptr.free(tmp);
     cptr.free(order);
 }
 
+/*=
+    Assorted 'small' utility routines.  They're virtually independent of
+    NetHack.
+
+      return type     routine name    argument type(s)
+        boolean         digit           (char)
+        boolean         letter          (char)
+        char            highc           (char)
+        char            lowc            (char)
+        char *          lcase           (char *)
+        char *          ucase           (char *)
+        char *          upstart         (char *)
+        char *          upwords         (char *)
+        char *          mungspaces      (char *)
+        char *          trimspaces      (char *)
+        char *          strip_newline   (char *)
+        char *          stripchars      (char *, const char *, const char *)
+        char *          stripdigits     (char *)
+        char *          eos             (char *)
+        const char *    c_eos           (const char *)
+        boolean         str_start_is    (const char *, const char *, boolean)
+        boolean         str_end_is      (const char *, const char *)
+        int             str_lines_maxlen (const char *)
+        char *          strkitten       (char *,char)
+        void            copynchars      (char *,const char *,int)
+        char            chrcasecpy      (int,int)
+        char *          strcasecpy      (char *,const char *)
+        char *          s_suffix        (const char *)
+        char *          ing_suffix      (const char *)
+        char *          xcrypt          (const char *, char *)
+        boolean         onlyspace       (const char *)
+        char *          tabexpand       (char *)
+        char *          visctrl         (char)
+        char *          strsubst        (char *, const char *, const char *)
+        int             strNsubst       (char *,const char *,const char *,int)
+        const char *    findword        (const char *,const char *,int,boolean)
+        const char *    ordin           (int)
+        char *          sitoa           (int)
+        int             sgn             (int)
+        int             distmin         (coordxy, coordxy, coordxy, coordxy)
+        int             dist2           (coordxy, coordxy, coordxy, coordxy)
+        boolean         online2         (coordxy, coordxy)
+        int             strncmpi        (const char *, const char *, int)
+        char *          strstri         (const char *, const char *)
+        boolean         fuzzymatch      (const char *, const char *,
+                                         const char *, boolean)
+        int             swapbits        (int, int, int)
+        void            nh_snprintf     (const char *, int, char *, size_t,
+                                         const char *, ...)
+=*/
+
+/* is 'c' a digit? */
 /** C ref: hacklib.c:126 — @param {CInt} c @returns {CInt} */
 export function digit(c) {
     return schar((48 <= c && c <= 57 ? 1 : 0));
 }
 
+/* is 'c' a letter?  note: '@' classed as letter */
 /** C ref: hacklib.c:133 — @param {CInt} c @returns {CInt} */
 export function letter(c) {
     return schar((schar((64 <= c && c <= 90 ? 1 : 0)) || (97 <= c && c <= 122) ? 1 : 0));
 }
 
+/* force 'c' into uppercase */
 /** C ref: hacklib.c:140 — @param {CInt} c @returns {CInt} */
 export function highc(c) {
     return schar(((97 <= c && c <= 122) ? (c & -33) : c));
 }
 
+/* force 'c' into lowercase */
 /** C ref: hacklib.c:147 — @param {CInt} c @returns {CInt} */
 export function lowc(c) {
     return schar(((65 <= c && c <= 90) ? (c | 32) : c));
 }
 
+/* convert a string into all lowercase */
 /** C ref: hacklib.c:154 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function lcase(s) {
     let p;
+
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
         if (65 <= cptr.ld1s(p) && cptr.ld1s(p) <= 90)
             cptr.st1(p, cptr.ld1s(p) | 32);
     return s;
 }
 
+/* convert a string into all uppercase */
 /** C ref: hacklib.c:166 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function ucase(s) {
     let p;
+
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
         if (97 <= cptr.ld1s(p) && cptr.ld1s(p) <= 122)
             cptr.st1(p, cptr.ld1s(p) & -33);
     return s;
 }
 
+/* convert first character of a string to uppercase */
 /** C ref: hacklib.c:178 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function upstart(s) {
     if (s)
@@ -156,10 +224,12 @@ export function upstart(s) {
     return s;
 }
 
+/* capitalize first letter of every word in a string (in place) */
 /** C ref: hacklib.c:187 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function upwords(s) {
     let p;
     let space = 1;
+
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
         if (cptr.ld1s(p) == 32) {
             space = 1;
@@ -172,15 +242,17 @@ export function upwords(s) {
     return s;
 }
 
+/* remove excess whitespace from a string buffer (in place) */
 /** C ref: hacklib.c:206 — @param {CPtr<char>} bp @returns {CPtr<char>} */
 export function* mungspaces(bp) {
     let c;
     let p;
     let p2;
     let was_space = 1;
+
     for (p = (p2 = bp); (c = cptr.ld1s(p)) != 0; p = cptr.add(p, 1)) {
         if (c == 10)
-            break;
+            break;  /* treat newline the same as end-of-string */
         if (c == 9)
             c = 32;
         if (c != 32 || !was_space)
@@ -193,20 +265,26 @@ export function* mungspaces(bp) {
     return bp;
 }
 
+/* skip leading whitespace; remove trailing whitespace, in place */
 /** C ref: hacklib.c:228 — @param {CPtr<char>} txt @returns {CPtr<char>} */
 export function* trimspaces(txt) {
     let end;
+
+    /* leading whitespace will remain in the buffer */
     while (cptr.ld1s(txt) == 32 || cptr.ld1s(txt) == 9)
         txt = cptr.add(txt, 1);
     end = eos(txt);
     while (cptr.cmp(cptr.predec(() => end, (v) => { end = v; }), txt) >= 0 && (cptr.ld1s(end) == 32 || cptr.ld1s(end) == 9))
         cptr.st1(end, 0);
+
     return txt;
 }
 
+/* remove \n from end of line; remove \r too if one is there */
 /** C ref: hacklib.c:244 — @param {CPtr<char>} str @returns {CPtr<char>} */
 export function strip_newline(str) {
     let p = cptr.strrchr(str, 10);
+
     if (p) {
         if (cptr.cmp(p, str) > 0 && cptr.ld1s((cptr.add(p, -(1)))) == 13)
             p = cptr.add(p, -1);
@@ -215,30 +293,35 @@ export function strip_newline(str) {
     return str;
 }
 
+/* return the end of a string (pointing at '\0') */
 /** C ref: hacklib.c:258 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function eos(s) {
     while (cptr.ld1s(s))
-        s = cptr.add(s, 1);
+        s = cptr.add(s, 1);  /* s += strlen(s); */
     return s;
 }
 
+/* version of eos() which takes a const* arg and returns that result */
 /** C ref: hacklib.c:267 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function c_eos(s) {
     while (cptr.ld1s(s))
-        s = cptr.add(s, 1);
+        s = cptr.add(s, 1);  /* s += strlen(s); */
     return s;
 }
 
+/* determine whether 'str' starts with 'chkstr', possibly ignoring case;
+ * panics on huge strings */
 /** C ref: hacklib.c:277 — @param {CPtr<char>} str @param {CPtr<char>} chkstr @param {CInt} caseblind @returns {CInt} */
 export function str_start_is(str, chkstr, caseblind) {
     let t1;
     let t2;
     let n = NHM.LARGEST_INT;
+
     while (--n) {
         if (!cptr.ld1s(str))
-            return schar((cptr.ld1s(chkstr) == 0));
+            return schar((cptr.ld1s(chkstr) == 0));  /* chkstr >= str */
         else if (!cptr.ld1s(chkstr))
-            return 1;
+            return 1;  /* chkstr < str */
         t1 = schar((caseblind ? lowc(cptr.ld1s(str)) : cptr.ld1s(str)));
         t2 = schar((caseblind ? lowc(cptr.ld1s(chkstr)) : cptr.ld1s(chkstr)));
         str = cptr.add(str, 1), chkstr = cptr.add(chkstr, 1);
@@ -248,20 +331,24 @@ export function str_start_is(str, chkstr, caseblind) {
     return 1;
 }
 
+/* determine whether 'str' ends in 'chkstr' */
 /** C ref: hacklib.c:305 — @param {CPtr<char>} str @param {CPtr<char>} chkstr @returns {CInt} */
 export function str_end_is(str, chkstr) {
     let clen = Number(BigInt.asIntN(32, cptr.strlen(chkstr)));
+
     if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= clen)
         return schar((!cptr.strncmp(cptr.add(eos(str), -(clen)), chkstr, BigInt.asUintN(64, BigInt(clen)))));
     return 0;
 }
 
+/* return max line length from buffer comprising newline-separated strings */
 /** C ref: hacklib.c:316 — @param {CPtr<char>} str @returns {CInt} */
 export function str_lines_maxlen(str) {
     let s1;
     let s2;
     let len;
     let max_len = 0;
+
     s1 = str;
     while (s1 && cptr.ld1s(s1)) {
         s2 = cptr.strchr(s1, 10);
@@ -275,19 +362,26 @@ export function str_lines_maxlen(str) {
         if (len > max_len)
             max_len = len;
     }
+
     return max_len;
 }
 
+/* append a character to a string (in place): strcat(s, {c,'\0'}); */
 /** C ref: hacklib.c:340 — @param {CPtr<char>} s @param {CInt} c @returns {CPtr<char>} */
 export function* strkitten(s, c) {
     let p = eos(s);
+
     cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), c);
     cptr.st1(p, 0);
     return s;
 }
 
+/* truncating string copy */
 /** C ref: hacklib.c:351 — @param {CPtr<char>} dst @param {CPtr<char>} src @param {CInt} n */
 export function* copynchars(dst, src, n) {
+    /* copies at most n characters, stopping sooner if terminator reached;
+       treats newline as input terminator; unlike strncpy, always supplies
+       '\0' terminator so dst must be able to hold at least n+1 characters */
     while (n > 0 && cptr.ld1s(src) != 0 && cptr.ld1s(src) != 10) {
         cptr.st1(cptr.postinc(() => dst, (v) => { dst = v; }), cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; })));
         --n;
@@ -295,24 +389,36 @@ export function* copynchars(dst, src, n) {
     cptr.st1(dst, 0);
 }
 
+/* convert char nc into oc's case; mostly used by strcasecpy */
 /** C ref: hacklib.c:365 — @param {CInt} oc @param {CInt} nc @returns {CInt} */
 export function chrcasecpy(oc, nc) {
     if (97 <= oc && oc <= 122) {
+        /* old char is lower case; if new char is upper case, downcase it */
         if (65 <= nc && nc <= 90)
-            nc = (nc + 32) | 0;
+            nc = (nc + 32) | 0;  /* lowc(nc) */
     } else if (65 <= oc && oc <= 90) {
+        /* old char is upper case; if new char is lower case, upcase it */
         if (97 <= nc && nc <= 122)
-            nc = (nc + -32) | 0;
+            nc = (nc + -32) | 0;  /* highc(nc) */
     }
     return schar(nc);
 }
 
+/* overwrite string, preserving old chars' case;
+   for case-insensitive editions of makeplural() and makesingular();
+   src might be shorter, same length, or longer than dst */
 /** C ref: hacklib.c:387 — @param {CPtr<char>} dst @param {CPtr<char>} src @returns {CPtr<char>} */
 export function* strcasecpy(dst, src) {
     let result = dst;
     let ic;
     let oc;
     let dst_exhausted = 0;
+
+    /* while dst has characters, replace each one with corresponding
+       character from src, converting case in the process if they differ;
+       once dst runs out, propagate the case of its last character to any
+       remaining src; if dst starts empty, it must be a pointer to the
+       tail of some other string because we examine the char at dst[-1] */
     while ((ic = cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))) != 0) {
         if (!dst_exhausted && !cptr.ld1s(dst))
             dst_exhausted = 1;
@@ -323,10 +429,12 @@ export function* strcasecpy(dst, src) {
     return result;
 }
 
+/* return a name converted to possessive */
 const __static_s_suffix_buf = new Uint8Array(256); /** C ref: hacklib.c:411 — char[256] (function-static) */
 
 /** C ref: hacklib.c:409 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function* s_suffix(s) {
+
     void cptr.strcpy(cptr.decay(__static_s_suffix_buf), s);
     if (!(yield* strncmpi(cptr.decay((__static_s_suffix_buf)), (__s_it), -1)))
         void cptr.strcat(cptr.decay(__static_s_suffix_buf), __s_s);
@@ -339,6 +447,7 @@ export function* s_suffix(s) {
     return cptr.decay(__static_s_suffix_buf);
 }
 
+/* construct a gerund (a verb formed by appending "ing" to a noun) */
 const __static_ing_suffix_vowel = cptr.bytes("aeiouwy"); /** C ref: hacklib.c:429 — char[8] (function-static) */
 const __static_ing_suffix_buf = new Uint8Array(256); /** C ref: hacklib.c:430 — char[256] (function-static) */
 
@@ -346,6 +455,7 @@ const __static_ing_suffix_buf = new Uint8Array(256); /** C ref: hacklib.c:430 �
 export function* ing_suffix(s) {
     let onoff = new Uint8Array(10);
     let p;
+
     void cptr.strcpy(cptr.decay(__static_ing_suffix_buf), s);
     p = eos(cptr.decay(__static_ing_suffix_buf));
     cptr.st1o(cptr.decay(onoff), 0, cptr.st1(p, cptr.st1((cptr.add(p, 1)), 0)), 1);
@@ -355,7 +465,9 @@ export function* ing_suffix(s) {
         cptr.st1(p, 0);
     }
     if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(2))), (__s_er), -1))) {
+        /* nothing here */
     } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 3, 1)) >= 0 && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(1))))) && cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(2))))) && !cptr.strchr(cptr.decay(__static_ing_suffix_vowel), cptr.ld1s((cptr.add(p, -(3)))))) {
+        /* tip -> tipp + ing */
         cptr.st1(p, cptr.ld1s((cptr.add(p, -(1)))));
         cptr.st1((cptr.add(p, 1)), 0);
     } else if (cptr.cmp(p, cptr.add(cptr.decay(__static_ing_suffix_buf), 2, 1)) >= 0 && !(yield* strncmpi((cptr.add(p, -(2))), (__s_ie), -1))) {
@@ -369,11 +481,13 @@ export function* ing_suffix(s) {
     return cptr.decay(__static_ing_suffix_buf);
 }
 
+/* trivial text encryption routine (see makedefs) */
 /** C ref: hacklib.c:464 — @param {CPtr<char>} str @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function* xcrypt(str, buf) {
     let p;
     let q;
     let bitmask;
+
     for (bitmask = 1, p = str, q = buf; cptr.ld1s(p); q = cptr.add(q, 1)) {
         cptr.st1(q, cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; })));
         if (cptr.ld1s(q) & 96)
@@ -385,6 +499,7 @@ export function* xcrypt(str, buf) {
     return buf;
 }
 
+/* is a string entirely whitespace? */
 /** C ref: hacklib.c:483 — @param {CPtr<char>} s @returns {CInt} */
 export function onlyspace(s) {
     for (; cptr.ld1s(s); s = cptr.add(s, 1))
@@ -393,16 +508,26 @@ export function onlyspace(s) {
     return 1;
 }
 
+/* expand tabs into proper number of spaces (in place) */
 /** C ref: hacklib.c:493 — @param {CPtr<char>} sbuf @returns {CPtr<char>} */
 export function* tabexpand(sbuf) {
     let buf = new Uint8Array(266);
     let bp;
     let s = sbuf;
     let idx;
+
     if (!cptr.ld1s(s))
         return sbuf;
     for (bp = cptr.decay(buf), idx = 0; cptr.ld1s(s); s = cptr.add(s, 1)) {
         if (cptr.ld1s(s) == 9) {
+            /*
+             * clang-8's optimizer at -Os has been observed to mis-compile
+             * this code.  Symptom is nethack getting stuck in an apparent
+             * infinite loop (or perhaps just an extremely long one) when
+             * examining data.base entries.
+             * clang-9 doesn't exhibit this problem.  [Was the incorrect
+             * optimization fixed or just disabled?]
+             */
             do
                 cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
             while (++idx % 8);
@@ -419,6 +544,7 @@ export function* tabexpand(sbuf) {
     return cptr.strcpy(sbuf, cptr.decay(buf));
 }
 
+/* make a displayable string from a character */
 const __static_visctrl_visctrl_bufs = (function () { const flat = new Uint8Array(5 * (5 * 1)); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * (5 * 1), (r + 1) * (5 * 1))); a.buf = flat; return a; })(); /** C ref: hacklib.c:535 — char[5][5] (function-static) */
 let __static_visctrl_nbuf = 0; /** C ref: hacklib.c:536 — int (function-static) */
 
@@ -427,6 +553,7 @@ export function visctrl(c) {
     let i = 0;
     let ccc = cptr.decay(__static_visctrl_visctrl_bufs[__static_visctrl_nbuf]);
     __static_visctrl_nbuf = ((__static_visctrl_nbuf + 1) | 0) % 5;
+
     if (uchar(c) & 128) {
         cptr.st1o(ccc, i++, 77);
         cptr.st1o(ccc, i++, 45);
@@ -434,21 +561,25 @@ export function visctrl(c) {
     c = schar(c & 127);
     if (c < 32) {
         cptr.st1o(ccc, i++, 94);
-        cptr.st1o(ccc, i++, schar((c | 64)));
+        cptr.st1o(ccc, i++, schar((c | 64)));  /* letter */
     } else if (c == 127) {
         cptr.st1o(ccc, i++, 94);
-        cptr.st1o(ccc, i++, schar((c & -65)));
+        cptr.st1o(ccc, i++, schar((c & -65)));  /* '?' */
     } else {
-        cptr.st1o(ccc, i++, c);
+        cptr.st1o(ccc, i++, c);  /* printable character */
     }
     cptr.st1o(ccc, i, 0);
     return ccc;
 }
 
+/* strip all the chars in stuff_to_strip from orig */
+/* caller is responsible for ensuring that bp is a
+   valid pointer to a BUFSZ buffer */
 /** C ref: hacklib.c:563 — @param {CPtr<char>} bp @param {CPtr<char>} stuff_to_strip @param {CPtr<char>} orig @returns {CPtr<char>} */
 export function* stripchars(bp, stuff_to_strip, orig) {
     let i = 0;
     let s = bp;
+
     while (cptr.ld1s(orig) && i < 255) {
         if (!cptr.strchr(stuff_to_strip, cptr.ld1s(orig))) {
             cptr.st1(cptr.postinc(() => s, (v) => { s = v; }), cptr.ld1s(orig));
@@ -457,24 +588,32 @@ export function* stripchars(bp, stuff_to_strip, orig) {
         orig = cptr.add(orig, 1);
     }
     cptr.st1(s, 0);
+
     return bp;
 }
 
+/* remove digits from string */
 /** C ref: hacklib.c:585 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function* stripdigits(s) {
     let s1;
     let s2;
+
     for (s1 = (s2 = s); cptr.ld1s(s1); s1 = cptr.add(s1, 1))
         if (cptr.ld1s(s1) < 48 || cptr.ld1s(s1) > 57)
             cptr.st1(cptr.postinc(() => s2, (v) => { s2 = v; }), cptr.ld1s(s1));
     cptr.st1(s2, 0);
+
     return s;
 }
 
+/* substitute a word or phrase in a string (in place);
+   caller is responsible for ensuring that bp points to big enough buffer */
 /** C ref: hacklib.c:600 — @param {CPtr<char>} bp @param {CPtr<char>} orig @param {CPtr<char>} replacement @returns {CPtr<char>} */
 export function strsubst(bp, orig, replacement) {
     let found;
     let buf = new Uint8Array(256);
+    /* [this could be replaced by strNsubst(bp, orig, replacement, 1)] */
+
     found = cptr.strstr(bp, orig);
     if (found) {
         void cptr.strcpy(cptr.decay(buf), cptr.add(found, cptr.strlen(orig)));
@@ -484,6 +623,9 @@ export function strsubst(bp, orig, replacement) {
     return bp;
 }
 
+/* substitute the Nth occurrence of a substring within a string (in place);
+   if N is 0, substitute all occurrences; returns the number of substitutions;
+   maximum output length is BUFSZ (BUFSZ-1 chars + terminating '\0') */
 /** C ref: hacklib.c:621 — @param {CPtr<char>} inoutbuf @param {CPtr<char>} orig @param {CPtr<char>} replacement @param {CInt} n @returns {CInt} */
 export function* strNsubst(inoutbuf, orig, replacement, n) {
     let bp;
@@ -492,20 +634,27 @@ export function* strNsubst(inoutbuf, orig, replacement, n) {
     let rp;
     let len = Number(BigInt.asUintN(32, cptr.strlen(orig)));
     let ocount = 0;
-    let rcount = 0;
+    let rcount = 0;  /* number of substitutions made */
+
     for (bp = inoutbuf, op = cptr.decay(workbuf); cptr.ld1s(bp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), 255, 1)) < 0; ) {
         if ((!len || !cptr.strncmp(bp, orig, BigInt(len >>> 0))) && (++ocount == n || n == 0)) {
+            /* Nth match found */
             for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), 255, 1)) < 0; )
                 cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => rp, (v) => { rp = v; })));
             ++rcount;
             if (len) {
-                bp = cptr.add(bp, len);
+                bp = cptr.add(bp, len);  /* skip 'orig' */
                 continue;
             }
         }
+        /* no match (or len==0) so retain current character */
         cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => bp, (v) => { bp = v; })));
     }
     if (!len && n == ((ocount + 1) | 0)) {
+        /* special case: orig=="" (!len) and n==strlen(inoutbuf)+1,
+           insert in front of terminator (in other words, append);
+           [when orig=="", ocount will have been incremented once for
+           each input char] */
         for (rp = replacement; cptr.ld1s(rp) && cptr.cmp(op, cptr.add(cptr.decay(workbuf), 255, 1)) < 0; )
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => rp, (v) => { rp = v; })));
         ++rcount;
@@ -517,9 +666,11 @@ export function* strNsubst(inoutbuf, orig, replacement, n) {
     return rcount;
 }
 
+/* search for a word in a space-separated list; returns non-Null if found */
 /** C ref: hacklib.c:665 — @param {CPtr<char>} list @param {CPtr<char>} word @param {CInt} wordlen @param {CInt} ignorecase @returns {CPtr<char>} */
 export function* findword(list, word, wordlen, ignorecase) {
     let p = list;
+
     while (p) {
         while (cptr.ld1s(p) == 32)
             p = cptr.add(p, 1);
@@ -532,47 +683,68 @@ export function* findword(list, word, wordlen, ignorecase) {
     return null;
 }
 
+/* return the ordinal suffix of a number */
 /** C ref: hacklib.c:689 — @param {CInt} n @returns {CPtr<char>} */
 export function ordin(n) {
     let dd = n % 10;
+
     return (dd == 0 || dd > 3 || (((n % 100) / 10) | 0) == 1) ? __s_th : ((dd == 1) ? __s_st : ((dd == 2) ? __s_nd : __s_rd));
 }
 
+/* make a signed digit string from a number */
 const __static_sitoa_buf = new Uint8Array(13); /** C ref: hacklib.c:704 — char[13] (function-static) */
 
 /** C ref: hacklib.c:702 — @param {CInt} n @returns {CPtr<char>} */
 export function sitoa(n) {
+
     void cptr.sprintf(cptr.decay(__static_sitoa_buf), (n < 0) ? __s_pct_d : __s_plus_pct_d, n);
     return cptr.decay(__static_sitoa_buf);
 }
 
+/* return the sign of a number: -1, 0, or 1 */
 /** C ref: hacklib.c:714 — @param {CInt} n @returns {CInt} */
 export function sgn(n) {
     return (n < 0) ? -1 : (n != 0);
 }
 
+/* distance between two points, in moves */
 /** C ref: hacklib.c:721 — @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 @returns {CInt} */
 export function distmin(x0, y0, x1, y1) {
     let dx = i16(((x0 - x1) | 0));
     let dy = i16(((y0 - y1) | 0));
+
     if (dx < 0)
         dx = i16((-dx));
     if (dy < 0)
         dy = i16((-dy));
+    /*  The minimum number of moves to get from (x0,y0) to (x1,y1) is the
+     *  larger of the [absolute value of the] two deltas.
+     */
     return (dx < dy) ? dy : dx;
 }
 
+/* square of Euclidean distance between pair of pts */
 /** C ref: hacklib.c:737 — @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 @returns {CInt} */
 export function dist2(x0, y0, x1, y1) {
     let dx = i16(((x0 - x1) | 0));
     let dy = i16(((y0 - y1) | 0));
+
     return (Math.imul(dx, dx) + Math.imul(dy, dy)) | 0;
 }
 
+/* integer square root function without using floating point */
 /** C ref: hacklib.c:746 — @param {CInt} val @returns {CInt} */
 export function isqrt(val) {
     let rt = 0;
     let odd = 1;
+    /*
+     * This could be replaced by a faster algorithm, but has not been because:
+     * + the simple algorithm is easy to read;
+     * + this algorithm does not require 64-bit support;
+     * + in current usage, the values passed to isqrt() are not really that
+     *   large, so the performance difference is negligible;
+     * + isqrt() is used in only few places, which are not bottle-necks.
+     */
     while (val >= odd) {
         val = (val - odd) | 0;
         odd = (odd + 2) | 0;
@@ -581,30 +753,38 @@ export function isqrt(val) {
     return rt;
 }
 
+/* are two points lined up (on a straight line)? */
 /** C ref: hacklib.c:768 — @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 @returns {CInt} */
 export function online2(x0, y0, x1, y1) {
     let dx = (x0 - x1) | 0;
     let dy = (y0 - y1) | 0;
+    /*  If either delta is zero then they're on an orthogonal line,
+     *  else if the deltas are equal (signs ignored) they're on a diagonal.
+     */
     return schar((!dy || !dx || dy == dx || dy == -dx ? 1 : 0));
 }
 
+/* case-insensitive counted string comparison */
+/*{ aka strncasecmp }*/
 /** C ref: hacklib.c:781 — @param {CPtr<char>} s1 @param {CPtr<char>} s2 @param {CInt} n @returns {CInt} */
 export function* strncmpi(s1, s2, n) {
     let t1;
     let t2;
+
     while (n--) {
         if (!cptr.ld1s(s2))
-            return (cptr.ld1s(s1) != 0);
+            return (cptr.ld1s(s1) != 0);  /* s1 >= s2 */
         else if (!cptr.ld1s(s1))
-            return -1;
+            return -1;  /* s1  < s2 */
         t1 = lowc(cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })));
         t2 = lowc(cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; })));
         if (t1 != t2)
             return (t1 > t2) ? 1 : -1;
     }
-    return 0;
+    return 0;  /* s1 == s2 */
 }
 
+/* case-insensitive substring search */
 /** C ref: hacklib.c:804 — @param {CPtr<char>} str @param {CPtr<char>} sub @returns {CPtr<char>} */
 export function* strstri(str, sub) {
     let s1;
@@ -612,72 +792,113 @@ export function* strstri(str, sub) {
     let i;
     let k;
     let tstr = new Uint8Array(32);
-    let tsub = new Uint8Array(32);
+    let tsub = new Uint8Array(32);  /* nibble count tables */
+
+    /* special case: empty substring */
     if (!cptr.ld1s(sub))
         return str;
+
+    /* do some useful work while determining relative lengths */
     for (i = 0; i < 32; i++)
-        cptr.st1o(cptr.decay(tstr), i, cptr.st1o(cptr.decay(tsub), i, 0, 1), 1);
+        cptr.st1o(cptr.decay(tstr), i, cptr.st1o(cptr.decay(tsub), i, 0, 1), 1);  /* init */
     for (k = 0, s1 = str; cptr.ld1s(s1); k++)
         cptr.postinc1(cptr.add(cptr.decay(tstr), cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })) & 31, 1));
     for (s2 = sub; cptr.ld1s(s2); --k)
         cptr.postinc1(cptr.add(cptr.decay(tsub), cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; })) & 31, 1));
+
+    /* evaluate the info we've collected */
     if (k < 0)
-        return null;
+        return null;  /* sub longer than str, so can't match */
     for (i = 0; i < 32; i++)
         if (cptr.ld1so(cptr.decay(tsub), i, 1) > cptr.ld1so(cptr.decay(tstr), i, 1))
-            return null;
+            return null;  /* match not possible */
+
+    /* now actually compare the substring repeatedly to parts of the string */
     for (i = 0; i <= k; i++) {
         s1 = cptr.add(str, i);
         s2 = sub;
         while (lowc(cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; }))) == lowc(cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; }))))
             if (!cptr.ld1s(s2))
-                return cptr.add(str, i);
+                return cptr.add(str, i);  /* full match */
     }
-    return null;
+    return null;  /* not found */
 }
 
+/* compare two strings for equality, ignoring the presence of specified
+   characters (typically whitespace) and possibly ignoring case */
 /** C ref: hacklib.c:849 — @param {CPtr<char>} s1 @param {CPtr<char>} s2 @param {CPtr<char>} ignore_chars @param {CInt} caseblind @returns {CInt} */
 export function* fuzzymatch(s1, s2, ignore_chars, caseblind) {
     let c1;
     let c2;
+
     do {
         while ((c1 = cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; }))) != 0 && cptr.strchr(ignore_chars, c1) !== null)
             continue;
         while ((c2 = cptr.ld1s(cptr.postinc(() => s2, (v) => { s2 = v; }))) != 0 && cptr.strchr(ignore_chars, c2) !== null)
             continue;
         if (!c1 || !c2)
-            break;
+            break;  /* stop when end of either string is reached */
+
         if (caseblind) {
             c1 = lowc(c1);
             c2 = lowc(c2);
         }
     } while (c1 == c2);
+
+    /* match occurs only when the end of both strings has been reached */
     return schar((!c1 && !c2 ? 1 : 0));
 }
 
+/* swapbits(val, bita, bitb) swaps bit a with bit b in val */
 /** C ref: hacklib.c:896 — @param {CInt} val @param {CInt} bita @param {CInt} bitb @returns {CInt} */
 export function swapbits(val, bita, bitb) {
     let tmp = ((val >> bita) & 1) ^ ((val >> bitb) & 1);
+
     return (val ^ ((tmp << bita) | (tmp << bitb)));
 }
 
+/*
+ * Wrap snprintf for use in the main code.
+ *
+ * Wrap reasons:
+ *   1. If there are any platform issues, we have one spot to fix them -
+ *      snprintf is a routine with a troubling history of bad implementations.
+ *   2. Add cumbersome error checking in one spot.  Problems with text
+ *      wrangling do not have to be fatal.
+ *   3. Gcc 9+ will issue a warning unless the return value is used.
+ *      Annoyingly, explicitly casting to void does not remove the error.
+ *      So, use the result - see reason #2.
+ */
 /** C ref: hacklib.c:918 — @param {CPtr<char>} func @param {CInt} line @param {CPtr<char>} str @param {CLongLong} size @param {CPtr<char>} fmt */
 export function nh_snprintf(func, line, str, size, fmt, ...__va) {
     let ap;
     let n;
+
     ap = cptr.vaList(__va);
     n = cptr.vsnprintf(str, size, fmt, ap);
     ap = null;
     if (n < 0 || BigInt.asUintN(64, BigInt(n)) >= size) {
-        cptr.st1o(str, BigInt.asUintN(64, size - 1n), 0);
+        cptr.st1o(str, BigInt.asUintN(64, size - 1n), 0);  /* make sure it is nul terminated */
     }
 }
 
+/* Unicode routines */
+
 /** C ref: hacklib.c:946 — @param {CInt} uval @param {CPtr<uint8>} buffer @param {CLongLong} bufsz @returns {CInt} */
 export function* unicodeval_to_utf8str(uval, buffer, bufsz) {
+    //    static uint8 buffer[7];
     let b = buffer;
+
     if (bufsz < 5n)
         return 0;
+    /*
+     *   Binary   Hex        Comments
+     *   0xxxxxxx 0x00..0x7F Only byte of a 1-byte character encoding
+     *   10xxxxxx 0x80..0xBF Continuation byte : one of 1-3 bytes following
+     * first 110xxxxx 0xC0..0xDF First byte of a 2-byte character encoding
+     *   1110xxxx 0xE0..0xEF First byte of a 3-byte character encoding
+     *   11110xxx 0xF0..0xF7 First byte of a 4-byte character encoding
+     */
     cptr.st1(b, 0);
     if (uval < 128) {
         cptr.st1(cptr.postinc(() => b, (v) => { b = v; }), uchar(uval));
@@ -698,7 +919,7 @@ export function* unicodeval_to_utf8str(uval, buffer, bufsz) {
     } else {
         return 0;
     }
-    cptr.st1(b, 0);
+    cptr.st1(b, 0);  /* NUL terminate */
     return 1;
 }
 
@@ -706,6 +927,7 @@ export function* unicodeval_to_utf8str(uval, buffer, bufsz) {
 export function case_insensitive_comp(s1, s2) {
     let u1;
     let u2;
+
     for (; ; s1 = cptr.add(s1, 1), s2 = cptr.add(s2, 1)) {
         u1 = uchar(cptr.ld1s(s1));
         if (cptr.isupper(u1))
@@ -724,9 +946,11 @@ export function copy_bytes(ifd, ofd) {
     let buf = new Uint8Array(1024);
     let nfrom;
     let nto;
+
     do {
         nto = 0n;
         nfrom = cptr.read(ifd, cptr.decay(buf), 1024n);
+        /* read can return -1 */
         if (nfrom >= 0n && nfrom <= 1024n)
             nto = cptr.write(ofd, cptr.decay(buf), BigInt.asUintN(64, nfrom));
         if (nto != nfrom || nfrom < 0n)
@@ -782,6 +1006,7 @@ export function datamodel(retidx) {
     let i;
     let j;
     let matchcount;
+
     for (i = 1; i < 5; ++i) {
         matchcount = 0;
         for (j = 0; j < 5; ++j) {
@@ -799,6 +1024,7 @@ let __static_what_datamodel_is_this_unknown = __s_unknown; /** C ref: hacklib.c:
 /** C ref: hacklib.c:1064 — @param {CInt} retidx @param {CInt} szshort @param {CInt} szint @param {CInt} szlong @param {CInt} szll @param {CInt} szptr @returns {CPtr<char>} */
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {
     let i;
+
     for (i = 1; i < 5; ++i) {
         if (szshort == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 0, 4, 0) && szint == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 1, 4, 0) && szlong == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 2, 4, 0) && szll == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 3, 4, 0) && szptr == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 4, 4, 0))
             return (retidx == 0) ? cptr.ldPtro2(dm, i, $sizeof_datamodel_information, $datamodel_information_datamodel) : cptr.ldPtro2(dm, i, $sizeof_datamodel_information, $datamodel_information_dmplatform);

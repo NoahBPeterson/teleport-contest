@@ -68,33 +68,44 @@ const __s_fork_failed_try_again = cptr.lit("Fork failed.  Try again.");
 /** C ref: unixunix.c:33 — struct stat */
 let buf = cptr.alloc($sizeof_stat);
 
+/* see whether we should throw away this xlock file;
+   if yes, close it, otherwise leave it open */
 /** C ref: unixunix.c:38 — @param {CInt} fd @returns {CInt} */
 function veryold(fd) {
     let date = cptr.box(0n);
+
     if (fstat(fd, buf))
-        return 0;
+        return 0;  /* cannot get status */
     void time(date);
     if (BigInt.asIntN(64, date.v - cptr.ldI64o(buf, $stat_st_mtimespec)) < 259200n) {
-        let lockedpid = cptr.box(0);
+        let lockedpid = cptr.box(0);  /* should be the same size as hackpid */
+
         if (BigInt.asUintN(64, cptr.read(fd, lockedpid, 4n)) != 4n)
+            /* strange ... */
             return 0;
         return 0;
     }
+    /* this used to close the file upon success, leave it open upon failure;
+       that was supposed to simplify the caller's usage but ended up making
+       that be more complicated; always leave the file open so that caller
+       can close it unconditionally */
+    /*(void) close(fd);*/
     return 1;
 }
 
 /** C ref: unixunix.c:80 @returns {CInt} */
 function eraseoldlocks() {
     let i;
-    cptr.stI32o(program_state, $sinfo_preserve_locks, 0);
+    cptr.stI32o(program_state, $sinfo_preserve_locks, 0);  /* not required but shows intent */
     for (i = 1; i <= 513; i++) {
+        /* try to remove all */
         set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), i);
         void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
     }
     set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
     if (unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0)))
-        return 0;
-    return 1;
+        return 0;  /* cannot remove it */
+    return 1;  /* success! */
 }
 
 const __static_getlock_destroy_old_game_prompt = cptr.bytes("There is already a game in progress under your name.  Destroy old game?"); /** C ref: unixunix.c:106 — char[72] (function-static) */
@@ -107,62 +118,88 @@ export function* getlock() {
     let too_old;
     let fq_lock;
     __lbl_gotlock: {
+        /* idea from rpick%ucqais@uccba.uc.edu
+         * prevent automated rerolling of characters
+         * test input (fd0) so that tee'ing output to get a screen dump still
+         * works
+         * also incidentally prevents development of any hack-o-matic programs
+         */
+        /* added check for window-system type -dlc */
         if (!strcmp(cptr.ldPtr(windowprocs), __s_tty))
             if (!isatty(0) && !getenv(__s_nomux_markers))
                 (yield* error(__s_you_must_play_from_a_terminal));
+
+        /* we ignore QUIT and INT at this point */
         if (!(yield* lock_file(__s_perm, NHM.LOCKPREFIX, 10))) {
             (yield* Y.icall(wait_synch()()));
             (yield* error(__s_pct_s, __s_empty));
         }
+
+        /* default value of gl.lock[] is "1lock" where '1' gets changed to
+           'a','b',&c below; override the default and use <uid><charname>
+           if we aren't restricting the number of simultaneous games */
         if (!cptr.ldI32o(gl, $instance_globals_l_locknum))
             void cptr.sprintf(cptr.add(gl, $instance_globals_l_lock), __s_u_s, getuid(), svp);
+
         regularize(cptr.add(gl, $instance_globals_l_lock));
         set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), 0);
+
         if (cptr.ldI32o(gl, $instance_globals_l_locknum)) {
             if (cptr.ldI32o(gl, $instance_globals_l_locknum) > 25)
                 cptr.stI32o(gl, $instance_globals_l_locknum, 25);
+
             do {
                 cptr.st1o2(gl, 0, 1, $instance_globals_l_lock, schar(((97 + i++) | 0)));
                 fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
+
                 if ((fd = open(fq_lock, 0)) == -1) {
                     if ((cptr.ldI32(__error())) == 2)
-                        break __lbl_gotlock;
+                        break __lbl_gotlock;  /* no such file */
                     perror(fq_lock);
                     (yield* unlock_file(__s_perm));
                     (yield* error(__s_cannot_open_s, fq_lock));
                 }
+
+                /* veryold() no longer conditionally closes fd */
                 too_old = veryold(fd);
                 void close(fd);
                 if (too_old && eraseoldlocks())
                     break __lbl_gotlock;
             } while (i < cptr.ldI32o(gl, $instance_globals_l_locknum));
+
             (yield* unlock_file(__s_perm));
             (yield* error(__s_too_many_hacks_running_now));
         } else {
             fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
             if ((fd = open(fq_lock, 0)) == -1) {
                 if ((cptr.ldI32(__error())) == 2)
-                    break __lbl_gotlock;
+                    break __lbl_gotlock;  /* no such file */
                 perror(fq_lock);
                 (yield* unlock_file(__s_perm));
                 (yield* error(__s_cannot_open_s, fq_lock));
             }
+
+            /* veryold() no longer conditionally closes fd */
             too_old = veryold(fd);
             void close(fd);
             if (too_old && eraseoldlocks())
                 break __lbl_gotlock;
+
+            /* drop the "perm" lock while the user decides */
             (yield* unlock_file(__s_perm));
             if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
+                /* this is a candidate for paranoid_confirmation */
                 c = (yield* yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, 1));
             } else {
                 void (yield* raw_printf(__s_s_yn, cptr.decay(__static_getlock_destroy_old_game_prompt)));
                 void fflush(__stdoutp);
                 if ((c = (yield* getchar())) != -1) {
                     let tmp;
+
                     void putchar(c);
                     void fflush(__stdoutp);
                     while ((tmp = (yield* getchar())) != 10 && tmp != -1)
-                        ;
+                        ;  /* eat rest of line and newline */
                 }
             }
             if (c == 121 || c == 89) {
@@ -182,21 +219,26 @@ export function* getlock() {
     (yield* unlock_file(__s_perm));
     if (fd == -1) {
         (yield* error(__s_cannot_creat_lock_file_s, fq_lock));
+        /*NOTREACHED*/
     } else {
         if (BigInt.asUintN(64, cptr.write(fd, svh, 4n)) != 4n) {
             (yield* error(__s_cannot_write_lock_s, fq_lock));
+            /*NOTREACHED*/
         }
         if (close(fd) == -1) {
             (yield* error(__s_cannot_close_lock_s, fq_lock));
+            /*NOTREACHED*/
         }
     }
 }
 
+/* caller couldn't find a regular save file but did find a panic one */
 const __static_ask_about_panic_save_Instead_prompt = cptr.bytes("Start a new game instead?"); /** C ref: unixunix.c:266 — char[26] (function-static) */
 
 /** C ref: unixunix.c:263 */
 export function* ask_about_panic_save() {
     let c = 0;
+
     (yield* pline(__s_there_is_no_regular_save_file_but_there));
     (yield* pline(__s_it_might_be_recoverable_with_demi));
     if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
@@ -212,18 +254,21 @@ export function* ask_about_panic_save() {
         } while (!cptr.strchr(__s_ynq, c));
     }
     if (c != 121) {
+        /* caller successfully called getlock() and made <levelfile>.0 */
         delete_levelfile(0);
-        (yield* unlock_file(__s_perm));
+        (yield* unlock_file(__s_perm));  /* just in case, release 'perm' */
         if (cptr.ld1so(iflags, $instance_flags_window_inited))
             (yield* Y.icall(exit_nhwindows()(null)));
         (yield* nh_terminate(0));
     }
-    return;
+    return;  /* proceed with new game */
 }
 
+/* normalize file name - we don't like .'s, /'s, spaces */
 /** C ref: unixunix.c:297 — @param {CPtr<char>} s */
 export function regularize(s) {
     let lp;
+
     while ((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null || (lp = cptr.strchr(s, 32)) !== null)
         cptr.st1(lp, 95);
 }
@@ -232,6 +277,7 @@ export function regularize(s) {
 export function* dosh() {
     let str;
     if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
+        /* FIXME: should no longer assume a particular command keystroke */
         (yield* Norep(__s_unavailable_command));
         return 0;
     }
@@ -249,7 +295,8 @@ export function* dosh() {
 /** C ref: unixunix.c:370 — @param {CInt} wt @returns {CInt} */
 export function* child(wt) {
     let f;
-    (yield* Y.icall(suspend_nhwindows()(null)));
+
+    (yield* Y.icall(suspend_nhwindows()(null)));  /* also calls end_screen() */
     if ((f = fork()) == 0) {
         void setgid(getgid());
         void setuid(getuid());
@@ -277,6 +324,11 @@ export function* child(wt) {
 /** C ref: unixunix.c:466 — @param {CPtr<char>} path @returns {CInt} */
 export function file_exists(path) {
     let sb = cptr.alloc(144);
+
+    /* Just see if it's there - trying to figure out if we can actually
+     * execute it in all cases is too hard - we really just want to
+     * catch typos in SYSCF.
+     */
     if (stat(path, sb)) {
         return 0;
     }

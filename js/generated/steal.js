@@ -161,11 +161,13 @@ const __s_s_gold_s = cptr.lit("%s gold %s.");
 const __s_vanishes = cptr.lit("vanishes");
 const __s_seems_to_vanish = cptr.lit("seems to vanish");
 
+/* proportional subset of gold; return value actually fits in an int */
 /** C ref: steal.c:14 — @param {CLongLong} lmoney @returns {CLongLong} */
 export function somegold(lmoney) {
     let igold = (lmoney >= 32767n) ? NHM.LARGEST_INT : Number(BigInt.asIntN(32, lmoney));
+
     if (igold < 50)
-        ;
+        ;  /* all gold */
     else if (igold < 100)
         igold = ((rn2_at(__s_steal_c, 21, __s_somegold, (((igold - 25) | 0) + 1) | 0) + 25) | 0);
     else if (igold < 500)
@@ -178,17 +180,30 @@ export function somegold(lmoney) {
         igold = ((rn2_at(__s_steal_c, 29, __s_somegold, (((igold - 1000) | 0) + 1) | 0) + 1000) | 0);
     else
         igold = ((rn2_at(__s_steal_c, 31, __s_somegold, (((igold - 5000) | 0) + 1) | 0) + 5000) | 0);
+
     return BigInt(igold);
 }
 
+/*
+ * Find the first (and hopefully only) gold object in a chain.
+ * Used when leprechaun (or you as leprechaun) looks for
+ * someone else's gold.  Returns a pointer so the gold may
+ * be seized without further searching.
+ * May search containers too.
+ * Deals in gold only, as leprechauns don't care for lesser coins.
+*/
 /** C ref: steal.c:45 — @param {CPtr<struct obj>} argchain @returns {CPtr<struct obj>} */
 export function findgold(argchain) {
-    let chain = argchain;
+    let chain = argchain;  /* allow arg to be nonnull */
+
     while (chain && cptr.ldI16o(chain, $obj_otyp) != NHC.GOLD_PIECE)
         chain = cptr.ldPtr(chain);
     return chain;
 }
 
+/*
+ * Steal gold coins only.  Leprechauns don't care for lesser coins.
+*/
 /** C ref: steal.c:58 — @param {CPtr<struct monst>} mtmp */
 export function stealgold(mtmp) {
     let fgold = g_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -197,9 +212,14 @@ export function stealgold(mtmp) {
     let who;
     let whose;
     let what;
+
+    /* skip lesser coins on the floor */
     while (fgold && cptr.ldI16o(fgold, $obj_otyp) != NHC.GOLD_PIECE)
         fgold = cptr.ldPtro(fgold, $obj_v);
+
+    /* Do you have real gold? */
     ygold = findgold(cptr.ldPtro(gi, $instance_globals_i_invent));
+
     if (fgold && (!ygold || cptr.ldI64o(fgold, $obj_quan) > cptr.ldI64o(ygold, $obj_quan) || !rn2_at(__s_steal_c, 73, __s_stealgold, 5))) {
         obj_extract_self(fgold);
         add_to_minv(mtmp, fgold);
@@ -213,8 +233,10 @@ export function stealgold(mtmp) {
             whose = __s_your;
             what = makeplural(body_part(NHC.FOOT));
         }
+        /* [ avoid "between your rear regions" :-] */
         if (((cptr.ldU64o((cptr.ldPtro(who, $monst_data)), $permonst_mflags1) & 524288n) != 0n))
             what = __s_coils;
+        /* reduce "rear hooves/claws" to "hooves/claws" */
         if (!cptr.strncmp(what, __s_rear, 5n))
             what = cptr.add(what, 5);
         pline(__s_s_quickly_snatches_some_gold_from_s_s_s, Monnam(mtmp), (Levitation() || Flying()) ? __s_beneath : __s_between, whose, what);
@@ -225,6 +247,7 @@ export function stealgold(mtmp) {
         }
     } else if (ygold) {
         let gold_price = cptr.ldI16o2(objects, NHC.GOLD_PIECE, $sizeof_objclass, $objclass_oc_cost);
+
         tmp = (BigInt.asIntN(64, BigInt.asIntN(64, somegold(money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) + BigInt(gold_price)) - 1n)) / BigInt(gold_price);
         tmp = min(tmp, cptr.ldI64o(ygold, $obj_quan));
         if (tmp < cptr.ldI64o(ygold, $obj_quan))
@@ -241,8 +264,10 @@ export function stealgold(mtmp) {
     }
 }
 
+/* monster who was stealing from hero has just died */
 /** C ref: steal.c:120 */
 export function thiefdead() {
+    /* hero is busy taking off an item of armor which takes multiple turns */
     cptr.stI32o(gs, $instance_globals_s_stealmid, 0);
     if (cptr.ldPtr(ga) === stealarm) {
         cptr.stPtr(ga, unstolenarm);
@@ -250,16 +275,24 @@ export function thiefdead() {
     }
 }
 
+/* checks whether hero can be responsive to seduction attempts; similar to
+   Unaware but also includes paralysis */
 /** C ref: steal.c:133 @returns {CInt} */
 export function unresponsive() {
     if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
         return 0;
+
     return schar((unconscious() || is_fainted() || (cptr.ldPtro(gm, $instance_globals_m_multi_reason) && (!cptr.strncmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), __s_frozen, 6n) || !cptr.strncmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), __s_paralyzed, 9n))) ? 1 : 0));
 }
 
+/* called via (*ga.afternmv)() when hero finishes taking off armor that
+   was slated to be stolen but the thief died in the interim */
 /** C ref: steal.c:147 @returns {CInt} */
 function unstolenarm() {
     let obj;
+
+    /* find the object before clearing stealoid; it has already become
+       not-worn and is still in hero's inventory */
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
         if (cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(gs, $instance_globals_s_stealoid))
             break;
@@ -270,14 +303,17 @@ function unstolenarm() {
     return 0;
 }
 
+/* finish stealing an item of armor which takes multiple turns to take off */
 /** C ref: steal.c:165 @returns {CInt} */
 function stealarm() {
     let mtmp;
     let otmp;
     let nextobj;
     __lbl_botm: {
+
         if (!cptr.ldI32o(gs, $instance_globals_s_stealoid) || !cptr.ldI32o(gs, $instance_globals_s_stealmid))
             break __lbl_botm;
+
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
             if (cptr.ldI32o(otmp, $obj_o_id) == cptr.ldI32o(gs, $instance_globals_s_stealoid)) {
@@ -285,15 +321,21 @@ function stealarm() {
                     if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(gs, $instance_globals_s_stealmid)) {
                         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                             impossible(__s_stealarm_dead_monster_stealing);
-                            break __lbl_botm;
+                            break __lbl_botm;  /* (could just use 'break' here) */
                         }
+                        /* maybe the thief polymorphed into something without a
+                           steal attack, or perhaps while stealing hero's suit
+                           the thief took away other items causing hero to fall
+                           into water or lava and then teleport to safety */
                         if (!dmgtype(cptr.ldPtro(mtmp, $monst_data), NHM.AD_SITM) || dist2((cptr.ldI16o(mtmp, $monst_mx)), (cptr.ldI16o(mtmp, $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 2)
-                            break __lbl_botm;
+                            break __lbl_botm;  /* (could just use 'break' here) */
                         if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
                             subfrombill(otmp, shop_keeper(cptr.ld1so(u, $you_ushops)));
                         freeinv(otmp);
                         pline(__s_s_steals_s, Monnam(mtmp), doname(otmp));
-                        void mpickobj(mtmp, otmp);
+                        void mpickobj(mtmp, otmp);  /* may free otmp */
+                        /* Implies seduction, "you gladly hand over ..."
+                           so we don't set mavenge bit here. */
                         monflee(mtmp, 0, 0, 0);
                         if (!tele_restrict(mtmp))
                             void rloc(mtmp, NHM.RLOC_MSG);
@@ -304,23 +346,43 @@ function stealarm() {
             }
         }
     }
-    cptr.stI32o(gs, $instance_globals_s_stealoid, cptr.stI32o(gs, $instance_globals_s_stealmid, 0));
+    cptr.stI32o(gs, $instance_globals_s_stealoid, cptr.stI32o(gs, $instance_globals_s_stealmid, 0));  /* in case only one has been reset so far */
     return 0;
 }
 
+/* An object you're wearing has been taken off by a monster (theft or
+   seduction).  Also used if a worn item gets transformed (stone to flesh). */
 /** C ref: steal.c:213 — @param {CPtr<struct obj>} obj @param {CInt} unchain_ball */
 export function remove_worn_item(obj, unchain_ball) {
     let oldinuse;
+
     if (donning(obj))
         cancel_don();
     if (!cptr.ldI64o(obj, $obj_owornmask))
         return;
+
+    /*
+     * Losing worn gear might drop hero into water or lava or onto a
+     * location-changing trap or take away the ability to breathe in water.
+     * Marking it 'in_use' prevents emergency_disrobe() from dropping it
+     * and lava_effects() from destroying it; other cases impacting object
+     * location (or destruction) might still have issues.
+     *
+     * Note:  if a hangup save occurs when 'in_use' is set, the item will
+     * be destroyed via useup() during restore.  Maybe remove_worn_item()
+     * and emergency_disrobe() should switch to using obj->bypass instead
+     * but that would need a lot more cooperation by callers.  It's a
+     * tradeoff between protecting the player against unintentional hangup
+     * and defending the game against deliberate hangup when player sees a
+     * message about something undesirable followed by --More--.
+     */
     oldinuse = (cptr.ldI32o(obj, $obj_in_use) & 1);
     cptr.stI32o(obj, $obj_in_use, 1);
+
     if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
         if (cptr.eq(obj, uskin.v)) {
             impossible(__s_removing_embedded_scales);
-            skinback(1);
+            skinback(1);  /* uarm = uskin; uskin = 0; */
         }
         if (cptr.eq(obj, uarm.v))
             void Armor_off();
@@ -352,12 +414,15 @@ export function remove_worn_item(obj, unchain_ball) {
         if (cptr.eq(obj, uquiver.v))
             uqwepgone();
     }
+
     if (cptr.ldI64o(obj, $obj_owornmask) & 6291456n) {
         if (unchain_ball)
             unpunish();
     } else if (cptr.ldI64o(obj, $obj_owornmask)) {
+        /* catchall */
         setnotworn(obj);
     }
+
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_DELETED)
         {
             if (debugcore(__s_steal_c, 1)) {
@@ -369,6 +434,7 @@ export function remove_worn_item(obj, unchain_ball) {
     cptr.stI32o(obj, $obj_in_use, oldinuse);
 }
 
+/* during theft of a worn item: remove_worn_item(), prefaced by a message */
 /** C ref: steal.c:294 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj */
 function worn_item_removal(mon, obj) {
     let objbuf = new Uint8Array(256);
@@ -376,22 +442,41 @@ function worn_item_removal(mon, obj) {
     let p;
     let verb;
     let strip_art;
+
     void cptr.strcpy(cptr.decay(objbuf), doname(obj));
+    /* massage the object description */
     strip_art = !cptr.strncmp(cptr.decay(objbuf), __s_the, 4n) ? 4 : (!cptr.strncmp(cptr.decay(objbuf), __s_an, 3n) ? 3 : (!cptr.strncmp(cptr.decay(objbuf), __s_a_sp, 2n) ? 2 : 0));
     if (strip_art) {
         copynchars(cptr.decay(article), cptr.decay(objbuf), strip_art);
+        /* when removing attached iron ball, caller passes 'uchain';
+           when formatted, it will be "an iron chain (attached to you)";
+           change "an" to "the" rather than to "your" in that situation */
         void strsubst(cptr.decay(objbuf), cptr.decay(article), (cptr.eq(obj, uchain.v)) ? __s_the : __s_your__2);
     }
+    /* these ought to be guarded against matching user-supplied name */
     void strsubst(cptr.decay(objbuf), __s_being_worn, __s_empty);
     void strsubst(cptr.decay(objbuf), __s_alternate_weapon_not_wielded, __s_empty);
+    /* convert "ring (on left hand)" to "ring (from left hand)" */
     if ((p = strstri(cptr.decay(objbuf), __s_on)) && (!cptr.strncmp(cptr.add(p, 5), __s_left, 5n) || !cptr.strncmp(cptr.add(p, 5), __s_right, 6n)))
         void strsubst(cptr.add(p, 2), __s_on__2, __s_from);
+
+    /* slightly iffy for alternate weapon that isn't actively dual-wielded,
+       but it's better to alert the player to the change in equipment than
+       to suppress the message for that case */
     verb = ((cptr.ldI64o(obj, $obj_owornmask) & 1792n) != 0n) ? __s_disarms : (((cptr.ldI64o(obj, $obj_owornmask) & 983040n) != 0n) ? __s_removes : __s_takes_off);
     pline(__s_s_s_s, Some_Monnam(mon), verb, cptr.decay(objbuf));
     cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_MON_TAKES_OFF_ITEM);
+    /* removal might trigger more messages (due to loss of Lev|Fly;
+       descending happens before the theft in progress finishes) */
     remove_worn_item(obj, 1);
 }
 
+/* Returns 1 when something was stolen (or at least, when N should flee now),
+ * returns -1 if the monster died in the attempt.
+ * Avoid stealing the object 'stealoid'.
+ * Nymphs and monkeys won't steal coins (so that their "steal item" attack
+ * doesn't become a superset of leprechaun's "steal gold" attack).
+ */
 const __static_steal_how = cptr.alloc(4 * 8);
 cptr.stPtro(__static_steal_how, 0, __s_steal);
 cptr.stPtro(__static_steal_how, 8, __s_snatch);
@@ -411,14 +496,28 @@ export function steal(mtmp, objnambuf) {
         monkey_business = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n));
         seen = schar(canspotmon(mtmp));
         was_punished = schar((uball.v !== null));
+
         if (objnambuf)
             cptr.st1(objnambuf, 0);
+        /* the following is true if successful on first of two attacks. */
         if (!monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             return 0;
+
+        /* stealing a worn item might drop hero into water or lava where
+           teleporting to safety could result in a previously visible thief
+           no longer being visible; it could also be a case of a blinded
+           hero being able to see via wearing the Eyes of the Overworld and
+           having those stolen; remember the name as it is now; if unseen,
+           nymphs will be "Someone" and monkeys will be "Something" */
         void cptr.strcpy(cptr.decay(Monnambuf), Some_Monnam(mtmp));
+
+        /* food being eaten might already be used up but will not have
+           been removed from inventory yet; we don't want to steal that,
+           so this will cause it to be removed now */
         if (cptr.ldPtro(go, $instance_globals_o_occupation))
             void maybe_finished_meal(0);
-        icnt = inv_cnt(0);
+
+        icnt = inv_cnt(0);  /* don't include gold */
         if (!icnt || (icnt == 1 && uskin.v)) { __pc = 6; continue; }
         __pc = 5; continue;
         }
@@ -427,10 +526,16 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 1 /* nothing_to_steal: */: {
+        /* nymphs might target uchain if invent is empty; monkeys won't;
+           hero becomes unpunished but nymph ends up empty handed */
         if (Punished() && !monkey_business && rn2_at(__s_steal_c, 379, __s_steal, 4)) {
+            /* uball is not carried (uchain never is) */
             (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__s_steal, __s_steal_c, 381, __s_uball_null_uball_where_obj_floor) : void 0);
             worn_item_removal(mtmp, uchain.v);
         } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !rn2_at(__s_steal_c, 384, __s_steal, 4)) {
+
+            /* buried ball is not tracked via 'uball' and there is no chain
+               at all (hence no uchain to take off) */
             pline(__s_s_takes_off_your_unseen_chain, cptr.decay(Monnambuf));
             void openholdingtrap(cptr.add(gy, $instance_globals_y_youmonst), dummy);
         } else if (Blind()) {
@@ -440,14 +545,14 @@ export function steal(mtmp, objnambuf) {
         } else {
             pline(__s_s_tries_to_rob_you_but_there_is_nothing, cptr.decay(Monnambuf));
         }
-        return 1;
+        return 1;  /* let her flee */
         }
         case 5: {
         if (monkey_business || uarmg.v) { __pc = 8; continue; }
         __pc = 9; continue;
         }
         case 8: {
-        ;
+        ;  /* skip ring special cases */
         __pc = 7;
         continue;
         }
@@ -502,8 +607,10 @@ export function steal(mtmp, objnambuf) {
             impossible(__s_steal_fails);
             return 0;
         }
+        /* can't steal ring(s) while wearing gloves */
         if ((cptr.eq(otmp, uleft.v) || cptr.eq(otmp, uright.v)) && uarmg.v)
             otmp = uarmg.v;
+        /* can't steal gloves while wielding - so steal the wielded item. */
         if (cptr.eq(otmp, uarmg.v) && uwep.v)
             otmp = uwep.v;
         else if (cptr.eq(otmp, uarm.v) && uarmc.v)
@@ -536,10 +643,13 @@ export function steal(mtmp, objnambuf) {
         __pc = 21; continue;
         }
         case 22: {
+
+        /* is the player prevented from voluntarily giving up this item?
+           (ignores loadstones; the !can_carry() check will catch those) */
         if (cptr.eq(otmp, uball.v))
-            ostuck = 1;
+            ostuck = 1;  /* effectively worn; curse is implicit */
         else if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, $you_twoweap)))
-            ostuck = 0;
+            ostuck = 0;  /* not really worn; curse doesn't matter */
         else
             ostuck = schar((((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && cptr.ldI64o(otmp, $obj_owornmask)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v)) && welded(uwep.v)) || (cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uright.v : uleft.v)) && welded(uwep.v) && bimanual(uwep.v)) ? 1 : 0));
         if (ostuck || can_carry(mtmp, otmp) == 0) { __pc = 24; continue; }
@@ -551,6 +661,9 @@ export function steal(mtmp, objnambuf) {
         }
         case 4 /* cant_take: */: {
         pline(__s_s_tries_to_s_s_s_but_gives_up, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, rn2_at(__s_steal_c, 481, __s_steal, 4), 8), (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __s_your__2 : __s_empty, (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? armor_simple_name(otmp) : yname(otmp));
+        /* the fewer items you have, the less likely the thief
+           is going to stick around to try again (0) instead of
+           running away (1) */
         return !rn2_at(__s_steal_c, 488, __s_steal, (((inv_cnt(0) / 5) | 0) + 2) | 0);
         }
         case 23: {
@@ -574,8 +687,12 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 25: {
+
         was_doffing = doffing(otmp);
+        /* stop donning/doffing now so that afternmv won't be clobbered
+           below; stop_occupation doesn't handle donning/doffing */
         olddelay = stop_donning(otmp);
+        /* you're going to notice the theft... */
         stop_occupation();
         if (cptr.ldI64o(otmp, $obj_owornmask) & 983167n) { __pc = 30; continue; }
         __pc = 31; continue;
@@ -625,6 +742,7 @@ export function steal(mtmp, objnambuf) {
         }
         case 42: {
         curssv = (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0;
+
         cptr.stI32o(otmp, $obj_cursed, 0);
         slowly = (armordelay >= 1 || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n ? 1 : 0);
         if (cptr.ld1so(flags, $flag_female))
@@ -632,6 +750,7 @@ export function steal(mtmp, objnambuf) {
         else
             urgent_pline(__s_s_seduces_you_and_s_off_your_s, !seen ? __s_she : Adjmonnam(mtmp, __s_beautiful), curssv ? __s_helps_you_to_take : (!slowly ? __s_you_take : (was_doffing ? __s_you_continue_taking : __s_you_start_taking)), armor_simple_name(otmp));
         named++;
+        /* the following is to set multi for later on */
         nomul(-armordelay);
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_taking_off_clothes);
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
@@ -655,6 +774,8 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 32: {
+        /* hero's blindfold might have just been stolen; if so, replace
+           cached "Someone" or "Something" with Monnam */
         if (!seen && canspotmon(mtmp))
             void cptr.strcpy(cptr.decay(Monnambuf), Monnam(mtmp));
         __pc = 29;
@@ -663,9 +784,16 @@ export function steal(mtmp, objnambuf) {
         case 31: {
         if (cptr.ldI64o(otmp, $obj_owornmask)) {
             item = otmp;
+
             if (cptr.eq(otmp, uball.v))
-                item = uchain.v;
+                item = uchain.v;  /* yields a more accurate 'takes off' message */
             worn_item_removal(mtmp, item);
+            /* if we switched from uball to uchain for the preface message,
+               then unpunish() took place and both those pointers are now Null,
+               with 'item' a stale pointer to freed chain; the ball is still
+               present though and 'otmp' is still valid; if uball was also
+               wielded or quivered, the corresponding weapon pointer hasn't
+               been cleared yet; do that, with no preface message this time */
             if ((cptr.ldI64o(otmp, $obj_owornmask) & 1792n) != 0n)
                 remove_worn_item(otmp, 0);
         }
@@ -673,20 +801,28 @@ export function steal(mtmp, objnambuf) {
         continue;
         }
         case 29: {
+
+        /* do this before removing it from inventory */
         if (objnambuf)
             void cptr.strcpy(objnambuf, yname(otmp));
+        /* usually set mavenge bit so knights won't suffer an alignment penalty
+           during retaliation; not applicable for removing attached iron ball */
         if (!Conflict() && !(was_punished && !Punished()))
             cptr.stI32o(mtmp, $monst_mavenge, 1);
+
         if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
             subfrombill(otmp, shop_keeper(cptr.ld1so(u, $you_ushops)));
         freeinv(otmp);
+
+        /* if we just gave a message about removing a worn item and there have
+           been no intervening messages, shorten '<mon> stole <item>' message */
         if (cptr.ldI32o(iflags, $instance_flags_last_msg) == NHC.PLNMSG_MON_TAKES_OFF_ITEM && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH)
             ++named;
         urgent_pline(__s_s_stole_s, named ? __s_she : cptr.decay(Monnambuf), doname(otmp));
         encumber_msg();
         could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)) ? 1 : 0);
         cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
-        void mpickobj(mtmp, otmp);
+        void mpickobj(mtmp, otmp);  /* may free otmp */
         if (could_petrify && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n)) {
             minstapetrify(mtmp, 1);
             return -1;
@@ -698,10 +834,12 @@ export function steal(mtmp, objnambuf) {
     }
 }
 
+/* Returns 1 if otmp is free'd, 0 otherwise. */
 /** C ref: steal.c:618 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function mpickobj(mtmp, otmp) {
     let freed_otmp;
     let snuff_otmp = 0;
+
     if (!otmp) {
         impossible(__s_monster_s_taking_or_picking_up_nothing, pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)));
         return 1;
@@ -709,34 +847,61 @@ export function mpickobj(mtmp, otmp) {
         impossible(__s_monster_s_taking_or_picking_up_attached, pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)), (cptr.eq(otmp, uchain.v)) ? __s_chain : __s_ball, simpleonames(otmp));
         return 0;
     }
+    /* if monster is acquiring a thrown or kicked object, the throwing
+       or kicking code shouldn't continue to track and place it */
     if (cptr.eq(otmp, cptr.ldPtro(gt, $instance_globals_t_thrownobj)))
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     else if (cptr.eq(otmp, cptr.ldPtro(gk, $instance_globals_k_kickedobj)))
         cptr.stPtro(gk, $instance_globals_k_kickedobj, null);
+    /* an unpaid item can be on the floor; if a monster picks it up, take
+       it off the shop bill */
     if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || ((cptr.ldPtro((otmp), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(otmp, $obj_cobj)))) {
         subfrombill(otmp, find_objowner(otmp, cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy)));
     }
+    /* don't want hidden light source inside the monster; assumes that
+       engulfers won't have external inventories; whirly monsters cause
+       the light to be extinguished rather than letting it shine through */
     if (obj_sheds_light(otmp) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_ENGL)) {
+        /* this is probably a burning object that you dropped or threw */
         if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))) && !Blind())
             pline(__s_s_out, Tobjnam(otmp, __s_go));
         snuff_otmp = 1;
     }
+    /* for hero owned object on shop floor, mtmp is taking possession
+       and if it's eventually dropped in a shop, shk will claim it */
     cptr.stI32o(otmp, $obj_no_charge, 0);
+    /* some object handling is only done if mtmp isn't a pet */
     if (!cptr.ld1so(mtmp, $monst_mtame)) {
+        /* if monst is unseen, some info hero knows about this object becomes
+           lost; continual pickup and drop by pets makes this too annoying if
+           it is applied to them; when engulfed (where monster can't be seen
+           because vision is disabled), or when held (or poly'd and holding)
+           while blind, behave as if the monster can be 'seen' by touch */
         if (!canseemon(mtmp) && !cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
             unknow_object(otmp);
+        /* if otmp has flags set for how it left hero's inventory, change
+           those flags; if thrown, now stolen and autopickup might override
+           pickup_types and autopickup exceptions based on 'pickup_stolen'
+           rather than 'pickup_thrown'; if previously stolen, stays stolen;
+           if previously dropped, now forgotten and autopickup will operate
+           normally regardless of the setting for 'dropped_nopick' */
         if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_THROWN)
             cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
         else if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_DROPPED)
             cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_NONE);
     }
+    /* Must do carrying effects on object prior to add_to_minv() */
     carry_obj_effects(otmp);
+    /* add_to_minv() might free otmp [if merged with something else],
+       so we have to call it after doing the object checks */
     freed_otmp = add_to_minv(mtmp, otmp);
+    /* and we had to defer this until object is in mtmp's inventory */
     if (snuff_otmp)
         snuff_light_source(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     return freed_otmp;
 }
 
+/* called for AD_SAMU (the Wizard and quest nemeses) */
 /** C ref: steal.c:689 — @param {CPtr<struct monst>} mtmp */
 export function stealamulet(mtmp) {
     let buf = new Uint8Array(256);
@@ -745,6 +910,10 @@ export function stealamulet(mtmp) {
     let real = 0;
     let fake = 0;
     let n;
+
+    /* target every quest artifact, not just current role's;
+       if hero has more than one, choose randomly so that player
+       can't use inventory ordering to influence the theft */
     for (n = 0, obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
         if ((cptr.ld1so((obj), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION))
             ++n, otmp = obj;
@@ -754,7 +923,9 @@ export function stealamulet(mtmp) {
             if ((cptr.ld1so((otmp), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) && !--n)
                 break;
     }
+
     if (!otmp) {
+        /* if we didn't find any quest artifact, find another valuable item */
         if ((cptr.ldI32o(u, $you_uhave) & 1)) {
             real = NHC.AMULET_OF_YENDOR;
             fake = NHC.FAKE_AMULET_OF_YENDOR;
@@ -766,7 +937,9 @@ export function stealamulet(mtmp) {
         } else if ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
             real = NHC.CANDELABRUM_OF_INVOCATION;
         } else
-            return;
+            return;  /* you have nothing of special interest */
+
+        /* If we get here, real and fake have been set up. */
         for (n = 0, obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
             if (cptr.ldI16o(obj, $obj_otyp) == real || (cptr.ldI16o(obj, $obj_otyp) == fake && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1)))
                 ++n, otmp = obj;
@@ -777,25 +950,32 @@ export function stealamulet(mtmp) {
                     break;
         }
     }
+
     if (otmp) {
+        /* take off outer gear if we're targeting [hypothetical]
+           quest artifact suit, shirt, gloves, or rings */
         if ((cptr.eq(otmp, uarm.v) || cptr.eq(otmp, uarmu.v)) && uarmc.v)
             worn_item_removal(mtmp, uarmc.v);
         if (cptr.eq(otmp, uarmu.v) && uarm.v)
             worn_item_removal(mtmp, uarm.v);
         if ((cptr.eq(otmp, uarmg.v) || ((cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) && uarmg.v)) && uwep.v) {
+            /* gloves are about to be unworn; unwield weapon(s) first */
             if (cptr.ld1so(u, $you_twoweap))
-                worn_item_removal(mtmp, uswapwep.v);
+                worn_item_removal(mtmp, uswapwep.v);  /* clears u.twoweap */
             worn_item_removal(mtmp, uwep.v);
         }
         if ((cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) && uarmg.v)
+            /* calls Gloves_off() to handle wielded cockatrice corpse */
             worn_item_removal(mtmp, uarmg.v);
+
+        /* finally, steal the target item */
         if (cptr.ldI64o(otmp, $obj_owornmask))
             worn_item_removal(mtmp, otmp);
         if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
             subfrombill(otmp, shop_keeper(cptr.ld1so(u, $you_ushops)));
         freeinv(otmp);
         void cptr.strcpy(cptr.decay(buf), doname(otmp));
-        void mpickobj(mtmp, otmp);
+        void mpickobj(mtmp, otmp);  /* could merge and free otmp but won't */
         pline(__s_s_steals_s, Some_Monnam(mtmp), cptr.decay(buf));
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 33554432n) != 0n) && !tele_restrict(mtmp))
             void rloc(mtmp, NHM.RLOC_MSG);
@@ -803,19 +983,25 @@ export function stealamulet(mtmp) {
     }
 }
 
+/* when a mimic gets poked with something, it might take that thing
+   (at present, only implemented for when the hero does the poking) */
 /** C ref: steal.c:772 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} ochance @param {CInt} achance */
 export function maybe_absorb_item(mon, obj, ochance, achance) {
     if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v) || cptr.ld1so(obj, $obj_oclass) == NHC.ROCK_CLASS || obj_resists(obj, (100 - ochance) | 0, (100 - achance) | 0) || !touch_artifact(obj, mon))
         return;
+
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
         if (cptr.ldI64o(obj, $obj_owornmask))
             remove_worn_item(obj, 1);
         if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
             subfrombill(obj, shop_keeper(cptr.ld1so(u, $you_ushops)));
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
+            /* Some_Monnam() avoids "It pulls ... and absorbs it!"
+               if hero can see the location but not the monster */
             pline(__s_s_pulls_s_away_from_you_and_absorbs_s, Some_Monnam(mon), yname(obj), (cptr.ldI64o(obj, $obj_quan) > 1n) ? __s_them : __s_it);
         } else {
             let hand_s = body_part(NHC.HAND);
+
             if (bimanual(obj))
                 hand_s = makeplural(hand_s);
             pline(__s_s_s_pulled_from_your_s, upstart(yname(obj)), otense(obj, __s_are), hand_s);
@@ -823,38 +1009,58 @@ export function maybe_absorb_item(mon, obj, ochance, achance) {
         freeinv(obj);
         encumber_msg();
     } else {
+        /* not carried; presumably thrown or kicked */
         if (canspotmon(mon))
             pline(__s_s_absorbs_s, Monnam(mon), yname(obj));
     }
+    /* add to mon's inventory */
     void mpickobj(mon, obj);
 }
 
+/* drop one object taken from a (possibly dead) monster's inventory */
 /** C ref: steal.c:814 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} verbosely */
 export function mdrop_obj(mon, obj, verbosely) {
     let omx = cptr.ldI16o(mon, $monst_mx);
     let omy = cptr.ldI16o(mon, $monst_my);
     let unwornmask = cptr.ldI64o(obj, $obj_owornmask);
+    /* call distant_name() for its possible side-effects even if the result
+       might not be printed, and do it before extracting obj from minvent */
     let obj_name = distant_name(obj, doname);
+
     extract_from_minvent(mon, obj, 0, 1);
+    /* don't charge for an owned saddle on dead steed (provided
+        that the hero is within the same shop at the time) */
     if (unwornmask && cptr.ld1so(mon, $monst_mtame) && (unwornmask & 1048576n) != 0n && !(cptr.ldI32o(obj, $obj_unpaid) & 1) && costly_spot(omx, omy) && cptr.strchr(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE), (cptr.ldI32o3(svl, omx, $sizeof_rm_x21, omy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0)) {
         cptr.stI32o(obj, $obj_no_charge, 1);
     }
+    /* obj_no_longer_held(obj); -- done by place_object */
     if (verbosely && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0))
         pline_mon(mon, __s_s_drops_s, Monnam(mon), obj_name);
     if (!flooreffects(obj, omx, omy, __s_fall)) {
         place_object(obj, omx, omy);
         stackobj(obj);
     }
+    /* do this last, after placing obj on floor; removing steed's saddle
+       throws rider, possibly inflicting fatal damage and producing bones; this
+       is why we had to call extract_from_minvent() with do_intrinsics=FALSE */
     if (!(cptr.ldI32o((mon), $monst_mhp) < 1) && unwornmask)
         update_mon_extrinsics(mon, obj, 0, 1);
 }
 
+/* some monsters bypass the normal rules for moving between levels or
+   even leaving the game entirely; when that happens, prevent them from
+   taking the Amulet, invocation items, or quest artifact with them */
 /** C ref: steal.c:852 — @param {CPtr<struct monst>} mon */
 export function mdrop_special_objs(mon) {
     let obj;
     let otmp;
+
     for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = otmp) {
         otmp = cptr.ldPtr(obj);
+        /* the Amulet, invocation tools, and Rider corpses resist even when
+           artifacts and ordinary objects are given 0% resistance chance;
+           current role's quest artifact is rescued too--quest artifacts
+           for the other roles are not */
         if (obj_resists(obj, 0, 0) || is_quest_artifact(obj)) {
             if (cptr.ldI16o(mon, $monst_mx)) {
                 mdrop_obj(mon, obj, 0);
@@ -866,20 +1072,25 @@ export function mdrop_special_objs(mon) {
     }
 }
 
+/* release the objects the creature is carrying */
 /** C ref: steal.c:875 — @param {CPtr<struct monst>} mtmp @param {CInt} show @param {CInt} is_pet */
 export function relobj(mtmp, show, is_pet) {
     let otmp;
     let omx = cptr.ldI16o(mtmp, $monst_mx);
     let omy = cptr.ldI16o(mtmp, $monst_my);
+
+    /* vault guard's gold goes away rather than be dropped... */
     if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && (otmp = findgold(cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
         if (canspotmon(mtmp))
             pline(__s_s_gold_s, s_suffix(Monnam(mtmp)), canseemon(mtmp) ? __s_vanishes : __s_seems_to_vanish);
         obj_extract_self(otmp);
         obfree(otmp, null);
-    }
+    }  /* isgd && has gold */
+
     while ((otmp = (is_pet ? droppables(mtmp) : cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
         mdrop_obj(mtmp, otmp, schar((is_pet && cptr.ld1so(flags, $flag_verbose) ? 1 : 0)));
     }
+
     if (show && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0))
         newsym(i16(omx), i16(omy));
 }

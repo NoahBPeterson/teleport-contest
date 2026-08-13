@@ -43,27 +43,31 @@ function* getco(L) {
     return co;
 }
 
+/*
+** Resumes a coroutine. Returns the number of results for non-error
+** cases or -1 for errors.
+*/
 /** C ref: lcorolib.c:32 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} co @param {CInt} narg @returns {CInt} */
 function* auxresume(L, co, narg) {
     let status;
     let nres = cptr.box(0);
     if ((__builtin_expect(BigInt(((!(yield* lua_checkstack(co, narg))) != 0)), 0n))) {
         (yield* lua_pushstring(L, __s_too_many_arguments_to_resume));
-        return -1;
+        return -1;  /* error flag */
     }
     (yield* lua_xmove(L, co, narg));
     status = (yield* lua_resume(co, L, narg, nres));
     if ((__builtin_expect(BigInt(((status == 0 || status == 1 ? 1 : 0) != 0)), 1n))) {
         if ((__builtin_expect(BigInt(((!(yield* lua_checkstack(L, (nres.v + 1) | 0))) != 0)), 0n))) {
-            (yield* lua_settop(co, (-(nres.v) - 1) | 0));
+            (yield* lua_settop(co, (-(nres.v) - 1) | 0));  /* remove results anyway */
             (yield* lua_pushstring(L, __s_too_many_results_to_resume));
-            return -1;
+            return -1;  /* error flag */
         }
-        (yield* lua_xmove(co, L, nres.v));
+        (yield* lua_xmove(co, L, nres.v));  /* move yielded values */
         return nres.v;
     } else {
-        (yield* lua_xmove(co, L, 1));
-        return -1;
+        (yield* lua_xmove(co, L, 1));  /* move error message */
+        return -1;  /* error flag */
     }
 }
 
@@ -75,11 +79,11 @@ function* luaB_coresume(L) {
     if ((__builtin_expect(BigInt(((r < 0) != 0)), 0n))) {
         (yield* lua_pushboolean(L, 0));
         lua_rotate(L, -2, 1);
-        return 2;
+        return 2;  /* return false + error message */
     } else {
         (yield* lua_pushboolean(L, 1));
         lua_rotate(L, (-((r + 1) | 0)), 1);
-        return (r + 1) | 0;
+        return (r + 1) | 0;  /* return true + 'resume' returns */
     }
 }
 
@@ -90,16 +94,16 @@ function* luaB_auxwrap(L) {
     if ((__builtin_expect(BigInt(((r < 0) != 0)), 0n))) {
         let stat = lua_status(co);
         if (stat != 0 && stat != 1) {
-            stat = (yield* lua_closethread(co, L));
+            stat = (yield* lua_closethread(co, L));  /* close its tbc variables */
             (void 0);
-            (yield* lua_xmove(co, L, 1));
+            (yield* lua_xmove(co, L, 1));  /* move error message to the caller */
         }
         if (stat != 4 && lua_type(L, -1) == 4) {
-            (yield* luaL_where(L, 1));
+            (yield* luaL_where(L, 1));  /* add extra info, if available */
             lua_rotate(L, -2, 1);
             (yield* lua_concat(L, 2));
         }
-        return (yield* lua_error(L));
+        return (yield* lua_error(L));  /* propagate error */
     }
     return r;
 }
@@ -109,8 +113,8 @@ function* luaB_cocreate(L) {
     let NL;
     (yield* luaL_checktype(L, 1, 6));
     NL = (yield* lua_newthread(L));
-    (yield* lua_pushvalue(L, 1));
-    (yield* lua_xmove(L, NL, 1));
+    (yield* lua_pushvalue(L, 1));  /* move function to top */
+    (yield* lua_xmove(L, NL, 1));  /* move function from L to NL */
     return 1;
 }
 
@@ -145,11 +149,11 @@ function auxstatus(L, co) {
             {
                 let ar = cptr.alloc(136);
                 if (lua_getstack(co, 0, ar))
-                    return 3;
+                    return 3;  /* it is running */
                 else if (lua_gettop(co) == 0)
                     return 1;
                 else
-                    return 2;
+                    return 2;  /* initial state */
             }
             default:
             return 1;
@@ -192,7 +196,7 @@ function* luaB_close(L) {
                 return 1;
             } else {
                 (yield* lua_pushboolean(L, 0));
-                (yield* lua_xmove(co, L, 1));
+                (yield* lua_xmove(co, L, 1));  /* move error message */
                 return 2;
             }
         }

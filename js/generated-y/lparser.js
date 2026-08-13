@@ -97,6 +97,9 @@ const __s_close = cptr.lit("close");
 const __s_unknown_attribute_s = cptr.lit("unknown attribute '%s'");
 const __s_multiple_to_be_closed_variables_in = cptr.lit("multiple to-be-closed variables in local list");
 
+/*
+** nodes for block list (list of active blocks)
+*/
 /** C ref: lparser.c:49 — struct BlockCnt { previous, firstlabel, firstgoto, nactvar, upval, isloop, insidetbc } (memory model v0.5) */
 
 /** C ref: lparser.c:57 — typedef BlockCnt (type alias only, no runtime output) */
@@ -122,6 +125,9 @@ function* checklimit(fs, v, l, what) {
         (yield* errorlimit(fs, l, what));
 }
 
+/*
+** Test whether next token is 'c'; if so, skip it.
+*/
 /** C ref: lparser.c:95 — @param {CPtr<LexState>} ls @param {CInt} c @returns {CInt} */
 function* testnext(ls, c) {
     if (cptr.ldI32o(ls, $LexState_t) == c) {
@@ -131,23 +137,34 @@ function* testnext(ls, c) {
         return 0;
 }
 
+/*
+** Check that next token is 'c'.
+*/
 /** C ref: lparser.c:107 — @param {CPtr<LexState>} ls @param {CInt} c */
 function* check(ls, c) {
     if (cptr.ldI32o(ls, $LexState_t) != c)
         (yield* error_expected(ls, c));
 }
 
+/*
+** Check that next token is 'c' and skip it.
+*/
 /** C ref: lparser.c:116 — @param {CPtr<LexState>} ls @param {CInt} c */
 function* checknext(ls, c) {
     (yield* check(ls, c));
     (yield* luaX_next(ls));
 }
 
+/*
+** Check that next token is 'what' and skip it. In case of error,
+** raise an error that the expected 'what' should match a 'who'
+** in line 'where' (if that is not the current line).
+*/
 /** C ref: lparser.c:130 — @param {CPtr<LexState>} ls @param {CInt} what @param {CInt} who @param {CInt} where */
 function* check_match(ls, what, who, where) {
     if ((__builtin_expect(BigInt(((!(yield* testnext(ls, what))) != 0)), 0n))) {
         if (where == cptr.ldI32o(ls, $LexState_linenumber))
-            (yield* error_expected(ls, what));
+            (yield* error_expected(ls, what));  /* do not need a complex message */
         else {
             (yield* luaX_syntaxerror(ls, (yield* luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_s_expected_to_close_s_at_line_d, (yield* luaX_token2str(ls, what)), (yield* luaX_token2str(ls, who)), where))));
         }
@@ -182,6 +199,10 @@ function* codename(ls, e) {
     codestring(e, (yield* str_checkname(ls)));
 }
 
+/*
+** Register a new local variable in the active 'Proto' (for debug
+** information).
+*/
 /** C ref: lparser.c:175 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs @param {CPtr<TString>} varname @returns {CInt} */
 function* registerlocalvar(ls, fs, varname) {
     let f = cptr.ldPtr(fs);
@@ -195,6 +216,10 @@ function* registerlocalvar(ls, fs, varname) {
     return (cptr.stI16o(fs, $FuncState_ndebugvars, cptr.ldI16o(fs, $FuncState_ndebugvars) + 1)) - (1);
 }
 
+/*
+** Create a new local variable with the given 'name'. Return its index
+** in the function.
+*/
 /** C ref: lparser.c:193 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @returns {CInt} */
 function* new_localvar(ls, name) {
     let L = cptr.ldPtro(ls, $LexState_L);
@@ -204,36 +229,53 @@ function* new_localvar(ls, name) {
     (yield* checklimit(fs, (((cptr.ldI32o(dyd, 8) + 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0, 200, __s_local_variables));
     (cptr.stPtr(dyd, (((yield* luaM_growaux_(L, cptr.ldPtr(dyd), (cptr.ldI32o(dyd, 8) + 1) | 0, cptr.add(dyd, 12), 24, 32767, __s_local_variables))))));
     var$ = cptr.add(cptr.ldPtr(dyd), (cptr.stI32o(dyd, 8, cptr.ldI32o(dyd, 8) + 1)) - (1), $sizeof_Vardesc);
-    cptr.st1o(var$, 9, 0);
+    cptr.st1o(var$, 9, 0);  /* default */
     cptr.stPtro(var$, 16, name);
     return (((cptr.ldI32o(dyd, 8) - 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0;
 }
 
+/*
+** Return the "variable description" (Vardesc) of a given variable.
+** (Unless noted otherwise, all variables are referred to by their
+** compiler indices.)
+*/
 /** C ref: lparser.c:219 — @param {CPtr<FuncState>} fs @param {CInt} vidx @returns {CPtr<Vardesc>} */
 function getlocalvardesc(fs, vidx) {
     return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), (cptr.ldI32o(fs, $FuncState_firstlocal) + vidx) | 0, $sizeof_Vardesc);
 }
 
+/*
+** Convert 'nvar', a compiler index level, to its corresponding
+** register. For that, search for the highest variable below that level
+** that is in a register and uses its register index ('ridx') plus one.
+*/
 /** C ref: lparser.c:229 — @param {CPtr<FuncState>} fs @param {CInt} nvar @returns {CInt} */
 function reglevel(fs, nvar) {
     while (nvar-- > 0) {
-        let vd = getlocalvardesc(fs, nvar);
+        let vd = getlocalvardesc(fs, nvar);  /* get previous variable */
         if (cptr.ld1uo(vd, 9) != 3)
             return (cptr.ld1uo(vd, 10) + 1) | 0;
     }
-    return 0;
+    return 0;  /* no variables in registers */
 }
 
+/*
+** Return the number of variables in the register stack for the given
+** function.
+*/
 /** C ref: lparser.c:243 — @param {CPtr<FuncState>} fs @returns {CInt} */
 export function luaY_nvarstack(fs) {
     return reglevel(fs, cptr.ld1uo(fs, $FuncState_nactvar));
 }
 
+/*
+** Get the debug-information entry for current variable 'vidx'.
+*/
 /** C ref: lparser.c:251 — @param {CPtr<FuncState>} fs @param {CInt} vidx @returns {CPtr<LocVar>} */
 function localdebuginfo(fs, vidx) {
     let vd = getlocalvardesc(fs, vidx);
     if (cptr.ld1uo(vd, 9) == 3)
-        return null;
+        return null;  /* no debug info. for constants */
     else {
         let idx = cptr.ldI16o(vd, 12);
         (void 0);
@@ -241,6 +283,9 @@ function localdebuginfo(fs, vidx) {
     }
 }
 
+/*
+** Create an expression representing variable 'vidx'
+*/
 /** C ref: lparser.c:266 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} vidx */
 function init_var(fs, e, vidx) {
     cptr.stI32o(e, $expdesc_f, cptr.stI32o(e, $expdesc_t, -1));
@@ -249,10 +294,13 @@ function init_var(fs, e, vidx) {
     cptr.st1o(e, $expdesc_u, cptr.ld1uo(getlocalvardesc(fs, vidx), 10));
 }
 
+/*
+** Raises an error if variable described by 'e' is read only
+*/
 /** C ref: lparser.c:277 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} e */
 function* check_readonly(ls, e) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let varname = null;
+    let varname = null;  /* to be set if variable is const */
     switch (cptr.ldI32(e)) {
         case NHC.VCONST:
         {
@@ -274,14 +322,17 @@ function* check_readonly(ls, e) {
             break;
         }
         default:
-        return;
+        return;  /* other cases cannot be read-only */
     }
     if (varname) {
         let msg = (yield* luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_attempt_to_assign_to_const_variable_s, (cptr.add((varname), $TString_contents))));
-        (yield* luaK_semerror(ls, msg));
+        (yield* luaK_semerror(ls, msg));  /* error */
     }
 }
 
+/*
+** Start the scope for the last 'nvars' created variables.
+*/
 /** C ref: lparser.c:311 — @param {CPtr<LexState>} ls @param {CInt} nvars */
 function* adjustlocalvars(ls, nvars) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -295,6 +346,10 @@ function* adjustlocalvars(ls, nvars) {
     }
 }
 
+/*
+** Close the scope for all variables up to level 'tolevel'.
+** (debug info.)
+*/
 /** C ref: lparser.c:328 — @param {CPtr<FuncState>} fs @param {CInt} tolevel */
 function removevars(fs, tolevel) {
     cptr.stI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8, (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8) - ((cptr.ld1uo(fs, $FuncState_nactvar) - tolevel) | 0)) | 0);
@@ -305,6 +360,10 @@ function removevars(fs, tolevel) {
     }
 }
 
+/*
+** Search the upvalues of the function 'fs' for one
+** with the given 'name'.
+*/
 /** C ref: lparser.c:342 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} name @returns {CInt} */
 function searchupvalue(fs, name) {
     let i;
@@ -313,7 +372,7 @@ function searchupvalue(fs, name) {
         if ((cptr.eq((cptr.ldPtro(up, i, $sizeof_Upvaldesc)), (name))))
             return i;
     }
-    return -1;
+    return -1;  /* not found */
 }
 
 /** C ref: lparser.c:352 — @param {CPtr<FuncState>} fs @returns {CPtr<Upvaldesc>} */
@@ -347,6 +406,11 @@ function* newupvalue(fs, name, v) {
     return (cptr.ld1uo(fs, $FuncState_nups) - 1) | 0;
 }
 
+/*
+** Look for an active local variable with the name 'n' in the
+** function 'fs'. If found, initialize 'var' with it and return
+** its expression kind; otherwise return -1.
+*/
 /** C ref: lparser.c:390 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} n @param {CPtr<expdesc>} var @returns {CInt} */
 function searchvar(fs, n, var$) {
     let i;
@@ -360,9 +424,13 @@ function searchvar(fs, n, var$) {
             return cptr.ldI32(var$);
         }
     }
-    return -1;
+    return -1;  /* not found */
 }
 
+/*
+** Mark block where variable at given level was defined
+** (to emit close instructions later).
+*/
 /** C ref: lparser.c:410 — @param {CPtr<FuncState>} fs @param {CInt} level */
 function markupval(fs, level) {
     let bl = cptr.ldPtro(fs, $FuncState_bl);
@@ -372,6 +440,9 @@ function markupval(fs, level) {
     cptr.st1o(fs, $FuncState_needclose, 1);
 }
 
+/*
+** Mark that current block has a to-be-closed variable.
+*/
 /** C ref: lparser.c:422 — @param {CPtr<FuncState>} fs */
 function marktobeclosed(fs) {
     let bl = cptr.ldPtro(fs, $FuncState_bl);
@@ -380,29 +451,38 @@ function marktobeclosed(fs) {
     cptr.st1o(fs, $FuncState_needclose, 1);
 }
 
+/*
+** Find a variable with the given name 'n'. If it is an upvalue, add
+** this upvalue into all intermediate functions. If it is a global, set
+** 'var' as 'void' as a flag.
+*/
 /** C ref: lparser.c:435 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} n @param {CPtr<expdesc>} var @param {CInt} base */
 function* singlevaraux(fs, n, var$, base) {
     if (cptr.eq(fs, (null)))
-        init_exp(var$, NHC.VVOID, 0);
+        init_exp(var$, NHC.VVOID, 0);  /* default is global */
     else {
-        let v = searchvar(fs, n, var$);
+        let v = searchvar(fs, n, var$);  /* look up locals at current level */
         if (v >= 0) {
             if (v == NHC.VLOCAL && !base)
-                markupval(fs, cptr.ldU16o(var$, $expdesc_u + 2));
+                markupval(fs, cptr.ldU16o(var$, $expdesc_u + 2));  /* local will be used as an upval */
         } else {
-            let idx = searchupvalue(fs, n);
+            let idx = searchupvalue(fs, n);  /* try existing upvalues */
             if (idx < 0) {
-                (yield* singlevaraux(cptr.ldPtro(fs, $FuncState_prev), n, var$, 0));
+                (yield* singlevaraux(cptr.ldPtro(fs, $FuncState_prev), n, var$, 0));  /* try upper levels */
                 if (cptr.ldI32(var$) == NHC.VLOCAL || cptr.ldI32(var$) == NHC.VUPVAL)
-                    idx = (yield* newupvalue(fs, n, var$));
+                    idx = (yield* newupvalue(fs, n, var$));  /* will be a new upvalue */
                 else
-                    return;
+                    return;  /* don't need to do anything at this level */
             }
-            init_exp(var$, NHC.VUPVAL, idx);
+            init_exp(var$, NHC.VUPVAL, idx);  /* new or old upvalue */
         }
     }
 }
 
+/*
+** Find a variable with the given name 'n', handling global variables
+** too.
+*/
 /** C ref: lparser.c:463 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} var */
 function* singlevar(ls, var$) {
     let varname = (yield* str_checkname(ls));
@@ -410,48 +490,61 @@ function* singlevar(ls, var$) {
     (yield* singlevaraux(fs, varname, var$, 1));
     if (cptr.ldI32(var$) == NHC.VVOID) {
         let key = cptr.alloc(24);
-        (yield* singlevaraux(fs, cptr.ldPtro(ls, $LexState_envn), var$, 1));
-        (void 0);
-        (yield* luaK_exp2anyregup(fs, var$));
-        codestring(key, varname);
-        (yield* luaK_indexed(fs, var$, key));
+        (yield* singlevaraux(fs, cptr.ldPtro(ls, $LexState_envn), var$, 1));  /* get environment variable */
+        (void 0);  /* this one must exist */
+        (yield* luaK_exp2anyregup(fs, var$));  /* but could be a constant */
+        codestring(key, varname);  /* key is variable name */
+        (yield* luaK_indexed(fs, var$, key));  /* env[varname] */
     }
 }
 
+/*
+** Adjust the number of results from an expression list 'e' with 'nexps'
+** expressions to 'nvars' values.
+*/
 /** C ref: lparser.c:482 — @param {CPtr<LexState>} ls @param {CInt} nvars @param {CInt} nexps @param {CPtr<expdesc>} e */
 function* adjust_assign(ls, nvars, nexps, e) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let needed = (nvars - nexps) | 0;
+    let needed = (nvars - nexps) | 0;  /* extra values needed */
     if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG)) {
-        let extra = (needed + 1) | 0;
+        let extra = (needed + 1) | 0;  /* discount last expression itself */
         if (extra < 0)
             extra = 0;
-        (yield* luaK_setreturns(fs, e, extra));
+        (yield* luaK_setreturns(fs, e, extra));  /* last exp. provides the difference */
     } else {
         if (cptr.ldI32(e) != NHC.VVOID)
-            (yield* luaK_exp2nextreg(fs, e));
+            (yield* luaK_exp2nextreg(fs, e));  /* close last expression */
         if (needed > 0)
-            (yield* luaK_nil(fs, cptr.ld1uo(fs, $FuncState_freereg), needed));
+            (yield* luaK_nil(fs, cptr.ld1uo(fs, $FuncState_freereg), needed));  /* complete with nils */
     }
     if (needed > 0)
-        (yield* luaK_reserveregs(fs, needed));
+        (yield* luaK_reserveregs(fs, needed));  /* registers for extra values */
     else
-        cptr.st1o(fs, $FuncState_freereg, cptr.ld1uo(fs, $FuncState_freereg) + needed);
+        cptr.st1o(fs, $FuncState_freereg, cptr.ld1uo(fs, $FuncState_freereg) + needed);  /* remove extra values */
 }
 
+/*
+** Generates an error that a goto jumps into the scope of some
+** local variable.
+*/
 /** C ref: lparser.c:514 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} gt */
 function* jumpscopeerror(ls, gt) {
     let varname = (cptr.add((cptr.ldPtro(getlocalvardesc(cptr.ldPtro(ls, $LexState_fs), cptr.ld1uo(gt, $Labeldesc_nactvar)), 16)), $TString_contents));
     let msg = __s_goto_s_at_line_d_jumps_into_the_scope;
     msg = (yield* luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), msg, (cptr.add((cptr.ldPtr(gt)), $TString_contents)), cptr.ldI32o(gt, $Labeldesc_line), varname));
-    (yield* luaK_semerror(ls, msg));
+    (yield* luaK_semerror(ls, msg));  /* raise the error */
 }
 
+/*
+** Solves the goto at index 'g' to given 'label' and removes it
+** from the list of pending gotos.
+** If it jumps into the scope of some variable, raises an error.
+*/
 /** C ref: lparser.c:527 — @param {CPtr<LexState>} ls @param {CInt} g @param {CPtr<Labeldesc>} label */
 function* solvegoto(ls, g, label) {
     let i;
-    let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);
-    let gt = cptr.add(cptr.ldPtr(gl), g, $sizeof_Labeldesc);
+    let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);  /* list of gotos */
+    let gt = cptr.add(cptr.ldPtr(gl), g, $sizeof_Labeldesc);  /* goto to be resolved */
     (void 0);
     if ((__builtin_expect(BigInt(((cptr.ld1uo(gt, $Labeldesc_nactvar) < cptr.ld1uo(label, $Labeldesc_nactvar)) != 0)), 0n)))
         (yield* jumpscopeerror(ls, gt));
@@ -461,18 +554,25 @@ function* solvegoto(ls, g, label) {
     (cptr.stI32o(gl, $Labellist_n, cptr.ldI32o(gl, $Labellist_n) + -1)) - (-1);
 }
 
+/*
+** Search for an active label with the given name.
+*/
 /** C ref: lparser.c:544 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @returns {CPtr<Labeldesc>} */
 function findlabel(ls, name) {
     let i;
     let dyd = cptr.ldPtro(ls, $LexState_dyd);
+    /* check labels in current function for a match */
     for (i = cptr.ldI32o(cptr.ldPtro(ls, $LexState_fs), $FuncState_firstlabel); i < cptr.ldI32o(dyd, $Dyndata_label + $Labellist_n); i++) {
         let lb = cptr.add(cptr.ldPtro(dyd, $Dyndata_label), i, $sizeof_Labeldesc);
         if ((cptr.eq((cptr.ldPtr(lb)), (name))))
             return lb;
     }
-    return null;
+    return null;  /* label not found */
 }
 
+/*
+** Adds a new label/goto in the corresponding list.
+*/
 /** C ref: lparser.c:560 — @param {CPtr<LexState>} ls @param {CPtr<Labellist>} l @param {CPtr<TString>} name @param {CInt} line @param {CInt} pc @returns {CInt} */
 function* newlabelentry(ls, l, name, line, pc) {
     let n = cptr.ldI32o(l, $Labellist_n);
@@ -491,6 +591,11 @@ function* newgotoentry(ls, name, line, pc) {
     return (yield* newlabelentry(ls, cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), name, line, pc));
 }
 
+/*
+** Solves forward jumps. Check whether new label 'lb' matches any
+** pending gotos in current block and solves them. Return true
+** if any of the gotos need to close upvalues.
+*/
 /** C ref: lparser.c:585 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} lb @returns {CInt} */
 function* solvegotos(ls, lb) {
     let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);
@@ -499,19 +604,27 @@ function* solvegotos(ls, lb) {
     while (i < cptr.ldI32o(gl, $Labellist_n)) {
         if ((cptr.eq((cptr.ldPtro(cptr.ldPtr(gl), i, $sizeof_Labeldesc)), (cptr.ldPtr(lb))))) {
             needsclose |= cptr.ld1uo2(cptr.ldPtr(gl), i, $sizeof_Labeldesc, $Labeldesc_close);
-            (yield* solvegoto(ls, i, lb));
+            (yield* solvegoto(ls, i, lb));  /* will remove 'i' from the list */
         } else
             i++;
     }
     return needsclose;
 }
 
+/*
+** Create a new label with the given 'name' at the given 'line'.
+** 'last' tells whether label is the last non-op statement in its
+** block. Solves all pending gotos to this new label and adds
+** a close instruction if necessary.
+** Returns true iff it added a close instruction.
+*/
 /** C ref: lparser.c:608 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line @param {CInt} last @returns {CInt} */
 function* createlabel(ls, name, line, last) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let ll = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label);
     let l = (yield* newlabelentry(ls, ll, name, line, luaK_getlabel(fs)));
     if (last) {
+        /* assume that locals are already out of scope */
         cptr.st1o2(cptr.ldPtr(ll), l, $sizeof_Labeldesc, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_nactvar));
     }
     if ((yield* solvegotos(ls, cptr.add(cptr.ldPtr(ll), l, $sizeof_Labeldesc)))) {
@@ -521,15 +634,20 @@ function* createlabel(ls, name, line, last) {
     return 0;
 }
 
+/*
+** Adjust pending gotos to outer level of a block.
+*/
 /** C ref: lparser.c:628 — @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl */
 function movegotosout(fs, bl) {
     let i;
     let gl = cptr.add(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), $Dyndata_gt);
+    /* correct pending gotos to current block */
     for (i = cptr.ldI32o(bl, $BlockCnt_firstgoto); i < cptr.ldI32o(gl, $Labellist_n); i++) {
         let gt = cptr.add(cptr.ldPtr(gl), i, $sizeof_Labeldesc);
+        /* leaving a variable scope? */
         if (reglevel(fs, cptr.ld1uo(gt, $Labeldesc_nactvar)) > reglevel(fs, cptr.ld1uo(bl, $BlockCnt_nactvar)))
-            cptr.st1o(gt, $Labeldesc_close, cptr.ld1uo(gt, $Labeldesc_close) | cptr.ld1uo(bl, $BlockCnt_upval));
-        cptr.st1o(gt, $Labeldesc_nactvar, cptr.ld1uo(bl, $BlockCnt_nactvar));
+            cptr.st1o(gt, $Labeldesc_close, cptr.ld1uo(gt, $Labeldesc_close) | cptr.ld1uo(bl, $BlockCnt_upval));  /* jump may need a close */
+        cptr.st1o(gt, $Labeldesc_nactvar, cptr.ld1uo(bl, $BlockCnt_nactvar));  /* update goto level */
     }
 }
 
@@ -546,6 +664,9 @@ function enterblock(fs, bl, isloop) {
     (void 0);
 }
 
+/*
+** generates an error for an undefined 'goto'.
+*/
 /** C ref: lparser.c:658 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} gt */
 function* undefgoto(ls, gt) {
     let msg;
@@ -564,30 +685,33 @@ function* leaveblock(fs) {
     let bl = cptr.ldPtro(fs, $FuncState_bl);
     let ls = cptr.ldPtro(fs, $FuncState_ls);
     let hasclose = 0;
-    let stklevel = reglevel(fs, cptr.ld1uo(bl, $BlockCnt_nactvar));
-    removevars(fs, cptr.ld1uo(bl, $BlockCnt_nactvar));
-    (void 0);
+    let stklevel = reglevel(fs, cptr.ld1uo(bl, $BlockCnt_nactvar));  /* level outside the block */
+    removevars(fs, cptr.ld1uo(bl, $BlockCnt_nactvar));  /* remove block locals */
+    (void 0);  /* back to level on entry */
     if (cptr.ld1uo(bl, $BlockCnt_isloop))
         hasclose = (yield* createlabel(ls, ((yield* luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n)))), 0, 0));
     if (!hasclose && cptr.ldPtr(bl) && cptr.ld1uo(bl, $BlockCnt_upval))
         (yield* luaK_codeABCk(fs, NHC.OP_CLOSE, stklevel, 0, 0, 0));
-    cptr.st1o(fs, $FuncState_freereg, uchar(stklevel));
-    cptr.stI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label + $Labellist_n, cptr.ldI32o(bl, $BlockCnt_firstlabel));
-    cptr.stPtro(fs, $FuncState_bl, cptr.ldPtr(bl));
+    cptr.st1o(fs, $FuncState_freereg, uchar(stklevel));  /* free registers */
+    cptr.stI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label + $Labellist_n, cptr.ldI32o(bl, $BlockCnt_firstlabel));  /* remove local labels */
+    cptr.stPtro(fs, $FuncState_bl, cptr.ldPtr(bl));  /* current block now is previous one */
     if (cptr.ldPtr(bl))
-        movegotosout(fs, bl);
+        movegotosout(fs, bl);  /* update pending gotos to enclosing block */
     else {
         if (cptr.ldI32o(bl, $BlockCnt_firstgoto) < cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt + $Labellist_n))
-            (yield* undefgoto(ls, cptr.add(cptr.ldPtro(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), cptr.ldI32o(bl, $BlockCnt_firstgoto), $sizeof_Labeldesc)));
+            (yield* undefgoto(ls, cptr.add(cptr.ldPtro(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), cptr.ldI32o(bl, $BlockCnt_firstgoto), $sizeof_Labeldesc)));  /* error */
     }
 }
 
+/*
+** adds a new prototype into list of prototypes
+*/
 /** C ref: lparser.c:698 — @param {CPtr<LexState>} ls @returns {CPtr<Proto>} */
 function* addprototype(ls) {
     let clp;
     let L = cptr.ldPtro(ls, $LexState_L);
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let f = cptr.ldPtr(fs);
+    let f = cptr.ldPtr(fs);  /* prototype of current function */
     if (cptr.ldI32o(fs, $FuncState_np) >= cptr.ldI32o(f, $Proto_sizep)) {
         let oldsize = cptr.ldI32o(f, $Proto_sizep);
         (cptr.stPtro(f, $Proto_p, (((yield* luaM_growaux_(L, cptr.ldPtro(f, $Proto_p), cptr.ldI32o(fs, $FuncState_np), cptr.add(f, $Proto_sizep), 8, 131071, __s_functions))))));
@@ -599,17 +723,24 @@ function* addprototype(ls) {
     return clp;
 }
 
+/*
+** codes instruction to create new closure in parent function.
+** The OP_CLOSURE instruction uses the last available register,
+** so that, if it invokes the GC, the GC knows which registers
+** are in use at that time.
+
+*/
 /** C ref: lparser.c:722 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* codeclosure(ls, v) {
     let fs = cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_prev);
     init_exp(v, NHC.VRELOC, (yield* luaK_codeABx(fs, NHC.OP_CLOSURE, 0, ((cptr.ldI32o(fs, $FuncState_np) - 1) | 0) >>> 0)));
-    (yield* luaK_exp2nextreg(fs, v));
+    (yield* luaK_exp2nextreg(fs, v));  /* fix it at the last register */
 }
 
 /** C ref: lparser.c:729 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl */
 function open_func(ls, fs, bl) {
     let f = cptr.ldPtr(fs);
-    cptr.stPtro(fs, $FuncState_prev, cptr.ldPtro(ls, $LexState_fs));
+    cptr.stPtro(fs, $FuncState_prev, cptr.ldPtro(ls, $LexState_fs));  /* linked list of funcstates */
     cptr.stPtro(fs, $FuncState_ls, ls);
     cptr.stPtro(ls, $LexState_fs, fs);
     cptr.stI32o(fs, $FuncState_pc, 0);
@@ -629,7 +760,7 @@ function open_func(ls, fs, bl) {
     cptr.stPtro(fs, $FuncState_bl, null);
     cptr.stPtro(f, $Proto_source, cptr.ldPtro(ls, $LexState_source));
     ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(f, $Proto_source)), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((f)))), ((((cptr.ldPtro(f, $Proto_source)))))) : (void 0));
-    cptr.st1o(f, $Proto_maxstacksize, 2);
+    cptr.st1o(f, $Proto_maxstacksize, 2);  /* registers 0/1 are always valid */
     enterblock(fs, bl, 0);
 }
 
@@ -638,7 +769,7 @@ function* close_func(ls) {
     let L = cptr.ldPtro(ls, $LexState_L);
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let f = cptr.ldPtr(fs);
-    (yield* luaK_ret(fs, luaY_nvarstack(fs), 0));
+    (yield* luaK_ret(fs, luaY_nvarstack(fs), 0));  /* final return */
     (yield* leaveblock(fs));
     (void 0);
     (yield* luaK_finish(fs));
@@ -662,6 +793,15 @@ function* close_func(ls) {
     ;
 }
 
+/*============================================================*/
+/* GRAMMAR RULES */
+/*============================================================*/
+
+/*
+** check whether current token is in the follow set of a block.
+** 'until' closes syntactical blocks, but do not close scope,
+** so it is handled in separate.
+*/
 /** C ref: lparser.c:788 — @param {CPtr<LexState>} ls @param {CInt} withuntil @returns {CInt} */
 function block_follow(ls, withuntil) {
     switch (cptr.ldI32o(ls, $LexState_t)) {
@@ -679,10 +819,11 @@ function block_follow(ls, withuntil) {
 
 /** C ref: lparser.c:799 — @param {CPtr<LexState>} ls */
 function* statlist(ls) {
+    /* statlist -> { stat [';'] } */
     while (!block_follow(ls, 1)) {
         if (cptr.ldI32o(ls, $LexState_t) == NHC.TK_RETURN) {
             (yield* statement(ls));
-            return;
+            return;  /* 'return' must be last statement */
         }
         (yield* statement(ls));
     }
@@ -690,21 +831,29 @@ function* statlist(ls) {
 
 /** C ref: lparser.c:811 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* fieldsel(ls, v) {
+    /* fieldsel -> ['.' | ':'] NAME */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let key = cptr.alloc(24);
     (yield* luaK_exp2anyregup(fs, v));
-    (yield* luaX_next(ls));
+    (yield* luaX_next(ls));  /* skip the dot or colon */
     (yield* codename(ls, key));
     (yield* luaK_indexed(fs, v, key));
 }
 
 /** C ref: lparser.c:822 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* yindex(ls, v) {
-    (yield* luaX_next(ls));
+    /* index -> '[' expr ']' */
+    (yield* luaX_next(ls));  /* skip the '[' */
     (yield* expr(ls, v));
     (yield* luaK_exp2val(cptr.ldPtro(ls, $LexState_fs), v));
     (yield* checknext(ls, 93));
 }
+
+/*
+** {======================================================================
+** Rules for Constructors
+** =======================================================================
+*/
 
 /** C ref: lparser.c:838 — struct ConsControl { v, t, nh, na, tostore } (memory model v0.5) */
 
@@ -712,6 +861,7 @@ function* yindex(ls, v) {
 
 /** C ref: lparser.c:847 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
 function* recfield(ls, cc) {
+    /* recfield -> (NAME | '['exp']') = exp */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let reg = cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg);
     let tab = cptr.alloc(24);
@@ -728,19 +878,19 @@ function* recfield(ls, cc) {
     (yield* luaK_indexed(fs, tab, key));
     (yield* expr(ls, val));
     (yield* luaK_storevar(fs, tab, val));
-    cptr.st1o(fs, $FuncState_freereg, uchar(reg));
+    cptr.st1o(fs, $FuncState_freereg, uchar(reg));  /* free registers */
 }
 
 /** C ref: lparser.c:867 — @param {CPtr<FuncState>} fs @param {CPtr<ConsControl>} cc */
 function* closelistfield(fs, cc) {
     if (cptr.ldI32(cc) == NHC.VVOID)
-        return;
+        return;  /* there is no list item */
     (yield* luaK_exp2nextreg(fs, cc));
     cptr.stI32(cc, NHC.VVOID);
     if (cptr.ldI32o(cc, $ConsControl_tostore) == 50) {
-        (yield* luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_tostore)));
+        (yield* luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_tostore)));  /* flush */
         cptr.stI32o(cc, $ConsControl_na, (cptr.ldI32o(cc, $ConsControl_na) + cptr.ldI32o(cc, $ConsControl_tostore)) | 0);
-        cptr.stI32o(cc, $ConsControl_tostore, 0);
+        cptr.stI32o(cc, $ConsControl_tostore, 0);  /* no more items pending */
     }
 }
 
@@ -751,7 +901,7 @@ function* lastlistfield(fs, cc) {
     if (((cptr.ldI32(cc)) == NHC.VCALL || (cptr.ldI32(cc)) == NHC.VVARARG)) {
         (yield* luaK_setreturns(fs, cc, -1));
         (yield* luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), -1));
-        (cptr.stI32o(cc, $ConsControl_na, cptr.ldI32o(cc, $ConsControl_na) + -1)) - (-1);
+        (cptr.stI32o(cc, $ConsControl_na, cptr.ldI32o(cc, $ConsControl_na) + -1)) - (-1);  /* do not count last expression (unknown number of elements) */
     } else {
         if (cptr.ldI32(cc) != NHC.VVOID)
             (yield* luaK_exp2nextreg(fs, cc));
@@ -762,12 +912,14 @@ function* lastlistfield(fs, cc) {
 
 /** C ref: lparser.c:895 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
 function* listfield(ls, cc) {
+    /* listfield -> exp */
     (yield* expr(ls, cc));
     (cptr.stI32o(cc, $ConsControl_tostore, cptr.ldI32o(cc, $ConsControl_tostore) + 1)) - (1);
 }
 
 /** C ref: lparser.c:902 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
 function* field(ls, cc) {
+    /* field -> listfield | recfield */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_NAME:
         {
@@ -792,16 +944,18 @@ function* field(ls, cc) {
 
 /** C ref: lparser.c:924 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} t */
 function* constructor(ls, t) {
+    /* constructor -> '{' [ field { sep field } [sep] ] '}'
+       sep -> ',' | ';' */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let line = cptr.ldI32o(ls, $LexState_linenumber);
     let pc = (yield* luaK_codeABCk(fs, NHC.OP_NEWTABLE, 0, 0, 0, 0));
     let cc = cptr.alloc(48);
-    (yield* luaK_code(fs, 0));
+    (yield* luaK_code(fs, 0));  /* space for extra arg. */
     cptr.stI32o(cc, $ConsControl_na, cptr.stI32o(cc, $ConsControl_nh, cptr.stI32o(cc, $ConsControl_tostore, 0)));
     cptr.stPtro(cc, $ConsControl_t, t);
-    init_exp(t, NHC.VNONRELOC, cptr.ld1uo(fs, $FuncState_freereg));
+    init_exp(t, NHC.VNONRELOC, cptr.ld1uo(fs, $FuncState_freereg));  /* table will be at stack top */
     (yield* luaK_reserveregs(fs, 1));
-    init_exp(cc, NHC.VVOID, 0);
+    init_exp(cc, NHC.VVOID, 0);  /* no value (yet) */
     (yield* checknext(ls, 123));
     do {
         (void 0);
@@ -815,6 +969,8 @@ function* constructor(ls, t) {
     luaK_settablesize(fs, pc, cptr.ldI32o(t, $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_nh));
 }
 
+/* }====================================================================== */
+
 /** C ref: lparser.c:952 — @param {CPtr<FuncState>} fs @param {CInt} nparams */
 function* setvararg(fs, nparams) {
     cptr.st1o(cptr.ldPtr(fs), $Proto_is_vararg, 1);
@@ -823,6 +979,7 @@ function* setvararg(fs, nparams) {
 
 /** C ref: lparser.c:958 — @param {CPtr<LexState>} ls */
 function* parlist(ls) {
+    /* parlist -> [ {NAME ','} (NAME | '...') ] */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let f = cptr.ldPtr(fs);
     let nparams = 0;
@@ -850,12 +1007,13 @@ function* parlist(ls) {
     (yield* adjustlocalvars(ls, nparams));
     cptr.st1o(f, $Proto_numparams, (((cptr.ld1uo(fs, $FuncState_nactvar)))));
     if (isvararg)
-        (yield* setvararg(fs, cptr.ld1uo(f, $Proto_numparams)));
-    (yield* luaK_reserveregs(fs, cptr.ld1uo(fs, $FuncState_nactvar)));
+        (yield* setvararg(fs, cptr.ld1uo(f, $Proto_numparams)));  /* declared vararg */
+    (yield* luaK_reserveregs(fs, cptr.ld1uo(fs, $FuncState_nactvar)));  /* reserve registers for parameters */
 }
 
 /** C ref: lparser.c:989 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} e @param {CInt} ismethod @param {CInt} line */
 function* body(ls, e, ismethod, line) {
+    /* body ->  '(' parlist ')' block END */
     let new_fs = cptr.alloc(72);
     let bl = cptr.alloc(24);
     cptr.stPtr(new_fs, (yield* addprototype(ls)));
@@ -863,7 +1021,7 @@ function* body(ls, e, ismethod, line) {
     open_func(ls, new_fs, bl);
     (yield* checknext(ls, 40));
     if (ismethod) {
-        (yield* new_localvar(ls, (yield* luaX_newstring(ls, __s_self, BigInt.asUintN(64, (5n / 1n) - 1n)))));
+        (yield* new_localvar(ls, (yield* luaX_newstring(ls, __s_self, BigInt.asUintN(64, (5n / 1n) - 1n)))));  /* create 'self' parameter */
         ;
         (yield* adjustlocalvars(ls, 1));
     }
@@ -878,7 +1036,8 @@ function* body(ls, e, ismethod, line) {
 
 /** C ref: lparser.c:1011 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @returns {CInt} */
 function* explist(ls, v) {
-    let n = 1;
+    /* explist -> expr { ',' expr } */
+    let n = 1;  /* at least one expression */
     (yield* expr(ls, v));
     while ((yield* testnext(ls, 44))) {
         (yield* luaK_exp2nextreg(cptr.ldPtro(ls, $LexState_fs), v));
@@ -917,7 +1076,7 @@ function* funcargs(ls, f) {
         case NHC.TK_STRING:
         {
             codestring(args, cptr.ldPtro(ls, $LexState_t + $Token_seminfo));
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* must use 'seminfo' before 'next' */
             break;
         }
         default:
@@ -926,12 +1085,12 @@ function* funcargs(ls, f) {
         }
     }
     (void 0);
-    base = cptr.ldI32o(f, $expdesc_u);
+    base = cptr.ldI32o(f, $expdesc_u);  /* base register for call */
     if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG))
-        nparams = -1;
+        nparams = -1;  /* open call */
     else {
         if (cptr.ldI32(args) != NHC.VVOID)
-            (yield* luaK_exp2nextreg(fs, args));
+            (yield* luaK_exp2nextreg(fs, args));  /* close last argument */
         nparams = (cptr.ld1uo(fs, $FuncState_freereg) - ((base + 1) | 0)) | 0;
     }
     init_exp(f, NHC.VCALL, (yield* luaK_codeABCk(fs, NHC.OP_CALL, base, (nparams + 1) | 0, 2, 0)));
@@ -939,8 +1098,15 @@ function* funcargs(ls, f) {
     cptr.st1o(fs, $FuncState_freereg, uchar(((base + 1) | 0)));
 }
 
+/*
+** {======================================================================
+** Expression parsing
+** =======================================================================
+*/
+
 /** C ref: lparser.c:1080 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* primaryexp(ls, v) {
+    /* primaryexp -> NAME | '(' expr ')' */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 40:
         {
@@ -965,6 +1131,8 @@ function* primaryexp(ls, v) {
 
 /** C ref: lparser.c:1102 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* suffixedexp(ls, v) {
+    /* suffixedexp ->
+         primaryexp { '.' NAME | '[' exp ']' | ':' NAME funcargs | funcargs } */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     (yield* primaryexp(ls, v));
     for (; ; ) {
@@ -1007,6 +1175,8 @@ function* suffixedexp(ls, v) {
 
 /** C ref: lparser.c:1139 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* simpleexp(ls, v) {
+    /* simpleexp -> FLT | INT | STRING | NIL | TRUE | FALSE | ... |
+                    constructor | FUNCTION body | suffixedexp */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_FLT:
         {
@@ -1137,6 +1307,9 @@ function getbinopr(op) {
     }
 }
 
+/*
+** Priority table for binary operators.
+*/
 /** C ref: lparser.c:1236 — struct undefined {  } (memory model v0.5) */
 
 /** C ref: lparser.c:1239 — struct (unnamed struct at lparser.c:1236:14)[21] */
@@ -1184,6 +1357,10 @@ cptr.st1o(priority, 39, 2);
 cptr.st1o(priority, 40, 1);
 cptr.st1o(priority, 41, 1);
 
+/*
+** subexpr -> (simpleexp | unop subexpr) { binop subexpr }
+** where 'binop' is any binary operator with a priority higher than 'limit'
+*/
 /** C ref: lparser.c:1259 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @param {CInt} limit @returns {*} */
 function* subexpr(ls, v, limit) {
     let op;
@@ -1192,24 +1369,26 @@ function* subexpr(ls, v, limit) {
     uop = getunopr(cptr.ldI32o(ls, $LexState_t));
     if (uop != NHC.OPR_NOUNOPR) {
         let line = cptr.ldI32o(ls, $LexState_linenumber);
-        (yield* luaX_next(ls));
+        (yield* luaX_next(ls));  /* skip operator */
         (yield* subexpr(ls, v, 12));
         (yield* luaK_prefix(cptr.ldPtro(ls, $LexState_fs), uop, v, line));
     } else
         (yield* simpleexp(ls, v));
+    /* expand while operators have priorities higher than 'limit' */
     op = getbinopr(cptr.ldI32o(ls, $LexState_t));
     while (op != NHC.OPR_NOBINOPR && cptr.ld1uo(priority, op, 2) > limit) {
         let v2 = cptr.alloc(24);
         let nextop;
         let line = cptr.ldI32o(ls, $LexState_linenumber);
-        (yield* luaX_next(ls));
+        (yield* luaX_next(ls));  /* skip operator */
         (yield* luaK_infix(cptr.ldPtro(ls, $LexState_fs), op, v));
+        /* read sub-expression with higher priority */
         nextop = (yield* subexpr(ls, v2, cptr.ld1uo2(priority, op, 2, 1)));
         (yield* luaK_posfix(cptr.ldPtro(ls, $LexState_fs), op, v, v2, line));
         op = nextop;
     }
     ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
-    return op;
+    return op;  /* return first untreated operator */
 }
 
 /** C ref: lparser.c:1289 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
@@ -1217,8 +1396,17 @@ function* expr(ls, v) {
     (yield* subexpr(ls, v, 0));
 }
 
+/* }==================================================================== */
+
+/*
+** {======================================================================
+** Rules for Statements
+** =======================================================================
+*/
+
 /** C ref: lparser.c:1304 — @param {CPtr<LexState>} ls */
 function* block(ls) {
+    /* block -> statlist */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let bl = cptr.alloc(24);
     enterblock(fs, bl, 0);
@@ -1226,34 +1414,46 @@ function* block(ls) {
     (yield* leaveblock(fs));
 }
 
+/*
+** structure to chain all variables in the left-hand side of an
+** assignment
+*/
 /** C ref: lparser.c:1318 — struct LHS_assign { prev, v } (memory model v0.5) */
 
+/*
+** check whether, in an assignment to an upvalue/local variable, the
+** upvalue/local variable is begin used in a previous assignment to a
+** table. If so, save original upvalue/local value in a safe place and
+** use this safe copy in the previous assignment.
+*/
 /** C ref: lparser.c:1330 — @param {CPtr<LexState>} ls @param {CPtr<struct LHS_assign>} lh @param {CPtr<expdesc>} v */
 function* check_conflict(ls, lh, v) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let extra = cptr.ld1uo(fs, $FuncState_freereg);
+    let extra = cptr.ld1uo(fs, $FuncState_freereg);  /* eventual position to save local variable */
     let conflict = 0;
     for (; lh; lh = cptr.ldPtr(lh)) {
         if ((NHC.VINDEXED <= (cptr.ldI32o(lh, $LHS_assign_v)) && (cptr.ldI32o(lh, $LHS_assign_v)) <= NHC.VINDEXSTR)) {
             if (cptr.ldI32o(lh, $LHS_assign_v) == NHC.VINDEXUP) {
                 if (cptr.ldI32(v) == NHC.VUPVAL && cptr.ld1uo(lh, $LHS_assign_v + $expdesc_u + 2) == cptr.ldI32o(v, $expdesc_u)) {
-                    conflict = 1;
+                    conflict = 1;  /* table is the upvalue being assigned now */
                     cptr.stI32o(lh, $LHS_assign_v, NHC.VINDEXSTR);
-                    cptr.st1o(lh, $LHS_assign_v + $expdesc_u + 2, uchar(extra));
+                    cptr.st1o(lh, $LHS_assign_v + $expdesc_u + 2, uchar(extra));  /* assignment will use safe copy */
                 }
             } else {
                 if (cptr.ldI32(v) == NHC.VLOCAL && cptr.ld1uo(lh, $LHS_assign_v + $expdesc_u + 2) == cptr.ld1uo(v, $expdesc_u)) {
-                    conflict = 1;
-                    cptr.st1o(lh, $LHS_assign_v + $expdesc_u + 2, uchar(extra));
+                    conflict = 1;  /* table is the local being assigned now */
+                    cptr.st1o(lh, $LHS_assign_v + $expdesc_u + 2, uchar(extra));  /* assignment will use safe copy */
                 }
+                /* is index the local being assigned? */
                 if (cptr.ldI32o(lh, $LHS_assign_v) == NHC.VINDEXED && cptr.ldI32(v) == NHC.VLOCAL && cptr.ldI16o(lh, $LHS_assign_v + $expdesc_u) == cptr.ld1uo(v, $expdesc_u)) {
                     conflict = 1;
-                    cptr.stI16o(lh, $LHS_assign_v + $expdesc_u, i16(extra));
+                    cptr.stI16o(lh, $LHS_assign_v + $expdesc_u, i16(extra));  /* previous assignment will use safe copy */
                 }
             }
         }
     }
     if (conflict) {
+        /* copy upvalue/local value to a temporary (in position 'extra') */
         if (cptr.ldI32(v) == NHC.VLOCAL)
             (yield* luaK_codeABCk(fs, NHC.OP_MOVE, extra, cptr.ld1uo(v, $expdesc_u), 0, 0));
         else
@@ -1262,6 +1462,13 @@ function* check_conflict(ls, lh, v) {
     }
 }
 
+/*
+** Parse and compile a multiple assignment. The first "variable"
+** (a 'suffixedexp') was already read by the caller.
+**
+** assignment -> suffixedexp restassign
+** restassign -> ',' suffixedexp restassign | '=' explist
+*/
 /** C ref: lparser.c:1374 — @param {CPtr<LexState>} ls @param {CPtr<struct LHS_assign>} lh @param {CInt} nvars */
 function* restassign(ls, lh, nvars) {
     let e = cptr.alloc(24);
@@ -1277,7 +1484,7 @@ function* restassign(ls, lh, nvars) {
         (yield* suffixedexp(ls, cptr.add(nv, $LHS_assign_v)));
         if (!(NHC.VINDEXED <= (cptr.ldI32o(nv, $LHS_assign_v)) && (cptr.ldI32o(nv, $LHS_assign_v)) <= NHC.VINDEXSTR))
             (yield* check_conflict(ls, lh, cptr.add(nv, $LHS_assign_v)));
-        (yield* luaE_incCstack(cptr.ldPtro(ls, $LexState_L)));
+        (yield* luaE_incCstack(cptr.ldPtro(ls, $LexState_L)));  /* control recursion depth */
         (yield* restassign(ls, nv, (nvars + 1) | 0));
         ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
     } else {
@@ -1287,21 +1494,22 @@ function* restassign(ls, lh, nvars) {
         if (nexps != nvars)
             (yield* adjust_assign(ls, nvars, nexps, e));
         else {
-            luaK_setoneret(cptr.ldPtro(ls, $LexState_fs), e);
+            luaK_setoneret(cptr.ldPtro(ls, $LexState_fs), e);  /* close last expression */
             (yield* luaK_storevar(cptr.ldPtro(ls, $LexState_fs), cptr.add(lh, $LHS_assign_v), e));
-            return;
+            return;  /* avoid default */
         }
     }
-    init_exp(e, NHC.VNONRELOC, (cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg) - 1) | 0);
+    init_exp(e, NHC.VNONRELOC, (cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg) - 1) | 0);  /* default assignment */
     (yield* luaK_storevar(cptr.ldPtro(ls, $LexState_fs), cptr.add(lh, $LHS_assign_v), e));
 }
 
 /** C ref: lparser.c:1405 — @param {CPtr<LexState>} ls @returns {CInt} */
 function* cond(ls) {
+    /* cond -> exp */
     let v = cptr.alloc(24);
-    (yield* expr(ls, v));
+    (yield* expr(ls, v));  /* read condition */
     if (cptr.ldI32(v) == NHC.VNIL)
-        cptr.stI32(v, NHC.VFALSE);
+        cptr.stI32(v, NHC.VFALSE);  /* 'falses' are all equal here */
     (yield* luaK_goiftrue(cptr.ldPtro(ls, $LexState_fs), v));
     return cptr.ldI32o(v, $expdesc_f);
 }
@@ -1310,51 +1518,62 @@ function* cond(ls) {
 function* gotostat(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let line = cptr.ldI32o(ls, $LexState_linenumber);
-    let name = (yield* str_checkname(ls));
+    let name = (yield* str_checkname(ls));  /* label's name */
     let lb = findlabel(ls, name);
     if (cptr.eq(lb, (null)))
+        /* forward jump; will be resolved when the label is declared */
         (yield* newgotoentry(ls, name, line, (yield* luaK_jump(fs))));
     else {
-        let lblevel = reglevel(fs, cptr.ld1uo(lb, $Labeldesc_nactvar));
+        /* backward jump; will be resolved here */
+        let lblevel = reglevel(fs, cptr.ld1uo(lb, $Labeldesc_nactvar));  /* label level */
         if (luaY_nvarstack(fs) > lblevel)
             (yield* luaK_codeABCk(fs, NHC.OP_CLOSE, lblevel, 0, 0, 0));
+        /* create jump and link it to the label */
         (yield* luaK_patchlist(fs, (yield* luaK_jump(fs)), cptr.ldI32o(lb, $Labeldesc_pc)));
     }
 }
 
+/*
+** Break statement. Semantically equivalent to "goto break".
+*/
 /** C ref: lparser.c:1437 — @param {CPtr<LexState>} ls */
 function* breakstat(ls) {
     let line = cptr.ldI32o(ls, $LexState_linenumber);
-    (yield* luaX_next(ls));
+    (yield* luaX_next(ls));  /* skip break */
     (yield* newgotoentry(ls, ((yield* luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n)))), line, (yield* luaK_jump(cptr.ldPtro(ls, $LexState_fs)))));
 }
 
+/*
+** Check whether there is already a label with the given 'name'.
+*/
 /** C ref: lparser.c:1447 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name */
 function* checkrepeated(ls, name) {
     let lb = findlabel(ls, name);
     if ((__builtin_expect(BigInt(((!cptr.eq(lb, (null))) != 0)), 0n))) {
         let msg = __s_label_s_already_defined_on_line_d;
         msg = (yield* luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), msg, (cptr.add((name), $TString_contents)), cptr.ldI32o(lb, $Labeldesc_line)));
-        (yield* luaK_semerror(ls, msg));
+        (yield* luaK_semerror(ls, msg));  /* error */
     }
 }
 
 /** C ref: lparser.c:1457 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line */
 function* labelstat(ls, name, line) {
-    (yield* checknext(ls, NHC.TK_DBCOLON));
+    /* label -> '::' NAME '::' */
+    (yield* checknext(ls, NHC.TK_DBCOLON));  /* skip double colon */
     while (cptr.ldI32o(ls, $LexState_t) == 59 || cptr.ldI32o(ls, $LexState_t) == NHC.TK_DBCOLON)
-        (yield* statement(ls));
-    (yield* checkrepeated(ls, name));
+        (yield* statement(ls));  /* skip other no-op statements */
+    (yield* checkrepeated(ls, name));  /* check for repeated labels */
     (yield* createlabel(ls, name, line, block_follow(ls, 0)));
 }
 
 /** C ref: lparser.c:1467 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* whilestat(ls, line) {
+    /* whilestat -> WHILE cond DO block END */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let whileinit;
     let condexit;
     let bl = cptr.alloc(24);
-    (yield* luaX_next(ls));
+    (yield* luaX_next(ls));  /* skip WHILE */
     whileinit = luaK_getlabel(fs);
     condexit = (yield* cond(ls));
     enterblock(fs, bl, 1);
@@ -1363,34 +1582,40 @@ function* whilestat(ls, line) {
     (yield* luaK_patchlist(fs, (yield* luaK_jump(fs)), whileinit));
     (yield* check_match(ls, NHC.TK_END, NHC.TK_WHILE, line));
     (yield* leaveblock(fs));
-    (yield* luaK_patchtohere(fs, condexit));
+    (yield* luaK_patchtohere(fs, condexit));  /* false conditions finish the loop */
 }
 
 /** C ref: lparser.c:1486 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* repeatstat(ls, line) {
+    /* repeatstat -> REPEAT block UNTIL cond */
     let condexit;
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let repeat_init = luaK_getlabel(fs);
     let bl1 = cptr.alloc(24);
     let bl2 = cptr.alloc(24);
-    enterblock(fs, bl1, 1);
-    enterblock(fs, bl2, 0);
-    (yield* luaX_next(ls));
+    enterblock(fs, bl1, 1);  /* loop block */
+    enterblock(fs, bl2, 0);  /* scope block */
+    (yield* luaX_next(ls));  /* skip REPEAT */
     (yield* statlist(ls));
     (yield* check_match(ls, NHC.TK_UNTIL, NHC.TK_REPEAT, line));
-    condexit = (yield* cond(ls));
-    (yield* leaveblock(fs));
+    condexit = (yield* cond(ls));  /* read condition (inside scope block) */
+    (yield* leaveblock(fs));  /* finish scope */
     if (cptr.ld1uo(bl2, $BlockCnt_upval)) {
-        let exit = (yield* luaK_jump(fs));
-        (yield* luaK_patchtohere(fs, condexit));
+        let exit = (yield* luaK_jump(fs));  /* normal exit must jump over fix */
+        (yield* luaK_patchtohere(fs, condexit));  /* repetition must close upvalues */
         (yield* luaK_codeABCk(fs, NHC.OP_CLOSE, reglevel(fs, cptr.ld1uo(bl2, $BlockCnt_nactvar)), 0, 0, 0));
-        condexit = (yield* luaK_jump(fs));
-        (yield* luaK_patchtohere(fs, exit));
+        condexit = (yield* luaK_jump(fs));  /* repeat after closing upvalues */
+        (yield* luaK_patchtohere(fs, exit));  /* normal exit comes to here */
     }
-    (yield* luaK_patchlist(fs, condexit, repeat_init));
-    (yield* leaveblock(fs));
+    (yield* luaK_patchlist(fs, condexit, repeat_init));  /* close the loop */
+    (yield* leaveblock(fs));  /* finish loop */
 }
 
+/*
+** Read an expression and generate code to put its results in next
+** stack slot.
+**
+*/
 /** C ref: lparser.c:1516 — @param {CPtr<LexState>} ls */
 function* exp1(ls) {
     let e = cptr.alloc(24);
@@ -1399,6 +1624,11 @@ function* exp1(ls) {
     (void 0);
 }
 
+/*
+** Fix for instruction at position 'pc' to jump to 'dest'.
+** (Jump addresses are relative in Lua). 'back' true means
+** a back jump.
+*/
 /** C ref: lparser.c:1529 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} dest @param {CInt} back */
 function* fixforjump(fs, pc, dest, back) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
@@ -1410,6 +1640,9 @@ function* fixforjump(fs, pc, dest, back) {
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 17) >>> 0)) << 15) >>> 0))) >>> 0) | ((((((offset) >>> 0) << 15) >>> 0) & (((~(((~0) << 17) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));
 }
 
+/*
+** Generate code for a 'for' loop.
+*/
 const __static_forbody_forprep = cptr.alloc(2 * 4);
 cptr.stI32o(__static_forbody_forprep, 0, NHC.OP_FORPREP);
 cptr.stI32o(__static_forbody_forprep, 4, NHC.OP_TFORPREP); /** C ref: lparser.c:1545 — OpCode[2] (function-static) */
@@ -1425,11 +1658,11 @@ function* forbody(ls, base, line, nvars, isgen) {
     let endfor;
     (yield* checknext(ls, NHC.TK_DO));
     prep = (yield* luaK_codeABx(fs, cptr.ldI32o(__static_forbody_forprep, isgen, 4), base, 0));
-    enterblock(fs, bl, 0);
+    enterblock(fs, bl, 0);  /* scope for declared variables */
     (yield* adjustlocalvars(ls, nvars));
     (yield* luaK_reserveregs(fs, nvars));
     (yield* block(ls));
-    (yield* leaveblock(fs));
+    (yield* leaveblock(fs));  /* end of scope for declared variables */
     (yield* fixforjump(fs, prep, luaK_getlabel(fs), 0));
     if (isgen) {
         (yield* luaK_codeABCk(fs, NHC.OP_TFORCALL, base, 0, nvars, 0));
@@ -1442,6 +1675,7 @@ function* forbody(ls, base, line, nvars, isgen) {
 
 /** C ref: lparser.c:1568 — @param {CPtr<LexState>} ls @param {CPtr<TString>} varname @param {CInt} line */
 function* fornum(ls, varname, line) {
+    /* fornum -> NAME = exp,exp[,exp] forbody */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let base = cptr.ld1uo(fs, $FuncState_freereg);
     (yield* new_localvar(ls, (yield* luaX_newstring(ls, __s_for_state, BigInt.asUintN(64, (12n / 1n) - 1n)))));
@@ -1452,26 +1686,28 @@ function* fornum(ls, varname, line) {
     ;
     (yield* new_localvar(ls, varname));
     (yield* checknext(ls, 61));
-    (yield* exp1(ls));
+    (yield* exp1(ls));  /* initial value */
     (yield* checknext(ls, 44));
-    (yield* exp1(ls));
+    (yield* exp1(ls));  /* limit */
     if ((yield* testnext(ls, 44)))
-        (yield* exp1(ls));
+        (yield* exp1(ls));  /* optional step */
     else {
         (yield* luaK_int(fs, cptr.ld1uo(fs, $FuncState_freereg), 1n));
         (yield* luaK_reserveregs(fs, 1));
     }
-    (yield* adjustlocalvars(ls, 3));
+    (yield* adjustlocalvars(ls, 3));  /* control variables */
     (yield* forbody(ls, base, line, 1, 0));
 }
 
 /** C ref: lparser.c:1591 — @param {CPtr<LexState>} ls @param {CPtr<TString>} indexname */
 function* forlist(ls, indexname) {
+    /* forlist -> NAME {,NAME} IN explist forbody */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let e = cptr.alloc(24);
-    let nvars = 5;
+    let nvars = 5;  /* gen, state, control, toclose, 'indexname' */
     let line;
     let base = cptr.ld1uo(fs, $FuncState_freereg);
+    /* create control variables */
     (yield* new_localvar(ls, (yield* luaX_newstring(ls, __s_for_state, BigInt.asUintN(64, (12n / 1n) - 1n)))));
     ;
     (yield* new_localvar(ls, (yield* luaX_newstring(ls, __s_for_state, BigInt.asUintN(64, (12n / 1n) - 1n)))));
@@ -1480,6 +1716,7 @@ function* forlist(ls, indexname) {
     ;
     (yield* new_localvar(ls, (yield* luaX_newstring(ls, __s_for_state, BigInt.asUintN(64, (12n / 1n) - 1n)))));
     ;
+    /* create declared variables */
     (yield* new_localvar(ls, indexname));
     while ((yield* testnext(ls, 44))) {
         (yield* new_localvar(ls, (yield* str_checkname(ls))));
@@ -1488,20 +1725,21 @@ function* forlist(ls, indexname) {
     (yield* checknext(ls, NHC.TK_IN));
     line = cptr.ldI32o(ls, $LexState_linenumber);
     (yield* adjust_assign(ls, 4, (yield* explist(ls, e)), e));
-    (yield* adjustlocalvars(ls, 4));
-    marktobeclosed(fs);
-    (yield* luaK_checkstack(fs, 3));
+    (yield* adjustlocalvars(ls, 4));  /* control variables */
+    marktobeclosed(fs);  /* last control var. must be closed */
+    (yield* luaK_checkstack(fs, 3));  /* extra space to call generator */
     (yield* forbody(ls, base, line, (nvars - 4) | 0, 1));
 }
 
 /** C ref: lparser.c:1619 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* forstat(ls, line) {
+    /* forstat -> FOR (fornum | forlist) END */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let varname;
     let bl = cptr.alloc(24);
-    enterblock(fs, bl, 1);
-    (yield* luaX_next(ls));
-    varname = (yield* str_checkname(ls));
+    enterblock(fs, bl, 1);  /* scope for loop and control variables */
+    (yield* luaX_next(ls));  /* skip 'for' */
+    varname = (yield* str_checkname(ls));  /* first variable name */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 61:
         (yield* fornum(ls, varname, line));
@@ -1514,80 +1752,84 @@ function* forstat(ls, line) {
         (yield* luaX_syntaxerror(ls, __s_or_in_expected));
     }
     (yield* check_match(ls, NHC.TK_END, NHC.TK_FOR, line));
-    (yield* leaveblock(fs));
+    (yield* leaveblock(fs));  /* loop scope ('break' jumps to this point) */
 }
 
 /** C ref: lparser.c:1637 — @param {CPtr<LexState>} ls @param {CPtr<int>} escapelist */
 function* test_then_block(ls, escapelist) {
+    /* test_then_block -> [IF | ELSEIF] cond THEN block */
     let bl = cptr.alloc(24);
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let v = cptr.alloc(24);
-    let jf;
-    (yield* luaX_next(ls));
-    (yield* expr(ls, v));
+    let jf;  /* instruction to skip 'then' code (if condition is false) */
+    (yield* luaX_next(ls));  /* skip IF or ELSEIF */
+    (yield* expr(ls, v));  /* read condition */
     (yield* checknext(ls, NHC.TK_THEN));
     if (cptr.ldI32o(ls, $LexState_t) == NHC.TK_BREAK) {
         let line = cptr.ldI32o(ls, $LexState_linenumber);
-        (yield* luaK_goiffalse(cptr.ldPtro(ls, $LexState_fs), v));
-        (yield* luaX_next(ls));
-        enterblock(fs, bl, 0);
+        (yield* luaK_goiffalse(cptr.ldPtro(ls, $LexState_fs), v));  /* will jump if condition is true */
+        (yield* luaX_next(ls));  /* skip 'break' */
+        enterblock(fs, bl, 0);  /* must enter block before 'goto' */
         (yield* newgotoentry(ls, ((yield* luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n)))), line, cptr.ldI32o(v, $expdesc_t)));
         while ((yield* testnext(ls, 59))) {
-        }
+        }  /* skip semicolons */
         if (block_follow(ls, 0)) {
             (yield* leaveblock(fs));
-            return;
+            return;  /* and that is it */
         } else
             jf = (yield* luaK_jump(fs));
     } else {
-        (yield* luaK_goiftrue(cptr.ldPtro(ls, $LexState_fs), v));
+        (yield* luaK_goiftrue(cptr.ldPtro(ls, $LexState_fs), v));  /* skip over block if condition is false */
         enterblock(fs, bl, 0);
         jf = cptr.ldI32o(v, $expdesc_f);
     }
-    (yield* statlist(ls));
+    (yield* statlist(ls));  /* 'then' part */
     (yield* leaveblock(fs));
     if (cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSE || cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSEIF)
-        (yield* luaK_concat(fs, escapelist, (yield* luaK_jump(fs))));
+        (yield* luaK_concat(fs, escapelist, (yield* luaK_jump(fs))));  /* must jump over it */
     (yield* luaK_patchtohere(fs, jf));
 }
 
 /** C ref: lparser.c:1674 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* ifstat(ls, line) {
+    /* ifstat -> IF cond THEN block {ELSEIF cond THEN block} [ELSE block] END */
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let escapelist = cptr.box(-1);
-    (yield* test_then_block(ls, escapelist));
+    let escapelist = cptr.box(-1);  /* exit list for finished parts */
+    (yield* test_then_block(ls, escapelist));  /* IF cond THEN block */
     while (cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSEIF)
-        (yield* test_then_block(ls, escapelist));
+        (yield* test_then_block(ls, escapelist));  /* ELSEIF cond THEN block */
     if ((yield* testnext(ls, NHC.TK_ELSE)))
-        (yield* block(ls));
+        (yield* block(ls));  /* 'else' part */
     (yield* check_match(ls, NHC.TK_END, NHC.TK_IF, line));
-    (yield* luaK_patchtohere(fs, escapelist.v));
+    (yield* luaK_patchtohere(fs, escapelist.v));  /* patch escape list to 'if' end */
 }
 
 /** C ref: lparser.c:1688 — @param {CPtr<LexState>} ls */
 function* localfunc(ls) {
     let b = cptr.alloc(24);
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let fvar = cptr.ld1uo(fs, $FuncState_nactvar);
-    (yield* new_localvar(ls, (yield* str_checkname(ls))));
-    (yield* adjustlocalvars(ls, 1));
-    (yield* body(ls, b, 0, cptr.ldI32o(ls, $LexState_linenumber)));
+    let fvar = cptr.ld1uo(fs, $FuncState_nactvar);  /* function's variable index */
+    (yield* new_localvar(ls, (yield* str_checkname(ls))));  /* new local variable */
+    (yield* adjustlocalvars(ls, 1));  /* enter its scope */
+    (yield* body(ls, b, 0, cptr.ldI32o(ls, $LexState_linenumber)));  /* function created in next register */
+    /* debug information will only see the variable after this point! */
     cptr.stI32o(localdebuginfo(fs, fvar), $LocVar_startpc, cptr.ldI32o(fs, $FuncState_pc));
 }
 
 /** C ref: lparser.c:1700 — @param {CPtr<LexState>} ls @returns {CInt} */
 function* getlocalattribute(ls) {
+    /* ATTRIB -> ['<' Name '>'] */
     if ((yield* testnext(ls, 60))) {
         let attr = (cptr.add(((yield* str_checkname(ls))), $TString_contents));
         (yield* checknext(ls, 62));
         if (strcmp(attr, __s_const) == 0)
-            return 1;
+            return 1;  /* read-only variable */
         else if (strcmp(attr, __s_close) == 0)
-            return 2;
+            return 2;  /* to-be-closed variable */
         else
             (yield* luaK_semerror(ls, (yield* luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_unknown_attribute_s, attr))));
     }
-    return 0;
+    return 0;  /* regular variable */
 }
 
 /** C ref: lparser.c:1717 — @param {CPtr<FuncState>} fs @param {CInt} level */
@@ -1600,11 +1842,12 @@ function* checktoclose(fs, level) {
 
 /** C ref: lparser.c:1725 — @param {CPtr<LexState>} ls */
 function* localstat(ls) {
+    /* stat -> LOCAL NAME ATTRIB { ',' NAME ATTRIB } ['=' explist] */
     let fs = cptr.ldPtro(ls, $LexState_fs);
-    let toclose = -1;
-    let var$;
+    let toclose = -1;  /* index of to-be-closed variable (if any) */
+    let var$;  /* last variable */
     let vidx;
-    let kind;
+    let kind;  /* index and kind of last variable */
     let nvars = 0;
     let nexps;
     let e = cptr.alloc(24);
@@ -1625,11 +1868,11 @@ function* localstat(ls) {
         cptr.stI32(e, NHC.VVOID);
         nexps = 0;
     }
-    var$ = getlocalvardesc(fs, vidx);
+    var$ = getlocalvardesc(fs, vidx);  /* get last variable */
     if (nvars == nexps && cptr.ld1uo(var$, 9) == 1 && luaK_exp2const(fs, e, var$)) {
-        cptr.st1o(var$, 9, 3);
-        (yield* adjustlocalvars(ls, (nvars - 1) | 0));
-        cptr.postinc1(cptr.add(fs, $FuncState_nactvar));
+        cptr.st1o(var$, 9, 3);  /* variable is a compile-time constant */
+        (yield* adjustlocalvars(ls, (nvars - 1) | 0));  /* exclude last variable */
+        cptr.postinc1(cptr.add(fs, $FuncState_nactvar));  /* but count it */
     } else {
         (yield* adjust_assign(ls, nvars, nexps, e));
         (yield* adjustlocalvars(ls, nvars));
@@ -1639,6 +1882,7 @@ function* localstat(ls) {
 
 /** C ref: lparser.c:1767 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @returns {CInt} */
 function* funcname(ls, v) {
+    /* funcname -> NAME {fieldsel} [':' NAME] */
     let ismethod = 0;
     (yield* singlevar(ls, v));
     while (cptr.ldI32o(ls, $LexState_t) == 46)
@@ -1652,19 +1896,21 @@ function* funcname(ls, v) {
 
 /** C ref: lparser.c:1781 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* funcstat(ls, line) {
+    /* funcstat -> FUNCTION funcname body */
     let ismethod;
     let v = cptr.alloc(24);
     let b = cptr.alloc(24);
-    (yield* luaX_next(ls));
+    (yield* luaX_next(ls));  /* skip FUNCTION */
     ismethod = (yield* funcname(ls, v));
     (yield* body(ls, b, ismethod, line));
     (yield* check_readonly(ls, v));
     (yield* luaK_storevar(cptr.ldPtro(ls, $LexState_fs), v, b));
-    (yield* luaK_fixline(cptr.ldPtro(ls, $LexState_fs), line));
+    (yield* luaK_fixline(cptr.ldPtro(ls, $LexState_fs), line));  /* definition "happens" in the first line */
 }
 
 /** C ref: lparser.c:1794 — @param {CPtr<LexState>} ls */
 function* exprstat(ls) {
+    /* stat -> func | assignment */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let v = cptr.alloc(32);
     (yield* suffixedexp(ls, cptr.add(v, $LHS_assign_v)));
@@ -1679,30 +1925,31 @@ function* exprstat(ls) {
         }
         ;
         inst = cptr.add(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((cptr.add(v, $LHS_assign_v)), $expdesc_u), 4);
-        (cptr.stI32(inst, (((((cptr.ldI32(inst)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | ((16777216 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));
+        (cptr.stI32(inst, (((((cptr.ldI32(inst)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | ((16777216 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));  /* call statement uses no results */
     }
 }
 
 /** C ref: lparser.c:1812 — @param {CPtr<LexState>} ls */
 function* retstat(ls) {
+    /* stat -> RETURN [explist] [';'] */
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let e = cptr.alloc(24);
-    let nret;
-    let first = luaY_nvarstack(fs);
+    let nret;  /* number of values being returned */
+    let first = luaY_nvarstack(fs);  /* first slot to be returned */
     if (block_follow(ls, 1) || cptr.ldI32o(ls, $LexState_t) == 59)
-        nret = 0;
+        nret = 0;  /* return no values */
     else {
-        nret = (yield* explist(ls, e));
+        nret = (yield* explist(ls, e));  /* optional return values */
         if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG)) {
             (yield* luaK_setreturns(fs, e, -1));
             if (cptr.ldI32(e) == NHC.VCALL && nret == 1 && !cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_insidetbc)) {
                 (cptr.stI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), ((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4))) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | (((((69) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0), 4));
                 (void 0);
             }
-            nret = -1;
+            nret = -1;  /* return all values */
         } else {
             if (nret == 1)
-                first = (yield* luaK_exp2anyreg(fs, e));
+                first = (yield* luaK_exp2anyreg(fs, e));  /* can use original slot */
             else {
                 (yield* luaK_exp2nextreg(fs, e));
                 (void 0);
@@ -1710,17 +1957,17 @@ function* retstat(ls) {
         }
     }
     (yield* luaK_ret(fs, first, nret));
-    (yield* testnext(ls, 59));
+    (yield* testnext(ls, 59));  /* skip optional semicolon */
 }
 
 /** C ref: lparser.c:1844 — @param {CPtr<LexState>} ls */
 function* statement(ls) {
-    let line = cptr.ldI32o(ls, $LexState_linenumber);
+    let line = cptr.ldI32o(ls, $LexState_linenumber);  /* may be needed for error messages */
     (yield* luaE_incCstack(cptr.ldPtro(ls, $LexState_L)));
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 59:
         {
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* skip ';' */
             break;
         }
         case NHC.TK_IF:
@@ -1735,7 +1982,7 @@ function* statement(ls) {
         }
         case NHC.TK_DO:
         {
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* skip DO */
             (yield* block(ls));
             (yield* check_match(ls, NHC.TK_END, NHC.TK_DO, line));
             break;
@@ -1757,7 +2004,7 @@ function* statement(ls) {
         }
         case NHC.TK_LOCAL:
         {
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* skip LOCAL */
             if ((yield* testnext(ls, NHC.TK_FUNCTION)))
                 (yield* localfunc(ls));
             else
@@ -1766,13 +2013,13 @@ function* statement(ls) {
         }
         case NHC.TK_DBCOLON:
         {
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* skip double colon */
             (yield* labelstat(ls, (yield* str_checkname(ls)), line));
             break;
         }
         case NHC.TK_RETURN:
         {
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* skip RETURN */
             (yield* retstat(ls));
             break;
         }
@@ -1783,7 +2030,7 @@ function* statement(ls) {
         }
         case NHC.TK_GOTO:
         {
-            (yield* luaX_next(ls));
+            (yield* luaX_next(ls));  /* skip 'goto' */
             (yield* gotostat(ls));
             break;
         }
@@ -1794,24 +2041,30 @@ function* statement(ls) {
         }
     }
     (void 0);
-    cptr.st1o(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg, uchar(luaY_nvarstack(cptr.ldPtro(ls, $LexState_fs))));
+    cptr.st1o(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg, uchar(luaY_nvarstack(cptr.ldPtro(ls, $LexState_fs))));  /* free registers */
     ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
 }
 
+/* }====================================================================== */
+
+/*
+** compiles the main function, which is a regular vararg function with an
+** upvalue named LUA_ENV
+*/
 /** C ref: lparser.c:1923 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs */
 function* mainfunc(ls, fs) {
     let bl = cptr.alloc(24);
     let env;
     open_func(ls, fs, bl);
-    (yield* setvararg(fs, 0));
-    env = (yield* allocupvalue(fs));
+    (yield* setvararg(fs, 0));  /* main function is always declared vararg */
+    env = (yield* allocupvalue(fs));  /* ...set environment upvalue */
     cptr.st1o(env, $Upvaldesc_instack, 1);
     cptr.st1o(env, $Upvaldesc_idx, 0);
     cptr.st1o(env, $Upvaldesc_kind, 0);
     cptr.stPtr(env, cptr.ldPtro(ls, $LexState_envn));
     ((((cptr.ld1uo((cptr.ldPtr(fs)), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtr(env)), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((cptr.ldPtr(fs))))), ((((cptr.ldPtr(env)))))) : (void 0));
-    (yield* luaX_next(ls));
-    (yield* statlist(ls));
+    (yield* luaX_next(ls));  /* read first token */
+    (yield* statlist(ls));  /* parse main body */
     (yield* check(ls, NHC.TK_EOS));
     (yield* close_func(ls));
 }
@@ -1820,9 +2073,9 @@ function* mainfunc(ls, fs) {
 export function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     let lexstate = cptr.alloc(112);
     let funcstate = cptr.alloc(72);
-    let cl = (yield* luaF_newLclosure(L, 1));
+    let cl = (yield* luaF_newLclosure(L, 1));  /* create main closure */
     {
-        let io = (((cptr.ldPtro(L, $lua_State_top))));
+        let io = (((cptr.ldPtro(L, $lua_State_top))));  /* anchor it (to avoid being collected) */
         let x_ = (cl);
         cptr.stPtr(((io)), ((((x_)))));
         (cptr.st1o((io), $TValue_tt_, 70));
@@ -1830,9 +2083,9 @@ export function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     }
     ;
     (yield* luaD_inctop(L));
-    cptr.stPtro(lexstate, $LexState_h, (yield* luaH_new(L)));
+    cptr.stPtro(lexstate, $LexState_h, (yield* luaH_new(L)));  /* create table for scanner */
     {
-        let io = (((cptr.ldPtro(L, $lua_State_top))));
+        let io = (((cptr.ldPtro(L, $lua_State_top))));  /* anchor it */
         let x_ = (cptr.ldPtro(lexstate, $LexState_h));
         cptr.stPtr(((io)), ((((x_)))));
         (cptr.st1o((io), $TValue_tt_, 69));
@@ -1842,7 +2095,7 @@ export function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     (yield* luaD_inctop(L));
     cptr.stPtr(funcstate, cptr.stPtro(cl, $LClosure_p, (yield* luaF_newproto(L))));
     ((((cptr.ld1uo((cl), $LClosure_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24)) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, $LClosure_p)))))) : (void 0));
-    cptr.stPtro(cptr.ldPtr(funcstate), $Proto_source, (yield* luaS_new(L, name)));
+    cptr.stPtro(cptr.ldPtr(funcstate), $Proto_source, (yield* luaS_new(L, name)));  /* create and anchor TString */
     ((((cptr.ld1uo((cptr.ldPtr(funcstate)), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source)), $TString_marked)) & 24)) ? luaC_barrier_(L, ((((cptr.ldPtr(funcstate))))), ((((cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source)))))) : (void 0));
     cptr.stPtro(lexstate, $LexState_buff, buff);
     cptr.stPtro(lexstate, $LexState_dyd, dyd);
@@ -1850,9 +2103,10 @@ export function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     (yield* luaX_setinput(L, lexstate, z, cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source), firstchar));
     (yield* mainfunc(lexstate, funcstate));
     (void 0);
+    /* all scopes should be correctly finished */
     (void 0);
-    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
-    return cl;
+    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* remove scanner's table */
+    return cl;  /* closure is on the stack, too */
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

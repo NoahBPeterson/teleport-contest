@@ -219,15 +219,23 @@ const __s_livelog = cptr.lit("livelog");
 const __s_cannot_open_live_log_file = cptr.lit("Cannot open live log file!");
 const __s_lltype_ld_name_s_role_s_race_s_gender_s = cptr.lit("lltype=%ld\tname=%s\trole=%s\trace=%s\tgender=%s\talign=%s\tturns=%ld\tstarttime=%ld\tcurtime=%ld\tmessage=%s\n");
 
+/* return a file's name without its path and optionally trailing 'type' */
 const __static_nh_basename_basebuf = new Uint8Array(80); /** C ref: files.c:202 — char[80] (function-static) */
 
 /** C ref: files.c:199 — @param {CPtr<char>} fname @param {CInt} keep_suffix @returns {CPtr<char>} */
 export function nh_basename(fname, keep_suffix) {
     let p;
+
     if ((p = cptr.strrchr(fname, 47)) !== null)
         fname = cptr.add(p, 1);
     if ((p = cptr.strrchr(fname, 46)) !== null && !keep_suffix) {
         let ln = BigInt.asUintN(64, (cptr.diff(p, fname)));
+        /* note that without path, name should be reasonable length;
+           it is expected to refer to a source file name or run-time
+           configuration file name and those aren't arbitrarily long;
+           if "name" part of "name.suffix" is too long for 'basebuf[]',
+           just return that as-is without stripping off ".suffix" */
+
         if (ln < 80n) {
             __builtin___strncpy_chk(cptr.decay(__static_nh_basename_basebuf), fname, ln, __builtin_object_size(cptr.decay(__static_nh_basename_basebuf), 1));
             cptr.st1o(cptr.decay(__static_nh_basename_basebuf), ln, 0, 1);
@@ -237,6 +245,29 @@ export function nh_basename(fname, keep_suffix) {
     return fname;
 }
 
+/*
+ * fname_encode()
+ *
+ *   Args:
+ *      legal       zero-terminated list of acceptable file name characters
+ *      quotechar   lead-in character used to quote illegal characters as
+ *                  hex digits
+ *      s           string to encode
+ *      callerbuf   buffer to house result
+ *      bufsz       size of callerbuf
+ *
+ *   Notes:
+ *      The hex digits 0-9 and A-F are always part of the legal set due to
+ *      their use in the encoding scheme, even if not explicitly included in
+ *      'legal'.
+ *
+ *   Sample:
+ *      The following call:
+ * (void) fname_encode("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+ *                     '%', "This is a % test!", buf, 512);
+ *      results in this encoding:
+ *          "This%20is%20a%20%25%20test%21"
+ */
 const __static_fname_encode_hexdigits = cptr.bytes("0123456789ABCDEF"); /** C ref: files.c:264 — char[17] (function-static) */
 
 /** C ref: files.c:255 — @param {CPtr<char>} legal @param {CInt} quotechar @param {CPtr<char>} s @param {CPtr<char>} callerbuf @param {CInt} bufsz @returns {CPtr<char>} */
@@ -244,12 +275,16 @@ export function* fname_encode(legal, quotechar, s, callerbuf, bufsz) {
     let sp;
     let op;
     let cnt = 0;
+
     sp = s;
     op = callerbuf;
     cptr.st1(op, 0);
+
     while (cptr.ld1s(sp)) {
+        /* Do we have room for one more character or encoding? */
         if (((bufsz - cnt) | 0) <= 4)
             return callerbuf;
+
         if (cptr.ld1s(sp) == quotechar) {
             void cptr.sprintf(op, __s_c_02x, quotechar, cptr.ld1s(sp));
             op = cptr.add(op, 3);
@@ -268,6 +303,16 @@ export function* fname_encode(legal, quotechar, s, callerbuf, bufsz) {
     return callerbuf;
 }
 
+/*
+ * fname_decode()
+ *
+ *   Args:
+ *      quotechar   lead-in character used to quote illegal characters as
+ *                  hex digits
+ *      s           string to decode
+ *      callerbuf   buffer to house result
+ *      bufsz       size of callerbuf
+ */
 const __static_fname_decode_hexdigits = cptr.bytes("0123456789ABCDEF"); /** C ref: files.c:309 — char[17] (function-static) */
 
 /** C ref: files.c:305 — @param {CInt} quotechar @param {CPtr<char>} s @param {CPtr<char>} callerbuf @param {CInt} bufsz @returns {CPtr<char>} */
@@ -277,10 +322,13 @@ export function* fname_decode(quotechar, s, callerbuf, bufsz) {
     let k;
     let calc;
     let cnt = 0;
+
     sp = s;
     op = callerbuf;
     cptr.st1(op, 0);
+
     while (cptr.ld1s(sp)) {
+        /* Do we have room for one more character? */
         if (((bufsz - cnt) | 0) <= 2)
             return callerbuf;
         if (cptr.ld1s(sp) == quotechar) {
@@ -289,14 +337,14 @@ export function* fname_decode(quotechar, s, callerbuf, bufsz) {
                 if (cptr.ld1s(sp) == cptr.ld1so(cptr.decay(__static_fname_decode_hexdigits), k, 1))
                     break;
             if (k >= 16)
-                return callerbuf;
+                return callerbuf;  /* impossible, so bail */
             calc = k << 4;
             sp = cptr.add(sp, 1);
             for (k = 0; k < 16; ++k)
                 if (cptr.ld1s(sp) == cptr.ld1so(cptr.decay(__static_fname_decode_hexdigits), k, 1))
                     break;
             if (k >= 16)
-                return callerbuf;
+                return callerbuf;  /* impossible, so bail */
             calc = (calc + k) | 0;
             sp = cptr.add(sp, 1);
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), schar(calc));
@@ -310,26 +358,35 @@ export function* fname_decode(quotechar, s, callerbuf, bufsz) {
     return callerbuf;
 }
 
+/*ARGSUSED*/
 /** C ref: files.c:354 — @param {CPtr<char>} basenam @param {CInt} whichprefix @param {CInt} buffnum @returns {CPtr<char>} */
 export function fqname(basenam, whichprefix, buffnum) {
     return basenam;
 }
 
+/* reasonbuf must be at least BUFSZ, supplied by caller */
 /** C ref: files.c:394 — @param {CPtr<char>} reasonbuf @returns {CInt} */
 export function validate_prefix_locations(reasonbuf) {
+
     if (reasonbuf)
         cptr.st1o(reasonbuf, 0, 0);
     return 1;
 }
 
+/* fopen a file, with OS-dependent bells and whistles */
+/* NOTE: a simpler version of this routine also exists in util/dlb_main.c */
 /** C ref: files.c:444 — @param {CPtr<char>} filename @param {CPtr<char>} mode @param {CInt} prefix @returns {CPtr<FILE>} */
 export function fopen_datafile(filename, mode, prefix) {
     let fp;
+
     filename = fqname(filename, prefix, prefix == NHM.TROUBLEPREFIX ? 3 : 0);
     fp = fopen(filename, mode);
     return fp;
 }
 
+/* ----------  EXTERNAL FILE SUPPORT ----------- */
+
+/* determine byte order */
 /** C ref: files.c:457 — int */
 let bei = cptr.box(1);
 
@@ -348,6 +405,7 @@ export function* init_nhfile(nhfp) {
     }
     cptr.stI32(nhfp, -1);
     cptr.stPtro(nhfp, $NHFILE_fpdef, null);
+
     cptr.stI32o(nhfp, $NHFILE_mode, NHM.COUNTING);
     cptr.st1o(nhfp, $NHFILE_structlevel, 1);
     cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
@@ -366,6 +424,7 @@ export function* init_nhfile(nhfp) {
 /** C ref: files.c:496 @returns {CPtr<NHFILE>} */
 function* new_nhfile() {
     let nhfp = (yield* alloc(88));
+
     __builtin___memset_chk(nhfp, 0, 88n, __builtin_object_size(nhfp, 0));
     (yield* init_nhfile(nhfp));
     return nhfp;
@@ -405,8 +464,15 @@ export function rewind_nhfile(nhfp) {
 
 /** C ref: files.c:549 — @param {CPtr<NHFILE>} nhfp @returns {CPtr<NHFILE>} */
 function* viable_nhfile(nhfp) {
+    /* perform some sanity checks before returning
+       the pointer to the nethack file descriptor */
     if (nhfp) {
+        /* check for no open file at all,
+         * not a structlevel legacy file,
+         * nor a fieldlevel file.
+         */
         if (((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, $NHFILE_fpdef)) || (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) < 0) || (cptr.ld1so(nhfp, $NHFILE_fieldlevel) && !cptr.ldPtro(nhfp, $NHFILE_fpdef))) {
+            /* not viable, start the cleanup */
             if (cptr.ld1so(nhfp, $NHFILE_fieldlevel)) {
                 if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
                     void fclose(cptr.ldPtro(nhfp, $NHFILE_fpdef));
@@ -429,6 +495,7 @@ function* viable_nhfile(nhfp) {
 /** C ref: files.c:583 — @param {CInt} fd @returns {CInt} */
 export function* nhclose(fd) {
     let retval = 0;
+
     if (fd >= 0) {
         if (close_check(fd))
             (yield* bclose(fd));
@@ -438,9 +505,16 @@ export function* nhclose(fd) {
     return retval;
 }
 
+/* Construct a file name for a level-type file, which is of the form
+ * something.level (with any old level stripped off).
+ * This assumes there is space on the end of 'file' to append
+ * a two digit number.  This is true for 'level'
+ * but be careful if you use it for other things -dgk
+ */
 /** C ref: files.c:606 — @param {CPtr<char>} file @param {CInt} lev */
 export function set_levelfile_name(file, lev) {
     let tf;
+
     tf = cptr.strrchr(file, 46);
     if (!tf)
         tf = eos(file);
@@ -452,16 +526,18 @@ export function set_levelfile_name(file, lev) {
 export function* create_levelfile(lev, errbuf) {
     let fq_lock;
     let nhfp = null;
+
     if (errbuf)
         cptr.st1(errbuf, 0);
     set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
     fq_lock = fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0);
+
     nhfp = (yield* new_nhfile());
     if (nhfp) {
         cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_LEVELFILE);
         cptr.stI32o(nhfp, $NHFILE_mode, NHM.WRITING);
-        cptr.st1o(nhfp, $NHFILE_structlevel, 1);
-        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+        cptr.st1o(nhfp, $NHFILE_structlevel, 1);  /* do set this TRUE for levelfiles */
+        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);  /* don't set this TRUE for levelfiles */
         cptr.st1o(nhfp, $NHFILE_addinfo, 0);
         cptr.st1o(nhfp, $NHFILE_style, 0);
         cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
@@ -469,6 +545,7 @@ export function* create_levelfile(lev, errbuf) {
         cptr.stI32(nhfp, -1);
         cptr.stPtro(nhfp, $NHFILE_fpdef, null);
         cptr.stI32(nhfp, creat(fq_lock, NHM.FCMASK));
+
         if (cptr.ldI32(nhfp) >= 0)
             cptr.st1o2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) | NHM.LFILE_EXISTS);
         else if (errbuf)
@@ -482,6 +559,7 @@ export function* create_levelfile(lev, errbuf) {
 export function* open_levelfile(lev, errbuf) {
     let fq_lock;
     let nhfp = null;
+
     if (errbuf)
         cptr.st1(errbuf, 0);
     set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
@@ -489,8 +567,8 @@ export function* open_levelfile(lev, errbuf) {
     nhfp = (yield* new_nhfile());
     if (nhfp) {
         cptr.stI32o(nhfp, $NHFILE_mode, NHM.READING);
-        cptr.st1o(nhfp, $NHFILE_structlevel, 1);
-        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
+        cptr.st1o(nhfp, $NHFILE_structlevel, 1);  /* do set this TRUE for levelfiles */
+        cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);  /* do not set this TRUE for levelfiles */
         cptr.st1o(nhfp, $NHFILE_addinfo, 0);
         cptr.st1o(nhfp, $NHFILE_style, 0);
         cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, 1);
@@ -501,6 +579,10 @@ export function* open_levelfile(lev, errbuf) {
     }
     if (nhfp && cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         cptr.stI32(nhfp, open(fq_lock, 0, 0));
+
+        /* for failure, return an explanation that our caller can use;
+           settle for `lock' instead of `fq_lock' because the latter
+           might end up being too big for nethack's BUFSZ */
         if (cptr.ldI32(nhfp) < 0 && errbuf)
             void cptr.sprintf(errbuf, __s_cannot_open_file_s_for_level_d_errno_d, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
     }
@@ -510,6 +592,10 @@ export function* open_levelfile(lev, errbuf) {
 
 /** C ref: files.c:719 — @param {CInt} lev */
 export function delete_levelfile(lev) {
+    /*
+     * Level 0 might be created by port specific code that doesn't
+     * call create_levfile(), so always assume that it exists.
+     */
     if (lev == 0 || (cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS)) {
         set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
         void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
@@ -524,26 +610,52 @@ export function clearlocks() {
         return;
     void signal(2, 1);
     sethanguphandler(1);
+    /* can't access maxledgerno() before dungeons are created -dlc */
     for (x = (cptr.ldI32(svn) ? maxledgerno() : 0); x >= 0; x--)
-        delete_levelfile(x);
+        delete_levelfile(x);  /* not all levels need be present */
 }
 
+/* qsort comparison routine */
 /** C ref: files.c:755 — @param {CPtr<void>} p @param {CPtr<void>} q @returns {CInt} */
 function strcmp_wrap(p, q) {
     return strcmp(cptr.ldPtr(p), cptr.ldPtr(q));
 }
 
+/* ----------  END LEVEL FILE HANDLING ----------- */
+
+/* ----------  BEGIN BONES FILE HANDLING ----------- */
+
+/* set up "file" to be file name for retrieving bones, and return a
+ * bonesid to be read/written in the bones file.
+ */
 /** C ref: files.c:769 — @param {CPtr<char>} file @param {CPtr<d_level>} lev @returns {CPtr<char>} */
 function set_bonesfile_name(file, lev) {
     let sptr;
     let dptr;
+
+    /*
+     * "bonD0.nn"   = bones for level nn in the main dungeon;
+     * "bonM0.T"    = bones for Minetown;
+     * "bonQBar.n"  = bones for level n in the Barbarian quest;
+     * "bon3D0.nn"  = \
+     * "bon3M0.T"   =  > same as above, but for bones pool #3.
+     * "bon3QBar.n" = /
+     *
+     * Return value for content validation skips "bon" and the
+     * pool number (if present), making it feasible for the admin
+     * to manually move a bones file from one pool to another by
+     * renaming it.
+     */
     void cptr.strcpy(file, __s_bon);
     if (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) > 1) {
         let poolnum = ((cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) < 10 ? (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) : 10);
-        poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday.v)), poolnum);
+
+        poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday.v)), poolnum);  /* 0..9 */
         void cptr.sprintf(eos(file), __s_pct_u, poolnum);
     }
     dptr = eos(file);
+    /* when this naming scheme was adopted, 'filecode' was one letter;
+       3.3.0 turned it into a three letter string for quest levels */
     void cptr.sprintf(dptr, __s_c_s, cptr.ld1so2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __s_0);
     if ((sptr = Is_special(lev)) !== null)
         void cptr.sprintf(eos(dptr), __s_dot_pct_c, cptr.ld1so(sptr, $s_level_boneid));
@@ -552,9 +664,16 @@ function set_bonesfile_name(file, lev) {
     return dptr;
 }
 
+/* set up temporary file name for writing bones, to avoid another game's
+ * trying to read from an uncompleted bones file.  we want an uncontentious
+ * name, so use one in the namespace reserved for this game's level files.
+ * (we are not reading or writing level files while writing bones files, so
+ * the same array may be used instead of copying.)
+ */
 /** C ref: files.c:818 @returns {CPtr<char>} */
 function set_bonestemp_name() {
     let tf;
+
     tf = cptr.strrchr(cptr.add(gl, $instance_globals_l_lock), 46);
     if (!tf)
         tf = eos(cptr.add(gl, $instance_globals_l_lock));
@@ -567,11 +686,13 @@ export function* create_bonesfile(lev, bonesid, errbuf) {
     let file;
     let nhfp = null;
     let failed = 0;
+
     if (errbuf)
         cptr.st1(errbuf, 0);
     cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev));
     file = set_bonestemp_name();
     file = fqname(file, NHM.BONESPREFIX, 0);
+
     nhfp = (yield* new_nhfile());
     if (nhfp) {
         cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_BONESFILE);
@@ -596,15 +717,18 @@ export function* create_bonesfile(lev, bonesid, errbuf) {
         if (failed && errbuf)
             void cptr.sprintf(errbuf, __s_cannot_create_bones_s_id_s_errno_d, cptr.add(gl, $instance_globals_l_lock), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
     }
+
     nhfp = (yield* viable_nhfile(nhfp));
     return nhfp;
 }
 
+/* move completed bones file to proper name */
 /** C ref: files.c:915 — @param {CPtr<d_level>} lev */
 export function* commit_bonesfile(lev) {
     let fq_bones;
     let tempname;
     let ret;
+
     void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
     fq_bones = fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0);
     tempname = set_bonestemp_name();
@@ -618,9 +742,11 @@ export function* commit_bonesfile(lev) {
 export function* open_bonesfile(lev, bonesid) {
     let fq_bones;
     let nhfp = null;
+
     cptr.stPtr(bonesid, set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev));
     fq_bones = fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0);
-    (yield* nh_uncompress(fq_bones));
+    (yield* nh_uncompress(fq_bones));  /* no effect if nonexistent */
+
     nhfp = (yield* new_nhfile());
     if (nhfp) {
         cptr.st1o(nhfp, $NHFILE_structlevel, 1);
@@ -646,28 +772,38 @@ export function* open_bonesfile(lev, bonesid) {
 /** C ref: files.c:993 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function* delete_bonesfile(lev) {
     let reslt;
+
     void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
     reslt = unlink(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
     (yield* delete_convertedfile(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0)));
     return !(reslt < 0);
 }
 
+/* assume we're compressing the recently read or created bonesfile, so the
+ * file name is already set properly */
 /** C ref: files.c:1006 */
 export function* compress_bonesfile() {
     nh_sfconvert(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
     (yield* nh_compress(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0)));
 }
 
+/* ----------  END BONES FILE HANDLING ----------- */
+
+/* ----------  BEGIN SAVE FILE HANDLING ----------- */
+
+/* set savefile name in OS-dependent manner from pre-existing svp.plname,
+ * avoiding troublesome characters */
 /** C ref: files.c:1020 — @param {CInt} regularize_it */
 export function set_savefile_name(regularize_it) {
     let regoffset = 0;
     let overflow = 0;
-    let indicator_spot = 0;
+    let indicator_spot = 0;  /* 0=no indicator, 1=before ext, 2=after ext */
     let postappend = null;
     let sfindicator = null;
     void cptr.sprintf(cptr.add(gs, $instance_globals_s_SAVEF), __s_save_d_s, getuid() | 0, svp);
     regoffset = 5;
     indicator_spot = 2;
+
     if (regularize_it)
         regularize(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), regoffset));
     if (indicator_spot == 1 && sfindicator && !overflow) {
@@ -676,6 +812,9 @@ export function set_savefile_name(regularize_it) {
         else
             overflow = 2;
     }
+    /* (0) is placed in brackets below so that the [&& !overflow] is
+       explicit dead code (the ">" comparison is detected as always
+       FALSE at compile-time). Done to appease clang's -Wunreachable-code */
     if (cptr.strlen(__s_empty) > 0n && !overflow) {
         if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__s_empty)) < 53n) {
             void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __s_empty);
@@ -701,16 +840,19 @@ export function* save_savefile_name(nhfp) {
     (yield* sfo_char(nhfp, cptr.add(gs, $instance_globals_s_SAVEF), __s_savefile_name, 54));
 }
 
+/* change pre-existing savefile name to indicate an error savefile */
 /** C ref: files.c:1137 */
 export function set_error_savefile() {
     void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __s_dot_e);
 }
 
+/* create save file, overwriting one if it already exists */
 /** C ref: files.c:1159 @returns {CPtr<NHFILE>} */
 export function* create_savefile() {
     let fq_save;
     let nhfp = null;
     let do_historical = 1;
+
     fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     nhfp = (yield* new_nhfile());
     if (nhfp) {
@@ -729,22 +871,25 @@ export function* create_savefile() {
             cptr.stI32(nhfp, creat(fq_save, NHM.FCMASK));
         }
     }
+
     nhfp = (yield* viable_nhfile(nhfp));
     return nhfp;
 }
 
+/* open savefile for reading */
 /** C ref: files.c:1217 @returns {CPtr<NHFILE>} */
 export function* open_savefile() {
     let fq_save;
     let nhfp = null;
     let do_historical = 1;
+
     fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     nhfp = (yield* new_nhfile());
     if (nhfp) {
         cptr.stI32o(nhfp, $NHFILE_ftype, NHM.NHF_SAVEFILE);
         cptr.stI32o(nhfp, $NHFILE_mode, NHM.READING);
         if (cptr.ldI32o(program_state, $sinfo_in_self_recover) || do_historical) {
-            do_historical = 1;
+            do_historical = 1;  /* force it */
             (void (do_historical));
             cptr.st1o(nhfp, $NHFILE_structlevel, 1);
             cptr.st1o(nhfp, $NHFILE_fieldlevel, 0);
@@ -761,21 +906,26 @@ export function* open_savefile() {
     return nhfp;
 }
 
+/* delete savefile */
 /** C ref: files.c:1259 @returns {CInt} */
 export function* delete_savefile() {
     let sfname = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
+
     void unlink(sfname);
     void (yield* delete_convertedfile(sfname));
-    return 0;
+    return 0;  /* for restore_saved_game() (ex-xxxmain.c) test */
 }
 
+/* try to open up a save file and prepare to restore it */
 /** C ref: files.c:1270 @returns {CPtr<NHFILE>} */
 export function* restore_saved_game() {
     let fq_save;
     let nhfp = null;
     let sfstatus = 0;
+
     set_savefile_name(1);
     fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
+
     (yield* nh_uncompress(fq_save));
     if ((nhfp = (yield* open_savefile())) !== null) {
         if ((sfstatus = (yield* validate(nhfp, fq_save, 0))) != NHM.SF_UPTODATE) {
@@ -786,25 +936,38 @@ export function* restore_saved_game() {
     return nhfp;
 }
 
+/*
+ * This doesn't open any files. It provides a valid (NHFILE *)
+ * to provide to functions that take one as a parameter, with
+ * only the FREEING bit set.
+ *
+ * close_nhfile() can, and should, be called on the returned
+ * (NHFILE *), and it will handle it correctly.
+ */
+
 /** C ref: files.c:1299 @returns {CPtr<NHFILE>} */
 export function* get_freeing_nhfile() {
     let nhfp = null;
-    nhfp = (yield* new_nhfile());
+
+    nhfp = (yield* new_nhfile());  /* also sets fd to -1 */
     if (nhfp) {
         cptr.stI32o(nhfp, $NHFILE_mode, NHM.FREEING);
     }
     return nhfp;
 }
 
+/* called if there is no save file for current character */
 /** C ref: files.c:1312 @returns {CInt} */
 export function* check_panic_save() {
     let result = 0;
     let cf;
     let savef;
+
     set_error_savefile();
     savef = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
     let ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__s_dot_z)))));
     let cfn = (yield* alloc((ln + 1) >>> 0));
+
     void cptr.strcpy(cfn, savef);
     void cptr.strcat(cfn, __s_dot_z);
     if (!cptr.eq((cf = fopen(cfn, __s_r)), (null))) {
@@ -812,13 +975,16 @@ export function* check_panic_save() {
         result = 1;
     }
     cptr.free(cfn);
+
     if (!result) {
+        /* maybe it has already been manually uncompressed */
         if (!cptr.eq((cf = fopen(savef, __s_r)), (null))) {
             void fclose(cf);
             result = 1;
         }
     }
-    set_savefile_name(1);
+
+    set_savefile_name(1);  /* reset to normal */
     return result;
 }
 
@@ -828,16 +994,21 @@ export function* plname_from_file(filename, without_wait_synch_per_file) {
     let ln;
     let result = null;
     let sfstatus = 0;
+
     void cptr.strcpy(cptr.add(gs, $instance_globals_s_SAVEF), filename);
     {
+        /* if COMPRESS_EXTENSION is present, strip it off */
         let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF))));
         let xln = Number(BigInt.asIntN(32, cptr.strlen(__s_dot_z)));
+
         if (sln > xln && !strcmp(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), (sln - xln) | 0, 1), __s_dot_z))
             cptr.st1o2(gs, (sln - xln) | 0, 1, $instance_globals_s_SAVEF, 0);
     }
     (yield* nh_uncompress(cptr.add(gs, $instance_globals_s_SAVEF)));
     if ((nhfp = (yield* open_savefile())) !== null) {
         if ((sfstatus = (yield* validate(nhfp, filename, without_wait_synch_per_file))) == NHM.SF_UPTODATE) {
+            /* room for "name+role+race+gend+algn X" where the space before
+               X is actually NUL and X is playmode: one of '-', 'X', or 'D' */
             ln = 49;
             result = __builtin___memset_chk((yield* alloc(ln)), 0, BigInt(ln >>> 0), __builtin_object_size((yield* alloc(ln)), 0));
             (yield* get_plname_from_file(nhfp, result, 0));
@@ -845,36 +1016,42 @@ export function* plname_from_file(filename, without_wait_synch_per_file) {
         (yield* close_nhfile(nhfp));
     }
     (yield* nh_compress(cptr.add(gs, $instance_globals_s_SAVEF)));
-    return result;
+    return result;  /* file's plname[]+playmode value */
 }
 
+/* get list of saved games owned by current user */
 /** C ref: files.c:1399 @returns {CPtr<char *>} */
 export function* get_saved_games() {
     let result = null;
     let n;
     let j = 0;
+    /* posixly correct version */
     let myuid = getuid() | 0;
     let dir;
+
     if ((dir = opendir(fqname(__s_save, NHM.SAVEPREFIX, 0)))) {
         for (n = 0; readdir(dir); n++)
             ;
         closedir(dir);
         if (n > 0) {
             let i;
+
             if (!(dir = opendir(fqname(__s_save, NHM.SAVEPREFIX, 0))))
                 return null;
-            result = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n)))));
+            result = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n)))));  /* at most */
             void __builtin___memset_chk(result, 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n), __builtin_object_size(result, 0));
             for (i = 0, j = 0; i < n; i++) {
                 let uid = cptr.box(0);
-                let name = new Uint8Array(64);
+                let name = new Uint8Array(64);  /* more than PL_NSIZ+1 */
                 let entry = readdir(dir);
+
                 if (!entry)
                     break;
                 if (sscanf(cptr.add(entry, $dirent_d_name), __s_d_63s, uid, cptr.decay(name)) == 2) {
                     if (uid.v == myuid) {
                         let filename = new Uint8Array(256);
                         let r;
+
                         void cptr.sprintf(cptr.decay(filename), __s_save_d_s, uid.v, cptr.decay(name));
                         r = (yield* plname_from_file(cptr.decay(filename), 0));
                         if (r)
@@ -885,6 +1062,7 @@ export function* get_saved_games() {
             closedir(dir);
         }
     }
+
     if (j > 0) {
         if (j > 1)
             (yield* nh_deterministic_qsort((result), BigInt.asUintN(64, BigInt((j))), 8n, (strcmp_wrap)));
@@ -893,6 +1071,7 @@ export function* get_saved_games() {
         free_saved_games(result);
         result = (null);
     }
+
     return result;
 }
 
@@ -900,6 +1079,7 @@ export function* get_saved_games() {
 export function free_saved_games(saved) {
     if (saved) {
         let i;
+
         for (i = 0; cptr.ldPtro(saved, i, 8); ++i)
             cptr.free(cptr.ldPtro(saved, i, 8));
         cptr.free(saved);
@@ -917,6 +1097,13 @@ function* redirect(filename, mode, stream, uncomp) {
     }
 }
 
+/*
+ * using system() is simpler, but opens up security holes and causes
+ * problems on at least Interactive UNIX 3.0.1 (SVR3.2), where any
+ * setuid is renounced by /bin/sh, so the files cannot be accessed.
+ *
+ * cf. child() in unixunix.c.
+ */
 /** C ref: files.c:1591 — @param {CPtr<char>} filename @param {CInt} uncomp */
 function* docompress_file(filename, uncomp) {
     let cfn = null;
@@ -931,8 +1118,11 @@ function* docompress_file(filename, uncomp) {
     xtra = __s_dot_z;
     ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))));
     cfn = (yield* alloc((ln + 1) >>> 0));
+
     void cptr.strcpy(cfn, filename);
     void cptr.strcat(cfn, xtra);
+
+    /* when compressing, we know the file exists */
     if (uncomp) {
         if ((cf = fopen(cfn, __s_r)) === null) {
             cptr.free(cfn);
@@ -940,18 +1130,36 @@ function* docompress_file(filename, uncomp) {
         }
         void fclose(cf);
     }
+
     cptr.stPtro(args, 0, __s_usr_bin_compress, 8);
     if (uncomp)
-        cptr.stPtro(args, ++i, __s_dash_d, 8);
+        cptr.stPtro(args, ++i, __s_dash_d, 8);  /* uncompress */
     cptr.stPtro(args, ++i, null, 8);
+    /* If we don't do this and we are right after a y/n question *and*
+     * there is an error message from the compression, the 'y' or 'n' can
+     * end up being displayed after the error message.
+     */
     if (istty) {
         (yield* Y.icall(mark_synch()()));
     }
     f = fork();
     if (f == 0) {
+        /* any error messages from the compression must come out after
+         * the first line, because the more() to let the user read
+         * them will have to clear the first line.  This should be
+         * invisible if there are no error messages.
+         */
         if (istty) {
             (yield* Y.icall(raw_print()(__s_empty)));
         }
+        /* run compressor without privileges, in case other programs
+         * have surprises along the line of gzip once taking filenames
+         * in GZIP.
+         */
+        /* assume all compressors will compress stdin to stdout
+         * without explicit filenames.  this is true of at least
+         * compress and gzip, those mentioned in config.h.
+         */
         if (uncomp) {
             (yield* redirect(cfn, __s_r, __stdinp, uncomp));
             (yield* redirect(filename, __s_w_plus, __stdoutp, uncomp));
@@ -972,13 +1180,16 @@ function* docompress_file(filename, uncomp) {
         cptr.free(cfn);
         return;
     }
-    childstatus.v = 1;
+    childstatus.v = 1;  /* wait() should update this, ideally setting it to 0 */
     void signal(2, 1);
     void signal(3, 1);
-    cptr.stI32(__error(), 0);
+    cptr.stI32(__error(), 0);  /* avoid stale details if wait() doesn't set errno */
+    /* wait() returns child's pid and sets 'childstatus' to child's
+       exit status, or returns -1 and leaves 'childstatus' unmodified */
     if (BigInt(wait(childstatus)) == -1n) {
         let numbuf = new Uint8Array(40);
         let details = strerror((cptr.ldI32(__error())));
+
         if (!details) {
             void cptr.sprintf(cptr.decay(numbuf), __s_lparen_pct_d_rparen, (cptr.ldI32(__error())));
             details = cptr.decay(numbuf);
@@ -989,31 +1200,45 @@ function* docompress_file(filename, uncomp) {
     if (wizard())
         void signal(3, null);
     if (childstatus.v == 0) {
+        /* (un)compress succeeded: remove file left behind */
         if (uncomp)
             void unlink(cfn);
         else
             void unlink(filename);
     } else {
+        /* (un)compress failed; remove the new, bad file */
         if (uncomp) {
             (yield* raw_printf(__s_unable_to_uncompress_s, filename));
             void unlink(filename);
         } else {
+            /* no message needed for compress case; life will go on */
             void unlink(cfn);
         }
+        /* Give them a chance to read any error messages from the
+         * compression--these would go to stdout or stderr and would get
+         * overwritten only in tty mode.  It's still ugly, since the
+         * messages are being written on top of the screen, but at least
+         * the user can read them.
+         */
         if (istty && cptr.ld1so(iflags, $instance_flags_window_inited)) {
             (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             (yield* more());
+            /* No way to know if this is feasible */
+            /* doredraw(); */
         }
     }
+
     cptr.free(cfn);
     return;
 }
 
+/* compress file */
 /** C ref: files.c:1787 — @param {CPtr<char>} filename */
 export function* nh_compress(filename) {
     (yield* docompress_file(filename, 0));
 }
 
+/* uncompress file if it exists */
 /** C ref: files.c:1796 — @param {CPtr<char>} filename */
 export function* nh_uncompress(filename) {
     (yield* docompress_file(filename, 1));
@@ -1048,6 +1273,7 @@ cptr.stPtro(sf2msg, 144 + $sfstatus_to_msg_msg, __s_generic_savefile_mismatch);
 function* problematic_savefile(sfstatus, savefilenm) {
     let i;
     let nhfp = null;
+
     switch (sfstatus) {
         case NHM.SF_UPTODATE:
         break;
@@ -1073,6 +1299,10 @@ function* problematic_savefile(sfstatus, savefilenm) {
     return nhfp;
 }
 
+/* ----------  END PROBLEMATIC SAVEFILE HANDLING ----------- */
+
+/* ----------  BEGIN EXTERNAL CONVERSION HANDLING ----------- */
+
 /** C ref: files.c:2053 — signed char */
 let cvtinit = 0;
 
@@ -1082,6 +1312,9 @@ let unconverted_filename = null;
 /** C ref: files.c:2056 — char * */
 let converted_filename = null;
 
+/*
+ * Returns non-zero if unconvert was successful
+ */
 /** C ref: files.c:2062 — @param {CPtr<char>} filename @param {CInt} sfstatus @param {CInt} unconvert @returns {CInt} */
 function doconvert_file(filename, sfstatus, unconvert) {
     (void (filename));
@@ -1090,11 +1323,13 @@ function doconvert_file(filename, sfstatus, unconvert) {
     return 1;
 }
 
+/* convert file */
 /** C ref: files.c:2072 — @param {CPtr<char>} filename */
 export function nh_sfconvert(filename) {
     void doconvert_file(filename, 0, 0);
 }
 
+/* unconvert file if it exists */
 /** C ref: files.c:2079 — @param {CPtr<char>} filename */
 export function nh_sfunconvert(filename) {
     void doconvert_file(filename, 0, 1);
@@ -1107,12 +1342,15 @@ function* make_converted_name(filename) {
     let finaldirchar;
     let dir = null;
     let needsep = 0;
+
     if (!filename)
         return 0;
+
     if (unconverted_filename)
         cptr.free(unconverted_filename), unconverted_filename = null;
     if (converted_filename)
         cptr.free(converted_filename), converted_filename = null;
+
     ln = Number(BigInt.asUintN(32, cptr.strlen(filename)));
     if (!contains_directory(filename)) {
         dir = nh_getenv(__s_nethackdir);
@@ -1140,6 +1378,7 @@ function* make_converted_name(filename) {
     return 1;
 }
 
+/* delete converted savefile as a normal course of action */
 /** C ref: files.c:2157 — @param {CPtr<char>} basefilename @returns {CInt} */
 export function* delete_convertedfile(basefilename) {
     if (!converted_filename)
@@ -1159,11 +1398,13 @@ export function free_convert_filenames() {
     cvtinit = 0;
 }
 
+/* return TRUE if s contains a directory, not just a filespec */
 /** C ref: files.c:2179 — @param {CPtr<char>} s @returns {CInt} */
 export function contains_directory(s) {
     let i;
     let slen = Number(BigInt.asIntN(32, cptr.strlen(s)));
     let cp = s;
+
     for (i = 0; i < slen; ++i) {
         if (cptr.ld1s(cp) == 92 || cptr.ld1s(cp) == 47 || cptr.ld1s(cp) == 58)
             return 1;
@@ -1178,8 +1419,10 @@ let lockfd = -1;
 /** C ref: files.c:2204 — struct flock */
 let sflock = cptr.alloc($sizeof_flock);
 
+/* lock a file */
 /** C ref: files.c:2255 — @param {CPtr<char>} filename @param {CInt} whichprefix @param {CInt} retryct @returns {CInt} */
 export function* lock_file(filename, whichprefix, retryct) {
+
     (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + 1)) - (1);
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) > 1) {
         (yield* impossible(__s_tried_to_nest_locks));
@@ -1214,8 +1457,10 @@ export function* lock_file(filename, whichprefix, retryct) {
     return 1;
 }
 
+/* unlock file, which must be currently locked by lock_file */
 /** C ref: files.c:2416 — @param {CPtr<char>} filename */
 export function* unlock_file(filename) {
+
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) == 1) {
         cptr.stI16o(sflock, $flock_l_type, 2);
         if (lockfd >= 0) {
@@ -1225,25 +1470,39 @@ export function* unlock_file(filename) {
             void close(lockfd), lockfd = -1;
         }
     }
+
     (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
 }
+
+/* ----------  END FILE LOCKING HANDLING ----------- */
+
+/* ----------  BEGIN WIZKIT FILE HANDLING ----------- */
 
 /** C ref: files.c:2465 @returns {CPtr<FILE>} */
 function* fopen_wizkit_file() {
     let fp;
     let tmp_wizkit = new Uint8Array(256);
     let envp;
+
     envp = nh_getenv(__s_wizkit);
     if (envp && cptr.ld1s(envp))
         void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), envp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
     if (!cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit))
         return null;
     if (access(cptr.add(gw, $instance_globals_w_wizkit), 4) == -1) {
+        /* 4 is R_OK on newer systems */
+        /* nasty sneaky attempt to read file through
+         * NetHack's setuid permissions -- this is a
+         * place a file name may be wholly under the player's
+         * control
+         */
         (yield* raw_printf(__s_access_to_s_denied_d, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error()))));
         (yield* Y.icall(wait_synch()()));
+        /* fall through to standard names */
     } else if ((fp = fopen(cptr.add(gw, $instance_globals_w_wizkit), __s_r)) !== null) {
         return fp;
     } else {
+        /* access() above probably caught most problems for UNIX */
         (yield* raw_printf(__s_couldn_t_open_requested_wizkit_file_s_d, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error()))));
         (yield* Y.icall(wait_synch()()));
     }
@@ -1255,23 +1514,31 @@ function* fopen_wizkit_file() {
     if ((fp = fopen(cptr.decay(tmp_wizkit), __s_r)) !== null)
         return fp;
     else if ((cptr.ldI32(__error())) != 2) {
+        /* e.g., problems when setuid NetHack can't search home
+         * directory restricted to user */
         (yield* raw_printf(__s_couldn_t_open_default_gw_wizkit_file_s_d, cptr.decay(tmp_wizkit), (cptr.ldI32(__error()))));
         (yield* Y.icall(wait_synch()()));
     }
     return null;
 }
 
+/* add to hero's inventory if there's room, otherwise put item on floor */
 /** C ref: files.c:2537 — @param {CPtr<struct obj>} obj */
 function* wizkit_addinv(obj) {
     if (!obj || cptr.eq(obj, hands_obj))
         return;
+
+    /* subset of starting inventory pre-ID */
     (yield* observe_object(obj));
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-        cptr.stI32o(obj, $obj_bknown, 1);
+        cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
+    /* same criteria as lift_object()'s check for available inventory slot */
     if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic && !(yield* merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj))) {
+        /* inventory overflow; can't just place & stack object since
+           hero isn't in position yet, so schedule for arrival later */
         (yield* add_to_migration(obj));
-        cptr.stI16o(obj, $obj_ox, 0);
-        cptr.stI16o(obj, $obj_oy, 1);
+        cptr.stI16o(obj, $obj_ox, 0);  /* index of main dungeon */
+        cptr.stI16o(obj, $obj_oy, 1);  /* starting level number */
         cptr.stI64o(obj, $obj_owornmask, 3081n);
     } else {
         void (yield* addinv(obj));
@@ -1281,15 +1548,18 @@ function* wizkit_addinv(obj) {
 /** C ref: files.c:2562 — @param {CPtr<char>} buf @returns {CInt} */
 export function* proc_wizkit_line(buf) {
     let otmp;
+
     if (cptr.strlen(buf) >= 256n)
         cptr.st1o(buf, 255, 0);
     otmp = (yield* readobjnam(buf, null));
+
     if (otmp) {
         if (!cptr.eq(otmp, hands_obj)) {
             (yield* wish_history_add(buf));
             (yield* wizkit_addinv(otmp));
         }
     } else {
+        /* .60 limits output line width to 79 chars */
         (yield* config_error_add(__s_bad_wizkit_item_60s, buf));
         return 0;
     }
@@ -1299,45 +1569,67 @@ export function* proc_wizkit_line(buf) {
 /** C ref: files.c:2584 */
 export function* read_wizkit() {
     let fp;
+
     if (!wizard() || !(fp = (yield* fopen_wizkit_file())))
         return;
+
     cptr.stI32o(program_state, $sinfo_wizkit_wishing, 1);
     (yield* config_error_init(1, __s_wizkit, 0));
+
     (yield* parse_conf_file(fp, proc_wizkit_line));
     void fclose(fp);
+
     (yield* config_error_done());
     cptr.stI32o(program_state, $sinfo_wizkit_wishing, 0);
+
     return;
 }
 
 /** C ref: files.c:2611 @returns {CPtr<FILE>} */
 function fopen_sym_file() {
     let fp;
+
     fp = fopen_datafile(__s_symbols, __s_r, NHM.HACKPREFIX);
+
     return fp;
 }
 
+/*
+ * Returns 1 if the chosen symset was found and loaded.
+ *         0 if it wasn't found in the sym file or other problem.
+ */
 /** C ref: files.c:2631 — @param {CInt} which_set @returns {CInt} */
 export function* read_sym_file(which_set) {
     let fp;
+
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 0);
     if (!(fp = fopen_sym_file()))
         return 0;
+
     cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 1);
     cptr.st1o(gc, $instance_globals_c_chosen_symset_start, cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 0));
     cptr.stI32o(gs, $instance_globals_s_symset_which_set, which_set);
     cptr.stI32o(gs, $instance_globals_s_symset_count, 0);
+
     (yield* config_error_init(1, __s_symbols, 0));
+
     (yield* parse_conf_file(fp, proc_symset_line));
     void fclose(fp);
+
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_start) && !cptr.ld1so(gc, $instance_globals_c_chosen_symset_end)) {
+        /* name caller put in symset[which_set].name was not found;
+           if it looks like "Default symbols", null it out and return
+           success to use the default; otherwise, return failure */
         if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name), __s_default_symbols, __s_sp_dash_us, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), (__s_default), -1))))
             clear_symsetentry(which_set, 1);
         (yield* config_error_done());
+
+        /* If name was defined, it was invalid. Then we're loading fallback */
         if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
             cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 0);
             return 0;
         }
+
         return 1;
     }
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_end))
@@ -1346,6 +1638,8 @@ export function* read_sym_file(which_set) {
     return 1;
 }
 
+/* verify that we can write to scoreboard file; if not, try to create one */
+/*ARGUSED*/
 /** C ref: files.c:2689 — @param {CPtr<char>} dir */
 export function* check_recordfile(dir) {
     let fq_record;
@@ -1353,18 +1647,24 @@ export function* check_recordfile(dir) {
     fq_record = fqname(__s_record, NHM.SCOREPREFIX, 0);
     fd = open(fq_record, 2, 0);
     if (fd >= 0) {
-        void (yield* nhclose(fd));
+        void (yield* nhclose(fd));  /* RECORD is accessible */
     } else if ((fd = open(fq_record, 514, NHM.FCMASK)) >= 0) {
-        void (yield* nhclose(fd));
+        void (yield* nhclose(fd));  /* RECORD newly created */
     } else {
         (yield* raw_printf(__s_warning_cannot_write_scoreboard_file_s, fq_record));
         (yield* Y.icall(wait_synch()()));
     }
 }
 
+/* ----------  END SCOREBOARD CREATION ----------- */
+
+/* ----------  BEGIN PANIC/IMPOSSIBLE/TESTING LOG ----------- */
+
+/*ARGSUSED*/
 /** C ref: files.c:2801 — @param {CPtr<char>} type @param {CPtr<char>} reason */
 export function* paniclog(type, reason) {
     let lfile;
+
     if (!cptr.ldI32o(program_state, $sinfo_in_paniclog)) {
         cptr.stI32o(program_state, $sinfo_in_paniclog, 1);
         lfile = fopen_datafile(__s_paniclog, __s_a, NHM.TROUBLEPREFIX);
@@ -1373,6 +1673,7 @@ export function* paniclog(type, reason) {
             let now = (yield* getnow());
             let uid = getuid() | 0;
             let playmode = schar((wizard() ? 68 : (discover() ? 88 : 45)));
+
             void fprintf(lfile, __s_s_08ld_06ld_d_c_s_s, version_string(cptr.decay(buf), 256n), (yield* yyyymmdd(now)), (yield* hhmmss(now)), uid, playmode, type, reason);
             void fclose(lfile);
         }
@@ -1385,6 +1686,7 @@ export function* paniclog(type, reason) {
 export function testinglog(filenm, type, reason) {
     let lfile;
     let fnbuf = new Uint8Array(256);
+
     if (!filenm)
         return;
     void cptr.strcpy(cptr.decay(fnbuf), filenm);
@@ -1398,32 +1700,63 @@ export function testinglog(filenm, type, reason) {
     return;
 }
 
+/* ----------  OTHER ----------- */
+
 /** C ref: files.c:3090 — @param {CInt} code */
 export function* do_deferred_showpaths(code) {
     cptr.st1o(gd, $instance_globals_d_deferred_showpaths, 0);
     (yield* reveal_paths(code));
+
+    /* cleanup before heading to an exit */
     (yield* freedynamicdata());
     ;
     (yield* l_nhcore_done());
     (yield* after_opt_showpaths(cptr.ldPtro(gd, $instance_globals_d_deferred_showpaths_dir)));
 }
 
+/* used by debugpline() to decide whether to issue a message
+ * from a particular source file; caller passes __FILE__ and we check
+ * whether it is in the source file list supplied by SYSCF's DEBUGFILES
+ *
+ * pass FALSE to override wildcard matching; useful for files
+ * like dungeon.c and questpgr.c, which generate a ridiculous amount of
+ * output if DEBUG is defined and effectively block the use of a wildcard */
 /** C ref: files.c:3126 — @param {CPtr<char>} filename @param {CInt} wildcards @returns {CInt} */
 export function* debugcore(filename, wildcards) {
     let debugfiles;
     let p;
+
+    /* debugpline() messages might disclose information that the player
+       doesn't normally get to see, so only display them in wizard mode */
     if (!wizard())
         return 0;
+
     if (!filename || !cptr.ld1s(filename))
-        return 0;
+        return 0;  /* sanity precaution */
+
     debugfiles = cptr.ldPtro(sysopt, $sysopt_s_debugfiles);
+    /* usual case: sysopt.debugfiles will be empty */
     if (!debugfiles || !cptr.ld1s(debugfiles))
         return 0;
+
+    /* strip filename's path if present */
     filename = nh_basename(filename, 1);
+
+    /*
+     * Wildcard match will only work if there's a single pattern (which
+     * might be a single file name without any wildcarding) rather than
+     * a space-separated list.
+     * [to NOT do: We could step through the space-separated list and
+     * attempt a wildcard match against each element, but that would be
+     * overkill for the intended usage.]
+     */
     if (wildcards && (yield* pmatch(debugfiles, filename)))
         return 1;
+
+    /* check whether filename is an element of the list */
     if ((p = cptr.strstr(debugfiles, filename)) !== null) {
         let l = Number(BigInt.asIntN(32, cptr.strlen(filename)));
+
         if ((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 || cptr.ld1so(p, -1) == 47) && (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0))
             return 1;
     }
@@ -1435,6 +1768,7 @@ export function* reveal_paths(code) {
     let skip_sysopt = 0;
     let fqn;
     let nodumpreason;
+
     let buf = new Uint8Array(256);
     let filep;
     let gamename = (cptr.ldPtr(gh) && cptr.ld1s(cptr.ldPtr(gh))) ? cptr.ldPtr(gh) : __s_nethack;
@@ -1454,16 +1788,28 @@ export function* reveal_paths(code) {
         (yield* raw_printf(__s_note_the_s_above_is_missing_or, __s_system_configuration_file));
         skip_sysopt = 1;
     }
+
+    /* symbols file */
+
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     envp = getcwd(cptr.decay(cwdbuf), 1024n);
     if (envp) {
         (yield* Y.icall(raw_print()(__s_the_loadable_symbols_file)));
         (yield* raw_printf(__s_s_s__3, envp, __s_symbols));
     }
+
+    /* dlb vs non-dlb */
+
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     (yield* raw_printf(__s_basic_data_files_s_are_in_many_separate, cptr.decay(buf)));
+
+    /* dumplog */
+
     fqn = null;
     nodumpreason = __s_not_supported;
+
+    /* personal configuration file */
+
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     (yield* raw_printf(__s_your_personal_configuration_file_s, cptr.decay(buf)));
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
@@ -1475,37 +1821,54 @@ export function* reveal_paths(code) {
     (yield* copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
     if (envp) {
         if (access(cptr.decay(buf), 4) == -1) {
+            /* read access to default failed; might be protected excessively
+               but more likely it doesn't exist; try first alternate:
+               "$HOME/Library/Pref..."; 'endp' points past '/' */
             (yield* copynchars(endp, __s_library_preferences_nethack_defaults, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
             if (access(cptr.decay(buf), 4) == -1) {
+                /* first alternate failed, try second:
+                   ".../NetHack Defaults.txt"; no 'endp', just append */
                 (yield* copynchars(eos(cptr.decay(buf)), __s_txt, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
                 if (access(cptr.decay(buf), 4) == -1) {
+                    /* second alternate failed too, so revert to the
+                       original default ("$HOME/.nethackrc") for message */
                     (yield* copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
                 }
             }
         }
     }
     (yield* raw_printf(__s_sp4_quot_pct_s_quot, cptr.decay(buf)));
+
     (yield* Y.icall(raw_print()(__s_empty)));
     (void (skip_sysopt));
     (void (nodumpreason));
 }
 
+/* choose a random passage that hasn't been chosen yet; once all have
+   been chosen, reset the tracking to make all passages available again */
 /** C ref: files.c:3431 — @param {CInt} passagecnt @param {CUInt} oid @returns {CInt} */
 function choose_passage(passagecnt, oid) {
     let idx;
     let res;
+
     if (passagecnt < 1)
         return 0;
+
+    /* if a different book or we've used up all the passages already,
+       reset in order to have all 'passagecnt' passages available */
     if (oid != cptr.ldI32o(svc, $context_info_novel) || cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) == 0) {
         let i;
         let range = passagecnt;
         let limit = Number(BigInt.asIntN(32, (30n / 1n)));
+
         cptr.stI32o(svc, $context_info_novel, oid);
         if (range <= limit) {
+            /* collect all of the N indices */
             cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, passagecnt);
             for (idx = 0; idx < Number(BigInt.asIntN(32, (30n / 1n))); idx++)
                 cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0))));
         } else {
+            /* collect MAXPASSAGES of the N indices */
             cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
                 if (range > 0 && rn2_at(__s_files_c, 3456, __s_choose_passage, range) < limit) {
@@ -1514,17 +1877,22 @@ function choose_passage(passagecnt, oid) {
                 }
         }
     }
+
     idx = rn2_at(__s_files_c, 3463, __s_choose_passage, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count));
     res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
+    /* move the last slot's passage index into the slot just used
+       and reduce the number of passages available */
     cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, cptr.ld1so2(svc, cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) + -1), 1, $context_info_novel + $novel_tracking_pasg));
     return res;
 }
 
+/* Returns True if you were able to read something. */
 /** C ref: files.c:3474 — @param {CPtr<char>} tribsection @param {CPtr<char>} tribtitle @param {CInt} tribpassage @param {CPtr<char>} nowin_buf @param {CInt} bufsz @param {CUInt} oid @returns {CInt} */
 export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bufsz, oid) {
     let fp;
     let line = new Uint8Array(256);
     let lastline = new Uint8Array(256);
+
     let scope = 0;
     let linect = 0;
     let passagecnt = 0;
@@ -1536,8 +1904,11 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
     let grasped = 0;
     let foundpassage = 0;
     __lbl_cleanup: {
+
         if (nowin_buf)
             cptr.st1(nowin_buf, 0);
+
+        /* check for mandatories */
         if (!tribsection || !tribtitle) {
             if (!nowin_buf)
                 (yield* pline(__s_it_s_s_of_s, badtranslation, tribtitle));
@@ -1545,17 +1916,40 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
         }
         {
             if ((yield* debugcore(__s_files_c, 1))) {
+
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
                 (yield* pline(__s_read_tribute_s_s_d, tribsection, tribtitle, tribpassage));
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
+
         fp = fopen(__s_tribute, __s_r);
         if (!fp) {
+            /* this is actually an error - cannot open tribute file! */
             if (!nowin_buf)
                 (yield* You_feel(__s_too_overwhelmed_to_continue));
             return grasped;
         }
+
+        /*
+         * Syntax (not case-sensitive):
+         *  %section books
+         *
+         * In the books section:
+         *    %title booktitle (n)
+         *          where booktitle=book title without quotes
+         *          (n)= total number of passages present for this title
+         *    %passage k
+         *          where k=sequential passage number
+         *
+         * %e ends the passage/book/section
+         *    If in a passage, it marks the end of that passage.
+         *    If in a book, it marks the end of that book.
+         *    If in a section, it marks the end of that section.
+         *
+         *  %section death
+         */
+
         cptr.st1(cptr.decay(line), cptr.st1(cptr.decay(lastline), 0));
         while (fgets(cptr.decay(line), 256, fp) !== null) {
             linect++;
@@ -1563,13 +1957,15 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
             switch (cptr.ld1so(cptr.decay(line), 0, 1)) {
                 case 37:
                 if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_section, 8))) {
-                    let st = cptr.add(cptr.decay(line), 9, 1);
+                    let st = cptr.add(cptr.decay(line), 9, 1);  /* 9 from "%section " */
+
                     scope = 1;
                     matchedsection = schar((!(yield* strncmpi((st), (tribsection), -1)) ? 1 : 0));
                 } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_title, 6))) {
-                    let st = cptr.add(cptr.decay(line), 7, 1);
+                    let st = cptr.add(cptr.decay(line), 7, 1);  /* 7 from "%title " */
                     let p1;
                     let p2;
+
                     if ((p1 = cptr.strchr(st, 40)) !== null) {
                         cptr.st1(cptr.postinc(() => p1, (v) => { p1 = v; }), 0);
                         void (yield* mungspaces(st));
@@ -1587,7 +1983,8 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                     }
                 } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_passage, 8))) {
                     let passagenum = 0;
-                    let st = cptr.add(cptr.decay(line), 9, 1);
+                    let st = cptr.add(cptr.decay(line), 9, 1);  /* 9 from "%passage " */
+
                     (yield* mungspaces(st));
                     passagenum = atoi(st);
                     if (passagenum > 0 && passagenum <= passagecnt) {
@@ -1621,16 +2018,19 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
                 }
                 break;
                 case 35:
+                /* comment only, next! */
                 break;
                 default:
                 if (foundpassage) {
                     if (!nowin_buf) {
+                        /* outputting multi-line passage to text window */
                         (yield* Y.icall(putstr()(tribwin, 0, cptr.decay(line))));
                         if (cptr.ld1s(cptr.decay(line)))
                             void cptr.strcpy(cptr.decay(lastline), cptr.decay(line));
                     } else {
+                        /* fetching one-line passage into buffer */
                         (yield* copynchars(nowin_buf, cptr.decay(line), (bufsz - 1) | 0));
-                        break __lbl_cleanup;
+                        break __lbl_cleanup;  /* don't wait for "%e passage" */
                     }
                 }
             }
@@ -1638,14 +2038,21 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
     }
     void fclose(fp);
     if (nowin_buf) {
+        /* one-line buffer */
         grasped = schar((cptr.ld1s(nowin_buf) ? 1 : 0));
     } else {
         if (tribwin != -1) {
+            /* multi-line window, normal case;
+               if lastline is empty, there were no non-empty lines between
+               "%passage n" and "%e passage" so we leave 'grasped' False */
             if (cptr.ld1s(cptr.decay(lastline))) {
                 let p;
+
                 (yield* Y.icall(display_nhwindow()(tribwin, 0)));
+                /* put the final attribution line into message history,
+                   analogous to the summary line from long quest messages */
                 if (cptr.strchr(cptr.decay(lastline), 91))
-                    (yield* mungspaces(cptr.decay(lastline)));
+                    (yield* mungspaces(cptr.decay(lastline)));  /* to remove leading spaces */
                 else
                     void cptr.sprintf(cptr.decay(lastline), __s_s_by_terry_pratchett, tribtitle);
                 if ((p = cptr.strrchr(cptr.decay(lastline), 93)) !== null)
@@ -1656,6 +2063,7 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
             (yield* Y.icall(destroy_nhwindow()(tribwin)));
         }
         if (!grasped)
+            /* multi-line window, problem */
             (yield* pline(__s_it_seems_to_be_s_of_s, badtranslation, tribtitle));
     }
     return grasped;
@@ -1663,27 +2071,41 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
 
 /** C ref: files.c:3648 — @param {CPtr<char>} buf @param {CInt} bufsz @returns {CInt} */
 export function* Death_quote(buf, bufsz) {
-    let death_oid = 1;
+    let death_oid = 1;  /* chance of oid #1 being a novel is negligible */
+
     return (yield* read_tribute(__s_death, __s_death_quotes, 0, buf, bufsz, death_oid));
 }
 
+/* Locks the live log file and writes 'buffer'
+ * iff the ll_type matches sysopt.livelog mask.
+ * lltype is included in LL entry for post-process filtering also.
+ */
 /** C ref: files.c:3667 — @param {CLongLong} ll_type @param {CPtr<char>} str */
 export function* livelog_add(ll_type, str) {
     let livelogfile;
     let now;
     let gindx;
     let aindx;
+
     if (!(ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)))
         return;
+
     if ((yield* lock_file(__s_livelog, NHM.SCOREPREFIX, 10))) {
         if (!(livelogfile = fopen_datafile(__s_livelog, __s_a, NHM.SCOREPREFIX))) {
             (yield* pline(__s_cannot_open_live_log_file));
             (yield* unlock_file(__s_livelog));
             return;
         }
+
         now = (yield* getnow());
         gindx = cptr.ld1so(flags, $flag_female) ? 1 : 0;
+        /* note on alignment designation:
+               aligns[] uses [0] lawful, [1] neutral, [2] chaotic;
+               u.ualign.type uses -1 chaotic, 0 neutral, 1 lawful;
+           so subtracting from 1 converts from either to the other */
         aindx = (1 - cptr.ld1so(u, $you_ualign)) | 0;
+        /* format relies on STD C's implicit concatenation of
+           adjacent string literals */
         void fprintf(livelogfile, __s_lltype_ld_name_s_role_s_race_s_gender_s, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, aindx, $sizeof_Align, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
         void fclose(livelogfile);
         (yield* unlock_file(__s_livelog));

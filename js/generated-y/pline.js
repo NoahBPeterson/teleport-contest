@@ -101,13 +101,24 @@ const __s_exec_to_message_handler_s_failed = cptr.lit("Exec to message handler %
 const __s_fork_to_message_handler_failed = cptr.lit("Fork to message handler failed.");
 const __s_nhassert_s_failed_in_file_s_at_line_d = cptr.lit("nhassert(%s) failed in file '%s' at line %d");
 
+/* keep the most recent DUMPLOG_MSG_COUNT messages */
 /** C ref: pline.c:22 — @param {CPtr<char>} line */
 export function* dumplogmsg(line) {
-    let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);
-    let oldest = cptr.ldPtro2(gs, indx, 8, $instance_globals_s_saved_plines);
+    /*
+     * TODO:
+     *  This essentially duplicates message history, which is
+     *  currently implemented in an interface-specific manner.
+     *  The core should take responsibility for that and have
+     *  this share it.
+     */
+    let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);  /* next slot to use */
+    let oldest = cptr.ldPtro2(gs, indx, 8, $instance_globals_s_saved_plines);  /* current content of that slot */
+
     if (!cptr.strncmp(line, __s_unknown_command, 15n))
         return;
     if (oldest && cptr.strlen(oldest) >= cptr.strlen(line)) {
+        /* this buffer will gradually shrink until the 'else' is needed;
+           there's no pressing need to track allocation size instead */
         void cptr.strcpy(oldest, line);
     } else {
         if (oldest)
@@ -117,20 +128,27 @@ export function* dumplogmsg(line) {
     cptr.stI32o(gs, $instance_globals_s_saved_pline_index, u32mod(((indx + 1) >>> 0), NHM.DUMPLOG_MSG_COUNT));
 }
 
+/* called during save (unlike the interface-specific message history,
+   this data isn't saved and restored); end-of-game releases saved_plines[]
+   while writing its contents to the final dump log */
 /** C ref: pline.c:52 */
 export function dumplogfreemessages() {
     let i;
+
     for (i = 0; i < NHM.DUMPLOG_MSG_COUNT; ++i)
         if (cptr.ldPtro2(gs, i, 8, $instance_globals_s_saved_plines))
             cptr.free(cptr.ldPtro2(gs, i, 8, $instance_globals_s_saved_plines)), cptr.stPtro2(gs, i, 8, $instance_globals_s_saved_plines, null);
     cptr.stI32o(gs, $instance_globals_s_saved_pline_index, 0);
 }
 
+/* keeps windowprocs usage out of pline() */
 /** C ref: pline.c:65 — @param {CPtr<char>} line */
 function* putmesg(line) {
     let attr = NHM.ATR_NONE;
+
     if (cptr.ld1so(iflags, $instance_flags_debug_prevent_pline))
         return;
+
     if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) != 0 && (cptr.ldU64o(windowprocs, $window_procs_wincap2) & 16384n) != 0n)
         attr |= NHM.ATR_URGENT;
     if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) != 0 && (cptr.ldU64o(windowprocs, $window_procs_wincap2) & 32768n) != 0n)
@@ -139,6 +157,7 @@ function* putmesg(line) {
     ;
 }
 
+/* set the direction where next message happens */
 /** C ref: pline.c:84 — @param {CInt} dir */
 export function set_msg_dir(dir) {
     dirtocoord(cptr.add(a11y, $accessibility_data_msg_loc), dir);
@@ -146,6 +165,7 @@ export function set_msg_dir(dir) {
     cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, cptr.ldI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y) + cptr.ldI16o(u, $you_uy));
 }
 
+/* set the coordinate where next message happens */
 /** C ref: pline.c:93 — @param {CInt} x @param {CInt} y */
 export function set_msg_xy(x, y) {
     cptr.stI16o(a11y, $accessibility_data_msg_loc, x);
@@ -155,6 +175,7 @@ export function set_msg_xy(x, y) {
 /** C ref: pline.c:104 — @param {CPtr<char>} line */
 export function* pline(line, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     (yield* vpline(line, the_args));
     the_args = null;
@@ -163,7 +184,9 @@ export function* pline(line, ...__va) {
 /** C ref: pline.c:114 — @param {CInt} dir @param {CPtr<char>} line */
 export function* pline_dir(dir, line, ...__va) {
     let the_args;
+
     set_msg_dir(dir);
+
     the_args = cptr.vaList(__va);
     (yield* vpline(line, the_args));
     the_args = null;
@@ -172,7 +195,9 @@ export function* pline_dir(dir, line, ...__va) {
 /** C ref: pline.c:126 — @param {CInt} x @param {CInt} y @param {CPtr<char>} line */
 export function* pline_xy(x, y, line, ...__va) {
     let the_args;
+
     set_msg_xy(x, y);
+
     the_args = cptr.vaList(__va);
     (yield* vpline(line, the_args));
     the_args = null;
@@ -181,10 +206,12 @@ export function* pline_xy(x, y, line, ...__va) {
 /** C ref: pline.c:138 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} line */
 export function* pline_mon(mtmp, line, ...__va) {
     let the_args;
+
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
         set_msg_xy(0, 0);
     else
         set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+
     the_args = cptr.vaList(__va);
     (yield* vpline(line, the_args));
     the_args = null;
@@ -194,24 +221,31 @@ let __static_vpline_in_pline = 0; /** C ref: pline.c:155 — int (function-stati
 
 /** C ref: pline.c:153 — @param {CPtr<char>} line @param {CPtr} the_args */
 function* vpline(line, the_args) {
-    let pbuf = new Uint8Array(1280);
+    let pbuf = new Uint8Array(1280);  /* will get chopped down to BUFSZ-1 if longer */
     let ln;
     let msgtyp;
     let no_repeat;
     let a11y_mesgxy = cptr.alloc(4);
     __lbl_pline_done: {
-        cptr.memcpy(a11y_mesgxy, cptr.add(a11y, $accessibility_data_msg_loc), 4);
+
+        cptr.memcpy(a11y_mesgxy, cptr.add(a11y, $accessibility_data_msg_loc), 4);  /* save a11y.msg_loc before reseting it */
+        /* always reset a11y.msg_loc whether we end up using it or not */
         cptr.stI16o(a11y, $accessibility_data_msg_loc, cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, 0));
+
         if (!line || !cptr.ld1s(line))
             return;
         if (cptr.ldI32o(program_state, $sinfo_done_hup))
             return;
         if (cptr.ldI32o(program_state, $sinfo_wizkit_wishing))
             return;
+
+        /* when accessiblemsg is set and a11y.msg_loc is nonzero, use the latter
+           to insert a location prefix in front of current message */
         if (cptr.ld1s(a11y) && isok(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, $nhcoord_y))) {
             let tmp;
             let dirstr;
             let dirstrbuf = new Uint8Array(128);
+
             dirstr = coord_desc(cptr.ldI16(a11y_mesgxy), cptr.ldI16o(a11y_mesgxy, $nhcoord_y), cptr.decay(dirstrbuf), schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110) ? 102 : cptr.ldI32o(iflags, $instance_flags_getpos_coords))));
             tmp = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(line) + 3n) + cptr.strlen(dirstr))))));
             void cptr.strcpy(tmp, dirstr);
@@ -221,21 +255,35 @@ function* vpline(line, the_args) {
             cptr.free(tmp);
             return;
         }
+
         if (!cptr.strchr(line, 37)) {
+            /* format does not specify any substitutions; use it as-is */
             ln = Number(BigInt.asIntN(32, cptr.strlen(line)));
         } else if (cptr.ld1so(line, 0) == 37 && cptr.ld1so(line, 1) == 115 && !cptr.ld1so(line, 2)) {
-            line = cptr.vaArg(the_args, 'ptr');
+            /* "%s" => single string; skip format and use its first argument;
+               unlike with the format, it is irrelevant whether the argument
+               contains any percent signs */
+            line = cptr.vaArg(the_args, 'ptr');  /*VA_NEXT(line,const char *);*/
             ln = Number(BigInt.asIntN(32, cptr.strlen(line)));
         } else {
+            /* perform printf() formatting */
             ln = cptr.vsnprintf(cptr.decay(pbuf), 1280n, line, the_args);
             line = cptr.decay(pbuf);
+            /* note: 'ln' is number of characters attempted, not necessarily
+               strlen(line); that matters for the overflow check; if we avoid
+               the extremely-too-long panic then 'ln' will be actual length */
         }
         if (ln > 1279)
             (yield* panic(__s_pline_attempting_to_print_d_characters, ln));
+
         if (ln > 255) {
+            /* too long but modestly so; allow but truncate, preserving final
+               3 chars: "___ extremely long text" -> "___ extremely l...ext"
+               (this may be suboptimal if overflow is less than 3) */
             if (!cptr.eq(line, cptr.decay(pbuf)))
-                void __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));
+                void __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));  /* caveat: unterminated */
             cptr.st1o(cptr.decay(pbuf), 249, cptr.st1o(cptr.decay(pbuf), 250, cptr.st1o(cptr.decay(pbuf), 251, 46, 1), 1), 1);
+            /* avoid strncpy; buffers could overlap if excess is small */
             cptr.st1o(cptr.decay(pbuf), 252, cptr.ld1so(line, (ln - 3) | 0), 1);
             cptr.st1o(cptr.decay(pbuf), 253, cptr.ld1so(line, (ln - 2) | 0), 1);
             cptr.st1o(cptr.decay(pbuf), 254, cptr.ld1so(line, (ln - 1) | 0), 1);
@@ -243,40 +291,66 @@ function* vpline(line, the_args) {
             line = cptr.decay(pbuf);
         }
         msgtyp = NHM.MSGTYP_NORMAL;
+        /* We hook here early to have options-agnostic output.
+         * Unfortunately, that means Norep() isn't honored (general issue) and
+         * that short lines aren't combined into one longer one (tty behavior).
+         */
         if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.SUPPRESS_HISTORY) >>> 0) == 0)
             (yield* dumplogmsg(line));
+        /* use raw_print() if we're called too early (or perhaps too late
+           during shutdown) or if we're being called recursively (probably
+           via debugpline() in the interface code) */
         if (__static_vpline_in_pline++ || !cptr.ld1so(iflags, $instance_flags_window_inited)) {
+            /* [we should probably be using raw_printf("\n%s", line) here] */
             (yield* Y.icall(raw_print()(line)));
             cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
             break __lbl_pline_done;
         }
+
         no_repeat = schar((((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.PLINE_NOREPEAT) >>> 0) ? 1 : 0));
         if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.OVERRIDE_MSGTYPE) >>> 0) == 0) {
             msgtyp = msgtype_type(line, no_repeat);
             if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) == 0 && (msgtyp == NHM.MSGTYP_NOSHOW || (msgtyp == NHM.MSGTYP_NOREP && !strcmp(line, cptr.add(gp, $instance_globals_p_prevmsg)))))
+                /* FIXME: we need a way to tell our caller that this message
+                 * was suppressed so that caller doesn't set iflags.last_msg
+                 * for something that hasn't been shown, otherwise a subsequent
+                 * message which uses alternate wording based on that would be
+                 * doing so out of context and probably end up seeming silly.
+                 * (Not an issue for no-repeat but matters for no-show.)
+                 */
                 break __lbl_pline_done;
         }
+
         if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc)) {
             let tmp_in_pline = __static_vpline_in_pline;
+
             __static_vpline_in_pline = 0;
             (yield* vision_recalc(0));
             __static_vpline_in_pline = tmp_in_pline;
         }
         if (cptr.ldI16(u))
-            (yield* flush_screen(((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.NO_CURS_ON_U) >>> 0) ? 0 : 1));
+            (yield* flush_screen(((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.NO_CURS_ON_U) >>> 0) ? 0 : 1));  /* %% */
+
         (yield* putmesg(line));
+
         (yield* execplinehandler(line));
+
+        /* this gets cleared after every pline message */
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_UNKNOWN);
         void __builtin___strncpy_chk(cptr.add(gp, $instance_globals_p_prevmsg), line, 256n, __builtin_object_size(cptr.add(gp, $instance_globals_p_prevmsg), 1)), cptr.st1o2(gp, 255, 1, $instance_globals_p_prevmsg, 0);
         if (msgtyp == NHM.MSGTYP_STOP)
-            (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
+            (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));  /* --more-- */
     }
     --__static_vpline_in_pline;
 }
 
+/* pline() variant which can override MSGTYPE handling or suppress
+   message history (tty interface uses pline() to issue prompts and
+   they shouldn't be blockable via MSGTYPE=hide) */
 /** C ref: pline.c:299 — @param {CUInt} pflags @param {CPtr<char>} line */
 export function* custompline(pflags, line, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     cptr.stI32o(gp, $instance_globals_p_pline_flags, pflags);
     (yield* vpline(line, the_args));
@@ -284,9 +358,14 @@ export function* custompline(pflags, line, ...__va) {
     the_args = null;
 }
 
+/* if player has dismissed --More-- with ESC to suppress further messages
+   until next input request, tell the interface that it should override that
+   and re-enable them; equivalent to custompline(URGENT_MESSAGE, line, ...)
+   but slightly simpler to use */
 /** C ref: pline.c:315 — @param {CPtr<char>} line */
 export function* urgent_pline(line, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
     (yield* vpline(line, the_args));
@@ -297,6 +376,7 @@ export function* urgent_pline(line, ...__va) {
 /** C ref: pline.c:327 — @param {CPtr<char>} line */
 export function* Norep(line, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.PLINE_NOREPEAT);
     (yield* vpline(line, the_args));
@@ -326,6 +406,7 @@ export function free_youbuf() {
 export function* You(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     (yield* vpline(cptr.strcat((void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n))))))), __s_you), tmp), line), the_args));
     the_args = null;
@@ -335,6 +416,7 @@ export function* You(line, ...__va) {
 export function* Your(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     (yield* vpline(cptr.strcat((void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 6n))))))), __s_your), tmp), line), the_args));
     the_args = null;
@@ -344,6 +426,7 @@ export function* Your(line, ...__va) {
 export function* You_feel(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n))))))), __s_you_dream_that_you_feel);
@@ -357,6 +440,7 @@ export function* You_feel(line, ...__va) {
 export function* You_cant(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     (yield* vpline(cptr.strcat((void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 11n))))))), __s_you_can_t), tmp), line), the_args));
     the_args = null;
@@ -366,6 +450,7 @@ export function* You_cant(line, ...__va) {
 export function* pline_The(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     (yield* vpline(cptr.strcat((void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 5n))))))), __s_the), tmp), line), the_args));
     the_args = null;
@@ -375,6 +460,7 @@ export function* pline_The(line, ...__va) {
 export function* There(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     (yield* vpline(cptr.strcat((void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 7n))))))), __s_there), tmp), line), the_args));
     the_args = null;
@@ -384,6 +470,7 @@ export function* There(line, ...__va) {
 export function* You_hear(line, ...__va) {
     let the_args;
     let tmp;
+
     if ((Deaf() && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) || !cptr.ld1s(flags))
         return;
     the_args = cptr.vaList(__va);
@@ -392,7 +479,7 @@ export function* You_hear(line, ...__va) {
     else if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 25n))))))), __s_you_dream_that_you_hear);
     else
-        void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n))))))), __s_you_hear);
+        void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 10n))))))), __s_you_hear);  /* Deaf-aware */
     (yield* vpline(cptr.strcat(tmp, line), the_args));
     the_args = null;
 }
@@ -401,6 +488,7 @@ export function* You_hear(line, ...__va) {
 export function* You_see(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         void cptr.strcpy((tmp = (yield* You_buf(Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(line) + 24n))))))), __s_you_dream_that_you_see);
@@ -412,10 +500,15 @@ export function* You_see(line, ...__va) {
     the_args = null;
 }
 
+/* Print a message inside double-quotes.
+ * The caller is responsible for checking deafness.
+ * Gods can speak directly to you in spite of deafness.
+ */
 /** C ref: pline.c:476 — @param {CPtr<char>} line */
 export function* verbalize(line, ...__va) {
     let the_args;
     let tmp;
+
     the_args = cptr.vaList(__va);
     cptr.stI32o(gp, $instance_globals_p_pline_flags, cptr.ldI32o(gp, $instance_globals_p_pline_flags) | NHM.PLINE_VERBALIZE);
     tmp = (yield* You_buf(Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(line))))) + 3n)))));
@@ -431,6 +524,7 @@ export function* verbalize(line, ...__va) {
 export function* gamelog_add(glflags, gltime, str) {
     let tmp;
     let lst = cptr.ldPtro(gg, $instance_globals_g_gamelog);
+
     tmp = (yield* alloc(32));
     cptr.stI64(tmp, gltime);
     cptr.stI64o(tmp, $gamelog_line_flags, glflags);
@@ -448,9 +542,11 @@ export function* gamelog_add(glflags, gltime, str) {
 export function* livelog_printf(ll_type, line, ...__va) {
     let gamelogbuf = new Uint8Array(512);
     let the_args;
+
     the_args = cptr.vaList(__va);
     void cptr.vsnprintf(cptr.decay(gamelogbuf), 512n, line, the_args);
     the_args = null;
+
     (yield* gamelog_add(ll_type, cptr.ldI64o(svm, $instance_globals_saved_m_moves), cptr.decay(gamelogbuf)));
     (yield* strNsubst(cptr.decay(gamelogbuf), __s_tab, __s_us, 0));
     (yield* livelog_add(ll_type, cptr.decay(gamelogbuf)));
@@ -459,6 +555,7 @@ export function* livelog_printf(ll_type, line, ...__va) {
 /** C ref: pline.c:549 — @param {CPtr<char>} line */
 export function* raw_printf(line, ...__va) {
     let the_args;
+
     the_args = cptr.vaList(__va);
     (yield* vraw_printf(line, the_args));
     the_args = null;
@@ -468,7 +565,8 @@ export function* raw_printf(line, ...__va) {
 
 /** C ref: pline.c:563 — @param {CPtr<char>} line @param {CPtr} the_args */
 function* vraw_printf(line, the_args) {
-    let pbuf = new Uint8Array(1280);
+    let pbuf = new Uint8Array(1280);  /* will be chopped down to BUFSZ-1 if longer */
+
     if (cptr.strchr(line, 37)) {
         void cptr.vsnprintf(cptr.decay(pbuf), 1280n, line, the_args);
         line = cptr.decay(pbuf);
@@ -476,7 +574,8 @@ function* vraw_printf(line, the_args) {
     if (Number(BigInt.asIntN(32, cptr.strlen(line))) > 255) {
         if (!cptr.eq(line, cptr.decay(pbuf)))
             line = __builtin___strncpy_chk(cptr.decay(pbuf), line, 255n, __builtin_object_size(cptr.decay(pbuf), 1));
-        cptr.st1o(cptr.decay(pbuf), 255, 0, 1);
+        /* unlike pline, we don't futz around to keep last few chars */
+        cptr.st1o(cptr.decay(pbuf), 255, 0, 1);  /* terminate strncpy or truncate vsprintf */
     }
     (yield* Y.icall(raw_print()(line)));
     (yield* execplinehandler(line));
@@ -487,25 +586,31 @@ function* vraw_printf(line, the_args) {
 /** C ref: pline.c:584 — @param {CPtr<char>} s */
 export function* impossible(s, ...__va) {
     let the_args;
-    let pbuf = new Uint8Array(1280);
+    let pbuf = new Uint8Array(1280);  /* will be chopped down to BUFSZ-1 if longer */
     let pbuf2 = new Uint8Array(256);
+
     the_args = cptr.vaList(__va);
     if (cptr.ldI32o(program_state, $sinfo_in_impossible))
         (yield* panic(__s_impossible_called_impossible));
+
     cptr.stI32o(program_state, $sinfo_in_impossible, 1);
     void cptr.vsnprintf(cptr.decay(pbuf), 1280n, s, the_args);
     the_args = null;
-    cptr.st1o(cptr.decay(pbuf), 255, 0, 1);
+    cptr.st1o(cptr.decay(pbuf), 255, 0, 1);  /* sanity */
     (yield* paniclog(__s_impossible, cptr.decay(pbuf)));
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) == NHC.fuzzer_impossible_panic)
         (yield* panic(__s_pct_s, cptr.decay(pbuf)));
+
     cptr.stI32o(gp, $instance_globals_p_pline_flags, NHM.URGENT_MESSAGE);
     (yield* pline(__s_pct_s, cptr.decay(pbuf)));
     cptr.stI32o(gp, $instance_globals_p_pline_flags, 0);
+
     if (cptr.ldI32o(program_state, $sinfo_in_sanity_check)) {
+        /* skip rest of multi-line feedback */
         cptr.stI32o(program_state, $sinfo_in_impossible, 0);
         return;
     }
+
     void cptr.strcpy(cptr.decay(pbuf2), __s_program_in_disorder);
     if (cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         void cptr.strcat(cptr.decay(pbuf2), __s_saving_and_reloading_may_fix_this);
@@ -516,11 +621,13 @@ export function* impossible(s, ...__va) {
     }
     if (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl)) {
         let report = schar((121 == (yield* yn_function(__s_report_now, cptr.decay(ynchars), 110, 0))));
-        (yield* Y.icall(raw_print()(__s_empty)));
+
+        (yield* Y.icall(raw_print()(__s_empty)));  /* prove to the user the character was accepted */
         if (report) {
             (yield* submit_web_report(1, __s_impossible__2, cptr.decay(pbuf)));
         }
     }
+
     cptr.stI32o(program_state, $sinfo_in_impossible, 0);
 }
 
@@ -531,6 +638,7 @@ let use_pline_handler = 1;
 function* execplinehandler(line) {
     let f;
     let args = cptr.alloc(3 * 8);
+
     if (!use_pline_handler || !cptr.ldPtro(sysopt, $sysopt_s_msghandler))
         return;
     f = fork();
@@ -546,6 +654,7 @@ function* execplinehandler(line) {
         (yield* nh_terminate(1));
     } else if (f > 0) {
         let status = cptr.box(0);
+
         waitpid(f, status, 0);
     } else if (f == -1) {
         perror(null);
@@ -554,15 +663,21 @@ function* execplinehandler(line) {
     }
 }
 
+/* nhassert_failed is called when an nhassert's condition is false */
 /** C ref: pline.c:690 — @param {CPtr<char>} expression @param {CPtr<char>} filepath @param {CInt} line */
 export function* nhassert_failed(expression, filepath, line) {
     let filename;
     let p;
+
+    /* Attempt to get filename from path.
+       TODO: we really need a port provided function to return a filename
+       from a path. */
     filename = filepath;
     if ((p = cptr.strrchr(filename, 47)) !== null)
         filename = cptr.add(p, 1);
     if ((p = cptr.strrchr(filename, 92)) !== null)
         filename = cptr.add(p, 1);
+
     (yield* impossible(__s_nhassert_s_failed_in_file_s_at_line_d, expression, filename, line));
 }
 

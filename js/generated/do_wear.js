@@ -372,9 +372,10 @@ cptr.stI64o(takeoff_order, 96, 1024n);
 cptr.stI64o(takeoff_order, 104, 512n);
 cptr.stI64o(takeoff_order, 112, 0n);
 
+/* plural "fingers" or optionally "gloves" */
 /** C ref: do_wear.c:60 — @param {CInt} check_gloves @returns {CPtr<char>} */
 export function fingers_or_gloves(check_gloves) {
-    return ((check_gloves && uarmg.v) ? gloves_simple_name(uarmg.v) : makeplural(body_part(NHC.FINGER)));
+    return ((check_gloves && uarmg.v) ? gloves_simple_name(uarmg.v) : makeplural(body_part(NHC.FINGER)));  /* "fingers" */
 }
 
 /** C ref: do_wear.c:68 — @param {CPtr<struct obj>} otmp */
@@ -383,15 +384,23 @@ export function off_msg(otmp) {
         You(__s_were_wearing_s, doname(otmp));
 }
 
+/* for items that involve no delay */
 /** C ref: do_wear.c:76 — @param {CPtr<struct obj>} otmp */
 function on_msg(otmp) {
+    /* on_msg() for rings and amulets just shows add-to-invent feedback
+       [after caller calls setworn(), for suffix: "(on {left|right} hand)"
+       or "(being worn)"]; eyewear too unless giving verbose message below */
     if ((cptr.ldI64o(otmp, $obj_owornmask) & 458752n) != 0n || ((cptr.ldI64o(otmp, $obj_owornmask) & 524288n) != 0n && !cptr.ld1so(flags, $flag_verbose))) {
         prinv((null), otmp, 0n);
         return;
     }
+
     if (cptr.ld1so(flags, $flag_verbose)) {
         let how = new Uint8Array(256);
+        /* call xname() before obj_is_pname(); formatting obj's name
+           might set obj->dknown and that affects the pname test */
         let otmp_name = xname(otmp);
+
         cptr.st1o(cptr.decay(how), 0, 0, 1);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL)
             void cptr.sprintf(cptr.decay(how), __s_around_your_s, body_part(NHC.HEAD));
@@ -399,15 +408,21 @@ function on_msg(otmp) {
     }
 }
 
+/* putting on or taking off an item which confers stealth;
+   give feedback and discover it iff stealth state is changing;
+   stealth is blocked by riding unless hero+steed fly (handled with
+   BStealth by mount and dismount routines) */
 /** C ref: do_wear.c:107 — @param {CPtr<struct obj>} obj @param {CLongLong} oldprop @param {CInt} on */
 function toggle_stealth(obj, oldprop, on) {
     if (on ? cptr.ld1so(gi, $instance_globals_i_initial_don) : cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
         return;
+
     if (!oldprop && !HStealth() && !BStealth()) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_STEALTH)
             learnring(obj, 1);
         else
             discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
+
         if (on) {
             if (!is_boots(obj))
                 You(__s_move_very_quietly);
@@ -417,25 +432,40 @@ function toggle_stealth(obj, oldprop, on) {
                 You(__s_walk_very_quietly);
         } else {
             let riding = schar((!cptr.eq(cptr.ldPtro(u, $you_usteed), (null))));
+
             You(__s_s_s_are_noisy, riding ? __s_and : __s_sure, riding ? x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_YOUR, (null), 12, 0) : __s_empty);
         }
     }
 }
 
+/* putting on or taking off an item which confers displacement, or gaining
+   or losing timed displacement after eating a displacer beast corpse or tin;
+   give feedback and discover it iff displacement state is changing *and*
+   hero is able to see self (or sense monsters); for timed, 'obj' is Null
+   and this is only called for the message */
 /** C ref: do_wear.c:148 — @param {CPtr<struct obj>} obj @param {CLongLong} oldprop @param {CInt} on */
 export function toggle_displacement(obj, oldprop, on) {
     if (on ? cptr.ld1so(gi, $instance_globals_i_initial_don) : cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
         return;
+
     if (!oldprop && !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_intrinsic)) && !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_blocked)) && ((!Blind() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !Invisible()) || (Unblind_telepat() || (Blind_telepat() && Blind()) || Detect_monsters()))) {
         if (obj)
             discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
+
         You_feel(__s_that_monsters_s_have_difficulty, on ? __s_empty : __s_no_longer);
     }
 }
 
+/*
+ * The Type_on() functions should be called *after* setworn().
+ * The Type_off() functions call setworn() themselves.
+ * [Blindf_on() is an exception and calls setworn() itself.]
+ */
+
 /** C ref: do_wear.c:187 @returns {CInt} */
 export function Boots_on() {
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -33n;
+
     switch (cptr.ldI16o(uarmf.v, $obj_otyp)) {
         case NHC.LOW_BOOTS:
         case NHC.IRON_SHOES:
@@ -444,15 +474,28 @@ export function Boots_on() {
         case NHC.KICKING_BOOTS:
         break;
         case NHC.WATER_WALKING_BOOTS:
+        /*
+         * Sequencing issue?  If underwater (perhaps via magical breathing),
+         * putting on water walking boots produces "you slowly rise above
+         * the surface" then "you finish your dressing maneuver".
+         */
+
+        /* spoteffects() doesn't get called here; pooleffects() is called
+           during movement and u.uinwater is already False after setworn() */
         if ((cptr.ldI32o(u, $you_uinwater) & 1))
             spoteffects(1);
+        /* init'd in accessory_or_armor_on() and only used here */
         if (cptr.ld1uo(gw, $instance_globals_w_wasinwater)) {
             if (!(cptr.ldI32o(u, $you_uinwater) & 1))
                 discover_object(NHC.WATER_WALKING_BOOTS, 1, 1, 1);
             cptr.st1o(gw, $instance_globals_w_wasinwater, 0);
         }
+        /* (we don't need a lava check here since boots can't be
+           put on while feet are stuck) */
         break;
         case NHC.SPEED_BOOTS:
+        /* Speed boots are still better than intrinsic speed, */
+        /* though not better than potion speed */
         if (!oldprop && !(HFast() & 16777215n)) {
             discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1);
             You_feel(__s_yourself_speed_up_s, (oldprop || HFast()) ? __s_a_bit_more : __s_empty);
@@ -468,20 +511,21 @@ export function Boots_on() {
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
             cptr.stI32o(uarmf.v, $obj_known, 1);
-            cptr.st1(disp, 1);
+            cptr.st1(disp, 1);  /* status hilites might mark AC changed */
             discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1);
             float_up();
             if (Levitation())
-                spoteffects(0);
+                spoteffects(0);  /* for sink effect */
         } else {
-            float_vs_flight();
+            float_vs_flight();  /* maybe toggle BFlying's I_SPECIAL */
         }
         break;
         default:
         impossible(cptr.decay(unknown_type), cptr.decay(c_boots), cptr.ldI16o(uarmf.v, $obj_otyp));
     }
+    /* uarmf could be Null here (levitation boots put on over a sink) */
     if (uarmf.v && !(cptr.ldI32o(uarmf.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmf.v, $obj_known, 1);
+        cptr.stI32o(uarmf.v, $obj_known, 1);  /* boots' +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -492,7 +536,11 @@ export function Boots_off() {
     let otmp = uarmf.v;
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -33n;
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-33n));
+    /* For levitation, float_down() returns if Levitation, so we
+     * must do a setworn() _before_ the levitation case.
+     */
     setworn(null, 32n);
     switch (otyp) {
         case NHC.SPEED_BOOTS:
@@ -502,7 +550,9 @@ export function Boots_off() {
         }
         break;
         case NHC.WATER_WALKING_BOOTS:
+        /* check for lava since fireproofed boots make it viable */
         if ((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && !Levitation() && !Flying() && !(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) && has_ceiling(cptr.add(u, $you_uz))) && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don) && !cptr.ldI32o(iflags, $instance_flags_in_lava_effects)) {
+            /* make boots known in case you survive the drowning */
             discover_object((otyp), 1, 1, 1);
             spoteffects(1);
         }
@@ -516,11 +566,13 @@ export function Boots_off() {
         break;
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n) && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
+            /* lava_effects() sets in_lava_effects and calls Boots_off()
+               so hero is already in midst of floating down */
             if (!cptr.ldI32o(iflags, $instance_flags_in_lava_effects))
                 void float_down(0n, 0n);
             discover_object((otyp), 1, 1, 1);
         } else {
-            float_vs_flight();
+            float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
         }
         break;
         case NHC.LOW_BOOTS:
@@ -539,6 +591,7 @@ export function Boots_off() {
 /** C ref: do_wear.c:326 @returns {CInt} */
 function Cloak_on() {
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -3n;
+
     switch (cptr.ldI16o(uarmc.v, $obj_otyp)) {
         case NHC.ORCISH_CLOAK:
         case NHC.DWARVISH_CLOAK:
@@ -556,12 +609,15 @@ function Cloak_on() {
         toggle_displacement(uarmc.v, oldprop, 1);
         break;
         case NHC.MUMMY_WRAPPING:
+        /* Note: it's already being worn, so we have to cheat here. */
         if ((HInvis() || EInvis()) && !Blind()) {
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             You(__s_can_s, See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself));
         }
         break;
         case NHC.CLOAK_OF_INVISIBILITY:
+        /* since cloak of invisibility was worn, we know mummy wrapping
+           wasn't, so no need to check `oldprop' against blocked */
         if (!oldprop && !HInvis() && !Blind()) {
             discover_object((cptr.ldI16o(uarmc.v, $obj_otyp)), 1, 1, 1);
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -578,7 +634,7 @@ function Cloak_on() {
         impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), cptr.ldI16o(uarmc.v, $obj_otyp));
     }
     if (uarmc.v && !(cptr.ldI32o(uarmc.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmc.v, $obj_known, 1);
+        cptr.stI32o(uarmc.v, $obj_known, 1);  /* cloak's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -589,7 +645,9 @@ export function Cloak_off() {
     let otmp = uarmc.v;
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -3n;
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-3n));
+    /* For mummy wrapping, taking it off first resets `Invisible'. */
     setworn(null, 2n);
     switch (otyp) {
         case NHC.ORCISH_CLOAK:
@@ -649,14 +707,22 @@ function Helmet_on() {
         adj_abon(uarmh.v, cptr.ld1so(uarmh.v, $obj_spe));
         break;
         case NHC.CORNUTHAUM:
+        /* people think marked wizards know what they're talking about,
+           but it takes trained arrogance to pull it off, and the actual
+           enchantment of the hat is irrelevant */
         cptr.st1o2(u, NHC.A_CHA, 1, $you_abon, cptr.ld1so2(u, NHC.A_CHA, 1, $you_abon) + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 1 : -1));
         cptr.st1(disp, 1);
         discover_object((cptr.ldI16o(uarmh.v, $obj_otyp)), 1, 1, 1);
         break;
         case NHC.HELM_OF_OPPOSITE_ALIGNMENT:
-        cptr.stI32o(uarmh.v, $obj_known, 1);
+        cptr.stI32o(uarmh.v, $obj_known, 1);  /* do this here because uarmh could get cleared */
+        /* changing alignment can toggle off active artifact properties,
+           including levitation; uarmh could get dropped or destroyed here
+           by hero falling onto a polymorph trap or into water (emergency
+           disrobe) or maybe lava (probably not, helm isn't 'organic') */
         uchangealign((cptr.ld1so(u, $you_ualign) != NHM.A_NEUTRAL) ? -cptr.ld1so(u, $you_ualign) : ((u32mod(cptr.ldI32o(uarmh.v, $obj_o_id), 2)) ? -1 : NHM.A_LAWFUL), NHC.A_CG_HELM_ON);
         // @FallThrough
+        /* makeknown(HELM_OF_OPPOSITE_ALIGNMENT); -- below, after Tobjnam() */
         ;
         case NHC.DUNCE_CAP:
         if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_cursed) & 1)) {
@@ -665,27 +731,31 @@ function Helmet_on() {
             else
                 pline(__s_s_s_for_a_moment, Tobjnam(uarmh.v, __s_glow), hcolor(cptr.ldPtr(c_color_names)));
             curse(uarmh.v);
+            /* curse() doesn't touch bknown so doesn't update persistent
+               inventory; do so now [set_bknown() calls update_inventory()] */
             if (Blind())
-                set_bknown(uarmh.v, 0);
+                set_bknown(uarmh.v, 0);  /* lose bknown if previously set */
             else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-                set_bknown(uarmh.v, 1);
+                set_bknown(uarmh.v, 1);  /* (bknown should already be set) */
             else if ((cptr.ldI32o(uarmh.v, $obj_bknown) & 1))
-                update_inventory();
+                update_inventory();  /* keep bknown as-is; display the curse */
         }
-        cptr.st1(disp, 1);
+        cptr.st1(disp, 1);  /* reveal new alignment or INT & WIS */
         if (Hallucination()) {
-            pline(__s_my_brain_hurts);
+            pline(__s_my_brain_hurts);  /* Monty Python's Flying Circus */
         } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP) {
             You_feel(__s_pct_s_dot, (acurr(NHC.A_INT)) <= (((((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon))) | 0) + (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0) ? __s_like_sitting_in_a_corner : __s_giddy);
         } else {
+            /* [message formerly given here moved to uchangealign()] */
             discover_object(NHC.HELM_OF_OPPOSITE_ALIGNMENT, 1, 1, 1);
         }
         break;
         default:
         impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16o(uarmh.v, $obj_otyp));
     }
+    /* uarmh could be Null due to uchangealign() */
     if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmh.v, $obj_known, 1);
+        cptr.stI32o(uarmh.v, $obj_known, 1);  /* helmet's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -694,6 +764,7 @@ function Helmet_on() {
 /** C ref: do_wear.c:518 @returns {CInt} */
 export function Helmet_off() {
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-5n));
+
     switch (cptr.ldI16o(uarmh.v, $obj_otyp)) {
         case NHC.FEDORA:
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST))
@@ -716,6 +787,7 @@ export function Helmet_off() {
         break;
         case NHC.HELM_OF_TELEPATHY:
         case NHC.HELM_OF_CAUTION:
+        /* need to update ability before calling see_monsters() */
         setworn(null, 4n);
         see_monsters();
         return 0;
@@ -724,6 +796,9 @@ export function Helmet_off() {
             adj_abon(uarmh.v, schar((-cptr.ld1so(uarmh.v, $obj_spe))));
         break;
         case NHC.HELM_OF_OPPOSITE_ALIGNMENT:
+        /* changing alignment can toggle off active artifact
+           properties, including levitation; uarmh could get
+           dropped or destroyed here */
         uchangealign(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase), NHC.A_CG_HELM_OFF);
         break;
         default:
@@ -734,6 +809,7 @@ export function Helmet_off() {
     return 0;
 }
 
+/* hard helms provide better protection against falling rocks */
 /** C ref: do_wear.c:568 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function hard_helmet(obj) {
     if (!obj || !is_helmet(obj))
@@ -744,6 +820,7 @@ export function hard_helmet(obj) {
 /** C ref: do_wear.c:576 @returns {CInt} */
 function Gloves_on() {
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -17n;
+
     switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
         case NHC.LEATHER_GLOVES:
         break;
@@ -753,7 +830,7 @@ function Gloves_on() {
         break;
         case NHC.GAUNTLETS_OF_POWER:
         discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1);
-        cptr.st1(disp, 1);
+        cptr.st1(disp, 1);  /* taken care of in attrib.c */
         break;
         case NHC.GAUNTLETS_OF_DEXTERITY:
         adj_abon(uarmg.v, cptr.ld1so(uarmg.v, $obj_spe));
@@ -762,28 +839,38 @@ function Gloves_on() {
         impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16o(uarmg.v, $obj_otyp));
     }
     if (!(cptr.ldI32o(uarmg.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmg.v, $obj_known, 1);
+        cptr.stI32o(uarmg.v, $obj_known, 1);  /* gloves' +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
 }
 
+/* check for wielding cockatrice corpse after taking off gloves or yellow
+   dragon scales/mail or having temporary stoning resistance time out */
 /** C ref: do_wear.c:608 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} how @param {CInt} voluntary */
 export function wielding_corpse(obj, how, voluntary) {
     if (!obj || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || uarmg.v)
         return;
+    /* note: can't dual-wield with non-weapons/weapon-tools so u.twoweap
+       will always be false if uswapwep happens to be a corpse */
     if (!cptr.eq(obj, uwep.v) && (!cptr.eq(obj, uswapwep.v) || !cptr.ld1so(u, $you_twoweap)))
         return;
+
     if (touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)) && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
         let hbuf = new Uint8Array(256);
+
         You(__s_s_s_in_your_bare_s, (how && is_gloves(how)) ? __s_now_wield : __s_are_wielding, corpse_xname(obj, null, NHM.CXN_ARTICLE), makeplural(body_part(NHC.HAND)));
+        /* "removing" ought to be "taking off" but that makes the
+           tombstone text more likely to be truncated */
         if (how)
             void cptr.sprintf(cptr.decay(hbuf), __s_s_s, voluntary ? __s_removing : __s_losing, is_gloves(how) ? gloves_simple_name(how) : strsubst(simpleonames(how), __s_set_of, __s_empty));
         else
             void cptr.strcpy(cptr.decay(hbuf), __s_resistance_timing_out);
         nh_snprintf(__s_wielding_corpse, 636, cptr.decay(kbuf), 256n, __s_s_while_wielding_s, cptr.decay(hbuf), killer_xname(obj));
         instapetrify(cptr.decay(kbuf));
+        /* life-saved or got poly'd into a stone golem; can't continue
+           wielding cockatrice corpse unless have now become resistant */
         if (!Stone_resistance())
             remove_worn_item(obj, 0);
     }
@@ -791,10 +878,12 @@ export function wielding_corpse(obj, how, voluntary) {
 
 /** C ref: do_wear.c:646 @returns {CInt} */
 export function Gloves_off() {
-    let gloves = uarmg.v;
+    let gloves = uarmg.v;  /* needed after uarmg has been set to Null */
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -17n;
     let on_purpose = schar((!cptr.ld1so(svc, $context_info_mon_moving) && !(cptr.ldI32o(uarmg.v, $obj_in_use) & 1) ? 1 : 0));
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-17n));
+
     switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
         case NHC.LEATHER_GLOVES:
         break;
@@ -804,7 +893,7 @@ export function Gloves_off() {
         break;
         case NHC.GAUNTLETS_OF_POWER:
         discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1);
-        cptr.st1(disp, 1);
+        cptr.st1(disp, 1);  /* taken care of in attrib.c */
         break;
         case NHC.GAUNTLETS_OF_DEXTERITY:
         if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
@@ -815,20 +904,41 @@ export function Gloves_off() {
     }
     setworn(null, 16n);
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, 0);
-    encumber_msg();
+    encumber_msg();  /* immediate feedback for GoP */
+
+    /* usually can't remove gloves when they're slippery but it can
+       be done by having them fall off (polymorph), stolen, or
+       destroyed (scroll, overenchantment, monster spell); if that
+       happens, 'cure' slippery fingers so that it doesn't transfer
+       from gloves to bare hands */
     if (Glib())
-        make_glib(0);
+        make_glib(0);  /* for update_inventory() */
+
+    /* prevent wielding cockatrice when not wearing gloves */
     if (uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.CORPSE)
         wielding_corpse(uwep.v, gloves, on_purpose);
+    /* KMH -- ...or your secondary weapon when you're wielding it
+       [This case can't actually happen; twoweapon mode won't engage
+       if a corpse has been set up as either the primary or alternate
+       weapon.  If it could happen and /both/ uwep and uswapwep could
+       be cockatrice corpses, life-saving for the first would need to
+       prevent the second from being fatal since conceptually they'd
+       be being touched simultaneously.] */
     if (cptr.ld1so(u, $you_twoweap) && uswapwep.v && cptr.ldI16o(uswapwep.v, $obj_otyp) == NHC.CORPSE)
         wielding_corpse(uswapwep.v, gloves, on_purpose);
+
     if (cptr.ld1so2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_enabled))
         cptr.st1(disp, 1);
+
     return 0;
 }
 
 /** C ref: do_wear.c:705 @returns {CInt} */
 function Shield_on() {
+    /* no shield currently requires special handling when put on, but we
+       keep this uncommented in case somebody adds a new one which does
+       [the magical shields are handled by setting u.uprops[*].extrinsic
+       in setworn() called by armor_or_accessory_on() before Shield_on()] */
     switch (cptr.ldI16o(uarms.v, $obj_otyp)) {
         case NHC.SMALL_SHIELD:
         case NHC.SHIELD_OF_DRAIN_RESISTANCE:
@@ -844,7 +954,7 @@ function Shield_on() {
         impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16o(uarms.v, $obj_otyp));
     }
     if (!(cptr.ldI32o(uarms.v, $obj_known) & 1)) {
-        cptr.stI32o(uarms.v, $obj_known, 1);
+        cptr.stI32o(uarms.v, $obj_known, 1);  /* shield's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -853,6 +963,9 @@ function Shield_on() {
 /** C ref: do_wear.c:733 @returns {CInt} */
 export function Shield_off() {
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-9n));
+
+    /* no shield currently requires special handling when taken off, but we
+       keep this uncommented in case somebody adds a new one which does */
     switch (cptr.ldI16o(uarms.v, $obj_otyp)) {
         case NHC.SMALL_SHIELD:
         case NHC.SHIELD_OF_DRAIN_RESISTANCE:
@@ -867,12 +980,15 @@ export function Shield_off() {
         default:
         impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16o(uarms.v, $obj_otyp));
     }
+
     setworn(null, 8n);
     return 0;
 }
 
 /** C ref: do_wear.c:759 @returns {CInt} */
 function Shirt_on() {
+    /* no shirt currently requires special handling when put on, but we
+       keep this uncommented in case somebody adds a new one which does */
     switch (cptr.ldI16o(uarmu.v, $obj_otyp)) {
         case NHC.HAWAIIAN_SHIRT:
         case NHC.T_SHIRT:
@@ -881,7 +997,7 @@ function Shirt_on() {
         impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16o(uarmu.v, $obj_otyp));
     }
     if (!(cptr.ldI32o(uarmu.v, $obj_known) & 1)) {
-        cptr.stI32o(uarmu.v, $obj_known, 1);
+        cptr.stI32o(uarmu.v, $obj_known, 1);  /* shirt's +/- evident because of status line AC */
         update_inventory();
     }
     return 0;
@@ -890,6 +1006,9 @@ function Shirt_on() {
 /** C ref: do_wear.c:778 @returns {CInt} */
 export function Shirt_off() {
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-65n));
+
+    /* no shirt currently requires special handling when taken off, but we
+       keep this uncommented in case somebody adds a new one which does */
     switch (cptr.ldI16o(uarmu.v, $obj_otyp)) {
         case NHC.HAWAIIAN_SHIRT:
         case NHC.T_SHIRT:
@@ -897,14 +1016,17 @@ export function Shirt_off() {
         default:
         impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16o(uarmu.v, $obj_otyp));
     }
+
     setworn(null, 64n);
     return 0;
 }
 
+/* handle extra abilities for hero wearing dragon scale armor */
 /** C ref: do_wear.c:798 — @param {CPtr<struct obj>} otmp @param {CInt} puton @param {CInt} on_purpose */
 function dragon_armor_handling(otmp, puton, on_purpose) {
     if (!otmp)
         return;
+
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.BLACK_DRAGON_SCALES:
         case NHC.BLACK_DRAGON_SCALE_MAIL:
@@ -961,6 +1083,9 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
             cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) | 1n);
         } else {
             cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) & (-2n));
+
+            /* prevent wielding cockatrice after losing stoning resistance
+               when not wearing gloves; the uswapwep case is always a no-op */
             wielding_corpse(uwep.v, otmp, on_purpose);
             wielding_corpse(uswapwep.v, otmp, on_purpose);
         }
@@ -983,10 +1108,12 @@ function Armor_on() {
     if (!uarm.v)
         return 0;
     if (!(cptr.ldI32o(uarm.v, $obj_known) & 1)) {
-        cptr.stI32o(uarm.v, $obj_known, 1);
+        cptr.stI32o(uarm.v, $obj_known, 1);  /* suit's +/- evident because of status line AC */
         update_inventory();
     }
     dragon_armor_handling(uarm.v, 1, 1);
+    /* gold DSM requires extra handling since it emits light when worn;
+       do that after the special armor handling */
     if (artifact_light(uarm.v) && !(cptr.ldI32o(uarm.v, $obj_lamplit) & 1)) {
         begin_burn(uarm.v, 0);
         if (!Blind())
@@ -999,39 +1126,62 @@ function Armor_on() {
 export function Armor_off() {
     let otmp = uarm.v;
     let was_arti_light = schar((otmp && (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 && artifact_light(otmp) ? 1 : 0));
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-2n));
     setworn(null, 1n);
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, 0);
+
+    /* taking off yellow dragon scales/mail might be fatal; arti_light
+       comes from gold dragon scales/mail so they don't overlap, but
+       conceptually the non-fatal change should be done before the
+       potentially fatal change in case the latter results in bones */
     if (was_arti_light && !artifact_light(otmp)) {
         end_burn(otmp, 0);
         if (!Blind())
             pline(__s_s_shining, Tobjnam(otmp, __s_stop));
     }
     dragon_armor_handling(otmp, 0, 1);
+
     return 0;
 }
 
+/* The gone functions differ from the off functions in that if you die from
+ * taking it off and have life saving, you still die.  [Obsolete reference
+ * to lack of fire resistance being fatal in hell (nethack 3.0) and life
+ * saving putting a removed item back on to prevent that from immediately
+ * repeating.]
+ */
 /** C ref: do_wear.c:939 @returns {CInt} */
 export function Armor_gone() {
     let otmp = uarm.v;
     let was_arti_light = schar((otmp && (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 && artifact_light(otmp) ? 1 : 0));
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-2n));
     setnotworn(uarm.v);
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, 0);
+
+    /* losing yellow dragon scales/mail might be fatal; arti_light
+       comes from gold dragon scales/mail so they don't overlap, but
+       conceptually the non-fatal change should be done before the
+       potentially fatal change in case the latter results in bones */
     if (was_arti_light && !artifact_light(otmp)) {
         end_burn(otmp, 0);
         if (!Blind())
             pline(__s_s_shining, Tobjnam(otmp, __s_stop));
     }
     dragon_armor_handling(otmp, 0, 0);
+
     return 0;
 }
 
 /** C ref: do_wear.c:963 — @param {CPtr<struct obj>} amul */
 function Amulet_on(amul) {
     let on_msg_done = 0;
+
+    /* make sure amulet isn't wielded/alt-wielded/quivered, before wearing */
     remove_worn_item(amul, 0);
     setworn(amul, 65536n);
+
     switch (cptr.ldI16o(uamul.v, $obj_otyp)) {
         case NHC.AMULET_OF_ESP:
         case NHC.AMULET_OF_LIFE_SAVING:
@@ -1042,6 +1192,9 @@ function Amulet_on(amul) {
         case NHC.AMULET_OF_MAGICAL_BREATHING:
         {
             let was_in_poison_gas;
+
+            /* amulet is already on; we need to check hero's gas-cloud status
+               when it was off */
             cptr.stI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) & (-65537n));
             was_in_poison_gas = region_danger();
             cptr.stI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) | 65536n);
@@ -1051,6 +1204,8 @@ function Amulet_on(amul) {
                 on_msg_done = 1;
                 You(__s_are_no_longer_bothered_by_the_poison_gas);
             }
+            /* no need to check for becoming able to breathe underwater;
+               if we are underwater, we already can or we would have drowned */
             break;
         }
         case NHC.AMULET_OF_UNCHANGING:
@@ -1062,19 +1217,29 @@ function Amulet_on(amul) {
             let call_it = 0;
             let new_sex;
             let orig_sex = poly_gender();
+
+            /* in normal play it's not possible to put on an amulet of change
+               while already wearing an amulet of unchanging, but in wizard
+               mode the Unchanging attribute can be set via #wizintrinsic */
             if (!Unchanging())
                 change_sex();
+
             new_sex = poly_gender();
             if (new_sex != orig_sex)
                 discover_object(NHC.AMULET_OF_CHANGE, 1, 1, 1);
-            on_msg(uamul.v);
+            on_msg(uamul.v);  /* show 'z - amulet of change (being worn)' */
             on_msg_done = 1;
+
+            /* Don't use same message as polymorph */
             if (new_sex != orig_sex) {
-                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                cptr.st1(disp, 1);
+                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* glyphmon flag and tile have changed */
+                cptr.st1(disp, 1);  /* role name or rank title might have changed */
                 You(__s_are_suddenly_very_s, cptr.ld1so(flags, $flag_female) ? __s_feminine : __s_masculine);
             } else {
+                /* already polymorphed into single-gender monster; only
+                   changed the character's base sex */
                 You(__s_don_t_feel_like_yourself);
+                /* checking dknown is redundant--amulets always have dknown set */
                 call_it = schar((((cptr.ldI32o(uamul.v, $obj_dknown) & 1) | 0) != 0));
             }
             livelog_newform(0, orig_sex, new_sex);
@@ -1085,6 +1250,7 @@ function Amulet_on(amul) {
             break;
         }
         case NHC.AMULET_OF_STRANGULATION:
+        /* note: might already be Strangled (via #wizintrinsic) */
         if (can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst)) && !Strangled()) {
             discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1);
             cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 6n);
@@ -1098,22 +1264,30 @@ function Amulet_on(amul) {
         {
             let newnap = BigInt.asIntN(64, BigInt(rnd_at(__s_do_wear_c, 1048, __s_amulet_on, 98)) + 2n);
             let oldnap = (HSleepy() & 16777215n);
+
             if (newnap < oldnap || oldnap == 0n)
+                /* avoid clobbering FROMOUTSIDE bit, which might have
+                   gotten set by previously eating one of these amulets */
                 cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, (HSleepy() & -16777216n) | newnap);
             break;
         }
         case NHC.AMULET_OF_FLYING:
-        float_vs_flight();
+        /* setworn() has already set extrinsic flying */
+        float_vs_flight();  /* block flying if levitating */
         if (Flying()) {
             let already_flying;
+
+            /* to determine whether this flight is new we have to muck
+               about in the Flying intrinsic (actually extrinsic) */
             cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) & (-65537n));
             already_flying = schar((!!Flying()));
             cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) | 65536n);
+
             if (!already_flying) {
                 discover_object(NHC.AMULET_OF_FLYING, 1, 1, 1);
                 on_msg(uamul.v);
                 on_msg_done = 1;
-                cptr.st1(disp, 1);
+                cptr.st1(disp, 1);  /* status: 'Fly' On */
                 You(__s_are_now_in_flight);
             }
         }
@@ -1125,21 +1299,26 @@ function Amulet_on(amul) {
         case NHC.AMULET_OF_YENDOR:
         break;
     }
+
     if (!on_msg_done)
         on_msg(uamul.v);
 }
 
 /** C ref: do_wear.c:1090 */
 export function Amulet_off() {
-    let amul = uamul.v;
+    let amul = uamul.v;  /* for off_msg() after setworn(NULL,W_AMUL) */
     let mkn = 0;
     let early_off_msg = 0;
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-65537n));
+
     switch (cptr.ldI16o(uamul.v, $obj_otyp)) {
         case NHC.AMULET_OF_ESP:
+        /* need to update ability before calling see_monsters() */
         setworn(null, 65536n);
         off_msg(amul);
         early_off_msg = 1;
+
         see_monsters();
         break;
         case NHC.AMULET_OF_LIFE_SAVING:
@@ -1150,17 +1329,21 @@ export function Amulet_off() {
         case NHC.FAKE_AMULET_OF_YENDOR:
         break;
         case NHC.AMULET_OF_MAGICAL_BREATHING:
+        /* amulet is currently still on; take it off before calling drown()
+           and region_danger(); call off_msg() before specific messages */
         setworn(null, 65536n);
-        off_msg(amul);
+        off_msg(amul);  /* 'uamul' has been set to Null */
         early_off_msg = 1;
+
         if (Underwater()) {
             if (!cant_drown(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !Swimming()) {
                 You(__s_suddenly_inhale_an_unhealthy_amount_of_s, hliquid(__s_water));
-                mkn = 1;
+                mkn = 1;  /* in case of life-saving */
                 void drown();
             }
         }
         if (region_danger()) {
+            /* "breathing": wouldn't get here otherwise */
             You(__s_are_breathing_poison_gas);
             mkn = 1;
         }
@@ -1169,6 +1352,7 @@ export function Amulet_off() {
         setworn(null, 65536n);
         off_msg(amul);
         early_off_msg = 1;
+
         if (Strangled()) {
             cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
             cptr.st1(disp, 1);
@@ -1181,20 +1365,25 @@ export function Amulet_off() {
         break;
         case NHC.AMULET_OF_RESTFUL_SLEEP:
         setworn(null, 65536n);
+        /* HSleepy = 0L; -- avoid clobbering FROMOUTSIDE bit */
         if (!ESleepy() && !(HSleepy() & -16777216n))
-            cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-16777216n));
+            cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-16777216n));  /* clear timeout bits */
         break;
         case NHC.AMULET_OF_FLYING:
         {
             let was_flying = schar((!!Flying()));
+
+            /* remove amulet 'early' to determine whether Flying changes;
+               also in case spoteffects() does something with the amulet */
             setworn(null, 65536n);
             off_msg(amul);
             early_off_msg = 1;
-            float_vs_flight();
+
+            float_vs_flight();  /* probably not needed here */
             if (was_flying && !Flying()) {
-                cptr.st1(disp, 1);
+                cptr.st1(disp, 1);  /* status: 'Fly' Off */
                 You(__s_pct_s_dot, (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) ? __s_stop_flying : __s_land);
-                mkn = 1;
+                mkn = 1;  /* makeknown(AMULET_OF_FLYING) */
                 spoteffects(1);
             }
             break;
@@ -1205,23 +1394,34 @@ export function Amulet_off() {
         case NHC.AMULET_OF_YENDOR:
         break;
     }
+
     setworn(null, 65536n);
     if (!early_off_msg)
-        off_msg(amul);
+        off_msg(amul);  /* (not 'uamul'; it's Null now) */
     if (mkn)
         discover_object((cptr.ldI16o(amul, $obj_otyp)), 1, 1, 1);
     return;
 }
 
+/* handle ring discovery; comparable to learnwand() */
 /** C ref: do_wear.c:1193 — @param {CPtr<struct obj>} ring @param {CInt} observed */
 function learnring(ring, observed) {
     let ringtype = cptr.ldI16o(ring, $obj_otyp);
+
+    /* if effect was observable then we usually discover the type */
     if (observed) {
+        /* if we already know the ring type which accomplishes this
+           effect (assumes there is at most one type for each effect),
+           mark this ring as having been seen (no need for makeknown);
+           otherwise if we have seen this ring, discover its type */
         if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1))
             observe_object(ring);
         else if ((cptr.ldI32o(ring, $obj_dknown) & 1))
             discover_object((ringtype), 1, 1, 1);
     }
+
+    /* make enchantment of charged ring known (might be +0) and update
+       perm invent window if we've seen this ring and know its type */
     if ((cptr.ldI32o(ring, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
         if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_charged) & 1))
             cptr.stI32o(ring, $obj_known, 1);
@@ -1233,9 +1433,15 @@ function learnring(ring, observed) {
 function adjust_attrib(obj, which, val) {
     let old_attrib;
     let observable;
+
     old_attrib = (acurr(which));
     cptr.st1o2(u, which, 1, $you_abon, cptr.ld1so2(u, which, 1, $you_abon) + val);
     observable = schar((old_attrib != (acurr(which))));
+    /* if didn't change, usually means ring is +0 but might
+        be because nonzero couldn't go below min or above max;
+        learn +0 enchantment if attribute value is not stuck
+        at a limit [and ring has been seen and its type is
+        already discovered, both handled by learnring()] */
     if (observable || !extremeattr(which))
         learnring(obj, observable);
     cptr.st1(disp, 1);
@@ -1245,14 +1451,21 @@ function adjust_attrib(obj, which, val) {
 export function Ring_on(obj) {
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops);
     let observable;
+
+    /* make sure ring isn't wielded; can't use remove_worn_item()
+       here because it has already been set worn in a ring slot */
     if (cptr.eq(obj, uwep.v))
         setuwep(null);
     else if (cptr.eq(obj, uswapwep.v))
         setuswapwep(null);
     else if (cptr.eq(obj, uquiver.v))
         setuqwep(null);
+
+    /* only mask out W_RING when we don't have both
+       left and right rings of the same type */
     if ((oldprop & 393216n) != 393216n)
         oldprop &= -393217n;
+
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.RIN_TELEPORTATION:
         case NHC.RIN_REGENERATION:
@@ -1272,6 +1485,7 @@ export function Ring_on(obj) {
         case NHC.RIN_SUSTAIN_ABILITY:
         break;
         case NHC.MEAT_RING:
+        /* wearing a meat ring does not affect vegan conduct */
         break;
         case NHC.RIN_STEALTH:
         toggle_stealth(obj, oldprop, 1);
@@ -1280,8 +1494,10 @@ export function Ring_on(obj) {
         see_monsters();
         break;
         case NHC.RIN_SEE_INVISIBLE:
-        set_mimic_blocking();
+        /* can now see invisible monsters */
+        set_mimic_blocking();  /* do special mimic handling */
         see_monsters();
+
         if (Invis() && !oldprop && !HSee_invisible() && !Blind()) {
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             pline(__s_suddenly_you_are_transparent_but_there);
@@ -1300,9 +1516,9 @@ export function Ring_on(obj) {
             float_up();
             learnring(obj, 1);
             if (Levitation())
-                spoteffects(0);
+                spoteffects(0);  /* for sinks */
         } else {
-            float_vs_flight();
+            float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
         }
         break;
         case NHC.RIN_GAIN_STRENGTH:
@@ -1324,10 +1540,13 @@ export function Ring_on(obj) {
         rescham();
         break;
         case NHC.RIN_PROTECTION:
+        /* usually learn enchantment and discover type;
+           won't happen if ring is unseen or if it's +0
+           and the type hasn't been discovered yet */
         observable = schar((cptr.ld1so(obj, $obj_spe) != 0));
         learnring(obj, observable);
         if (cptr.ld1so(obj, $obj_spe))
-            find_ac();
+            find_ac();  /* updates botl */
         break;
     }
 }
@@ -1336,6 +1555,7 @@ export function Ring_on(obj) {
 function Ring_off_or_gone(obj, gone) {
     let mask = (cptr.ldI64o(obj, $obj_owornmask) & 393216n);
     let observable;
+
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & BigInt.asIntN(64, ~mask));
     if (!(cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & mask))
         impossible(__s_strange_i_didn_t_know_you_had_that_ring);
@@ -1343,6 +1563,7 @@ function Ring_off_or_gone(obj, gone) {
         setnotworn(obj);
     else
         setworn(null, cptr.ldI64o(obj, $obj_owornmask));
+
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.RIN_TELEPORTATION:
         case NHC.RIN_REGENERATION:
@@ -1369,10 +1590,12 @@ function Ring_off_or_gone(obj, gone) {
         see_monsters();
         break;
         case NHC.RIN_SEE_INVISIBLE:
+        /* Make invisible monsters go away */
         if (!See_invisible()) {
-            set_mimic_blocking();
+            set_mimic_blocking();  /* do special mimic handling */
             see_monsters();
         }
+
         if (Invisible() && !Blind()) {
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             pline(__s_suddenly_you_cannot_see_yourself);
@@ -1392,7 +1615,7 @@ function Ring_off_or_gone(obj, gone) {
             if (!Levitation())
                 learnring(obj, 1);
         } else {
-            float_vs_flight();
+            float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
         }
         break;
         case NHC.RIN_GAIN_STRENGTH:
@@ -1411,12 +1634,17 @@ function Ring_off_or_gone(obj, gone) {
         cptr.st1o(u, $you_udaminc, cptr.ld1so(u, $you_udaminc) - cptr.ld1so(obj, $obj_spe));
         break;
         case NHC.RIN_PROTECTION:
+        /* might have been put on while blind and we can now see
+           or perhaps been forgotten due to amnesia */
         observable = schar((cptr.ld1so(obj, $obj_spe) != 0));
         learnring(obj, observable);
         if (cptr.ld1so(obj, $obj_spe))
-            find_ac();
+            find_ac();  /* updates botl */
         break;
         case NHC.RIN_PROTECTION_FROM_SHAPE_CHAN:
+        /* if you're no longer protected, let the chameleons change
+           shape again; however, might still be protected if wearing
+           2nd ring of this type (or via #wizintrinsic) */
         if (!Protection_from_shape_changers())
             restartcham();
         break;
@@ -1437,25 +1665,33 @@ export function Ring_gone(obj) {
 export function Blindf_on(otmp) {
     let already_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0));
     let changed = 0;
+
+    /* blindfold might be wielded; release it for wearing */
     remove_worn_item(otmp, 0);
     setworn(otmp, 524288n);
     on_msg(otmp);
+
     if (Blind() && !already_blind) {
         changed = 1;
         if (cptr.ld1so(flags, $flag_verbose))
             You_cant(__s_see_any_more);
+        /* set ball&chain variables before the hero goes blind */
         if (Punished())
             set_bc(0);
     } else if (already_blind && !Blind()) {
         changed = 1;
+        /* "You are now wearing the Eyes of the Overworld." */
         if (cptr.ld1so(u, $you_uroleplay)) {
+            /* this can only happen by putting on the Eyes of the Overworld;
+               that shouldn't actually produce a permanent cure, but we
+               can't let the "blind from birth" conduct remain intact */
             pline(__s_for_the_first_time_in_your_life_you_can);
             cptr.st1o(u, $you_uroleplay, 0);
         } else
             You(__s_can_see);
     }
     if (changed) {
-        toggle_blindness();
+        toggle_blindness();  /* potion.c */
     }
 }
 
@@ -1464,6 +1700,7 @@ export function Blindf_off(otmp) {
     let was_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0));
     let changed = 0;
     let nooffmsg = schar((!otmp));
+
     if (!otmp)
         otmp = ublindf.v;
     if (!otmp) {
@@ -1474,30 +1711,38 @@ export function Blindf_off(otmp) {
     setworn(null, cptr.ldI64o(otmp, $obj_owornmask));
     if (!nooffmsg)
         off_msg(otmp);
+
     if (Blind()) {
         if (was_blind) {
+            /* "still cannot see" makes no sense when removing lenses
+               since they can't have been the cause of your blindness */
             if (cptr.ldI16o(otmp, $obj_otyp) != NHC.LENSES)
                 You(__s_still_cannot_see);
         } else {
-            changed = 1;
+            changed = 1;  /* !was_blind */
+            /* "You were wearing the Eyes of the Overworld." */
             You_cant(__s_see_anything_now);
+            /* set ball&chain variables before the hero goes blind */
             if (Punished())
                 set_bc(0);
         }
     } else if (was_blind) {
         if (!gulp_blnd_check()) {
-            changed = 1;
+            changed = 1;  /* !Blind */
             You(__s_can_see_again);
         }
     }
     if (changed) {
-        toggle_blindness();
+        toggle_blindness();  /* potion.c */
     }
 }
 
+/* called in moveloop()'s prologue to set side-effects of worn start-up items;
+   also used by poly_obj() when a worn item gets transformed */
 /** C ref: do_wear.c:1539 — @param {CPtr<struct obj>} obj */
 export function set_wear(obj) {
     cptr.st1o(gi, $instance_globals_i_initial_don, schar((!obj)));
+
     if (!obj ? ublindf.v !== null : (cptr.eq(obj, ublindf.v)))
         void Blindf_on(ublindf.v);
     if (!obj ? uright.v !== null : (cptr.eq(obj, uright.v)))
@@ -1506,6 +1751,7 @@ export function set_wear(obj) {
         void Ring_on(uleft.v);
     if (!obj ? uamul.v !== null : (cptr.eq(obj, uamul.v)))
         void Amulet_on(uamul.v);
+
     if (!obj ? uarmu.v !== null : (cptr.eq(obj, uarmu.v)))
         void Shirt_on();
     if (!obj ? uarm.v !== null : (cptr.eq(obj, uarm.v)))
@@ -1520,12 +1766,17 @@ export function set_wear(obj) {
         void Helmet_on();
     if (!obj ? uarms.v !== null : (cptr.eq(obj, uarms.v)))
         void Shield_on();
+
     cptr.st1o(gi, $instance_globals_i_initial_don, 0);
 }
 
+/* check whether the target object is currently being put on (or taken off--
+   also checks for doffing--[why?]) */
 /** C ref: do_wear.c:1574 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function donning(otmp) {
     let result = 0;
+
+    /* 'W' (or 'P' used for armor) sets ga.afternmv */
     if (doffing(otmp))
         result = 1;
     else if (cptr.eq(otmp, uarm.v))
@@ -1542,13 +1793,19 @@ export function donning(otmp) {
         result = schar((cptr.ldPtr(ga) === Gloves_on));
     else if (cptr.eq(otmp, uarms.v))
         result = schar((cptr.ldPtr(ga) === Shield_on));
+
     return result;
 }
 
+/* check whether the target object is currently being taken off,
+   so that stop_donning() and steal() can vary messages and doname()
+   can vary "(being worn)" suffix */
 /** C ref: do_wear.c:1603 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function doffing(otmp) {
     let what = cptr.ldI64o(svc, $context_info_takeoff + $takeoff_info_what);
     let result = 0;
+
+    /* 'T' (or 'R' used for armor) sets ga.afternmv, 'A' sets takeoff.what */
     if (cptr.eq(otmp, uarm.v))
         result = schar((cptr.ldPtr(ga) === Armor_off || what == 1n ? 1 : 0));
     else if (cptr.eq(otmp, uarmu.v))
@@ -1577,18 +1834,38 @@ export function doffing(otmp) {
         result = schar((what == 1024n));
     else if (cptr.eq(otmp, uquiver.v))
         result = schar((what == 512n));
+
     return result;
 }
 
+/* despite their names, cancel_don() and cancel_doff() both apply to both
+   donning and doffing... */
 /** C ref: do_wear.c:1645 — @param {CPtr<struct obj>} obj @param {CLongLong} slotmask */
 export function cancel_doff(obj, slotmask) {
+    /* Called by setworn() for old item in specified slot or by setnotworn()
+     * for specified item.  We don't want to call cancel_don() if we got
+     * here via <X>_off() -> setworn((struct obj *) 0) -> cancel_doff()
+     * because that would stop the 'A' command from continuing with next
+     * selected item.  So do_takeoff() sets a flag in takeoff.mask for us.
+     * [For taking off an individual item with 'T'/'R'/'w-', it doesn't
+     * matter whether cancel_don() gets called here--the item has already
+     * been removed by now.]
+     */
     if (!(cptr.ldI64o(svc, $context_info_takeoff) & 536870912n) && donning(obj))
-        cancel_don();
+        cancel_don();  /* applies to doffing too */
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & BigInt.asIntN(64, ~slotmask));
 }
 
+/* despite their names, cancel_don() and cancel_doff() both apply to both
+   donning and doffing... */
 /** C ref: do_wear.c:1664 */
 export function cancel_don() {
+    /* the piece of armor we were donning/doffing has vanished, so stop
+     * wasting time on it (and don't dereference it when donning would
+     * otherwise finish); afternmv never has some of these values because
+     * every item of the corresponding armor category takes 1 turn to wear,
+     * but check all of them anyway
+     */
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, schar((cptr.ldPtr(ga) === Cloak_on || cptr.ldPtr(ga) === Armor_on || cptr.ldPtr(ga) === Shirt_on || cptr.ldPtr(ga) === Helmet_on || cptr.ldPtr(ga) === Gloves_on || cptr.ldPtr(ga) === Boots_on || cptr.ldPtr(ga) === Shield_on ? 1 : 0)));
     cptr.stPtr(ga, null);
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
@@ -1597,29 +1874,42 @@ export function cancel_don() {
     cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, 0n);
 }
 
+/* called by steal() during theft from hero; interrupt donning/doffing */
 /** C ref: do_wear.c:1688 — @param {CPtr<struct obj>} stolenobj @returns {CInt} */
 export function stop_donning(stolenobj) {
     let buf = new Uint8Array(256);
     let otmp;
     let putting_on;
     let result = 0;
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if ((cptr.ldI64o(otmp, $obj_owornmask) & 127n) && donning(otmp))
             break;
+    /* at most one item will pass donning() test at any given time */
     if (!otmp)
         return 0;
+
+    /* donning() returns True when doffing too; doffing() is more specific */
     putting_on = schar((!doffing(otmp)));
+    /* cancel_don() looks at afternmv; it can also cancel doffing */
     cancel_don();
+    /* don't want <armor>_on() or <armor>_off() being called
+       by unmul() since the on or off action isn't completing */
     cptr.stPtr(ga, null);
     if (putting_on || !cptr.eq(otmp, stolenobj)) {
         void cptr.sprintf(cptr.decay(buf), __s_you_stop_s_s, putting_on ? __s_putting_on : __s_taking_off, thesimpleoname(otmp));
     } else {
-        cptr.st1o(cptr.decay(buf), 0, 0, 1);
-        result = Number(BigInt.asIntN(32, (-cptr.ldI64o(gm, $instance_globals_m_multi))));
+        cptr.st1o(cptr.decay(buf), 0, 0, 1);  /* silently stop doffing stolenobj */
+        result = Number(BigInt.asIntN(32, (-cptr.ldI64o(gm, $instance_globals_m_multi))));  /* remember this before calling unmul() */
     }
     unmul(cptr.decay(buf));
+    /* while putting on, item becomes worn immediately but side-effects are
+       deferred until the delay expires; when interrupted, make it unworn
+       (while taking off, item stays worn until the delay expires; when
+       interrupted, leave it worn) */
     if (putting_on)
         remove_worn_item(otmp, 0);
+
     return result;
 }
 
@@ -1629,9 +1919,11 @@ let Narmorpieces = 0;
 /** C ref: do_wear.c:1729 — int */
 let Naccessories = 0;
 
+/* assign values to Narmorpieces and Naccessories */
 /** C ref: do_wear.c:1733 — @param {CPtr<struct obj *>} which @param {CInt} accessorizing */
 function count_worn_stuff(which, accessorizing) {
     let otmp;
+
     Narmorpieces = (Naccessories = 0);
     otmp = null;
     {
@@ -1658,6 +1950,8 @@ function count_worn_stuff(which, accessorizing) {
             otmp = uarmf.v;
         }
     }
+    /* for cloak/suit/shirt, we only count the outermost item so that it
+       can be taken off without confirmation if final count ends up as 1 */
     if (uarmc.v)
         {
             if (uarmc.v) {
@@ -1680,7 +1974,8 @@ function count_worn_stuff(which, accessorizing) {
             }
         }
     if (!accessorizing)
-        cptr.stPtr(which, otmp);
+        cptr.stPtr(which, otmp);  /* default item iff Narmorpieces is 1 */
+
     otmp = null;
     {
         if (uleft.v) {
@@ -1707,9 +2002,11 @@ function count_worn_stuff(which, accessorizing) {
         }
     }
     if (accessorizing)
-        cptr.stPtr(which, otmp);
+        cptr.stPtr(which, otmp);  /* default item iff Naccessories is 1 */
 }
 
+/* take off one piece or armor or one accessory;
+   shared by dotakeoff('T') and doremring('R') */
 /** C ref: do_wear.c:1771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function armor_or_accessory_off(obj) {
     if (!(cptr.ldI64o(obj, $obj_owornmask) & 983167n)) {
@@ -1719,6 +2016,7 @@ function armor_or_accessory_off(obj) {
     if (cptr.eq(obj, uskin.v) || ((cptr.eq(obj, uarm.v)) && uarmc.v) || ((cptr.eq(obj, uarmu.v)) && (uarmc.v || uarm.v))) {
         let why = new Uint8Array(128);
         let what = new Uint8Array(128);
+
         cptr.st1o(cptr.decay(why), 0, cptr.st1o(cptr.decay(what), 0, 0, 1), 1);
         if (!cptr.eq(obj, uskin.v)) {
             if (uarmc.v)
@@ -1735,20 +2033,29 @@ function armor_or_accessory_off(obj) {
         You_cant(__s_take_that_off_s, cptr.decay(why));
         return NHM.ECMD_OK;
     }
-    reset_remarm();
+
+    reset_remarm();  /* clear context.takeoff.mask and context.takeoff.what */
     void select_off(obj);
     if (!cptr.ldI64o(svc, $context_info_takeoff))
         return NHM.ECMD_OK;
+    /* none of armoroff()/Ring_/Amulet/Blindf_off() use context.takeoff.mask */
     reset_remarm();
+
     if (cptr.ldI64o(obj, $obj_owornmask) & 127n) {
         void armoroff(obj);
     } else if (cptr.eq(obj, uright.v) || cptr.eq(obj, uleft.v)) {
+        /* Sometimes we want to give the off_msg before removing and
+         * sometimes after; for instance, "you were wearing a moonstone
+         * ring (on right hand)" is desired but "you were wearing a
+         * square amulet (being worn)" is not because of the redundant
+         * "being worn".
+         */
         off_msg(obj);
         Ring_off(obj);
     } else if (cptr.eq(obj, uamul.v)) {
-        Amulet_off();
+        Amulet_off();  /* does its own off_msg */
     } else if (cptr.eq(obj, ublindf.v)) {
-        Blindf_off(obj);
+        Blindf_off(obj);  /* does its own off_msg */
     } else {
         impossible(__s_removing_strange_accessory_s, safe_typename(cptr.ldI16o(obj, $obj_otyp)));
         if (cptr.ldI64o(obj, $obj_owornmask))
@@ -1757,11 +2064,14 @@ function armor_or_accessory_off(obj) {
     return NHM.ECMD_TIME;
 }
 
+/* the #takeoff command - remove worn armor */
 /** C ref: do_wear.c:1833 @returns {CInt} */
 export function dotakeoff() {
     let otmp = cptr.box(null);
+
     count_worn_stuff(otmp, 0);
     if (!Narmorpieces && !Naccessories) {
+        /* assert( GRAY_DRAGON_SCALES > YELLOW_DRAGON_SCALE_MAIL ); */
         if (uskin.v)
             pline_The(__s_s_merged_with_your_skin, cptr.ldI16o(uskin.v, $obj_otyp) >= NHC.GRAY_DRAGON_SCALES ? __s_dragon_scales_are : __s_dragon_scale_mail_is);
         else
@@ -1772,21 +2082,29 @@ export function dotakeoff() {
         otmp.v = getobj(__s_take_off, takeoff_ok, NHM.GETOBJ_NOFLAGS);
     if (!otmp.v)
         return NHM.ECMD_CANCEL;
+
     return armor_or_accessory_off(otmp.v);
 }
 
+/* 'i' or 'I[' followed by <invlet> and then 'T';
+   plain dotakeoff() would not give any feedback when picking suit
+   covered by cloak, or shirt covered by suit and/or cloak, due to the
+   default behavior of equip_ok() (skipping inaccessible items) */
 /** C ref: do_wear.c:1862 @returns {CInt} */
 export function ia_dotakeoff() {
     let res;
+
     cptr.st1o(gi, $instance_globals_i_item_action_in_progress, 1);
     res = dotakeoff();
     cptr.st1o(gi, $instance_globals_i_item_action_in_progress, 0);
     return res;
 }
 
+/* the #remove command - take off ring or other accessory */
 /** C ref: do_wear.c:1874 @returns {CInt} */
 export function doremring() {
     let otmp = cptr.box(null);
+
     count_worn_stuff(otmp, 1);
     if (!Naccessories && !Narmorpieces) {
         pline(__s_not_wearing_any_accessories_or_armor);
@@ -1796,17 +2114,22 @@ export function doremring() {
         otmp.v = getobj(__s_remove, remove_ok, NHM.GETOBJ_NOFLAGS);
     if (!otmp.v)
         return NHM.ECMD_CANCEL;
+
     return armor_or_accessory_off(otmp.v);
 }
 
+/* Check if something worn is cursed _and_ unremovable. */
 /** C ref: do_wear.c:1893 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function cursed(otmp) {
     if (!otmp) {
         impossible(__s_cursed_without_otmp);
         return 0;
     }
+    /* Curses, like chickens, come home to roost. */
     if ((cptr.eq(otmp, uwep.v)) ? welded(otmp) : (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
         let use_plural = schar((is_boots(otmp) || is_gloves(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES || cptr.ldI64o(otmp, $obj_quan) > 1n ? 1 : 0));
+
+        /* might be trying again after applying grease to hands */
         if (Glib() && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 && (uarmg.v ? (cptr.eq(otmp, uwep.v)) : ((cptr.ldI64o(otmp, $obj_owornmask) & 393472n) != 0n)))
             pline(__s_despite_your_slippery_s_you_can_t, fingers_or_gloves(1));
         else
@@ -1823,8 +2146,11 @@ const __static_armoroff_offdelaybuf = new Uint8Array(60); /** C ref: do_wear.c:1
 export function armoroff(otmp) {
     let delay = -cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_delay);
     let what = null;
+
     if (cursed(otmp))
         return 0;
+    /* this used to make assumptions about which types of armor had
+       delays and which didn't; now both are handled for all types */
     if (delay) {
         nomul(delay);
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_disrobing);
@@ -1862,10 +2188,12 @@ export function armoroff(otmp) {
             break;
         }
         if (what) {
+            /* sizeof offdelaybuf == 60; increase it if this becomes longer */
             nh_snprintf(__s_armoroff, 1970, cptr.decay(__static_armoroff_offdelaybuf), 60n, __s_you_finish_taking_off_your_s, what);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.decay(__static_armoroff_offdelaybuf));
         }
     } else {
+        /* no delay so no '(*afternmv)()' or 'nomovemsg' */
         switch (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp)) {
             case NHC.ARM_SUIT:
             void Armor_off();
@@ -1892,6 +2220,8 @@ export function armoroff(otmp) {
             impossible(__s_taking_off_unknown_armor_d_d_no_delay, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp));
             break;
         }
+        /* We want off_msg() after removing the item to
+           avoid "You were wearing ____ (being worn)." */
         off_msg(otmp);
     }
     cptr.stI64o(svc, $context_info_takeoff, cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, 0n));
@@ -1908,15 +2238,26 @@ function already_wearing2(cc1, cc2) {
     You_cant(__s_wear_s_because_you_re_wearing_s_there, cc1, cc2);
 }
 
+/*
+ * canwearobj checks to see whether the player can wear a piece of armor
+ *
+ * inputs: otmp (the piece of armor)
+ *         noisy (if TRUE give error messages, otherwise be quiet about it)
+ * output: mask (otmp's armor type)
+ */
 /** C ref: do_wear.c:2030 — @param {CPtr<struct obj>} otmp @param {CPtr<long>} mask @param {CInt} noisy @returns {CInt} */
 export function canwearobj(otmp, mask, noisy) {
     let err = 0;
     let which;
+
+    /* this is the same check as for 'W' (dowear), but different message,
+       in case we get here via 'P' (doputon) */
     if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         if (noisy)
             You(__s_can_t_wear_any_armor_in_your_current);
         return 0;
     }
+
     which = is_cloak(otmp) ? cptr.decay(c_cloak) : (is_shirt(otmp) ? cptr.decay(c_shirt) : (is_suit(otmp) ? cptr.decay(c_suit) : null));
     if (which && cantweararm(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (!cptr.eq(which, cptr.decay(c_cloak)) || ((cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING) ? cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) != NHM.MZ_SMALL : !WrappingAllowed(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) && (racial_exception(cptr.add(gy, $instance_globals_y_youmonst), otmp) < 1)) {
         if (noisy)
@@ -1927,17 +2268,20 @@ export function canwearobj(otmp, mask, noisy) {
             already_wearing(cptr.decay(c_that_));
         return 0;
     }
+
     if (welded(uwep.v) && bimanual(uwep.v) && (is_suit(otmp) || is_shirt(otmp))) {
         if (noisy)
             You(__s_cannot_do_that_while_holding_your_s, is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
         return 0;
     }
+
     if (is_helmet(otmp)) {
         if (uarmh.v) {
             if (noisy)
                 already_wearing(an(helm_simple_name(uarmh.v)));
             err++;
         } else if (Upolyd() && (num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 0) && !is_flimsy(otmp)) {
+            /* (flimsy exception matches polyself handling) */
             if (noisy)
                 pline_The(__s_s_won_t_fit_over_your_horn_s, helm_simple_name(otmp), (((num_horns(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) == 1) ? __s_empty : __s_s));
             err++;
@@ -1965,9 +2309,13 @@ export function canwearobj(otmp, mask, noisy) {
             err++;
         } else if (Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 524288n) != 0n)) {
             if (noisy)
-                You(__s_have_no_feet);
+                You(__s_have_no_feet);  /* not body_part(FOOT) */
             err++;
         } else if (Upolyd() && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_CENTAUR) {
+            /* break_armor() pushes boots off for centaurs, so don't let
+               dowear() put them back on;
+               makeplural(body_part(FOOT)) would yield "rear hooves" here,
+               which sounds odd, so use hard-coded "hooves" */
             if (noisy)
                 You(__s_have_too_many_hooves_to_wear_s, cptr.decay(c_boots));
             err++;
@@ -1995,6 +2343,8 @@ export function canwearobj(otmp, mask, noisy) {
                 You(__s_cannot_wear_gloves_over_your_s, is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
             err++;
         } else if (Glib()) {
+            /* prevent slippery bare fingers from transferring to
+               gloved fingers */
             if (noisy)
                 Your(__s_s_are_too_slippery_to_pull_on_s, fingers_or_gloves(0), gloves_simple_name(otmp));
             err++;
@@ -2031,10 +2381,21 @@ export function canwearobj(otmp, mask, noisy) {
         } else
             cptr.stI64(mask, 1n);
     } else {
+        /* getobj can't do this after setting its allow_all flag; that
+           happens if you have armor for slots that are covered up or
+           extra armor for slots that are filled */
         if (noisy)
             silly_thing(__s_wear, otmp);
         err++;
     }
+    /* Unnecessary since now only weapons and special items like pick-axes get
+     * welded to your hand, not armor
+        if (welded(otmp)) {
+            if (!err++) {
+                if (noisy) weldmsg(otmp);
+            }
+        }
+     */
     return !err;
 }
 
@@ -2046,6 +2407,7 @@ function accessory_or_armor_on(obj) {
     let ring;
     let amulet;
     let eyewear;
+
     if (cptr.ldI64o(obj.v, $obj_owornmask) & 983167n) {
         already_wearing(cptr.decay(c_that_));
         return NHM.ECMD_OK;
@@ -2054,24 +2416,37 @@ function accessory_or_armor_on(obj) {
     ring = schar((cptr.ld1so(obj.v, $obj_oclass) == NHC.RING_CLASS || cptr.ldI16o(obj.v, $obj_otyp) == NHC.MEAT_RING ? 1 : 0));
     amulet = schar((cptr.ld1so(obj.v, $obj_oclass) == NHC.AMULET_CLASS));
     eyewear = schar((cptr.ldI16o(obj.v, $obj_otyp) == NHC.BLINDFOLD || cptr.ldI16o(obj.v, $obj_otyp) == NHC.TOWEL || cptr.ldI16o(obj.v, $obj_otyp) == NHC.LENSES ? 1 : 0));
+    /* checks which are performed prior to actually touching the item */
     if (armor) {
         if (!canwearobj(obj.v, mask, 1))
             return NHM.ECMD_OK;
+
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT && cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))) == cptr.ldI16o(u, $you_uz)) {
             if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))
                 You(__s_narrowly_avoid_losing_all_chance_at);
             else
                 You(__s_are_suddenly_overcome_with_shame_and);
-            cptr.stI32o(u, $you_ublessed, 0);
+            cptr.stI32o(u, $you_ublessed, 0);  /* lose your god's protection */
             discover_object((cptr.ldI16o(obj.v, $obj_otyp)), 1, 1, 1);
-            cptr.st1(disp, 1);
+            cptr.st1(disp, 1);  /* for AC after zeroing u.ublessed */
             return NHM.ECMD_TIME;
         }
     } else {
+        /*
+         * FIXME:
+         *  except for the rings/nolimbs case, this allows you to put on
+         *  accessories without having any hands to manipulate them, and
+         *  to put them on when poly'd into a tiny or huge form where
+         *  they shouldn't fit.  [If the latter situation changes, make
+         *  comparable change to break_armor(polyself.c).]
+         */
+
+        /* accessory */
         if (ring) {
             let answer;
             let qbuf = new Uint8Array(128);
             let res = 0;
+
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
                 You(__s_cannot_make_the_ring_stick_to_your_body);
                 return NHM.ECMD_OK;
@@ -2105,21 +2480,25 @@ function accessory_or_armor_on(obj) {
             }
             if (uarmg.v && Glib()) {
                 Your(__s_s_are_too_slippery_to_remove_so_you, gloves_simple_name(uarmg.v));
-                return NHM.ECMD_TIME;
+                return NHM.ECMD_TIME;  /* always uses move */
             }
             if (uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0) {
                 res = !(cptr.ldI32o(uarmg.v, $obj_bknown) & 1);
                 set_bknown(uarmg.v, 1);
                 You(__s_cannot_remove_your_s_to_put_on_the_ring, cptr.decay(c_gloves));
+                /* uses move iff we learned gloves are cursed */
                 return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
             }
             if (uwep.v) {
-                res = !(cptr.ldI32o(uwep.v, $obj_bknown) & 1);
+                res = !(cptr.ldI32o(uwep.v, $obj_bknown) & 1);  /* check this before calling welded() */
                 if (((mask.v == 262144n && URIGHTY()) || (mask.v == 131072n && ULEFTY()) || bimanual(uwep.v)) && welded(uwep.v)) {
                     let hand = body_part(NHC.HAND);
+
+                    /* welded will set bknown */
                     if (bimanual(uwep.v))
                         hand = makeplural(hand);
                     You(__s_cannot_free_your_weapon_s_to_put_on_the, hand);
+                    /* uses move iff we learned weapon is cursed */
                     return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
                 }
             }
@@ -2133,6 +2512,7 @@ function accessory_or_armor_on(obj) {
                 You(__s_have_no_head_to_wear_s_on, ansimpleoname(obj.v));
                 return NHM.ECMD_OK;
             }
+
             if (ublindf.v) {
                 if (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.TOWEL)
                     Your(__s_s_is_already_covered_by_a_towel, body_part(NHC.FACE));
@@ -2147,23 +2527,40 @@ function accessory_or_armor_on(obj) {
                     else
                         already_wearing(__s_some_lenses);
                 } else {
-                    already_wearing(cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+                    already_wearing(cptr.ldPtro(c_common_strings, $c_common_strings_c_something));  /* ??? */
                 }
                 return NHM.ECMD_OK;
             }
         } else {
+            /* neither armor nor accessory */
             You_cant(__s_wear_that);
             return NHM.ECMD_OK;
         }
     }
+
     if (!retouch_object(obj, 0))
-        return NHM.ECMD_TIME;
+        return NHM.ECMD_TIME;  /* costs a turn even though it didn't get worn */
+
     if (armor) {
         let delay;
+
+        /* if the armor is wielded, release it for wearing (won't be
+           welded even if cursed; that only happens for weapons/weptools) */
         if (cptr.ldI64o(obj.v, $obj_owornmask) & 1792n)
             remove_worn_item(obj.v, 0);
-        cptr.st1o(gw, $instance_globals_w_wasinwater, uchar((cptr.ldI32o(u, $you_uinwater) & 1)));
+        /*
+         * Setting obj->known=1 is done because setworn() causes hero's AC
+         * to change so armor's +/- value is evident via the status line.
+         * We used to set it here because of that, but then it would stick
+         * if a nymph stole the armor before it was fully worn.  Delay it
+         * until the afternmv action.  The player may still know this armor's
+         * +/- amount if donning gets interrupted, but the hero won't.
+         *
+        obj->known = 1;
+         */
+        cptr.st1o(gw, $instance_globals_w_wasinwater, uchar((cptr.ldI32o(u, $you_uinwater) & 1)));  /* for WWALKING; Boots_on() is too late */
         setworn(obj.v, mask.v);
+        /* if there's no delay, we'll execute 'afternmv' immediately */
         if (cptr.eq(obj.v, uarm.v))
             cptr.stPtr(ga, Armor_on);
         else if (cptr.eq(obj.v, uarmh.v))
@@ -2180,25 +2577,33 @@ function accessory_or_armor_on(obj) {
             cptr.stPtr(ga, Shirt_on);
         else
             panic(__s_wearing_armor_not_worn_as_armor_08lx, cptr.ldI64o(obj.v, $obj_owornmask));
+
         delay = -cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay);
         if (delay) {
             nomul(delay);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_dressing_up);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_finish_your_dressing_maneuver);
         } else {
-            unmul(__s_empty);
+            unmul(__s_empty);  /* call afternmv, clear it+nomovemsg+multi_reason */
             on_msg(obj.v);
         }
         cptr.stI64o(svc, $context_info_takeoff, cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, 0n));
+        /* gw.wasinwater = 0U; // can't clear this yet; Boots_on() needs it
+         * and gets called via afternmv() after this routine has returned */
     } else {
         if (ring) {
+            /* Ring_on() expects ring to already be worn as uleft or uright */
             setworn(obj.v, mask.v);
             Ring_on(obj.v);
+            /* is_worn(): 'obj' will always be worn here except when putting
+               on a ring of levitation while at a sink location */
             if (is_worn(obj.v))
                 on_msg(obj.v);
         } else if (amulet) {
+            /* setworn() and on_msg() handled by Amulet_on() */
             Amulet_on(obj.v);
         } else if (eyewear) {
+            /* setworn() and on_msg() handled by Blindf_on() */
             Blindf_on(obj.v);
         } else {
             impossible(__s_putting_on_unexpected_type_of_accessory, safe_typename(cptr.ldI16o(obj.v, $obj_otyp)));
@@ -2207,14 +2612,19 @@ function accessory_or_armor_on(obj) {
     return NHM.ECMD_TIME;
 }
 
+/* the #wear command */
 /** C ref: do_wear.c:2432 @returns {CInt} */
 export function dowear() {
     let otmp;
+
+    /* cantweararm() checks for suits of armor, not what we want here;
+       verysmall() or nohands() checks for shields, gloves, etc... */
     if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
         pline(__s_don_t_even_bother);
         return NHM.ECMD_OK;
     }
     if (uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v && uleft.v && uright.v && uamul.v && ublindf.v) {
+        /* 'W' message doesn't mention accessories */
         You(__s_are_already_wearing_a_full_complement);
         return NHM.ECMD_OK;
     }
@@ -2222,10 +2632,13 @@ export function dowear() {
     return otmp ? accessory_or_armor_on(otmp) : NHM.ECMD_CANCEL;
 }
 
+/* the #puton command */
 /** C ref: do_wear.c:2454 @returns {CInt} */
 export function doputon() {
     let otmp;
+
     if (uleft.v && uright.v && uamul.v && ublindf.v && uarm.v && uarmu.v && uarmc.v && uarmh.v && uarms.v && uarmg.v && uarmf.v) {
+        /* 'P' message doesn't mention armor */
         Your(__s_s_s_are_full_and_you_re_already_wearing, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_ring : __s_empty, fingers_or_gloves(0), (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? __s_some_lenses : __s_a_blindfold);
         return NHM.ECMD_OK;
     }
@@ -2233,9 +2646,12 @@ export function doputon() {
     return otmp ? accessory_or_armor_on(otmp) : NHM.ECMD_CANCEL;
 }
 
+/* calculate current armor class */
 /** C ref: do_wear.c:2473 */
 export function find_ac() {
-    let uac = cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_ac);
+    let uac = cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_ac);  /* base armor class for current form */
+
+    /* armor class from worn gear */
     if (uarm.v)
         uac = (uac - ARM_BONUS(uarm.v)) | 0;
     if (uarmc.v)
@@ -2255,12 +2671,17 @@ export function find_ac() {
     if (uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION)
         uac = (uac - cptr.ld1so(uright.v, $obj_spe)) | 0;
     if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_GUARDING)
-        uac = (uac - 2) | 0;
+        uac = (uac - 2) | 0;  /* fixed amount; main benefit is to MC */
+
+    /* armor class from other sources */
     if (HProtection() & 117440512n)
         uac = (uac - cptr.ldI32o(u, $you_ublessed)) | 0;
     uac = (uac - cptr.ld1uo(u, $you_uspellprot)) | 0;
+
+    /* put a cap on armor class [5.0: was +127,-128, now reduced to +/- 99 */
     if (Math.abs(uac) > NHM.AC_MAX)
         uac = Math.imul(sgn(uac), NHM.AC_MAX);
+
     if (uac != cptr.ld1so(u, $you_uac)) {
         cptr.st1o(u, $you_uac, schar(uac));
         cptr.st1(disp, 1);
@@ -2278,9 +2699,17 @@ export function glibr() {
     let thiswep;
     let which;
     let hand;
+
     leftfall = schar((uleft.v && !(cptr.ldI32o(uleft.v, $obj_cursed) & 1) && (!uwep.v || !(welded(uwep.v) && ULEFTY()) || !bimanual(uwep.v)) ? 1 : 0));
     rightfall = schar((uright.v && !(cptr.ldI32o(uright.v, $obj_cursed) & 1) && (!uwep.v || !(welded(uwep.v) && URIGHTY()) || !bimanual(uwep.v)) ? 1 : 0));
+    /*
+        leftfall = (uleft && !uleft->cursed
+                    && (!uwep || !welded(uwep) || !bimanual(uwep)));
+        rightfall = (uright && !uright->cursed && (!welded(uwep)));
+    */
+
     if (!uarmg.v && (leftfall || rightfall) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
+        /* changed so cursed rings don't fall off, GAN 10/30/86 */
         Your(__s_s_off_your_s, (leftfall && rightfall) ? __s_rings_slip : __s_ring_slips, (leftfall && rightfall) ? fingers_or_gloves(0) : body_part(NHC.FINGER));
         xfl++;
         if (leftfall) {
@@ -2296,17 +2725,23 @@ export function glibr() {
             cmdq_clear(NHC.CQ_CANNED);
         }
     }
+
     otmp = uswapwep.v;
     if (cptr.ld1so(u, $you_twoweap) && otmp) {
+        /* secondary weapon doesn't need nearly as much handling as
+           primary; when in two-weapon mode, we know it's one-handed
+           with something else in the other hand and also that it's
+           a weapon or weptool rather than something unusual, plus
+           we don't need to compare its type with the primary */
         otherwep = is_sword(otmp) ? cptr.decay(c_sword) : weapon_descr(otmp);
         if (cptr.ldI64o(otmp, $obj_quan) > 1n)
             otherwep = makeplural(otherwep);
         hand = body_part(NHC.HAND);
-        which = URIGHTY() ? __s_left : __s_right;
+        which = URIGHTY() ? __s_left : __s_right;  /* text for the off hand */
         Your(__s_s_s_s_from_your_s_s, otherwep, xfl ? __s_also : __s_empty, otense(otmp, __s_slip), which, hand);
         xfl++;
         wastwoweap = 1;
-        setuswapwep(null);
+        setuswapwep(null);  /* clears u.twoweap */
         cmdq_clear(NHC.CQ_CANNED);
         if (canletgo(otmp, __s_empty))
             dropx(otmp);
@@ -2314,10 +2749,17 @@ export function glibr() {
     otmp = uwep.v;
     if (otmp && cptr.ldI16o(otmp, $obj_otyp) != NHC.AKLYS && !welded(otmp)) {
         let savequan = cptr.ldI64o(otmp, $obj_quan);
+
+        /* nice wording if both weapons are the same type */
         thiswep = is_sword(otmp) ? cptr.decay(c_sword) : weapon_descr(otmp);
         if (otherwep && strcmp(thiswep, makesingular(otherwep)))
             otherwep = null;
         if (cptr.ldI64o(otmp, $obj_quan) > 1n) {
+            /* most class names for unconventional wielded items
+               are ok, but if wielding multiple apples or rations
+               we don't want "your foods slip", so force non-corpse
+               food to be singular; skipping makeplural() isn't
+               enough--we need to fool otense() too */
             if (!strcmp(thiswep, __s_food))
                 cptr.stI64o(otmp, $obj_quan, 1n);
             else
@@ -2328,9 +2770,11 @@ export function glibr() {
         if (bimanual(otmp)) {
             hand = makeplural(hand);
         } else if (wastwoweap) {
+            /* preceding msg was about non-dominant hand */
             which = URIGHTY() ? __s_right : __s_left;
         }
         pline(__s_s_s_s_s_s_from_your_s_s, !cptr.strncmp(thiswep, __s_corpse, 6n) ? __s_the : __s_your, otherwep ? __s_other : __s_empty, thiswep, xfl ? __s_also : __s_empty, otense(otmp, __s_slip), which, hand);
+        /* xfl++; */
         cptr.stI64o(otmp, $obj_quan, savequan);
         setuwep(null);
         cmdq_clear(NHC.CQ_CANNED);
@@ -2343,11 +2787,13 @@ export function glibr() {
 export function some_armor(victim) {
     let otmph;
     let otmp;
+
     otmph = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmc.v : which_armor(victim, 2n);
     if (!otmph)
         otmph = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarm.v : which_armor(victim, 1n);
     if (!otmph)
         otmph = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmu.v : which_armor(victim, 64n);
+
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmh.v : which_armor(victim, 4n);
     if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2641, __s_some_armor__2, 4)))
         otmph = otmp;
@@ -2363,13 +2809,17 @@ export function some_armor(victim) {
     return otmph;
 }
 
+/* used for praying to check and fix levitation trouble */
 /** C ref: do_wear.c:2657 — @param {CPtr<struct obj>} ring @param {CInt} otyp @returns {CPtr<struct obj>} */
 export function stuck_ring(ring, otyp) {
     if (!cptr.eq(ring, uleft.v) && !cptr.eq(ring, uright.v)) {
         impossible(__s_stuck_ring_neither_left_nor_right);
         return null;
     }
+
     if (ring && cptr.ldI16o(ring, $obj_otyp) == otyp) {
+        /* reasons ring can't be removed match those checked by select_off();
+           limbless case has extra checks because ordinarily it's temporary */
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) && uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING && (cptr.ldI32o(uamul.v, $obj_cursed) & 1) | 0)
             return uamul.v;
         if (welded(uwep.v) && ((cptr.eq(ring, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v))) || bimanual(uwep.v)))
@@ -2378,12 +2828,16 @@ export function stuck_ring(ring, otyp) {
             return uarmg.v;
         if ((cptr.ldI32o(ring, $obj_cursed) & 1))
             return ring;
+        /* normally outermost layer is processed first, but slippery gloves
+           wears off quickly so uncurse ring itself before handling those */
         if (uarmg.v && Glib())
             return uarmg.v;
     }
+    /* either no ring or not right type or nothing prevents its removal */
     return null;
 }
 
+/* also for praying; find worn item that confers "Unchanging" attribute */
 /** C ref: do_wear.c:2687 @returns {CPtr<struct obj>} */
 export function unchanger() {
     if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING)
@@ -2395,17 +2849,21 @@ export function unchanger() {
 function select_off(otmp) {
     let why;
     let buf = new Uint8Array(256);
+
     if (!otmp)
         return 0;
-    cptr.st1(cptr.decay(buf), 0);
+    cptr.st1(cptr.decay(buf), 0);  /* lint suppression */
+
+    /* special ring checks */
     if (cptr.eq(otmp, uright.v) || cptr.eq(otmp, uleft.v)) {
         let glibdummy = cptr.alloc(216);
+
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
             pline_The(__s_ring_is_stuck);
             return 0;
         }
         cptr.memcpy(glibdummy, cg, 216);
-        why = null;
+        why = null;  /* the item which prevents ring removal */
         if (welded(uwep.v) && ((cptr.eq(otmp, ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED) ? uleft.v : uright.v))) || bimanual(uwep.v))) {
             void cptr.sprintf(cptr.decay(buf), __s_free_a_weapon_s, body_part(NHC.HAND));
             why = uwep.v;
@@ -2419,6 +2877,7 @@ function select_off(otmp) {
             return 0;
         }
     }
+    /* special glove checks */
     if (cptr.eq(otmp, uarmg.v)) {
         if (welded(uwep.v)) {
             You(__s_are_unable_to_take_off_your_s_while, cptr.decay(c_gloves), is_sword(uwep.v) ? cptr.decay(c_sword) : cptr.decay(c_weapon));
@@ -2431,6 +2890,7 @@ function select_off(otmp) {
         if (better_not_take_that_off(otmp))
             return 0;
     }
+    /* special boot checks */
     if (cptr.eq(otmp, uarmf.v)) {
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) {
             pline_The(__s_bear_trap_prevents_you_from_pulling, body_part(NHC.FOOT));
@@ -2440,8 +2900,9 @@ function select_off(otmp) {
             return 0;
         }
     }
+    /* special suit and shirt checks */
     if (cptr.eq(otmp, uarm.v) || cptr.eq(otmp, uarmu.v)) {
-        why = null;
+        why = null;  /* the item which prevents disrobing */
         if (uarmc.v && (cptr.ldI32o(uarmc.v, $obj_cursed) & 1) | 0) {
             void cptr.sprintf(cptr.decay(buf), __s_remove_your_s, cloak_simple_name(uarmc.v));
             why = uarmc.v;
@@ -2458,12 +2919,15 @@ function select_off(otmp) {
             return 0;
         }
     }
+    /* basic curse check */
     if (cptr.eq(otmp, uquiver.v) || (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, $you_twoweap))) {
-        ;
+        ;  /* some items can be removed even when cursed */
     } else {
+        /* otherwise, this is fundamental */
         if (cursed(otmp))
             return 0;
     }
+
     if (cptr.eq(otmp, uarm.v))
         cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) | 1n);
     else if (cptr.eq(otmp, uarmc.v))
@@ -2494,6 +2958,7 @@ function select_off(otmp) {
         cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) | 512n);
     else
         impossible(__s_select_off_s, doname(otmp));
+
     return 0;
 }
 
@@ -2502,7 +2967,8 @@ function do_takeoff() {
     let otmp = null;
     let was_twoweap = cptr.ld1so(u, $you_twoweap);
     let doff = cptr.add(svc, $context_info_takeoff);
-    cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) | 536870912n);
+
+    cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) | 536870912n);  /* set flag for cancel_doff() */
     if (cptr.ldI64o(doff, $takeoff_info_what) == 256n) {
         if (!cursed(uwep.v)) {
             setuwep(null);
@@ -2563,32 +3029,38 @@ function do_takeoff() {
     } else {
         impossible(__s_do_takeoff_taking_off_lx, cptr.ldI64o(doff, $takeoff_info_what));
     }
-    cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-536870913n));
+    cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-536870913n));  /* clear cancel_doff() flag */
+
     return otmp;
 }
 
+/* occupation callback for 'A' */
 /** C ref: do_wear.c:2900 @returns {CInt} */
 function take_off() {
     let i;
     let otmp;
     let doff = cptr.add(svc, $context_info_takeoff);
+
     if (cptr.ldI64o(doff, $takeoff_info_what)) {
         if (cptr.ldI32o(doff, $takeoff_info_delay) > 0) {
             (cptr.stI32o(doff, $takeoff_info_delay, cptr.ldI32o(doff, $takeoff_info_delay) + -1)) - (-1);
-            return 1;
+            return 1;  /* still busy */
         }
         if ((otmp = do_takeoff()) !== null)
             off_msg(otmp);
         cptr.stI64(doff, cptr.ldI64(doff) & BigInt.asIntN(64, ~cptr.ldI64o(doff, $takeoff_info_what)));
         cptr.stI64o(doff, $takeoff_info_what, 0n);
     }
+
     for (i = 0; cptr.ldI64o(takeoff_order, i, 8); i++)
         if (cptr.ldI64(doff) & cptr.ldI64o(takeoff_order, i, 8)) {
             cptr.stI64o(doff, $takeoff_info_what, cptr.ldI64o(takeoff_order, i, 8));
             break;
         }
+
     otmp = null;
     cptr.stI32o(doff, $takeoff_info_delay, 0);
+
     if (cptr.ldI64o(doff, $takeoff_info_what) == 0n) {
         You(__s_finish_s, cptr.add(doff, $takeoff_info_disrobing));
         return 0;
@@ -2600,6 +3072,10 @@ function take_off() {
         cptr.stI32o(doff, $takeoff_info_delay, 1);
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 1n) {
         otmp = uarm.v;
+        /* If a cloak is being worn, add the time to take it off and put
+         * it back on again.  Kludge alert! since that time is 0 for all
+         * known cloaks, add 1 so that it actually matters...
+         */
         if (uarmc.v)
             cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + ((Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) + 1) | 0)) | 0);
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 2n) {
@@ -2614,6 +3090,7 @@ function take_off() {
         otmp = uarms.v;
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 64n) {
         otmp = uarmu.v;
+        /* add the time to take off and put back on armor and/or cloak */
         if (uarm.v)
             cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarm.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay))) | 0);
         if (uarmc.v)
@@ -2625,23 +3102,40 @@ function take_off() {
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 262144n) {
         cptr.stI32o(doff, $takeoff_info_delay, 1);
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 524288n) {
+        /* [this used to be 2, but 'R' (and 'T') only require 1 turn to
+           remove a blindfold, so 'A' shouldn't have been requiring 2] */
         cptr.stI32o(doff, $takeoff_info_delay, 1);
     } else {
         impossible(__s_take_off_taking_off_lx, cptr.ldI64o(doff, $takeoff_info_what));
-        return 0;
+        return 0;  /* force done */
     }
+
     if (otmp)
         cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) | 0);
+
+    /* Since setting the occupation now starts the counter next move, that
+     * would always produce a delay 1 too big per item unless we subtract
+     * 1 here to account for it.
+     */
     if (cptr.ldI32o(doff, $takeoff_info_delay) > 0)
         (cptr.stI32o(doff, $takeoff_info_delay, cptr.ldI32o(doff, $takeoff_info_delay) + -1)) - (-1);
+
     set_occupation(take_off, cptr.add(doff, $takeoff_info_disrobing), 0n);
-    return 1;
+    return 1;  /* get busy */
 }
 
 /** C ref: do_wear.c:2990 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function better_not_take_that_off(otmp) {
     let corpse = carrying_stoning_corpse();
     let buf = new Uint8Array(256);
+
+    /* u_safe_from_fatal_corpse() with
+       (st_corpse | st_petrifies | st_resists) instead of
+       (st_corpse | st_petrifies)
+       would also check for no stoning resistance before
+       bothering to prompt, but losing stoning resistance
+       later, without the gloves on could prove dangerous,
+       so we won't factor that in */
     if (corpse && !u_safe_from_fatal_corpse(corpse, (NHC.st_corpse | NHC.st_petrifies))) {
         nh_snprintf(__s_better_not_take_that_off, 3006, cptr.decay(buf), 256n, __s_take_off_your_s_despite_carrying_a_dead, gloves_simple_name(otmp), obj_pmname(corpse));
         return schar((paranoid_ynq(1, cptr.decay(buf), 0) != 121));
@@ -2649,15 +3143,18 @@ function better_not_take_that_off(otmp) {
     return 0;
 }
 
+/* clear saved context to avoid inappropriate resumption of interrupted 'A' */
 /** C ref: do_wear.c:3014 */
 export function reset_remarm() {
     cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, cptr.stI64o(svc, $context_info_takeoff, 0n));
     cptr.st1o2(svc, 0, 1, $context_info_takeoff + $takeoff_info_disrobing, 0);
 }
 
+/* the #takeoffall command -- remove multiple worn items */
 /** C ref: do_wear.c:3022 @returns {CInt} */
 export function doddoremarm() {
     let result = 0;
+
     if (cptr.ldI64o(svc, $context_info_takeoff + $takeoff_info_what) || cptr.ldI64o(svc, $context_info_takeoff)) {
         You(__s_continue_s, cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing));
         set_occupation(take_off, cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), 0n);
@@ -2666,30 +3163,41 @@ export function doddoremarm() {
         You(__s_are_not_wearing_anything);
         return NHM.ECMD_OK;
     }
-    add_valid_menu_class(0);
+
+    add_valid_menu_class(0);  /* reset */
     if (cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL || (result = ggetobj(__s_take_off, select_off, 0, 0, null)) < -1)
         void menu_remarm(result);
+
     if (cptr.ldI64o(svc, $context_info_takeoff)) {
         void __builtin___strncpy_chk(cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), (((cptr.ldI64o(svc, $context_info_takeoff) & -1793n) != 0n) ? __s_disrobing : __s_disarming), 30n, __builtin_object_size(cptr.add(svc, $context_info_takeoff + $takeoff_info_disrobing), 1));
         void take_off();
     }
+    /* The time to perform the command is already completely accounted for
+     * in take_off(); if we return 1, that would add an extra turn to each
+     * disrobe.
+     */
     return NHM.ECMD_OK;
 }
 
+/* #altunwield - just unwield alternate weapon, item-action '-' when picking
+   uswapwep from context-sensitive inventory */
 /** C ref: do_wear.c:3062 @returns {CInt} */
 export function remarm_swapwep() {
     let cq = cptr.alloc(32);
     let cmdq;
     let oldbknown;
+
     if ((cmdq = cmdq_pop()) !== null) {
+        /* '-' uswapwep item-action picked from context-sensitive invent */
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
     } else {
         cptr.stI32(cq, NHC.CMDQ_KEY);
-        cptr.st1o(cq, $_cmd_queue_key, 0);
+        cptr.st1o(cq, $_cmd_queue_key, 0);  /* something other than '-' */
     }
     if (cptr.ldI32(cq) != NHC.CMDQ_KEY || cptr.ld1so(cq, $_cmd_queue_key) != 45 || !uswapwep.v)
         return NHM.ECMD_FAIL;
+
     oldbknown = (cptr.ldI32o(uswapwep.v, $obj_bknown) & 1);
     reset_remarm();
     cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, cptr.stI64o(svc, $context_info_takeoff, 1024n));
@@ -2703,6 +3211,7 @@ function menu_remarm(retry) {
     let i = 0;
     let pick_list = cptr.box(0);
     let all_worn_categories = 1;
+
     if (retry) {
         all_worn_categories = schar((retry == -2));
     } else if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_FULL) {
@@ -2719,6 +3228,7 @@ function menu_remarm(retry) {
         cptr.free(pick_list.v);
     } else if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
         let ggofeedback = cptr.box(0);
+
         i = ggetobj(__s_take_off, select_off, 0, 1, ggofeedback);
         if ((ggofeedback.v & NHM.ALL_FINISHED) >>> 0)
             return 0;
@@ -2726,6 +3236,7 @@ function menu_remarm(retry) {
     }
     if (menu_class_present(117) || menu_class_present(66) || menu_class_present(85) || menu_class_present(67) || menu_class_present(88))
         all_worn_categories = 0;
+
     n = query_objlist(__s_what_do_you_want_to_take_off, cptr.add(gi, $instance_globals_i_invent), 56, pick_list, NHM.PICK_ANY, all_worn_categories ? is_worn : is_worn_by_type);
     if (n > 0) {
         for (i = 0; i < n; i++)
@@ -2737,13 +3248,21 @@ function menu_remarm(retry) {
     return 0;
 }
 
+/* take off the specific worn object and if it still exists after that,
+   destroy it (taking off the item might already destroy it by dunking
+   hero into lava) */
 /** C ref: do_wear.c:3144 — @param {CPtr<struct obj>} wornarm */
 function wornarm_destroyed(wornarm) {
     let invobj;
     let nextobj;
     let wornoid = cptr.ldI32o(wornarm, $obj_o_id);
+
+    /* cancel_don() resets 'afternmv' when appropriate but doesn't reset
+       uarmc/uarm/&c so doing this now won't interfere with the tests in
+       'if (wornarm==uarmc) ... else if (wornarm==uarm) ... else ...' */
     if (donning(wornarm))
         cancel_don();
+
     if (cptr.eq(wornarm, uarmc.v))
         void Cloak_off();
     else if (cptr.eq(wornarm, uarm.v))
@@ -2758,6 +3277,12 @@ function wornarm_destroyed(wornarm) {
         void Boots_off();
     else if (cptr.eq(wornarm, uarms.v))
         void Shield_off();
+
+    /* 'wornarm' might be destroyed as a side-effect of xxx_off() so
+       using carried() to check wornarm->where==OBJ_INVENT is not viable;
+       scan invent instead; if already freed it shouldn't be possible to
+       have re-used the stale memory for a new item yet but verify o_id
+       just in case */
     for (invobj = cptr.ldPtro(gi, $instance_globals_i_invent); invobj; invobj = nextobj) {
         nextobj = cptr.ldPtr(invobj);
         if (cptr.eq(invobj, wornarm) && cptr.ldI32o(invobj, $obj_o_id) == wornoid) {
@@ -2767,6 +3292,10 @@ function wornarm_destroyed(wornarm) {
     }
 }
 
+/*
+ * returns impacted armor with its in_use bit set,
+ * or Null. *resisted is updated to reflect whether
+ * it resisted or not */
 /** C ref: do_wear.c:3189 — @param {CPtr<struct obj>} armor @param {CPtr<struct obj>} atmp @param {CPtr<boolean>} resisted @returns {CPtr<struct obj>} */
 function maybe_destroy_armor(armor, atmp, resisted) {
     if ((armor !== null) && (!atmp || cptr.eq(atmp, armor)) && ((cptr.st1(resisted, obj_resists(armor, 0, 90))) == 0)) {
@@ -2776,6 +3305,7 @@ function maybe_destroy_armor(armor, atmp, resisted) {
     return null;
 }
 
+/* hit by destroy armor scroll/black dragon breath */
 /** C ref: do_wear.c:3201 — @param {CPtr<struct obj>} atmp @returns {CInt} */
 export function disintegrate_arm(atmp) {
     let otmp = null;
@@ -2783,17 +3313,28 @@ export function disintegrate_arm(atmp) {
     let resisted = cptr.box(0);
     let resistedc = cptr.box(0);
     let resistedsuit = cptr.box(0);
+    /*
+     * Note: if the cloak resisted, then the suit or shirt underneath
+     * wouldn't be impacted either. Likewise, if the suit resisted, the
+     * shirt underneath wouldn't be impacted. Since there are no artifact
+     * cloaks or suits right now, this is unlikely to come into effect,
+     * but it should behave appropriately if/when the situation changes.
+     */
+
     if ((otmp = maybe_destroy_armor(uarmc.v, atmp, resistedc)) !== null) {
         urgent_pline(__s_your_s_crumbles_and_turns_to_dust, cloak_simple_name(otmp));
     } else if (!resistedc.v && (otmp = maybe_destroy_armor(uarm.v, atmp, resistedsuit)) !== null) {
         let suit = suit_simple_name(otmp);
+
+        /* for gold DSM, we don't want Armor_gone() to report that it
+           stops shining _after_ we've been told that it is destroyed */
         if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
             end_burn(otmp, 0);
         urgent_pline(__s_your_s_s_to_dust_and_s_to_the_s, suit, vtense(suit, __s_turn), vtense(suit, __s_fall), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     } else if (!resistedc.v && !resistedsuit.v && (otmp = maybe_destroy_armor(uarmu.v, atmp, resisted)) !== null) {
-        urgent_pline(__s_your_s_crumbles_into_tiny_threads_and, shirt_simple_name(otmp));
+        urgent_pline(__s_your_s_crumbles_into_tiny_threads_and, shirt_simple_name(otmp));  /* always "shirt" */
     } else if ((otmp = maybe_destroy_armor(uarmh.v, atmp, resisted)) !== null) {
-        urgent_pline(__s_your_s_turns_to_dust_and_is_blown_away, helm_simple_name(otmp));
+        urgent_pline(__s_your_s_turns_to_dust_and_is_blown_away, helm_simple_name(otmp));  /* "helm" or "hat" */
     } else if ((otmp = maybe_destroy_armor(uarmg.v, atmp, resisted)) !== null) {
         urgent_pline(__s_your_s_vanish, gloves_simple_name(otmp));
         losing_gloves = 1;
@@ -2802,15 +3343,20 @@ export function disintegrate_arm(atmp) {
     } else if ((otmp = maybe_destroy_armor(uarms.v, atmp, resisted)) !== null) {
         urgent_pline(__s_your_s_crumbles_away, shield_simple_name(otmp));
     } else {
-        return 0;
+        return 0;  /* could not destroy anything */
     }
+
+    /* cancel_don() if applicable, Cloak_off()/Armor_off()/&c, and useup() */
     wornarm_destroyed(otmp);
+    /* glove loss means wielded weapon will be touched */
     if (losing_gloves)
         selftouch(__s_you);
+
     stop_occupation();
     return 1;
 }
 
+/* return ERODE_foo erosion type which can apply to object */
 /** C ref: do_wear.c:3260 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function obj_erode_type(otmp) {
     if (is_flammable(otmp))
@@ -2826,6 +3372,8 @@ function obj_erode_type(otmp) {
     return -1;
 }
 
+/* erode a number of worn armor(s).
+   if the armor is hit when max eroded, destroys it. */
 /** C ref: do_wear.c:3278 @returns {CInt} */
 export function destroy_arm() {
     let armors = cptr.alloc(7 * 8); cptr.stPtro(armors, 0, null);
@@ -2835,6 +3383,8 @@ export function destroy_arm() {
     let hits = (rn2_at(__s_do_wear_c, 3282, __s_destroy_arm, 4) + 1) | 0;
     let ret = 0;
     if (uarm.v)
+
+        /* gather worn armor; include non-erodeable ones */
         cptr.stPtro(armors, idx++, uarm.v, 8);
     if (uarmc.v)
         cptr.stPtro(armors, idx++, uarmc.v, 8);
@@ -2850,12 +3400,16 @@ export function destroy_arm() {
         cptr.stPtro(armors, idx++, uarmu.v, 8);
     if (!idx)
         return 0;
+
     for (i = 0; i < hits; i++) {
         otmp = cptr.ldPtro(armors, rn2_at(__s_do_wear_c, 3297, __s_destroy_arm, idx), 8);
+
         if (erosion_matters(otmp) && is_damageable(otmp) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
             let erosion = obj_erode_type(otmp);
+
             if (erosion != -1) {
                 let r = erode_obj(otmp, xname(otmp), erosion, 10);
+
                 if (r != NHM.ER_NOTHING)
                     ret = 1;
                 if (r == NHM.ER_DESTROYED)
@@ -2863,6 +3417,7 @@ export function destroy_arm() {
             }
         }
     }
+
     if (ret)
         stop_occupation();
     return ret;
@@ -2887,14 +3442,20 @@ export function adj_abon(otmp, delta) {
     }
 }
 
+/* decide whether a worn item is covered up by some other worn item,
+   used for dipping into liquid and applying grease and takeoff_ok();
+   some criteria are different than select_off()'s */
 const __static_inaccessible_equipment_need_to_take_off_outer_armor = cptr.bytes("need to take off %s to %s %s."); /** C ref: do_wear.c:3348 — char[30] (function-static) */
 
 /** C ref: do_wear.c:3342 — @param {CPtr<struct obj>} obj @param {CPtr<char>} verb @param {CInt} only_if_known_cursed @returns {CInt} */
 export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     let buf = new Uint8Array(256);
-    let anycovering = schar((!only_if_known_cursed));
+    let anycovering = schar((!only_if_known_cursed));  /* more comprehensible... */
+
     if (!obj || !cptr.ldI64o(obj, $obj_owornmask))
-        return 0;
+        return 0;  /* not inaccessible */
+
+    /* check for suit covered by cloak */
     if (cptr.eq(obj, uarm.v) && uarmc.v && (anycovering || ((cptr.ldI32o((uarmc.v), $obj_cursed) & 1) | 0 && (cptr.ldI32o((uarmc.v), $obj_bknown) & 1) | 0))) {
         if (verb) {
             void cptr.strcpy(cptr.decay(buf), yname(uarmc.v));
@@ -2902,11 +3463,16 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
         }
         return 1;
     }
+    /* check for shirt covered by suit and/or cloak */
     if (cptr.eq(obj, uarmu.v) && ((uarm.v && (anycovering || ((cptr.ldI32o((uarm.v), $obj_cursed) & 1) | 0 && (cptr.ldI32o((uarm.v), $obj_bknown) & 1) | 0))) || (uarmc.v && (anycovering || ((cptr.ldI32o((uarmc.v), $obj_cursed) & 1) | 0 && (cptr.ldI32o((uarmc.v), $obj_bknown) & 1) | 0))))) {
         if (verb) {
             let cloaktmp = new Uint8Array(128);
             let suittmp = new Uint8Array(128);
+            /* if sameprefix, use yname and xname to get "your cloak and suit"
+               or "Manlobbi's cloak and suit"; otherwise, use yname and yname
+               to get "your cloak and Manlobbi's suit" or vice versa */
             let sameprefix = schar((uarm.v && uarmc.v && !strcmp(shk_your(cptr.decay(cloaktmp), uarmc.v), shk_your(cptr.decay(suittmp), uarm.v)) ? 1 : 0));
+
             cptr.st1(cptr.decay(buf), 0);
             if (uarmc.v)
                 void cptr.strcat(cptr.decay(buf), yname(uarmc.v));
@@ -2918,6 +3484,7 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
         }
         return 1;
     }
+    /* check for ring covered by gloves */
     if ((cptr.eq(obj, uleft.v) || cptr.eq(obj, uright.v)) && uarmg.v && (anycovering || ((cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0 && (cptr.ldI32o((uarmg.v), $obj_bknown) & 1) | 0))) {
         if (verb) {
             void cptr.strcpy(cptr.decay(buf), yname(uarmg.v));
@@ -2925,53 +3492,78 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
         }
         return 1;
     }
+    /* item is not inaccessible */
     return 0;
 }
 
+/* not a getobj callback - unifies code among the other 4 getobj callbacks */
 /** C ref: do_wear.c:3404 — @param {CPtr<struct obj>} obj @param {CInt} removing @param {CInt} accessory @returns {CInt} */
 function equip_ok(obj, removing, accessory) {
     let is_worn;
     let dummymask = cptr.box(0n);
+
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
+    /* ignore for putting on if already worn, or removing if not worn */
     is_worn = schar(((cptr.ldI64o(obj, $obj_owornmask) & 983167n) != 0n));
     if (removing ^ is_worn)
         return NHC.GETOBJ_EXCLUDE_INACCESS;
+
+    /* exclude most object classes outright */
     if (cptr.ld1so(obj, $obj_oclass) != NHC.ARMOR_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.RING_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS) {
+        /* ... except for a few wearable exceptions outside these classes */
         if (cptr.ldI16o(obj, $obj_otyp) != NHC.MEAT_RING && cptr.ldI16o(obj, $obj_otyp) != NHC.BLINDFOLD && cptr.ldI16o(obj, $obj_otyp) != NHC.TOWEL && cptr.ldI16o(obj, $obj_otyp) != NHC.LENSES)
             return NHC.GETOBJ_EXCLUDE;
     }
+
+    /* armor with 'P' or 'R' or accessory with 'W' or 'T' */
     if (accessory ^ (cptr.ld1so(obj, $obj_oclass) != NHC.ARMOR_CLASS))
         return NHC.GETOBJ_DOWNPLAY;
+
+    /* armor we can't wear, e.g. from polyform */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && !removing && !canwearobj(obj, dummymask, 0))
         return NHC.GETOBJ_DOWNPLAY;
+
+    /* Possible extension: downplay items (both accessories and armor) which
+     * can't be worn because the slot is filled with something else. */
+
+    /* removing inaccessible equipment */
     if (removing && !cptr.ld1so(gi, $instance_globals_i_item_action_in_progress)) {
         if (inaccessible_equipment(obj, null, schar((cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS))))
             return NHC.GETOBJ_EXCLUDE_INACCESS;
     }
+
+    /* all good to go */
     return NHC.GETOBJ_SUGGEST;
 }
 
+/* getobj callback for P command */
 /** C ref: do_wear.c:3451 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function puton_ok(obj) {
     return equip_ok(obj, 0, 1);
 }
 
+/* getobj callback for R command */
 /** C ref: do_wear.c:3458 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function remove_ok(obj) {
     return equip_ok(obj, 1, 1);
 }
 
+/* getobj callback for W command */
 /** C ref: do_wear.c:3465 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function wear_ok(obj) {
     return equip_ok(obj, 0, 0);
 }
 
+/* getobj callback for T command */
 /** C ref: do_wear.c:3472 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function takeoff_ok(obj) {
     return equip_ok(obj, 1, 0);
 }
 
+/* getobj callback for blessed destroy armor.
+   suggest any worn armor, even if covered by other armor */
 /** C ref: do_wear.c:3480 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function any_worn_armor_ok(obj) {
     if (obj && (cptr.ldI64o(obj, $obj_owornmask) & 127n))
@@ -2979,10 +3571,12 @@ export function any_worn_armor_ok(obj) {
     return NHC.GETOBJ_EXCLUDE;
 }
 
+/* number of armor pieces worn by hero */
 /** C ref: do_wear.c:3489 @returns {CInt} */
 export function count_worn_armor() {
     let ret = 0;
     if (uarm.v)
+
         ret++;
     if (uarmc.v)
         ret++;
@@ -2996,6 +3590,7 @@ export function count_worn_armor() {
         ret++;
     if (uarmu.v)
         ret++;
+
     return ret;
 }
 

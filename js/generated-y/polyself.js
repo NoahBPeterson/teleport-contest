@@ -492,21 +492,25 @@ const __s_empty__2 = cptr.lit("empty");
 /** C ref: polyself.c:33 — char[33] */
 const no_longer_petrify_resistant = cptr.bytes("No longer petrify-resistant, you");
 
+/* update the gy.youmonst.data structure pointer and intrinsics */
 /** C ref: polyself.c:38 */
 export function* set_uasmon() {
     let mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst);
     let was_vampshifter = valid_vampshiftform(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham), cptr.ldI32o(u, $you_umonnum));
+
     set_mon_data(cptr.add(gy, $instance_globals_y_youmonst), mdat);
     cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_m_id, 1);
+
     if (Protection_from_shape_changers())
         cptr.stI16o(gy, $instance_globals_y_youmonst + $monst_cham, NHC.NON_PM);
     else if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE))
         cptr.stI16o(gy, $instance_globals_y_youmonst + $monst_cham, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_mnum));
     else if (!was_vampshifter)
         cptr.stI16o(gy, $instance_globals_y_youmonst + $monst_cham, NHC.NON_PM);
-    cptr.stI16o(u, $you_mcham, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham));
+    cptr.stI16o(u, $you_mcham, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham));  /* for save/restore since youmonst isn't */
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_FIRE) != 0))
+
             cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
             cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
@@ -554,7 +558,9 @@ export function* set_uasmon() {
             cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
+        /* resists_drli() takes wielded weapon into account; suppress it */
         let save_uwep = uwep.v;
+
         uwep.v = null;
         {
             if ((yield* resists_drli(cptr.add(gy, $instance_globals_y_youmonst))))
@@ -566,6 +572,8 @@ export function* set_uasmon() {
     }
     {
         if ((dmgtype(mdat, NHM.AD_MAGM) || cptr.eq(mdat, cptr.add(mons, NHC.PM_BABY_GRAY_DRAGON, $sizeof_permonst)) || dmgtype(mdat, NHM.AD_RBRE)))
+            /* resists_magm() takes wielded, worn, and carried equipment into
+               into account; cheat and duplicate its monster-specific part */
             cptr.stI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
             cptr.stI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
@@ -578,6 +586,7 @@ export function* set_uasmon() {
     }
     {
         if ((cptr.eq(mdat, cptr.add(mons, NHC.PM_STALKER, $sizeof_permonst)) || is_bat(mdat)))
+
             cptr.stI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
             cptr.stI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
@@ -602,6 +611,7 @@ export function* set_uasmon() {
     }
     {
         if (((cptr.ldU16o((Upolyd() ? mdat : cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), $sizeof_permonst)), $permonst_mflags3) & NHM.M3_INFRAVISION)))
+            /* note that Infravision uses mons[race] rather than usual mons[role] */
             cptr.stI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
             cptr.stI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
@@ -632,6 +642,9 @@ export function* set_uasmon() {
     }
     {
         if ((((cptr.ldU64o((mdat), $permonst_mflags1) & 1n) != 0n) && !is_floater(mdat)))
+            /* floating eye is the only 'floater'; it is also flagged as a 'flyer';
+               suppress flying for it so that enlightenment doesn't confusingly
+               show latent flight capability always blocked by levitation */
             cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
             cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
@@ -644,6 +657,8 @@ export function* set_uasmon() {
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 8n) != 0n))
+            /* [don't touch MAGICAL_BREATHING here; both Amphibious and Breathless
+               key off of it but include different monster forms...] */
             cptr.stI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
             cptr.stI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
@@ -672,29 +687,46 @@ export function* set_uasmon() {
         else
             cptr.stI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
+
+    /* whether the player is flying/floating depends on their steed,
+       which won't be known during the restore process: but BFlying
+       and BStealth should be set correctly already in that case, so
+       there's nothing to do */
     if (!cptr.ldI32o(program_state, $sinfo_restoring))
-        float_vs_flight();
+        float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
     polysense();
     if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n))
         (yield* status_initialize(1));
+    /* we can reset this now, having just done what it is meant to trigger */
     cptr.stI64o(gw, $instance_globals_w_were_changes, 0n);
 }
 
+/* Levitation overrides Flying; set or clear BFlying|I_SPECIAL */
 /** C ref: polyself.c:131 */
 export function float_vs_flight() {
     let stuck_in_floor = schar((cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT ? 1 : 0));
+
+    /* floating overrides flight; so does being trapped in the floor */
     if ((HLevitation() || ELevitation()) || ((HFlying() || EFlying()) && stuck_in_floor))
         cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked) | 536870912n);
     else
         cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked) & (-536870913n));
+    /* being trapped on the ground (bear trap, web, molten lava survived
+       with fire resistance, former lava solidified via cold, tethered
+       to a buried iron ball) overrides floating--the floor is reachable */
     if ((HLevitation() || ELevitation()) && stuck_in_floor)
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked) | 536870912n);
     else
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked) & (-536870913n));
+
+    /* riding blocks stealth unless hero+steed fly, so a change in flying
+       might cause a change in stealth */
     steed_vs_stealth();
+
     cptr.st1(disp, 1);
 }
 
+/* riding blocks stealth unless hero+steed fly */
 /** C ref: polyself.c:158 */
 export function steed_vs_stealth() {
     if (cptr.ldPtro(u, $you_usteed) && !Flying() && !Levitation())
@@ -703,16 +735,23 @@ export function steed_vs_stealth() {
         cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked) & (-67108865n));
 }
 
+/* for changing into form that's immune to strangulation */
 /** C ref: polyself.c:168 — @param {CInt} on */
 function* check_strangling(on) {
+    /* on -- maybe resume strangling */
     if (on) {
         let was_strangled = schar((Strangled() != 0n));
+
+        /* when Strangled is already set, polymorphing from one
+           vulnerable form into another causes the counter to be reset */
         if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_STRANGULATION && (yield* can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst)))) {
             cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 6n);
             cptr.st1(disp, 1);
-            (yield* Your(__s_s_s_your_s, (yield* simpleonames(uamul.v)), was_strangled ? __s_still_constricts : __s_begins_constricting, (yield* body_part(NHC.NECK))));
+            (yield* Your(__s_s_s_your_s, (yield* simpleonames(uamul.v)), was_strangled ? __s_still_constricts : __s_begins_constricting, (yield* body_part(NHC.NECK))));  /* "throat" */
             (yield* discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1));
         }
+
+        /* off -- maybe block strangling */
     } else {
         if (Strangled() && !(yield* can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst)))) {
             cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
@@ -722,23 +761,27 @@ function* check_strangling(on) {
     }
 }
 
+/* make a (new) human out of the player */
 /** C ref: polyself.c:200 — @param {CPtr<char>} fmt @param {CPtr<char>} arg */
 function* polyman(fmt, arg) {
     let sticking = schar((sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldPtro(u, $you_ustuck) && !(cptr.ldI32o(u, $you_uswallow) & 1) ? 1 : 0));
     let was_mimicking = schar((U_AP_TYPE() != NHC.M_AP_NOTHING));
     let was_blind = schar((!!Blind()));
     let had_see_invis = schar((!!See_invisible()));
+
     if (Upolyd()) {
-        cptr.memcpy(cptr.add(u, $you_acurr), cptr.add(u, $you_macurr), 6);
+        cptr.memcpy(cptr.add(u, $you_acurr), cptr.add(u, $you_macurr), 6);  /* restore old attribs */
         cptr.memcpy(cptr.add(u, $you_amax), cptr.add(u, $you_mamax), 6);
         cptr.stI32o(u, $you_umonnum, cptr.ldI32o(u, $you_umonster));
         cptr.st1o(flags, $flag_female, schar((cptr.ldI32o(u, $you_mfemale) & 1)));
     }
     (yield* set_uasmon());
+
     cptr.stI32o(u, $you_mh, cptr.stI32o(u, $you_mhmax, 0));
     cptr.stI32o(u, $you_mtimedone, 0);
     (yield* skinback(0));
     cptr.stI32o(u, $you_uundetected, 0);
+
     if (sticking)
         (yield* uunstick());
     find_ac();
@@ -748,10 +791,15 @@ function* polyman(fmt, arg) {
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
     }
+
     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+
     (yield* urgent_pline(fmt, arg));
+    /* check whether player foolishly genocided self while poly'd */
     if (ugenocided()) {
+        /* intervening activity might have clobbered genocide info */
         let kptr = find_delayed_killer(NHC.POLYMORPH);
+
         if (kptr !== null && cptr.ld1so2(kptr, 0, 1, $kinfo_name)) {
             cptr.stI32o(svk, $kinfo_format, cptr.ldI32o(kptr, $kinfo_format));
             void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
@@ -762,30 +810,41 @@ function* polyman(fmt, arg) {
         (yield* dealloc_killer(kptr));
         (yield* done(NHC.GENOCIDED));
     }
+
     if (!!See_invisible() ^ had_see_invis)
-        (yield* set_mimic_blocking());
+        (yield* set_mimic_blocking());  /* See_invisible just toggled */
+
     if (cptr.ld1so(u, $you_twoweap) && !could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         (yield* untwoweapon());
+
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap(((rn2_at(__s_polyself_c, 256, __s_polyman, 6) + 2) | 0) >>> 0, NHC.TT_PIT);
+        set_utrap(((rn2_at(__s_polyself_c, 256, __s_polyman, 6) + 2) | 0) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), 1n);
-        (yield* make_blinded(0n, 1));
+        (yield* make_blinded(0n, 1));  /* remove blindness */
     }
     (yield* check_strangling(1));
+
     if (!Levitation() && !cptr.ldPtro(u, $you_ustuck) && is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         (yield* spoteffects(1));
+
     (yield* see_monsters());
 }
 
 /** C ref: polyself.c:273 */
 export function* change_sex() {
+    /* Some monsters are always of one sex and their sex can't be changed;
+     * Succubi/incubi can change, but are handled below.
+     *
+     * !Upolyd check necessary because is_male() and is_female()
+     * may be true for certain roles
+     */
     if (!Upolyd() || (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 65536n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 131072n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 262144n) != 0n)))
         cptr.st1o(flags, $flag_female, schar((!cptr.ld1so(flags, $flag_female))));
     if (Upolyd())
         cptr.stI32o(u, $you_mfemale, (!(cptr.ldI32o(u, $you_mfemale) & 1)) >>> 0);
-    max_rank_sz();
+    max_rank_sz();  /* [this appears to be superfluous] */
     if ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
         void cptr.strcpy(cptr.add(svp, $instance_globals_saved_p_pl_character), cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f));
     else
@@ -798,6 +857,7 @@ export function* change_sex() {
     }
 }
 
+/* log a message if non-poly'd hero's gender has changed */
 /** C ref: polyself.c:307 — @param {CInt} viapoly @param {CInt} oldgend @param {CInt} newgend */
 export function* livelog_newform(viapoly, oldgend, newgend) {
     let buf = new Uint8Array(256);
@@ -805,6 +865,12 @@ export function* livelog_newform(viapoly, oldgend, newgend) {
     let oldrank;
     let newrole;
     let newrank;
+
+    /*
+     * TODO?
+     *  Give other logging feedback here instead of in newman().
+     */
+
     if (!Upolyd()) {
         if (newgend != oldgend) {
             oldrole = (oldgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole);
@@ -827,42 +893,76 @@ function* newman() {
     let newgend;
     let hpmax;
     let enmax;
+
     oldlvl = cptr.ldI32o(u, $you_ulevel);
-    newlvl = (oldlvl + ((rn2_at(__s_polyself_c, 342, __s_newman, 5) + -2) | 0)) | 0;
+    newlvl = (oldlvl + ((rn2_at(__s_polyself_c, 342, __s_newman, 5) + -2) | 0)) | 0;  /* new = old + {-2,-1,0,+1,+2} */
     if (newlvl > 127 || newlvl < 1) {
         {
             (yield* urgent_pline(__s_your_new_form_doesn_t_seem_healthy));
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_unsuccessful_polymorph);
             (yield* done(NHC.DIED));
+            /* must have been life-saved to get here */
             (yield* newuhs(0));
-            (yield* encumber_msg());
-            return;
-        }
+            (yield* encumber_msg());  /* used to be done by redist_attr() */
+            return;  /* lifesaved */
+        }  /* old level is still intact (in case of lifesaving) */
     }
     if (newlvl > NHM.MAXULEV)
         newlvl = NHM.MAXULEV;
+    /* If your level goes down, your peak level goes down by
+       the same amount so that you can't simply use blessed
+       full healing to undo the decrease.  But if your level
+       goes up, your peak level does *not* undergo the same
+       adjustment; you might end up losing out on the chance
+       to regain some levels previously lost to other causes. */
     if (newlvl < oldlvl)
         cptr.stI32o(u, $you_ulevelmax, (cptr.ldI32o(u, $you_ulevelmax) - ((oldlvl - newlvl) | 0)) | 0);
     if (cptr.ldI32o(u, $you_ulevelmax) < newlvl)
         cptr.stI32o(u, $you_ulevelmax, newlvl);
     cptr.stI32o(u, $you_ulevel, newlvl);
+
     oldgend = poly_gender();
     if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !rn2_at(__s_polyself_c, 361, __s_newman, 10))
         (yield* change_sex());
+
     (yield* adjabil(oldlvl, cptr.ldI32o(u, $you_ulevel)));
+
+    /* random experience points for the new experience level */
     cptr.stI64o(u, $you_uexp, rndexp(0));
+
+    /* set up new attribute points (particularly Con) */
     redist_attr();
+
+    /*
+     * New hit points:
+     *  remove "level gain"-based HP from any extra HP accumulated
+     *  (the "extra" might actually be negative);
+     *  modify the extra, retaining {80%, 90%, 100%, or 110%};
+     *  add in newly generated set of level-gain HP.
+     *
+     * (This used to calculate new HP in direct proportion to old HP,
+     * but that was subject to abuse:  accumulate a large amount of
+     * extra HP, drain level down to 1, then polyself to level 2 or 3
+     * [lifesaving capability needed to handle level 0 and -1 cases]
+     * and the extra got multiplied by 2 or 3.  Repeat the level
+     * drain and polyself steps until out of lifesaving capability.)
+     */
     hpmax = cptr.ldI32o(u, $you_uhpmax);
     for (i = 0; i < oldlvl; i++)
         hpmax = (hpmax - cptr.ldI16o2(u, i, 2, $you_uhpinc)) | 0;
+    /* hpmax * rn1(4,8) / 10; 0.95*hpmax on average */
     hpmax = (yield* rounddiv(BigInt.asIntN(64, BigInt(hpmax) * BigInt(((rn2_at(__s_polyself_c, 390, __s_newman, 4) + 8) | 0))), 10));
     for (i = 0; (cptr.stI32o(u, $you_ulevel, i)) < newlvl; i++)
         hpmax = (hpmax + newhp()) | 0;
     if (hpmax < cptr.ldI32o(u, $you_ulevel))
-        hpmax = cptr.ldI32o(u, $you_ulevel);
+        hpmax = cptr.ldI32o(u, $you_ulevel);  /* min of 1 HP per level */
+    /* retain same proportion for current HP; u.uhp * hpmax / u.uhpmax */
     cptr.stI32o(u, $you_uhp, (yield* rounddiv(BigInt.asIntN(64, BigInt(cptr.ldI32o(u, $you_uhp)) * BigInt(hpmax)), cptr.ldI32o(u, $you_uhpmax))));
-    setuhpmax(hpmax, 1);
+    setuhpmax(hpmax, 1);  /* might reduce u.uhp */
+    /*
+     * Do the same for spell power.
+     */
     enmax = cptr.ldI32o(u, $you_uenmax);
     for (i = 0; i < oldlvl; i++)
         enmax = (enmax - cptr.ldI16o2(u, i, 2, $you_ueninc)) | 0;
@@ -873,6 +973,8 @@ function* newman() {
         enmax = cptr.ldI32o(u, $you_ulevel);
     cptr.stI32o(u, $you_uen, (yield* rounddiv(BigInt.asIntN(64, BigInt(cptr.ldI32o(u, $you_uen)) * BigInt(enmax)), ((cptr.ldI32o(u, $you_uenmax) < 1) ? 1 : cptr.ldI32o(u, $you_uenmax)))));
     cptr.stI32o(u, $you_uenmax, enmax);
+    /* [should alignment record be tweaked too?] */
+
     cptr.stI32o(u, $you_uhunger, ((rn2_at(__s_polyself_c, 414, __s_newman, 500) + 500) | 0));
     if (Sick())
         (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
@@ -893,20 +995,27 @@ function* newman() {
         }
     }
     (yield* newuhs(0));
+    /* use saved gender we're about to revert to, not current */
     newform = ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) && cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f) : ((cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual)) ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual) : cptr.ldPtro(gu, $instance_globals_u_urace));
     (yield* polyman(__s_you_feel_like_a_new_s, newform));
+
     newgend = poly_gender();
+    /* note: newman() bypasses achievements for new ranks attained and
+       doesn't log "new <form>" when that isn't accompanied by level change */
     if (newlvl != oldlvl)
         (yield* livelog_printf(4096n, __s_became_experience_level_d_as_a_new_s, newlvl, newform));
     else
         (yield* livelog_newform(1, oldgend, newgend));
+
     if (Slimed()) {
         (yield* Your(__s_body_transforms_but_there_is_still));
         (yield* make_slimed(10n, null));
     }
+
     cptr.st1(disp, 1);
     (yield* see_monsters());
     (yield* encumber_msg());
+
     (yield* retouch_equipment(2));
     if (!uarmg.v)
         (yield* selftouch(cptr.decay(no_longer_petrify_resistant)));
@@ -929,10 +1038,12 @@ export function* polyself(psflags) {
         iswere = schar((ismnum(cptr.ldI32o(u, $you_ulycn))));
         isvamp = schar(((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)) ? 1 : 0));
         controllable_poly = schar((Polymorph_control() && !(HStun() || (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) ? 1 : 0));
+
         if (Unchanging()) {
             (yield* You(__s_fail_to_transform));
             return;
         }
+        /* being Stunned|Unaware doesn't negate this aspect of Poly_control */
         if (!Polymorph_control() && !forcecontrol && !draconian && !iswere && !isvamp) {
             if (rn2_at(__s_polyself_c, 490, __s_polyself, 20) > (acurr(NHC.A_CON))) {
                 (yield* You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
@@ -943,11 +1054,13 @@ export function* polyself(psflags) {
         }
         old_light = emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
         mntmp.v = NHC.NON_PM;
+
         if (formrevert) {
             mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
             monsterpoly = 1;
             controllable_poly = 0;
         }
+
         if (forcecontrol && low_control && (draconian || monsterpoly || isvamp || iswere))
             forcecontrol = 0;
         if (monsterpoly && isvamp) { __pc = 7; continue; }
@@ -973,17 +1086,19 @@ export function* polyself(psflags) {
         (yield* getlin(__s_become_what_kind_of_monster_type_the, cptr.decay(buf)));
         void (yield* mungspaces(cptr.decay(buf)));
         if (cptr.ld1s(cptr.decay(buf)) == 27) {
+            /* user is cancelling controlled poly */
             if (forcecontrol) {
                 (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
                 return;
             }
-            void cptr.strcpy(cptr.decay(buf), __s_star);
+            void cptr.strcpy(cptr.decay(buf), __s_star);  /* resort to random */
         }
         if (!strcmp(cptr.decay(buf), __s_star) || !strcmp(cptr.decay(buf), __s_random)) { __pc = 15; continue; }
         __pc = 14; continue;
         }
         case 15: {
-        tryct = 0;
+        /* explicitly requesting random result */
+        tryct = 0;  /* will skip thats_enough_tries */
         { __pc = 12; continue; }
         }
         case 14: {
@@ -1004,13 +1119,22 @@ export function* polyself(psflags) {
         continue;
         }
         case 18: {
+
+        /* placeholder monsters are for corpses and all flagged
+           M2_NOPOLY but they are reasonable polymorph targets;
+           pick a suitable substitute (which might be geno'd) */
         if (is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)) && !((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && mntmp.v != NHC.PM_HUMAN) {
+            /* far less general than mkclass() */
             if (mntmp.v == NHC.PM_ORC)
                 mntmp.v = rn2_at(__s_polyself_c, 554, __s_polyself, 3) ? NHC.PM_HILL_ORC : NHC.PM_MORDOR_ORC;
             else if (mntmp.v == NHC.PM_ELF)
                 mntmp.v = rn2_at(__s_polyself_c, 556, __s_polyself, 3) ? NHC.PM_GREEN_ELF : NHC.PM_GREY_ELF;
             else if (mntmp.v == NHC.PM_GIANT)
                 mntmp.v = rn2_at(__s_polyself_c, 558, __s_polyself, 3) ? NHC.PM_STONE_GIANT : NHC.PM_HILL_GIANT;
+            /* note: PM_DWARF and PM_GNOME are ordinary monsters and
+               no longer flagged no-poly so have no need for placeholder
+               handling; PM_HUMAN is a placeholder without a suitable
+               substitute so gets handled differently below */
         }
         __pc = 16;
         continue;
@@ -1032,8 +1156,10 @@ export function* polyself(psflags) {
         __pc = 24; continue;
         }
         case 23: {
+        /* in wizard mode, picking own role while poly'd reverts to
+           normal without newman()'s chance of level or sex change */
         (yield* rehumanize());
-        old_light = 0;
+        old_light = 0;  /* rehumanize() extinguishes u-as-mon light */
         { __pc = 5; continue; }
         }
         case 24: {
@@ -1059,6 +1185,9 @@ export function* polyself(psflags) {
         { __pc = 1; continue; }
         }
         case 33: {
+        /* no retries left; put one back on counter
+           so that end of loop decrement will yield
+           0 and trigger thats_enough_tries message */
         ++tryct;
         __pc = 31;
         continue;
@@ -1094,6 +1223,7 @@ export function* polyself(psflags) {
         continue;
         }
         case 11: {
+
         if (!tryct)
             (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries)));
         if (draconian && (tryct <= 0 || mntmp.v == armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp)))) { __pc = 36; continue; }
@@ -1130,18 +1260,30 @@ export function* polyself(psflags) {
         if (!(cptr.ld1uo2(svm, mntmp.v, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD)) {
             was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
             arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
+
+            /* allow G_EXTINCT */
             if (Is_dragon_scales(uarm.v)) {
+                /* dragon scales remain intact as uskin */
                 (yield* You(__s_merge_with_your_scaly_armor));
             } else {
+                /* similar to noarmor(invent.c),
+                   shorten to "<color> scale mail" */
                 void cptr.strcpy(cptr.decay(buf), (yield* simpleonames(uarm.v)));
                 strsubst(cptr.decay(buf), __s_dragon, __s_sp);
+                /* tricky phrasing; dragon scale mail is singular, dragon
+                   scales are plural (note: we don't use "set of scales",
+                   which usually overrides the distinction, here) */
                 (yield* Your(__s_s_reverts_to_scales_as_you_merge_with, cptr.decay(buf)));
+                /* uarm->spe enchantment remains unchanged;
+                   re-converting scales to mail poses risk
+                   of evaporation due to over enchanting */
                 cptr.stI16o(uarm.v, $obj_otyp, cptr.ldI16o(uarm.v, $obj_otyp) + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0));
                 (yield* observe_object(uarm.v));
-                cptr.st1(disp, 1);
+                cptr.st1(disp, 1);  /* AC is changing */
             }
             uskin.v = uarm.v;
             uarm.v = null;
+            /* save/restore hack */
             cptr.stI64o(uskin.v, $obj_owornmask, cptr.ldI64o(uskin.v, $obj_owornmask) | 536870912n);
             if (was_lit)
                 (yield* maybe_adjust_light(uskin.v, arm_light));
@@ -1160,7 +1302,7 @@ export function* polyself(psflags) {
         }
         case 3 /* do_shift: */: {
         if (Upolyd() && were_beastie(mntmp.v) != cptr.ldI32o(u, $you_ulycn))
-            mntmp.v = NHC.PM_HUMAN;
+            mntmp.v = NHC.PM_HUMAN;  /* Illegal; force newman() */
         else
             mntmp.v = cptr.ldI32o(u, $you_ulycn);
         __pc = 44;
@@ -1197,8 +1339,11 @@ export function* polyself(psflags) {
         continue;
         }
         case 41: {
+        /* if polymon fails, "you feel" message has been given
+           so don't follow up with another polymon or newman;
+           sex_change_ok left disabled here */
         if (mntmp.v == NHC.PM_HUMAN)
-            (yield* newman());
+            (yield* newman());  /* werecritter */
         else
             void (yield* polymon(mntmp.v));
         { __pc = 5; continue; }
@@ -1208,21 +1353,27 @@ export function* polyself(psflags) {
         continue;
         }
         case 8: {
+
         if (mntmp.v < NHC.LOW_PM) {
             tryct = 200;
             do {
+                /* randomly pick an "ordinary" monster */
                 mntmp.v = ((rn2_at(__s_polyself_c, 702, __s_polyself, ((NHC.SPECIAL_PM - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0);
                 if (((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & 1n) == 0n) && !is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)))
                     break;
             } while (--tryct > 0);
         }
+
+        /* The below polyok() fails either if everything is genocided, or if
+         * we deliberately chose something illegal to force newman().
+         */
         (cptr.stI32o(gs, $instance_globals_s_sex_change_ok, cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + 1)) - (1);
         if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & 1n) == 0n) || (!forcecontrol && !rn2_at(__s_polyself_c, 712, __s_polyself, 5)) || ((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) {
             (yield* newman());
         } else {
             void (yield* polymon(mntmp.v));
         }
-        (cptr.stI32o(gs, $instance_globals_s_sex_change_ok, cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + -1)) - (-1);
+        (cptr.stI32o(gs, $instance_globals_s_sex_change_ok, cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + -1)) - (-1);  /* reset */
         __pc = 5;
         continue;
         }
@@ -1232,7 +1383,7 @@ export function* polyself(psflags) {
             if (old_light)
                 (yield* del_light_source(NHC.LS_MONSTER, monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))));
             if (new_light == 1)
-                ++new_light;
+                ++new_light;  /* otherwise it's undetectable */
             if (new_light)
                 (yield* new_light_source(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), new_light, NHC.LS_MONSTER, monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))));
         }
@@ -1244,6 +1395,7 @@ export function* polyself(psflags) {
     }
 }
 
+/* (try to) make a mntmp monster out of the player; return 1 if successful */
 const __static_polymon_use_thec = cptr.bytes("Use the command #%s to %s."); /** C ref: polyself.c:1032 — char[27] (function-static) */
 const __static_polymon_monsterc = cptr.bytes("monster"); /** C ref: polyself.c:1033 — char[8] (function-static) */
 
@@ -1258,27 +1410,42 @@ export function* polymon(mntmp) {
     let was_hiding_under = schar(((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
     let mlvl;
     let newMaxStr;
+
     if (cptr.ld1uo2(svm, mntmp, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
         (yield* You_feel(__s_rather_s_ish, pmname(cptr.add(mons, mntmp, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
         (yield* exercise(NHC.A_WIS, 1));
         return 0;
     }
+
+    /* KMH, conduct */
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_polyselfs, cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs) + 1n)) - (1n)))
         (yield* livelog_printf(32n, __s_changed_form_for_the_first_time, (yield* an(pmname(cptr.add(mons, mntmp, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)))));
+
+    /* exercise used to be at the very end but only Wis was affected
+       there since the polymorph was always in effect by then */
     (yield* exercise(NHC.A_CON, 0));
     (yield* exercise(NHC.A_WIS, 1));
+
     if (!Upolyd()) {
+        /* Human to monster; save human stats */
         cptr.memcpy(cptr.add(u, $you_macurr), cptr.add(u, $you_acurr), 6);
         cptr.memcpy(cptr.add(u, $you_mamax), cptr.add(u, $you_amax), 6);
         cptr.stI32o(u, $you_mfemale, cptr.ld1so(flags, $flag_female));
     } else {
+        /* Monster to monster; restore human stats, to be
+         * immediately changed to provide stats for the new monster
+         */
         cptr.memcpy(cptr.add(u, $you_acurr), cptr.add(u, $you_macurr), 6);
         cptr.memcpy(cptr.add(u, $you_amax), cptr.add(u, $you_mamax), 6);
         cptr.st1o(flags, $flag_female, schar((cptr.ldI32o(u, $you_mfemale) & 1)));
     }
+
+    /* if stuck mimicking gold, stop immediately */
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && U_AP_TYPE() == NHC.M_AP_OBJECT && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_MIMIC)
         (yield* unmul(__s_empty));
+    /* if becoming a non-mimic, stop mimicking anything */
     if (cptr.ld1so2(mons, mntmp, $sizeof_permonst, $permonst_mlet) != NHC.S_MIMIC) {
+        /* as in polyman() */
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
     }
@@ -1292,7 +1459,9 @@ export function* polymon(mntmp) {
         if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !rn2_at(__s_polyself_c, 792, __s_polymon, 10))
             dochange = 1;
     }
+
     void cptr.strcpy(cptr.decay(ustuckNam), cptr.ldPtro(u, $you_ustuck) ? (yield* Some_Monnam(cptr.ldPtro(u, $you_ustuck))) : __s_empty);
+
     void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __s_empty : __s_new);
     if (dochange) {
         cptr.st1o(flags, $flag_female, schar((!cptr.ld1so(flags, $flag_female))));
@@ -1300,21 +1469,34 @@ export function* polymon(mntmp) {
     }
     void cptr.strcat(cptr.decay(buf), pmname(cptr.add(mons, mntmp, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
     (yield* You(__s_s_s, (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __s_turn_into : __s_feel_like, (yield* an(cptr.decay(buf)))));
+
     if (Stoned() && poly_when_stoned(cptr.add(mons, mntmp, $sizeof_permonst))) {
+        /* poly_when_stoned already checked stone golem genocide */
         mntmp = NHC.PM_STONE_GOLEM;
         (yield* make_stoned(0n, __s_you_turn_to_stone, 0, null));
     }
+
     cptr.stI32o(u, $you_mtimedone, ((rn2_at(__s_polyself_c, 813, __s_polymon, 500) + 500) | 0));
     cptr.stI32o(u, $you_umonnum, mntmp);
     (yield* set_uasmon());
+
+    /* New stats for monster, to last only as long as polymorphed.
+     * Currently only strength gets changed.
+     */
     newMaxStr = uasmon_maxStr();
     if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 67108864n) != 0n)) {
         cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, cptr.st1o2(u, NHC.A_STR, 1, $you_amax, schar(newMaxStr)));
     } else {
+        /* not a strongmonst(); if hero has exceptional strength, remove it
+           (note: removal is temporary until returning to original form);
+           we don't attempt to enforce lower maximum for wimpy forms;
+           unlike for strongmonst, current strength does not get set to max */
         cptr.st1o2(u, NHC.A_STR, 1, $you_amax, schar(newMaxStr));
+        /* make sure current is not higher than max (strip exceptional Str) */
         if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) > (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)))
             cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)));
     }
+
     if (Stone_resistance() && Stoned()) {
         (yield* make_stoned(0n, __s_you_no_longer_seem_to_be_petrifying, 0, null));
     }
@@ -1326,12 +1508,19 @@ export function* polymon(mntmp) {
         if (flaming(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             (yield* make_slimed(0n, __s_the_slime_burns_away));
         } else if (mntmp == NHC.PM_GREEN_SLIME) {
+            /* do it silently */
             (yield* make_slimed(0n, null));
         }
     }
-    (yield* check_strangling(0));
+    (yield* check_strangling(0));  /* maybe stop strangling */
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n))
         (yield* make_glib(0));
+
+    /*
+    mlvl = adj_lev(&mons[mntmp]);
+     * We can't do the above, since there's no such thing as an
+     * "experience level of you as a monster" for a polymorphed character.
+     */
     mlvl = cptr.ld1so2(mons, mntmp, $sizeof_permonst, $permonst_mlevel);
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_DRAGON && mntmp >= NHC.PM_GRAY_DRAGON) {
         cptr.stI32o(u, $you_mhmax, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (Math.imul(8, mlvl)) : ((Math.imul(4, mlvl) + d_at(__s_polyself_c, 861, __s_polymon, (mlvl), 4)) | 0));
@@ -1346,32 +1535,45 @@ export function* polymon(mntmp) {
             cptr.stI32o(u, $you_mhmax, Math.imul(cptr.ldI32o(u, $you_mhmax), 3));
     }
     cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
+
     if (cptr.ldI32o(u, $you_ulevel) < mlvl) {
         cptr.stI32o(u, $you_mtimedone, (Math.imul(cptr.ldI32o(u, $you_mtimedone), cptr.ldI32o(u, $you_ulevel)) / mlvl) | 0);
     }
+
     if (uskin.v && mntmp != armor_to_dragon(cptr.ldI16o(uskin.v, $obj_otyp)))
         (yield* skinback(0));
     (yield* break_armor());
     (yield* drop_weapon(1));
-    find_ac();
+    find_ac();  /* (repeated below) */
+    /* if hiding under something and can't hide anymore, unhide now;
+       but don't auto-hide when not already hiding-under */
     if (was_hiding_under)
         void (yield* hideunder(cptr.add(gy, $instance_globals_y_youmonst)));
+
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap(((rn2_at(__s_polyself_c, 897, __s_polymon, 6) + 2) | 0) >>> 0, NHC.TT_PIT);
+        set_utrap(((rn2_at(__s_polyself_c, 897, __s_polymon, 6) + 2) | 0) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), 1n);
-        (yield* make_blinded(0n, 1));
+        (yield* make_blinded(0n, 1));  /* remove blindness */
     }
-    (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+    (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* Change symbol */
+
+    /* you now know what an egg of your type looks like; [moved from
+       below in case expels() -> spoteffects() drops hero onto any eggs] */
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4194304n) != 0n)) {
         (yield* learn_egg_type(cptr.ldI32o(u, $you_umonnum)));
+        /* make queen bees recognize killer bee eggs */
         (yield* learn_egg_type(egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 1)));
     }
+
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let usiz;
+
+        /* if new form can't be swallowed, make engulfer expel hero */
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n) || (usiz = cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize)) >= NHM.MZ_HUGE || (cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), $permonst_msize) < usiz && !is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)))) {
             let expels_mesg = 1;
+
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n)) {
                 if (canspotmon(cptr.ldPtro(u, $you_ustuck)))
                     void cptr.strcpy(cptr.decay(ustuckNam), (yield* Monnam(cptr.ldPtro(u, $you_ustuck))));
@@ -1380,15 +1582,26 @@ export function* polymon(mntmp) {
             }
             (yield* expels(cptr.ldPtro(u, $you_ustuck), cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), expels_mesg));
             was_expelled = 1;
+            /* FIXME? if expels() triggered rehumanize then we should
+               return early */
         }
+
+        /* [note:  this 'sticking' handling is only sufficient for changing from
+           grabber to engulfer or vice versa because engulfing by poly'd hero
+           always ends immediately so won't be in effect during a polymorph] */
     } else if (cptr.ldPtro(u, $you_ustuck) && !sticking && (sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n))) {
+        /* u.ustuck name was saved above in case we're changing from can-see
+           to can't-see; but might have changed from can't-see to can-see so
+           override here if hero knows who u.ustuck is */
         if (canspotmon(cptr.ldPtro(u, $you_ustuck)))
             void cptr.strcpy(cptr.decay(ustuckNam), (yield* Monnam(cptr.ldPtro(u, $you_ustuck))));
         (yield* set_ustuck(null));
         (yield* pline(__s_s_loses_its_grip_on_you, cptr.decay(ustuckNam)));
     } else if (sticking && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        /* was holding onto u.ustuck but no longer capable of that */
         (yield* uunstick());
     }
+
     if (cptr.ldPtro(u, $you_usteed)) {
         if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && rnl_at(__s_polyself_c, 956, __s_polymon, 3)) {
             (yield* pline(__s_s_touch_s, cptr.decay(no_longer_petrify_resistant), (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
@@ -1398,9 +1611,12 @@ export function* polymon(mntmp) {
         if (!can_ride(cptr.ldPtro(u, $you_usteed)))
             (yield* dismount_steed(NHC.DISMOUNT_POLY));
     }
+
     find_ac();
     if (((!Levitation() && !cptr.ldPtro(u, $you_ustuck) && !Flying() && is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) || (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !Swimming())) && !was_expelled) {
         (yield* spoteffects(1));
+        /* FIXME? if spoteffects() triggered rehumanize then we should
+           return early */
     }
     if (Passes_walls() && cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)) {
         if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR) {
@@ -1425,23 +1641,34 @@ export function* polymon(mntmp) {
     }
     if (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP) && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n) || is_whirly(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1048576n) != 0n) || (cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) <= NHM.MZ_SMALL && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP))) {
         (yield* You(__s_are_no_longer_stuck_in_the_s, cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB ? __s_web : __s_bear_trap));
+        /* probably should burn webs too if PM_FIRE_ELEMENTAL */
         (yield* reset_utrap(1));
     }
     if (webmaker(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
         (yield* You(__s_orient_yourself_on_the_web));
         (yield* reset_utrap(1));
     }
-    (yield* check_strangling(1));
+    (yield* check_strangling(1));  /* maybe start strangling */
+
     cptr.st1(disp, 1);
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
     (yield* see_monsters());
     (yield* encumber_msg());
+
     (yield* retouch_equipment(2));
+    /* this might trigger a recursive call to polymon() [stone golem
+       wielding cockatrice corpse and hit by stone-to-flesh, becomes
+       flesh golem above, now gets transformed back into stone golem;
+       fortunately neither form uses #monster] */
     if (!uarmg.v)
         (yield* selftouch(cptr.decay(no_longer_petrify_resistant)));
+
+    /* the explanation of '#monster' used to be shown sooner, but there are
+       possible fatalities above and it isn't useful unless hero survives */
     if (cptr.ld1so(flags, $flag_verbose)) {
         let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
         let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
+
         if (attacktype(uptr, NHM.AT_BREA))
             (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_use_your_breath_weapon));
         if (attacktype(uptr, NHM.AT_SPIT))
@@ -1468,18 +1695,23 @@ export function* polymon(mntmp) {
             (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_shriek));
         if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)))
             (yield* pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_change_shape));
+
         if (((cptr.ldU64o((uptr), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female) && !(cptr.eq(uptr, cptr.add(mons, NHC.PM_GIANT_EEL, $sizeof_permonst)) || cptr.eq(uptr, cptr.add(mons, NHC.PM_ELECTRIC_EEL, $sizeof_permonst))))
             (yield* pline(cptr.decay(__static_polymon_use_thec), __s_sit, eggs_in_water(uptr) ? __s_spawn_in_the_water : __s_lay_an_egg));
     }
     return 1;
 }
 
+/* determine hero's temporary strength value used while polymorphed;
+   hero poly'd into M2_STRONG monster usually gets 18/100 strength but
+   there are exceptions; non-M2_STRONG get maximum strength set to 18 */
 /** C ref: polyself.c:1077 @returns {CInt} */
 export function uasmon_maxStr() {
     let R;
     let newMaxStr;
     let mndx = cptr.ldI32o(u, $you_umonnum);
     let ptr = cptr.add(mons, mndx, $sizeof_permonst);
+
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 128n) != 0n)) {
         if (mndx != NHC.PM_URUK_HAI && mndx != NHC.PM_ORC_CAPTAIN)
             mndx = NHC.PM_ORC;
@@ -1491,21 +1723,57 @@ export function uasmon_maxStr() {
         mndx = NHC.PM_GNOME;
     }
     R = character_race(i16(mndx));
+
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n)) {
+        /* ettins, titans and minotaurs don't pass the is_giant() test;
+           giant mummies and giant zombies do but we throttle those */
         let live_H = schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 8192n) != 0n) && !((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) ? 1 : 0));
+
+        /* hero orcs are limited to 18/50 for maximum strength, so treat
+           hero poly'd into an orc the same; goblins, orc shamans, and orc
+           zombies don't have strongmonst() attribute so won't get here;
+           hobgoblins and orc mummies do get here and are limited to 18/50
+           like normal orcs; however, orc captains and Uruk-hai retain 18/100
+           strength; hero gnomes are also limited to 18/50; hero elves are
+           limited to 18/00 regardless of whether they're strongmonst, but
+           the two strongmonst types (monarchs and nobles) have current
+           strength set to 18 [by polymon()], the others don't */
         newMaxStr = R ? cptr.ldI16o2(R, NHC.A_STR, 2, $Race_attrmax) : (live_H ? 119 : 118);
     } else {
-        newMaxStr = R ? cptr.ldI16o2(R, NHC.A_STR, 2, $Race_attrmax) : 18;
+        newMaxStr = R ? cptr.ldI16o2(R, NHC.A_STR, 2, $Race_attrmax) : 18;  /* 18 is same as STR18(0) */
     }
     return schar(newMaxStr);
 }
 
+/* dropx() jacket for break_armor() */
 /** C ref: polyself.c:1123 — @param {CPtr<struct obj>} obj */
 function* dropp(obj) {
     let otmp;
+
+    /*
+     * Dropping worn armor while polymorphing might put hero into water
+     * (loss of levitation boots or water walking boots that the new
+     * form can't wear), where emergency_disrobe() could remove it from
+     * inventory.  Without this, dropx() could trigger an 'object lost'
+     * panic.  Right now, boots are the only armor which might encounter
+     * this situation, but handle it for all armor.
+     *
+     * Hypothetically, 'obj' could have merged with something (not
+     * applicable for armor) and no longer be a valid pointer, so scan
+     * inventory for it instead of trusting obj->where.
+     */
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if (cptr.eq(otmp, obj)) {
             (yield* dropx(obj));
+            /* Note that otmp->nobj is pointing at fobj now,
+             * as a result of:
+             * dropx() -> dropy() -> dropz() -> place_object(),
+             * and no longer pointing at the next obj in inventory.
+             * That would be an issue if this loop were allowed
+             * to continue, but the break statement that
+             * follows prevents the loop from continuing on with
+             * objects on the floor.
+             */
             break;
         }
     }
@@ -1515,12 +1783,16 @@ function* dropp(obj) {
 function* break_armor() {
     let otmp;
     let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
+
     if (breakarm(uptr)) {
         if ((otmp = uarm.v) !== null) {
             if (donning(otmp))
                 cancel_don();
+            /* for gold DSM, we don't want Armor_gone() to report that it
+               stops shining _after_ we've been told that it is destroyed */
             if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
                 (yield* end_burn(otmp, 0));
+
             (yield* You(__s_break_out_of_your_armor));
             (yield* exercise(NHC.A_STR, 0));
             void (yield* Armor_gone());
@@ -1528,6 +1800,7 @@ function* break_armor() {
         }
         if ((otmp = uarmc.v) !== null && (cptr.ldI16o(otmp, $obj_otyp) != NHC.MUMMY_WRAPPING || !WrappingAllowed(uptr))) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MUMMY_WRAPPING) {
+                /* doesn't have a clasp to break open */
                 (yield* Your(__s_s_tears_apart, cloak_simple_name(otmp)));
                 void (yield* Cloak_off());
                 (yield* useup(otmp));
@@ -1550,6 +1823,10 @@ function* break_armor() {
             if (donning(otmp))
                 cancel_don();
             (yield* Your(__s_armor_falls_around_you));
+            /* [note: _gone() instead of _off() dates to when life-saving
+               could force fire resisting armor back on if hero burned in
+               hell (3.0, predating Gehennom); the armor isn't actually
+               gone here but also isn't available to be put back on] */
             void (yield* Armor_gone());
             (yield* dropp(otmp));
         }
@@ -1574,6 +1851,8 @@ function* break_armor() {
         if ((otmp = uarmh.v) !== null) {
             if (is_flimsy(otmp) && !donning(otmp)) {
                 let hornbuf = new Uint8Array(256);
+
+                /* Future possibilities: This could damage/destroy helmet */
                 void cptr.sprintf(cptr.decay(hornbuf), __s_horn_s, (((num_horns(uptr)) == 1) ? __s_empty : __s_s));
                 (yield* Your(__s_s_s_through_s, cptr.decay(hornbuf), (yield* vtense(cptr.decay(hornbuf), __s_pierce)), (yield* yname(otmp))));
             } else {
@@ -1589,9 +1868,11 @@ function* break_armor() {
         if ((otmp = uarmg.v) !== null) {
             if (donning(otmp))
                 cancel_don();
+            /* Drop weapon along with gloves */
             (yield* You(__s_drop_your_gloves_s, uwep.v ? __s_and_weapon : __s_empty));
             (yield* drop_weapon(0));
             void (yield* Gloves_off());
+            /* Glib manipulation (ends immediately) handled by Gloves_off */
             (yield* dropp(otmp));
         }
         if ((otmp = uarms.v) !== null) {
@@ -1619,15 +1900,21 @@ function* break_armor() {
             (yield* dropp(otmp));
         }
     }
+    /* not armor, but eyewear shouldn't stay worn without a head to wear
+       it/them on (should also come off if head is too tiny or too huge,
+       but putting accessories on doesn't reject those cases [yet?]);
+       amulet stays worn */
     if ((otmp = ublindf.v) !== null && !((cptr.ldU64o((uptr), $permonst_mflags1) & 32768n) == 0n)) {
         let l;
-        let eyewear = (yield* simpleonames(otmp));
+        let eyewear = (yield* simpleonames(otmp));  /* blindfold|towel|lenses */
+
         if (!cptr.strncmp(eyewear, __s_pair_of, BigInt.asUintN(64, BigInt((l = 8)))))
             eyewear = cptr.add(eyewear, l);
         (yield* Your(__s_s_s_off, eyewear, (yield* vtense(eyewear, __s_fall))));
-        void (yield* Blindf_off(null));
+        void (yield* Blindf_off(null));  /* Null: skip usual off mesg */
         (yield* dropp(otmp));
     }
+    /* rings stay worn even when no hands */
 }
 
 /** C ref: polyself.c:1305 — @param {CInt} alone */
@@ -1639,7 +1926,12 @@ function* drop_weapon(alone) {
     let candropwep;
     let candropswapwep;
     let updateinv = 1;
+
     if (uwep.v) {
+        /* !alone check below is currently superfluous but in the
+         * future it might not be so if there are monsters which cannot
+         * wear gloves but can wield weapons
+         */
         if (!alone || cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             candropwep = (yield* canletgo(uwep.v, __s_empty));
             candropswapwep = schar((!cptr.ld1so(u, $you_twoweap) || (yield* canletgo(uswapwep.v, __s_empty)) ? 1 : 0));
@@ -1653,8 +1945,12 @@ function* drop_weapon(alone) {
                 }
                 if (cptr.ldI64o(uwep.v, $obj_quan) != 1n || cptr.ld1so(u, $you_twoweap))
                     which = (yield* makeplural(which));
+
                 (yield* You(__s_find_you_must_s_s_s, what, cptr.ldPtro2(c_common_strings, !!cptr.strncmp(which, __s_corpse, 6n), 8, $c_common_strings_c_the_your), which));
             }
+            /* if either uwep or wielded uswapwep is flagged as 'in_use'
+               then don't drop it or explicitly update inventory; leave
+               those actions to caller (or caller's caller, &c) */
             if (cptr.ld1so(u, $you_twoweap)) {
                 otmp = uswapwep.v;
                 (yield* uswapwepgone());
@@ -1669,6 +1965,11 @@ function* drop_weapon(alone) {
                 updateinv = 0;
             else if (candropwep)
                 (yield* dropx(otmp));
+            /* [note: dropp vs dropx -- if heart of ahriman is wielded, we
+               might be losing levitation by dropping it; but that won't
+               happen until the drop, unlike Boots_off() dumping hero into
+               water and triggering emergency_disrobe() before dropx()] */
+
             if (updateinv)
                 (yield* update_inventory());
         } else if (!could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
@@ -1677,31 +1978,48 @@ function* drop_weapon(alone) {
     }
 }
 
+/* return to original form, usually either due to polymorph timing out
+   or dying from loss of hit points while being polymorphed */
 /** C ref: polyself.c:1367 */
 export function* rehumanize() {
     let was_flying = schar((Flying() != 0));
+
+    /* You can't revert back while unchanging */
     if (Unchanging()) {
         if (cptr.ldI32o(u, $you_mh) < 1) {
             cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
             void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_killed_while_stuck_in_creature_form);
             (yield* done(NHC.DIED));
-            return;
+            /* can get to here if declining to die in explore or wizard
+               mode; since we're wearing an amulet of unchanging we can't
+               be wearing an amulet of life-saving */
+            return;  /* don't rehumanize after all */
         } else if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING) {
             (yield* Your(__s_s_s, (yield* simpleonames(uamul.v)), (yield* otense(uamul.v, __s_fail))));
             (yield* observe_object(uamul.v));
             (yield* discover_object(NHC.AMULET_OF_UNCHANGING, 1, 1, 1));
         }
     }
+
+    /*
+     * Right now, dying while being a shifted vampire (bat, cloud, wolf)
+     * reverts to human rather than to vampire.
+     */
+
     if (emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         (yield* del_light_source(NHC.LS_MONSTER, monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))));
     (yield* polyman(__s_you_return_to_s_form, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj)));
+
     if (cptr.ldI32o(u, $you_uhp) < 1) {
+        /* can only happen if some bit of code reduces u.uhp
+           instead of u.mh while poly'd */
         (yield* Your(__s_old_form_was_not_healthy_enough_to));
         void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_reverting_to_unhealthy_s_form, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj));
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
         (yield* done(NHC.DIED));
     }
     nomul(0);
+
     cptr.st1(disp, 1);
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
     (yield* encumber_msg());
@@ -1716,6 +2034,7 @@ export function* rehumanize() {
 /** C ref: polyself.c:1421 @returns {CInt} */
 export function* dobreathe() {
     let mattk;
+
     if (Strangled()) {
         (yield* You_cant(__s_breathe_sorry));
         return NHM.ECMD_OK;
@@ -1726,11 +2045,13 @@ export function* dobreathe() {
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 15) | 0);
     cptr.st1(disp, 1);
+
     if (!(yield* getdir(null)))
         return NHM.ECMD_CANCEL;
+
     mattk = attacktype_fordmg(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), NHM.AT_BREA, -1);
     if (!mattk)
-        (yield* impossible(__s_bad_breath_attack));
+        (yield* impossible(__s_bad_breath_attack));  /* mouthwash needed... */
     else if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz))
         (yield* ubreatheu(mattk));
     else
@@ -1742,6 +2063,7 @@ export function* dobreathe() {
 export function* dospit() {
     let otmp;
     let mattk;
+
     if (!(yield* getdir(null)))
         return NHM.ECMD_CANCEL;
     mattk = attacktype_fordmg(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), NHM.AT_SPIT, -1);
@@ -1761,7 +2083,7 @@ export function* dospit() {
             otmp = (yield* mksobj(NHC.ACID_VENOM, 1, 0));
             break;
         }
-        cptr.st1o(otmp, $obj_spe, 1);
+        cptr.st1o(otmp, $obj_spe, 1);  /* to indicate it's yours */
         (yield* throwit(otmp, 0n, 0, null));
     }
     return NHM.ECMD_TIME;
@@ -1786,7 +2108,12 @@ export function* dospinweb() {
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
     let ttmp = t_at(x, y);
+    /* disallow webs on water, lava, air & cloud */
     let reject_terrain = schar((is_pool_or_lava(x, y) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD) ? 1 : 0));
+
+    /* [at the time this was written, it was not possible to be both a
+       webmaker and a flyer, but with the advent of amulet of flying that
+       became a possibility; at present hero can spin a web while flying] */
     if (Levitation() || reject_terrain) {
         (yield* You(__s_must_be_on_s_ground_to_spin_a_web, reject_terrain ? __s_solid : __s_the));
         return NHM.ECMD_OK;
@@ -1799,6 +2126,7 @@ export function* dospinweb() {
         }
         if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) {
             let i;
+
             for (i = 0; i < NHM.NATTK; i++)
                 if (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, $sizeof_attack, $permonst_mattk) == NHM.AT_ENGL)
                     break;
@@ -1806,6 +2134,7 @@ export function* dospinweb() {
                 (yield* impossible(__s_swallower_has_no_engulfing_attack));
             else {
                 let sweep = new Uint8Array(30);
+
                 cptr.st1o(cptr.decay(sweep), 0, 0, 1);
                 switch (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                     case NHM.AD_FIRE:
@@ -1821,7 +2150,7 @@ export function* dospinweb() {
                 (yield* pline_The(__s_web_sis_swept_away, cptr.decay(sweep)));
             }
             return NHM.ECMD_OK;
-        }
+        }  /* default: a nasty jelly-like creature */
         (yield* pline_The(__s_web_dissolves_into_s, (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)))));
         return NHM.ECMD_OK;
     }
@@ -1883,6 +2212,7 @@ export function* dospinweb() {
             return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
+        /* cop out: don't let them hide the stairs */
         (yield* Your(__s_web_fails_to_impede_access_to_the_s, (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS) ? __s_stairs : __s_ladder));
         return NHM.ECMD_TIME;
     }
@@ -1906,6 +2236,7 @@ export function* dosummon() {
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 10) | 0);
     cptr.st1(disp, 1);
+
     (yield* You(__s_call_upon_your_brethren_for_help));
     (yield* exercise(NHC.A_WIS, 1));
     if (!(yield* were_summon(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), 1, placeholder, null)))
@@ -1920,6 +2251,7 @@ export function* dogaze() {
     let qbuf = new Uint8Array(128);
     let i;
     let adtyp = 0;
+
     for (i = 0; i < NHM.NATTK; i++) {
         if (cptr.ld1uo2(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), i, $sizeof_attack, $permonst_mattk) == NHM.AT_GAZE) {
             adtyp = cptr.ld1uo2(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
@@ -1930,6 +2262,7 @@ export function* dogaze() {
         (yield* impossible(__s_gaze_attack_d, adtyp));
         return NHM.ECMD_OK;
     }
+
     if (Blind()) {
         (yield* You_cant(__s_see_anything_to_gaze_at));
         return NHM.ECMD_OK;
@@ -1943,6 +2276,7 @@ export function* dogaze() {
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 15) | 0);
     cptr.st1(disp, 1);
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -1968,6 +2302,9 @@ export function* dogaze() {
                     looked--;
                     continue;
                 }
+                /* No reflection check for consistency with when a monster
+                 * gazes at *you*--only medusa gaze gets reflected then.
+                 */
                 if (adtyp == NHM.AD_CONF) {
                     if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1))
                         (yield* Your(__s_gaze_confuses_s, (yield* mon_nam(mtmp))));
@@ -1978,6 +2315,7 @@ export function* dogaze() {
                     let dmg = d_at(__s_polyself_c, 1715, __s_dogaze, 2, 6);
                     let orig_dmg = dmg;
                     let lev = cptr.ldI32o(u, $you_ulevel);
+
                     (yield* You(__s_attack_s_with_a_fiery_gaze, (yield* mon_nam(mtmp))));
                     if ((yield* Resists_Elem(mtmp, NHC.FIRE_RES))) {
                         (yield* pline_The(__s_fire_doesn_t_burn_s, (yield* mon_nam(mtmp))));
@@ -1992,8 +2330,12 @@ export function* dogaze() {
                     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                         (yield* killed(mtmp));
                 }
+                /* For consistency with passive() in uhitm.c, this only
+                 * affects you if the monster is still alive.
+                 */
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
+
                 if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     if (!Free_action()) {
                         (yield* You(__s_are_frozen_by_s_gaze, (yield* s_suffix((yield* mon_nam(mtmp))))));
@@ -2004,8 +2346,14 @@ export function* dogaze() {
                     } else
                         (yield* You(__s_stiffen_momentarily_under_s_gaze, (yield* s_suffix((yield* mon_nam(mtmp))))));
                 }
+                /* Technically this one shouldn't affect you at all because
+                 * the Medusa gaze is an active monster attack that only
+                 * works on the monster's turn, but for it to *not* have an
+                 * effect would be too weird.
+                 */
                 if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     (yield* pline(__s_gazing_at_the_awake_s_is_not_a_very, (yield* l_monnam(mtmp))));
+                    /* as if gazing at a sleeping anything is fruitful... */
                     (yield* urgent_pline(__s_you_turn_to_stone__2));
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                     void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_deliberately_meeting_medusa_s_gaze);
@@ -2019,10 +2367,14 @@ export function* dogaze() {
     return NHM.ECMD_TIME;
 }
 
+/* called by domonability() for #monster */
 /** C ref: polyself.c:1777 @returns {CInt} */
 export function* dohide() {
     let ismimic = schar((cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_MIMIC));
     let on_ceiling = schar((((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) || Flying() ? 1 : 0));
+
+    /* can't hide while being held (or holding) or while trapped
+       (except for floor hiders [trapper or mimic] in pits) */
     if (cptr.ldPtro(u, $you_ustuck) || (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT || on_ceiling))) {
         (yield* You_cant(__s_hide_while_you_re_s, !cptr.ldPtro(u, $you_ustuck) ? __s_trapped : ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallowed : __s_engulfed) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_being_held : (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_holding_someone : __s_holding_that_creature)))));
         if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (ismimic && U_AP_TYPE() != NHC.M_AP_NOTHING)) {
@@ -2032,6 +2384,8 @@ export function* dohide() {
         }
         return NHM.ECMD_OK;
     }
+    /* note: hero-as-eel handling is incomplete but unnecessary;
+       such critters aren't offered the option of hiding via #monster */
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN))
             (yield* pline_The(__s_fountain_is_not_deep_enough_to_hide_in));
@@ -2044,6 +2398,7 @@ export function* dohide() {
         let ct = 0n;
         let otmp;
         let otop = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+
         if (!otop) {
             (yield* There(__s_is_nothing_to_hide_under_here));
             cptr.stI32o(u, $you_uundetected, 0);
@@ -2051,18 +2406,27 @@ export function* dohide() {
         }
         for (otmp = otop; otmp && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)); otmp = cptr.ldPtro(otmp, $obj_v))
             ct += cptr.ldI64o(otmp, $obj_quan);
+        /* otmp will be Null iff the entire pile consists of 'trice corpses */
         if (!otmp && !Stone_resistance()) {
             let kbuf = new Uint8Array(256);
             let corpse_name = (yield* cxname(otop));
+
+            /* for the plural case, we'll say "cockatrice corpses" or
+               "chickatrice corpses" depending on the top of the pile
+               even if both types are present */
             if (ct == 1n)
                 corpse_name = (yield* an(corpse_name));
+            /* no need to check poly_when_stoned(); no hide-underers can
+               turn into stone golems instead of becoming petrified */
             (yield* pline(__s_hiding_under_s_s_is_a_fatal_mistake, corpse_name, (((ct) == 1n) ? __s_empty : __s_s)));
             void cptr.sprintf(cptr.decay(kbuf), __s_hiding_under_s_s, corpse_name, (((ct) == 1n) ? __s_empty : __s_s));
             (yield* instapetrify(cptr.decay(kbuf)));
+            /* only reach here if life-saved */
             cptr.stI32o(u, $you_uundetected, 0);
             return NHM.ECMD_TIME;
         }
     }
+    /* Planes of Air and Water */
     if (on_ceiling && !has_ceiling(cptr.add(u, $you_uz))) {
         (yield* There(__s_is_nowhere_to_hide_above_you));
         cptr.stI32o(u, $you_uundetected, 0);
@@ -2073,23 +2437,30 @@ export function* dohide() {
         cptr.stI32o(u, $you_uundetected, 0);
         return NHM.ECMD_OK;
     }
+    /* TODO? inhibit floor hiding at furniture locations, or
+     * else make youhiding() give smarter messages at such spots.
+     */
+
     if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (ismimic && U_AP_TYPE() != NHC.M_AP_NOTHING)) {
-        (yield* youhiding(0, 1));
+        (yield* youhiding(0, 1));  /* "you are already hiding" */
         return NHM.ECMD_OK;
     }
+
     if (ismimic) {
+        /* should bring up a dialog "what would you like to imitate?" */
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_OBJECT);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, NHC.STRANGE_OBJECT);
     } else
         cptr.stI32o(u, $you_uundetected, 1);
     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-    (yield* youhiding(0, 0));
+    (yield* youhiding(0, 0));  /* "you are now hiding" */
     return NHM.ECMD_TIME;
 }
 
 /** C ref: polyself.c:1877 @returns {CInt} */
 export function* dopoly() {
     let savedat = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
+
     if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))) {
         (yield* polyself(NHC.POLY_MONSTER));
         if (!cptr.eq(savedat, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
@@ -2100,21 +2471,25 @@ export function* dopoly() {
     return NHM.ECMD_TIME;
 }
 
+/* #monster for hero-as-mind_flayer giving psychic blast */
 /** C ref: polyself.c:1894 @returns {CInt} */
 export function* domindblast() {
     let mtmp;
     let nmon;
     let dmg;
+
     if (cptr.ldI32o(u, $you_uen) < 10) {
         (yield* You(__s_concentrate_but_lack_the_energy_to));
         return NHM.ECMD_OK;
     }
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - 10) | 0);
     cptr.st1(disp, 1);
+
     (yield* You(__s_concentrate));
     (yield* pline(__s_a_wave_of_psychic_energy_pours_out));
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = nmon) {
         let u_sen;
+
         nmon = cptr.ldPtr(mtmp);
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
@@ -2127,6 +2502,10 @@ export function* domindblast() {
         u_sen = telepathic(cptr.ldPtro(mtmp, $monst_data)) && !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ? 1 : 0;
         if (u_sen || (telepathic(cptr.ldPtro(mtmp, $monst_data)) && rn2_at(__s_polyself_c, 1921, __s_domindblast, 2)) || !rn2_at(__s_polyself_c, 1921, __s_domindblast, 10)) {
             dmg = rnd_at(__s_polyself_c, 1922, __s_domindblast, 15);
+            /* wake it up first, to bring hidden monster out of hiding;
+               but in case it is currently peaceful, don't make it hostile
+               unless it will survive the psychic blast, otherwise hero
+               would avoid the penalty for killing it while peaceful */
             (yield* wakeup(mtmp, schar(((dmg > cptr.ldI32o(mtmp, $monst_mhp)) ? 1 : 0))));
             (yield* You(__s_lock_in_on_s_s, (yield* s_suffix((yield* mon_nam(mtmp)))), u_sen ? __s_telepathy : (telepathic(cptr.ldPtro(mtmp, $monst_data)) ? __s_latent_telepathy : __s_mind)));
             cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - dmg) | 0);
@@ -2140,11 +2519,12 @@ export function* domindblast() {
 /** C ref: polyself.c:1941 */
 export function* uunstick() {
     let mtmp = cptr.ldPtro(u, $you_ustuck);
+
     if (!mtmp) {
         (yield* impossible(__s_uunstick_no_ustuck));
         return;
     }
-    (yield* set_ustuck(null));
+    (yield* set_ustuck(null));  /* before pline() */
     (yield* pline(__s_s_is_no_longer_in_your_clutches, (yield* Monnam(mtmp))));
 }
 
@@ -2152,11 +2532,14 @@ export function* uunstick() {
 export function* skinback(silently) {
     if (uskin.v) {
         let old_light = arti_light_radius(uskin.v);
+
         if (!silently)
             (yield* Your(__s_skin_returns_to_its_original_form));
         uarm.v = uskin.v;
         uskin.v = null;
+        /* undo save/restore hack */
         cptr.stI64o(uarm.v, $obj_owornmask, cptr.ldI64o(uarm.v, $obj_owornmask) & (-536870913n));
+
         if (artifact_light(uarm.v))
             (yield* maybe_adjust_light(uarm.v, old_light));
     }
@@ -2407,10 +2790,13 @@ const __static_mbodypart_not_claws = [NHC.S_HUMAN, NHC.S_MUMMY, NHC.S_ZOMBIE, NH
 /** C ref: polyself.c:1972 — @param {CPtr<struct monst>} mon @param {CInt} part @returns {CPtr<char>} */
 export function* mbodypart(mon, part) {
     let mptr = cptr.ldPtro(mon, $monst_data);
+
     if (part <= NHC.NO_PART) {
         (yield* impossible(__s_mbodypart_bad_part_d, part));
         return __s_mystery_part;
     }
+
+    /* some special cases */
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_DOG || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_FELINE || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_RODENT || cptr.eq(mptr, cptr.add(mons, NHC.PM_OWLBEAR, $sizeof_permonst))) {
         switch (part) {
             case NHC.HAND:
@@ -2421,19 +2807,20 @@ export function* mbodypart(mon, part) {
             return __s_rear_paw;
             case NHC.ARM:
             case NHC.LEG:
-            return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);
+            return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);  /* "foreleg", "rear leg" */
             default:
-            break;
+            break;  /* for other parts, use animal_parts[] below */
         }
     } else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_YETI) {
-        return cptr.ldPtro(__static_mbodypart_humanoid_parts, part, 8);
+        /* opposable thumbs, hence "hands", "arms", "legs", &c */
+        return cptr.ldPtro(__static_mbodypart_humanoid_parts, part, 8);  /* yeti/sasquatch, monkey/ape */
     }
     if ((part == NHC.HAND || part == NHC.HANDED) && (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && attacktype(mptr, NHM.AT_CLAW) && !cptr.strchr(cptr.decay(__static_mbodypart_not_claws), cptr.ld1so(mptr, $permonst_mlet)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_STONE_GOLEM, $sizeof_permonst)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst))))
         return (part == NHC.HAND) ? __s_claw : __s_clawed;
     if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_MUMAK, $sizeof_permonst)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_MASTODON, $sizeof_permonst))) && part == NHC.NOSE)
         return __s_trunk;
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_SHARK, $sizeof_permonst)) && part == NHC.HAIR)
-        return __s_skin;
+        return __s_skin;  /* sharks don't have scales */
     if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, $sizeof_permonst)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_KRAKEN, $sizeof_permonst))) && (part == NHC.ARM || part == NHC.FINGER || part == NHC.HAND || part == NHC.FOOT || part == NHC.TOE))
         return __s_tentacle;
     if (cptr.eq(mptr, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && part == NHC.EYE)
@@ -2484,6 +2871,9 @@ export function* body_part(part) {
 
 /** C ref: polyself.c:2149 @returns {CInt} */
 export function poly_gender() {
+    /* Returns gender of polymorphed player;
+     * 0/1=same meaning as flags.female, 2=none.
+     */
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 262144n) != 0n) || !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n))
         return 2;
     return cptr.ld1so(flags, $flag_female);
@@ -2492,12 +2882,17 @@ export function poly_gender() {
 /** C ref: polyself.c:2160 — @param {CInt} damtype @param {CInt} dam */
 export function* ugolemeffects(damtype, dam) {
     let heal = 0;
+
+    /* We won't bother with "slow"/"haste" since players do not
+     * have a monster-specific slow/haste so there is no way to
+     * restore the old velocity once they are back to human.
+     */
     if (cptr.ldI32o(u, $you_umonnum) != NHC.PM_FLESH_GOLEM && cptr.ldI32o(u, $you_umonnum) != NHC.PM_IRON_GOLEM)
         return;
     switch (damtype) {
         case NHM.AD_ELEC:
         if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_FLESH_GOLEM)
-            heal = (((dam + 5) | 0) / 6) | 0;
+            heal = (((dam + 5) | 0) / 6) | 0;  /* Approx 1 per die */
         break;
         case NHM.AD_FIRE:
         if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_IRON_GOLEM)
@@ -2552,13 +2947,16 @@ function armor_to_dragon(atyp) {
     }
 }
 
+/* some species have awareness of other species */
 /** C ref: polyself.c:2236 */
 function polysense() {
     let warnidx = NHC.NON_PM;
+
     cptr.stI16o(svc, $context_info_warntype + $warntype_info_speciesidx, NHC.NON_PM);
     cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, null);
     cptr.stU64o(svc, $context_info_warntype + $warntype_info_polyd, 0n);
     cptr.stI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-33554433n));
+
     switch (cptr.ldI32o(u, $you_umonnum)) {
         case NHC.PM_PURPLE_WORM:
         case NHC.PM_BABY_PURPLE_WORM:
@@ -2577,14 +2975,20 @@ function polysense() {
     }
 }
 
+/* True iff hero's role or race has been genocided */
 /** C ref: polyself.c:2265 @returns {CInt} */
 export function ugenocided() {
     return schar(((cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) || (cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
 }
 
+/* how hero feels "inside" after self-genocide of role or race */
 /** C ref: polyself.c:2273 @returns {CPtr<char>} */
 export function udeadinside() {
-    return !nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_dead : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_condemned : __s_empty__2);
+    /* self-genocide used to always say "you feel dead inside" but that
+       seems silly when you're polymorphed into something undead;
+       monkilled() distinguishes between living (killed) and non (destroyed)
+       for monster death message; we refine the nonliving aspect a bit */
+    return !nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_dead : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_condemned : __s_empty__2);  /* golems plus vortices */
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

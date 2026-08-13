@@ -649,12 +649,17 @@ const __s_finalize_level = cptr.lit("finalize_level");
 const __s_gas_cloud = cptr.lit("gas_cloud");
 const __s_des = cptr.lit("des");
 
+/*
+ * No need for 'struct instance_globals g' to contain these.
+ * sp_level_coder_init() always re-initializes them prior to use.
+ */
 /** C ref: sp_lev.c:192 — signed char */
 let splev_init_present = 0;
 
 /** C ref: sp_lev.c:192 — signed char */
 let icedpools = 0;
 
+/* positions touched by level elements explicitly defined in the level */
 /** C ref: sp_lev.c:194 — char[80][21] */
 const SpLev_Map = (function () { const flat = new Uint8Array(80 * (21 * 1)); const a = []; for (let r = 0; r < 80; r++) a.push(flat.subarray(r * (21 * 1), (r + 1) * (21 * 1))); a.buf = flat; return a; })();
 
@@ -669,12 +674,14 @@ let invent_carrying_monster = null;
 
 /** C ref: sp_lev.c:206 */
 export function reset_xystart_size() {
-    cptr.stI16o(gx, $instance_globals_x_xstart, 1);
+    cptr.stI16o(gx, $instance_globals_x_xstart, 1);  /* column [0] is off limits */
     cptr.stI16o(gy, $instance_globals_y_ystart, 0);
-    cptr.stI16o(gx, $instance_globals_x_xsize, 79);
-    cptr.stI16o(gy, $instance_globals_y_ysize, NHM.ROWNO);
+    cptr.stI16o(gx, $instance_globals_x_xsize, 79);  /* 1..COLNO-1 */
+    cptr.stI16o(gy, $instance_globals_y_ysize, NHM.ROWNO);  /* 0..ROWNO-1 */
 }
 
+/* Does typ match with levl[][].typ, considering special types
+   MATCH_WALL and MAX_TYPE (aka transparency)? */
 /** C ref: sp_lev.c:217 — @param {CInt} typ @param {CInt} levltyp @returns {CInt} */
 export function match_maptyps(typ, levltyp) {
     if ((typ == NHC.MATCH_WALL) && !((levltyp) <= NHC.DBWALL))
@@ -687,14 +694,18 @@ export function match_maptyps(typ, levltyp) {
 /** C ref: sp_lev.c:227 — @param {CPtr<char>} str @returns {CPtr<struct mapfragment>} */
 export function* mapfrag_fromstr(str) {
     let mf = (yield* alloc(16));
+
     let tmps;
+
     cptr.stPtro(mf, $mapfragment_data, (yield* dupstr(str)));
+
     void (yield* stripdigits(cptr.ldPtro(mf, $mapfragment_data)));
     cptr.stI32(mf, str_lines_maxlen(cptr.ldPtro(mf, $mapfragment_data)));
     cptr.stI32o(mf, $mapfragment_hei, 0);
     tmps = cptr.ldPtro(mf, $mapfragment_data);
     while (tmps && cptr.ld1s(tmps)) {
         let s1 = cptr.strchr(tmps, 10);
+
         if (cptr.ldI32o(mf, $mapfragment_hei) > NHM.MAP_Y_LIM) {
             cptr.free(cptr.ldPtro(mf, $mapfragment_data));
             cptr.free(mf);
@@ -733,6 +744,7 @@ export function mapfrag_canmatch(mf) {
 export function* mapfrag_error(mf) {
     mf = cptr.box(mf);
     let res = null;
+
     if (!mf.v) {
         res = __s_mapfragment_error;
     } else if (!mapfrag_canmatch(mf.v)) {
@@ -749,10 +761,12 @@ export function* mapfrag_error(mf) {
 export function* mapfrag_match(mf, x, y) {
     let rx;
     let ry;
+
     for (rx = -((cptr.ldI32(mf) / 2) | 0); rx <= ((cptr.ldI32(mf) / 2) | 0); rx++)
         for (ry = -((cptr.ldI32o(mf, $mapfragment_hei) / 2) | 0); ry <= ((cptr.ldI32o(mf, $mapfragment_hei) / 2) | 0); ry++) {
             let mapc = (yield* mapfrag_get(mf, (rx + ((cptr.ldI32(mf) / 2) | 0)) | 0, (ry + ((cptr.ldI32o(mf, $mapfragment_hei) / 2) | 0)) | 0));
             let levc = schar((isok(i16(((x + rx) | 0)), i16(((y + ry) | 0))) ? cptr.ld1so3(svl, (x + rx) | 0, $sizeof_rm_x21, (y + ry) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) : NHC.STONE));
+
             if (!match_maptyps(i16(mapc), i16(levc)))
                 return 0;
         }
@@ -763,12 +777,15 @@ export function* mapfrag_match(mf, x, y) {
 function solidify_map() {
     let x;
     let y;
+
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
             if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) && !cptr.ld1so(cptr.decay(SpLev_Map[x]), y, 1))
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | 24);
 }
 
+/* do a post-level-creation cleanup of map, such as
+   removing boulders and traps from lava */
 /** C ref: sp_lev.c:328 */
 function* map_cleanup() {
     let otmp;
@@ -776,16 +793,23 @@ function* map_cleanup() {
     let etmp;
     let x;
     let y;
+
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
             let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+
             if (IS_LAVA(typ) || IS_POOL(typ)) {
+                /* in case any boulders are on liquid, delete them */
                 while ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null) {
                     (yield* obj_extract_self(otmp));
                     (yield* obfree(otmp, null));
                 }
+
+                /* traps on liquid? */
                 if (((ttmp = t_at(x, y)) !== null) && !undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)))
                     (yield* deltrap(ttmp));
+
+                /* engravings? */
                 if ((etmp = engr_at(x, y)) !== null)
                     (yield* del_engr(etmp));
             }
@@ -796,6 +820,7 @@ function* map_cleanup() {
 function lvlfill_maze_grid(x1, y1, x2, y2, filling) {
     let x;
     let y;
+
     for (x = x1; x <= x2; x++)
         for (y = y1; y <= y2; y++) {
             if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze) & 1))
@@ -809,10 +834,12 @@ function lvlfill_maze_grid(x1, y1, x2, y2, filling) {
 function* lvlfill_solid(filling, lit) {
     let x;
     let y;
+
     for (x = 2; x <= cptr.ldI32(gx); x++)
         for (y = 0; y <= cptr.ldI32(gy); y++) {
             if (!(yield* set_levltyp_lit(i16(x), i16(y), filling, lit)))
                 continue;
+            /* TODO: consolidate this w lspo_map ? */
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, 0);
@@ -824,10 +851,14 @@ function* lvlfill_solid(filling, lit) {
 function* lvlfill_swamp(fg, bg, lit) {
     let x;
     let y;
+
     (yield* lvlfill_solid(bg, lit));
+
+    /* "relaxed blockwise maze" algorithm, Jamis Buck */
     for (x = 2; x <= ((cptr.ldI32(gx)) < 78 ? (cptr.ldI32(gx)) : 78); x = (x + 2) | 0)
         for (y = 0; y <= ((cptr.ldI32(gy)) < 19 ? (cptr.ldI32(gy)) : 19); y = (y + 2) | 0) {
             let c = 0;
+
             void (yield* set_levltyp_lit(i16(x), i16(y), fg, lit));
             if (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == bg)
                 ++c;
@@ -879,19 +910,28 @@ function flip_dbridge_vertical(lev) {
     }
 }
 
+/* for #wizfliplevel; not needed when flipping during level creation;
+   update seen vector for whole flip area and glyph for known walls */
 /** C ref: sp_lev.c:458 — @param {CInt} flp @param {CInt} minx @param {CInt} miny @param {CInt} maxx @param {CInt} maxy */
 function* flip_visuals(flp, minx, miny, maxx, maxy) {
     let lev;
     let x;
     let y;
     let seenv;
+
     for (y = miny; y <= maxy; ++y) {
         for (x = minx; x <= maxx; ++x) {
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
             seenv = cptr.ld1uo(lev, $rm_seenv) & 255;
+            /* locations which haven't been seen can be skipped */
             if (seenv == 0)
                 continue;
+            /* flip <x,y>'s seen vector; not necessary for locations seen
+               from all directions (the whole level after magic mapping) */
             if (seenv != 255) {
+                /* SV2 SV1 SV0 *
+                 * SV3 -+- SV7 *
+                 * SV4 SV5 SV6 */
                 if (flp & 1) {
                     seenv = swapbits(seenv, 2, 4);
                     seenv = swapbits(seenv, 1, 5);
@@ -904,14 +944,18 @@ function* flip_visuals(flp, minx, miny, maxx, maxy) {
                 }
                 cptr.st1o(lev, $rm_seenv, uchar(seenv));
             }
+            /* if <x,y> is displayed as a wall, reset its display glyph so
+               that remembered, out of view T's and corners get flipped */
             if ((IS_WALL(cptr.ld1so(lev, $rm_typ)) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR) && glyph_is_cmap(cptr.ldI32(lev)))
                 cptr.stI32(lev, (yield* back_to_glyph(i16(x), i16(y))));
         }
     }
 }
 
+/* transpose an encoded direction */
 /** C ref: sp_lev.c:499 — @param {CInt} flp @param {CInt} val @returns {CInt} */
 function flip_encoded_dir_bits(flp, val) {
+    /* these depend on xdir[] and ydir[] order */
     if (flp & 1) {
         val = swapbits(val, 1, 7);
         val = swapbits(val, 2, 6);
@@ -922,9 +966,12 @@ function flip_encoded_dir_bits(flp, val) {
         val = swapbits(val, 0, 4);
         val = swapbits(val, 7, 5);
     }
+
     return val;
 }
 
+/* transpose top with bottom or left with right or both; sometimes called
+   for new special levels, or for any level via the #wizfliplevel command */
 /** C ref: sp_lev.c:533 — @param {CInt} flp @param {CInt} extras */
 export function* flip_level(flp, extras) {
     let x;
@@ -946,9 +993,13 @@ export function* flip_level(flp, extras) {
     let ball_fliparea = 0;
     let stway;
     let ez;
+
+    /* nothing to do unless (flp & 1) or (flp & 2) or both */
     if ((flp & 3) == 0)
         return;
+
     get_level_extends(minx, miny, maxx, maxy);
+    /* get_level_extends() returns -1,-1 to COLNO,ROWNO at max */
     if (miny.v < 0)
         miny.v = 0;
     if (minx.v < 1)
@@ -957,9 +1008,16 @@ export function* flip_level(flp, extras) {
         maxx.v = 79;
     if (maxy.v >= NHM.ROWNO)
         maxy.v = 20;
+
     if (extras) {
         if (Punished() && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE) {
             ball_active = 1;
+            /* if hero and ball and chain are all inside flip area,
+               flip b&c coordinates along with other objects; if they
+               are all outside, leave them to be rejected when flipping
+               so that they stay as is; if some are inside and some are
+               outside, un-place here and subsequently re-place them on
+               hero's [possibly new] spot below */
             if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT))
                 cptr.stI16o(uball.v, $obj_ox, cptr.ldI16(u)), cptr.stI16o(uball.v, $obj_oy, cptr.ldI16o(u, $you_uy));
             ball_fliparea = schar(((((cptr.ldI16o(uball.v, $obj_ox)) >= minx.v && (cptr.ldI16o(uball.v, $obj_ox)) <= maxx.v && (cptr.ldI16o(uball.v, $obj_oy)) >= miny.v && (cptr.ldI16o(uball.v, $obj_oy)) <= maxy.v ? 1 : 0) == ((cptr.ldI16o(uchain.v, $obj_ox)) >= minx.v && (cptr.ldI16o(uchain.v, $obj_ox)) <= maxx.v && (cptr.ldI16o(uchain.v, $obj_oy)) >= miny.v && (cptr.ldI16o(uchain.v, $obj_oy)) <= maxy.v ? 1 : 0)) && (((cptr.ldI16o(uball.v, $obj_ox)) >= minx.v && (cptr.ldI16o(uball.v, $obj_ox)) <= maxx.v && (cptr.ldI16o(uball.v, $obj_oy)) >= miny.v && (cptr.ldI16o(uball.v, $obj_oy)) <= maxy.v ? 1 : 0) == ((cptr.ldI16(u)) >= minx.v && (cptr.ldI16(u)) <= maxx.v && (cptr.ldI16o(u, $you_uy)) >= miny.v && (cptr.ldI16o(u, $you_uy)) <= maxy.v ? 1 : 0)) ? 1 : 0));
@@ -967,12 +1025,16 @@ export function* flip_level(flp, extras) {
                 (yield* unplacebc());
         }
     }
+
+    /* stairs and ladders */
     for (stway = cptr.ldPtro(gs, $instance_globals_s_stairs); stway; stway = cptr.ldPtro(stway, $stairway_next)) {
         if (flp & 1)
             cptr.stI16o(stway, $stairway_sy, i16(((((maxy.v - (cptr.ldI16o(stway, $stairway_sy))) | 0) + miny.v) | 0)));
         if (flp & 2)
             cptr.stI16(stway, i16(((((maxx.v - (cptr.ldI16(stway))) | 0) + minx.v) | 0)));
     }
+
+    /* traps */
     for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp)) {
         if (!((cptr.ldI16o(ttmp, $trap_tx)) >= minx.v && (cptr.ldI16o(ttmp, $trap_tx)) <= maxx.v && (cptr.ldI16o(ttmp, $trap_ty)) >= miny.v && (cptr.ldI16o(ttmp, $trap_ty)) <= maxy.v))
             continue;
@@ -995,6 +1057,8 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
+    /* objects */
     for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); otmp; otmp = cptr.ldPtr(otmp)) {
         if (!((cptr.ldI16o(otmp, $obj_ox)) >= minx.v && (cptr.ldI16o(otmp, $obj_ox)) <= maxx.v && (cptr.ldI16o(otmp, $obj_oy)) >= miny.v && (cptr.ldI16o(otmp, $obj_oy)) <= maxy.v))
             continue;
@@ -1003,6 +1067,8 @@ export function* flip_level(flp, extras) {
         if (flp & 2)
             cptr.stI16o(otmp, $obj_ox, i16(((((maxx.v - (cptr.ldI16o(otmp, $obj_ox))) | 0) + minx.v) | 0)));
     }
+
+    /* buried objects */
     for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); otmp; otmp = cptr.ldPtr(otmp)) {
         if (!((cptr.ldI16o(otmp, $obj_ox)) >= minx.v && (cptr.ldI16o(otmp, $obj_ox)) <= maxx.v && (cptr.ldI16o(otmp, $obj_oy)) >= miny.v && (cptr.ldI16o(otmp, $obj_oy)) <= maxy.v))
             continue;
@@ -1011,6 +1077,8 @@ export function* flip_level(flp, extras) {
         if (flp & 2)
             cptr.stI16o(otmp, $obj_ox, i16(((((maxx.v - (cptr.ldI16o(otmp, $obj_ox))) | 0) + minx.v) | 0)));
     }
+
+    /* monsters */
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
             if (extras)
@@ -1018,6 +1086,7 @@ export function* flip_level(flp, extras) {
             if (cptr.ldI16o(mtmp, $monst_mx) == 0)
                 continue;
         }
+        /* skip the occasional earth elemental outside the flip area */
         if (!((cptr.ldI16o(mtmp, $monst_mx)) >= minx.v && (cptr.ldI16o(mtmp, $monst_mx)) <= maxx.v && (cptr.ldI16o(mtmp, $monst_my)) >= miny.v && (cptr.ldI16o(mtmp, $monst_my)) <= maxy.v))
             continue;
         if (flp & 1)
@@ -1027,11 +1096,13 @@ export function* flip_level(flp, extras) {
         {
             if (cptr.ldI16((cptr.add(mtmp, $monst_mgoal))) && ((cptr.ldI16((cptr.add(mtmp, $monst_mgoal)))) >= minx.v && (cptr.ldI16((cptr.add(mtmp, $monst_mgoal)))) <= maxx.v && (cptr.ldI16o((cptr.add(mtmp, $monst_mgoal)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add(mtmp, $monst_mgoal)), $nhcoord_y)) <= maxy.v)) {
                 if (flp & 1)
+
                     cptr.stI16o((cptr.add(mtmp, $monst_mgoal)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add(mtmp, $monst_mgoal)), $nhcoord_y))) | 0) + miny.v) | 0)));
                 if (flp & 2)
                     cptr.stI16((cptr.add(mtmp, $monst_mgoal)), i16(((((maxx.v - (cptr.ldI16((cptr.add(mtmp, $monst_mgoal))))) | 0) + minx.v) | 0)));
             }
         }
+
         if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1)) {
             {
                 if (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos))) && ((cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)))) >= minx.v && (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)))) <= maxx.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y)) <= maxy.v)) {
@@ -1045,7 +1116,7 @@ export function* flip_level(flp, extras) {
             {
                 if (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk))) && ((cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)))) >= minx.v && (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)))) <= maxx.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y)) <= maxy.v)) {
                     if (flp & 1)
-                        cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y))) | 0) + miny.v) | 0)));
+                        cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y))) | 0) + miny.v) | 0)));  /* shk's preferred spot */
                     if (flp & 2)
                         cptr.stI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), i16(((((maxx.v - (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk))))) | 0) + minx.v) | 0)));
                 }
@@ -1053,7 +1124,7 @@ export function* flip_level(flp, extras) {
             {
                 if (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd))) && ((cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)))) >= minx.v && (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)))) <= maxx.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y)) <= maxy.v)) {
                     if (flp & 1)
-                        cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y))) | 0) + miny.v) | 0)));
+                        cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y))) | 0) + miny.v) | 0)));  /* shop door */
                     if (flp & 2)
                         cptr.stI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), i16(((((maxx.v - (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd))))) | 0) + minx.v) | 0)));
                 }
@@ -1068,12 +1139,12 @@ export function* flip_level(flp, extras) {
     if (extras) {
         for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && on_level(cptr.add(u, $you_uz), cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), $egd_gdlevel))) {
-                flip_vault_guard(flp, mtmp, minx.v, miny.v, maxx.v, maxy.v);
+                flip_vault_guard(flp, mtmp, minx.v, miny.v, maxx.v, maxy.v);  /* egd */
             } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && on_level(cptr.add(u, $you_uz), cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrlevel))) {
                 {
                     if (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos))) && ((cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)))) >= minx.v && (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)))) <= maxx.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y)) <= maxy.v)) {
                         if (flp & 1)
-                            cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y))) | 0) + miny.v) | 0)));
+                            cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), $nhcoord_y))) | 0) + miny.v) | 0)));  /* priest's altar */
                         if (flp & 2)
                             cptr.stI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos)), i16(((((maxx.v - (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shrpos))))) | 0) + minx.v) | 0)));
                     }
@@ -1082,7 +1153,7 @@ export function* flip_level(flp, extras) {
                 {
                     if (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk))) && ((cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)))) >= minx.v && (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)))) <= maxx.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y)) <= maxy.v)) {
                         if (flp & 1)
-                            cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y))) | 0) + miny.v) | 0)));
+                            cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), $nhcoord_y))) | 0) + miny.v) | 0)));  /* shk's preferred spot */
                         if (flp & 2)
                             cptr.stI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk)), i16(((((maxx.v - (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shk))))) | 0) + minx.v) | 0)));
                     }
@@ -1090,7 +1161,7 @@ export function* flip_level(flp, extras) {
                 {
                     if (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd))) && ((cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)))) >= minx.v && (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)))) <= maxx.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y)) <= maxy.v)) {
                         if (flp & 1)
-                            cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y))) | 0) + miny.v) | 0)));
+                            cptr.stI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y, i16(((((maxy.v - (cptr.ldI16o((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), $nhcoord_y))) | 0) + miny.v) | 0)));  /* shop door */
                         if (flp & 2)
                             cptr.stI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd)), i16(((((maxx.v - (cptr.ldI16((cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shd))))) | 0) + minx.v) | 0)));
                     }
@@ -1098,12 +1169,16 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
+    /* engravings */
     for (etmp = head_engr.v; etmp; etmp = cptr.ldPtr(etmp)) {
         if (flp & 1)
             cptr.stI16o(etmp, $engr_engr_y, i16(((((maxy.v - (cptr.ldI16o(etmp, $engr_engr_y))) | 0) + miny.v) | 0)));
         if (flp & 2)
             cptr.stI16o(etmp, $engr_engr_x, i16(((((maxx.v - (cptr.ldI16o(etmp, $engr_engr_x))) | 0) + minx.v) | 0)));
     }
+
+    /* level (teleport) regions */
     for (i = 0; i < cptr.ldI32o(gn, $instance_globals_n_num_lregions); i++) {
         if (flp & 1) {
             cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 2, i16(((((maxy.v - (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 2))) | 0) + miny.v) | 0)));
@@ -1113,6 +1188,7 @@ export function* flip_level(flp, extras) {
                 cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 2, cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 6));
                 cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 6, i16(itmp));
             }
+
             cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 2, i16(((((maxy.v - (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 2))) | 0) + miny.v) | 0)));
             cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 6, i16(((((maxy.v - (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 6))) | 0) + miny.v) | 0)));
             if (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 2) > cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 6)) {
@@ -1129,6 +1205,7 @@ export function* flip_level(flp, extras) {
                 cptr.stI16o(cptr.ldPtro(gl, $instance_globals_l_lregions), i, cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 4), $sizeof_lev_region);
                 cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, 4, i16(itmp));
             }
+
             cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea, i16(((((maxx.v - (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea))) | 0) + minx.v) | 0)));
             cptr.stI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 4, i16(((((maxx.v - (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 4))) | 0) + minx.v) | 0)));
             if (cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea) > cptr.ldI16o2(cptr.ldPtro(gl, $instance_globals_l_lregions), i, $sizeof_lev_region, $lev_region_delarea + 4)) {
@@ -1138,6 +1215,8 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
+    /* regions (poison clouds, etc) */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
         let j;
         let tmp1;
@@ -1167,9 +1246,12 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
+    /* rooms */
     for (sroom = cptr.add(svr, 0, $sizeof_mkroom); ; sroom = cptr.add(sroom, 1, 224)) {
         if (cptr.ldI16o(sroom, $mkroom_hx) < 0)
             break;
+
         if (flp & 1) {
             cptr.stI16o(sroom, $mkroom_ly, i16(((((maxy.v - (cptr.ldI16o(sroom, $mkroom_ly))) | 0) + miny.v) | 0)));
             cptr.stI16o(sroom, $mkroom_hy, i16(((((maxy.v - (cptr.ldI16o(sroom, $mkroom_hy))) | 0) + miny.v) | 0)));
@@ -1188,9 +1270,11 @@ export function* flip_level(flp, extras) {
                 cptr.stI16o(sroom, $mkroom_hx, i16(itmp));
             }
         }
+
         if (cptr.ld1so(sroom, $mkroom_nsubrooms))
             for (i = 0; i < cptr.ld1so(sroom, $mkroom_nsubrooms); i++) {
                 let rroom = cptr.ldPtro2(sroom, i, 8, $mkroom_sbrooms);
+
                 if (flp & 1) {
                     cptr.stI16o(rroom, $mkroom_ly, i16(((((maxy.v - (cptr.ldI16o(rroom, $mkroom_ly))) | 0) + miny.v) | 0)));
                     cptr.stI16o(rroom, $mkroom_hy, i16(((((maxy.v - (cptr.ldI16o(rroom, $mkroom_hy))) | 0) + miny.v) | 0)));
@@ -1211,6 +1295,8 @@ export function* flip_level(flp, extras) {
                 }
             }
     }
+
+    /* doors */
     for (i = 0; i < cptr.ldI32(gd); i++) {
         {
             if (cptr.ldI16((cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), i, $sizeof_coord))) && ((cptr.ldI16((cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), i, $sizeof_coord)))) >= minx.v && (cptr.ldI16((cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), i, $sizeof_coord)))) <= maxx.v && (cptr.ldI16o((cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), i, $sizeof_coord)), $nhcoord_y)) >= miny.v && (cptr.ldI16o((cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), i, $sizeof_coord)), $nhcoord_y)) <= maxy.v)) {
@@ -1221,18 +1307,24 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
+    /* the map */
     if (flp & 1) {
         for (x = minx.v; x <= maxx.v; x++)
             for (y = miny.v; y < ((miny.v + ((((((maxy.v - miny.v) | 0) + 1) | 0) / 2) | 0)) | 0); y++) {
                 let ny = ((((maxy.v - (y)) | 0) + miny.v) | 0);
+
                 flip_dbridge_vertical(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));
                 flip_dbridge_vertical(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), ny, $sizeof_rm));
+
                 cptr.memcpy(trm, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm), 36);
                 cptr.memcpy(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), ny, $sizeof_rm), 36);
                 cptr.memcpy(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), ny, $sizeof_rm), trm, 36);
+
                 otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
                 cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects, cptr.ldPtro3(svl, x, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_objects));
                 cptr.stPtro3(svl, x, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_objects, otmp);
+
                 mtmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters);
                 cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, cptr.ldPtro3(svl, x, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
                 cptr.stPtro3(svl, x, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mtmp);
@@ -1242,23 +1334,30 @@ export function* flip_level(flp, extras) {
         for (x = minx.v; x < ((minx.v + ((((((maxx.v - minx.v) | 0) + 1) | 0) / 2) | 0)) | 0); x++)
             for (y = miny.v; y <= maxy.v; y++) {
                 let nx = ((((maxx.v - (x)) | 0) + minx.v) | 0);
+
                 flip_dbridge_horizontal(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));
                 flip_dbridge_horizontal(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, $sizeof_rm_x21), y, $sizeof_rm));
+
                 cptr.memcpy(trm, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm), 36);
                 cptr.memcpy(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, $sizeof_rm_x21), y, $sizeof_rm), 36);
                 cptr.memcpy(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, $sizeof_rm_x21), y, $sizeof_rm), trm, 36);
+
                 otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
                 cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects, cptr.ldPtro3(svl, nx, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects));
                 cptr.stPtro3(svl, nx, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects, otmp);
+
                 mtmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters);
                 cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, cptr.ldPtro3(svl, nx, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
                 cptr.stPtro3(svl, nx, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mtmp);
             }
     }
+
+    /* timed effects */
     for (timer = cptr.ldPtro(gt, $instance_globals_t_timer_base); timer; timer = cptr.ldPtr(timer)) {
         if (cptr.ldI16o(timer, $timer_element_func_index) == NHC.MELT_ICE_AWAY) {
             let ty = cptr.ldI64o(timer, $timer_element_arg) & 65535n;
             let tx = (cptr.ldI64o(timer, $timer_element_arg) >> 16n) & 65535n;
+
             if (flp & 1)
                 ty = (BigInt.asIntN(64, (BigInt.asIntN(64, BigInt(maxy.v) - (ty))) + BigInt(miny.v)));
             if (flp & 2)
@@ -1266,6 +1365,8 @@ export function* flip_level(flp, extras) {
             cptr.stI64o(timer, $timer_element_arg, ((tx << 16n) | ty));
         }
     }
+
+    /* exclusion zones */
     for (ez = cptr.ldPtr(sve); ez; ez = cptr.ldPtro(ez, $exclusion_zone_next)) {
         if (flp & 1) {
             cptr.stI16o(ez, $exclusion_zone_ly, i16(((((maxy.v - (cptr.ldI16o(ez, $exclusion_zone_ly))) | 0) + miny.v) | 0)));
@@ -1286,12 +1387,16 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
     if (extras) {
+        /* flip hero location only if inside the flippable area */
         if (((cptr.ldI16(u)) >= minx.v && (cptr.ldI16(u)) <= maxx.v && (cptr.ldI16o(u, $you_uy)) >= miny.v && (cptr.ldI16o(u, $you_uy)) <= maxy.v)) {
             if (flp & 1)
                 cptr.stI16o(u, $you_uy, i16(((((maxy.v - (cptr.ldI16o(u, $you_uy))) | 0) + miny.v) | 0)));
             if (flp & 2)
                 cptr.stI16(u, i16(((((maxx.v - (cptr.ldI16(u))) | 0) + minx.v) | 0)));
+            /* we could flip <ux0,uy0> too if it's inside the flip area,
+               but have to resort to this if outside, so just do this */
             cptr.stI16o(u, $you_ux0, cptr.ldI16(u)), cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
         }
         if (ball_active && !ball_fliparea)
@@ -1313,18 +1418,22 @@ export function* flip_level(flp, extras) {
             }
         }
     }
+
     (yield* fix_wall_spines(1, 0, 79, 20));
     if (extras && flp) {
         set_wall_state();
+        /* after wall_spines; flips seenv and wall joins */
         (yield* flip_visuals(flp, minx.v, miny.v, maxx.v, maxy.v));
     }
     (yield* vision_reset());
 }
 
+/* for #wizfliplevel, flip guard's egd data; not needed for level creation */
 /** C ref: sp_lev.c:926 — @param {CInt} flp @param {CPtr<struct monst>} grd @param {CInt} minx @param {CInt} miny @param {CInt} maxx @param {CInt} maxy */
 function flip_vault_guard(flp, grd, minx, miny, maxx, maxy) {
     let i;
     let egd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
+
     if (((cptr.ldI16o(egd, $egd_gdx)) >= minx && (cptr.ldI16o(egd, $egd_gdx)) <= maxx && (cptr.ldI16o(egd, $egd_gdy)) >= miny && (cptr.ldI16o(egd, $egd_gdy)) <= maxy)) {
         if (flp & 1)
             cptr.stI16o(egd, $egd_gdy, i16(((((maxy - (cptr.ldI16o(egd, $egd_gdy))) | 0) + miny) | 0)));
@@ -1340,6 +1449,7 @@ function flip_vault_guard(flp, grd, minx, miny, maxx, maxy) {
     for (i = cptr.ldI32o(egd, $egd_fcbeg); i < cptr.ldI32o(egd, $egd_fcend); ++i) {
         let fx = cptr.ldI16o2(egd, i, $sizeof_fakecorridor, $egd_fakecorr);
         let fy = cptr.ldI16o2(egd, i, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy);
+
         if (((fx) >= minx && (fx) <= maxx && (fy) >= miny && (fy) <= maxy)) {
             if (flp & 1)
                 cptr.stI16o2(egd, i, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy, i16(((((maxy - (fy)) | 0) + miny) | 0)));
@@ -1350,13 +1460,21 @@ function flip_vault_guard(flp, grd, minx, miny, maxx, maxy) {
     return;
 }
 
+/* randomly transpose top with bottom or left with right or both;
+   caller controls which transpositions are allowed */
 /** C ref: sp_lev.c:967 — @param {CInt} flp @param {CInt} extras */
 export function* flip_level_rnd(flp, extras) {
     let c = 0;
+
+    /* TODO?
+     *  Might change rn2(2) to !rn2(3) or (rn2(5) < 2) in order to bias
+     *  the outcome towards the traditional orientation.
+     */
     if ((flp & 1) && rn2_at(__s_sp_lev_c, 975, __s_flip_level_rnd, 2))
         c |= 1;
     if ((flp & 2) && rn2_at(__s_sp_lev_c, 977, __s_flip_level_rnd, 2))
         c |= 2;
+
     if (c)
         (yield* flip_level(c, extras));
 }
@@ -1364,15 +1482,20 @@ export function* flip_level_rnd(flp, extras) {
 /** C ref: sp_lev.c:986 — @param {CInt} x @param {CInt} y @param {CPtr} arg */
 function sel_set_wall_property(x, y, arg) {
     let prop = cptr.ldI32(arg);
+
     if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.STONE)) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS)
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | prop);
 }
 
+/*
+ * Make walls of the area (x1, y1, x2, y2) non diggable/non passwall-able
+ */
 /** C ref: sp_lev.c:1001 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @param {CInt} prop */
 function set_wall_property(x1, y1, x2, y2, prop) {
     prop = cptr.box(prop);
     let x;
     let y;
+
     x1 = i16(((x1) > 1 ? (x1) : 1));
     x2 = i16(((x2) < 79 ? (x2) : 79));
     y1 = i16(((y1) > 0 ? (y1) : 0));
@@ -1385,9 +1508,15 @@ function set_wall_property(x1, y1, x2, y2, prop) {
 
 /** C ref: sp_lev.c:1016 */
 function remove_boundary_syms() {
+    /*
+     * If any CROSSWALLs are found, must change to ROOM after REGION's
+     * are laid out.  CROSSWALLS are used to specify "invisible"
+     * boundaries where DOOR syms look bad or aren't desirable.
+     */
     let x;
     let y;
     let has_bounds = 0;
+
     for (x = 0; x < 79; x++)
         for (y = 0; y < 20; y++)
             if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CROSSWALL) {
@@ -1402,17 +1531,39 @@ function remove_boundary_syms() {
     }
 }
 
+/* used by sel_set_door() and link_doors_rooms() */
 /** C ref: sp_lev.c:1042 — @param {CInt} x @param {CInt} y */
 function set_door_orientation(x, y) {
     let wleft;
     let wright;
     let wup;
     let wdown;
+
+    /* If there's a wall or door on either the left side or right
+     * side (or both) of this secret door, make it be horizontal.
+     *
+     * It is feasible to put SDOOR in a corner, tee, or crosswall
+     * position, although once the door is found and opened it won't
+     * make a lot sense (diagonal access required).  Still, we try to
+     * handle that as best as possible.  For top or bottom tee, using
+     * horizontal is the best we can do.  For corner or crosswall,
+     * either horizontal or vertical are just as good as each other;
+     * we produce horizontal for corners and vertical for crosswalls.
+     * For left or right tee, using vertical is best.
+     *
+     * A secret door with no adjacent walls is also feasible and makes
+     * even less sense.  It will be displayed as a vertical wall while
+     * hidden and become a vertical door when found.  Before resorting
+     * to that, we check for solid rock which hasn't been wallified
+     * yet (cf lower leftside of leader's room in Cav quest).
+     */
     wleft = schar((isok(i16(((x - 1) | 0)), i16(y)) && (((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) ? 1 : 0));
     wright = schar((isok(i16(((x + 1) | 0)), i16(y)) && (((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) ? 1 : 0));
     wup = schar((isok(i16(x), i16(((y - 1) | 0))) && (((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) ? 1 : 0));
     wdown = schar((isok(i16(x), i16(((y + 1) | 0))) && (((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) ? 1 : 0));
     if (!wleft && !wright && !wup && !wdown) {
+        /* out of bounds is treated as implicit wall; should be academic
+           because we don't expect to have doors so near the level's edge */
         wleft = schar((!isok(i16(((x - 1) | 0)), i16(y)) || (((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.IRONBARS) ? 1 : 0));
         wright = schar((!isok(i16(((x + 1) | 0)), i16(y)) || (((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.IRONBARS) ? 1 : 0));
         wup = schar((!isok(i16(x), i16(((y - 1) | 0))) || (((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.IRONBARS) ? 1 : 0));
@@ -1421,9 +1572,11 @@ function set_door_orientation(x, y) {
     cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, (((wleft || wright) && !(wup && wdown)) ? 1 : 0) >>> 0);
 }
 
+/* is x,y right next to room droom? */
 /** C ref: sp_lev.c:1089 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} droom @returns {CInt} */
 function shared_with_room(x, y, droom) {
     let rmno = Number(BigInt.asIntN(32, BigInt.asIntN(64, (cptr.diff(droom, svr) / 224n) + 3n)));
+
     if (!isok(i16(x), i16(y)))
         return 0;
     if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno && !(cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1))
@@ -1439,6 +1592,7 @@ function shared_with_room(x, y, droom) {
     return 0;
 }
 
+/* maybe add door at x,y to room droom */
 /** C ref: sp_lev.c:1110 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} droom */
 function* maybe_add_door(x, y, droom) {
     if (cptr.ldI16o(droom, $mkroom_hx) >= 0 && ((!cptr.ld1so(droom, $mkroom_irregular) && inside_room(droom, i16(x), i16(y))) || BigInt(((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0)) == BigInt.asIntN(64, (cptr.diff(droom, svr) / 224n) + 3n) || shared_with_room(x, y, droom))) {
@@ -1446,16 +1600,22 @@ function* maybe_add_door(x, y, droom) {
     }
 }
 
+/* link all doors in the map to their corresponding rooms */
 /** C ref: sp_lev.c:1122 */
 function* link_doors_rooms() {
     let x;
     let y;
     let tmpi;
     let m;
+
     for (y = 0; y < NHM.ROWNO; y++)
         for (x = 0; x < NHM.COLNO; x++)
             if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
+                /* in case this door was a '+' or 'S' from the
+                   MAP...ENDMAP section without an explicit DOOR
+                   directive, set/clear levl[][].horizontal for it */
                 set_door_orientation(x, y);
+
                 for (tmpi = 0; tmpi < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); tmpi++) {
                     (yield* maybe_add_door(x, y, cptr.add(svr, tmpi, $sizeof_mkroom)));
                     for (m = 0; m < cptr.ld1so2(svr, tmpi, $sizeof_mkroom, $mkroom_nsubrooms); m++) {
@@ -1465,6 +1625,9 @@ function* link_doors_rooms() {
             }
 }
 
+/*
+ * Choose randomly the state (nodoor, open, closed or locked) for a door
+ */
 const __static_rnddoor_state = cptr.alloc(5 * 4);
 cptr.stI32o(__static_rnddoor_state, 0, NHM.D_NODOOR);
 cptr.stI32o(__static_rnddoor_state, 4, NHM.D_BROKEN);
@@ -1474,12 +1637,17 @@ cptr.stI32o(__static_rnddoor_state, 16, NHM.D_LOCKED); /** C ref: sp_lev.c:1150 
 
 /** C ref: sp_lev.c:1148 @returns {CInt} */
 function rnddoor() {
+
     return cptr.ldI32o(__static_rnddoor_state, rn2_at(__s_sp_lev_c, 1152, __s_rnddoor, 5), 4);
 }
 
+/*
+ * Select a random trap
+ */
 /** C ref: sp_lev.c:1159 @returns {CInt} */
 function rndtrap() {
     let rtrap;
+
     do {
         rtrap = rnd_at(__s_sp_lev_c, 1164, __s_rndtrap, ((NHC.TRAPNUM - 1) | 0));
         switch (rtrap) {
@@ -1507,6 +1675,17 @@ function rndtrap() {
     return rtrap;
 }
 
+/*
+ * Translate a given coordinate from a special level definition into an actual
+ * location on the map.
+ *
+ * If x or y is negative, we generate a random coordinate within the area. If
+ * not negative, they are interpreted as relative to the last defined map or
+ * room, and are output as absolute svl.level.locations coordinates.
+ *
+ * The "humidity" flag is used to ensure that engravings aren't created
+ * underwater, or eels on dry land.
+ */
 /** C ref: sp_lev.c:1202 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CUInt} humidity @param {CPtr<struct mkroom>} croom */
 function* get_location(x, y, humidity, croom) {
     let cpt = 0;
@@ -1515,6 +1694,7 @@ function* get_location(x, y, humidity, croom) {
     let sx;
     let sy;
     __lbl_found_it: {
+
         if (croom) {
             mx = cptr.ldI16(croom);
             my = cptr.ldI16o(croom, $mkroom_ly);
@@ -1526,6 +1706,7 @@ function* get_location(x, y, humidity, croom) {
             sx = cptr.ldI16o(gx, $instance_globals_x_xsize);
             sy = cptr.ldI16o(gy, $instance_globals_y_ysize);
         }
+
         if (cptr.ldI16(x) >= 0) {
             cptr.stI16(x, cptr.ldI16(x) + mx);
             cptr.stI16(y, cptr.ldI16(y) + my);
@@ -1546,6 +1727,8 @@ function* get_location(x, y, humidity, croom) {
             if (cpt >= 100) {
                 let xx;
                 let yy;
+
+                /* last try */
                 for (xx = 0; xx < sx; xx++)
                     for (yy = 0; yy < sy; yy++) {
                         cptr.stI16(x, i16(((mx + xx) | 0)));
@@ -1562,8 +1745,10 @@ function* get_location(x, y, humidity, croom) {
         }
     }
     ;
+
     if (!((humidity & NHM.ANY_LOC) >>> 0) && !isok(cptr.ldI16(x), cptr.ldI16(y))) {
         if (!((humidity & NHM.NO_LOC_WARN) >>> 0)) {
+            /*warning("get_location:  (%d,%d) out of bounds", *x, *y);*/
             cptr.stI16(x, i16(cptr.ldI32(gx)));
             cptr.stI16(y, i16(cptr.ldI32(gy)));
         } else {
@@ -1583,16 +1768,23 @@ function set_ok_location_func(func) {
 /** C ref: sp_lev.c:1280 — @param {CInt} x @param {CInt} y @param {CUInt} humidity @returns {CInt} */
 function* is_ok_location(x, y, humidity) {
     let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
-        return 1;
+        return 1;  /* accept any spot */
+
     if (is_ok_location_func)
         return (yield* Y.icall(is_ok_location_func(x, y)));
+
+    /* TODO: Should perhaps check if wall is diggable/passwall? */
     if ((humidity & NHM.ANY_LOC) >>> 0)
         return 1;
+
     if (((humidity & NHM.SOLID) >>> 0) && ((typ) < NHC.POOL))
         return 1;
+
     if (((humidity & 65) >>> 0) && ((typ) > NHC.DOOR)) {
         let bould = schar((!cptr.eq(sobj_at(NHC.BOULDER, x, y), (null))));
+
         if (!bould || (bould && ((humidity & NHM.SOLID) >>> 0)))
             return 1;
     }
@@ -1612,6 +1804,7 @@ let __static_get_unpacked_coord_c = cptr.alloc($sizeof_unpacked_coord); /** C re
 
 /** C ref: sp_lev.c:1317 — @param {CLongLong} loc @param {CInt} defhumidity @returns {*} */
 function get_unpacked_coord(loc, defhumidity) {
+
     if (loc & 16777216n) {
         cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_x, cptr.stI32o(__static_get_unpacked_coord_c, $unpacked_coord_y, -1));
         cptr.stI16(__static_get_unpacked_coord_c, 1);
@@ -1630,17 +1823,24 @@ function get_unpacked_coord(loc, defhumidity) {
 /** C ref: sp_lev.c:1337 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CInt} humidity @param {CPtr<struct mkroom>} croom @param {CLongLong} crd */
 export function* get_location_coord(x, y, humidity, croom, crd) {
     let c = cptr.alloc(16);
+
     cptr.memcpy(c, get_unpacked_coord(crd, humidity), 16);
     cptr.stI16(x, i16(cptr.ldI32o(c, $unpacked_coord_x)));
     cptr.stI16(y, i16(cptr.ldI32o(c, $unpacked_coord_y)));
     (yield* get_location(x, y, (cptr.ldI32o(c, $unpacked_coord_getloc_flags) | (cptr.ldI16(c) ? NHM.NO_LOC_WARN : 0) >>> 0) >>> 0, croom));
+
     if (cptr.ldI16(x) == -1 && cptr.ldI16(y) == -1 && cptr.ldI16(c))
         (yield* get_location(x, y, humidity >>> 0, croom));
 }
 
+/*
+ * Get a relative position inside a room.
+ * negative values for x or y means RANDOM!
+ */
 /** C ref: sp_lev.c:1360 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<struct mkroom>} croom */
 function* get_room_loc(x, y, croom) {
     let c = cptr.alloc(4);
+
     if (cptr.ldI16(x) < 0 && cptr.ldI16(y) < 0) {
         if (somexy(croom, c)) {
             cptr.stI16(x, cptr.ldI16(c));
@@ -1657,17 +1857,23 @@ function* get_room_loc(x, y, croom) {
     }
 }
 
+/*
+ * Get a relative position inside a room.
+ * negative values for x or y means RANDOM!
+ */
 /** C ref: sp_lev.c:1385 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<struct mkroom>} croom @param {CLongLong} pos */
 function* get_free_room_loc(x, y, croom, pos) {
     let try_x = cptr.box(0);
     let try_y = cptr.box(0);
     let trycnt = 0;
+
     (yield* get_location_coord(try_x, try_y, NHM.DRY, croom, pos));
     if (cptr.ld1so3(svl, try_x.v, $sizeof_rm_x21, try_y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) {
         do {
             try_x.v = cptr.ldI16(x), try_y.v = cptr.ldI16(y);
             (yield* get_room_loc(try_x, try_y, croom));
         } while (cptr.ld1so3(svl, try_x.v, $sizeof_rm_x21, try_y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM && ++trycnt <= 100);
+
         if (trycnt > 100)
             (yield* panic(__s_get_free_room_loc_can_t_find_a_place));
     }
@@ -1688,12 +1894,15 @@ export function* check_room(lowx, ddx, lowy, ddy, vault) {
     let s_ddx;
     let s_lowy;
     let s_ddy;
+
     s_lowx = cptr.ldI16(lowx);
     s_ddx = cptr.ldI16(ddx);
     s_lowy = cptr.ldI16(lowy);
     s_ddy = cptr.ldI16(ddy);
+
     xlim = (4 + (vault ? 1 : 0)) | 0;
     ylim = (3 + (vault ? 1 : 0)) | 0;
+
     if (cptr.ldI16(lowx) < 3)
         cptr.stI16(lowx, 3);
     if (cptr.ldI16(lowy) < 2)
@@ -1705,8 +1914,11 @@ export function* check_room(lowx, ddx, lowy, ddy, vault) {
     __lbl_chk: while (true) {
         if (hix <= cptr.ldI16(lowx) || hiy <= cptr.ldI16(lowy))
             return 0;
+
         if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && (s_lowx != cptr.ldI16(lowx)) && (s_ddx != cptr.ldI16(ddx)) && (s_lowy != cptr.ldI16(lowy)) && (s_ddy != cptr.ldI16(ddy)))
             return 0;
+
+        /* check area around room (and make room smaller if necessary) */
         for (x = (cptr.ldI16(lowx) - xlim) | 0; x <= ((hix + xlim) | 0); x++) {
             if (x <= 0 || x >= NHM.COLNO)
                 continue;
@@ -1746,12 +1958,18 @@ export function* check_room(lowx, ddx, lowy, ddy, vault) {
         }
         cptr.stI16(ddx, i16(((hix - cptr.ldI16(lowx)) | 0)));
         cptr.stI16(ddy, i16(((hiy - cptr.ldI16(lowy)) | 0)));
+
         if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && (s_lowx != cptr.ldI16(lowx)) && (s_ddx != cptr.ldI16(ddx)) && (s_lowy != cptr.ldI16(lowy)) && (s_ddy != cptr.ldI16(ddy)))
             return 0;
+
         return 1;
     }
 }
 
+/*
+ * Create a new room.
+ * This is still very incomplete...
+ */
 /** C ref: sp_lev.c:1486 — @param {CInt} x @param {CInt} y @param {CInt} w @param {CInt} h @param {CInt} xal @param {CInt} yal @param {CInt} rtype @param {CInt} rlit @returns {CInt} */
 export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
     let xabs = cptr.box(0);
@@ -1768,23 +1986,40 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
     let vault = 0;
     let xlim = 4;
     let ylim = 3;
+
     if (rtype == -1)
         rtype = NHC.OROOM;
+
     if (rtype == NHC.VAULT) {
         vault = 1;
         xlim++;
         ylim++;
     }
+
+    /* on low levels the room is lit (usually) */
+    /* some other rooms may require lighting */
+
+    /* is light state random ? */
     rlit = i16(litstate_rnd(rlit));
+
+    /*
+     * Here we will try to create a room. If some parameters are
+     * random we are willing to make several try before we give
+     * it up.
+     */
     do {
         let xborder;
         let yborder;
+
         wtmp = w;
         htmp = h;
         xtmp = x;
         ytmp = y;
         xaltmp = xal;
         yaltmp = yal;
+
+        /* First case : a totally random room */
+
         if ((xtmp < 0 && ytmp < 0 && wtmp < 0 && xaltmp < 0 && yaltmp < 0) || vault) {
             let hx;
             let hy;
@@ -1792,7 +2027,9 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
             let ly;
             let dx = cptr.box(0);
             let dy = cptr.box(0);
-            r1 = rnd_rect();
+
+            r1 = rnd_rect();  /* Get a random rectangle */
+
             if (!r1) {
                 {
                     if ((yield* debugcore(__s_sp_lev_c, 1))) {
@@ -1842,6 +2079,7 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
             let rndpos = 0;
             let dx = cptr.box(0);
             let dy = cptr.box(0);
+
             if (xtmp < 0 && ytmp < 0) {
                 xtmp = rnd_at(__s_sp_lev_c, 1585, __s_create_room, 5);
                 ytmp = rnd_at(__s_sp_lev_c, 1586, __s_create_room, 5);
@@ -1855,6 +2093,9 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
                 xaltmp = rnd_at(__s_sp_lev_c, 1594, __s_create_room, 3);
             if (yaltmp == -1)
                 yaltmp = rnd_at(__s_sp_lev_c, 1596, __s_create_room, 3);
+
+            /* Try to generate real (absolute) coordinates here! */
+
             xabs.v = i16((((((Math.imul(((xtmp - 1) | 0), NHM.COLNO)) / 5) | 0) + 1) | 0));
             yabs.v = i16((((((Math.imul(((ytmp - 1) | 0), NHM.ROWNO)) / 5) | 0) + 1) | 0));
             switch (xaltmp) {
@@ -1877,6 +2118,7 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
                 yabs.v = i16(yabs.v + ((((4 - htmp) | 0) / 2) | 0));
                 break;
             }
+
             if (((((xabs.v + wtmp) | 0) - 1) | 0) > 78)
                 xabs.v = i16(((((NHM.COLNO - wtmp) | 0) - 3) | 0));
             if (xabs.v < 2)
@@ -1885,6 +2127,9 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
                 yabs.v = i16(((((NHM.ROWNO - htmp) | 0) - 3) | 0));
             if (yabs.v < 2)
                 yabs.v = 2;
+
+            /* Try to find a rectangle that fit our room ! */
+
             cptr.stI16(r2, i16(((xabs.v - 1) | 0)));
             cptr.stI16o(r2, $nhrect_ly, i16(((yabs.v - 1) | 0)));
             cptr.stI16o(r2, $nhrect_hx, i16(((((xabs.v + wtmp) | 0) + rndpos) | 0)));
@@ -1892,6 +2137,7 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
             r1 = get_rect(r2);
             dx.v = i16(wtmp);
             dy.v = i16(htmp);
+
             if (r1 && !(yield* check_room(xabs, dx, yabs, dy, vault))) {
                 r1 = null;
             }
@@ -1901,6 +2147,7 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
         return 0;
     }
     (yield* split_rects(r1, r2));
+
     if (!vault) {
         cptr.stI32o2(gs, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 4, $instance_globals_s_smeq, cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
         (yield* add_room(xabs.v, yabs.v, i16(((((xabs.v + wtmp) | 0) - 1) | 0)), i16(((((yabs.v + htmp) | 0) - 1) | 0)), schar(rlit), schar(rtype), 0));
@@ -1911,14 +2158,24 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
     return 1;
 }
 
+/*
+ * Create a subroom in room proom at pos x,y with width w & height h.
+ * x & y are relative to the parent room.
+ */
 /** C ref: sp_lev.c:1668 — @param {CPtr<struct mkroom>} proom @param {CInt} x @param {CInt} y @param {CInt} w @param {CInt} h @param {CInt} rtype @param {CInt} rlit @returns {CInt} */
 function* create_subroom(proom, x, y, w, h, rtype, rlit) {
     let width;
     let height;
+
     width = i16(((((cptr.ldI16o(proom, $mkroom_hx) - cptr.ldI16(proom)) | 0) + 1) | 0));
     height = i16(((((cptr.ldI16o(proom, $mkroom_hy) - cptr.ldI16o(proom, $mkroom_ly)) | 0) + 1) | 0));
+
+    /* There is a minimum size for the parent room */
     if (width < 4 || height < 4)
         return 0;
+
+    /* Check for random position, size, etc... */
+
     if (w == -1)
         w = i16(rnd_at(__s_sp_lev_c, 1686, __s_create_subroom, (width - 3) | 0));
     if (h == -1)
@@ -1942,16 +2199,24 @@ function* create_subroom(proom, x, y, w, h, rtype, rlit) {
     return 1;
 }
 
+/*
+ * Create a new door in a room.
+ * It's placed on a wall (north, south, east or west).
+ */
 /** C ref: sp_lev.c:1714 — @param {CPtr<room_door>} dd @param {CPtr<struct mkroom>} broom */
 function* create_door(dd, broom) {
     let x = 0;
     let y = 0;
     let trycnt;
+
     if (cptr.ldI16o(dd, $room_door_secret) == -1)
         cptr.stI16o(dd, $room_door_secret, i16(rn2_at(__s_sp_lev_c, 1720, __s_create_door, 2)));
+
     if (cptr.ldI16(dd) == -1)
-        cptr.stI16(dd, 15);
+        cptr.stI16(dd, 15);  /* speeds things up in the below loop */
+
     if (cptr.ldI16o(dd, $room_door_mask) == -1) {
+        /* is it a locked door, closed, or a doorway? */
         if (!cptr.ldI16o(dd, $room_door_secret)) {
             if (!rn2_at(__s_sp_lev_c, 1728, __s_create_door, 3)) {
                 if (!rn2_at(__s_sp_lev_c, 1729, __s_create_door, 5))
@@ -1969,13 +2234,17 @@ function* create_door(dd, broom) {
                 cptr.stI16o(dd, $room_door_mask, NHM.D_LOCKED);
             else
                 cptr.stI16o(dd, $room_door_mask, NHM.D_CLOSED);
+
             if (!rn2_at(__s_sp_lev_c, 1745, __s_create_door, 20))
                 cptr.stI16o(dd, $room_door_mask, cptr.ldI16o(dd, $room_door_mask) | NHM.D_TRAPPED);
         }
     }
+
     for (trycnt = 0; trycnt < 100; ++trycnt) {
         let dwall = cptr.ldI16(dd);
         let dpos = cptr.ldI16o(dd, $room_door_pos);
+
+        /* Convert wall and pos into an absolute coordinate! */
         switch (rn2_at(__s_sp_lev_c, 1754, __s_create_door, 4)) {
             case 0:
             if (!(dwall & NHM.W_NORTH))
@@ -2010,8 +2279,10 @@ function* create_door(dd, broom) {
                 continue;
             break;
             default:
+            /*NOTREACHED*/
             break;
         }
+
         if (okdoor(i16(x), i16(y)))
             break;
     }
@@ -2024,12 +2295,16 @@ function* create_door(dd, broom) {
     cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI16o(dd, $room_door_mask));
 }
 
+/*
+ * Create a trap in a room.
+ */
 /** C ref: sp_lev.c:1812 — @param {CPtr<spltrap>} t @param {CPtr<struct mkroom>} croom */
 function* create_trap(t, croom) {
     let x = cptr.box(-1);
     let y = cptr.box(-1);
     let tm = cptr.alloc(4);
     let mktrap_flags = NHM.MKTRAP_MAZEFLAG;
+
     if (cptr.ldI16o(t, $spltrap_type) == NHC.VIBRATING_SQUARE) {
         (yield* pick_vibrasquare_location());
         (yield* maketrap(cptr.ldI16(svi), cptr.ldI16o(svi, $nhcoord_y), NHC.VIBRATING_SQUARE));
@@ -2038,48 +2313,64 @@ function* create_trap(t, croom) {
         (yield* get_free_room_loc(x, y, croom, cptr.ldI64(t)));
     } else {
         let trycnt = 0;
+
         do {
             (yield* get_location_coord(x, y, NHM.DRY, croom, cptr.ldI64(t)));
         } while ((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS || cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LADDER) && ++trycnt <= 100);
         if (trycnt > 100)
             return;
     }
+
     if (!cptr.ld1so(t, $spltrap_spider_on_web))
         mktrap_flags |= NHM.MKTRAP_NOSPIDERONWEB;
     if (cptr.ld1so(t, $spltrap_seen))
         mktrap_flags |= NHM.MKTRAP_SEEN;
     if (cptr.ld1so(t, $spltrap_novictim))
         mktrap_flags |= NHM.MKTRAP_NOVICTIM;
+
     cptr.stI16(tm, x.v);
     cptr.stI16o(tm, $nhcoord_y, y.v);
+
     (yield* mktrap(cptr.ldI16o(t, $spltrap_type), mktrap_flags, null, tm));
 }
 
+/*
+ * Create a monster in a room.
+ */
 /** C ref: sp_lev.c:1852 — @param {CInt} alignment @returns {CInt} */
 function noncoalignment(alignment) {
     let k;
+
     k = rn2_at(__s_sp_lev_c, 1856, __s_noncoalignment, 2);
     if (!alignment)
         return (k ? -1 : 1);
     return (k ? -alignment : 0);
 }
 
+/* attempt to screen out locations where a mimic-as-boulder shouldn't occur */
 /** C ref: sp_lev.c:1864 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function m_bad_boulder_spot(x, y) {
     let lev;
+
+    /* avoid trap locations */
     if (t_at(x, y))
         return 1;
+    /* try to avoid locations which already have a boulder (this won't
+       actually work; we get called before objects have been placed...) */
     if (sobj_at(NHC.BOULDER, x, y))
         return 1;
+    /* avoid closed doors */
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 12) != 0)
         return 1;
+    /* spot is ok */
     return 0;
 }
 
 /** C ref: sp_lev.c:1884 — @param {CPtr<struct permonst>} pm @returns {CInt} */
 function pm_to_humidity(pm) {
     let loc = NHM.DRY;
+
     if (!pm)
         return loc;
     if (cptr.ld1so(pm, $permonst_mlet) == NHC.S_EEL || ((cptr.ldU64o((pm), $permonst_mflags1) & 512n) != 0n) || ((cptr.ldU64o((pm), $permonst_mflags1) & 2n) != 0n))
@@ -2093,9 +2384,16 @@ function pm_to_humidity(pm) {
     return loc;
 }
 
+/*
+ * Convert a special level alignment mask (an alignment mask with possible
+ * extra values/flags) to a "normal" alignment mask (no extra flags).
+ *
+ * When random: there is an 80% chance that the altar will be co-aligned.
+ */
 /** C ref: sp_lev.c:1908 — @param {CUInt} sp_amask @returns {CUInt} */
 function sp_amask_to_amask(sp_amask) {
     let amask;
+
     if (sp_amask == NHM.AM_SPLEV_CO)
         amask = Align2amask(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
     else if (sp_amask == NHM.AM_SPLEV_NONCO)
@@ -2104,6 +2402,7 @@ function sp_amask_to_amask(sp_amask) {
         amask = induced_align(80);
     else
         amask = (sp_amask & NHM.AM_MASK) >>> 0;
+
     return amask;
 }
 
@@ -2117,13 +2416,17 @@ function* create_monster(m, croom) {
     let cc = cptr.alloc(4);
     let pm;
     let g_mvflags;
+
     if (cptr.ldI16o(m, $monster_class) >= 0)
         class$ = schar(def_char_to_monclass(schar(cptr.ldI16o(m, $monster_class))));
     else
         class$ = 0;
+
     if (class$ == NHC.MAXMCLASSES)
         (yield* panic(__s_create_monster_unknown_monster_class_c, cptr.ldI16o(m, $monster_class)));
+
     amask = sp_amask_to_amask(cptr.ldI32o(m, $monster_sp_amask));
+
     if (!class$) {
         pm = null;
     } else if (cptr.ldI16o(m, $monster_id) != NHC.NON_PM) {
@@ -2132,14 +2435,19 @@ function* create_monster(m, croom) {
         if ((cptr.ldU16o(pm, $permonst_geno) & NHM.G_UNIQ) && ((g_mvflags & NHM.G_EXTINCT) >>> 0))
             return;
         if ((g_mvflags & 3) >>> 0)
-            pm = null;
+            pm = null;  /* make random monster */
     } else {
         pm = (yield* mkclass(class$, NHM.G_NOGEN));
+        /* if we can't get a specific monster type (pm == 0) then the
+           class has been genocided, so settle for a random monster */
     }
     if (In_mines(cptr.add(u, $you_uz)) && pm && ((cptr.ldU64o((pm), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME)) && rn2_at(__s_sp_lev_c, 1960, __s_create_monster, 3))
         pm = null;
+
     if (pm) {
         let loc = pm_to_humidity(pm);
+
+        /* If water-liking monster, first try is without DRY */
         (yield* get_location_coord(x, y, loc | NHM.NO_LOC_WARN, croom, cptr.ldI64o(m, $monster_coord)));
         if (x.v == -1 && y.v == -1) {
             loc |= NHM.DRY;
@@ -2148,23 +2456,36 @@ function* create_monster(m, croom) {
     } else {
         (yield* get_location_coord(x, y, NHM.DRY, croom, cptr.ldI64o(m, $monster_coord)));
     }
+
+    /* try to find a close place if someone else is already there */
     if ((cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (yield* enexto(cc, x.v, y.v, pm)))
         x.v = cptr.ldI16(cc), y.v = cptr.ldI16o(cc, $nhcoord_y);
+
     if (croom && !inside_room(croom, x.v, y.v))
         return;
+
     if (cptr.ldI32o(m, $monster_sp_amask) != NHM.AM_SPLEV_RANDOM)
         mtmp = (yield* mk_roamer(pm, (schar((((((amask) & NHM.AM_MASK) >>> 0) == 0) ? -128 : (((((amask) & NHM.AM_MASK) >>> 0) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : (((((amask) & NHM.AM_MASK) >>> 0) | 0) - 2) | 0)))), x.v, y.v, cptr.ld1so(m, $monster_peaceful)));
     else if (NHC.PM_ARCHEOLOGIST <= cptr.ldI16o(m, $monster_id) && cptr.ldI16o(m, $monster_id) <= NHC.PM_WIZARD)
         mtmp = (yield* mk_mplayer(pm, x.v, y.v, 0));
     else
         mtmp = (yield* makemon(pm, x.v, y.v, cptr.ldI32o(m, $monster_mm_flags)));
+
     if (mtmp) {
-        x.v = cptr.ldI16o(mtmp, $monst_mx), y.v = cptr.ldI16o(mtmp, $monst_my);
+        x.v = cptr.ldI16o(mtmp, $monst_mx), y.v = cptr.ldI16o(mtmp, $monst_my);  /* sanity precaution */
         cptr.stI16o(m, $monster_x, x.v), cptr.stI16o(m, $monster_y, y.v);
+        /* handle specific attributes for some special monsters */
         if (cptr.ldPtr(m))
             mtmp = (yield* christen_monst(mtmp, cptr.ldPtr(m)));
+
+        /*
+         * This doesn't complain if an attempt is made to give a
+         * non-mimic/non-shapechanger an appearance or to give a
+         * shapechanger a non-monster shape, it just refuses to comply.
+         */
         if (cptr.ldPtro(m, $monster_appear_as) && ((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC) || (ismnum(cptr.ldI16o(mtmp, $monst_cham)) && cptr.ldI16o(m, $monster_appear) == NHC.M_AP_MONSTER)) && !Protection_from_shape_changers()) {
             let i;
+
             switch (cptr.ldI16o(m, $monster_appear)) {
                 case NHC.M_AP_NOTHING:
                 (yield* impossible(__s_create_monster_mon_has_an_appearance_s, cptr.ldPtro(m, $monster_appear_as)));
@@ -2189,8 +2510,10 @@ function* create_monster(m, croom) {
                 } else {
                     cptr.st1o(mtmp, $monst_m_ap_type, NHC.M_AP_OBJECT);
                     cptr.stI32o(mtmp, $monst_mappearance, i >>> 0);
+                    /* try to avoid placing mimic boulder on a trap */
                     if (i == NHC.BOULDER && cptr.ldI16o(m, $monster_x) < 0 && m_bad_boulder_spot(x.v, y.v)) {
                         let retrylimit = 10;
+
                         cptr.stPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
                         do {
                             x.v = cptr.ldI16o(m, $monster_x);
@@ -2200,35 +2523,46 @@ function* create_monster(m, croom) {
                                 x.v = cptr.ldI16(cc), y.v = cptr.ldI16o(cc, $nhcoord_y);
                         } while (m_bad_boulder_spot(x.v, y.v) && --retrylimit > 0);
                         (yield* place_monster(mtmp, x.v, y.v));
+                        /* if we didn't find a good spot
+                           then mimic something else */
                         if (!retrylimit)
                             (yield* set_mimic_sym(mtmp));
                     }
                 }
                 break;
                 case NHC.M_AP_MONSTER:
+
                 {
                     let mndx = cptr.box(0);
                     let gender_name_var = cptr.box(NHC.NEUTRAL);
+
                     if (!(yield* strncmpi((cptr.ldPtro(m, $monster_appear_as)), (__s_random), -1)))
                         mndx.v = (yield* select_newcham_form(mtmp));
                     else
                         mndx.v = (yield* name_to_mon(cptr.ldPtro(m, $monster_appear_as), gender_name_var));
+
                     if (mndx.v == NHC.NON_PM || (is_vampshifter(mtmp) && !validvamp(mtmp, mndx, NHC.S_HUMAN))) {
                         (yield* impossible(__s_create_monster_invalid_s_s, (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC) ? __s_mimic_appearance : ((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst))) ? __s_wizard_appearance : (is_vampshifter(mtmp) ? __s_vampire_shape : __s_chameleon_shape)), cptr.ldPtro(m, $monster_appear_as)));
                     } else if (cptr.eq(cptr.add(mons, mndx.v, $sizeof_permonst), cptr.ldPtro(mtmp, $monst_data))) {
+                        /* explicitly forcing a mimic to appear as itself */
                         cptr.st1o(mtmp, $monst_m_ap_type, NHC.M_AP_NOTHING);
                         cptr.stI32o(mtmp, $monst_mappearance, 0);
                     } else if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_MIMIC || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst))) {
+                        /* this is ordinarily only used for Wizard clones
+                           and hasn't been exhaustively tested for mimics */
                         cptr.st1o(mtmp, $monst_m_ap_type, NHC.M_AP_MONSTER);
                         cptr.stI32o(mtmp, $monst_mappearance, mndx.v >>> 0);
                     } else {
                         let mdat = cptr.add(mons, mndx.v, $sizeof_permonst);
                         let olddata = cptr.ldPtro(mtmp, $monst_data);
+
                         mgender_from_permonst(mtmp, mdat);
                         if (gender_name_var.v != NHC.NEUTRAL)
                             cptr.stI32o(mtmp, $monst_female, gender_name_var.v >>> 0);
                         set_mon_data(mtmp, mdat);
                         if (emits_light(olddata) != emits_light(cptr.ldPtro(mtmp, $monst_data))) {
+                            /* used to give light, now doesn't, or vice versa,
+                               or light's range has changed */
                             if (emits_light(olddata))
                                 (yield* del_light_source(NHC.LS_MONSTER, monst_to_any(mtmp)));
                             if (emits_light(cptr.ldPtro(mtmp, $monst_data)))
@@ -2246,9 +2580,11 @@ function* create_monster(m, croom) {
             if ((yield* does_block(x.v, y.v, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x.v, $sizeof_rm_x21), y.v, $sizeof_rm))))
                 (yield* block_point(x.v, y.v));
         }
+
         cptr.stI32o(mtmp, $monst_female, cptr.ldI16o(m, $monster_female));
         if (cptr.ld1so(m, $monster_peaceful) > -1) {
             cptr.stI32o(mtmp, $monst_mpeaceful, cptr.ld1so(m, $monster_peaceful));
+            /* changed mpeaceful again; have to reset malign */
             set_malign(mtmp);
         }
         if (cptr.ld1so(m, $monster_asleep) > -1)
@@ -2282,6 +2618,9 @@ function* create_monster(m, croom) {
         }
         if (cptr.ldI16o(m, $monster_waiting)) {
             cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) | 536870912n);
+            /* if this is a vampire that got created already shifted into
+               bat/fog/wolf form and the special level or theme room didn't
+               explicitly request that, shift back to vampire */
             if (vampshifted(mtmp) && cptr.ldI16o(m, $monster_appear) != NHC.M_AP_MONSTER)
                 void (yield* newcham(mtmp, cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst), NHM.NO_NC_FLAGS));
         }
@@ -2294,6 +2633,9 @@ function* create_monster(m, croom) {
                 cptr.st1o(mtmp, $monst_m_lev, cptr.ld1uo(mtmp, $monst_m_lev) + cptr.ldI16o(m, $monster_m_lev_adj));
         }
         if (!(cptr.ldI16o(m, $monster_has_invent) & NHM.DEFAULT_INVENT)) {
+            /* guard against someone accidentally specifying e.g. quest nemesis
+             * with custom inventory that lacks Bell or quest artifact but
+             * forgetting to flag them as receiving their default inventory */
             (yield* mdrop_special_objs(mtmp));
             (yield* discard_minvent(mtmp, 1));
         }
@@ -2303,6 +2645,9 @@ function* create_monster(m, croom) {
     }
 }
 
+/*
+ * Create an object in a room.
+ */
 const __static_create_object_prize_warning = cptr.bytes("multiple prizes on %s level"); /** C ref: sp_lev.c:2392 — char[28] (function-static) */
 
 /** C ref: sp_lev.c:2193 — @param {CPtr<object>} o @param {CPtr<struct mkroom>} croom @returns {CPtr<struct obj>} */
@@ -2311,28 +2656,41 @@ function* create_object(o, croom) {
     let x = cptr.box(0);
     let y = cptr.box(0);
     let c;
-    let named;
+    let named;  /* has a name been supplied in level description? */
+
     named = schar((cptr.ldPtr(o) ? 1 : 0));
+
     (yield* get_location_coord(x, y, NHM.DRY, croom, cptr.ldI64o(o, $object_coord)));
+
     if (cptr.ldI16o(o, $object_class) >= 0)
         c = schar(cptr.ldI16o(o, $object_class));
     else
         c = 0;
+
     if (!c) {
         otmp = (yield* mkobj_at(NHC.RANDOM_CLASS, x.v, y.v, schar((!named))));
     } else if (cptr.ldI16o(o, $object_id) != -1) {
         otmp = (yield* mksobj_at(cptr.ldI16o(o, $object_id), x.v, y.v, 1, schar((!named))));
     } else {
+        /*
+         * The special levels are compiled with the default "text" object
+         * class characters.  We must convert them to the internal format.
+         */
         let oclass = schar(def_char_to_objclass(c));
+
         if (oclass == NHC.MAXOCLASSES)
             (yield* panic(__s_create_object_unexpected_object_class_c, c));
+
+        /* KMH -- Create piles of gold properly */
         if (oclass == NHC.COIN_CLASS)
             otmp = (yield* mkgold(0n, x.v, y.v));
         else
             otmp = (yield* mkobj_at(oclass, x.v, y.v, schar((!named))));
     }
+
     if (cptr.ldI16o(o, $object_spe) != -127)
         cptr.st1o(otmp, $obj_spe, schar(cptr.ldI16o(o, $object_spe)));
+
     switch (cptr.ld1so(o, $object_curse_state)) {
         case 1:
         (yield* bless(otmp));
@@ -2354,17 +2712,22 @@ function* create_object(o, croom) {
         (yield* unbless(otmp));
         break;
         default:
-        break;
+        break;  /* keep what mkobj gave us */
     }
+
+    /* corpsenm is "empty" if -1, random if -2, otherwise specific */
     if (cptr.ldI32o(o, $object_corpsenm) != NHC.NON_PM) {
         if (cptr.ldI32o(o, $object_corpsenm) == ((NHC.NON_PM - 1) | 0))
             (yield* set_corpsenm(otmp, (yield* rndmonnum())));
         else
             (yield* set_corpsenm(otmp, cptr.ldI32o(o, $object_corpsenm)));
     }
+    /* set_corpsenm() took care of egg hatch and corpse timers */
+
     if (named) {
         otmp = (yield* oname(otmp, cptr.ldPtr(o), NHM.ONAME_LEVEL_DEF));
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_NOVEL) {
+            /* needs to be an existing title */
             void (yield* lookup_novel(cptr.ldPtr(o), cptr.add(otmp, $obj_corpsenm)));
         }
     }
@@ -2385,21 +2748,32 @@ function* create_object(o, croom) {
         cptr.stI32o(otmp, $obj_olocked, cptr.ldI16o(o, $object_locked));
     } else if (cptr.ldI16o(o, $object_broken)) {
         cptr.stI32o(otmp, $obj_obroken, 1);
-        cptr.stI32o(otmp, $obj_olocked, 0);
+        cptr.stI32o(otmp, $obj_olocked, 0);  /* obj generation may set */
     }
     if (cptr.ldI16o(o, $object_trapped) == 0 || cptr.ldI16o(o, $object_trapped) == 1)
         cptr.stI32o(otmp, $obj_otrapped, cptr.ldI16o(o, $object_trapped));
     if (cptr.ldI16o(o, $object_trapped) && (cptr.ldI16o(o, $object_tknown) == 0 || cptr.ldI16o(o, $object_tknown) == 1))
         cptr.stI32o(otmp, $obj_tknown, cptr.ldI16o(o, $object_tknown));
     cptr.stI32o(otmp, $obj_greased, (cptr.ldI16o(o, $object_greased) ? 1 : 0) >>> 0);
+
     if (cptr.ldI32o(o, $object_quan) > 0 && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0) {
         cptr.stI64o(otmp, $obj_quan, BigInt(cptr.ldI32o(o, $object_quan)));
         cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
     }
+
+    /* contents (of a container or monster's inventory) */
     if (cptr.ldI16o(o, $object_containment) & NHM.SP_OBJ_CONTENT || invent_carrying_monster) {
         if (!container_idx) {
             if (!invent_carrying_monster) {
-                ;
+                /*impossible("create_object: no container");*/
+                /* don't complain, the monster may be gone legally
+                   (eg. unique demon already generated)
+                   TODO: In the case of unique demon lords, they should
+                   get their inventories even when they get generated
+                   outside the des-file.  Maybe another data file that
+                   determines what inventories monsters get by default?
+                 */
+                ;  /* ['otmp' remains on floor] */
             } else {
                 (yield* remove_object(otmp));
                 if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SADDLE && can_saddle(invent_carrying_monster))
@@ -2409,19 +2783,23 @@ function* create_object(o, croom) {
             }
         } else {
             let cobj = cptr.ldPtro(container_obj, (container_idx - 1) | 0, 8);
+
             (yield* remove_object(otmp));
             if (cobj) {
                 otmp = (yield* add_to_container(cobj, otmp));
                 cptr.stI32o(cobj, $obj_owt, (yield* weight(cobj)) >>> 0);
             } else {
                 (yield* obj_extract_self(otmp));
+                /* uncreate a random artifact created in a container */
+                /* FIXME: it could be intentional rather than random */
                 if (cptr.ld1so(otmp, $obj_oartifact))
-                    (yield* artifact_exists(otmp, safe_oname(otmp), 0, NHM.ONAME_NO_FLAGS));
+                    (yield* artifact_exists(otmp, safe_oname(otmp), 0, NHM.ONAME_NO_FLAGS));  /* flags don't matter */
                 (yield* obfree(otmp, null));
                 return null;
             }
         }
     }
+    /* container */
     if (cptr.ldI16o(o, $object_containment) & NHM.SP_OBJ_CONTAINER) {
         (yield* delete_contents(otmp));
         if (container_idx < 10) {
@@ -2430,12 +2808,23 @@ function* create_object(o, croom) {
         } else
             (yield* impossible(__s_create_object_too_deeply_nested));
     }
+
+    /* Medusa level special case: statues are petrified monsters, so they
+     * are not stone-resistant and have monster inventory.  They also lack
+     * other contents, but that can be specified as an empty container.
+     */
     if (cptr.ldI16o(o, $object_id) == NHC.STATUE && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && cptr.ldI32o(o, $object_corpsenm) == NHC.NON_PM) {
         let was = null;
         let obj;
         let wastyp;
-        let i = 0;
+        let i = 0;  /* prevent endless loop in case makemon always fails */
+
+        /* Named random statues are of player types, and aren't stone-
+         * resistant (if they were, we'd have to reset the name as well as
+         * setting corpsenm).
+         */
         for (wastyp = cptr.ldI32o(otmp, $obj_corpsenm); i < 1000; i++, wastyp = (yield* rndmonnum())) {
+            /* makemon without rndmonst() might create a group */
             was = (yield* makemon(cptr.add(mons, wastyp, $sizeof_permonst), 0, 0, 131076));
             if (was) {
                 if (!(yield* Resists_Elem(was, NHC.STONE_RES)) && !poly_when_stoned(cptr.add(mons, wastyp, $sizeof_permonst))) {
@@ -2458,11 +2847,15 @@ function* create_object(o, croom) {
             (yield* mongone(was));
         }
     }
+
     if (cptr.ldI16o(o, $object_achievement)) {
+
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
             if (!cptr.ldI32o(svc, $context_info_achieveo)) {
                 cptr.stI32o(svc, $context_info_achieveo, cptr.ldI32o(otmp, $obj_o_id));
                 cptr.stI16o(svc, $context_info_achieveo + $achievement_tracking_mines_prize_otyp, cptr.ldI16o(otmp, $obj_otyp));
+                /* prevent stacking; cleared when achievement is recorded;
+                   will be reset in addinv_core1() */
                 cptr.stI32o(otmp, $obj_nomerge, 1);
             } else {
                 (yield* impossible(cptr.decay(__static_create_object_prize_warning), __s_mines_end));
@@ -2477,16 +2870,21 @@ function* create_object(o, croom) {
             }
         } else if (!cptr.ld1so(iflags, $instance_flags_lua_testing)) {
             let lbuf = new Uint8Array(128);
+
             void describe_level(cptr.decay(lbuf), 3);
             (yield* impossible(__s_create_object_unknown_achievement_s_s, cptr.decay(lbuf), (yield* simpleonames(otmp))));
         }
     }
+
     if (!(cptr.ldI16o(o, $object_containment) & NHM.SP_OBJ_CONTENT)) {
         (yield* stackobj(otmp));
+
         if (cptr.ldI16o(o, $object_lit))
             (yield* begin_burn(otmp, 0));
+
         if (cptr.ldI16o(o, $object_buried)) {
             let dealloced = cptr.box(0);
+
             void (yield* bury_an_obj(otmp, dealloced));
             if (dealloced.v) {
                 if (container_idx)
@@ -2498,6 +2896,9 @@ function* create_object(o, croom) {
     return otmp;
 }
 
+/*
+ * Create an altar in a room.
+ */
 /** C ref: sp_lev.c:2446 — @param {CPtr<altar>} a @param {CPtr<struct mkroom>} croom */
 function* create_altar(a, croom) {
     let sproom;
@@ -2505,6 +2906,7 @@ function* create_altar(a, croom) {
     let y = cptr.box(-1);
     let amask;
     let croom_is_temple = 1;
+
     if (croom) {
         (yield* get_free_room_loc(x, y, croom, cptr.ldI64(a)));
         if (cptr.ld1so(croom, $mkroom_rtype) != NHC.TEMPLE)
@@ -2516,14 +2918,21 @@ function* create_altar(a, croom) {
         else
             croom_is_temple = 0;
     }
+
+    /* check for existing features */
     if (!(yield* set_levltyp(x.v, y.v, NHC.ALTAR)))
         return;
+
     amask = sp_amask_to_amask(cptr.ldI32o(a, $altar_sp_amask));
+
     cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, amask);
+
     if (cptr.ldI16o(a, $altar_shrine) < 0)
-        cptr.stI16o(a, $altar_shrine, i16(rn2_at(__s_sp_lev_c, 2474, __s_create_altar, 2)));
+        cptr.stI16o(a, $altar_shrine, i16(rn2_at(__s_sp_lev_c, 2474, __s_create_altar, 2)));  /* handle random case */
+
     if (!croom_is_temple || !cptr.ldI16o(a, $altar_shrine))
         return;
+
     if (cptr.ldI16o(a, $altar_shrine)) {
         (yield* priestini(cptr.add(u, $you_uz), croom, x.v, y.v, schar((cptr.ldI16o(a, $altar_shrine) > 1))));
         cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.AM_SHRINE);
@@ -2533,12 +2942,16 @@ function* create_altar(a, croom) {
     }
 }
 
+/*
+ * Search for a door in a room on a specified wall.
+ */
 /** C ref: sp_lev.c:2492 — @param {CPtr<struct mkroom>} croom @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CInt} wall @param {CInt} cnt @returns {CInt} */
 function* search_door(croom, x, y, wall, cnt) {
     let dx;
     let dy;
     let xx;
     let yy;
+
     switch (wall) {
         case NHM.W_SOUTH:
         dy = 0;
@@ -2580,6 +2993,12 @@ function* search_door(croom, x, y, wall, cnt) {
     return 0;
 }
 
+/*
+ * Dig a corridor between two points, using terrain ftyp.
+ * if nxcor is TRUE, he corridor may be blocked by a boulder,
+ * or just end without reaching the destination.
+ * if not null, npoints has the number of map locations used
+ */
 /** C ref: sp_lev.c:2549 — @param {CPtr<coord>} org @param {CPtr<coord>} dest @param {CPtr<int>} npoints @param {CInt} nxcor @param {CInt} ftyp @param {CInt} btyp @returns {CInt} */
 export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
     let dx = 0;
@@ -2592,6 +3011,7 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
     let ty;
     let xx;
     let yy;
+
     if (npoints)
         cptr.stI32(npoints, 0);
     xx = cptr.ldI16(org);
@@ -2616,16 +3036,21 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
         dx = -1;
     else
         dy = -1;
+
     xx = (xx - dx) | 0;
     yy = (yy - dy) | 0;
     cct = 0;
     while (xx != tx || yy != ty) {
+        /* loop: dig corridor at [xx,yy] and find new [xx,yy] */
         if (cct++ > 500 || (nxcor && !rn2_at(__s_sp_lev_c, 2585, __s_dig_corridor, 35)))
             return 0;
+
         xx = (xx + dx) | 0;
         yy = (yy + dy) | 0;
+
         if (xx >= 79 || xx <= 0 || yy <= 0 || yy >= 20)
-            return 0;
+            return 0;  /* impossible */
+
         crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xx, $sizeof_rm_x21), yy, $sizeof_rm);
         if (cptr.ld1so(crm, $rm_typ) == btyp) {
             if (ftyp == NHC.CORR && maybe_sdoor(100)) {
@@ -2640,17 +3065,24 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
                     void (yield* mksobj_at(NHC.BOULDER, i16(xx), i16(yy), 1, 0));
             }
         } else if (cptr.ld1so(crm, $rm_typ) != ftyp && cptr.ld1so(crm, $rm_typ) != NHC.SCORR) {
+            /* strange ... */
             return 0;
         }
+
+        /* find next corridor position */
         dix = Math.abs((xx - tx) | 0);
         diy = Math.abs((yy - ty) | 0);
+
         if ((dix > diy) && diy && !rn2_at(__s_sp_lev_c, 2616, __s_dig_corridor, (((dix - diy) | 0) + 1) | 0)) {
             dix = 0;
         } else if ((diy > dix) && dix && !rn2_at(__s_sp_lev_c, 2618, __s_dig_corridor, (((diy - dix) | 0) + 1) | 0)) {
             diy = 0;
         }
+
+        /* do we have to change direction ? */
         if (dy && dix > diy) {
             let ddx = (xx > tx) ? -1 : 1;
+
             crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (xx + ddx) | 0, $sizeof_rm_x21), yy, $sizeof_rm);
             if (cptr.ld1so(crm, $rm_typ) == btyp || cptr.ld1so(crm, $rm_typ) == ftyp || cptr.ld1so(crm, $rm_typ) == NHC.SCORR) {
                 dx = ddx;
@@ -2659,6 +3091,7 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
             }
         } else if (dx && diy > dix) {
             let ddy = (yy > ty) ? -1 : 1;
+
             crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xx, $sizeof_rm_x21), (yy + ddy) | 0, $sizeof_rm);
             if (cptr.ld1so(crm, $rm_typ) == btyp || cptr.ld1so(crm, $rm_typ) == ftyp || cptr.ld1so(crm, $rm_typ) == NHC.SCORR) {
                 dy = ddy;
@@ -2666,9 +3099,13 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
                 continue;
             }
         }
+
+        /* continue straight on? */
         crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (xx + dx) | 0, $sizeof_rm_x21), (yy + dy) | 0, $sizeof_rm);
         if (cptr.ld1so(crm, $rm_typ) == btyp || cptr.ld1so(crm, $rm_typ) == ftyp || cptr.ld1so(crm, $rm_typ) == NHC.SCORR)
             continue;
+
+        /* no, what must we do now?? */
         if (dx) {
             dx = 0;
             dy = (ty < yy) ? -1 : 1;
@@ -2685,14 +3122,24 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
     return 1;
 }
 
+/*
+ * Corridors always start from a door. But it can end anywhere...
+ * Basically we search for door coordinates or for endpoints coordinates
+ * (from a distance).
+ */
 /** C ref: sp_lev.c:2671 — @param {CPtr<corridor>} c */
 function* create_corridor(c) {
     let org = cptr.alloc(4);
     let dest = cptr.alloc(4);
+
     if (cptr.ldI16(c) == -1) {
-        (yield* makecorridors());
+        (yield* makecorridors());  /*makecorridors(c->src.door);*/
         return;
     }
+
+    /* Safety railings - if there's ever a case where des.corridor() needs
+     * to be called with src/destwall="random", that logic first needs to be
+     * implemented in search_door. */
     if (cptr.ldI16o(c, 2) == 15 || cptr.ldI16o(c, 2) == -1 || cptr.ldI16o(c, $corridor_dest + 2) == 15 || cptr.ldI16o(c, $corridor_dest + 2) == -1) {
         (yield* impossible(__s_create_corridor_to_from_a_random_wall));
         return;
@@ -2734,24 +3181,37 @@ function* create_corridor(c) {
     }
 }
 
+/*
+ * Fill a room (shop, zoo, etc...) with appropriate stuff.
+ */
 /** C ref: sp_lev.c:2731 — @param {CPtr<struct mkroom>} croom */
 export function* fill_special_room(croom) {
     let i;
+
     if (!croom)
         return;
+
+    /* First recurse into subrooms. We don't want to block an ordinary room
+     * with a special subroom from having the subroom filled, or an unfilled
+     * outer room preventing a special subroom from being filled. */
     for (i = 0; i < cptr.ld1so(croom, $mkroom_nsubrooms); ++i) {
         (yield* fill_special_room(cptr.ldPtro2(croom, i, 8, $mkroom_sbrooms)));
     }
+
     if (cptr.ld1so(croom, $mkroom_rtype) == NHC.OROOM || cptr.ld1so(croom, $mkroom_rtype) == NHC.THEMEROOM || cptr.ld1so(croom, $mkroom_needfill) == NHM.FILL_NONE)
         return;
+
     if (cptr.ld1so(croom, $mkroom_needfill) == NHM.FILL_NORMAL) {
         let x;
         let y;
+
+        /* Shop ? */
         if (cptr.ld1so(croom, $mkroom_rtype) >= NHC.SHOPBASE) {
             (yield* stock_room((cptr.ld1so(croom, $mkroom_rtype) - NHC.SHOPBASE) | 0, croom));
             cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
             return;
         }
+
         switch (cptr.ld1so(croom, $mkroom_rtype)) {
             case NHC.VAULT:
             for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
@@ -2803,6 +3263,7 @@ function* build_room(r, mkr) {
     let okroom;
     let aroom;
     let rtype = i16(((!cptr.ldI16o(r, $room_chance) || rn2_at(__s_sp_lev_c, 2811, __s_build_room, 100) < cptr.ldI16o(r, $room_chance)) ? cptr.ldI16o(r, $room_rtype) : NHC.OROOM));
+
     if (mkr) {
         aroom = cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), $sizeof_mkroom);
         okroom = (yield* create_subroom(mkr, cptr.ldI16o(r, $room_x), cptr.ldI16o(r, $room_y), cptr.ldI16o(r, $room_w), cptr.ldI16o(r, $room_h), rtype, cptr.ldI16o(r, $room_rlit)));
@@ -2810,8 +3271,9 @@ function* build_room(r, mkr) {
         aroom = cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom);
         okroom = (yield* create_room(cptr.ldI16o(r, $room_x), cptr.ldI16o(r, $room_y), cptr.ldI16o(r, $room_w), cptr.ldI16o(r, $room_h), cptr.ldI16o(r, $room_xalign), cptr.ldI16o(r, $room_yalign), rtype, cptr.ldI16o(r, $room_rlit)));
     }
+
     if (okroom) {
-        topologize(aroom);
+        topologize(aroom);  /* set roomno */
         cptr.st1o(aroom, $mkroom_needfill, schar(cptr.ldI16o(r, $room_needfill)));
         cptr.st1o(aroom, $mkroom_needjoining, cptr.ld1so(r, $room_joined));
         return aroom;
@@ -2819,6 +3281,9 @@ function* build_room(r, mkr) {
     return null;
 }
 
+/*
+ * set lighting in a region that will not become a room.
+ */
 /** C ref: sp_lev.c:2839 — @param {CPtr<region>} tmpregion */
 function light_region(tmpregion) {
     let litstate = schar((cptr.ldI16o(tmpregion, $region_rlit) ? 1 : 0));
@@ -2829,7 +3294,9 @@ function light_region(tmpregion) {
     let lowy = cptr.ldI16o(tmpregion, $region_y1);
     let lowx = cptr.ldI16(tmpregion);
     let hix = cptr.ldI16o(tmpregion, $region_x2);
+
     if (litstate) {
+        /* adjust region size for walls, but only if lighted */
         lowx = (((lowx - 1) | 0) > 1 ? ((lowx - 1) | 0) : 1);
         hix = (((hix + 1) | 0) < 79 ? ((hix + 1) | 0) : 79);
         lowy = (((lowy - 1) | 0) > 0 ? ((lowy - 1) | 0) : 0);
@@ -2854,6 +3321,7 @@ export function wallify_map(x1, y1, x2, y2) {
     let lo_yy;
     let hi_xx;
     let hi_yy;
+
     y1 = i16(((y1) > 0 ? (y1) : 0));
     x1 = i16(((x1) > 1 ? (x1) : 1));
     y2 = i16(((y2) < 20 ? (y2) : 20));
@@ -2870,27 +3338,45 @@ export function wallify_map(x1, y1, x2, y2) {
                 for (xx = lo_xx; xx <= hi_xx; xx++)
                     if (((cptr.ld1so3(svl, xx, $sizeof_rm_x21, yy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || cptr.ld1so3(svl, xx, $sizeof_rm_x21, yy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CROSSWALL) {
                         cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((yy != y) ? NHC.HWALL : NHC.VWALL)));
-                        yy = hi_yy;
-                        break;
+                        yy = hi_yy;  /* end `yy' loop */
+                        break;  /* end `xx' loop */
                     }
         }
     }
 }
 
+/*
+ * Select a random coordinate in the maze.
+ *
+ * We want a place not 'touched' by the loader.  That is, a place in
+ * the maze outside every part of the special level.
+ */
 /** C ref: sp_lev.c:2900 — @param {CPtr<coord>} m @param {CInt} humidity */
 function* maze1xy(m, humidity) {
     let x;
     let y;
     let tryct = 2000;
+    /* tryct:  normally it won't take more than ten or so tries due
+       to the circumstances under which we'll be called, but the
+       `humidity' screening might drastically change the chances */
+
     do {
         x = ((rn2_at(__s_sp_lev_c, 2908, __s_maze1xy, (cptr.ldI32(gx) - 3) | 0) + 3) | 0);
         y = ((rn2_at(__s_sp_lev_c, 2909, __s_maze1xy, (cptr.ldI32(gy) - 3) | 0) + 3) | 0);
         if (--tryct < 0)
-            break;
+            break;  /* give up */
     } while (!(x % 2) || !(y % 2) || cptr.ld1so(cptr.decay(SpLev_Map[x]), y, 1) || !(yield* is_ok_location(i16(x), i16(y), humidity >>> 0)));
+
     cptr.stI16(m, i16(x)), cptr.stI16o(m, $coord_y, i16(y));
 }
 
+/*
+ * If there's a significant portion of maze unused by the special level,
+ * we don't want it empty.
+ *
+ * Makes the number of traps, monsters, etc. proportional
+ * to the size of the maze.
+ */
 /** C ref: sp_lev.c:2926 */
 function* fill_empty_maze() {
     let mapcountmax;
@@ -2899,12 +3385,15 @@ function* fill_empty_maze() {
     let x;
     let y;
     let mm = cptr.alloc(4);
+
     mapcountmax = (mapcount = Math.imul(((cptr.ldI32(gx) - 2) | 0), ((cptr.ldI32(gy) - 2) | 0)));
     mapcountmax = (mapcountmax / 2) | 0;
+
     for (x = 2; x < cptr.ldI32(gx); x++)
         for (y = 0; y < cptr.ldI32(gy); y++)
             if (cptr.ld1so(cptr.decay(SpLev_Map[x]), y, 1))
                 mapcount--;
+
     if ((mapcount > ((mapcountmax / 10) | 0))) {
         mapfact = Number(BigInt.asIntN(32, ((BigInt.asIntN(64, BigInt(mapcount) * 100n)) / BigInt(mapcountmax))));
         for (x = i16(rnd_at(__s_sp_lev_c, 2942, __s_fill_empty_maze, ((Math.imul(20, mapfact)) / 100) | 0)); x; x--) {
@@ -2913,6 +3402,7 @@ function* fill_empty_maze() {
         }
         for (x = i16(rnd_at(__s_sp_lev_c, 2947, __s_fill_empty_maze, ((Math.imul(12, mapfact)) / 100) | 0)); x; x--) {
             let ttmp;
+
             (yield* maze1xy(mm, NHM.DRY));
             if ((ttmp = t_at(cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y))) !== null && (is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))))
                 continue;
@@ -2932,6 +3422,7 @@ function* fill_empty_maze() {
         }
         for (x = i16(rn2_at(__s_sp_lev_c, 2968, __s_fill_empty_maze, ((Math.imul(15, mapfact)) / 100) | 0)); x; x--) {
             let trytrap;
+
             (yield* maze1xy(mm, NHM.DRY));
             trytrap = rndtrap();
             if (sobj_at(NHC.BOULDER, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y)))
@@ -2980,6 +3471,7 @@ function* splev_initlev(linit) {
     }
 }
 
+/*ARGUSED*/
 /** C ref: sp_lev.c:3031 */
 function* spo_end_moninvent() {
     if (invent_carrying_monster)
@@ -2987,6 +3479,7 @@ function* spo_end_moninvent() {
     invent_carrying_monster = null;
 }
 
+/*ARGUSED*/
 /** C ref: sp_lev.c:3040 */
 function spo_pop_container() {
     if (container_idx > 0) {
@@ -2995,6 +3488,7 @@ function spo_pop_container() {
     }
 }
 
+/* push a table on lua stack: {width=wid, height=hei} */
 /** C ref: sp_lev.c:3050 — @param {CPtr<lua_State>} L @param {CInt} wid @param {CInt} hei */
 function* l_push_wid_hei_table(L, wid, hei) {
     (yield* lua_createtable(L, 0, 0));
@@ -3002,6 +3496,7 @@ function* l_push_wid_hei_table(L, wid, hei) {
     (yield* nhl_add_table_entry_int(L, __s_height, BigInt(hei)));
 }
 
+/* push a table on lua stack containing room data */
 /** C ref: sp_lev.c:3059 — @param {CPtr<lua_State>} L @param {CPtr<struct mkroom>} tmpr */
 function* l_push_mkroom_table(L, tmpr) {
     (yield* lua_createtable(L, 0, 0));
@@ -3014,21 +3509,29 @@ function* l_push_mkroom_table(L, tmpr) {
     (yield* nhl_add_table_entry_str(L, __s_type, (yield* get_mkroom_name(cptr.ld1so(tmpr, $mkroom_rtype)))));
 }
 
+/* message("What a strange feeling!"); */
 /** C ref: sp_lev.c:3076 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_message(L) {
     let levmsg;
     let old_n;
     let n;
     let msg;
+
     let argc = lua_gettop(L);
+
     if (argc < 1) {
         (yield* nhl_error(L, __s_wrong_parameters));
+        /*NOTREACHED*/
         return 0;
     }
+
     (yield* create_des_coder());
+
     msg = ((yield* luaL_checklstring(L, 1, null)));
+
     old_n = (cptr.ldPtro(gl, $instance_globals_l_lev_message) ? (((yield* Strlen_(cptr.ldPtro(gl, $instance_globals_l_lev_message), __s_lspo_message, 3094)) + 1) >>> 0) : 0) | 0;
     n = (yield* Strlen_(msg, __s_lspo_message, 3095)) | 0;
+
     levmsg = (yield* alloc(((((old_n + n) | 0) + 1) | 0) >>> 0));
     if (old_n)
         cptr.st1o(levmsg, (old_n - 1) | 0, 10);
@@ -3041,7 +3544,8 @@ export function* lspo_message(L) {
             cptr.free((cptr.ldPtro(gl, $instance_globals_l_lev_message)));
     }
     cptr.stPtro(gl, $instance_globals_l_lev_message, levmsg);
-    return 0;
+
+    return 0;  /* number of results */
 }
 
 const __static_get_table_align_gtaligns = cptr.alloc(8 * 8);
@@ -3065,7 +3569,9 @@ cptr.stI32o(__static_get_table_align_aligns2i, 28, 0); /** C ref: sp_lev.c:3120 
 
 /** C ref: sp_lev.c:3114 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* get_table_align(L) {
+
     let a = cptr.ldI32o(__static_get_table_align_aligns2i, (yield* get_table_option(L, __s_align, __s_random, __static_get_table_align_gtaligns)), 4);
+
     return a;
 }
 
@@ -3073,6 +3579,7 @@ function* get_table_align(L) {
 function* get_table_monclass(L) {
     let s = (yield* get_table_str_opt(L, __s_class, null));
     let ret = -1;
+
     if (s && cptr.strlen(s) == 1n)
         ret = cptr.ld1s(s);
     {
@@ -3086,6 +3593,7 @@ function* get_table_monclass(L) {
 function* find_montype(L, s, mgender) {
     let i;
     let mgend = cptr.box(NHC.NEUTRAL);
+
     i = (yield* name_to_monplus(s, null, mgend));
     if (i >= NHC.LOW_PM && i < NHC.NUMMONS) {
         if (((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 131072n) != 0n))
@@ -3105,6 +3613,7 @@ function* find_montype(L, s, mgender) {
 function* get_table_montype(L, mgender) {
     let s = (yield* get_table_str_opt(L, __s_id, null));
     let ret = NHC.NON_PM;
+
     if (s) {
         ret = (yield* find_montype(L, s, mgender));
         {
@@ -3117,19 +3626,34 @@ function* get_table_montype(L, mgender) {
     return ret;
 }
 
+/* Get x and y values from a table (which the caller has already checked for
+ * the existence of), handling both a table with x= and y= specified and a
+ * table with coord= specified.
+ * Returns absolute rather than map-relative coordinates; the caller of this
+ * function must decide if it wants to interpret the coordinates as
+ * map-relative and adjust accordingly. */
 /** C ref: sp_lev.c:3188 — @param {CPtr<lua_State>} L @param {CPtr<lua_Integer>} x @param {CPtr<lua_Integer>} y */
 function* get_table_xy_or_coord(L, x, y) {
     let mx = cptr.box(BigInt((yield* get_table_int_opt(L, __s_x, -1))));
     let my = cptr.box(BigInt((yield* get_table_int_opt(L, __s_y, -1))));
+
     if (mx.v == -1n && my.v == -1n) {
         (yield* lua_getfield(L, 1, __s_coord));
         void (yield* get_coord(L, -1, mx, my));
         (yield* lua_settop(L, -2));
     }
+
     cptr.stI64(x, mx.v);
     cptr.stI64(y, my.v);
 }
 
+/* monster(); */
+/* monster("wood nymph"); */
+/* monster("D"); */
+/* monster("giant eel",11,06); */
+/* monster("hill giant", {08,06}); */
+/* monster({ id = "giant mimic", appear_as = "obj:boulder" }); */
+/* monster({ class = "H", peaceful = 0 }); */
 /** C ref: sp_lev.c:3214 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_monster(L) {
     let argc = lua_gettop(L);
@@ -3138,7 +3662,9 @@ export function* lspo_monster(L) {
     let my = cptr.box(-1n);
     let mgend = cptr.box(NHC.NEUTRAL);
     let mappear = null;
+
     (yield* create_des_coder());
+
     cptr.st1o(tmpmons, $monster_peaceful, -1);
     cptr.st1o(tmpmons, $monster_asleep, -1);
     cptr.stPtr(tmpmons, null);
@@ -3160,8 +3686,10 @@ export function* lspo_monster(L) {
     cptr.stI16o(tmpmons, $monster_waiting, 0);
     cptr.stI32o(tmpmons, $monster_mm_flags, NHM.NO_MM_FLAGS);
     cptr.stI16o(tmpmons, $monster_m_lev_adj, 0);
+
     if (argc == 1 && lua_type(L, 1) == 4) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
+
         if (cptr.strlen(paramstr) == 1n) {
             cptr.stI16o(tmpmons, $monster_class, i16(cptr.ld1s(paramstr)));
             cptr.stI16o(tmpmons, $monster_id, NHC.NON_PM);
@@ -3172,7 +3700,9 @@ export function* lspo_monster(L) {
         }
     } else if (argc == 2 && lua_type(L, 1) == 4 && lua_type(L, 2) == 5) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
+
         void (yield* get_coord(L, 2, mx, my));
+
         if (cptr.strlen(paramstr) == 1n) {
             cptr.stI16o(tmpmons, $monster_class, i16(cptr.ld1s(paramstr)));
             cptr.stI16o(tmpmons, $monster_id, NHC.NON_PM);
@@ -3181,10 +3711,13 @@ export function* lspo_monster(L) {
             cptr.stI16o(tmpmons, $monster_id, i16((yield* find_montype(L, paramstr, mgend))));
             cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : rn2_at(__s_sp_lev_c, 3271, __s_lspo_monster, 2)))));
         }
+
     } else if (argc == 3) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
+
         mx.v = (yield* luaL_checkinteger(L, 2));
         my.v = (yield* luaL_checkinteger(L, 3));
+
         if (cptr.strlen(paramstr) == 1n) {
             cptr.stI16o(tmpmons, $monster_class, i16(cptr.ld1s(paramstr)));
             cptr.stI16o(tmpmons, $monster_id, NHC.NON_PM);
@@ -3194,8 +3727,9 @@ export function* lspo_monster(L) {
             cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : rn2_at(__s_sp_lev_c, 3287, __s_lspo_monster, 2)))));
         }
     } else {
-        let keep_default_invent = -1;
+        let keep_default_invent = -1;  /* -1 = unspecified */
         (yield* lcheck_param_table(L));
+
         cptr.st1o(tmpmons, $monster_peaceful, schar((yield* get_table_boolean_opt(L, __s_peaceful, -1))));
         cptr.st1o(tmpmons, $monster_asleep, schar((yield* get_table_boolean_opt(L, __s_asleep, -1))));
         cptr.stPtr(tmpmons, (yield* get_table_str_opt(L, __s_name, null)));
@@ -3214,8 +3748,9 @@ export function* lspo_monster(L) {
         cptr.stI16o(tmpmons, $monster_confused, i16((yield* get_table_boolean_opt(L, __s_confused, 0))));
         cptr.stI16o(tmpmons, $monster_waiting, i16((yield* get_table_boolean_opt(L, __s_waiting, 0))));
         cptr.stI16o(tmpmons, $monster_m_lev_adj, i16((yield* get_table_int_opt(L, __s_m_lev_adj, 0))));
-        cptr.stI64o(tmpmons, $monster_seentraps, 0n);
+        cptr.stI64o(tmpmons, $monster_seentraps, 0n);  /* TODO: list of trap names to bitfield */
         keep_default_invent = (yield* get_table_boolean_opt(L, __s_keep_default_invent, -1));
+
         if (!(yield* get_table_boolean_opt(L, __s_tail, 1)))
             cptr.stI32o(tmpmons, $monster_mm_flags, Number(BigInt.asUintN(32, BigInt(cptr.ldI32o(tmpmons, $monster_mm_flags) >>> 0) | 16384n)));
         if (!(yield* get_table_boolean_opt(L, __s_group, 1)))
@@ -3226,6 +3761,7 @@ export function* lspo_monster(L) {
             cptr.stI32o(tmpmons, $monster_mm_flags, Number(BigInt.asUintN(32, BigInt(cptr.ldI32o(tmpmons, $monster_mm_flags) >>> 0) | 8n)));
         if (!(yield* get_table_boolean_opt(L, __s_countbirth, 1)))
             cptr.stI32o(tmpmons, $monster_mm_flags, Number(BigInt.asUintN(32, BigInt(cptr.ldI32o(tmpmons, $monster_mm_flags) >>> 0) | 4n)));
+
         mappear = (yield* get_table_str_opt(L, __s_appear_as, null));
         if (mappear) {
             if (!cptr.strncmp(__s_obj, mappear, 4n)) {
@@ -3243,30 +3779,51 @@ export function* lspo_monster(L) {
                     cptr.free((mappear));
             }
         }
+
         (yield* get_table_xy_or_coord(L, mx, my));
+
         cptr.stI16o(tmpmons, $monster_id, i16((yield* get_table_montype(L, mgend))));
+        /* get_table_montype will return a random gender if the species isn't
+         * all-male or all-female; if the level designer specified a certain
+         * gender, override that random one now, unless it *is* a one-gender
+         * species, in which case don't override (don't permit creation of a
+         * male nymph or female Nazgul, etc.) */
         if (mgend.v != NHC.NEUTRAL && (cptr.ldI16o(tmpmons, $monster_female) == -1 || ((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), $sizeof_permonst)), $permonst_mflags2) & 131072n) != 0n) || ((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), $sizeof_permonst)), $permonst_mflags2) & 65536n) != 0n)))
             cptr.stI16o(tmpmons, $monster_female, i16(mgend.v));
+        /* safety net - if find_montype did not find a gender for this species
+         * (should cause a lua error anyway) */
         if (cptr.ldI16o(tmpmons, $monster_female) == -1)
             cptr.stI16o(tmpmons, $monster_female, 0);
+
         cptr.stI16o(tmpmons, $monster_class, i16((yield* get_table_monclass(L))));
+
         (yield* lua_getfield(L, 1, __s_inventory));
         if (!(lua_type(L, -1) == 0)) {
+            /* overwrite DEFAULT_INVENT - most times inventory is specified,
+             * the monster should not get its species' default inventory. Only
+             * provide it if explicitly requested. */
             cptr.stI16o(tmpmons, $monster_has_invent, NHM.CUSTOM_INVENT);
             if (keep_default_invent == 1)
                 cptr.stI16o(tmpmons, $monster_has_invent, cptr.ldI16o(tmpmons, $monster_has_invent) | NHM.DEFAULT_INVENT);
         } else {
+            /* if keep_default_invent was not specified (-1), keep has_invent as
+             * DEFAULT_INVENT and provide the species' default inventory.
+             * But if it was explicitly set to false, provide *no* inventory. */
             if (keep_default_invent == 0)
                 cptr.stI16o(tmpmons, $monster_has_invent, NHM.NO_INVENT);
         }
     }
+
     if (mx.v == -1n && my.v == -1n)
         cptr.stI64o(tmpmons, $monster_coord, 16777216n);
     else
         cptr.stI64o(tmpmons, $monster_coord, (BigInt.asIntN(64, ((mx.v) & 255n) + (((my.v) & 255n) << 16n))));
+
     if (cptr.ldI16o(tmpmons, $monster_id) != NHC.NON_PM && cptr.ldI16o(tmpmons, $monster_class) == -1)
         cptr.stI16o(tmpmons, $monster_class, i16((cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, cptr.ldI16o(tmpmons, $monster_id), $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym))));
+
     (yield* create_monster(tmpmons, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
+
     if ((cptr.ldI16o(tmpmons, $monster_has_invent) & NHM.CUSTOM_INVENT) && lua_type(L, -1) == 6) {
         (lua_rotate(L, -2, -1), (yield* lua_settop(L, -2)));
         (yield* nhl_pcall_handle(L, 0, 0, __s_lspo_monster, NHC.NHLpa_panic));
@@ -3275,19 +3832,24 @@ export function* lspo_monster(L) {
         (yield* lua_settop(L, -2));
     {
         if (cptr.ldPtr(tmpmons))
+
             cptr.free((cptr.ldPtr(tmpmons)));
     }
     {
         if (cptr.ldPtro(tmpmons, $monster_appear_as))
             cptr.free((cptr.ldPtro(tmpmons, $monster_appear_as)));
     }
+
     return 0;
 }
 
+/* the hash key 'name' is an integer or "random",
+   or if not existent, also return rndval */
 /** C ref: sp_lev.c:3407 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} rndval @returns {*} */
 function* get_table_int_or_random(L, name, rndval) {
     let ret;
     let buf = new Uint8Array(256);
+
     (yield* lua_getfield(L, 1, name));
     if (lua_type(L, -1) == 0) {
         (yield* lua_settop(L, -2));
@@ -3295,6 +3857,7 @@ function* get_table_int_or_random(L, name, rndval) {
     }
     if (!(yield* lua_isnumber(L, -1))) {
         let tmp = (yield* lua_tolstring(L, -1, null));
+
         if (tmp && !(yield* strncmpi((__s_random), (tmp), -1))) {
             (yield* lua_settop(L, -2));
             return BigInt(rndval);
@@ -3305,6 +3868,7 @@ function* get_table_int_or_random(L, name, rndval) {
         else
             void cptr.strcat(cptr.decay(buf), __s_null);
         (yield* nhl_error(L, cptr.decay(buf)));
+        /*NOTREACHED*/
         (yield* lua_settop(L, -2));
         return 0n;
     }
@@ -3335,6 +3899,7 @@ cptr.stI32o(__static_get_table_buc_bucs2i, 28, 0); /** C ref: sp_lev.c:3448 — 
 /** C ref: sp_lev.c:3442 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* get_table_buc(L) {
     let curse_state = cptr.ldI32o(__static_get_table_buc_bucs2i, (yield* get_table_option(L, __s_buc, __s_random, __static_get_table_buc_bucs)), 4);
+
     return curse_state;
 }
 
@@ -3342,6 +3907,7 @@ function* get_table_buc(L) {
 export function* get_table_objclass(L) {
     let s = (yield* get_table_str_opt(L, __s_class, null));
     let ret = -1;
+
     if (s && cptr.strlen(s) == 1n)
         ret = cptr.ld1s(s);
     {
@@ -3351,6 +3917,7 @@ export function* get_table_objclass(L) {
     return ret;
 }
 
+/* find object otyp by text s (optionally considering oclass) */
 const __static_find_objtype_class_prefixes = cptr.alloc(6 * $sizeof_objclasspfx);
 cptr.stPtro(__static_find_objtype_class_prefixes, 0, __s_ring_of);
 cptr.st1o(__static_find_objtype_class_prefixes, 0 + $objclasspfx_class, NHC.RING_CLASS);
@@ -3371,11 +3938,14 @@ function* find_objtype(L, s, oclass) {
         let i;
         let objname;
         let class$ = schar(def_char_to_objclass(oclass));
+
         if (class$ == NHC.MAXOCLASSES)
             class$ = 0;
+
         if ((yield* strstri(s, __s_of))) {
             for (i = 0; cptr.ldPtro(__static_find_objtype_class_prefixes, i, $sizeof_objclasspfx); i++) {
                 let p = cptr.ldPtro(__static_find_objtype_class_prefixes, i, $sizeof_objclasspfx);
+
                 if (!(yield* strncmpi(s, p, Number(BigInt.asIntN(32, cptr.strlen(p)))))) {
                     class$ = cptr.ld1so2(__static_find_objtype_class_prefixes, i, $sizeof_objclasspfx, $objclasspfx_class);
                     s = cptr.add(s, cptr.strlen(p));
@@ -3383,16 +3953,33 @@ function* find_objtype(L, s, oclass) {
                 }
             }
         }
+
+        /* find by object name */
         for (i = 0; i < NHC.NUM_OBJECTS; i++) {
             objname = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr));
             if ((!class$ || class$ == cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class)) && objname && !(yield* strncmpi((s), (objname), -1)))
                 return i;
         }
+
+        /*
+         * FIXME:
+         *  If the file specifies "orange potion", the actual object
+         *  description is just "orange" and won't match.  [There's a
+         *  reason that wish handling is insanely complicated.]  And
+         *  even if that gets fixed, if the file specifies "gray stone"
+         *  it will start matching but would always pick the first one.
+         *
+         *  "orange potion" is an unlikely thing to have in a special
+         *  level description but "gray stone" is not....
+         */
+
+        /* find by object description */
         for (i = 0; i < NHC.NUM_OBJECTS; i++) {
             objname = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr));
             if (objname && !(yield* strncmpi((s), (objname), -1)))
                 return i;
         }
+
         (yield* nhl_error(L, __s_unknown_object_id));
     }
     return NHC.STRANGE_OBJECT;
@@ -3405,11 +3992,19 @@ export function* get_table_objtype(L) {
     let ret = (yield* find_objtype(L, s, oclass));
     {
         if (s)
+
             cptr.free((s));
     }
     return ret;
 }
 
+/* object(); */
+/* object("sack"); */
+/* object("scimitar", 6,7); */
+/* object("scimitar", {6,7}); */
+/* object({ class = "%" }); */
+/* object({ id = "boulder", x = 03, y = 12}); */
+/* object({ id = "boulder", coord = {03,12} }); */
 let __static_lspo_object_zeroobject = cptr.alloc($sizeof_object); /** C ref: sp_lev.c:3559 — object (function-static) */
 cptr.stPtr(__static_lspo_object_zeroobject, null);
 cptr.stI32o(__static_lspo_object_zeroobject, $object_corpsenm, 0);
@@ -3443,7 +4038,9 @@ export function* lspo_object(L) {
     let argc = lua_gettop(L);
     let maybe_contents = 0;
     let otmp = null;
+
     (yield* create_des_coder());
+
     cptr.memcpy(tmpobj, __static_lspo_object_zeroobject, 64);
     cptr.stPtr(tmpobj, null);
     cptr.stI16o(tmpobj, $object_spe, -127);
@@ -3452,8 +4049,10 @@ export function* lspo_object(L) {
     cptr.stI16o(tmpobj, $object_tknown, -1);
     cptr.stI16o(tmpobj, $object_locked, -1);
     cptr.stI32o(tmpobj, $object_corpsenm, NHC.NON_PM);
+
     if (argc == 1 && lua_type(L, 1) == 4) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
+
         if (cptr.strlen(paramstr) == 1n) {
             cptr.stI16o(tmpobj, $object_class, i16(cptr.ld1s(paramstr)));
             cptr.stI16o(tmpobj, $object_id, NHC.STRANGE_OBJECT);
@@ -3463,7 +4062,9 @@ export function* lspo_object(L) {
         }
     } else if (argc == 2 && lua_type(L, 1) == 4 && lua_type(L, 2) == 5) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
+
         void (yield* get_coord(L, 2, ox, oy));
+
         if (cptr.strlen(paramstr) == 1n) {
             cptr.stI16o(tmpobj, $object_class, i16(cptr.ld1s(paramstr)));
             cptr.stI16o(tmpobj, $object_id, NHC.STRANGE_OBJECT);
@@ -3473,8 +4074,10 @@ export function* lspo_object(L) {
         }
     } else if (argc == 3 && lua_type(L, 2) == 3 && lua_type(L, 3) == 3) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
+
         ox.v = (yield* luaL_checkinteger(L, 2));
         oy.v = (yield* luaL_checkinteger(L, 3));
+
         if (cptr.strlen(paramstr) == 1n) {
             cptr.stI16o(tmpobj, $object_class, i16(cptr.ld1s(paramstr)));
             cptr.stI16o(tmpobj, $object_id, NHC.STRANGE_OBJECT);
@@ -3484,6 +4087,7 @@ export function* lspo_object(L) {
         }
     } else {
         (yield* lcheck_param_table(L));
+
         cptr.stI16o(tmpobj, $object_spe, Number(BigInt.asIntN(16, (yield* get_table_int_or_random(L, __s_spe, -127)))));
         cptr.st1o(tmpobj, $object_curse_state, schar((yield* get_table_buc(L))));
         cptr.stI32o(tmpobj, $object_corpsenm, NHC.NON_PM);
@@ -3499,24 +4103,30 @@ export function* lspo_object(L) {
         cptr.stI16o(tmpobj, $object_greased, i16((yield* get_table_boolean_opt(L, __s_greased, 0))));
         cptr.stI16o(tmpobj, $object_broken, i16((yield* get_table_boolean_opt(L, __s_broken, 0))));
         cptr.stI16o(tmpobj, $object_achievement, i16((yield* get_table_boolean_opt(L, __s_achievement, 0))));
+
         (yield* get_table_xy_or_coord(L, ox, oy));
+
         cptr.stI16o(tmpobj, $object_id, i16((yield* get_table_objtype(L))));
         cptr.stI16o(tmpobj, $object_class, i16((yield* get_table_objclass(L))));
         maybe_contents = 1;
     }
+
     if (ox.v == -1n && oy.v == -1n)
         cptr.stI64o(tmpobj, $object_coord, 16777216n);
     else
         cptr.stI64o(tmpobj, $object_coord, (BigInt.asIntN(64, ((ox.v) & 255n) + (((oy.v) & 255n) << 16n))));
+
     if (cptr.ldI16o(tmpobj, $object_class) == -1 && cptr.ldI16o(tmpobj, $object_id) > NHC.STRANGE_OBJECT)
         cptr.stI16o(tmpobj, $object_class, i16(cptr.ld1so2(objects, cptr.ldI16o(tmpobj, $object_id), $sizeof_objclass, $objclass_oc_class)));
     else if (cptr.ldI16o(tmpobj, $object_class) > -1 && cptr.ldI16o(tmpobj, $object_id) == NHC.STRANGE_OBJECT)
         cptr.stI16o(tmpobj, $object_id, -1);
+
     if (cptr.ldI16o(tmpobj, $object_id) == NHC.STATUE || cptr.ldI16o(tmpobj, $object_id) == NHC.EGG || cptr.ldI16o(tmpobj, $object_id) == NHC.CORPSE || cptr.ldI16o(tmpobj, $object_id) == NHC.TIN || cptr.ldI16o(tmpobj, $object_id) == NHC.FIGURINE) {
         let pm = null;
         let nonpmobj = 0;
         let i;
         let montype = (yield* get_table_str_opt(L, __s_montype, null));
+
         if (montype) {
             if ((cptr.ldI16o(tmpobj, $object_id) == NHC.TIN && (!(yield* strncmpi((montype), (__s_spinach), -1)) || !(yield* strncmpi((montype), (__s_empty), -1)))) || (cptr.ldI16o(tmpobj, $object_id) == NHC.EGG && !(yield* strncmpi((montype), (__s_empty), -1)))) {
                 cptr.stI32o(tmpobj, $object_corpsenm, NHC.NON_PM);
@@ -3539,6 +4149,7 @@ export function* lspo_object(L) {
         }
         if (cptr.ldI16o(tmpobj, $object_id) == NHC.STATUE || cptr.ldI16o(tmpobj, $object_id) == NHC.CORPSE) {
             let lflags = 0;
+
             if ((yield* get_table_boolean_opt(L, __s_historic, 0)))
                 lflags |= NHM.CORPSTAT_HISTORIC;
             if ((yield* get_table_boolean_opt(L, __s_male, 0)))
@@ -3552,43 +4163,57 @@ export function* lspo_object(L) {
             cptr.stI16o(tmpobj, $object_spe, 0);
         }
     }
+
     quancnt = BigInt(((cptr.ldI16o(tmpobj, $object_id) > NHC.STRANGE_OBJECT) ? cptr.ldI32o(tmpobj, $object_quan) : 0));
+
     if (container_idx)
         cptr.stI16o(tmpobj, $object_containment, cptr.ldI16o(tmpobj, $object_containment) | NHM.SP_OBJ_CONTENT);
+
     if (maybe_contents) {
         (yield* lua_getfield(L, 1, __s_contents));
         if (!(lua_type(L, -1) == 0))
             cptr.stI16o(tmpobj, $object_containment, cptr.ldI16o(tmpobj, $object_containment) | NHM.SP_OBJ_CONTAINER);
     }
+
     do {
         otmp = (yield* create_object(tmpobj, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
         quancnt--;
     } while ((quancnt > 0n) && ((cptr.ldI16o(tmpobj, $object_id) > NHC.STRANGE_OBJECT) && !(cptr.ldI32o2(objects, cptr.ldI16o(tmpobj, $object_id), $sizeof_objclass, $objclass_oc_merge) & 1)));
+
     if (lua_type(L, -1) == 6) {
         (lua_rotate(L, -2, -1), (yield* lua_settop(L, -2)));
         (yield* nhl_push_obj(L, otmp));
         (yield* nhl_pcall_handle(L, 1, 0, __s_lspo_object, NHC.NHLpa_panic));
     } else
         (yield* lua_settop(L, -2));
+
     if ((cptr.ldI16o(tmpobj, $object_containment) & NHM.SP_OBJ_CONTAINER) != 0)
         spo_pop_container();
     {
         if (cptr.ldPtr(tmpobj))
+
             cptr.free((cptr.ldPtr(tmpobj)));
     }
+
     (yield* nhl_push_obj(L, otmp));
+
     return 1;
 }
 
+/* level_flags("noteleport", "mazelevel", ... ); */
 /** C ref: sp_lev.c:3759 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_level_flags(L) {
     let argc = lua_gettop(L);
     let i;
+
     (yield* create_des_coder());
+
     if (argc < 1)
         (yield* nhl_error(L, __s_expected_string_params));
+
     for (i = 1; i <= argc; i++) {
         let s = ((yield* luaL_checklstring(L, (i), null)));
+
         if (!(yield* strncmpi((s), (__s_noteleport), -1)))
             cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport, 1);
         else if (!(yield* strncmpi((s), (__s_hardfloor), -1)))
@@ -3614,7 +4239,7 @@ export function* lspo_level_flags(L) {
         else if (!(yield* strncmpi((s), (__s_solidify), -1)))
             cptr.st1o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_solidify, 1);
         else if (!(yield* strncmpi((s), (__s_sokoban), -1)))
-            cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules, 1);
+            cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules, 1);  /* svl.level.flags.sokoban_rules */
         else if (!(yield* strncmpi((s), (__s_inaccessibles), -1)))
             cptr.st1o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_check_inaccessibles, 1);
         else if (!(yield* strncmpi((s), (__s_noflipx), -1)))
@@ -3641,13 +4266,18 @@ export function* lspo_level_flags(L) {
             cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy, 1);
         else {
             let buf = new Uint8Array(256);
+
             void cptr.sprintf(cptr.decay(buf), __s_unknown_level_flag_s, s);
             (yield* nhl_error(L, cptr.decay(buf)));
         }
     }
+
     return 0;
 }
 
+/* level_init({ style = "solidfill", fg = " " }); */
+/* level_init({ style = "mines", fg = ".", bg = "}",
+                smoothed=true, joined=true, lit=0 }) */
 const __static_lspo_level_init_initstyles = cptr.alloc(7 * 8);
 cptr.stPtro(__static_lspo_level_init_initstyles, 0, __s_solidfill);
 cptr.stPtro(__static_lspo_level_init_initstyles, 8, __s_mazegrid);
@@ -3668,9 +4298,13 @@ cptr.stI32o(__static_lspo_level_init_initstyles2i, 24, 0); /** C ref: sp_lev.c:3
 /** C ref: sp_lev.c:3837 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_level_init(L) {
     let init_lev = cptr.alloc(48);
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+
     splev_init_present = 1;
+
     cptr.stI16(init_lev, i16(cptr.ldI32o(__static_lspo_level_init_initstyles2i, (yield* get_table_option(L, __s_style, __s_solidfill, __static_lspo_level_init_initstyles)), 4)));
     cptr.st1o(init_lev, $lev_init_fg, (yield* get_table_mapchr_opt(L, __s_fg, NHC.ROOM)));
     cptr.st1o(init_lev, $lev_init_bg, (yield* get_table_mapchr_opt(L, __s_bg, NHC.INVALID_TYPE)));
@@ -3682,13 +4316,20 @@ export function* lspo_level_init(L) {
     cptr.stI32o(init_lev, $lev_init_corrwid, (yield* get_table_int_opt(L, __s_corrwid, -1)));
     cptr.stI32o(init_lev, $lev_init_wallthick, (yield* get_table_int_opt(L, __s_wallthick, -1)));
     cptr.st1o(init_lev, $lev_init_rm_deadends, schar((!(yield* get_table_boolean_opt(L, __s_deadends, 1)))));
+
     cptr.st1o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_lvl_is_joined, cptr.ld1so(init_lev, $lev_init_joined));
+
     if (cptr.ld1so(init_lev, $lev_init_bg) == NHC.INVALID_TYPE)
         cptr.st1o(init_lev, $lev_init_bg, schar(((cptr.ldI16(init_lev) == NHC.LVLINIT_SWAMP) ? NHC.MOAT : NHC.STONE)));
+
     (yield* splev_initlev(init_lev));
+
     return 0;
 }
 
+/* engraving({ x = 1, y = 1, type="burn", text="Foo" }); */
+/* engraving({ coord={1, 1}, type="burn", text="Foo" }); */
+/* engraving({x,y}, "engrave", "Foo"); */
 const __static_lspo_engraving_engrtypes = cptr.alloc(6 * 8);
 cptr.stPtro(__static_lspo_engraving_engrtypes, 0, __s_dust);
 cptr.stPtro(__static_lspo_engraving_engrtypes, 8, __s_engrave);
@@ -3715,11 +4356,14 @@ export function* lspo_engraving(L) {
     let guardobjs = 0;
     let wipeout = 1;
     let ep;
+
     (yield* create_des_coder());
+
     if (argc == 1) {
         let ex = cptr.box(0n);
         let ey = cptr.box(0n);
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, ex, ey));
         x.v = Number(BigInt.asIntN(16, ex.v));
         y.v = Number(BigInt.asIntN(16, ey.v));
@@ -3738,10 +4382,12 @@ export function* lspo_engraving(L) {
     } else {
         (yield* nhl_error(L, __s_wrong_parameters));
     }
+
     if (x.v == -1 && y.v == -1)
         ecoord = 16777216n;
     else
         ecoord = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
+
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), ecoord));
     (yield* make_engr_at(x.v, y.v, txt, null, 0n, etyp));
     {
@@ -3762,13 +4408,18 @@ export function* lspo_mineralize(L) {
     let gold_prob;
     let kelp_moat;
     let kelp_pool;
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+    /* -1 produces default mineralize behavior */
     gem_prob = (yield* get_table_int_opt(L, __s_gem_prob, -1));
     gold_prob = (yield* get_table_int_opt(L, __s_gold_prob, -1));
     kelp_moat = (yield* get_table_int_opt(L, __s_kelp_moat, -1));
     kelp_pool = (yield* get_table_int_opt(L, __s_kelp_pool, -1));
+
     (yield* mineralize(kelp_pool, kelp_moat, gold_prob, gem_prob, 1));
+
     return 0;
 }
 
@@ -3834,11 +4485,13 @@ cptr.stI32o(room_types, 424, 0);
 /** C ref: sp_lev.c:3991 — @param {CInt} rtype @returns {CPtr<char>} */
 function* get_mkroom_name(rtype) {
     let i;
+
     for (i = 0; cptr.ldPtro(room_types, i, 16); i++)
         if (cptr.ldI32o2(room_types, i, 16, 8) == rtype)
             return cptr.ldPtro(room_types, i, 16);
+
     (yield* impossible(__s_get_mkroom_name_unknown_rtype_d, rtype));
-    return __s_unknown;
+    return __s_unknown;  /* not NULL */
 }
 
 /** C ref: sp_lev.c:4004 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} defval @returns {CInt} */
@@ -3846,6 +4499,7 @@ function* get_table_roomtype_opt(L, name, defval) {
     let roomstr = (yield* get_table_str_opt(L, name, cptr.decay(emptystr)));
     let i;
     let res = defval;
+
     if (roomstr && cptr.ld1s(roomstr)) {
         for (i = 0; cptr.ldPtro(room_types, i, 16); i++)
             if (!(yield* strncmpi((roomstr), (cptr.ldPtro(room_types, i, 16)), -1))) {
@@ -3862,6 +4516,11 @@ function* get_table_roomtype_opt(L, name, defval) {
     return res;
 }
 
+/* room({ type="ordinary", lit=1, x=3,y=3, xalign="center",yalign="center",
+ *        w=11,h=9 }); */
+/* room({ lit=1, coord={3,3}, xalign="center",yalign="center", w=11,h=9 }); */
+/* room({ coord={3,3}, xalign="center",yalign="center", w=11,h=9,
+ *        contents=function(room) ... end }); */
 const __static_lspo_room_left_or_right = cptr.alloc(8 * 8);
 cptr.stPtro(__static_lspo_room_left_or_right, 0, __s_left);
 cptr.stPtro(__static_lspo_room_left_or_right, 8, __s_half_left);
@@ -3898,9 +4557,12 @@ cptr.stI32o(__static_lspo_room_t_or_b2i, 20, -1); /** C ref: sp_lev.c:4051 — i
 /** C ref: sp_lev.c:4028 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_room(L) {
     (yield* create_des_coder());
+
     if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && cptr.ld1so(gt, $instance_globals_t_themeroom_failed))
         return 0;
+
     (yield* lcheck_param_table(L));
+
     if (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) > NHM.MAX_NESTED_ROOMS) {
         (yield* panic(__s_too_deeply_nested_rooms));
     } else {
@@ -3908,27 +4570,35 @@ export function* lspo_room(L) {
         let tmpcr;
         let rx = cptr.box(0n);
         let ry = cptr.box(0n);
+
         (yield* get_table_xy_or_coord(L, rx, ry));
         cptr.stI16o(tmproom, $_room_x, Number(BigInt.asIntN(16, rx.v))), cptr.stI16o(tmproom, $_room_y, Number(BigInt.asIntN(16, ry.v)));
         if ((cptr.ldI16o(tmproom, $_room_x) == -1 || cptr.ldI16o(tmproom, $_room_y) == -1) && cptr.ldI16o(tmproom, $_room_x) != cptr.ldI16o(tmproom, $_room_y))
             (yield* nhl_error(L, __s_room_must_have_both_x_and_y));
+
         cptr.stI16o(tmproom, $_room_w, i16((yield* get_table_int_opt(L, __s_w, -1))));
         cptr.stI16o(tmproom, $_room_h, i16((yield* get_table_int_opt(L, __s_h, -1))));
+
         if ((cptr.ldI16o(tmproom, $_room_w) == -1 || cptr.ldI16o(tmproom, $_room_h) == -1) && cptr.ldI16o(tmproom, $_room_w) != cptr.ldI16o(tmproom, $_room_h))
             (yield* nhl_error(L, __s_room_must_have_both_w_and_h));
+
         cptr.stI16o(tmproom, $_room_xalign, i16(cptr.ldI32o(__static_lspo_room_l_or_r2i, (yield* get_table_option(L, __s_xalign, __s_random, __static_lspo_room_left_or_right)), 4)));
         cptr.stI16o(tmproom, $_room_yalign, i16(cptr.ldI32o(__static_lspo_room_t_or_b2i, (yield* get_table_option(L, __s_yalign, __s_random, __static_lspo_room_top_or_bot)), 4)));
         cptr.stI16o(tmproom, $_room_rtype, i16((yield* get_table_roomtype_opt(L, __s_type, NHC.OROOM))));
         cptr.stI16o(tmproom, $_room_chance, i16((yield* get_table_int_opt(L, __s_chance, 100))));
         cptr.stI16o(tmproom, $_room_rlit, i16((yield* get_table_int_opt(L, __s_lit, -1))));
+        /* theme rooms default to unfilled */
         cptr.stI16o(tmproom, $_room_needfill, i16((yield* get_table_int_opt(L, __s_filled, cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) ? 0 : 1))));
         cptr.st1o(tmproom, $_room_joined, schar((yield* get_table_boolean_opt(L, __s_joined, 1))));
+
         if (!cptr.ld1so2(cptr.ldPtro(gc, $instance_globals_c_coder), (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) - 1) | 0, 1, $sp_coder_failed_room)) {
             tmpcr = (yield* build_room(tmproom, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
             if (tmpcr) {
                 let n = cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom);
-                cptr.stPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), n, 8, $sp_coder_tmproomlist, tmpcr);
+
+                cptr.stPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), n, 8, $sp_coder_tmproomlist, tmpcr);  /* TRUE to get here... */
                 cptr.st1o2(cptr.ldPtro(gc, $instance_globals_c_coder), n, 1, $sp_coder_failed_room, 0);
+                /* added a subroom, make parent room irregular */
                 if (cptr.ldPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), (n - 1) | 0, 8, $sp_coder_tmproomlist))
                     cptr.st1o(cptr.ldPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), (n - 1) | 0, 8, $sp_coder_tmproomlist), $mkroom_irregular, 1);
                 (cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom, cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) + 1)) - (1);
@@ -3946,7 +4616,7 @@ export function* lspo_room(L) {
             }
             if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms))
                 cptr.st1o(gt, $instance_globals_t_themeroom_failed, 1);
-        }
+        }  /* failed to create parent room, so fail this too */
     }
     cptr.stPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom), 8, $sp_coder_tmproomlist, null);
     cptr.st1o2(cptr.ldPtro(gc, $instance_globals_c_coder), cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom), 1, $sp_coder_failed_room, 1);
@@ -3955,6 +4625,7 @@ export function* lspo_room(L) {
     spo_endroom(cptr.ldPtro(gc, $instance_globals_c_coder));
     if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms))
         cptr.st1o(gt, $instance_globals_t_themeroom_failed, 1);
+
     return 0;
 }
 
@@ -3965,15 +4636,22 @@ function spo_endroom(coder) {
         cptr.stPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom), 8, $sp_coder_tmproomlist, null);
         cptr.st1o2(cptr.ldPtro(gc, $instance_globals_c_coder), cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom), 1, $sp_coder_failed_room, 1);
     } else {
+        /* no subroom, get out of top-level room */
+        /* Need to ensure xstart/ystart/xsize/ysize have something sensible,
+           in case there's some stuff to be created outside the outermost
+           room, and there's no MAP. */
         if (cptr.ldI16o(gx, $instance_globals_x_xsize) <= 1 && cptr.ldI16o(gy, $instance_globals_y_ysize) <= 1)
             reset_xystart_size();
     }
     update_croom();
 }
 
+/* callback for is_ok_location.
+   stairs generated at random location shouldn't overwrite special terrain */
 /** C ref: sp_lev.c:4139 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function good_stair_loc(x, y) {
     let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+
     return schar((typ == NHC.ROOM || typ == NHC.CORR || typ == NHC.ICE ? 1 : 0));
 }
 
@@ -3991,10 +4669,13 @@ function* l_create_stairway(L, using_ladder) {
     let x = cptr.box(-1);
     let y = cptr.box(-1);
     let badtrap;
+
     let scoord;
-    let up = 0;
+    let up = 0;  /* default is down */
     let ltype = lua_type(L, 1);
+
     (yield* create_des_coder());
+
     if (argc == 1 && ltype == 5) {
         let ax = cptr.box(-1n);
         let ay = cptr.box(-1n);
@@ -4014,26 +4695,31 @@ function* l_create_stairway(L, using_ladder) {
         x.v = Number(BigInt.asIntN(16, ix.v));
         y.v = Number(BigInt.asIntN(16, iy.v));
     }
+
     if (x.v == -1 && y.v == -1) {
         set_ok_location_func(good_stair_loc);
         scoord = 16777216n;
     } else
         scoord = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
+
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), scoord));
     set_ok_location_func(null);
     if ((badtrap = t_at(x.v, y.v)) !== null)
         (yield* deltrap(badtrap));
     cptr.st1o(cptr.decay(SpLev_Map[x.v]), y.v, 1, 1);
+
     if (using_ladder) {
         cptr.st1o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.LADDER);
         if (up) {
             let dest = cptr.alloc(4);
+
             cptr.stI16(dest, cptr.ldI16o(u, $you_uz));
             cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) - 1) | 0)));
             (yield* stairway_add(x.v, y.v, 1, 1, dest));
             cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.LA_UP);
         } else {
             let dest = cptr.alloc(4);
+
             cptr.stI16(dest, cptr.ldI16o(u, $you_uz));
             cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0)));
             (yield* stairway_add(x.v, y.v, 0, 1, dest));
@@ -4045,16 +4731,31 @@ function* l_create_stairway(L, using_ladder) {
     return 0;
 }
 
+/* stair("up"); */
+/* stair({ dir = "down" }); */
+/* stair({ dir = "down", x = 4, y = 7 }); */
+/* stair({ dir = "down", coord = {x,y} }); */
+/* stair("down", 4, 7); */
+/* TODO: stair(selection, "down"); */
+/* TODO: stair("up", {x,y}); */
 /** C ref: sp_lev.c:4223 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_stair(L) {
     return (yield* l_create_stairway(L, 0));
 }
 
+/* ladder("down"); */
+/* ladder("up", 6,10); */
+/* ladder({ x=11, y=05, dir="down" }); */
 /** C ref: sp_lev.c:4232 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_ladder(L) {
     return (yield* l_create_stairway(L, 1));
 }
 
+/* grave(); */
+/* grave(x,y, "text"); */
+/* grave({ x = 1, y = 1 }); */
+/* grave({ x = 1, y = 1, text = "Foo" }); */
+/* grave({ coord = {1, 1}, text = "Foo" }); */
 /** C ref: sp_lev.c:4243 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_grave(L) {
     let argc = lua_gettop(L);
@@ -4064,25 +4765,31 @@ export function* lspo_grave(L) {
     let ax = cptr.box(0n);
     let ay = cptr.box(0n);
     let txt;
+
     (yield* create_des_coder());
+
     if (argc == 3) {
         x.v = Number(BigInt.asIntN(16, (ax.v = (yield* luaL_checkinteger(L, 1)))));
         y.v = Number(BigInt.asIntN(16, (ay.v = (yield* luaL_checkinteger(L, 2)))));
         txt = (yield* dupstr(((yield* luaL_checklstring(L, 3, null)))));
     } else {
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, ax, ay));
         x.v = Number(BigInt.asIntN(16, ax.v)), y.v = Number(BigInt.asIntN(16, ay.v));
         txt = (yield* get_table_str_opt(L, __s_text, null));
     }
+
     if (x.v == -1 && y.v == -1)
         scoord = 16777216n;
     else
         scoord = (BigInt.asIntN(64, ((ax.v) & 255n) + (((ay.v) & 255n) << 16n)));
+
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), scoord));
+
     if (isok(x.v, y.v) && !t_at(x.v, y.v)) {
         cptr.st1o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.GRAVE);
-        (yield* make_grave(x.v, y.v, txt));
+        (yield* make_grave(x.v, y.v, txt));  /* note: 'txt' might be Null */
     }
     {
         if (txt)
@@ -4091,6 +4798,8 @@ export function* lspo_grave(L) {
     return 0;
 }
 
+/* altar({ x=NN, y=NN, align=ALIGNMENT, type=SHRINE }); */
+/* des.altar({ coord = {5, 10}, align="noalign", type="altar" }); */
 const __static_lspo_altar_shrines = cptr.alloc(4 * 8);
 cptr.stPtro(__static_lspo_altar_shrines, 0, __s_altar);
 cptr.stPtro(__static_lspo_altar_shrines, 8, __s_shrine);
@@ -4104,25 +4813,35 @@ cptr.stI32o(__static_lspo_altar_shrines2i, 12, 0); /** C ref: sp_lev.c:4288 — 
 
 /** C ref: sp_lev.c:4283 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_altar(L) {
+
     let tmpaltar = cptr.alloc(24);
+
     let x = cptr.box(0n);
     let y = cptr.box(0n);
     let acoord;
     let shrine;
     let al;
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+
     (yield* get_table_xy_or_coord(L, x, y));
+
     al = (yield* get_table_align(L));
     shrine = cptr.ldI32o(__static_lspo_altar_shrines2i, (yield* get_table_option(L, __s_type, __s_altar, __static_lspo_altar_shrines)), 4);
+
     if (x.v == -1n && y.v == -1n)
         acoord = 16777216n;
     else
         acoord = (BigInt.asIntN(64, ((x.v) & 255n) + (((y.v) & 255n) << 16n)));
+
     cptr.stI64(tmpaltar, acoord);
     cptr.stI32o(tmpaltar, $altar_sp_amask, al >>> 0);
     cptr.stI16o(tmpaltar, $altar_shrine, i16(shrine));
+
     (yield* create_altar(tmpaltar, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
+
     return 0;
 }
 
@@ -4186,6 +4905,7 @@ function* get_table_traptype_opt(L, name, defval) {
     let trapstr = (yield* get_table_str_opt(L, name, cptr.decay(emptystr)));
     let i;
     let res = defval;
+
     if (trapstr && cptr.ld1s(trapstr)) {
         for (i = 0; cptr.ldPtro(trap_types, i, 16); i++)
             if (!(yield* strncmpi((trapstr), (cptr.ldPtro(trap_types, i, 16)), -1))) {
@@ -4203,65 +4923,86 @@ function* get_table_traptype_opt(L, name, defval) {
 /** C ref: sp_lev.c:4367 — @param {CInt} ttyp @returns {CPtr<char>} */
 export function get_trapname_bytype(ttyp) {
     let i;
+
     for (i = 0; cptr.ldPtro(trap_types, i, 16); i++)
         if (ttyp == cptr.ldI32o2(trap_types, i, 16, 8))
             return cptr.ldPtro(trap_types, i, 16);
+
     return null;
 }
 
 /** C ref: sp_lev.c:4379 — @param {CPtr<char>} trapname @returns {CInt} */
 function* get_traptype_byname(trapname) {
     let i;
+
     for (i = 0; cptr.ldPtro(trap_types, i, 16); i++)
         if (!(yield* strncmpi((trapname), (cptr.ldPtro(trap_types, i, 16)), -1)))
             return cptr.ldI32o2(trap_types, i, 16, 8);
+
     return NHC.NO_TRAP;
 }
 
+/* trap({ type = "hole", x = 1, y = 1 }); */
+/* trap({ type = "web", spider_on_web = 0 }); */
+/* trap("hole", 3, 4); */
+/* trap("level teleport", {5, 8}); */
+/* trap("rust") */
+/* trap(); */
 /** C ref: sp_lev.c:4397 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_trap(L) {
     let tmptrap = cptr.alloc(24);
     let x = cptr.box(0n);
     let y = cptr.box(0n);
     let argc = lua_gettop(L);
+
     (yield* create_des_coder());
+
     cptr.st1o(tmptrap, $spltrap_spider_on_web, 1);
     cptr.st1o(tmptrap, $spltrap_seen, 0);
     cptr.st1o(tmptrap, $spltrap_novictim, 0);
+
     if (argc == 1 && lua_type(L, 1) == 4) {
         let trapstr = ((yield* luaL_checklstring(L, 1, null)));
+
         cptr.stI16o(tmptrap, $spltrap_type, i16((yield* get_traptype_byname(trapstr))));
         x.v = (y.v = -1n);
     } else if (argc == 2 && lua_type(L, 1) == 4 && lua_type(L, 2) == 5) {
         let trapstr = ((yield* luaL_checklstring(L, 1, null)));
+
         cptr.stI16o(tmptrap, $spltrap_type, i16((yield* get_traptype_byname(trapstr))));
         void (yield* get_coord(L, 2, x, y));
     } else if (argc == 3) {
         let trapstr = ((yield* luaL_checklstring(L, 1, null)));
+
         cptr.stI16o(tmptrap, $spltrap_type, i16((yield* get_traptype_byname(trapstr))));
         x.v = (yield* luaL_checkinteger(L, 2));
         y.v = (yield* luaL_checkinteger(L, 3));
     } else {
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, x, y));
         cptr.stI16o(tmptrap, $spltrap_type, i16((yield* get_table_traptype_opt(L, __s_type, -1))));
         cptr.st1o(tmptrap, $spltrap_spider_on_web, schar((yield* get_table_boolean_opt(L, __s_spider_on_web, 1))));
         cptr.st1o(tmptrap, $spltrap_seen, schar((yield* get_table_boolean_opt(L, __s_seen, 0))));
         cptr.st1o(tmptrap, $spltrap_novictim, schar((!(yield* get_table_boolean_opt(L, __s_victim, 1)))));
+
         (yield* lua_getfield(L, -1, __s_launchfrom));
         if (lua_type(L, -1) == 5) {
             let lx = cptr.box(-1n);
             let ly = cptr.box(-1n);
+
             void (yield* get_coord(L, -1, lx, ly));
             (yield* lua_settop(L, -2));
             cptr.stI16o(gl, $instance_globals_l_launchplace + $launchplace_x, Number(BigInt.asIntN(16, lx.v)));
             cptr.stI16o(gl, $instance_globals_l_launchplace + $launchplace_y, Number(BigInt.asIntN(16, ly.v)));
         } else
             (yield* lua_settop(L, -2));
+
         (yield* lua_getfield(L, -1, __s_teledest));
         if (lua_type(L, -1) == 5) {
             let lx = cptr.box(-1n);
             let ly = cptr.box(-1n);
+
             void (yield* get_coord(L, -1, lx, ly));
             (yield* lua_settop(L, -2));
             cptr.stI16o(gl, $instance_globals_l_launchplace + $launchplace_x, Number(BigInt.asIntN(16, lx.v)));
@@ -4269,17 +5010,26 @@ export function* lspo_trap(L) {
         } else
             (yield* lua_settop(L, -2));
     }
+
     if (cptr.ldI16o(tmptrap, $spltrap_type) == NHC.NO_TRAP)
         (yield* nhl_error(L, __s_unknown_trap_type));
+
     if (x.v == -1n && y.v == -1n)
         cptr.stI64(tmptrap, 16777216n);
     else
         cptr.stI64(tmptrap, (BigInt.asIntN(64, ((x.v) & 255n) + (((y.v) & 255n) << 16n))));
+
     (yield* create_trap(tmptrap, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
     cptr.stI16o(gl, $instance_globals_l_launchplace + $launchplace_x, cptr.stI16o(gl, $instance_globals_l_launchplace + $launchplace_y, 0));
+
     return 0;
 }
 
+/* gold(500, 3,5); */
+/* gold(500, {5, 6}); */
+/* gold({ amount = 500, x = 2, y = 5 });*/
+/* gold({ amount = 500, coord = {2, 5} });*/
+/* gold(); */
 /** C ref: sp_lev.c:4480 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_gold(L) {
     let argc = lua_gettop(L);
@@ -4289,7 +5039,9 @@ export function* lspo_gold(L) {
     let gcoord;
     let gldx = cptr.box(0n);
     let gldy = cptr.box(0n);
+
     (yield* create_des_coder());
+
     if (argc == 3) {
         amount = (yield* luaL_checkinteger(L, 1));
         x.v = Number(BigInt.asIntN(16, (gldx.v = (yield* luaL_checkinteger(L, 2)))));
@@ -4301,24 +5053,31 @@ export function* lspo_gold(L) {
         y.v = Number(BigInt.asIntN(16, gldy.v));
     } else if (argc == 0 || (argc == 1 && lua_type(L, 1) == 5)) {
         (yield* lcheck_param_table(L));
+
         amount = BigInt((yield* get_table_int_opt(L, __s_amount, -1)));
         (yield* get_table_xy_or_coord(L, gldx, gldy));
         x.v = Number(BigInt.asIntN(16, gldx.v)), y.v = Number(BigInt.asIntN(16, gldy.v));
     } else {
         (yield* nhl_error(L, __s_wrong_parameters));
+        /*NOTREACHED*/
         return 0;
     }
+
     if (x.v == -1 && y.v == -1)
         gcoord = 16777216n;
     else
         gcoord = (BigInt.asIntN(64, ((gldx.v) & 255n) + (((gldy.v) & 255n) << 16n)));
+
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), gcoord));
     if (amount < 0n)
         amount = BigInt(rnd_at(__s_sp_lev_c, 4518, __s_lspo_gold, 200));
     (yield* mkgold(amount, x.v, y.v));
+
     return 0;
 }
 
+/* corridor({ srcroom=1, srcdoor=2, srcwall="north",
+ *            destroom=2, destdoor=1, destwall="west" }); */
 const __static_lspo_corridor_walldirs = cptr.alloc(7 * 8);
 cptr.stPtro(__static_lspo_corridor_walldirs, 0, __s_all);
 cptr.stPtro(__static_lspo_corridor_walldirs, 8, __s_random);
@@ -4339,32 +5098,43 @@ cptr.stI32o(__static_lspo_corridor_walldirs2i, 24, 0); /** C ref: sp_lev.c:4534 
 /** C ref: sp_lev.c:4529 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_corridor(L) {
     let tc = cptr.alloc(12);
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+
     cptr.stI16(tc, i16((yield* get_table_int(L, __s_srcroom))));
     cptr.stI16o(tc, 4, i16((yield* get_table_int(L, __s_srcdoor))));
     cptr.stI16o(tc, 2, i16(cptr.ldI32o(__static_lspo_corridor_walldirs2i, (yield* get_table_option(L, __s_srcwall, __s_all, __static_lspo_corridor_walldirs)), 4)));
     cptr.stI16o(tc, $corridor_dest, i16((yield* get_table_int(L, __s_destroom))));
     cptr.stI16o(tc, $corridor_dest + 4, i16((yield* get_table_int(L, __s_destdoor))));
     cptr.stI16o(tc, $corridor_dest + 2, i16(cptr.ldI32o(__static_lspo_corridor_walldirs2i, (yield* get_table_option(L, __s_destwall, __s_all, __static_lspo_corridor_walldirs)), 4)));
+
     (yield* create_corridor(tc));
+
     return 0;
 }
 
+/* random_corridors(); */
 /** C ref: sp_lev.c:4558 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_random_corridors(L) {
     let tc = cptr.alloc(12);
+
     (yield* create_des_coder());
+
     cptr.stI16(tc, -1);
     cptr.stI16o(tc, 4, -1);
     cptr.stI16o(tc, 2, -1);
     cptr.stI16o(tc, $corridor_dest, -1);
     cptr.stI16o(tc, $corridor_dest + 4, -1);
     cptr.stI16o(tc, $corridor_dest + 2, -1);
+
     (yield* create_corridor(tc));
+
     return 0;
 }
 
+/* Choose a single random W_* direction. */
 const __static_random_wdir_wdirs = cptr.alloc(4 * 2);
 cptr.stI16o(__static_random_wdir_wdirs, 0, NHM.W_NORTH);
 cptr.stI16o(__static_random_wdir_wdirs, 2, NHM.W_SOUTH);
@@ -4395,12 +5165,16 @@ function floodfillchk_match_accessible(x, y) {
     return (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.DOOR) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SCORR ? 1 : 0);
 }
 
+/* change map location terrain type during level creation */
 /** C ref: sp_lev.c:4609 — @param {CInt} x @param {CInt} y @param {CPtr} arg */
 function* sel_set_ter(x, y, arg) {
     let terr = cptr.alloc(4);
+
     cptr.memcpy(terr, arg, 4);
     if (!(yield* set_levltyp_lit(x, y, schar(cptr.ldI16(terr)), schar(cptr.ldI16o(terr, $terrain_tlit)))))
         return;
+    /* TODO: move this below into set_levltyp? */
+    /* handle doors and secret doors */
     if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
         if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
@@ -4411,7 +5185,7 @@ function* sel_set_ter(x, y, arg) {
     } else if (splev_init_present && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ICE) {
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, (icedpools ? NHM.ICED_POOL : NHM.ICED_MOAT) >>> 0);
     } else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CLOUD) {
-        (yield* del_engr_at(x, y));
+        (yield* del_engr_at(x, y));  /* clouds cannot have engravings */
     }
 }
 
@@ -4430,6 +5204,7 @@ function sel_set_door(dx, dy, arg) {
     let typ = cptr.ldI16(arg);
     let x = dx;
     let y = dy;
+
     if (!((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.SDOOR)
         cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((typ & NHM.D_SECRET) ? NHC.SDOOR : NHC.DOOR)));
     if (typ & NHM.D_SECRET) {
@@ -4437,11 +5212,15 @@ function sel_set_door(dx, dy, arg) {
         if (typ < NHM.D_CLOSED)
             typ = NHM.D_CLOSED;
     }
-    set_door_orientation(x, y);
+    set_door_orientation(x, y);  /* set/clear levl[x][y].horizontal */
     cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, typ);
     cptr.st1o(cptr.decay(SpLev_Map[x]), y, 1, 1);
 }
 
+/* door({ x = 1, y = 1, state = "nodoor" }); */
+/* door({ coord = {1, 1}, state = "nodoor" }); */
+/* door({ wall = "north", pos = 3, state="secret" }); */
+/* door("nodoor", 1, 2); */
 const __static_lspo_door_doorstates = cptr.alloc(8 * 8);
 cptr.stPtro(__static_lspo_door_doorstates, 0, __s_random);
 cptr.stPtro(__static_lspo_door_doorstates, 8, __s_open);
@@ -4483,41 +5262,53 @@ export function* lspo_door(L) {
     let y = cptr.box(0);
     let typ = cptr.box(0);
     let argc = lua_gettop(L);
+
     (yield* create_des_coder());
+
     if (argc == 3) {
         msk = cptr.ldI32o(__static_lspo_door_doorstates2i, (yield* luaL_checkoption(L, 1, __s_random, __static_lspo_door_doorstates)), 4);
         x.v = Number(BigInt.asIntN(16, (yield* luaL_checkinteger(L, 2))));
         y.v = Number(BigInt.asIntN(16, (yield* luaL_checkinteger(L, 3))));
+
     } else {
         let dx = cptr.box(0n);
         let dy = cptr.box(0n);
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, dx, dy));
         x.v = Number(BigInt.asIntN(16, dx.v)), y.v = Number(BigInt.asIntN(16, dy.v));
         msk = cptr.ldI32o(__static_lspo_door_doorstates2i, (yield* get_table_option(L, __s_state, __s_random, __static_lspo_door_doorstates)), 4);
     }
+
     typ.v = i16(((msk == -1) ? rnddoor() : i16(msk)));
+
     if (x.v == -1 && y.v == -1) {
         let tmpd = cptr.alloc(8);
+
         cptr.stI16o(tmpd, $room_door_secret, i16(((typ.v == NHM.D_SECRET) ? 1 : 0)));
         cptr.stI16o(tmpd, $room_door_mask, i16(msk));
         cptr.stI16o(tmpd, $room_door_pos, i16((yield* get_table_int_opt(L, __s_pos, -1))));
         cptr.stI16(tmpd, i16(cptr.ldI32o(__static_lspo_door_walldirs2i, (yield* get_table_option(L, __s_wall, __s_all, __static_lspo_door_walldirs)), 4)));
+
         (yield* create_door(tmpd, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
     } else {
+        /*selection_iterate(sel, sel_set_door, (genericptr_t) &typ);*/
         (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
         if (!isok(x.v, y.v)) {
             (yield* nhl_error(L, __s_door_coord_not_ok));
+            /*NOTREACHED*/
             return 0;
         }
         sel_set_door(x.v, y.v, typ);
     }
+
     return 0;
 }
 
 /** C ref: sp_lev.c:4739 — @param {CPtr<lua_State>} L @param {CInt} x @param {CInt} y @param {CPtr<char>} name @param {CInt} flag */
 function* l_table_getset_feature_flag(L, x, y, name, flag) {
     let val = (yield* get_table_boolean_opt(L, name, -2));
+
     if (val != -2) {
         if (val == -1)
             val = rn2_at(__s_sp_lev_c, 4749, __s_l_table_getset_feature_flag, 2);
@@ -4528,8 +5319,29 @@ function* l_table_getset_feature_flag(L, x, y, name, flag) {
     }
 }
 
+/* guts of nhl_abs_coord; convert a coordinate relative to a map or room
+ * into an absolute coordinate in svl.level.locations.
+ *
+ * If there is no enclosing map or room, the coordinates are assumed to be
+ * absolute already.
+ *
+ * Part of the reason this is a function is to make it clearer in the calling
+ * code that this conversion is what is intended.
+ *
+ * NOTE: if the coordinates are going to get passed to one of the get_location
+ * family of functions, this should NOT be called; get_location already makes
+ * an adjustment like this. (What this function supports which get_location
+ * doesn't is the input coordinates being negative. get_location will treat
+ * that as "level designer wants a random coordinate".) */
 /** C ref: sp_lev.c:4772 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 export function cvt_to_abscoord(x, y) {
+    /* since commit 99715e0, xstart and ystart are only relevant in mklev when
+     * maps are being used, and 0 otherwise. It is possible in the future that
+     * map positions and dimensions can be saved and retrieved outside of
+     * mklev which would reintroduce nonzero xstart/ystart/xsiz/ysiz, but
+     * this is not currently implemented, so this function can be assumed to
+     * have no effect outside of mklev.
+     */
     if (cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
         cptr.stI16(x, cptr.ldI16(x) + cptr.ldI16(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
         cptr.stI16(y, cptr.ldI16(y) + cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), $mkroom_ly));
@@ -4539,6 +5351,8 @@ export function cvt_to_abscoord(x, y) {
     }
 }
 
+/* inverse of cvt_to_abscoord; turn an absolute svl.level.locations coordinate
+ * into one relative to the current map or room. */
 /** C ref: sp_lev.c:4793 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 export function cvt_to_relcoord(x, y) {
     if (cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
@@ -4550,11 +5364,16 @@ export function cvt_to_relcoord(x, y) {
     }
 }
 
+/* convert map-relative coordinate to absolute.
+  local ax,ay = nh.abscoord(rx, ry);
+  local pt = nh.abscoord({ x = 10, y = 5 });
+ */
 /** C ref: sp_lev.c:4811 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* nhl_abs_coord(L) {
     let argc = lua_gettop(L);
     let x = cptr.box(-1);
     let y = cptr.box(-1);
+
     if (argc == 2) {
         x.v = Number(BigInt.asIntN(16, (yield* lua_tointegerx(L, 1, null))));
         y.v = Number(BigInt.asIntN(16, (yield* lua_tointegerx(L, 2, null))));
@@ -4572,10 +5391,16 @@ export function* nhl_abs_coord(L) {
         return 1;
     } else {
         (yield* nhl_error(L, __s_nhl_abs_coord_wrong_args));
+        /*NOTREACHED*/
         return 0;
     }
 }
 
+/* feature("fountain", x, y); */
+/* feature("fountain", {x,y}); */
+/* feature({ type="fountain", x=NN, y=NN }); */
+/* feature({ type="fountain", coord={NN, NN} }); */
+/* feature({ type="tree", coord={NN, NN}, swarm=true, looted=false }); */
 const __static_lspo_feature_features = cptr.alloc(6 * 8);
 cptr.stPtro(__static_lspo_feature_features, 0, __s_fountain);
 cptr.stPtro(__static_lspo_feature_features, 8, __s_sink);
@@ -4600,7 +5425,9 @@ export function* lspo_feature(L) {
     let can_have_flags = 0;
     let fcoord;
     let humidity;
+
     (yield* create_des_coder());
+
     if (argc == 1 && lua_type(L, 1) == 4) {
         typ.v = cptr.ldI32o(__static_lspo_feature_features2i, (yield* luaL_checkoption(L, 1, null, __static_lspo_feature_features)), 4);
         x.v = (y.v = -1);
@@ -4619,25 +5446,30 @@ export function* lspo_feature(L) {
         let fx = cptr.box(0n);
         let fy = cptr.box(0n);
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, fx, fy));
         x.v = Number(BigInt.asIntN(16, fx.v)), y.v = Number(BigInt.asIntN(16, fy.v));
         typ.v = cptr.ldI32o(__static_lspo_feature_features2i, (yield* get_table_option(L, __s_type, null, __static_lspo_feature_features)), 4);
         can_have_flags = 1;
     }
+
     if (x.v == -1 && y.v == -1) {
         fcoord = 16777216n;
-        humidity = NHM.DRY;
+        humidity = NHM.DRY;  /* pick a regular space, no rock or other furniture */
     } else {
         fcoord = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
-        humidity = NHM.ANY_LOC;
+        humidity = NHM.ANY_LOC;  /* assume the author knows what they're doing */
     }
     (yield* get_location_coord(x, y, humidity, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), fcoord));
+
     if (typ.v == NHC.STONE)
         (yield* impossible(__s_feature_has_unknown_type_param));
     else
         sel_set_feature(x.v, y.v, typ);
+
     if (cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != typ.v || !can_have_flags)
         return 0;
+
     switch (typ.v) {
         default:
         break;
@@ -4658,9 +5490,13 @@ export function* lspo_feature(L) {
         (yield* l_table_getset_feature_flag(L, x.v, y.v, __s_swarm, NHM.TREE_SWARM));
         break;
     }
+
     return 0;
 }
 
+/* gas_cloud({ selection=SELECTION }); */
+/* gas_cloud({ selection=SELECTION, damage=N }); */
+/* gas_cloud({ selection=SELECTION, damage=N, ttl=N }); */
 /** C ref: sp_lev.c:4929 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_gas_cloud(L) {
     let x = 0;
@@ -4669,12 +5505,16 @@ export function* lspo_gas_cloud(L) {
     let argc = lua_gettop(L);
     let damage = 0;
     let ttl = -2;
+
     (yield* create_des_coder());
+
     if (argc == 1 && lua_type(L, 1) == 5) {
         let tx = cptr.box(0n);
         let ty = cptr.box(0n);
         let reg;
+
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, tx, ty));
         x = Number(BigInt.asIntN(16, tx.v)), y = Number(BigInt.asIntN(16, ty.v));
         if (tx.v == -1n && ty.v == -1n) {
@@ -4693,9 +5533,19 @@ export function* lspo_gas_cloud(L) {
     } else {
         (yield* nhl_error(L, __s_wrong_parameters__2));
     }
+
     return 0;
 }
 
+/*
+ * [lit_state: 1 On, 0 Off, -1 random, -2 leave as-is]
+ * terrain({ x=NN, y=NN, typ=MAPCHAR, lit=lit_state });
+ * terrain({ coord={X, Y}, typ=MAPCHAR, lit=lit_state });
+ * terrain({ selection=SELECTION, typ=MAPCHAR, lit=lit_state });
+ * terrain( SELECTION, MAPCHAR [, lit_state ] );
+ * terrain({x,y}, MAPCHAR);
+ * terrain(x,y, MAPCHAR);
+ */
 /** C ref: sp_lev.c:4978 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_terrain(L) {
     let tmpterrain = cptr.alloc(4);
@@ -4703,13 +5553,16 @@ export function* lspo_terrain(L) {
     let y = cptr.box(0);
     let sel = null;
     let argc = lua_gettop(L);
+
     (yield* create_des_coder());
     cptr.stI16o(tmpterrain, $terrain_tlit, -2);
     cptr.stI16(tmpterrain, NHC.INVALID_TYPE);
+
     if (argc == 1) {
         let tx = cptr.box(0n);
         let ty = cptr.box(0n);
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, tx, ty));
         x.v = Number(BigInt.asIntN(16, tx.v)), y.v = Number(BigInt.asIntN(16, ty.v));
         if (tx.v == -1n && ty.v == -1n) {
@@ -4737,21 +5590,35 @@ export function* lspo_terrain(L) {
     } else {
         (yield* nhl_error(L, __s_wrong_parameters__2));
     }
+
     if (cptr.ldI16(tmpterrain) == NHC.INVALID_TYPE)
         (yield* nhl_error(L, __s_erroneous_map_char));
+
     if (sel) {
         (yield* selection_iterate(sel, sel_set_ter, tmpterrain));
     } else {
         (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
         if (!isok(x.v, y.v)) {
             (yield* nhl_error(L, __s_terrain_coord_not_ok));
+            /*NOTREACHED*/
             return 0;
         }
         (yield* sel_set_ter(x.v, y.v, tmpterrain));
     }
+
     return 0;
 }
 
+/*
+ * replace_terrain({ x1=NN,y1=NN, x2=NN,y2=NN, fromterrain=MAPCHAR,
+ *                   toterrain=MAPCHAR, lit=N, chance=NN });
+ * replace_terrain({ region={x1,y1, x2,y2}, fromterrain=MAPCHAR,
+ *                   toterrain=MAPCHAR, lit=N, chance=NN });
+ * replace_terrain({ selection=selection.area(2,5, 40,10),
+ *                   fromterrain=MAPCHAR, toterrain=MAPCHAR });
+ * replace_terrain({ selection=SEL, mapfragment=[[...]],
+ *                   toterrain=MAPCHAR });
+ */
 /** C ref: sp_lev.c:5051 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_replace_terrain(L) {
     let totyp;
@@ -4768,39 +5635,52 @@ export function* lspo_replace_terrain(L) {
     let chance;
     let tolit;
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+
     totyp = i16((yield* get_table_mapchr(L, __s_toterrain)));
+
     if (totyp >= NHC.MAX_TYPE)
         return 0;
+
     fromtyp = i16((yield* get_table_mapchr_opt(L, __s_fromterrain, NHC.INVALID_TYPE)));
+
     if (fromtyp == NHC.INVALID_TYPE) {
         let err;
         let tmpstr = (yield* get_table_str(L, __s_mapfragment));
         mf.v = (yield* mapfrag_fromstr(tmpstr));
         cptr.free(tmpstr);
+
         if (!cptr.eq((err = (yield* mapfrag_error(mf.v))), (null))) {
             (yield* nhl_error(L, err));
+            /*NOTREACHED*/
         }
     }
+
     chance = (yield* get_table_int_opt(L, __s_chance, 100));
     tolit = (yield* get_table_int_opt(L, __s_lit, -2));
     x1.v = BigInt((yield* get_table_int_opt(L, __s_x1, -1)));
     y1.v = BigInt((yield* get_table_int_opt(L, __s_y1, -1)));
     x2.v = BigInt((yield* get_table_int_opt(L, __s_x2, -1)));
     y2.v = BigInt((yield* get_table_int_opt(L, __s_y2, -1)));
+
     if (x1.v == -1n && y1.v == -1n && x2.v == -1n && y2.v == -1n) {
         (yield* get_table_region(L, __s_region, x1, y1, x2, y2, 1));
     }
+
     if (x1.v == -1n && y1.v == -1n && x2.v == -1n && y2.v == -1n) {
         (yield* lua_getfield(L, 1, __s_selection));
         if (lua_type(L, -1) != 0)
             sel = (yield* l_selection_check(L, -1));
         (yield* lua_settop(L, -2));
     }
+
     if (!sel) {
         sel = (yield* selection_new());
         freesel = 1;
+
         if (x1.v == -1n && y1.v == -1n && x2.v == -1n && y2.v == -1n) {
             void selection_clear(sel, 1);
         } else {
@@ -4816,7 +5696,9 @@ export function* lspo_replace_terrain(L) {
                     selection_setpoint(x, y, sel, 1);
         }
     }
+
     selection_getbounds(sel, rect);
+
     for (x = i16((1 > (cptr.ldI16(rect)) ? 1 : (cptr.ldI16(rect)))); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (selection_getpoint(x, y, sel)) {
@@ -4828,9 +5710,12 @@ export function* lspo_replace_terrain(L) {
                         void (yield* set_levltyp_lit(x, y, schar(totyp), schar(tolit)));
                 }
             }
+
     if (freesel)
         selection_free(sel, 1);
+
     mapfrag_free(mf);
+
     return 0;
 }
 
@@ -4850,8 +5735,11 @@ function* generate_way_out_method(nx, ny, ov) {
     let y = cptr.box(0);
     let res = 1;
     __lbl_gotitdone: {
+
         (yield* selection_floodfill(ov2, nx, ny, 1));
         ov3 = (yield* selection_clone(ov2));
+
+        /* try to make a secret door */
         while (selection_rndcoord(ov3, x, y, 1)) {
             if (isok(i16(((x.v + 1) | 0)), y.v) && !selection_getpoint(i16(((x.v + 1) | 0)), y.v, ov) && ((cptr.ld1so3(svl, (x.v + 1) | 0, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, (x.v + 1) | 0, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) && isok(i16(((x.v + 2) | 0)), y.v) && selection_getpoint(i16(((x.v + 2) | 0)), y.v, ov) && ((cptr.ld1so3(svl, (x.v + 2) | 0, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.DOOR)) {
                 cptr.st1o3(svl, (x.v + 1) | 0, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.SDOOR);
@@ -4870,6 +5758,8 @@ function* generate_way_out_method(nx, ny, ov) {
                 break __lbl_gotitdone;
             }
         }
+
+        /* try to make a hole or a trapdoor */
         if (Can_fall_thru(cptr.add(u, $you_uz))) {
             selection_free(ov3, 1);
             ov3 = (yield* selection_clone(ov2));
@@ -4878,10 +5768,13 @@ function* generate_way_out_method(nx, ny, ov) {
                     break __lbl_gotitdone;
             }
         }
+
+        /* generate one of the escape items */
         if (selection_rndcoord(ov2, x, y, 0)) {
             (yield* mksobj_at(cptr.ldI32o(__static_generate_way_out_method_escapeitems, rn2_at(__s_sp_lev_c, 5205, __s_generate_way_out_method, 6), 4), x.v, y.v, 1, 0));
             break __lbl_gotitdone;
         }
+
         res = 0;
     }
     selection_free(ov2, 1);
@@ -4897,17 +5790,21 @@ function* ensure_way_out() {
     let y;
     let ret = 1;
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
+
     set_selection_floodfillchk(floodfillchk_match_accessible);
+
     while (stway) {
         if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz))
             (yield* selection_floodfill(ov, cptr.ldI16(stway), cptr.ldI16o(stway, $stairway_sy), 1));
         stway = cptr.ldPtro(stway, $stairway_next);
     }
+
     while (ttmp) {
         if ((undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) && !selection_getpoint(cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty), ov))
             (yield* selection_floodfill(ov, cptr.ldI16o(ttmp, $trap_tx), cptr.ldI16o(ttmp, $trap_ty), 1));
         ttmp = cptr.ldPtr(ttmp);
     }
+
     do {
         __lbl_outhere: {
             ret = 1;
@@ -4930,12 +5827,14 @@ function* get_table_intarray_entry(L, tableidx, entrynum) {
     let ret = 0n;
     if (tableidx < 0)
         tableidx--;
+
     (yield* lua_pushinteger(L, BigInt(entrynum)));
     (yield* lua_gettable(L, tableidx));
     if ((yield* lua_isnumber(L, -1))) {
         ret = (yield* lua_tointegerx(L, -1, null));
     } else {
         let buf = new Uint8Array(256);
+
         void cptr.sprintf(cptr.decay(buf), __s_array_entry_i_is_s_expected_number, 1, lua_typename(L, lua_type(L, -1)));
         (yield* nhl_error(L, cptr.decay(buf)));
     }
@@ -4946,24 +5845,30 @@ function* get_table_intarray_entry(L, tableidx, entrynum) {
 /** C ref: sp_lev.c:5282 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CPtr<lua_Integer>} x1 @param {CPtr<lua_Integer>} y1 @param {CPtr<lua_Integer>} x2 @param {CPtr<lua_Integer>} y2 @param {CInt} optional @returns {CInt} */
 function* get_table_region(L, name, x1, y1, x2, y2, optional) {
     let arrlen;
+
     (yield* lua_getfield(L, 1, name));
     if (optional && lua_type(L, -1) == 0) {
         (yield* lua_settop(L, -2));
         return 1;
     }
+
     (yield* luaL_checktype(L, -1, 5));
+
     (yield* lua_len(L, -1));
     arrlen = (yield* lua_tointegerx(L, -1, null));
     (yield* lua_settop(L, -2));
     if (arrlen != 4n) {
         (yield* nhl_error(L, __s_not_a_region));
+        /*NOTREACHED*/
         (yield* lua_settop(L, -2));
         return 0;
     }
+
     cptr.stI64(x1, (yield* get_table_intarray_entry(L, -1, 1)));
     cptr.stI64(y1, (yield* get_table_intarray_entry(L, -1, 2)));
     cptr.stI64(x2, (yield* get_table_intarray_entry(L, -1, 3)));
     cptr.stI64(y2, (yield* get_table_intarray_entry(L, -1, 4)));
+
     (yield* lua_settop(L, -2));
     return 1;
 }
@@ -4972,15 +5877,18 @@ function* get_table_region(L, name, x1, y1, x2, y2, optional) {
 export function* get_coord(L, i, x, y) {
     let ret = 0;
     let ltyp = lua_type(L, i);
+
     if (ltyp == 5) {
         let arrlen;
         let gotx = 0;
+
         (yield* lua_getfield(L, i, __s_x));
         if (!(lua_type(L, -1) == 0)) {
             cptr.stI64(x, (yield* luaL_checkinteger(L, -1)));
             gotx = 1;
         }
         (yield* lua_settop(L, -2));
+
         if (gotx) {
             (yield* lua_getfield(L, i, __s_y));
             if (!(lua_type(L, -1) == 0)) {
@@ -4989,6 +5897,7 @@ export function* get_coord(L, i, x, y) {
                 ret = 1;
             } else {
                 (yield* nhl_error(L, __s_not_a_coordinate));
+                /*NOTREACHED*/
                 return 0;
             }
         } else {
@@ -4997,13 +5906,17 @@ export function* get_coord(L, i, x, y) {
             (yield* lua_settop(L, -2));
             if (arrlen != 2) {
                 (yield* nhl_error(L, __s_not_a_coordinate));
+                /*NOTREACHED*/
                 return 0;
             }
+
             cptr.stI64(x, (yield* get_table_intarray_entry(L, i, 1)));
             cptr.stI64(y, (yield* get_table_intarray_entry(L, i, 2)));
+
             return 1;
         }
     } else if (ltyp != 0) {
+        /* non-existent coord is ok */
         (yield* nhl_error(L, __s_non_table_coord_specified));
     }
     return ret;
@@ -5015,12 +5928,15 @@ function* levregion_add(lregion) {
         (yield* get_location(lregion, cptr.add(lregion, 2), NHM.ANY_LOC, null));
         (yield* get_location(cptr.add(lregion, 4), cptr.add(lregion, 6), NHM.ANY_LOC, null));
     }
+
     if (!cptr.ld1so(lregion, $lev_region_del_islev)) {
         (yield* get_location(cptr.add(lregion, $lev_region_delarea), cptr.add(lregion, $lev_region_delarea + 2), NHM.ANY_LOC, null));
         (yield* get_location(cptr.add(lregion, $lev_region_delarea + 4), cptr.add(lregion, $lev_region_delarea + 6), NHM.ANY_LOC, null));
     }
     if (cptr.ldI32o(gn, $instance_globals_n_num_lregions)) {
+        /* realloc the lregion space to add the new one */
         let newl = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 32n * BigInt((((1 + cptr.ldI32o(gn, $instance_globals_n_num_lregions)) | 0) >>> 0) >>> 0))))));
+
         void cptr.memcpy((newl), cptr.ldPtro(gl, $instance_globals_l_lregions), BigInt.asUintN(64, 32n * BigInt.asUintN(64, BigInt(cptr.ldI32o(gn, $instance_globals_n_num_lregions)))));
         {
             if (cptr.ldPtro(gl, $instance_globals_l_lregions))
@@ -5035,29 +5951,46 @@ function* levregion_add(lregion) {
     void cptr.memcpy(cptr.add(cptr.ldPtro(gl, $instance_globals_l_lregions), (cptr.ldI32o(gn, $instance_globals_n_num_lregions) - 1) | 0, $sizeof_lev_region), lregion, 32n);
 }
 
+/* get params from topmost lua hash:
+   - region = {x1,y1,x2,y2}
+   - exclude = {x1,y1,x2,y2} (optional)
+   - region_islev=true, exclude_islev=true (optional)
+   - negative x and y are invalid */
 /** C ref: sp_lev.c:5410 — @param {CPtr<lua_State>} L @param {CPtr<lev_region>} tmplregion */
 function* l_get_lregion(L, tmplregion) {
     let x1 = cptr.box(0n);
     let y1 = cptr.box(0n);
     let x2 = cptr.box(0n);
     let y2 = cptr.box(0n);
+
     (yield* get_table_region(L, __s_region, x1, y1, x2, y2, 0));
     cptr.stI16(tmplregion, Number(BigInt.asIntN(16, x1.v)));
     cptr.stI16o(tmplregion, 2, Number(BigInt.asIntN(16, y1.v)));
     cptr.stI16o(tmplregion, 4, Number(BigInt.asIntN(16, x2.v)));
     cptr.stI16o(tmplregion, 6, Number(BigInt.asIntN(16, y2.v)));
+
     x1.v = (y1.v = (x2.v = (y2.v = -1n)));
     (yield* get_table_region(L, __s_exclude, x1, y1, x2, y2, 1));
     cptr.stI16o(tmplregion, $lev_region_delarea, Number(BigInt.asIntN(16, x1.v)));
     cptr.stI16o(tmplregion, $lev_region_delarea + 2, Number(BigInt.asIntN(16, y1.v)));
     cptr.stI16o(tmplregion, $lev_region_delarea + 4, Number(BigInt.asIntN(16, x2.v)));
     cptr.stI16o(tmplregion, $lev_region_delarea + 6, Number(BigInt.asIntN(16, y2.v)));
+
     cptr.st1o(tmplregion, $lev_region_in_islev, schar((yield* get_table_boolean_opt(L, __s_region_islev, 0))));
     cptr.st1o(tmplregion, $lev_region_del_islev, schar((yield* get_table_boolean_opt(L, __s_exclude_islev, 0))));
+
+    /* if x1 is still negative, exclude wasn't specified, so we should treat
+     * it as if there is no exclude region at all. Force exclude_islev to
+     * true so the -1,-1,-1,-1 region is safely off the map and won't
+     * interfere with branch or portal placement. */
     if (x1.v < 0n)
         cptr.st1o(tmplregion, $lev_region_del_islev, 1);
 }
 
+/* teleport_region({ region = { x1,y1, x2,y2 } }); */
+/* teleport_region({ region = { x1,y1, x2,y2 }, [ region_islev = 1, ]
+ *   exclude = { x1,y1, x2,y2 }, [ exclude_islen = 1, ] [ dir = "up" ] }); */
+/* TODO: maybe allow using selection, with a new method "getextents()"? */
 const __static_lspo_teleport_region_teledirs = cptr.alloc(4 * 8);
 cptr.stPtro(__static_lspo_teleport_region_teledirs, 0, __s_both);
 cptr.stPtro(__static_lspo_teleport_region_teledirs, 8, __s_down);
@@ -5072,16 +6005,28 @@ cptr.stI32o(__static_lspo_teleport_region_teledirs2i, 12, -1); /** C ref: sp_lev
 /** C ref: sp_lev.c:5443 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_teleport_region(L) {
     let tmplregion = cptr.alloc(32);
+
     (yield* create_des_coder());
     (yield* lcheck_param_table(L));
     (yield* l_get_lregion(L, tmplregion));
     cptr.stI16o(tmplregion, $lev_region_rtype, i16(cptr.ldI32o(__static_lspo_teleport_region_teledirs2i, (yield* get_table_option(L, __s_dir, __s_both, __static_lspo_teleport_region_teledirs)), 4)));
     cptr.stI16o(tmplregion, $lev_region_padding, 0);
     cptr.stPtro(tmplregion, $lev_region_rname, null);
+
     (yield* levregion_add(tmplregion));
+
     return 0;
 }
 
+/* TODO: FIXME
+   from lev_comp SPO_LEVREGION was called as:
+   - STAIR:(x1,y1,x2,y2),(x1,y1,x2,y2),dir
+   - PORTAL:(x1,y1,x2,y2),(x1,y1,x2,y2),string
+   - BRANCH:(x1,y1,x2,y2),(x1,y1,x2,y2),dir
+*/
+/* levregion({ region = { x1,y1, x2,y2 }, exclude = { x1,y1, x2,y2 },
+ *             type = "portal", name="air" }); */
+/* TODO: allow region to be optional, defaulting to whole level */
 const __static_lspo_levregion_regiontypes = cptr.alloc(8 * 8);
 cptr.stPtro(__static_lspo_levregion_regiontypes, 0, __s_stair_down);
 cptr.stPtro(__static_lspo_levregion_regiontypes, 8, __s_stair_up);
@@ -5104,16 +6049,19 @@ cptr.stI32o(__static_lspo_levregion_regiontypes2i, 28, 0); /** C ref: sp_lev.c:5
 /** C ref: sp_lev.c:5472 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_levregion(L) {
     let tmplregion = cptr.alloc(32);
+
     (yield* create_des_coder());
     (yield* lcheck_param_table(L));
     (yield* l_get_lregion(L, tmplregion));
     cptr.stI16o(tmplregion, $lev_region_rtype, i16(cptr.ldI32o(__static_lspo_levregion_regiontypes2i, (yield* get_table_option(L, __s_type, __s_stair_down, __static_lspo_levregion_regiontypes)), 4)));
     cptr.stI16o(tmplregion, $lev_region_padding, i16((yield* get_table_int_opt(L, __s_padding, 0))));
     cptr.stPtro(tmplregion, $lev_region_rname, (yield* get_table_str_opt(L, __s_name, null)));
+
     (yield* levregion_add(tmplregion));
     return 0;
 }
 
+/* exclusion({ type = "teleport", region = { x1,y1, x2,y2 } }); */
 const __static_lspo_exclusion_ez_types = cptr.alloc(5 * 8);
 cptr.stPtro(__static_lspo_exclusion_ez_types, 0, __s_teleport);
 cptr.stPtro(__static_lspo_exclusion_ez_types, 8, __s_teleport_up);
@@ -5138,18 +6086,23 @@ export function* lspo_exclusion(L) {
     let b1 = cptr.box(0);
     let a2 = cptr.box(0);
     let b2 = cptr.box(0);
+
     (yield* create_des_coder());
     (yield* lcheck_param_table(L));
     cptr.stI16(ez, i16(cptr.ldI32o(__static_lspo_exclusion_ez_types2i, (yield* get_table_option(L, __s_type, __s_teleport, __static_lspo_exclusion_ez_types)), 4)));
     (yield* get_table_region(L, __s_region, x1, y1, x2, y2, 0));
+
     a1.v = Number(BigInt.asIntN(16, x1.v)), b1.v = Number(BigInt.asIntN(16, y1.v));
     a2.v = Number(BigInt.asIntN(16, x2.v)), b2.v = Number(BigInt.asIntN(16, y2.v));
+
     (yield* get_location_coord(a1, b1, 48, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((a1.v) & 255) + (((b1.v) & 255) << 16)) | 0))));
     (yield* get_location_coord(a2, b2, 48, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), BigInt(((((a2.v) & 255) + (((b2.v) & 255) << 16)) | 0))));
+
     cptr.stI16o(ez, $exclusion_zone_lx, a1.v);
     cptr.stI16o(ez, $exclusion_zone_ly, b1.v);
     cptr.stI16o(ez, $exclusion_zone_hx, a2.v);
     cptr.stI16o(ez, $exclusion_zone_hy, b2.v);
+
     cptr.stPtro(ez, $exclusion_zone_next, cptr.ldPtr(sve));
     cptr.stPtr(sve, ez);
     return 0;
@@ -5158,14 +6111,17 @@ export function* lspo_exclusion(L) {
 /** C ref: sp_lev.c:5535 — @param {CInt} x @param {CInt} y @param {CPtr} arg */
 function sel_set_lit(x, y, arg) {
     let lit = cptr.ldI32(arg);
+
     cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, ((((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAPOOL || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAWALL) || lit) ? 1 : 0) >>> 0);
 }
 
+/* Add to the room any doors within/bordering it */
 /** C ref: sp_lev.c:5544 — @param {CPtr<struct mkroom>} croom */
 function* add_doors_to_room(croom) {
     let x;
     let y;
     let i;
+
     for (x = i16(((cptr.ldI16(croom) - 1) | 0)); x <= ((cptr.ldI16o(croom, $mkroom_hx) + 1) | 0); x++)
         for (y = i16(((cptr.ldI16o(croom, $mkroom_ly) - 1) | 0)); y <= ((cptr.ldI16o(croom, $mkroom_hy) + 1) | 0); y++)
             if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)
@@ -5174,17 +6130,20 @@ function* add_doors_to_room(croom) {
         (yield* add_doors_to_room(cptr.ldPtro2(croom, i, 8, $mkroom_sbrooms)));
 }
 
+/* inside a lua table, get fields x1,y1,x2,y2 or region table */
 /** C ref: sp_lev.c:5561 — @param {CPtr<lua_State>} L @param {CPtr<coordxy>} dx1 @param {CPtr<coordxy>} dy1 @param {CPtr<coordxy>} dx2 @param {CPtr<coordxy>} dy2 */
 function* get_table_coords_or_region(L, dx1, dy1, dx2, dy2) {
     cptr.stI16(dx1, i16((yield* get_table_int_opt(L, __s_x1, -1))));
     cptr.stI16(dy1, i16((yield* get_table_int_opt(L, __s_y1, -1))));
     cptr.stI16(dx2, i16((yield* get_table_int_opt(L, __s_x2, -1))));
     cptr.stI16(dy2, i16((yield* get_table_int_opt(L, __s_y2, -1))));
+
     if (cptr.ldI16(dx1) == -1 && cptr.ldI16(dy1) == -1 && cptr.ldI16(dx2) == -1 && cptr.ldI16(dy2) == -1) {
         let rx1 = cptr.box(0n);
         let ry1 = cptr.box(0n);
         let rx2 = cptr.box(0n);
         let ry2 = cptr.box(0n);
+
         (yield* get_table_region(L, __s_region, rx1, ry1, rx2, ry2, 0));
         cptr.stI16(dx1, Number(BigInt.asIntN(16, rx1.v)));
         cptr.stI16(dy1, Number(BigInt.asIntN(16, ry1.v)));
@@ -5193,6 +6152,10 @@ function* get_table_coords_or_region(L, dx1, dy1, dx2, dy2) {
     }
 }
 
+/* region(selection, lit); */
+/* region({ x1=NN, y1=NN, x2=NN, y2=NN, lit=BOOL, type=ROOMTYPE, joined=BOOL,
+ *          irregular=BOOL, filled=NN [ , contents = FUNCTION ] }); */
+/* region({ region={x1,y1, x2,y2}, type="ordinary" }); */
 const __static_lspo_region_lits = cptr.alloc(3 * 8);
 cptr.stPtro(__static_lspo_region_lits, 0, __s_unlit);
 cptr.stPtro(__static_lspo_region_lits, 8, __s_lit);
@@ -5213,35 +6176,64 @@ export function* lspo_region(L) {
     let rlit = cptr.box(1);
     let needfill = 0;
     let argc = lua_gettop(L);
+
     (yield* create_des_coder());
+
     if (argc <= 1) {
         (yield* lcheck_param_table(L));
+
+        /* TODO: "unfilled" => filled=0, "filled" => filled=1, and
+         * "lvflags_only" => filled=2, probably in a get_table_needfill_opt */
         needfill = (yield* get_table_int_opt(L, __s_filled, 0));
         irregular = schar((yield* get_table_boolean_opt(L, __s_irregular, 0)));
         joined = schar((yield* get_table_boolean_opt(L, __s_joined, 1)));
         do_arrival_room = schar((yield* get_table_boolean_opt(L, __s_arrival_room, 0)));
         rtype = (yield* get_table_roomtype_opt(L, __s_type, NHC.OROOM));
         rlit.v = (yield* get_table_int_opt(L, __s_lit, -1));
+
         (yield* get_table_coords_or_region(L, dx1, dy1, dx2, dy2));
+
         if (dx1.v == -1 && dy1.v == -1 && dx2.v == -1 && dy2.v == -1) {
             (yield* nhl_error(L, __s_region_needs_region));
         }
+
     } else if (argc == 2) {
         let orig = (yield* l_selection_check(L, 1));
         let sel = (yield* selection_clone(orig));
+
         rlit.v = (yield* luaL_checkoption(L, 2, __s_lit, __static_lspo_region_lits));
+
+        /*
+    TODO: lit=random
+        */
         if (rlit.v)
             (yield* selection_do_grow(sel, 15));
         (yield* selection_iterate(sel, sel_set_lit, rlit));
+
         selection_free(sel, 1);
+
+        /* TODO: skip the rest of this function? */
         return 0;
     } else {
         (yield* nhl_error(L, __s_wrong_parameters));
+        /*NOTREACHED*/
         return 0;
     }
+
     rlit.v = litstate_rnd(rlit.v);
+
     (yield* get_location(dx1, dy1, NHM.ANY_LOC, null));
     (yield* get_location(dx2, dy2, NHM.ANY_LOC, null));
+
+    /* Many regions are simple, rectangular areas that just need to set
+     * lighting in an area. In that case, we don't need to do anything
+     * complicated by creating a room. The exceptions are:
+     *  - Special rooms (which usually need to be filled).
+     *  - Irregular regions (more convenient to use the room-making code).
+     *  - Themed room regions (which often have contents).
+     *  - When a room is desired to constrain the arrival of migrating
+     *    monsters (see the mon_arrive function for details).
+     */
     room_not_needed = schar((rtype == NHC.OROOM && !irregular && !do_arrival_room && !cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) ? 1 : 0));
     if (room_not_needed || cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= NHM.MAXNROFROOMS) {
         let tmpregion = cptr.alloc(14);
@@ -5253,11 +6245,17 @@ export function* lspo_region(L) {
         cptr.stI16o(tmpregion, $region_x2, dx2.v);
         cptr.stI16o(tmpregion, $region_y2, dy2.v);
         light_region(tmpregion);
+
         return 0;
     }
+
     troom = cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom);
+
+    /* mark rooms that must be filled, but do it later */
     cptr.st1o(troom, $mkroom_needfill, schar(needfill));
+
     cptr.st1o(troom, $mkroom_needjoining, joined);
+
     if (irregular) {
         cptr.stI16o(gm, $instance_globals_m_min_rx, cptr.stI16o(gm, $instance_globals_m_max_rx, dx1.v));
         cptr.stI16o(gm, $instance_globals_m_min_ry, cptr.stI16o(gm, $instance_globals_m_max_ry, dy1.v));
@@ -5268,8 +6266,9 @@ export function* lspo_region(L) {
         cptr.st1o(troom, $mkroom_irregular, 1);
     } else {
         (yield* add_room(dx1.v, dy1.v, dx2.v, dy2.v, schar(rlit.v), schar(rtype), 1));
-        topologize(troom);
+        topologize(troom);  /* set roomno */
     }
+
     if (!room_not_needed) {
         if (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) > 1) {
             (yield* impossible(__s_region_as_subroom));
@@ -5290,9 +6289,12 @@ export function* lspo_region(L) {
             (yield* add_doors_to_room(troom));
         }
     }
+
     return 0;
 }
 
+/* drawbridge({ dir="east", state="closed", x=05,y=08 }); */
+/* drawbridge({ dir="east", state="closed", coord={05,08} }); */
 const __static_lspo_drawbridge_mwdirs = cptr.alloc(6 * 8);
 cptr.stPtro(__static_lspo_drawbridge_mwdirs, 0, __s_north);
 cptr.stPtro(__static_lspo_drawbridge_mwdirs, 8, __s_south);
@@ -5327,17 +6329,23 @@ export function* lspo_drawbridge(L) {
     let dir;
     let db_open;
     let dcoord;
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+
     (yield* get_table_xy_or_coord(L, mx, my));
+
     dir = cptr.ldI32o(__static_lspo_drawbridge_mwdirs2i, (yield* get_table_option(L, __s_dir, __s_random, __static_lspo_drawbridge_mwdirs)), 4);
     dcoord = (BigInt.asIntN(64, ((mx.v) & 255n) + (((my.v) & 255n) << 16n)));
     db_open = cptr.ldI32o(__static_lspo_drawbridge_dbopens2i, (yield* get_table_option(L, __s_state, __s_random, __static_lspo_drawbridge_dbopens)), 4);
     x.v = Number(BigInt.asIntN(16, mx.v));
     y.v = Number(BigInt.asIntN(16, my.v));
+
     (yield* get_location_coord(x, y, 7, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), dcoord));
     if (!isok(Number(BigInt.asIntN(16, mx.v)), Number(BigInt.asIntN(16, my.v)))) {
         (yield* nhl_error(L, __s_drawbridge_coord_not_ok));
+        /*NOTREACHED*/
         return 0;
     }
     if (db_open == -1)
@@ -5345,9 +6353,13 @@ export function* lspo_drawbridge(L) {
     if (!(yield* create_drawbridge(x.v, y.v, dir, schar((db_open ? 1 : 0)))))
         (yield* impossible(__s_cannot_create_drawbridge));
     cptr.st1o(cptr.decay(SpLev_Map[x.v]), y.v, 1, 1);
+
     return 0;
 }
 
+/* mazewalk({ x = NN, y = NN, typ = ".", dir = "north", stocked = 0 }); */
+/* mazewalk({ coord = {XX, YY}, typ = ".", dir = "north", stocked = 0 }); */
+/* mazewalk(x,y,dir); */
 const __static_lspo_mazewalk_mwdirs = cptr.alloc(6 * 8);
 cptr.stPtro(__static_lspo_mazewalk_mwdirs, 0, __s_north);
 cptr.stPtro(__static_lspo_mazewalk_mwdirs, 8, __s_south);
@@ -5374,31 +6386,42 @@ export function* lspo_mazewalk(L) {
     let dir = -1;
     let mcoord;
     let argc = lua_gettop(L);
+
     (yield* create_des_coder());
+
     if (argc == 3) {
         mx.v = (yield* luaL_checkinteger(L, 1));
         my.v = (yield* luaL_checkinteger(L, 2));
         dir = cptr.ldI32o(__static_lspo_mazewalk_mwdirs2i, (yield* luaL_checkoption(L, 3, __s_random, __static_lspo_mazewalk_mwdirs)), 4);
     } else {
         (yield* lcheck_param_table(L));
+
         (yield* get_table_xy_or_coord(L, mx, my));
         ftyp = i16((yield* get_table_mapchr_opt(L, __s_typ, NHC.ROOM)));
         fstocked = (yield* get_table_boolean_opt(L, __s_stocked, 1));
         dir = cptr.ldI32o(__static_lspo_mazewalk_mwdirs2i, (yield* get_table_option(L, __s_dir, __s_random, __static_lspo_mazewalk_mwdirs)), 4);
     }
+
     mcoord = (BigInt.asIntN(64, ((mx.v) & 255n) + (((my.v) & 255n) << 16n)));
     x.v = Number(BigInt.asIntN(16, mx.v));
     y.v = Number(BigInt.asIntN(16, my.v));
+
     (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), mcoord));
+
     if (!isok(x.v, y.v)) {
         (yield* nhl_error(L, __s_mazewalk_coord_not_ok));
+        /*NOTREACHED*/
         return 0;
     }
+
     if (ftyp < 1) {
         ftyp = i16(((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze) & 1) | 0 ? NHC.CORR : NHC.ROOM));
     }
+
     if (dir == -1)
         dir = random_wdir();
+
+    /* don't use move() - it doesn't use W_NORTH, etc. */
     switch (dir) {
         case NHM.W_NORTH:
         --y.v;
@@ -5415,30 +6438,44 @@ export function* lspo_mazewalk(L) {
         default:
         (yield* impossible(__s_mazewalk_bad_direction));
     }
+
     if (!((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
         cptr.st1o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(ftyp));
         cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
     }
+
+    /*
+     * We must be sure that the parity of the coordinates for
+     * walkfrom() is odd.  But we must also take into account
+     * what direction was chosen.
+     */
     if (!(x.v % 2)) {
         if (dir == NHM.W_EAST)
             x.v++;
         else
             x.v--;
+
+        /* no need for IS_DOOR check; out of map bounds */
         cptr.st1o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(ftyp));
         cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
     }
+
     if (!(y.v % 2)) {
         if (dir == NHM.W_SOUTH)
             y.v++;
         else
             y.v--;
     }
+
     (yield* walkfrom(x.v, y.v, schar(ftyp)));
     if (fstocked)
         (yield* fill_empty_maze());
+
     return 0;
 }
 
+/* wall_property({ x1=0, y1=0, x2=78, y2=20, property="nondiggable" }); */
+/* wall_property({ region = {1,0, 78,20}, property="nonpasswall" }); */
 const __static_lspo_wall_property_wprops = cptr.alloc(3 * 8);
 cptr.stPtro(__static_lspo_wall_property_wprops, 0, __s_nondiggable);
 cptr.stPtro(__static_lspo_wall_property_wprops, 8, __s_nonpasswall);
@@ -5455,10 +6492,15 @@ export function* lspo_wall_property(L) {
     let dx2 = cptr.box(-1);
     let dy2 = cptr.box(-1);
     let wprop;
+
     (yield* create_des_coder());
+
     (yield* lcheck_param_table(L));
+
     (yield* get_table_coords_or_region(L, dx1, dy1, dx2, dy2));
+
     wprop = cptr.ldI32o(__static_lspo_wall_property_wprop2i, (yield* get_table_option(L, __s_property, __s_nondiggable, __static_lspo_wall_property_wprops)), 4);
+
     if (dx1.v == -1)
         dx1.v = i16(((cptr.ldI16o(gx, $instance_globals_x_xstart) - 1) | 0));
     if (dy1.v == -1)
@@ -5467,9 +6509,12 @@ export function* lspo_wall_property(L) {
         dx2.v = i16(((((cptr.ldI16o(gx, $instance_globals_x_xstart) + cptr.ldI16o(gx, $instance_globals_x_xsize)) | 0) + 1) | 0));
     if (dy2.v == -1)
         dy2.v = i16(((((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0) + 1) | 0));
+
     (yield* get_location(dx1, dy1, NHM.ANY_LOC, null));
     (yield* get_location(dx2, dy2, NHM.ANY_LOC, null));
+
     set_wall_property(dx1.v, dy1.v, dx2.v, dy2.v, wprop);
+
     return 0;
 }
 
@@ -5479,7 +6524,9 @@ function* set_wallprop_in_selection(L, prop) {
     let argc = lua_gettop(L);
     let freesel = 0;
     let sel = null;
+
     (yield* create_des_coder());
+
     if (argc == 1) {
         sel = (yield* l_selection_check(L, -1));
     } else if (argc == 0) {
@@ -5487,6 +6534,7 @@ function* set_wallprop_in_selection(L, prop) {
         sel = (yield* selection_new());
         selection_clear(sel, 1);
     }
+
     if (sel) {
         (yield* selection_iterate(sel, sel_set_wall_property, prop));
         if (freesel)
@@ -5494,38 +6542,56 @@ function* set_wallprop_in_selection(L, prop) {
     }
 }
 
+/* non_diggable(selection); */
+/* non_diggable(); */
 /** C ref: sp_lev.c:5937 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_non_diggable(L) {
     (yield* set_wallprop_in_selection(L, NHM.W_NONDIGGABLE));
     return 0;
 }
 
+/* non_passwall(selection); */
+/* non_passwall(); */
 /** C ref: sp_lev.c:5946 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_non_passwall(L) {
     (yield* set_wallprop_in_selection(L, NHM.W_NONPASSWALL));
     return 0;
 }
 
+/* TODO: wallify(selection) */
+/* wallify({ x1=NN,y1=NN, x2=NN,y2=NN }); */
+/* wallify(); */
 /** C ref: sp_lev.c:5965 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_wallify(L) {
     let dx1 = -1;
     let dy1 = -1;
     let dx2 = -1;
     let dy2 = -1;
+
+    /* TODO: clamp coord values */
+    /* TODO: maybe allow wallify({x1,y1}, {x2,y2}) */
+    /* TODO: is_table_coord(), is_table_area(),
+             get_table_coord(), get_table_area() */
+
     (yield* create_des_coder());
+
     if (lua_gettop(L) == 1) {
         dx1 = (yield* get_table_int(L, __s_x1));
         dy1 = (yield* get_table_int(L, __s_y1));
         dx2 = (yield* get_table_int(L, __s_x2));
         dy2 = (yield* get_table_int(L, __s_y2));
     }
+
     wallify_map(i16((dx1 < 0 ? ((cptr.ldI16o(gx, $instance_globals_x_xstart) - 1) | 0) : dx1)), i16((dy1 < 0 ? ((cptr.ldI16o(gy, $instance_globals_y_ystart) - 1) | 0) : dy1)), i16((dx2 < 0 ? ((((cptr.ldI16o(gx, $instance_globals_x_xstart) + cptr.ldI16o(gx, $instance_globals_x_xsize)) | 0) + 1) | 0) : dx2)), i16((dy2 < 0 ? ((((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0) + 1) | 0) : dy2)));
+
     return 0;
 }
 
+/* reset_level is only needed for testing purposes */
 /** C ref: sp_lev.c:5993 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_reset_level(L) {
     let wtower = (yield* In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz)));
+
     cptr.st1o(iflags, $instance_flags_lua_testing, 1);
     if (L) {
         if (cptr.ldPtro(gc, $instance_globals_c_coder)) {
@@ -5539,41 +6605,70 @@ export function* lspo_reset_level(L) {
     }
     (yield* makemap_prepost(1, wtower));
     cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
-    (yield* oinit());
+    (yield* oinit());  /* assign level dependent obj probabilities */
     (yield* clear_level_structures());
     return 0;
 }
 
+/* finalize_level is only needed for testing purposes */
 /** C ref: sp_lev.c:6014 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* lspo_finalize_level(L) {
     let wtower = (yield* In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz)));
     let i;
+
     if (L)
         (yield* create_des_coder());
+
     (yield* link_doors_rooms());
     remove_boundary_syms();
+
+    /* TODO: ensure_way_out() needs rewrite */
     if (L && cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_check_inaccessibles))
         (yield* ensure_way_out());
+
     (yield* map_cleanup());
+
+    /* FIXME: Ideally, we want this call to only cover areas of the map
+     * which were not inserted directly by the special level file (see
+     * the insect legs on Baalzebub's level, for instance). Since that
+     * is currently not possible, we overload the corrmaze flag for this
+     * purpose.
+     */
     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze) & 1))
         (yield* wallification(1, 0, 79, 20));
+
     if (L)
         (yield* flip_level_rnd(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_allow_flips), 0));
+
     count_level_features();
+
     if (L && cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_solidify))
         solidify_map();
+
+    /* This must be done before premap_detect(),
+     * otherwise branch stairs won't be premapped. */
     (yield* fixup_special());
+
     if (L && cptr.ldI32(cptr.ldPtro(gc, $instance_globals_c_coder)))
         (yield* premap_detect());
+
     (yield* level_finalize_topology());
+
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); ++i) {
         (yield* fill_special_room(cptr.add(svr, i, $sizeof_mkroom)));
     }
+
     (yield* makemap_prepost(0, wtower));
     cptr.st1o(iflags, $instance_flags_lua_testing, 0);
     return 0;
 }
 
+/* map({ x = 10, y = 10, map = [[...]] }); */
+/* map({ coord = {10, 10}, map = [[...]] }); */
+/* map({ halign = "center", valign = "center", map = [[...]] }); */
+/* map({ map = [[...]], contents = function(map) ... end }); */
+/* map([[...]]) */
+/* local selection = map( ... ); */
 const __static_lspo_map_left_or_right = cptr.alloc(7 * 8);
 cptr.stPtro(__static_lspo_map_left_or_right, 0, __s_left);
 cptr.stPtro(__static_lspo_map_left_or_right, 8, __s_half_left);
@@ -5618,9 +6713,12 @@ export function* lspo_map(L) {
     let oy;
     let lit = 0;
     let sel;
+
     (yield* create_des_coder());
+
     if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && cptr.ld1so(gt, $instance_globals_t_themeroom_failed))
         return 0;
+
     if (argc == 1 && lua_type(L, 1) == 4) {
         tmpstr = (yield* dupstr(((yield* luaL_checklstring(L, 1, null)))));
         lr = (tb = 3);
@@ -5643,16 +6741,20 @@ export function* lspo_map(L) {
         mf.v = (yield* mapfrag_fromstr(tmpstr));
         cptr.free(tmpstr);
     }
+
     if (!mf.v) {
         (yield* nhl_error(L, __s_map_data_error));
+        /*NOTREACHED*/
         return 0;
     }
+
     sel = (yield* selection_new());
     ox = Number(BigInt.asIntN(32, x.v));
     oy = Number(BigInt.asIntN(32, y.v));
     __lbl_redo_maploc: while (true) {
         cptr.stI16o(gx, $instance_globals_x_xsize, i16(cptr.ldI32(mf.v)));
         cptr.stI16o(gy, $instance_globals_y_ysize, i16(cptr.ldI32o(mf.v, $mapfragment_hei)));
+
         if (lr == -1 && tb == -1) {
             if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && (ox == -1 || oy == -1)) {
                 if (ox == -1) {
@@ -5664,6 +6766,7 @@ export function* lspo_map(L) {
                         x.v = BigInt(((1 + rn2_at(__s_sp_lev_c, 6154, __s_lspo_map, (79 - cptr.ldI32(mf.v)) | 0)) | 0));
                     }
                 }
+
                 if (oy == -1) {
                     if (cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
                         y.v = BigInt(((somey(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) - cptr.ldI32o(mf.v, $mapfragment_hei)) | 0));
@@ -5674,8 +6777,11 @@ export function* lspo_map(L) {
                     }
                 }
             }
+
             if (isok(Number(BigInt.asIntN(16, x.v)), Number(BigInt.asIntN(16, y.v)))) {
+                /* x,y is given, place map starting at x,y */
                 if (cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
+                    /* in a room? adjust to room relative coords */
                     cptr.stI16o(gx, $instance_globals_x_xstart, Number(BigInt.asIntN(16, BigInt.asIntN(64, x.v + BigInt(cptr.ldI16(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)))))));
                     cptr.stI16o(gy, $instance_globals_y_ystart, Number(BigInt.asIntN(16, BigInt.asIntN(64, y.v + BigInt(cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), $mkroom_ly))))));
                     cptr.stI16o(gx, $instance_globals_x_xsize, i16(min(cptr.ldI32(mf.v), ((cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), $mkroom_hx) - cptr.ldI16(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom))) | 0))));
@@ -5693,6 +6799,7 @@ export function* lspo_map(L) {
                 return 0;
             }
         } else {
+            /* place map starting at halign,valign */
             switch (lr) {
                 case 1:
                 cptr.stI16o(gx, $instance_globals_x_xstart, i16((splev_init_present ? 1 : 3)));
@@ -5726,23 +6833,31 @@ export function* lspo_map(L) {
             if (!(cptr.ldI16o(gy, $instance_globals_y_ystart) % 2))
                 (cptr.stI16o(gy, $instance_globals_y_ystart, cptr.ldI16o(gy, $instance_globals_y_ystart) + 1)) - (1);
         }
+
         if (cptr.ldI16o(gy, $instance_globals_y_ystart) < 0 || ((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0) > NHM.ROWNO) {
             if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms)) {
                 cptr.st1o(gt, $instance_globals_t_themeroom_failed, 1);
                 {
                     mapfrag_free(mf);
+
                     if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && cptr.ld1so(gt, $instance_globals_t_themeroom_failed)) {
+                        /* this mutated xstart and ystart in the process of trying to make a
+                         * themed room, so undo them */
                         reset_xystart_size();
                     } else if (has_contents) {
                         (yield* l_push_wid_hei_table(L, cptr.ldI16o(gx, $instance_globals_x_xsize), cptr.ldI16o(gy, $instance_globals_y_ysize)));
                         (yield* nhl_pcall_handle(L, 1, 0, __s_lspo_map, NHC.NHLpa_panic));
                         reset_xystart_size();
                     }
+
+                    /* return selection where map locations were put */
                     (yield* l_selection_push_copy(L, sel));
                     selection_free(sel, 1);
+
                     return 1;
                 }
             }
+            /* try to move the start a bit */
             cptr.stI16o(gy, $instance_globals_y_ystart, cptr.ldI16o(gy, $instance_globals_y_ystart) + ((cptr.ldI16o(gy, $instance_globals_y_ystart) > 0) ? -2 : 2));
             if (cptr.ldI16o(gy, $instance_globals_y_ysize) == NHM.ROWNO)
                 cptr.stI16o(gy, $instance_globals_y_ystart, 0);
@@ -5754,6 +6869,8 @@ export function* lspo_map(L) {
         } else {
             let mptyp;
             let terr = cptr.alloc(4);
+
+            /* Themed rooms should never overwrite anything */
             if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms)) {
                 let isokp = 1;
                 for (y.v = BigInt(((cptr.ldI16o(gy, $instance_globals_y_ystart) - 1) | 0)); y.v < BigInt((((NHM.ROWNO < ((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0) ? NHM.ROWNO : ((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0)) + 1) | 0)); y.v++)
@@ -5790,14 +6907,18 @@ export function* lspo_map(L) {
                         }
                     }
             }
+
+            /* Load the map */
             for (y.v = BigInt(cptr.ldI16o(gy, $instance_globals_y_ystart)); y.v < BigInt((NHM.ROWNO < ((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0) ? NHM.ROWNO : ((cptr.ldI16o(gy, $instance_globals_y_ystart) + cptr.ldI16o(gy, $instance_globals_y_ysize)) | 0))); y.v++)
                 for (x.v = BigInt(cptr.ldI16o(gx, $instance_globals_x_xstart)); x.v < BigInt((NHM.COLNO < ((cptr.ldI16o(gx, $instance_globals_x_xstart) + cptr.ldI16o(gx, $instance_globals_x_xsize)) | 0) ? NHM.COLNO : ((cptr.ldI16o(gx, $instance_globals_x_xstart) + cptr.ldI16o(gx, $instance_globals_x_xsize)) | 0))); x.v++) {
                     mptyp = i16((yield* mapfrag_get(mf.v, Number(BigInt.asIntN(32, (BigInt.asIntN(64, x.v - BigInt(cptr.ldI16o(gx, $instance_globals_x_xstart)))))), Number(BigInt.asIntN(32, (BigInt.asIntN(64, y.v - BigInt(cptr.ldI16o(gy, $instance_globals_y_ystart)))))))));
                     if (mptyp == NHC.INVALID_TYPE) {
+                        /* TODO: warn about illegal map char */
                         continue;
                     }
                     if (mptyp >= NHC.MAX_TYPE)
                         continue;
+                    /* clear out levl: load_common_data may set them */
                     cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
                     cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
                     cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, 0);
@@ -5827,6 +6948,7 @@ export function* lspo_map(L) {
 export function update_croom() {
     if (!cptr.ldPtro(gc, $instance_globals_c_coder))
         return;
+
     if (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom))
         cptr.stPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom, cptr.ldPtro2(cptr.ldPtro(gc, $instance_globals_c_coder), (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) - 1) | 0, 8, $sp_coder_tmproomlist));
     else
@@ -5837,31 +6959,41 @@ export function update_croom() {
 function* sp_level_coder_init() {
     let tmpi;
     let coder = (yield* alloc(96));
+
     cptr.stI32(coder, 0);
     cptr.st1o(coder, $sp_coder_solidify, 0);
     cptr.st1o(coder, $sp_coder_check_inaccessibles, 0);
-    cptr.stI32o(coder, $sp_coder_allow_flips, 3);
+    cptr.stI32o(coder, $sp_coder_allow_flips, 3);  /* allow flipping level horiz/vert */
     cptr.stPtro(coder, $sp_coder_croom, null);
     cptr.stI32o(coder, $sp_coder_n_subroom, 1);
     cptr.st1o(coder, $sp_coder_lvl_is_joined, 0);
     cptr.stI32o(coder, $sp_coder_room_stack, 0);
+
     splev_init_present = 0;
     icedpools = 0;
+
     for (tmpi = 0; tmpi <= NHM.MAX_NESTED_ROOMS; tmpi++) {
         cptr.stPtro2(coder, tmpi, 8, $sp_coder_tmproomlist, null);
         cptr.st1o2(coder, tmpi, 1, $sp_coder_failed_room, 0);
     }
+
     update_croom();
+
     for (tmpi = 0; tmpi < 10; tmpi++)
         cptr.stPtro(container_obj, tmpi, null, 8);
     container_idx = 0;
+
     invent_carrying_monster = null;
+
     void __builtin___memset_chk(cptr.decay(SpLev_Map), 0, 1680n, __builtin_object_size(cptr.decay(SpLev_Map), 0));
+
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev, 0);
     cptr.st1o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature, schar((In_hell(cptr.add(u, $you_uz)) ? 1 : 0)));
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen, 1);
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_deathdrops, 1);
+
     reset_xystart_size();
+
     return coder;
 }
 
@@ -5938,8 +7070,24 @@ cptr.stPtro(nhl_functions, 528 + $luaL_Reg_func, lspo_gas_cloud);
 cptr.stPtro(nhl_functions, 544, null);
 cptr.stPtro(nhl_functions, 544 + $luaL_Reg_func, null);
 
+/* TODO:
+
+ - if des-file used MAZE_ID to start a level, the level needs
+   des.level_flags("mazelevel")
+ - expose gc.coder->croom or gx.xstart gy.ystart and gx.xsize gy.ysize to lua.
+ - detect a "subroom" automatically.
+ - new function get_mapchar(x,y) to return the mapchar on map
+ - many params should accept their normal type (eg, int or bool), AND "random"
+ - automatically add shuffle(array)
+ - automatically add align = { "law", "neutral", "chaos" } and shuffle it.
+   (remove from lua files)
+ - grab the header comments from des-files and add them to the lua files
+
+*/
+
 /** C ref: sp_lev.c:6435 — @param {CPtr<lua_State>} L */
 export function* l_register_des(L) {
+    /* register des -table, and functions for it */
     (yield* lua_createtable(L, 0, 0));
     (yield* luaL_setfuncs(L, nhl_functions, 0));
     (yield* lua_setglobal(L, __s_des));
@@ -5951,28 +7099,52 @@ export function* create_des_coder() {
         cptr.stPtro(gc, $instance_globals_c_coder, (yield* sp_level_coder_init()));
 }
 
+/*
+ * General loader
+ */
 /** C ref: sp_lev.c:6454 — @param {CPtr<char>} name @returns {CInt} */
 export function* load_special(name) {
     let result = 0;
     let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
     __lbl_give_up: {
+
         (yield* create_des_coder());
+
         if (!(yield* load_lua(name, sbi)))
             break __lbl_give_up;
+
         (yield* link_doors_rooms());
         remove_boundary_syms();
+
+        /* TODO: ensure_way_out() needs rewrite */
         if (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_check_inaccessibles))
             (yield* ensure_way_out());
+
         (yield* map_cleanup());
+
+        /* FIXME: Ideally, we want this call to only cover areas of the map
+         * which were not inserted directly by the special level file (see
+         * the insect legs on Baalzebub's level, for instance). Since that
+         * is currently not possible, we overload the corrmaze flag for this
+         * purpose.
+         */
         if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_corrmaze) & 1))
             (yield* wallification(1, 0, 79, 20));
+
         (yield* flip_level_rnd(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_allow_flips), 0));
+
         count_level_features();
+
         if (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_solidify))
             solidify_map();
+
+        /* This must be done before premap_detect(),
+         * otherwise branch stairs won't be premapped. */
         (yield* fixup_special());
+
         if (cptr.ldI32(cptr.ldPtro(gc, $instance_globals_c_coder)))
             (yield* premap_detect());
+
         result = 1;
     }
     {
@@ -5980,6 +7152,7 @@ export function* load_special(name) {
             cptr.free((cptr.ldPtro(gc, $instance_globals_c_coder)));
     }
     cptr.stPtro(gc, $instance_globals_c_coder, null);
+
     return result;
 }
 

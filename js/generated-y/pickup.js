@@ -435,14 +435,22 @@ const nearloadpfx = cptr.bytes("You have much trouble");
 /** C ref: pickup.c:70 — char[28] */
 const overloadpfx = cptr.bytes("You have extreme difficulty");
 
+/* BUG: this lets you look at cockatrice corpses while blind without
+   touching them */
+/* much simpler version of the look-here code; used by query_classes() */
 /** C ref: pickup.c:76 — @param {CPtr<struct obj>} otmp @param {CInt} here */
 function* simple_look(otmp, here) {
+    /* Neither of the first two cases is expected to happen, since
+     * we're only called after multiple classes of objects have been
+     * detected, hence multiple objects must be present.
+     */
     if (!otmp) {
         (yield* impossible(__s_simple_look_null));
     } else if (!(here ? cptr.ldPtro(otmp, $obj_v) : cptr.ldPtr(otmp))) {
         (yield* pline(__s_pct_s, (yield* doname(otmp))));
     } else {
         let tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+
         (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
         do {
             (yield* Y.icall(putstr()(tmpwin, 0, (yield* doname(otmp)))));
@@ -457,8 +465,9 @@ function* simple_look(otmp, here) {
 export function* collect_obj_classes(ilets, otmp, here, filter, itemcount) {
     let iletct = 0;
     let c;
+
     cptr.stI32(itemcount, 0);
-    cptr.st1o(ilets, iletct, 0);
+    cptr.st1o(ilets, iletct, 0);  /* terminate ilets so that strchr() will work */
     while (otmp) {
         c = cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), $sizeof_class_sym);
         if (!cptr.strchr(ilets, c) && (!filter || (yield* Y.icall((filter)(otmp)))))
@@ -466,13 +475,34 @@ export function* collect_obj_classes(ilets, otmp, here, filter, itemcount) {
         cptr.stI32(itemcount, (cptr.ldI32(itemcount) + 1) | 0);
         otmp = here ? cptr.ldPtro(otmp, $obj_v) : cptr.ldPtr(otmp);
     }
+
     return iletct;
 }
 
+/*
+ * For menustyle:Traditional and menustyle:Combination.
+ *
+ * Suppose some '?' and '!' objects are present, but '/' objects aren't:
+ *      "a" picks all items without further prompting;
+ *      "A" steps through all items, asking one by one;
+ *      "?" steps through '?' items, asking, and ignores '!' ones;
+ *      "/" becomes 'A', since no '/' present;
+ *      "?a" or "a?" picks all '?' without further prompting;
+ *      "/a" or "a/" becomes 'A' since there aren't any '/'
+ *          (bug fix:  3.1.0 thru 3.1.3 treated it as "a");
+ *      "?/a" or "a?/" or "/a?",&c picks all '?' even though no '/'
+ *          (ie, treated as if it had just been "?a").
+ *
+ * Note: the behavior and meaning of 'a' vs 'A' is effectively reversed
+ * when using menustyle:Full.  For Traditional, the choice is based on
+ * ease of typing (using 'a' is much more common than 'A'); for Full,
+ * it was changed to enhance menu entry ordering ('A' stands out, but
+ * some players complain that it is too easy to choose accidentally).
+ */
 /** C ref: pickup.c:141 — @param {CPtr<char>} oclasses @param {CPtr<boolean>} one_at_a_time @param {CPtr<boolean>} everything @param {CPtr<char>} action @param {CPtr<struct obj>} objs @param {CInt} here @param {CPtr<int>} menu_on_demand @returns {CInt} */
 function* query_classes(oclasses, one_at_a_time, everything, action, objs, here, menu_on_demand) {
     let ilets = new Uint8Array(36);
-    let inbuf = [0];
+    let inbuf = [0];  /* FIXME: hardcoded ilets[] length */
     let iletct;
     let oclassct;
     let not_everything;
@@ -486,6 +516,7 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
     let xcnt = cptr.box(0);
     let ocnt = cptr.box(0);
     let jcnt = cptr.box(0);
+
     cptr.st1o(oclasses, oclassct = 0, 0);
     cptr.st1(one_at_a_time, cptr.st1(everything, m_seen = 0));
     if (menu_on_demand)
@@ -493,10 +524,12 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
     iletct = (yield* collect_obj_classes(cptr.decay(ilets), objs, here, null, itemcount));
     if (iletct == 0)
         return 0;
+
     if (iletct == 1) {
         cptr.st1o(oclasses, 0, schar(def_char_to_objclass(cptr.ld1so(cptr.decay(ilets), 0, 1))));
         cptr.st1o(oclasses, 1, 0);
     } else {
+        /* additional choices */
         cptr.st1o(cptr.decay(ilets), iletct++, 32, 1);
         cptr.st1o(cptr.decay(ilets), iletct++, 97, 1);
         cptr.st1o(cptr.decay(ilets), iletct++, 65, 1);
@@ -506,6 +539,7 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
         cptr.st1o(cptr.decay(ilets), iletct++, 109, 1);
     if (count_unpaid(objs))
         cptr.st1o(cptr.decay(ilets), iletct++, 117, 1);
+
     tally_BUCX(objs, here, bcnt, ucnt, ccnt, xcnt, ocnt, jcnt);
     if (bcnt.v)
         cptr.st1o(cptr.decay(ilets), iletct++, 66, 1);
@@ -518,6 +552,7 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
     if (jcnt.v)
         cptr.st1o(cptr.decay(ilets), iletct++, 80, 1);
     cptr.st1o(cptr.decay(ilets), iletct, 0, 1);
+
     if (iletct > 1) {
         let where = null;
         let sym;
@@ -531,6 +566,7 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
             (yield* getlin(cptr.decay(qbuf), cptr.decay(inbuf)));
             if (cptr.ld1s(cptr.decay(inbuf)) == 27)
                 return 0;
+
             for (p = cptr.decay(inbuf); (sym = cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; }))) != 0; ) {
                 if (sym == 32)
                     continue;
@@ -539,7 +575,9 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
                 else if (sym == 97)
                     cptr.st1(everything, 1);
                 else if (sym == 58) {
-                    (yield* simple_look(objs, here));
+                    (yield* simple_look(objs, here));  /* dumb if objs==invent */
+                    /* if we just scanned the contents of a container
+                       then mark it as having known contents */
                     if (cptr.ld1so(objs, $obj_where) == NHM.OBJ_CONTAINED)
                         cptr.stI32o(cptr.ldPtro(objs, $obj_v), $obj_cknown, 1);
                     continue __lbl_ask_again;
@@ -549,7 +587,7 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
                 } else if (sym == 109) {
                     m_seen = 1;
                 } else if (cptr.strchr(__s_ubucxp, sym)) {
-                    add_valid_menu_class(sym);
+                    add_valid_menu_class(sym);  /* 'u' or 'B','U','C','X','P' */
                     filtered = 1;
                 } else {
                     oc_of_sym = schar(def_char_to_objclass(sym));
@@ -567,14 +605,17 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
                         not_everything = 1;
                     }
                 }
-            }
+            }  /* for p:sym in inbuf */
+
             if (m_seen && menu_on_demand) {
                 cptr.stI32(menu_on_demand, (((cptr.ld1s(everything) || !oclassct) && !filtered) ? -2 : -3));
                 return 0;
             }
             if (!oclassct && (!cptr.ld1s(everything) || not_everything)) {
-                cptr.st1(one_at_a_time, 1);
-                cptr.st1(everything, 0);
+                /* didn't pick anything,
+                   or tried to pick something that's not present */
+                cptr.st1(one_at_a_time, 1);  /* force 'A' */
+                cptr.st1(everything, 0);  /* inhibit 'a' */
             }
             break __lbl_ask_again;
         }
@@ -582,6 +623,14 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
     return 1;
 }
 
+/*
+ * tests:
+ *  st_gloves      wearing gloves?
+ *  st_corpse      is it a corpse obj?
+ *  st_petrifies   does the corpse petrify on touch?
+ *  st_resists     does hero have stoning resistance?
+ *  st_all         st_gloves | st_corpse | st_petrifies | st_resists
+ */
 /** C ref: pickup.c:273 — @param {CPtr<struct obj>} obj @param {CInt} tests @returns {CInt} */
 export function u_safe_from_fatal_corpse(obj, tests) {
     if (((tests & NHC.st_gloves) && uarmg.v) || ((tests & NHC.st_corpse) && cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE) || ((tests & NHC.st_petrifies) && !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) || ((tests & NHC.st_resists) && Stone_resistance()))
@@ -589,33 +638,48 @@ export function u_safe_from_fatal_corpse(obj, tests) {
     return 0;
 }
 
+/* check whether hero is bare-handedly touching a cockatrice corpse */
 /** C ref: pickup.c:285 — @param {CPtr<struct obj>} obj @param {CInt} remotely @returns {CInt} */
 function* fatal_corpse_mistake(obj, remotely) {
     if (u_safe_from_fatal_corpse(obj, NHC.st_all) || remotely)
         return 0;
+
     if (poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM))) {
-        (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
+        (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));  /* --More-- */
         return 0;
     }
+
     (yield* pline(__s_touching_s_is_a_fatal_mistake, (yield* corpse_xname(obj, null, 9))));
     (yield* instapetrify((yield* killer_xname(obj))));
     return 1;
 }
 
+/* attempting to manipulate a Rider's corpse triggers its revival */
 /** C ref: pickup.c:303 — @param {CPtr<struct obj>} obj @param {CInt} remotely @returns {CInt} */
 export function* rider_corpse_revival(obj, remotely) {
     if (!obj || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || !is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)))
         return 0;
+
     (yield* pline(__s_at_your_s_the_corpse_suddenly_moves, remotely ? __s_attempted_acquisition : __s_touch));
     void (yield* revive_corpse(obj));
     (yield* exercise(NHC.A_WIS, 0));
     return 1;
 }
 
+/* wand of probing zapped down; perhaps hero is levitating while blind */
 /** C ref: pickup.c:317 — @param {CInt} via_probing */
 export function* force_decor(via_probing) {
+    /* we don't want describe_decor() to defer feedback if hero is fumbling
+       with 1 turn left until next slip_or_trip(), or for ice_descr() to
+       omit thawing details if hero is probing when levitating while blind
+       (those will be skipped for look_here() and farlook() or autodescribe);
+       we can't control that by temporarily tweaking properties because that
+       could become noticeable if status gets updated while decor feedback
+       is being delivered */
     cptr.st1o(gd, $instance_globals_d_decor_fumble_override, 1);
     cptr.st1o(gd, $instance_globals_d_decor_levitate_override, via_probing);
+    /* force current terrain to be different from previous location, or
+       uninteresting if previous location was actually inside solid stone */
     cptr.st1o(iflags, $instance_flags_prev_decor, NHC.STONE);
     void (yield* describe_decor());
     cptr.st1o(gd, $instance_globals_d_decor_fumble_override, cptr.st1o(gd, $instance_globals_d_decor_levitate_override, 0));
@@ -634,6 +698,8 @@ export function* deferred_decor(setup) {
     }
 }
 
+/* handle 'mention_decor' (when walking onto a dungeon feature such as
+   stairs or altar, describe it even if it isn't covered up by an object) */
 /** C ref: pickup.c:353 @returns {CInt} */
 function* describe_decor() {
     let outbuf = new Uint8Array(256);
@@ -643,16 +709,35 @@ function* describe_decor() {
     let res = 1;
     let dfeature;
     let ltyp;
+
     if ((HFumbling() & 16777215n) == 1n && !cptr.ld1so(iflags, $instance_flags_defer_decor) && !cptr.ld1so(gd, $instance_globals_d_decor_fumble_override)) {
+        /*
+         * Work around a message sequencing issue if Fumbling's periodic
+         * timeout is about to kick in:  avoid the combination
+         *  |You are back on floor.
+         *  |You trip over <object>.  or  You flounder.
+         * when the trip is being caused by moving on ice as hero
+         * steps off ice onto non-ice.  Defer the back-on-floor part if
+         * that is about to happen.
+         */
         (yield* deferred_decor(1));
         return 0;
     }
+
     ltyp = SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     dfeature = (yield* dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf)));
+
+    /* we don't mention "ordinary" doors but do mention broken ones (and
+       closed ones, which will only happen for Passes_walls) */
     doorhere = schar((dfeature && (!strcmp(dfeature, __s_open_door) || !strcmp(dfeature, __s_doorway)) ? 1 : 0));
     waterhere = schar((dfeature && !strcmp(dfeature, __s_pool_of_water) ? 1 : 0));
     if (doorhere || ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || (ltyp == NHC.ICE && IS_POOL(cptr.ld1so(iflags, $instance_flags_prev_decor))))
         dfeature = null;
+    /*
+     * TODO: if on ice, report moving between thicker and thinner ice (based
+     * on ice_descr()'s classification) as if moving onto different terrain.
+     */
+
     if (ltyp == cptr.ld1so(iflags, $instance_flags_prev_decor) && !IS_FURNITURE(ltyp)) {
         res = 0;
     } else if (dfeature) {
@@ -660,6 +745,7 @@ function* describe_decor() {
             dfeature = cptr.strcpy(cptr.decay(fbuf), waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         if (strcmp(dfeature, __s_swamp) && ltyp != NHC.ICE)
             dfeature = (yield* an(dfeature));
+
         if (cptr.ld1so(flags, $flag_verbose)) {
             void cptr.sprintf(cptr.decay(outbuf), __s_there_is_s_here, dfeature);
         } else {
@@ -678,23 +764,33 @@ function* describe_decor() {
             }
         }
     }
+    /* describe_decor() is normally called when moving onto a different
+       type of terrain, but it is also called by pickup() even when
+       mention_decor is Off if hero can't reach floor; only adapt the next
+       describe_decor() by what has just occurred in this one when it's On */
     cptr.st1o(iflags, $instance_flags_prev_decor, schar((cptr.ld1so(flags, $flag_mention_decor) ? ltyp : NHC.STONE)));
     return res;
 }
 
+/* look at the objects at our location, unless there are too many of them */
 /** C ref: pickup.c:430 — @param {CInt} picked_some */
 function* check_here(picked_some) {
     let obj;
     let ct = 0;
     let lhflags = picked_some ? NHM.LOOKHERE_PICKED_SOME : NHM.LOOKHERE_NOFLAGS;
+
     if (cptr.ld1so(flags, $flag_mention_decor)) {
         if ((yield* describe_decor()))
             lhflags |= NHM.LOOKHERE_SKIP_DFEATURE;
     }
+
+    /* count the objects here */
     for (obj = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v)) {
         if (!cptr.eq(obj, uchain.v))
             ct++;
     }
+
+    /* If there are objects here, take a look. */
     if (ct) {
         if (cptr.ldI32o(svc, $context_info_run))
             nomul(0);
@@ -705,6 +801,7 @@ function* check_here(picked_some) {
     }
 }
 
+/* query_objlist callback: return TRUE if obj's count is >= reference value */
 /** C ref: pickup.c:460 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function n_or_more(obj) {
     if (cptr.eq(obj, uchain.v))
@@ -712,6 +809,7 @@ function n_or_more(obj) {
     return schar((cptr.ldI64o(obj, $obj_quan) >= cptr.ldI64o(gv, $instance_globals_v_val_for_n_or_more)));
 }
 
+/* check valid_menu_classes[] for an entry; also used by askchain() */
 /** C ref: pickup.c:469 — @param {CInt} c @returns {CInt} */
 export function menu_class_present(c) {
     return schar(((c && cptr.strchr(cptr.add(gv, $instance_globals_v_valid_menu_classes), c)) ? 1 : 0));
@@ -721,12 +819,14 @@ let __static_add_valid_menu_class_vmc_count = 0; /** C ref: pickup.c:477 — int
 
 /** C ref: pickup.c:475 — @param {CInt} c */
 export function add_valid_menu_class(c) {
+
     if (c == 0) {
         __static_add_valid_menu_class_vmc_count = 0;
         cptr.st1o(gc, $instance_globals_c_class_filter, cptr.st1o(gb, $instance_globals_b_bucx_filter, cptr.st1o(gs, $instance_globals_s_shop_filter, 0)));
         cptr.st1o(gp, $instance_globals_p_picked_filter, 0);
     } else if (!menu_class_present(c)) {
         cptr.st1o2(gv, __static_add_valid_menu_class_vmc_count++, 1, $instance_globals_v_valid_menu_classes, schar(c));
+        /* categorize the new class */
         switch (c) {
             case 66:
             case 85:
@@ -748,11 +848,14 @@ export function add_valid_menu_class(c) {
     cptr.st1o2(gv, __static_add_valid_menu_class_vmc_count, 1, $instance_globals_v_valid_menu_classes, 0);
 }
 
+/* query_objlist callback: return TRUE if not uchain */
 /** C ref: pickup.c:509 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function all_but_uchain(obj) {
     return schar((!cptr.eq(obj, uchain.v)));
 }
 
+/* query_objlist callback: return TRUE */
+/*ARGUSED*/
 /** C ref: pickup.c:517 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function allow_all(obj) {
     return 1;
@@ -760,39 +863,91 @@ export function allow_all(obj) {
 
 /** C ref: pickup.c:523 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* allow_category(obj) {
+    /* If no filters are active, nothing will match unless
+       paranoid_confirm:A is set. */
     if (!cptr.ld1so(gc, $instance_globals_c_class_filter) && !cptr.ld1so(gs, $instance_globals_s_shop_filter) && !cptr.ld1so(gb, $instance_globals_b_bucx_filter) && !cptr.ld1so(gp, $instance_globals_p_picked_filter) && !ParanoidAutoAll())
         return 0;
+
+    /* For coins, if any class filter is specified, accept if coins
+     * are included regardless of whether either unpaid or BUC-status
+     * is also specified since player has explicitly requested coins.
+     */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS && cptr.ld1so(gc, $instance_globals_c_class_filter))
         return schar((cptr.strchr(cptr.add(gv, $instance_globals_v_valid_menu_classes), NHC.COIN_CLASS) ? 1 : 0));
+
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && !(cptr.ldI32o(obj, $obj_bknown) & 1))
         (yield* set_bknown(obj, 1));
+
+    /*
+     * Version 3.6 had three types of filters possible and the first
+     * and third can have more than one entry:
+     *  1) object class (armor, potion, &c);
+     *  2) unpaid shop item;
+     *  3) bless/curse state (blessed, uncursed, cursed, BUC-unknown).
+     * Version 5.0 added a fourth:
+     *  4) 'novelty' ('P' for just picked up items).
+     * When only one type is present, the situation is simple:
+     * to be accepted, obj's status must match one of the entries.
+     * When more than one type is present, the obj will now only
+     * be accepted when it matches one entry of each type.
+     * So ?!B will accept blessed scrolls or potions, and [u will
+     * accept unpaid armor.  (In 3.4.3, an object was accepted by
+     * this filter if it met any entry of any type, so ?!B resulted
+     * in accepting all scrolls and potions regardless of bless/curse
+     * state plus all blessed non-scroll, non-potion objects.)
+     */
+
+    /* if class is expected but obj's class is not in the list, reject */
     if (cptr.ld1so(gc, $instance_globals_c_class_filter) && !cptr.strchr(cptr.add(gv, $instance_globals_v_valid_menu_classes), cptr.ld1so(obj, $obj_oclass)))
         return 0;
+    /* if unpaid is expected and obj isn't unpaid, reject (treat a container
+       holding any unpaid object as unpaid even if isn't unpaid itself) */
     if (cptr.ld1so(gs, $instance_globals_s_shop_filter) && !(cptr.ldI32o(obj, $obj_unpaid) & 1) && !((cptr.ldPtro((obj), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(obj, $obj_cobj)) > 0))
         return 0;
+    /* check for particular bless/curse state */
     if (cptr.ld1so(gb, $instance_globals_b_bucx_filter)) {
+        /* first categorize this object's bless/curse state */
         let bucx;
         if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
+            /* If no class filtering is specified but bless/curse state is,
+               coins are treated as either unknown or uncursed based on an
+               option setting. */
             bucx = schar((cptr.ld1so(flags, $flag_goldX) ? 88 : 85));
         } else {
             bucx = schar((!(cptr.ldI32o(obj, $obj_bknown) & 1) ? 88 : ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 66 : ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? 67 : 85))));
         }
+
+        /* if its category is not in the list, reject */
         if (!cptr.strchr(cptr.add(gv, $instance_globals_v_valid_menu_classes), bucx))
             return 0;
     }
     if (cptr.ld1so(gp, $instance_globals_p_picked_filter) && !(cptr.ldI32o(obj, $obj_pickup_prev) & 1))
         return 0;
+    /* obj didn't fail any of the filter checks, so accept */
     return 1;
 }
 
+/* query_objlist callback: return TRUE if valid class and worn */
 /** C ref: pickup.c:609 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function* is_worn_by_type(otmp) {
     return schar(((is_worn(otmp) && (yield* allow_category(otmp))) ? 1 : 0));
 }
 
+/* reset last-picked-up flags */
 /** C ref: pickup.c:616 — @param {CPtr<struct obj>} olist */
 export function reset_justpicked(olist) {
     let otmp;
+    /*
+     * TODO?  Possible enhancement: don't reset if hero is still at same
+     *  spot where most recent pickup took place.  Not resetting will be
+     *  the correct behavior for autopickup immediately followed by manual
+     *  pickup.  It would probably be correct for either or both pickups
+     *  followed by manual pickup of a newly arrived missile after some
+     *  time has elapsed.  Things becomes murkier for other activity.
+     *  Taking anything out of a container ought to be treated as if
+     *  having moved to another spot.
+     */
+
     for (otmp = olist; otmp; otmp = cptr.ldPtr(otmp))
         cptr.stI32o(otmp, $obj_pickup_prev, 0);
 }
@@ -801,21 +956,37 @@ export function reset_justpicked(olist) {
 export function count_justpicked(olist) {
     let otmp;
     let cnt = 0;
+
     for (otmp = olist; otmp; otmp = cptr.ldPtr(otmp))
         if ((cptr.ldI32o(otmp, $obj_pickup_prev) & 1))
             cnt++;
+
     return cnt;
 }
 
 /** C ref: pickup.c:648 — @param {CPtr<struct obj>} olist @returns {CPtr<struct obj>} */
 export function find_justpicked(olist) {
     let otmp;
+
     for (otmp = olist; otmp; otmp = cptr.ldPtr(otmp))
         if ((cptr.ldI32o(otmp, $obj_pickup_prev) & 1))
             return otmp;
+
     return null;
 }
 
+/*
+ * Have the hero pick things from the ground
+ * or a monster's inventory if swallowed.
+ *
+ * Arg what:
+ *      >0  autopickup
+ *      =0  interactive
+ *      <0  pickup count of something
+ *
+ * Returns 1 if tried to pick something up, whether
+ * or not it succeeded.
+ */
 /** C ref: pickup.c:672 — @param {CInt} what @returns {CInt} */
 export function* pickup(what) {
     let i, n, res, n_tried, n_picked, pick_list = cptr.box(0), autopickup;
@@ -828,95 +999,134 @@ export function* pickup(what) {
         autopickup = schar((what > 0));
         let objchain_p;
         let traverse_how;
+
+        /* we might have arrived here while fainted or sleeping, via
+           random teleport or levitation timeout; if so, skip check_here
+           and read_engr_at in addition to bypassing autopickup itself
+           [probably ought to check whether hero is using a cockatrice
+           corpse for a pillow here... (also at initial faint/sleep)] */
         if (autopickup && cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && unconscious()) {
             cptr.st1o(iflags, $instance_flags_prev_decor, NHC.STONE);
             return 0;
         }
+
+        /* used by pickup_object() for encumbrance feedback */
         cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
+
         if (what < 0)
             count = -what;
         else
             count = 0;
+
         if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
             let t;
+
+            /* no auto-pick if no-pick move, nothing there, or in a pool */
             if (autopickup && (cptr.ld1so(svc, $context_info_nopick) || !(cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) || (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Underwater()) || is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
                 if (cptr.ld1so(flags, $flag_mention_decor))
                     void (yield* describe_decor());
                 (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
                 return 0;
             }
+            /* no pickup if levitating & not on air or water level */
             t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             if (!can_reach_floor(schar((t && is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ? 1 : 0)))) {
-                void (yield* describe_decor());
+                void (yield* describe_decor());  /* even when !flags.mention_decor */
                 if ((cptr.ldI64o(gm, $instance_globals_m_multi) && !cptr.ldI32o(svc, $context_info_run)) || (autopickup && !cptr.ld1so(flags, $flag_pickup)) || (t && (uteetering_at_seen_pit(t) || uescaped_shaft(t))))
                     (yield* read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
                 return 0;
             }
+            /* multi && !svc.context.run means they are in the middle of some
+             * other action, or possibly paralyzed, sleeping, etc.... and they
+             * just teleported onto the object.  They shouldn't pick it up.
+             */
             if ((cptr.ldI64o(gm, $instance_globals_m_multi) && !cptr.ldI32o(svc, $context_info_run)) || (autopickup && !cptr.ld1so(flags, $flag_pickup)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2048n) != 0n)) {
                 (yield* check_here(0));
                 if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2048n) != 0n) && (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && (autopickup || cptr.ld1so(flags, $flag_pickup)))
                     (yield* You(__s_are_physically_incapable_of_picking));
                 return 0;
             }
+
+            /* if there's anything here, stop running */
             if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && cptr.ldI32o(svc, $context_info_run) && cptr.ldI32o(svc, $context_info_run) != 8 && !cptr.ld1so(svc, $context_info_nopick))
                 nomul(0);
         }
-        add_valid_menu_class(0);
+
+        add_valid_menu_class(0);  /* reset */
         if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
             objchain_p = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objects), cptr.ldI16(u), 168), cptr.ldI16o(u, $you_uy), 8);
             traverse_how = NHM.BY_NEXTHERE;
         } else {
             objchain_p = cptr.add(cptr.ldPtro(u, $you_ustuck), $monst_minvent);
-            traverse_how = 0;
+            traverse_how = 0;  /* nobj */
         }
+        /*
+         * Start the actual pickup process.  This is split into two main
+         * sections, the newer menu and the older "traditional" methods.
+         * Automatic pickup has been split into its own menu-style routine
+         * to make things less confusing.
+         */
         if (autopickup) {
             n = (yield* autopick(cptr.ldPtr(objchain_p), traverse_how, pick_list));
             { __go_menu_pickup = true; break __skip_menu_pickup; }
         }
+
         if (cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL || cptr.ld1so(iflags, $instance_flags_menu_requested)) {
+            /* use menus exclusively */
             traverse_how |= NHM.AUTOSELECT_SINGLE | (cptr.ld1so(flags, $flag_sortpack) ? NHM.INVORDER_SORT : 0);
             if (count) {
                 let qbuf = new Uint8Array(128);
+
                 void cptr.sprintf(cptr.decay(qbuf), __s_pick_d_of_what, count);
-                cptr.stI64o(gv, $instance_globals_v_val_for_n_or_more, BigInt(count));
+                cptr.stI64o(gv, $instance_globals_v_val_for_n_or_more, BigInt(count));  /* set up callback selector */
                 n = (yield* query_objlist(cptr.decay(qbuf), objchain_p, traverse_how, pick_list, NHM.PICK_ONE, n_or_more));
+                /* correct counts, if any given */
                 for (i = 0; i < n; i++)
                     cptr.stI64o2(pick_list.v, i, $sizeof_menu_item, $mi_count, BigInt(count));
             } else {
                 n = (yield* query_objlist(__s_pick_up_what, objchain_p, (traverse_how | NHM.FEEL_COCKATRICE), pick_list, NHM.PICK_ANY, all_but_uchain));
             }
             __go_menu_pickup = true; break __skip_menu_pickup;
+
         } else {
+            /* old style interface */
             let ct = 0;
             let lcount;
             let all_of_a_type = cptr.box(0);
             let selective = cptr.box(0);
             let bycat;
-            let oclasses = new Uint8Array(28);
+            let oclasses = new Uint8Array(28);  /* +10: room for B,U,C,X plus slop */
             let obj;
             let obj2;
             __lbl_end_query: {
-                cptr.st1o(cptr.decay(oclasses), 0, 0, 1);
-                all_of_a_type.v = 1;
-                selective.v = 0;
+
+                cptr.st1o(cptr.decay(oclasses), 0, 0, 1);  /* types to consider (empty for all) */
+                all_of_a_type.v = 1;  /* take all of considered types */
+                selective.v = 0;  /* ask for each item */
+
+                /* check for more than one object */
                 for (obj = cptr.ldPtr(objchain_p); obj; obj = (((traverse_how) & NHM.BY_NEXTHERE) ? cptr.ldPtro((obj), $obj_v) : cptr.ldPtr((obj))))
                     ct++;
+
                 if (ct == 1 && count) {
+                    /* if only one thing, then pick it */
                     obj = cptr.ldPtr(objchain_p);
                     lcount = min(cptr.ldI64o(obj, $obj_quan), BigInt(count));
                     n_tried++;
                     reset_justpicked(cptr.ldPtro(gi, $instance_globals_i_invent));
                     if ((yield* pickup_object(obj, lcount, 0)) > 0)
-                        n_picked++;
+                        n_picked++;  /* picked something */
                     break __lbl_end_query;
+
                 } else if (ct >= 2) {
                     let via_menu = cptr.box(0);
+
                     (yield* There(__s_are_s_objects_here, (ct <= 10) ? __s_several : __s_many));
                     if (!(yield* query_classes(cptr.decay(oclasses), selective, all_of_a_type, __s_pick_up, cptr.ldPtr(objchain_p), schar(((traverse_how & NHM.BY_NEXTHERE) ? 1 : 0)), via_menu))) {
                         if (!via_menu.v)
                             {
                                 cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
-                                add_valid_menu_class(0);
+                                add_valid_menu_class(0);  /* reset */
                                 return (n_tried > 0);
                             }
                         if (selective.v)
@@ -926,17 +1136,20 @@ export function* pickup(what) {
                     }
                 }
                 bycat = schar((menu_class_present(66) || menu_class_present(85) || menu_class_present(67) || menu_class_present(88) ? 1 : 0));
+
                 for (obj = cptr.ldPtr(objchain_p); obj; obj = obj2) {
                     obj2 = (((traverse_how) & NHM.BY_NEXTHERE) ? cptr.ldPtro((obj), $obj_v) : cptr.ldPtr((obj)));
                     if (bycat ? !(yield* allow_category(obj)) : (!selective.v && cptr.ld1so(cptr.decay(oclasses), 0, 1) && !cptr.strchr(cptr.decay(oclasses), cptr.ld1so(obj, $obj_oclass)) ? 1 : 0))
                         continue;
+
                     lcount = -1n;
                     if (!all_of_a_type.v) {
                         let qbuf = new Uint8Array(256);
+
                         void (yield* safe_qbuf(cptr.decay(qbuf), __s_pick_up__2, __s_query, obj, doname, ansimpleoname, cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
                         switch ((cptr.ldI64o(obj, $obj_quan) < 2n) ? (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynaqchars), 121, 1)) : (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynNaqchars), 121, 1))) {
                             case 113:
-                            break __lbl_end_query;
+                            break __lbl_end_query;  /* out 2 levels */
                             case 110:
                             continue;
                             case 97:
@@ -949,7 +1162,7 @@ export function* pickup(what) {
                             break;
                             case 35:
                             if (!yn_number.v)
-                                continue;
+                                continue;  /* 0 count => No */
                             lcount = yn_number.v;
                             if (lcount > cptr.ldI64o(obj, $obj_quan))
                                 lcount = cptr.ldI64o(obj, $obj_quan);
@@ -961,15 +1174,17 @@ export function* pickup(what) {
                     }
                     if (lcount == -1n)
                         lcount = cptr.ldI64o(obj, $obj_quan);
+
                     if (!n_tried)
                         reset_justpicked(cptr.ldPtro(gi, $instance_globals_i_invent));
+
                     n_tried++;
                     if ((res = (yield* pickup_object(obj, lcount, 0))) < 0)
                         break;
                     n_picked = (n_picked + res) | 0;
                 }
             }
-            ;
+            ;  /* statement required after label */
         }
     }
     if (__go_menu_pickup) {
@@ -979,17 +1194,22 @@ export function* pickup(what) {
         for (n_picked = (i = 0); i < n; i++) {
             res = (yield* pickup_object(cptr.ldPtro(pick_list.v, i, $sizeof_menu_item), cptr.ldI64o2(pick_list.v, i, $sizeof_menu_item, $mi_count), 0));
             if (res < 0)
-                break;
+                break;  /* can't continue */
             n_picked = (n_picked + res) | 0;
         }
         if (pick_list.v)
             cptr.free(pick_list.v);
     }
+
     if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n))
             void (yield* hideunder(cptr.add(gy, $instance_globals_y_youmonst)));
+
+        /* position may need updating (invisible hero) */
         if (n_picked)
             (yield* newsym_force(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+
+        /* check if there's anything else here after auto-pickup is done */
         if (autopickup)
             (yield* check_here(schar((n_picked > 0))));
     }
@@ -1000,9 +1220,14 @@ export function* pickup(what) {
 
 /** C ref: pickup.c:913 — @param {CPtr<struct obj>} obj @returns {CPtr<struct autopickup_exception>} */
 export function* check_autopickup_exceptions(obj) {
+    /*
+     *  Does the text description of this match an exception?
+     */
     let ape = cptr.ldPtro(ga, $instance_globals_a_apelist);
+
     if (ape) {
         let objdesc = (yield* makesingular((yield* doname(obj))));
+
         while (ape && !regex_match(objdesc, cptr.ldPtr(ape)))
             ape = cptr.ldPtro(ape, $autopickup_exception_next);
     }
@@ -1016,34 +1241,56 @@ export function* autopick_testobj(otmp, calc_costly) {
     let ape;
     let otypes = cptr.add(flags, $flag_pickup_types);
     let pickit;
+
+    /* calculate 'costly' just once for a given autopickup operation */
     if (calc_costly)
         __static_autopick_testobj_costly = schar((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR && (yield* costly_spot(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy))) ? 1 : 0));
+
+    /* first check: reject if an unpaid item in a shop */
     if (__static_autopick_testobj_costly && !(cptr.ldI32o(otmp, $obj_no_charge) & 1))
         return 0;
+
+    /* pickup_thrown/pickup_stolen/nopick_dropped override pickup_types and
+       exceptions */
     if ((cptr.ld1so(flags, $flag_pickup_thrown) && ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_THROWN) || (cptr.ld1so(flags, $flag_pickup_stolen) && ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_STOLEN))
         return 1;
     if (cptr.ld1so(flags, $flag_nopick_dropped) && ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_DROPPED)
         return 0;
     if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
         return 0;
+
+    /* check for pickup_types */
     pickit = schar((!cptr.ld1s(otypes) || cptr.strchr(otypes, cptr.ld1so(otmp, $obj_oclass)) ? 1 : 0));
+
+    /* check for autopickup exceptions */
     ape = (yield* check_autopickup_exceptions(otmp));
     if (ape)
         pickit = cptr.ld1so(ape, $autopickup_exception_grab);
+
     return pickit;
 }
 
+/*
+ * Pick from the given list using flags.pickup_types.  Return the number
+ * of items picked (not counts).  Create an array that returns pointers
+ * and counts of the items to be picked up.  If the number of items
+ * picked is zero, the pickup list is left alone.  The caller of this
+ * function must free the pickup list.
+ */
 /** C ref: pickup.c:975 — @param {CPtr<struct obj>} olist @param {CInt} follow @param {CPtr<menu_item *>} pick_list @returns {CInt} */
 function* autopick(olist, follow, pick_list) {
-    let pi;
+    let pi;  /* pick item */
     let curr;
     let n;
     let check_costly = 1;
+
+    /* first count the number of eligible items */
     for (n = 0, curr = olist; curr; curr = (((follow) & NHM.BY_NEXTHERE) ? cptr.ldPtro((curr), $obj_v) : cptr.ldPtr((curr)))) {
         if ((yield* autopick_testobj(curr, check_costly)))
             ++n;
-        check_costly = 0;
+        check_costly = 0;  /* only need to check once per autopickup */
     }
+
     if (n) {
         cptr.stPtr(pick_list, pi = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 24n * BigInt.asUintN(64, BigInt(n))))))));
         for (n = 0, curr = olist; curr; curr = (((follow) & NHM.BY_NEXTHERE) ? cptr.ldPtro((curr), $obj_v) : cptr.ldPtr((curr)))) {
@@ -1057,6 +1304,25 @@ function* autopick(olist, follow, pick_list) {
     return n;
 }
 
+/*
+ * Put up a menu using the given object list.  Only those objects on the
+ * list that meet the approval of the allow function are displayed.  Return
+ * a count of the number of items selected, as well as an allocated array of
+ * menu_items, containing pointers to the objects selected and counts.  The
+ * returned counts are guaranteed to be in bounds and non-zero.
+ *
+ * Query flags:
+ *      BY_NEXTHERE       - Follow object list via nexthere instead of nobj.
+ *      AUTOSELECT_SINGLE - Don't ask if only 1 object qualifies - just
+ *                          use it.
+ *      USE_INVLET        - Use object's invlet.
+ *      INVORDER_SORT     - Use hero's pack order.
+ *      INCLUDE_HERO      - Showing engulfer's invent; show hero too.
+ *      SIGNAL_NOMENU     - Return -1 rather than 0 if nothing passes "allow".
+ *      SIGNAL_ESCAPE     - Return -1 rather than 0 if player uses ESC to
+ *                          pick nothing.
+ *      FEEL_COCKATRICE   - touch corpse.
+ */
 /** C ref: pickup.c:1025 — @param {CPtr<char>} qstr @param {CPtr<struct obj *>} olist_p @param {CInt} qflags @param {CPtr<menu_item *>} pick_list @param {CInt} how @param {CPtr} allow @returns {CInt} */
 export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
     let i;
@@ -1080,41 +1346,59 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
     let sortedolist = cptr.box(0);
     let srtoli;
     let clr = NHM.NO_COLOR;
+
     cptr.stPtr(pick_list, null);
     if (!olist.v && !engulfer)
         return 0;
+
+    /* count the number of items allowed */
     for (n = 0, last = null, curr = olist.v; curr; curr = (((qflags) & NHM.BY_NEXTHERE) ? cptr.ldPtro((curr), $obj_v) : cptr.ldPtr((curr))))
         if ((yield* Y.icall((allow)(curr)))) {
             last = curr;
             n++;
         }
+    /* can't depend upon 'engulfer' because that's used to indicate whether
+       hero should be shown as an extra, fake item */
     engulfer_minvent = schar((olist.v && cptr.ld1so(olist.v, $obj_where) == NHM.OBJ_MINVENT && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (cptr.ldPtro(olist.v, $obj_v))))) ? 1 : 0));
     if (engulfer_minvent && n == 1 && cptr.ldI64o(olist.v, $obj_owornmask) != 0n) {
         qflags &= -5;
     }
     if (engulfer) {
         ++n;
+        /* don't autoselect swallowed hero if it's the only choice */
         qflags &= -5;
     }
+
     if (n == 0)
         return (qflags & NHM.SIGNAL_NOMENU) ? -1 : 0;
+
     if (n == 1 && (qflags & NHM.AUTOSELECT_SINGLE)) {
         cptr.stPtr(pick_list, (yield* alloc(24)));
         cptr.stPtr((cptr.ldPtr(pick_list)), last);
         cptr.stI64o((cptr.ldPtr(pick_list)), $menu_item_count, cptr.ldI64o(last, $obj_quan));
         return 1;
     }
+
     sortflags = (((cptr.ld1so(flags, $flag_sortloot) == 102 || (cptr.ld1so(flags, $flag_sortloot) == 108 && !(qflags & NHM.USE_INVLET))) ? NHM.SORTLOOT_LOOT : ((qflags & NHM.USE_INVLET) ? NHM.SORTLOOT_INVLET : 0)) | (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0) | ((qflags & NHM.FEEL_COCKATRICE) ? NHM.SORTLOOT_PETRIFY : 0)) >>> 0;
     sortedolist.v = (yield* sortloot(olist, sortflags, schar(((qflags & NHM.BY_NEXTHERE) ? 1 : 0)), allow));
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     if (cptr.ldPtro(gt, $instance_globals_t_this_title)) {
+        /* dotypeinv() supplies gt.this_title to display as initial header;
+           intentionally avoid the menu_headings highlight attribute here */
         (yield* add_menu_str(win, cptr.ldPtro(gt, $instance_globals_t_this_title)));
     }
+    /*
+     * Run through the list and add the objects to the menu.  If
+     * INVORDER_SORT is set, we'll run through the list once for
+     * each type so we can group them.  The allow function was
+     * called by sortloot() and will be called once per item here.
+     */
     pack = cptr.strcpy(cptr.decay(packbuf), cptr.add(flags, $flag_inv_order));
     if (qflags & NHM.INCLUDE_VENOM)
-        void (yield* strkitten(pack, NHC.VENOM_CLASS));
+        void (yield* strkitten(pack, NHC.VENOM_CLASS));  /* venom is not in inv_order */
     first = 1;
     do {
         printed_type_name = 0;
@@ -1122,18 +1406,21 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
             if (sorted && cptr.ld1so(curr, $obj_oclass) != cptr.ld1s(pack))
                 continue;
             if ((qflags & NHM.FEEL_COCKATRICE) && cptr.ldI16o(curr, $obj_otyp) == NHC.CORPSE && will_feel_cockatrice(curr, 0)) {
-                (yield* Y.icall(destroy_nhwindow()(win)));
+                (yield* Y.icall(destroy_nhwindow()(win)));  /* stop the menu and revert */
                 void (yield* look_here(0, NHM.LOOKHERE_NOFLAGS));
                 unsortloot(sortedolist);
                 return 0;
             }
             if ((yield* Y.icall((allow)(curr)))) {
+                /* if sorting, print type name (once only) */
                 if (sorted && !printed_type_name) {
                     let with_oc_sym = schar((how != NHM.PICK_NONE && cptr.ld1so(iflags, $instance_flags_menu_head_objsym) ? 1 : 0));
+
                     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
                     (yield* add_menu_heading(win, (yield* let_to_name(cptr.ld1s(pack), 0, with_oc_sym))));
                     printed_type_name = 1;
                 }
+
                 cptr.stPtr(any, curr);
                 tmpglyph = ((cptr.ldI16o((curr), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((curr), $obj_corpsenm) + (((cptr.ld1so((curr), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((curr), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((curr), $obj_ox), 168, cptr.ldI16o((curr), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((curr), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((curr), $obj_ox), 168, cptr.ldI16o((curr), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((curr), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((curr), $obj_corpsenm) + ((cptr.ld1so((curr), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((curr), $obj_ox), 168, cptr.ldI16o((curr), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(curr) ? (((cptr.ld1so((curr), $obj_oclass) + ((cptr.ld1so((curr), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((curr), $obj_ox), 168, cptr.ldI16o((curr), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((curr), $obj_otyp) + ((cptr.ld1so((curr), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((curr), $obj_ox), 168, cptr.ldI16o((curr), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
                 map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
@@ -1144,29 +1431,39 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
         pack = cptr.add(pack, 1);
     } while (sorted && cptr.ld1s(pack));
     unsortloot(sortedolist);
+
     if (engulfer) {
         let buf = new Uint8Array(256);
+
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         if (sorted && n > 1) {
             void cptr.sprintf(cptr.decay(buf), __s_s_creatures, (dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallowed : __s_engulfed);
             (yield* add_menu_heading(win, cptr.decay(buf)));
         }
         cptr.memcpy(fake_hero_object, cg, 216);
-        cptr.stI64o(fake_hero_object, $obj_quan, 1n);
+        cptr.stI64o(fake_hero_object, $obj_quan, 1n);  /* not strictly necessary... */
         cptr.stPtr(any, fake_hero_object);
         tmpglyph = (((Hallucination() ? ((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) : (cptr.ldI32o((cptr.ldPtro((cptr.add(gy, $instance_globals_y_youmonst)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0);
         map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
         (yield* add_menu(win, tmpglyphinfo, any, 62, 0, NHM.ATR_NONE, clr, (yield* an((yield* self_lookat(cptr.decay(buf))))), NHM.MENU_ITEMFLAGS_NONE));
     }
+
     (yield* Y.icall(end_menu()(win, qstr)));
     n = (yield* select_menu(win, how, pick_list));
     (yield* Y.icall(destroy_nhwindow()(win)));
+
     if (n > 0) {
         let mi;
         let k;
+
+        /* fix up counts:  -1 means no count used => pick all;
+           if fake_hero_object was picked, discard that choice */
         for (i = (k = 0), mi = cptr.ldPtr(pick_list); i < n; i++, mi = cptr.add(mi, 1, 24)) {
             curr = cptr.ldPtr(mi);
             if (cptr.eq(curr, fake_hero_object)) {
+                /* this isn't actually possible; fake item representing
+                   hero is only included for look here (':'), not pickup,
+                   and that's PICK_NONE so we can't get here from there */
                 (yield* You_cant(__s_pick_yourself_up));
                 continue;
             }
@@ -1181,10 +1478,14 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
             ++k;
         }
         if (!k) {
+            /* fake_hero was only choice so discard whole list */
             cptr.free(cptr.ldPtr(pick_list));
             cptr.stPtr(pick_list, null);
             n = 0;
         } else if (k < n) {
+            /* other stuff plus fake_hero; last slot is now unused
+               (could be more than one if player tried to pick items
+               worn by engulfer) */
             while (n > k) {
                 --n;
                 cptr.memcpy(cptr.add((cptr.ldPtr(pick_list)), n, $sizeof_menu_item), cptr.add(cg, $const_globals_zeroany), 8);
@@ -1192,11 +1493,20 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
             }
         }
     } else if (n < 0) {
+        /* -1 is used for SIGNAL_NOMENU, so callers don't expect it
+           to indicate that the player declined to make a choice */
         n = (qflags & NHM.SIGNAL_ESCAPE) ? -2 : 0;
     }
     return n;
 }
 
+/*
+ * For menustyle:Full.
+ *
+ * allow menu-based category (class) selection (for Drop,take off etc.)
+ *
+ * If ParanoidAutoAll, requires confirmation when 'A' has been picked.
+ */
 /** C ref: pickup.c:1226 — @param {CPtr<char>} qstr @param {CPtr<struct obj>} olist @param {CInt} qflags @param {CPtr<menu_item *>} pick_list @param {CInt} how @returns {CInt} */
 export function* query_category(qstr, olist, qflags, pick_list, how) {
     let n;
@@ -1222,13 +1532,17 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
     let num_justpicked = 0;
     let clr = NHM.NO_COLOR;
     __lbl_query_done: {
+
         cptr.stPtr(pick_list, null);
         if (!olist)
             return 0;
         if ((qflags & NHM.UNPAID_TYPES) != 0 && count_unpaid(olist))
             do_unpaid = 1;
+        /* caller only passes BILLED_TYPES when there are some used up items
+           on shop's bill */
         if ((qflags & NHM.BILLED_TYPES) != 0)
             do_usedup = 1;
+        /* for the 'A' command to remove worn/wielded */
         if ((qflags & NHM.WORN_TYPES) != 0) {
             do_worn = 1;
             ofilter = is_worn;
@@ -1252,7 +1566,9 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
         if ((qflags & NHM.JUSTPICKED) != 0) {
             num_justpicked = count_justpicked(olist);
         }
+
         ccount = count_categories(olist, qflags);
+        /* no point in actually showing a menu for a single category */
         if (ccount == 1 && !do_unpaid && !do_usedup && num_buc_types <= 1) {
             for (curr = olist; curr; curr = (((qflags) & NHM.BY_NEXTHERE) ? cptr.ldPtro((curr), $obj_v) : cptr.ldPtr((curr)))) {
                 if (ofilter && !(yield* Y.icall((ofilter)(curr))))
@@ -1273,14 +1589,19 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
                 }
                 n = 0;
             }
+            /* early return is ok; there's no temp window yet */
             return n;
         }
+
         win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(win, 0n)));
+
         pack = cptr.strcpy(cptr.decay(packbuf), cptr.add(flags, $flag_inv_order));
         if ((qflags & NHM.INCLUDE_VENOM) != 0)
-            void (yield* strkitten(pack, NHC.VENOM_CLASS));
+            void (yield* strkitten(pack, NHC.VENOM_CLASS));  /* venom is not in inv_order */
+
         show_a = schar(((qflags & NHM.ALL_TYPES) != 0 && ccount > 1 ? 1 : 0));
+
         if ((qflags & NHM.CHOOSE_ALL) != 0) {
             invlet = 65;
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -1294,15 +1615,18 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
                 if (!((cptr.stI32o(ga, $instance_globals_a_A_second_hint, cptr.ldI32o(ga, $instance_globals_a_A_second_hint) + 1)) - (1)) || cptr.ld1so(iflags, $instance_flags_cmdassist))
                     (yield* add_menu_str(win, __s_if_no_other_choices_are_picked_a_is));
             }
+            /* blank separator */
             (yield* add_menu_str(win, __s_empty));
         }
+
         invlet = 97;
         if (show_a) {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(any, -2);
             (yield* add_menu(win, nul_glyphinfo.v, any, invlet, 0, NHM.ATR_NONE, clr, do_worn ? __s_all_worn_and_wielded_types : __s_all_types, NHM.MENU_ITEMFLAGS_SKIPINVERT));
-            ++invlet;
+            ++invlet;  /* invlet = 'b'; */
         }
+
         do {
             collected_type_name = 0;
             for (curr = olist; curr; curr = (((qflags) & NHM.BY_NEXTHERE) ? cptr.ldPtro((curr), $obj_v) : cptr.ldPtr((curr)))) {
@@ -1311,6 +1635,7 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
                         continue;
                     if (!collected_type_name) {
                         let oclass = cptr.ld1so(curr, $obj_oclass);
+
                         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
                         cptr.stI32(any, oclass);
                         (yield* add_menu(win, nul_glyphinfo.v, any, invlet++, schar(cptr.ld1so(def_oc_syms, oclass, $sizeof_class_sym)), NHM.ATR_NONE, clr, (yield* let_to_name(cptr.ld1s(pack), 0, schar((how != NHM.PICK_NONE && cptr.ld1so(iflags, $instance_flags_menu_head_objsym) ? 1 : 0)))), NHM.MENU_ITEMFLAGS_NONE));
@@ -1325,21 +1650,29 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
                 break __lbl_query_done;
             }
         } while (cptr.ld1s(pack));
+
         if (do_unpaid || do_usedup || do_blessed || do_cursed || do_uncursed || do_buc_unknown || num_justpicked) {
             (yield* add_menu_str(win, __s_empty));
         }
+
+        /* unpaid items if there are any */
         if (do_unpaid) {
             invlet = 117;
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(any, 117);
             (yield* add_menu(win, nul_glyphinfo.v, any, invlet, 0, NHM.ATR_NONE, clr, __s_unpaid_items, NHM.MENU_ITEMFLAGS_SKIPINVERT));
         }
+        /* billed items: checked by caller, so always include if BILLED_TYPES */
         if (do_usedup) {
             invlet = 120;
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(any, 120);
             (yield* add_menu(win, nul_glyphinfo.v, any, invlet, 0, NHM.ATR_NONE, clr, __s_unpaid_items_already_used_up, NHM.MENU_ITEMFLAGS_SKIPINVERT));
         }
+
+        /* items with b/u/c/unknown if there are any;
+           this cluster of menu entries is in alphabetical order,
+           reversing the usual sequence of 'U' and 'C' in BUCX */
         if (do_blessed) {
             invlet = 66;
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -1366,6 +1699,7 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
         }
         if (num_justpicked) {
             let tmpbuf = new Uint8Array(256);
+
             if (num_justpicked == 1)
                 void cptr.sprintf(cptr.decay(tmpbuf), __s_just_picked_up_s, (yield* doname(find_justpicked(olist))));
             else
@@ -1380,43 +1714,60 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
         if (n > 0) {
             (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtr(pick_list), (null))))), 0n) ? __assert_rtn(__s_query_category, __s_pickup_c, 1451, __s_pick_list_null) : void 0);
         }
+
+        /* handle ParanoidAutoAll by confirming 'A' choice if present */
         if (n > 0 && verify_All) {
             let i;
             let j;
+
             for (i = 0; i < n; ++i)
                 if (cptr.ldI32o((cptr.ldPtr(pick_list)), i, $sizeof_menu_item) == 65) {
+                    /* ParanoidAutoAll is set (otherwise verify_All is false);
+                       if ParanoidConfirm is also set, require "yes" rather than
+                       just "y" to accept (and "no" rather than "n" to decline;
+                       accepts "quit" and ESC without converting them to 'n') */
                     switch ((yield* paranoid_ynq(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0)), __s_really_autoselect_all, 1))) {
                         case 121:
+                        /* yes => honor Auto-select All */
                         break;
                         case 110:
+                        /* no => remove 'A' from the list; if that would make
+                           it empty then replace with 'a' */
                         if (n > 1) {
                             for (j = (i + 1) | 0; j < n; ++j)
                                 cptr.memcpy(cptr.add((cptr.ldPtr(pick_list)), (j - 1) | 0, $sizeof_menu_item), cptr.add((cptr.ldPtr(pick_list)), j, $sizeof_menu_item), 24);
                             --n;
-                            break;
+                            break;  /* from switch */
                         } else if ((qflags & NHM.ALL_TYPES) != 0) {
+                            /* 'A' was the only choice; convert it to 'a' and
+                               then let the next menu offer a choice of all */
                             cptr.stI32o((cptr.ldPtr(pick_list)), 0, -2, $sizeof_menu_item);
-                            break;
+                            /* assert( n == 1 ); */
+                            break;  /* from switch */
                         }
                         // @FallThrough
                         ;
                         case 113:
                         default:
+                        /* quit | ESC => cancel, no Auto-select and no 2nd menu */
                         n = 0;
                         cptr.free(cptr.ldPtr(pick_list)), cptr.stPtr(pick_list, null);
                         break;
                     }
-                    break;
+                    break;  /* from for => goto query_done; */
                 }
         } else if (n == 1 && !verify_All && cptr.ldI32o((cptr.ldPtr(pick_list)), 0, $sizeof_menu_item) == 65) {
+            /* without paranoid_confirm:A, choosing 'A' by itself is rejected */
             n = 0;
             cptr.free(cptr.ldPtr(pick_list)), cptr.stPtr(pick_list, null);
+            /* the menu entry description is "Auto-select every relevant item"
+               [not sure whether issuing a message here is a good idea...] */
             (yield* pline(__s_no_relevant_items_selected));
         }
     }
     (yield* Y.icall(destroy_nhwindow()(win)));
     if (n < 0)
-        n = 0;
+        n = 0;  /* callers don't expect -1 */
     return n;
 }
 
@@ -1427,6 +1778,7 @@ function count_categories(olist, qflags) {
     let ccount = 0;
     let curr;
     let do_worn = schar(((qflags & NHM.WORN_TYPES) != 0));
+
     pack = cptr.add(flags, $flag_inv_order);
     do {
         counted_category = 0;
@@ -1445,27 +1797,37 @@ function count_categories(olist, qflags) {
     return ccount;
 }
 
+/*
+ *  How much the weight of the given container will change when the given
+ *  object is removed from it.  Use before and after weight amounts rather
+ *  than trying to match the calculation used by weight() in mkobj.c.
+ */
 /** C ref: pickup.c:1544 — @param {CPtr<struct obj>} container @param {CPtr<struct obj>} obj @returns {CInt} */
 function* delta_cwt(container, obj) {
     let prev;
     let owt;
     let nwt;
+
     if (cptr.ldI16o(container, $obj_otyp) != NHC.BAG_OF_HOLDING)
         return cptr.ldI32o(obj, $obj_owt) | 0;
+
     owt = (nwt = cptr.ldI32o(container, $obj_owt) | 0);
+    /* find the object so that we can remove it */
     for (prev = cptr.add(container, $obj_cobj); cptr.ldPtr(prev); prev = (cptr.ldPtr(prev)))
         if (cptr.eq(cptr.ldPtr(prev), obj))
             break;
     if (!cptr.ldPtr(prev)) {
         (yield* panic(__s_delta_cwt_obj_not_inside_container));
     } else {
+        /* temporarily remove the object and calculate resulting weight */
         cptr.stPtr(prev, cptr.ldPtr(obj));
         nwt = (yield* weight(container));
-        cptr.stPtr(prev, obj);
+        cptr.stPtr(prev, obj);  /* put the object back; obj->nobj is still valid */
     }
     return (owt - nwt) | 0;
 }
 
+/* could we carry `obj'? if not, could we carry some of it/them? */
 /** C ref: pickup.c:1570 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} container @param {CLongLong} count @param {CInt} telekinesis @param {CPtr<int>} wt_before @param {CPtr<int>} wt_after @returns {CLongLong} */
 function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     let adjust_wt = schar((container && (cptr.ld1so((container), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0));
@@ -1484,10 +1846,12 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     let suffx;
     let obj_nambuf = new Uint8Array(256);
     let where = new Uint8Array(256);
+
     savequan = cptr.ldI64o(obj, $obj_quan);
     saveowt = cptr.ldI32o(obj, $obj_owt);
     umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
     iw = max_capacity();
+
     if (count != savequan) {
         cptr.stI64o(obj, $obj_quan, count);
         cptr.stI32o(obj, $obj_owt, (yield* weight(obj)) >>> 0);
@@ -1495,6 +1859,7 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     wt = (iw + (cptr.ldI32o(obj, $obj_owt) | 0)) | 0;
     if (adjust_wt)
         wt = (wt - (yield* delta_cwt(container, obj))) | 0;
+    /* This will go with silver+copper & new gold weight */
     if (is_gold)
         wt = Number(BigInt.asIntN(32, BigInt(wt) - (BigInt.asIntN(64, BigInt.asIntN(64, ((BigInt.asIntN(64, (umoney) + 50n)) / 100n) + ((BigInt.asIntN(64, (count) + 50n)) / 100n)) - ((BigInt.asIntN(64, (BigInt.asIntN(64, umoney + count)) + 50n)) / 100n)))));
     if (count != savequan) {
@@ -1503,8 +1868,11 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     }
     cptr.stI32(wt_before, iw);
     cptr.stI32(wt_after, wt);
+
     if (wt < 0)
         return count;
+
+    /* see how many we can lift */
     if (is_gold) {
         iw = (iw - Number(BigInt.asIntN(32, ((BigInt.asIntN(64, (umoney) + 50n)) / 100n)))) | 0;
         if (!adjust_wt) {
@@ -1532,6 +1900,13 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
             qq = count;
         wt = (iw + Number(BigInt.asIntN(32, ((BigInt.asIntN(64, (BigInt.asIntN(64, umoney + qq)) + 50n)) / 100n)))) | 0;
     } else if (count > 1n || count < cptr.ldI64o(obj, $obj_quan)) {
+        /*
+         * Ugh. Calc num to lift by changing the quan of the
+         * object and calling weight.
+         *
+         * This works for containers only because containers
+         * don't merge.  -dean
+         */
         for (qq = 1n; qq <= count; qq++) {
             cptr.stI64o(obj, $obj_quan, qq);
             cptr.stI32o(obj, $obj_owt, (ow = (yield* weight(obj))) >>> 0);
@@ -1543,11 +1918,14 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
         }
         --qq;
     } else {
+        /* there's only one, and we can't lift it */
         qq = 0n;
     }
     cptr.stI64o(obj, $obj_quan, savequan);
     cptr.stI32o(obj, $obj_owt, saveowt);
+
     if (qq < count) {
+        /* some message will be given */
         void cptr.strcpy(cptr.decay(obj_nambuf), (yield* doname(obj)));
         if (container) {
             void cptr.sprintf(cptr.decay(where), __s_in_s, (yield* the((yield* xname(container)))));
@@ -1557,17 +1935,20 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
             verb = telekinesis ? __s_acquire : __s_lift;
         }
     } else {
+        /* lint suppression */
         cptr.st1(cptr.decay(obj_nambuf), cptr.st1(cptr.decay(where), 0));
         verb = __s_empty;
     }
+    /* we can carry qq of them */
     if (qq > 0n) {
         if (qq < count)
             (yield* You(__s_can_only_s_s_of_the_s_s, verb, (qq == 1n) ? __s_one : __s_some, cptr.decay(obj_nambuf), cptr.decay(where)));
         cptr.stI32(wt_after, wt);
         return qq;
     }
+
     if (!container)
-        void cptr.strcpy(cptr.decay(where), __s_here);
+        void cptr.strcpy(cptr.decay(where), __s_here);  /* slightly shorter form */
     if (cptr.ldPtro(gi, $instance_globals_i_invent) || umoney) {
         prefx1 = __s_you_cannot;
         prefx2 = __s_empty;
@@ -1578,9 +1959,12 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
         suffx = __s_empty;
     }
     (yield* There(__s_s_s_s_but_s_s_s_s, (yield* otense(obj, __s_are)), cptr.decay(obj_nambuf), cptr.decay(where), prefx1, prefx2, verb, suffx));
+
+    /* *wt_after = iw; */
     return 0n;
 }
 
+/* determine whether character is able and player is willing to carry `obj' */
 /** C ref: pickup.c:1705 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} container @param {CPtr<long>} cnt_p @param {CInt} telekinesis @returns {CInt} */
 function* lift_object(obj, container, cnt_p, telekinesis) {
     let result;
@@ -1588,22 +1972,36 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
     let new_wt = cptr.box(0);
     let prev_encumbr;
     let next_encumbr;
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0) {
         (yield* You(__s_cannot_get_your_s_around_this_s, (yield* body_part(NHC.HAND)), (yield* xname(obj))));
         return -1;
     }
+    /* override weight consideration for loadstone picked up by anybody
+       and for boulder picked up by hero poly'd into a giant; override
+       availability of open inventory slot iff not already carrying one */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE || (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n))) {
         if (inv_cnt(0) < NHC.invlet_basic || !carrying(cptr.ldI16o(obj, $obj_otyp)) || (yield* merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj)))
-            return 1;
+            return 1;  /* lift regardless of current situation */
+        /* if we reach here, we're out of slots and already have at least
+           one of these, so treat this one more like a normal item
+           [this was using simpleonames(obj) for shortest description, but
+           that's suboptimal for loadstones because it omits user-assigned
+           type name which is something of interest for gray stones] */
         (yield* You(__s_are_carrying_too_much_stuff_to_pick_up, (cptr.ldI64o(obj, $obj_quan) == 1n) ? __s_another : __s_more, (yield* xname(obj))));
         return -1;
     }
+
     cptr.stI64(cnt_p, (yield* carry_count(obj, container, cptr.ldI64(cnt_p), telekinesis, old_wt, new_wt)));
     if (cptr.ldI64(cnt_p) < 1n) {
-        result = -1;
+        result = -1;  /* nothing lifted */
     } else if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic && !(yield* merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj))) {
+        /* if there is some gold here (and we haven't already skipped it),
+           we aren't limited by the 52 item limit for it, but caller and
+           "grandcaller" aren't prepared to skip stuff and then pickup
+           just gold, so the best we can do here is vary the message */
         (yield* Your(__s_knapsack_cannot_accommodate_any_more, nxtobj(obj, NHC.GOLD_PIECE, schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR))) ? __s_except_gold : __s_empty));
-        result = -1;
+        result = -1;  /* nothing lifted */
     } else {
         result = 1;
         prev_encumbr = near_capacity();
@@ -1612,10 +2010,11 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
         next_encumbr = calc_capacity((new_wt.v - old_wt.v) | 0);
         if (next_encumbr > prev_encumbr) {
             if (telekinesis) {
-                result = 0;
+                result = 0;  /* don't lift */
             } else {
                 let qbuf = new Uint8Array(256);
                 let savequan = cptr.ldI64o(obj, $obj_quan);
+
                 cptr.stI64o(obj, $obj_quan, cptr.ldI64(cnt_p));
                 void cptr.sprintf(cptr.decay(qbuf), __s_s_s, (next_encumbr >= NHC.EXT_ENCUMBER) ? cptr.decay(overloadpfx) : ((next_encumbr >= NHC.HVY_ENCUMBER) ? cptr.decay(nearloadpfx) : ((next_encumbr >= NHC.MOD_ENCUMBER) ? cptr.decay(moderateloadpfx) : cptr.decay(slightloadpfx))), !container ? __s_lifting : __s_removing);
                 void (yield* safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), __s_continue, obj, doname, ansimpleoname, cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
@@ -1628,27 +2027,38 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
                     result = 0;
                     break;
                     default:
-                    break;
+                    break;  /* 'y' => result == 1 */
                 }
                 (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             }
         }
     }
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_SCARE_MONSTER && result <= 0 && !container)
         cptr.st1o(obj, $obj_spe, 0);
     return result;
 }
 
+/*
+ * Pick up <count> of obj from the ground and add it to the hero's inventory.
+ * Returns -1 if caller should break out of its loop, 0 if nothing picked
+ * up, 1 if otherwise.
+ */
 /** C ref: pickup.c:1803 — @param {CPtr<struct obj>} obj @param {CLongLong} count @param {CInt} telekinesis @returns {CInt} */
 export function* pickup_object(obj, count, telekinesis) {
     count = cptr.box(count);
     let res;
+
     if (cptr.ldI64o(obj, $obj_quan) < count.v) {
         (yield* impossible(__s_pickup_object_count_ld_quan_ld, count.v, cptr.ldI64o(obj, $obj_quan)));
         return 0;
     }
+
+    /* In case of auto-pickup, where we haven't had a chance
+       to look at it yet; affects docall(SCR_SCARE_MONSTER). */
     if (!Blind())
         (yield* observe_object(obj));
+
     if (cptr.eq(obj, uchain.v)) {
         return 0;
     } else if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MINVENT && cptr.ldI64o(obj, $obj_owornmask) != 0n && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (cptr.ldPtro(obj, $obj_v)))))) {
@@ -1662,10 +2072,19 @@ export function* pickup_object(obj, count, telekinesis) {
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_SCARE_MONSTER) {
         let old_wt = cptr.box(0);
         let new_wt = cptr.box(0);
+
+        /* process a count before altering/deleting scrolls;
+           tricky because being unable to lift full stack imposes an
+           implicit count; unliftable ones should be treated as if
+           the count excluded them so that they don't change state */
         if ((count.v = (yield* carry_count(obj, null, count.v ? count.v : cptr.ldI64o(obj, $obj_quan), 0, old_wt, new_wt))) < 1n)
-            return -1;
+            return -1;  /* couldn't even pick up 1, so effectively untouched */
+        /* all current callers handle a new object sanely when traversing
+           a list; other half of a split will be left as-is and whatever
+           already follows 'obj' will still be processed next */
         if (count.v > 0n && count.v < cptr.ldI64o(obj, $obj_quan))
             obj = (yield* splitobj(obj, count.v));
+
         if ((cptr.ldI32o(obj, $obj_blessed) & 1)) {
             (yield* unbless(obj));
         } else if (!cptr.ld1so(obj, $obj_spe) && !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
@@ -1677,14 +2096,24 @@ export function* pickup_object(obj, count, telekinesis) {
             return 1;
         }
     }
+
+    /* obj has either already passed autopick_testobj or we are explicitly
+       picking it off the floor, so addinv() will override obj->how_lost;
+       otherwise we couldn't pick up a thrown, stolen, or dropped item that
+       was split off from a carried stack even while still carrying the
+       rest of the stack unless we have at least one free slot available */
     res = (yield* lift_object(obj, null, count, telekinesis));
     if (res <= 0)
         return res;
+
+    /* What's left of the special case for gold :-) */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         cptr.st1(disp, 1);
     if (cptr.ldI64o(obj, $obj_quan) != count.v && cptr.ldI16o(obj, $obj_otyp) != NHC.LOADSTONE)
         obj = (yield* splitobj(obj, count.v));
+
     obj = (yield* pick_obj(obj));
+
     if (uwep.v && cptr.eq(uwep.v, obj))
         cptr.st1o(gm, $instance_globals_m_mrg_to_wielded, 1);
     (yield* pickup_prinv(obj, count.v, __s_lifting));
@@ -1694,6 +2123,12 @@ export function* pickup_object(obj, count, telekinesis) {
     return 1;
 }
 
+/*
+ * Do the actual work of picking otmp from the floor or monster's interior
+ * and putting it in the hero's inventory.  Take care of billing.  Return a
+ * pointer to the object where otmp ends up.  This may be different
+ * from otmp because of merging.
+ */
 /** C ref: pickup.c:1897 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct obj>} */
 export function* pick_obj(otmp) {
     let result;
@@ -1701,33 +2136,58 @@ export function* pick_obj(otmp) {
     let oy = cptr.box(0);
     let robshop;
     let fromfloor = schar((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR));
+
+    /* otmp is either on the floor or in an engulfer's inventory; for the
+       latter, its <ox,oy> probably won't be set */
     void get_obj_location(otmp, ox, oy, 0);
+
     robshop = schar((!(cptr.ldI32o(u, $you_uswallow) & 1) && !cptr.eq(otmp, uball.v) && (yield* costly_spot(ox.v, oy.v)) ? 1 : 0));
     (yield* obj_extract_self(otmp));
     if (fromfloor)
         (yield* newsym(ox.v, oy.v));
+
+    /* for shop items, addinv() needs to be after addtobill() (so that
+       object merger can take otmp->unpaid into account) but before
+       remote_robbery() (which calls rob_shop() which calls setpaid()
+       after moving costs of unpaid items to shop debt; setpaid()
+       calls clear_unpaid() for lots of object chains, but 'otmp' isn't
+       on any of those between obj_extract_self() and addinv(); for
+       3.6.0, 'otmp' remained flagged as an unpaid item in inventory
+       and triggered impossible() every time inventory was examined) */
     if (robshop) {
         let saveushops = new Uint8Array(5);
         let fakeshop = new Uint8Array(2);
+
+        /* addtobill cares about your location rather than the object's;
+           usually they'll be the same, but not when using telekinesis
+           (if ever implemented) or a grappling hook */
         void cptr.strcpy(cptr.decay(saveushops), cptr.add(u, $you_ushops));
         cptr.st1o(cptr.decay(fakeshop), 0, cptr.ld1s((yield* in_rooms(ox.v, oy.v, NHC.SHOPBASE))), 1);
         cptr.st1o(cptr.decay(fakeshop), 1, 0, 1);
         void cptr.strcpy(cptr.add(u, $you_ushops), cptr.decay(fakeshop));
+        /* sets obj->unpaid if necessary */
         (yield* addtobill(otmp, 1, 0, 0));
         void cptr.strcpy(cptr.add(u, $you_ushops), cptr.decay(saveushops));
         robshop = schar(((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 && !cptr.strchr(cptr.add(u, $you_ushops), cptr.ld1s(cptr.decay(fakeshop))) ? 1 : 0));
     }
+
     result = (yield* addinv(otmp));
+    /* if you're taking a shop item from outside the shop, make shk notice */
     if (robshop)
         (yield* remote_burglary(ox.v, oy.v));
+
     return result;
 }
 
+/* pickup_object()/out_container() helper;
+   print an added-to-invent message for current object, limiting feedback
+   about encumbrance to the first item which causes that to change */
 /** C ref: pickup.c:1948 — @param {CPtr<struct obj>} obj @param {CLongLong} count @param {CPtr<char>} verb */
 function* pickup_prinv(obj, count, verb) {
     let pbuf = new Uint8Array(128);
     let prefix;
     let nearload = near_capacity();
+
     cptr.st1o(cptr.decay(pbuf), 0, 0, 1);
     if (nearload == cptr.ldI32o(gp, $instance_globals_p_pickup_encumbrance)) {
         prefix = null;
@@ -1737,12 +2197,17 @@ function* pickup_prinv(obj, count, verb) {
     }
     if (prefix)
         void cptr.sprintf(cptr.decay(pbuf), __s_s_s__2, prefix, verb);
+
     (yield* prinv(cptr.decay(pbuf), obj, count));
 }
 
+/*
+ * prints a message if encumbrance changed since the last check
+ */
 /** C ref: pickup.c:1978 */
 export function* encumber_msg() {
     let newcap = near_capacity();
+
     if (cptr.ldI32o(go, $instance_globals_o_oldcap) < newcap) {
         switch (newcap) {
             case 1:
@@ -1776,14 +2241,17 @@ export function* encumber_msg() {
         }
         cptr.st1(disp, 1);
     }
+
     cptr.stI32o(go, $instance_globals_o_oldcap, newcap);
 }
 
+/* Is there a container at x,y. Optional: return count of containers at x,y */
 /** C ref: pickup.c:2024 — @param {CInt} x @param {CInt} y @param {CInt} countem @returns {CInt} */
 export function container_at(x, y, countem) {
     let cobj;
     let nobj;
     let container_count = 0;
+
     for (cobj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); cobj; cobj = nobj) {
         nobj = cptr.ldPtro(cobj, $obj_v);
         if (Is_container(cobj)) {
@@ -1799,13 +2267,16 @@ export function container_at(x, y, countem) {
 function* able_to_loot(x, y, looting) {
     let verb = looting ? __s_loot : __s_tip;
     let t = t_at(x, y);
+
     if (!can_reach_floor(schar((t && is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ? 1 : 0)))) {
         if (cptr.ldPtro(u, $you_usteed) && (cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills)) < NHC.P_BASIC)
-            (yield* rider_cant_reach());
+            (yield* rider_cant_reach());  /* not skilled enough to reach */
         else
             (yield* cant_reach_floor(x, y, 0, 1, 0));
         return 0;
     } else if ((is_pool(x, y) && (looting || !Underwater())) || is_lava(x, y)) {
+        /* at present, can't loot in water even when Underwater;
+           can tip underwater, but not when over--or stuck in--lava */
         (yield* You(__s_cannot_s_things_that_are_deep_in_the_s, verb, hliquid(is_lava(x, y) ? __s_lava : __s_water)));
         return 0;
     } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
@@ -1824,6 +2295,7 @@ function mon_beside(x, y) {
     let j;
     let nx;
     let ny;
+
     for (i = -1; i <= 1; i++)
         for (j = -1; j <= 1; j++) {
             nx = i16(((x + i) | 0));
@@ -1837,6 +2309,7 @@ function mon_beside(x, y) {
 /** C ref: pickup.c:2088 — @param {CPtr<struct obj *>} cobjp @param {CInt} cindex @param {CInt} ccount @returns {CInt} */
 function* do_loot_cont(cobjp, cindex, ccount) {
     let cobj = cptr.ldPtr(cobjp);
+
     if (!cobj)
         return NHM.ECMD_OK;
     if ((cptr.ldI32o(cobj, $obj_olocked) & 1)) {
@@ -1846,15 +2319,23 @@ function* do_loot_cont(cobjp, cindex, ccount) {
         else
             (yield* pline(__s_hmmm_s_turns_out_to_be_locked, (yield* the((yield* xname(cobj))))));
         cptr.stI32o(cobj, $obj_lknown, 1);
+
         if (cptr.ldI32o(flags, $flag_autounlock)) {
             let otmp;
             let unlocktool = null;
             let ox = cptr.ldI16o(cobj, $obj_ox);
             let oy = cptr.ldI16o(cobj, $obj_oy);
+
             cptr.stI32o(u, $you_dz, 0);
+            /* if both the untrap and apply_key bits are set, untrap
+               attempt will be performed first but we need to set up
+               unlocktool in case "check for trap?" is declined */
             if ((((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0) != 0 && (unlocktool = autokey(1)) !== null) || ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0) {
+                /* pass ox and oy to avoid direction prompt */
                 if ((yield* pick_lock(unlocktool, ox, oy, cobj)))
                     res = NHM.ECMD_TIME;
+                /* attempting to untrap or unlock might trigger a trap
+                   which destroys 'cobj'; inform caller if that happens */
                 for (otmp = cptr.ldPtro3(svl, ox, 168, oy, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
                     if (cptr.eq(otmp, cobj))
                         break;
@@ -1863,15 +2344,19 @@ function* do_loot_cont(cobjp, cindex, ccount) {
                 return res;
             }
             if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_FORCE) >>> 0) != 0 && res != NHM.ECMD_TIME && ccount == 1 && u_have_forceable_weapon()) {
+                /* single container, and we could #force it open... */
+                /* note: doforce asks for confirmation */
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, doforce));
                 cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
             }
         }
         return res;
     }
-    cptr.stI32o(cobj, $obj_lknown, 1);
+    cptr.stI32o(cobj, $obj_lknown, 1);  /* floor container, so no need for update_inventory() */
+
     if (cptr.ldI16o(cobj, $obj_otyp) == NHC.BAG_OF_TRICKS) {
         let tmp;
+
         (yield* You(__s_carefully_open_s, (yield* the((yield* xname(cobj))))));
         (yield* pline(__s_it_develops_a_huge_set_of_teeth_and));
         tmp = rnd_at(__s_pickup_c, 2155, __s_do_loot_cont, 10);
@@ -1883,15 +2368,18 @@ function* do_loot_cont(cobjp, cindex, ccount) {
     return (yield* use_container(cobjp, 0, schar((cindex < ccount))));
 }
 
+/* #loot extended command */
 /** C ref: pickup.c:2166 @returns {CInt} */
 export function* doloot() {
     let res;
+
     cptr.st1o(gl, $instance_globals_l_loot_reset_justpicked, 1);
     res = (yield* doloot_core());
     cptr.st1o(gl, $instance_globals_l_loot_reset_justpicked, 0);
     return res;
 }
 
+/* loot a container on the floor or loot saddle from mon. */
 /** C ref: pickup.c:2178 @returns {CInt} */
 function* doloot_core() {
     let cobj = cptr.box(0), nobj, c, timepassed, cc, underfoot, dont_find_anything, mtmp, prev_inquiry = cptr.box(0), prev_loot = cptr.box(0), num_conts, clr, anyfound, n, i, win, any, pick_list = cptr.box(0), looted_mon;
@@ -1908,12 +2396,15 @@ function* doloot_core() {
         prev_loot.v = 0;
         num_conts = 0;
         clr = NHM.NO_COLOR;
+
         cptr.st1o(ga, $instance_globals_a_abort_looting, 0);
+
         if ((yield* check_capacity(null))) {
+            /* "Can't do that while carrying so much stuff." */
             return NHM.ECMD_OK;
         }
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-            (yield* You(__s_have_no_hands));
+            (yield* You(__s_have_no_hands));  /* not `body_part(HAND)' */
             return NHM.ECMD_OK;
         }
         if (HConfusion()) {
@@ -1921,8 +2412,8 @@ function* doloot_core() {
                 return NHM.ECMD_TIME;
             if (rn2_at(__s_pickup_c, 2205, __s_doloot_core, 2)) {
                 (yield* pline(__s_being_confused_you_find_nothing_to_loot));
-                return NHM.ECMD_TIME;
-            }
+                return NHM.ECMD_TIME;  /* costs a turn */
+            }  /* else fallthrough to normal looting */
         }
         cptr.stI16(cc, cptr.ldI16(u));
         cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
@@ -1939,21 +2430,31 @@ function* doloot_core() {
         case 1 /* lootcont: */: {
         if ((num_conts = container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1)) > 0) {
             anyfound = 0;
+
             if (!(yield* able_to_loot(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1)))
                 return NHM.ECMD_OK;
+
             if (Blind() && !uarmg.v) {
+                /* if blind and without gloves, attempting to #loot at the
+                   location of a cockatrice corpse is fatal before asking
+                   whether to manipulate any containers */
                 for (nobj = sobj_at(NHC.CORPSE, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)); nobj; nobj = nxtobj(nobj, NHC.CORPSE, 1))
                     if (will_feel_cockatrice(nobj, 0)) {
                         (yield* feel_cockatrice(nobj, 0));
+                        /* if life-saved (or poly'd into stone golem),
+                           terminate attempt to loot */
                         return NHM.ECMD_TIME;
                     }
             }
+
             if (num_conts > 1) {
                 any = cptr.alloc(8);
                 pick_list.v = null;
+
                 cptr.stPtr(any, null);
                 win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
                 (yield* Y.icall(start_menu()(win, 0n)));
+
                 for (cobj.v = cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_objects); cobj.v; cobj.v = cptr.ldPtro(cobj.v, $obj_v))
                     if (Is_container(cobj.v)) {
                         cptr.stPtr(any, cobj.v);
@@ -1962,11 +2463,13 @@ function* doloot_core() {
                 (yield* Y.icall(end_menu()(win, __s_loot_which_containers)));
                 n = (yield* select_menu(win, NHM.PICK_ANY, pick_list));
                 (yield* Y.icall(destroy_nhwindow()(win)));
+
                 if (n > 0) {
                     for (i = 1; i <= n; i++) {
                         cobj.v = cptr.ldPtro(pick_list.v, (i - 1) | 0, $sizeof_menu_item);
                         timepassed |= (yield* do_loot_cont(cobj, i, n));
                         if (cptr.ld1so(ga, $instance_globals_a_abort_looting)) {
+                            /* chest trap or magic bag explosion or <esc> */
                             cptr.free(pick_list.v);
                             return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
                         }
@@ -1978,10 +2481,12 @@ function* doloot_core() {
             } else {
                 for (cobj.v = cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_objects); cobj.v; cobj.v = nobj) {
                     nobj = cptr.ldPtro(cobj.v, $obj_v);
+
                     if (Is_container(cobj.v)) {
                         anyfound = 1;
                         timepassed |= (yield* do_loot_cont(cobj, 1, 1));
                         if (cptr.ld1so(ga, $instance_globals_a_abort_looting))
+                            /* chest trap or magic bag explosion or <esc> */
                             return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
                     }
                 }
@@ -2020,8 +2525,16 @@ function* doloot_core() {
             if (timepassed)
                 looted_mon = 1;
         }
+        /* always use a turn when choosing a direction is impaired,
+           even if you've successfully targeted a saddled creature
+           and then answered "no" to the "remove its saddle?" prompt */
         if (HConfusion() || HStun())
             timepassed = 1;
+
+        /* Preserve pre-3.3.1 behavior for containers.
+         * Adjust this if-block to allow container looting
+         * from one square away to change that in the future.
+         */
         if (!looted_mon) {
             if (!underfoot && container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) {
                 if (mtmp) {
@@ -2053,6 +2566,7 @@ function* doloot_core() {
     }
 }
 
+/* called when attempting to #loot while confused */
 /** C ref: pickup.c:2350 @returns {CInt} */
 function* reverse_loot() {
     let goldob = null;
@@ -2064,7 +2578,9 @@ function* reverse_loot() {
     let n;
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
+
     if (!rn2_at(__s_pickup_c, 2357, __s_reverse_loot, 3)) {
+        /* n objects: 1/(n+1) chance per object, 1/(n+1) to fall off end */
         for (n = inv_cnt(1), otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; --n, otmp = cptr.ldPtr(otmp))
             if (!rn2_at(__s_pickup_c, 2361, __s_reverse_loot, (n + 1) | 0)) {
                 (yield* prinv(__s_you_find_old_loot, otmp, 0n));
@@ -2072,6 +2588,8 @@ function* reverse_loot() {
             }
         return 0;
     }
+
+    /* find a money object to mess with */
     for (goldob = cptr.ldPtro(gi, $instance_globals_i_invent); goldob; goldob = cptr.ldPtr(goldob))
         if (cptr.ld1so(goldob, $obj_oclass) == NHC.COIN_CLASS) {
             contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(rnd_at(__s_pickup_c, 2371, __s_reverse_loot, 5)) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
@@ -2081,22 +2599,29 @@ function* reverse_loot() {
         }
     if (!goldob)
         return 0;
+
+    /* gold might be quivered; dropping would un-wear it, but freeinv()
+       expects caller to do that; do so now */
     (yield* remove_worn_item(goldob, 0));
+
     if (!((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
         (yield* dropx(goldob));
+        /* the dropped gold might have fallen to lower level */
         if (g_at(i16(x), i16(y)))
             (yield* pline(__s_ok_now_there_is_loot_here));
     } else {
+        /* find original coffers chest if present, otherwise use nearest */
         otmp = null;
         for (coffers = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); coffers; coffers = cptr.ldPtr(coffers))
             if (cptr.ldI16o(coffers, $obj_otyp) == NHC.CHEST) {
                 if (cptr.ld1so(coffers, $obj_spe) == 2)
-                    break;
+                    break;  /* a throne room chest */
                 if (!otmp || (dist2((cptr.ldI16o(coffers, $obj_ox)), (cptr.ldI16o(coffers, $obj_oy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < dist2((cptr.ldI16o(otmp, $obj_ox)), (cptr.ldI16o(otmp, $obj_oy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
-                    otmp = coffers;
+                    otmp = coffers;  /* remember closest ordinary chest */
             }
         if (!coffers)
             coffers = otmp;
+
         if (coffers) {
             ;
             (yield* verbalize(__s_thank_you_for_your_contribution_to));
@@ -2122,23 +2647,31 @@ function* reverse_loot() {
     return 1;
 }
 
+/* loot_mon() returns amount of time passed.
+ */
 /** C ref: pickup.c:2431 — @param {CPtr<struct monst>} mtmp @param {CPtr<int>} passed_info @param {CPtr<boolean>} prev_loot @returns {CInt} */
 export function* loot_mon(mtmp, passed_info, prev_loot) {
     let c = -1;
     let timepassed = 0;
     let otmp;
     let qbuf = new Uint8Array(128);
+
+    /* 3.3.1 introduced the ability to remove saddle from a steed.
+     *  *passed_info is set to TRUE if a loot query was given.
+     *  *prev_loot is set to TRUE if something was actually acquired in here.
+     */
     if (mtmp && !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) && (otmp = (yield* which_armor(mtmp, 1048576n)))) {
         if (passed_info)
             cptr.stI32(passed_info, 1);
         void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_remove_the_saddle_from_s, (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0)));
         if ((c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1))) == 121) {
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) {
-                (yield* You_cant(__s_do_that_without_limbs));
+                (yield* You_cant(__s_do_that_without_limbs));  /* not body_part(HAND) */
                 return 0;
             }
             if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
                 (yield* You(__s_can_t_the_saddle_seems_to_be_stuck_to_s, (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0))));
+                /* the attempt costs you time */
                 return 1;
             }
             (yield* extract_from_minvent(mtmp, otmp, 1, 0));
@@ -2153,21 +2686,31 @@ export function* loot_mon(mtmp, passed_info, prev_loot) {
             return 0;
         }
     }
+    /* 3.4.0 introduced ability to pick things up from swallower's stomach */
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let count = passed_info ? cptr.ldI32(passed_info) : 0;
+
         timepassed = (yield* pickup(count));
     }
     return timepassed;
 }
 
+/*
+ * Decide whether an object being placed into a magic bag will cause
+ * it to explode.  If the object is a bag itself, check recursively.
+ */
 /** C ref: pickup.c:2488 — @param {CPtr<struct obj>} obj @param {CInt} depthin @returns {CInt} */
 function mbag_explodes(obj, depthin) {
+    /* these won't cause an explosion when they're empty */
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS) && cptr.ld1so(obj, $obj_spe) <= 0)
         return 0;
+
+    /* odds: 1/1, 2/2, 3/4, 4/8, 5/16, 6/32, 7/64, 8/128, 9/128, 10/128,... */
     if ((Is_mbag(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && (rn2_at(__s_pickup_c, 2497, __s_mbag_explodes, 1 << (depthin > 7 ? 7 : depthin)) <= depthin))
         return 1;
     else if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         let otmp;
+
         for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp))
             if (mbag_explodes(otmp, (depthin + 1) | 0))
                 return 1;
@@ -2180,11 +2723,14 @@ function is_boh_item_gone() {
     return schar((!rn2_at(__s_pickup_c, 2512, __s_is_boh_item_gone, 13)));
 }
 
+/* Scatter most of Bag of holding contents around.  Some items will be
+   destroyed with the same chance as looting a cursed bag. */
 /** C ref: pickup.c:2518 — @param {CPtr<struct obj>} boh @param {CInt} on_floor */
 function* do_boh_explosion(boh, on_floor) {
     let otmp;
     let nobj;
-    cptr.stI32o(boh, $obj_in_use, 1);
+
+    cptr.stI32o(boh, $obj_in_use, 1);  /* in case scatter() leads to bones creation */
     for (otmp = cptr.ldPtro(boh, $obj_cobj); otmp; otmp = nobj) {
         nobj = cptr.ldPtr(otmp);
         if (is_boh_item_gone()) {
@@ -2195,14 +2741,17 @@ function* do_boh_explosion(boh, on_floor) {
             void (yield* scatter(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 4, 14, otmp));
         }
     }
+    /* boh is about to be deleted so no need to reset its in_use flag here */
 }
 
 /** C ref: pickup.c:2537 — @param {CPtr<struct obj>} container @param {CInt} held @returns {CLongLong} */
 function* boh_loss(container, held) {
+    /* sometimes toss objects if a cursed magic bag */
     if (Is_mbag(container) && (cptr.ldI32o(container, $obj_cursed) & 1) | 0 && (cptr.ldPtro((container), $obj_cobj) !== null)) {
         let loss = 0n;
         let curr;
         let otmp;
+
         for (curr = cptr.ldPtro(container, $obj_cobj); curr; curr = otmp) {
             otmp = cptr.ldPtr(curr);
             if (is_boh_item_gone()) {
@@ -2215,11 +2764,13 @@ function* boh_loss(container, held) {
     return 0n;
 }
 
+/* Returns: -1 to stop, 1 item was inserted, 0 item was not inserted. */
 /** C ref: pickup.c:2558 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* in_container(obj) {
     let floor_container = schar((!(cptr.ld1so((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_where) == NHM.OBJ_INVENT)));
     let was_unpaid = 0;
     let buf = new Uint8Array(256);
+
     if (!cptr.ldPtro(gc, $instance_globals_c_current_container)) {
         (yield* impossible(__s_in_no_gc_current_container));
         return 0;
@@ -2237,6 +2788,10 @@ function* in_container(obj) {
         (yield* pline_The(__s_stone_s_won_t_leave_your_person, (((cptr.ldI64o(obj, $obj_quan)) == 1n) ? __s_empty : __s_s)));
         return 0;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD) {
+        /* Prohibit Amulets in containers; if you allow it, monsters can't
+         * steal them.  It also becomes a pain to check to see if someone
+         * has the Amulet.  Ditto for the Candelabrum, the Bell and the Book.
+         */
         (yield* pline(__s_s_cannot_be_confined_in_such_trappings, (yield* The((yield* xname(obj))))));
         return 0;
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm) != 0) {
@@ -2248,27 +2803,42 @@ function* in_container(obj) {
             return 0;
         }
         (yield* setuwep(null));
+        /* This uwep check is obsolete.  It dates to 3.0 and earlier when
+         * unwielding Firebrand would be fatal in hell if hero had no other
+         * fire resistance.  Life-saving would force it to be re-wielded.
+         */
         if (uwep.v)
-            return 0;
+            return 0;  /* unwielded, died, rewielded */
     } else if (cptr.eq(obj, uswapwep.v)) {
         (yield* setuswapwep(null));
     } else if (cptr.eq(obj, uquiver.v)) {
         (yield* setuqwep(null));
     }
+
     if ((yield* fatal_corpse_mistake(obj, 0)))
         return -1;
+
+    /* boxes, boulders, and big statues can't fit into any container */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.ICE_BOX || Is_box(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER || (cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE && (cptr.ld1uo((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)), $permonst_msize) >= NHM.MZ_LARGE))) {
+        /* consumes multiple obufs but not enough to overwrite the result */
         void cptr.strcpy(cptr.decay(buf), (yield* the((yield* xname(obj)))));
         (yield* You(__s_cannot_fit_s_into_s, cptr.decay(buf), (yield* the((yield* xname(cptr.ldPtro(gc, $instance_globals_c_current_container)))))));
         return 0;
     }
+
     (yield* freeinv(obj));
+
     if (obj_is_burning(obj))
         void (yield* snuff_lit(obj));
+
     if (floor_container && (yield* costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
+        /* defer gold until after put-in message */
         if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS) {
+            /* sellobj() will take an unpaid item off the shop bill */
             was_unpaid = schar(((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 ? 1 : 0));
             if (cptr.ld1so(gs, $instance_globals_s_sellobj_first)) {
+                /* don't sell when putting the item into your own container,
+                   but handle billing correctly */
                 sellobj_state((cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_no_charge) & 1) | 0 ? NHM.SELL_DONTSELL : NHM.SELL_DELIBERATE);
                 cptr.st1o(gs, $instance_globals_s_sellobj_first, 0);
             }
@@ -2276,12 +2846,14 @@ function* in_container(obj) {
         }
     }
     if ((cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_otyp) == NHC.ICE_BOX) && !age_is_relative(obj)) {
-        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(obj, $obj_age)));
+        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(obj, $obj_age)));  /* actual age */
+        /* stop any corpse timeouts when frozen */
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) {
             if (cptr.ldI16o(obj, $obj_timed)) {
                 void (yield* stop_timer(NHC.ROT_CORPSE, obj_to_any(obj)));
                 void (yield* stop_timer(NHC.REVIVE_MON, obj_to_any(obj)));
             }
+            /* if this is the corpse of a cancelled ice troll, uncancel it */
             if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_ICE_TROLL && has_omonst(obj))
                 cptr.stI32o((cptr.ldPtro(cptr.ldPtro((obj), $obj_oextra), $oextra_omonst)), $monst_mcan, 0);
         } else if ((cptr.ldI32o(obj, $obj_globby) & 1) | 0 && cptr.ldI16o(obj, $obj_timed)) {
@@ -2289,110 +2861,152 @@ function* in_container(obj) {
         }
     } else if (Is_mbag(cptr.ldPtro(gc, $instance_globals_c_current_container)) && mbag_explodes(obj, 0)) {
         (yield* livelog_printf(2n, __s_just_blew_up_s_bag_of_holding, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his))));
+        /* explicitly mention what item is triggering the explosion */
         (yield* urgent_pline(__s_as_you_put_s_inside_you_are_blasted_by, (yield* doname(obj))));
+        /* did not actually insert obj yet */
         if (was_unpaid)
             (yield* addtobill(obj, 0, 0, 1));
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_HOLDING)
             (yield* do_boh_explosion(obj, schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR))));
         (yield* obfree(obj, null));
+        /* if carried, shop goods will be flagged 'unpaid' and obfree() will
+           handle bill issues, but if on floor, we need to put them on bill
+           before deleting them (non-shop items will be flagged 'no_charge')*/
         if (floor_container && (yield* costly_spot(cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_ox), cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_oy)))) {
             let save_no_charge = cptr.alloc(216);
+
             cptr.stI32o(save_no_charge, $obj_no_charge, (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_no_charge) & 1));
             (yield* addtobill(cptr.ldPtro(gc, $instance_globals_c_current_container), 0, 0, 0));
+            /* addtobill() clears no charge; we need to set it back
+               so that useupf() doesn't double bill */
             cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_no_charge, (cptr.ldI32o(save_no_charge, $obj_no_charge) & 1));
         }
         (yield* do_boh_explosion(cptr.ldPtro(gc, $instance_globals_c_current_container), floor_container));
+
         if (!floor_container)
             (yield* useup(cptr.ldPtro(gc, $instance_globals_c_current_container)));
         else if (obj_here(cptr.ldPtro(gc, $instance_globals_c_current_container), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             (yield* useupf(cptr.ldPtro(gc, $instance_globals_c_current_container), cptr.ldI64o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_quan)));
         else
             (yield* panic(__s_in_container_bag_not_found));
+
         (yield* losehp(d_at(__s_pickup_c, 2692, __s_in_container, 6, 6), __s_magical_explosion, NHM.KILLED_BY_AN));
-        cptr.stPtro(gc, $instance_globals_c_current_container, null);
+        cptr.stPtro(gc, $instance_globals_c_current_container, null);  /* baggone = TRUE; */
     }
+
     if (cptr.ldPtro(gc, $instance_globals_c_current_container)) {
         void cptr.strcpy(cptr.decay(buf), (yield* the((yield* xname(cptr.ldPtro(gc, $instance_globals_c_current_container))))));
         (yield* You(__s_put_s_into_s, (yield* doname(obj)), cptr.decay(buf)));
+
+        /* gold in container always needs to be added to credit */
         if (floor_container && cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
             (yield* sellobj(obj, cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_ox), cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_oy)));
         void (yield* add_to_container(cptr.ldPtro(gc, $instance_globals_c_current_container), obj));
         cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_owt, (yield* weight(cptr.ldPtro(gc, $instance_globals_c_current_container))) >>> 0);
     }
+    /* gold needs this, and freeinv() many lines above may cause
+     * the encumbrance to disappear from the status, so just always
+     * update status immediately.
+     */
     (yield* bot());
     return (cptr.ldPtro(gc, $instance_globals_c_current_container) ? 1 : -1);
 }
 
+/* askchain() filter used by in_container();
+ * returns True if the container is intact and 'obj' isn't it, False if
+ * container is gone (magic bag explosion) or 'obj' is the container itself;
+ * also used by getobj() when picking a single item to stash
+ */
 /** C ref: pickup.c:2720 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function ck_bag(obj) {
     return (cptr.ldPtro(gc, $instance_globals_c_current_container) && !cptr.eq(obj, cptr.ldPtro(gc, $instance_globals_c_current_container)) ? 1 : 0);
 }
 
+/* Returns: -1 to stop, 1 item was removed, 0 item was not removed. */
 /** C ref: pickup.c:2727 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* out_container(obj) {
     let otmp;
     let res;
     let count = cptr.box(0n);
     let is_gold = schar((cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS));
+
     if (!cptr.ldPtro(gc, $instance_globals_c_current_container)) {
         (yield* impossible(__s_out_no_gc_current_container));
         return -1;
     } else if (is_gold) {
         cptr.stI32o(obj, $obj_owt, (yield* weight(obj)) >>> 0);
     }
+
     if (cptr.ld1so(obj, $obj_oartifact) && !(yield* touch_artifact(obj, cptr.add(gy, $instance_globals_y_youmonst))))
         return 0;
+
     if ((yield* fatal_corpse_mistake(obj, 0)))
         return -1;
+
     count.v = cptr.ldI64o(obj, $obj_quan);
     if ((res = (yield* lift_object(obj, cptr.ldPtro(gc, $instance_globals_c_current_container), count, 0))) <= 0)
         return res;
+
     if (cptr.ldI64o(obj, $obj_quan) != count.v && cptr.ldI16o(obj, $obj_otyp) != NHC.LOADSTONE)
         obj = (yield* splitobj(obj, count.v));
+
+    /* Remove the object from the list. */
     (yield* obj_extract_self(obj));
     cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_owt, (yield* weight(cptr.ldPtro(gc, $instance_globals_c_current_container))) >>> 0);
+
     if ((cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_otyp) == NHC.ICE_BOX))
         (yield* removed_from_icebox(obj));
+
     if (!(cptr.ldI32o(obj, $obj_unpaid) & 1) && !(cptr.ld1so((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_where) == NHM.OBJ_INVENT) && (yield* costly_spot(cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_ox), cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_oy)))) {
         cptr.stI16o(obj, $obj_ox, cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_ox));
         cptr.stI16o(obj, $obj_oy, cptr.ldI16o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_oy));
         (yield* addtobill(obj, 0, 0, 0));
     }
     if (is_pick(obj))
-        (yield* pick_pick(obj));
+        (yield* pick_pick(obj));  /* shopkeeper feedback */
+
     otmp = (yield* addinv(obj));
     (yield* pickup_prinv(otmp, count.v, __s_removing));
+
     if (is_gold) {
-        (yield* bot());
+        (yield* bot());  /* update character's gold piece count immediately */
     }
     return 1;
 }
 
+/* taking a corpse out of an ice box needs a couple of adjustments */
 /** C ref: pickup.c:2781 — @param {CPtr<struct obj>} obj */
 export function* removed_from_icebox(obj) {
     if (!age_is_relative(obj)) {
-        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(obj, $obj_age)));
+        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(obj, $obj_age)));  /* actual age */
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) {
             let m = (yield* get_mtraits(obj, 0));
             let iceT = schar((m ? (cptr.eq(cptr.ldPtro(m, $monst_data), cptr.add(mons, NHC.PM_ICE_TROLL, $sizeof_permonst))) : (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_ICE_TROLL)));
+
+            /* start a revive timer if this corpse is for an ice troll,
+               otherwise start a rot-away timer (even for other trolls) */
             cptr.stI32o(obj, $obj_oeroded2, (iceT ? 0 : 1) >>> 0);
             (yield* start_corpse_timeout(obj));
         } else if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
+            /* non-frozen globs gradually shrink away to nothing */
             (yield* start_glob_timeout(obj, 0n));
         }
     }
 }
 
+/* an object inside a cursed bag of holding is being destroyed */
 /** C ref: pickup.c:2803 — @param {CInt} held @param {CPtr<struct obj>} item @param {CInt} silent @returns {CLongLong} */
 function* mbag_item_gone(held, item, silent) {
     let shkp;
     let loss = 0n;
+
     if (!silent) {
         if ((cptr.ldI32o(item, $obj_dknown) & 1))
             (yield* pline(__s_s_s_vanished, (yield* Doname2(item)), (yield* otense(item, __s_have))));
         else
             (yield* You(__s_s_s_disappear, Blind() ? __s_notice : __s_see, (yield* doname(item))));
     }
+
     if (cptr.ld1so(u, $you_ushops) && (shkp = (yield* shop_keeper(cptr.ld1so(u, $you_ushops)))) !== null) {
         if (held ? schar((cptr.ldI32o(item, $obj_unpaid) & 1)) : (yield* costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
             loss = (yield* stolen_value(item, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)), 1));
@@ -2401,6 +3015,7 @@ function* mbag_item_gone(held, item, silent) {
     return loss;
 }
 
+/* used for #loot/apply, #tip, and final disclosure */
 const __static_observe_quantum_cat_sc = cptr.bytes("Schroedinger's Cat"); /** C ref: pickup.c:2828 — char[19] (function-static) */
 
 /** C ref: pickup.c:2826 — @param {CPtr<struct obj>} box @param {CInt} makecat @param {CInt} givemsg */
@@ -2410,8 +3025,16 @@ export function* observe_quantum_cat(box, makecat, givemsg) {
     let ox = cptr.box(0);
     let oy = cptr.box(0);
     let itsalive = schar((!rn2_at(__s_pickup_c, 2832, __s_observe_quantum_cat, 2)));
+
     if (get_obj_location(box, ox, oy, 0))
-        cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);
+        cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);  /* in case it's being carried */
+
+    /* this isn't really right, since any form of observation
+       (telepathic or monster/object/food detection) ought to
+       force the determination of alive vs dead state; but basing it
+       just on opening or disclosing the box is much simpler to cope with */
+
+    /* SchroedingersBox already has a cat corpse in it */
     deadcat = cptr.ldPtro(box, $obj_cobj);
     if (itsalive) {
         if (makecat)
@@ -2432,21 +3055,30 @@ export function* observe_quantum_cat(box, makecat, givemsg) {
             }
             cptr.stI32o(box, $obj_owt, (yield* weight(box)) >>> 0);
             cptr.st1o(box, $obj_spe, 0);
+
             if (!cptr.ld1so(svc, $context_info_mon_moving)) {
-                (yield* more_experienced(10, 20));
+                /* give experience points for releasing live cat; slightly
+                   different amount from what is given for "killing" it */
+                (yield* more_experienced(10, 20));  /* 10:current exp; 20:score bonus */
                 (yield* newexplevel());
             }
         }
     } else {
-        cptr.st1o(box, $obj_spe, 0);
+        cptr.st1o(box, $obj_spe, 0);  /* now an ordinary box (with a cat corpse inside) */
         if (givemsg)
             (yield* pline_The(__s_s_inside_the_box_is_dead, Hallucination() ? (yield* rndmonnam(null)) : __s_housecat));
         if (deadcat) {
+            /* set_corpsenm() will start the rot timer that was removed
+               when makemon() created SchroedingersBox; start it from
+               now rather than from when this special corpse got created */
             cptr.stI64o(deadcat, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
             (yield* set_corpsenm(deadcat, NHC.PM_HOUSECAT));
             deadcat = (yield* oname(deadcat, cptr.decay(__static_observe_quantum_cat_sc), NHM.ONAME_NO_FLAGS));
+
             if (!cptr.ld1so(svc, $context_info_mon_moving)) {
-                (yield* more_experienced(20, 10));
+                /* give experience points for the death of the cat since
+                   that has been finalized by the hero opening the box */
+                (yield* more_experienced(20, 10));  /* 20:current exp; 10:score bonus */
                 (yield* newexplevel());
             }
         }
@@ -2455,8 +3087,10 @@ export function* observe_quantum_cat(box, makecat, givemsg) {
     return;
 }
 
+/* used by askchain() to check for magic bag explosion */
 /** C ref: pickup.c:2903 — @param {CPtr} fn @returns {CInt} */
 export function container_gone(fn) {
+    /* result is only meaningful while use_container() is executing */
     return schar(((fn === in_container || fn === out_container) && !cptr.ldPtro(gc, $instance_globals_c_current_container) ? 1 : 0));
 }
 
@@ -2480,6 +3114,8 @@ cptr.stPtro(__static_explain_container_prompt_explaintext, 104, null); /** C ref
 function* explain_container_prompt(more_containers) {
     let txtpp;
     let win;
+
+    /* "Do what with <container>? [:oibrsq or ?] (q)" */
     if ((win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)))) != -1) {
         for (txtpp = __static_explain_container_prompt_explaintext; cptr.ldPtr(txtpp); txtpp = cptr.add(txtpp, 1, 8)) {
             if (!more_containers && !cptr.strncmp(cptr.ldPtr(txtpp), __s_sp_n_sp, 3n))
@@ -2494,7 +3130,7 @@ function* explain_container_prompt(more_containers) {
 /** C ref: pickup.c:2943 @returns {CInt} */
 export function* u_handsy() {
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        (yield* You(__s_have_no_hands));
+        (yield* You(__s_have_no_hands));  /* not `body_part(HAND)' */
         return 0;
     } else if (!(yield* freehand())) {
         (yield* You(__s_have_no_free_s, (yield* body_part(NHC.HAND))));
@@ -2503,12 +3139,18 @@ export function* u_handsy() {
     return 1;
 }
 
+/* getobj callback for object to be stashed into a container */
 /** C ref: pickup.c:2957 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function stash_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
+    /* downplay the container being stashed into */
     if (!ck_bag(obj))
         return NHC.GETOBJ_EXCLUDE_SELECTABLE;
+    /* Possible extension: downplay things too big to fit into containers (in
+     * which case extract in_container()'s logic.) */
+
     return NHC.GETOBJ_SUGGEST;
 }
 
@@ -2533,11 +3175,14 @@ export function* use_container(objp, held, more_containers) {
     let used = NHM.ECMD_OK;
     let loss;
     __lbl_containerdone: {
+
         cptr.st1o(ga, $instance_globals_a_abort_looting, 0);
-        cptr.st1o(gs, $instance_globals_s_sellobj_first, 1);
+        cptr.st1o(gs, $instance_globals_s_sellobj_first, 1);  /* in_container() should call sellobj_state() */
         cptr.st1o(cptr.decay(emptymsg), 0, 0, 1);
+
         if (!(yield* u_handsy()))
             return NHM.ECMD_OK;
+
         if (!(cptr.ldI32o(obj, $obj_lknown) & 1)) {
             cptr.stI32o(obj, $obj_lknown, 1);
             if (held)
@@ -2552,6 +3197,7 @@ export function* use_container(objp, held, more_containers) {
             if (held)
                 (yield* You(__s_open_s, (yield* the((yield* xname(obj))))));
             void (yield* chest_trap(obj, NHC.HAND, 0));
+            /* even if the trap fails, you've used up this turn */
             if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
                 nomul(-1);
                 cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_opening_a_container);
@@ -2560,115 +3206,176 @@ export function* use_container(objp, held, more_containers) {
             cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
             return NHM.ECMD_TIME;
         }
-        cptr.stPtro(gc, $instance_globals_c_current_container, obj);
+
+        cptr.stPtro(gc, $instance_globals_c_current_container, obj);  /* for use by in/out_container */
+        /*
+         * From here on out, all early returns go through 'containerdone:'.
+         */
+
+        /* check for Schroedinger's Cat */
         quantum_cat = schar(SchroedingersBox(cptr.ldPtro(gc, $instance_globals_c_current_container)));
         if (quantum_cat) {
             (yield* observe_quantum_cat(cptr.ldPtro(gc, $instance_globals_c_current_container), 1, 1));
             used = NHM.ECMD_TIME;
         }
+
         cursed_mbag = schar((Is_mbag(cptr.ldPtro(gc, $instance_globals_c_current_container)) && (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cursed) & 1) | 0 && (cptr.ldPtro((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_cobj) !== null) ? 1 : 0));
         if (cursed_mbag && (loss = (yield* boh_loss(cptr.ldPtro(gc, $instance_globals_c_current_container), held))) != 0n) {
             used = NHM.ECMD_TIME;
             (yield* You(__s_owe_ld_s_for_lost_merchandise, loss, (yield* currency(loss))));
             cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_owt, (yield* weight(cptr.ldPtro(gc, $instance_globals_c_current_container))) >>> 0);
         }
+        /* might put something in if carrying anything other than just the
+           container itself (invent is not the container or has a next object) */
         inokay = schar((cptr.ldPtro(gi, $instance_globals_i_invent) !== null && (!cptr.eq(cptr.ldPtro(gi, $instance_globals_i_invent), cptr.ldPtro(gc, $instance_globals_c_current_container)) || cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent))) ? 1 : 0));
+        /* might take something out if container isn't empty */
         outokay = schar((cptr.ldPtro((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_cobj) !== null));
         if (!outokay)
             void cptr.sprintf(cptr.decay(emptymsg), __s_s_is_sempty, (yield* Ysimple_name2(cptr.ldPtro(gc, $instance_globals_c_current_container))), (quantum_cat || cursed_mbag) ? __s_now : __s_empty);
+
+        /*
+         * What-to-do prompt's list of possible actions:
+         * always include the look-inside choice (':');
+         * include the take-out choice ('o') if container
+         * has anything in it or if player doesn't yet know
+         * that it's empty (latter can change on subsequent
+         * iterations if player picks ':' response);
+         * include the put-in choices ('i','s') if hero
+         * carries any inventory (including gold) aside from
+         * the container itself;
+         * include do-both when 'o' is available, even if
+         * inventory is empty--taking out could alter that;
+         * include do-both-reversed when 'i' is available,
+         * even if container is empty--for similar reason;
+         * include the next container choice ('n') when
+         * relevant, and make it the default;
+         * always include the quit choice ('q'), and make
+         * it the default if there's no next container;
+         * include the help choice (" or ?") if `cmdassist'
+         * run-time option is set;
+         * (Player can pick any of (o,i,b,r,n,s,?) even when
+         * they're not listed among the available actions.)
+         *
+         * Do what with <the/your/Shk's container>? [:oibrs nq or ?] (q)
+         * or
+         * <The/Your/Shk's container> is empty.  Do what with it? [:irs nq or ?]
+         */
         for (; ; ) {
             outmaybe = schar((outokay || !(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown) & 1) ? 1 : 0));
             if (!outmaybe)
                 void (yield* safe_qbuf(cptr.decay(qbuf), null, __s_is_empty_do_what_with_it, cptr.ldPtro(gc, $instance_globals_c_current_container), Yname2, Ysimple_name2, __s_this));
             else
                 void (yield* safe_qbuf(cptr.decay(qbuf), __s_do_what_with, __s_query, cptr.ldPtro(gc, $instance_globals_c_current_container), yname, ysimple_name, __s_it__2));
+            /* ask player about what to do with this container */
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_PARTIAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_FULL) {
                 if (!inokay && !outmaybe) {
+                    /* nothing to take out, nothing to put in;
+                       trying to do both will yield proper feedback */
                     c = 98;
                 } else {
                     c = (yield* in_or_out_menu(cptr.decay(qbuf), cptr.ldPtro(gc, $instance_globals_c_current_container), outmaybe, inokay, schar((used != NHM.ECMD_OK)), more_containers));
                 }
             } else {
-                cptr.st1o(cptr.decay(xbuf), 0, 0, 1);
-                void cptr.strcpy(cptr.decay(pbuf), __s_colon);
-                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_o);
-                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_i);
-                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_b);
-                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_rs);
-                void cptr.strcat(cptr.decay(pbuf), __s_sp);
-                void cptr.strcat(more_containers ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_n);
-                void cptr.strcat(cptr.decay(pbuf), __s_q);
+                cptr.st1o(cptr.decay(xbuf), 0, 0, 1);  /* list of extra acceptable responses */
+                void cptr.strcpy(cptr.decay(pbuf), __s_colon);  /* look inside */
+                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_o);  /* take out */
+                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_i);  /* put in */
+                void cptr.strcat(outmaybe ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_b);  /* both */
+                void cptr.strcat(inokay ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_rs);  /* reversed, stash */
+                void cptr.strcat(cptr.decay(pbuf), __s_sp);  /* separator */
+                void cptr.strcat(more_containers ? cptr.decay(pbuf) : cptr.decay(xbuf), __s_n);  /* next container */
+                void cptr.strcat(cptr.decay(pbuf), __s_q);  /* quit */
                 if (cptr.ld1so(iflags, $instance_flags_cmdassist))
-                    void cptr.strcat(cptr.decay(pbuf), __s_or);
+                    /* this unintentionally allows user to answer with 'o' or
+                       'r'; fortunately, those are already valid choices here */
+                    void cptr.strcat(cptr.decay(pbuf), __s_or);  /* help */
                 else
                     void cptr.strcat(cptr.decay(xbuf), __s_query);
                 if (cptr.ld1s(cptr.decay(xbuf)))
                     void cptr.strcat(cptr.strcat(cptr.decay(pbuf), __s_esc), cptr.decay(xbuf));
                 c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(pbuf), schar((more_containers ? 110 : 113)), 1));
-            }
+            }  /* PARTIAL|FULL vs other modes */
+
             if (c == 63) {
                 (yield* explain_container_prompt(more_containers));
             } else if (c == 58) {
                 if (!(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown) & 1))
-                    used = NHM.ECMD_TIME;
+                    used = NHM.ECMD_TIME;  /* gaining info */
                 (yield* container_contents(cptr.ldPtro(gc, $instance_globals_c_current_container), 0, 0, 1));
             } else
                 break;
-        }
+        }  /* loop until something other than '?' or ':' is picked */
+
         if (c == 113)
             cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
         if (c == 110 || c == 113)
             break __lbl_containerdone;
         loot_out = schar((c == 111 || c == 98 || c == 114 ? 1 : 0));
         loot_in = schar((c == 105 || c == 98 || c == 114 ? 1 : 0));
-        loot_in_first = schar((c == 114));
+        loot_in_first = schar((c == 114));  /* both, reversed */
         stash_one = schar((c == 115));
+
+        /* out-only or out before in */
         if (loot_out && !loot_in_first) {
             if (!(cptr.ldPtro((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_cobj) !== null)) {
-                (yield* pline(__s_pct_s, cptr.decay(emptymsg)));
+                (yield* pline(__s_pct_s, cptr.decay(emptymsg)));  /* <whatever> is empty. */
                 if (!(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown) & 1))
                     used = NHM.ECMD_TIME;
                 cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown, 1);
             } else {
-                add_valid_menu_class(0);
+                add_valid_menu_class(0);  /* reset */
                 if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL)
                     used |= (yield* traditional_loot(0));
                 else
                     used |= ((yield* menu_loot(0, 0)) > 0);
                 add_valid_menu_class(0);
             }
+            /* recalculate 'inokay' in case something was just taken out and
+               inventory is no longer empty or no longer just the container */
             inokay = schar((cptr.ldPtro(gi, $instance_globals_i_invent) && (!cptr.eq(cptr.ldPtro(gi, $instance_globals_i_invent), cptr.ldPtro(gc, $instance_globals_c_current_container)) || cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent))) ? 1 : 0));
         }
+
         if ((loot_in || stash_one) && !inokay) {
             (yield* You(__s_don_t_have_anything_s_to_s, cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_else__2 : __s_empty, stash_one ? __s_stash : __s_put_in));
             loot_in = (stash_one = 0);
         }
+
+        /*
+         * Gone: being nice about only selecting food if we know we are
+         * putting things in an ice chest.
+         */
         if (loot_in) {
-            add_valid_menu_class(0);
+            add_valid_menu_class(0);  /* reset */
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL)
                 used |= (yield* traditional_loot(1));
             else
                 used |= ((yield* menu_loot(0, 1)) > 0);
             add_valid_menu_class(0);
         } else if (stash_one) {
+            /* put one item into container */
             if ((otmp = (yield* getobj(__s_stash, stash_ok, 3))) !== null) {
                 if ((yield* in_container(otmp))) {
                     used = 1;
                 } else {
+                    /* couldn't put selected item into container for some
+                       reason; might need to undo splitobj() */
                     void (yield* unsplitobj(otmp));
                 }
             }
         }
+        /* putting something in might have triggered magic bag explosion */
         if (!cptr.ldPtro(gc, $instance_globals_c_current_container))
             loot_out = 0;
+
+        /* out after in */
         if (loot_out && loot_in_first) {
             if (!(cptr.ldPtro((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_cobj) !== null)) {
-                (yield* pline(__s_pct_s, cptr.decay(emptymsg)));
+                (yield* pline(__s_pct_s, cptr.decay(emptymsg)));  /* <whatever> is empty. */
                 if (!(cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown) & 1))
                     used = 1;
                 cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown, 1);
             } else {
-                add_valid_menu_class(0);
+                add_valid_menu_class(0);  /* reset */
                 if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL)
                     used |= (yield* traditional_loot(0));
                 else
@@ -2678,30 +3385,37 @@ export function* use_container(objp, held, more_containers) {
         }
     }
     if (used) {
+        /* Not completely correct; if we put something in without knowing
+           whatever was already inside, now we suddenly do.  That can't
+           be helped unless we want to track things item by item and then
+           deal with containers whose contents are "partly known". */
         if (cptr.ldPtro(gc, $instance_globals_c_current_container))
             cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown, 1);
         (yield* update_inventory());
     }
-    sellobj_state(NHM.SELL_NORMAL);
-    cptr.stPtr(objp, cptr.ldPtro(gc, $instance_globals_c_current_container));
+
+    sellobj_state(NHM.SELL_NORMAL);  /* in case in_container() set it */
+    cptr.stPtr(objp, cptr.ldPtro(gc, $instance_globals_c_current_container));  /* might have become null */
     if (cptr.ldPtro(gc, $instance_globals_c_current_container))
-        cptr.stPtro(gc, $instance_globals_c_current_container, null);
+        cptr.stPtro(gc, $instance_globals_c_current_container, null);  /* avoid hanging on to stale pointer */
     else
         cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
     return used;
 }
 
+/* loot current_container (take things out or put things in), by prompting */
 /** C ref: pickup.c:3230 — @param {CInt} put_in @returns {CInt} */
 function* traditional_loot(put_in) {
     let actionfunc;
     let checkfunc;
     let objlist;
-    let selection = new Uint8Array(28);
+    let selection = new Uint8Array(28);  /* +10: room for B,U,C,X plus slop */
     let action;
     let one_by_one = cptr.box(0);
     let allflag = cptr.box(0);
     let used = NHM.ECMD_OK;
     let menu_on_request = cptr.box(0);
+
     if (put_in) {
         action = __s_put_in;
         objlist = cptr.add(gi, $instance_globals_i_invent);
@@ -2712,8 +3426,9 @@ function* traditional_loot(put_in) {
         objlist = cptr.add(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cobj);
         actionfunc = out_container;
         checkfunc = null;
-        cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
+        cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);  /* used to limit verbosity */
     }
+
     if ((yield* query_classes(cptr.decay(selection), one_by_one, allflag, action, cptr.ldPtr(objlist), 0, menu_on_request))) {
         if ((yield* askchain(objlist, (one_by_one.v ? null : cptr.decay(selection)), allflag.v, actionfunc, checkfunc, 0, action)))
             used = NHM.ECMD_TIME;
@@ -2723,6 +3438,7 @@ function* traditional_loot(put_in) {
     return used;
 }
 
+/* loot current_container (take things out or put things in), using a menu */
 /** C ref: pickup.c:3265 — @param {CInt} retry @param {CInt} put_in @returns {CInt} */
 function* menu_loot(retry, put_in) {
     let n;
@@ -2740,6 +3456,7 @@ function* menu_loot(retry, put_in) {
     let mflags;
     let res;
     let count = 0n;
+
     cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
     if (retry) {
         all_categories = schar((retry == -2));
@@ -2748,8 +3465,13 @@ function* menu_loot(retry, put_in) {
         void cptr.sprintf(cptr.decay(buf), __s_s_what_type_of_objects, action);
         mflags = 8100;
         n = (yield* query_category(cptr.decay(buf), put_in ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cobj), mflags, pick_list, NHM.PICK_ANY));
+        /* when paranoid_confirm:A is set, 'A' by itself implies
+           'A'+'a' which will be followed by a confirmation prompt;
+           when that option isn't set, 'A' by itself is rejected
+           by query_categorry() and result here will be n==0 */
         if (!n)
-            return NHM.ECMD_OK;
+            return NHM.ECMD_OK;  /* no non-autopick category filters specified */
+
         for (i = 0; i < n; i++) {
             if (cptr.ldI32o(pick_list.v, i, $sizeof_menu_item) == 65) {
                 loot_everything = (autopick = 1);
@@ -2767,9 +3489,11 @@ function* menu_loot(retry, put_in) {
         }
         cptr.free(pick_list.v);
     }
+
     if (autopick) {
-        let inout_func;
+        let inout_func;  /* in_container or out_container */
         let firstobj;
+
         if (!put_in) {
             cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cknown, 1);
             inout_func = out_container;
@@ -2778,6 +3502,13 @@ function* menu_loot(retry, put_in) {
             inout_func = in_container;
             firstobj = cptr.ldPtro(gi, $instance_globals_i_invent);
         }
+        /*
+         * Note:  for put_in, current_container might be destroyed during
+         * mid-traversal by a magic bag explosion.
+         * Note too:  items are processed in internal list order rather
+         * than menu display order ('sortpack') or 'sortloot' order;
+         * for put_in that should be item->invlet order so reasonable.
+         */
         for (otmp = firstobj; otmp && cptr.ldPtro(gc, $instance_globals_c_current_container); otmp = otmp2) {
             otmp2 = cptr.ldPtr(otmp);
             if (loot_everything || all_categories || (yield* allow_category(otmp))) {
@@ -2795,6 +3526,7 @@ function* menu_loot(retry, put_in) {
                 otmp = (yield* splitobj(otmp, count));
             }
             void (yield* in_container(otmp));
+            /* return value doesn't matter, even if container blew up */
         }
     } else {
         mflags = 18;
@@ -2814,12 +3546,16 @@ function* menu_loot(retry, put_in) {
                 count = cptr.ldI64o2(pick_list.v, i, $sizeof_menu_item, $mi_count);
                 if (count > 0n && count < cptr.ldI64o(otmp, $obj_quan)) {
                     otmp = (yield* splitobj(otmp, count));
+                    /* special split case also handled by askchain() */
                 }
                 res = put_in ? (yield* in_container(otmp)) : (yield* out_container(otmp));
                 if (res <= 0) {
                     if (!cptr.ldPtro(gc, $instance_globals_c_current_container)) {
-                        otmp = null;
+                        /* otmp caused current_container to explode;
+                           both are now gone */
+                        otmp = null;  /* and break loop */
                     } else if (otmp && !cptr.eq(otmp, cptr.ldPtro(pick_list.v, i, $sizeof_menu_item))) {
+                        /* split occurred, merge again */
                         void (yield* unsplitobj(otmp));
                     }
                     if (res < 0)
@@ -2844,68 +3580,83 @@ function* in_or_out_menu(prompt, obj, outokay, inokay, alreadyused, more_contain
     let n;
     let menuselector = cptr.ld1so(flags, $flag_lootabc) ? cptr.decay(__static_in_or_out_menu_abc_chars) : cptr.decay(__static_in_or_out_menu_lootchars);
     let clr = NHM.NO_COLOR;
+
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
-    cptr.stI32(any, 1);
+
+    cptr.stI32(any, 1);  /* ':' */
     void cptr.sprintf(cptr.decay(buf), __s_look_inside_s, (yield* thesimpleoname(obj)));
     (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     if (outokay) {
-        cptr.stI32(any, 2);
+        cptr.stI32(any, 2);  /* 'o' */
         void cptr.sprintf(cptr.decay(buf), __s_take_s_out, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     }
     if (inokay) {
-        cptr.stI32(any, 3);
+        cptr.stI32(any, 3);  /* 'i' */
         void cptr.sprintf(cptr.decay(buf), __s_put_s_in, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     }
     if (outokay) {
-        cptr.stI32(any, 4);
+        cptr.stI32(any, 4);  /* 'b' */
         void cptr.sprintf(cptr.decay(buf), __s_stake_out_then_put_in, inokay ? __s_both : __s_empty);
         (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     }
     if (inokay) {
-        cptr.stI32(any, 5);
+        cptr.stI32(any, 5);  /* 'r' */
         void cptr.sprintf(cptr.decay(buf), __s_sput_in_then_take_out, outokay ? __s_both_reversed : __s_empty);
         (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
-        cptr.stI32(any, 6);
+        cptr.stI32(any, 6);  /* 's' */
         void cptr.sprintf(cptr.decay(buf), __s_stash_one_item_into_s, (yield* thesimpleoname(obj)));
         (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     }
     (yield* add_menu_str(win, __s_empty));
     if (more_containers) {
-        cptr.stI32(any, 7);
+        cptr.stI32(any, 7);  /* 'n' */
         (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, __s_loot_next_container, NHM.MENU_ITEMFLAGS_SELECTED));
     }
-    cptr.stI32(any, 8);
+    cptr.stI32(any, 8);  /* 'q' */
     void cptr.strcpy(cptr.decay(buf), alreadyused ? __s_done : __s_do_nothing);
     (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(menuselector, cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), more_containers ? NHM.MENU_ITEMFLAGS_NONE : NHM.MENU_ITEMFLAGS_SELECTED));
+
     (yield* Y.icall(end_menu()(win, prompt)));
     n = (yield* select_menu(win, NHM.PICK_ONE, pick_list));
     (yield* Y.icall(destroy_nhwindow()(win)));
     if (n > 0) {
         let k = cptr.ldI32o(pick_list.v, 0, $sizeof_menu_item);
+
         if (n > 1 && k == (more_containers ? 7 : 8))
             k = cptr.ldI32o(pick_list.v, 1, $sizeof_menu_item);
         cptr.free(pick_list.v);
-        return cptr.ld1so(cptr.decay(__static_in_or_out_menu_lootchars), k, 1);
+        return cptr.ld1so(cptr.decay(__static_in_or_out_menu_lootchars), k, 1);  /* :,o,i,b,r,s,n,q */
     }
-    return schar(((n == 0 && more_containers) ? 110 : 113));
+    return schar(((n == 0 && more_containers) ? 110 : 113));  /* next or quit */
 }
 
+/* getobj callback for object to tip */
 /** C ref: pickup.c:3481 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function tip_ok(obj) {
     if (!obj || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
+
     if (Is_container(obj)) {
         return NHC.GETOBJ_SUGGEST;
     }
+
+    /* include horn of plenty if sufficiently discovered */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
         return NHC.GETOBJ_SUGGEST;
+
+    /* allow trying anything else in inventory */
     return NHC.GETOBJ_DOWNPLAY;
 }
 
+/* show a menu of containers under hero,
+   and one extra entry for choosing an inventory.
+   returns ECMD_CANCEL if menu was canceled,
+   ECMD_TIME if a container was picked,
+   otherwise returns ECMD_OK. */
 /** C ref: pickup.c:3505 @returns {CInt} */
 function* choose_tip_container_menu() {
     let n;
@@ -2916,9 +3667,11 @@ function* choose_tip_container_menu() {
     let dummyobj = cptr.alloc(216);
     let otmp;
     let clr = NHM.NO_COLOR;
+
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
+
     for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), i = 0; otmp; otmp = cptr.ldPtro(otmp, $obj_v))
         if (Is_container(otmp)) {
             ++i;
@@ -2928,12 +3681,21 @@ function* choose_tip_container_menu() {
     if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         (yield* add_menu_str(win, __s_empty));
         cptr.stPtr(any, dummyobj);
+        /* use 'i' for inventory unless there are so many
+           containers that it's already being used */
         i = (i <= 8 && !cptr.ld1so(flags, $flag_lootabc)) ? 105 : 0;
         (yield* add_menu(win, nul_glyphinfo.v, any, schar(i), 0, NHM.ATR_NONE, clr, __s_tip_something_being_carried, NHM.MENU_ITEMFLAGS_SELECTED));
     }
     (yield* Y.icall(end_menu()(win, __s_tip_which_container)));
     n = (yield* select_menu(win, NHM.PICK_ONE, pick_list));
     (yield* Y.icall(destroy_nhwindow()(win)));
+    /*
+     * Deal with quirk of preselected item in pick-one menu:
+     * n ==  0 => picked preselected entry, toggling it off;
+     * n ==  1 => accepted preselected choice via SPACE or RETURN;
+     * n ==  2 => picked something other than preselected entry;
+     * n == -1 => cancelled via ESC;
+     */
     otmp = (n <= 0) ? null : cptr.ldPtro(pick_list.v, 0, $sizeof_menu_item);
     if (n > 1 && cptr.eq(otmp, dummyobj))
         otmp = cptr.ldPtro(pick_list.v, 1, $sizeof_menu_item);
@@ -2948,6 +3710,7 @@ function* choose_tip_container_menu() {
     return NHM.ECMD_OK;
 }
 
+/* #tip command -- empty container contents onto floor */
 /** C ref: pickup.c:3562 @returns {CInt} */
 export function* dotip() {
     let cobj;
@@ -2958,15 +3721,35 @@ export function* dotip() {
     let buf = new Uint8Array(256);
     let qbuf = new Uint8Array(256);
     let spillage = null;
+
+    /*
+     * Doesn't require free hands;
+     * limbs are needed to tip floor containers.
+     *
+     * Note: for menustyle:Traditional, using m prefix forces a menu
+     * of floor containers when more than one is present.  For other
+     * menustyle settings or when fewer than two floor containers are
+     * present, using 'm' skips floor and goes straight to invent.
+     * This somewhat unintuitive behavior is driven by the way that
+     * context-sensitive inventory item actions use m prefix.
+     */
+
+    /* at present, can only tip things at current spot, not adjacent ones */
     cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+
+    /* check floor container(s) first; at most one will be accessed */
     boxes = container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1);
+    /* this is iffy for menustyle:traditional; 'm' prefix is ambiguous
+       for it: skip floor vs handle multiple containers via menu */
     if (boxes > 0 && (!cptr.ld1so(iflags, $instance_flags_menu_requested) || (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL && boxes > 1))) {
         void cptr.sprintf(cptr.decay(buf), __s_you_can_t_tip_s_while_carrying_so_much, !cptr.ld1so(flags, $flag_verbose) ? __s_a_container : ((boxes > 1) ? __s_one : __s_it__2));
         if (!(yield* check_capacity(cptr.decay(buf))) && (yield* able_to_loot(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0))) {
             if (boxes > 1) {
                 let res;
+                /* pick one container via menu or ... */
                 if ((res = (yield* choose_tip_container_menu())) != NHM.ECMD_OK)
                     return res;
+                /* else pick-from-gi.invent below */
             } else {
                 for (cobj = cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_objects); cobj; cobj = nobj) {
                     nobj = cptr.ldPtro(cobj, $obj_v);
@@ -2978,23 +3761,33 @@ export function* dotip() {
                     if (c == 110)
                         continue;
                     (yield* tipcontainer(cobj));
+                    /* can only tip one container at a time */
                     return NHM.ECMD_TIME;
                 }
             }
         }
     }
+
+    /* either no floor container(s) or 'm' prefix was used to ignore such
+       or couldn't tip one or didn't tip any */
     cobj = (yield* getobj(__s_tip, tip_ok, NHM.GETOBJ_PROMPT));
     if (!cobj)
         return NHM.ECMD_CANCEL;
+
+    /* normal case */
     if (Is_container(cobj) || cptr.ldI16o(cobj, $obj_otyp) == NHC.HORN_OF_PLENTY) {
         (yield* tipcontainer(cobj));
         return NHM.ECMD_TIME;
     }
+    /* assorted other cases */
     if (Is_candle(cobj) && (cptr.ldI32o(cobj, $obj_lamplit) & 1) | 0) {
+        /* note "wax" even for tallow candles to avoid giving away info */
         spillage = __s_wax;
     } else if ((cptr.ldI16o(cobj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(cobj, $obj_lamplit) & 1) | 0) || (cptr.ldI16o(cobj, $obj_otyp) == NHC.OIL_LAMP && cptr.ldI64o(cobj, $obj_age) != 0n) || (cptr.ldI16o(cobj, $obj_otyp) == NHC.MAGIC_LAMP && cptr.ld1so(cobj, $obj_spe) != 0)) {
         spillage = __s_oil;
+        /* todo: reduce potion's remaining burn timer or oil lamp's fuel */
     } else if (cptr.ldI16o(cobj, $obj_otyp) == NHC.CAN_OF_GREASE && cptr.ld1so(cobj, $obj_spe) > 0) {
+        /* charged consumed below */
         spillage = __s_grease;
     } else if (cptr.ldI16o(cobj, $obj_otyp) == NHC.FOOD_RATION || cptr.ldI16o(cobj, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(cobj, $obj_otyp) == NHC.LEMBAS_WAFER) {
         spillage = __s_crumbs;
@@ -3008,11 +3801,14 @@ export function* dotip() {
         else if (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             void cptr.sprintf(cptr.decay(buf), __s_and_immediately_s_away, (yield* vtense(spillage, __s_burn)));
         (yield* pline(__s_some_s_s_onto_the_s_s, spillage, (yield* vtense(spillage, __s_spill)), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), cptr.decay(buf)));
+        /* shop usage message comes after the spill message */
         if (cptr.ldI16o(cobj, $obj_otyp) == NHC.CAN_OF_GREASE && cptr.ld1so(cobj, $obj_spe) > 0) {
             (yield* consume_obj_charge(cobj, 1));
         }
+        /* something [useless] happened */
         return NHM.ECMD_TIME;
     }
+    /* anything not covered yet */
     if (cptr.ld1so(cobj, $obj_oclass) == NHC.POTION_CLASS)
         (yield* pline_The(__s_s_s_securely_sealed, (yield* xname(cobj)), (yield* otense(cobj, __s_are))));
     else if (uarmh.v && cptr.eq(cobj, uarmh.v))
@@ -3034,22 +3830,47 @@ export const TIPCHECK_EMPTY = 4;
 /** C ref: pickup.c:3688 — @param {CPtr<struct obj>} box */
 function* tipcontainer(box) {
     let ox = cptr.box(cptr.ldI16(u));
-    let oy = cptr.box(cptr.ldI16o(u, $you_uy));
+    let oy = cptr.box(cptr.ldI16o(u, $you_uy));  /* #tip only works at hero's location */
     let srcheld = 0;
     let dstheld = 0;
     let maybeshopgoods;
     let targetbox = null;
     let cancelled = cptr.box(0);
+
+    /* box is either held or on floor at hero's spot; no need to check for
+       nesting; when held, we need to update its location to match hero's;
+       for floor, the coordinate updating is redundant */
     if (get_obj_location(box, ox, oy, 0))
         cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);
+
+    /*
+     * TODO?
+     *  if 'box' is known to be empty or known to be locked, give up
+     *  before choosing 'targetbox'.
+     */
     targetbox = (yield* tipcontainer_gettarget(box, cancelled));
     if (cancelled.v)
         return;
+
+    /* Shop handling:  can't rely on the container's own unpaid
+       or no_charge status because contents might differ with it.
+       A carried container's contents will be flagged as unpaid
+       or not, as appropriate, and need no special handling here.
+       Items owned by the hero get sold to the shop without
+       confirmation as with other uncontrolled drops.  A floor
+       container's contents will be marked no_charge if owned by
+       hero, otherwise they're owned by the shop.  By passing
+       the contents through shop billing, they end up getting
+       treated the same as in the carried case.   We do so one
+       item at a time instead of doing whole container at once
+       to reduce the chance of exhausting shk's billing capacity. */
     maybeshopgoods = schar((!(cptr.ld1so((box), $obj_where) == NHM.OBJ_INVENT) && (yield* costly_spot(cptr.ldI16o(box, $obj_ox), cptr.ldI16o(box, $obj_oy))) ? 1 : 0));
+
     if ((yield* tipcontainer_checks(box, targetbox, 0)) != NHC.TIPCHECK_OK)
         return;
     if (targetbox && (yield* tipcontainer_checks(targetbox, null, 1)) != NHC.TIPCHECK_OK)
         return;
+
     {
         let otmp;
         let nobj;
@@ -3058,51 +3879,72 @@ function* tipcontainer(box) {
         let altarizing = schar(((cptr.ld1so3(svl, ox.v, $sizeof_rm_x21, oy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR));
         let cursed_mbag = schar((Is_mbag(box) && (cptr.ldI32o(box, $obj_cursed) & 1) | 0 ? 1 : 0));
         let loss = 0n;
+
         srcheld = schar((cptr.ld1so((box), $obj_where) == NHM.OBJ_INVENT));
         dstheld = schar((targetbox && (cptr.ld1so((targetbox), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0));
         if ((cptr.ldI32o(u, $you_uswallow) & 1))
             highdrop = (altarizing = 0);
         terse = schar((!(highdrop || altarizing || (yield* costly_spot(cptr.ldI16o(box, $obj_ox), cptr.ldI16o(box, $obj_oy))))));
         cptr.stI32o(box, $obj_cknown, 1);
+        /* Terse formatting is
+         * "Objects spill out: obj1, obj2, obj3, ..., objN."
+         * If any other messages intervene between objects, we revert to
+         * "ObjK drops to the floor.", "ObjL drops to the floor.", &c.
+         */
         if (targetbox)
             (yield* pline(__s_s_into_s, cptr.ldPtr(cptr.ldPtro(box, $obj_cobj)) ? __s_objects_tumble : __s_an_object_tumbles, (yield* the((yield* xname(targetbox))))));
         else
             (yield* pline(__s_s_out_c, cptr.ldPtr(cptr.ldPtro(box, $obj_cobj)) ? __s_objects_spill : __s_an_object_spills, terse ? 58 : 46));
+
         for (otmp = cptr.ldPtro(box, $obj_cobj); otmp; otmp = nobj) {
             nobj = cptr.ldPtr(otmp);
             (yield* obj_extract_self(otmp));
             cptr.stI16o(otmp, $obj_ox, cptr.ldI16o(box, $obj_ox)), cptr.stI16o(otmp, $obj_oy, cptr.ldI16o(box, $obj_oy));
+
             if (cptr.ldI16o(box, $obj_otyp) == NHC.ICE_BOX) {
-                (yield* removed_from_icebox(otmp));
+                (yield* removed_from_icebox(otmp));  /* resume rotting for corpse */
             } else if (cursed_mbag && is_boh_item_gone()) {
                 loss += (yield* mbag_item_gone(srcheld, otmp, 0));
+                /* abbreviated drop format is no longer appropriate */
                 terse = 0;
                 continue;
             }
             if (maybeshopgoods) {
                 (yield* addtobill(otmp, 0, 0, 1));
-                (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
+                (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);  /* doname formatting */
             }
+
             if (targetbox) {
                 if (Is_mbag(targetbox) && mbag_explodes(otmp, 0)) {
                     (yield* livelog_printf(2n, __s_just_blew_up_s_bag_of_holding_via, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his))));
+                    /* explicitly mention what item is triggering explosion */
                     (yield* urgent_pline(__s_as_s_s_inside_you_are_blasted_by_a, (yield* doname(otmp)), (yield* otense(otmp, __s_tumble))));
+
+                    /* if putting one bag of holding into another, first
+                       blow up the one going in, then (below) blow up the
+                       one it's going into */
                     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_HOLDING)
                         (yield* do_boh_explosion(otmp, schar((!srcheld))));
-                    (yield* obfree(otmp, null));
+                    /* always delete the item which triggered the explosion */
+                    (yield* obfree(otmp, null));  /* where==OBJ_FREE */
+
+                    /* [assumes targetbox is carried, otherwise shop bill
+                       handling becomes necessary here] */
                     (yield* do_boh_explosion(targetbox, schar((!dstheld))));
                     if (dstheld)
                         (yield* useup(targetbox));
                     else
                         (yield* useupf(targetbox, cptr.ldI64o(targetbox, $obj_quan)));
-                    targetbox = null;
-                    nobj = null;
+                    targetbox = null;  /* it's gone */
+                    nobj = null;  /* stop tipping; want loop to exit 'normally' */
+
                     (yield* losehp(d_at(__s_pickup_c, 3803, __s_tipcontainer, 6, 6), __s_magical_explosion, NHM.KILLED_BY_AN));
                 } else {
                     void (yield* add_to_container(targetbox, otmp));
                 }
             } else if (highdrop) {
                 cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_DROPPED);
+                /* might break or fall down stairs; handles altars itself */
                 (yield* hitfloor(otmp, 1));
             } else {
                 if (altarizing) {
@@ -3116,23 +3958,28 @@ function* tipcontainer(box) {
                 cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_DROPPED);
                 (yield* dropy(otmp));
                 if (cptr.ldI32o(iflags, $instance_flags_last_msg) != NHC.PLNMSG_OBJNAM_ONLY)
-                    terse = 0;
+                    terse = 0;  /* terse formatting has been interrupted */
             }
+
             if (maybeshopgoods)
-                (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
+                (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);  /* reset */
         }
         if (loss)
             (yield* You(__s_owe_ld_s_for_lost_merchandise, loss, (yield* currency(loss))));
-        cptr.stI32o(box, $obj_owt, (yield* weight(box)) >>> 0);
+        cptr.stI32o(box, $obj_owt, (yield* weight(box)) >>> 0);  /* mbag_item_gone() doesn't update this */
         if (targetbox)
             cptr.stI32o(targetbox, $obj_owt, (yield* weight(targetbox)) >>> 0);
         if (srcheld || dstheld)
             (yield* encumber_msg());
     }
+
     if (srcheld || dstheld)
         (yield* update_inventory());
 }
 
+/* ask user for a carried container into which they want box to be emptied;
+   cancelled is TRUE if user cancelled the menu pick; hands aren't required
+   when tipping to the floor but are when tipping into another container */
 /** C ref: pickup.c:3871 — @param {CPtr<struct obj>} box @param {CPtr<boolean>} cancelled @returns {CPtr<struct obj>} */
 function* tipcontainer_gettarget(box, cancelled) {
     let n;
@@ -3146,34 +3993,46 @@ function* tipcontainer_gettarget(box, cancelled) {
     let hands_available = 1;
     let exclude_it;
     let clr = NHM.NO_COLOR;
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
-    cptr.memcpy(dummyobj, cg, 216);
+
+    cptr.memcpy(dummyobj, cg, 216);  /* lint suppression; only its address matters */
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stPtr(any, dummyobj);
+    /* tip to floor does not require free hands */
     (yield* add_menu(win, nul_glyphinfo.v, any, 45, 0, NHM.ATR_NONE, clr, __s_on_the_floor, NHM.MENU_ITEMFLAGS_SELECTED));
     (yield* add_menu_str(win, __s_empty));
+
     n_conts = 0;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if (cptr.eq(otmp, box))
             continue;
+        /* skip non-containers; bag of tricks passes Is_container() test,
+           only include it if it isn't known to be a bag of tricks */
         if (!Is_container(otmp) || (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS && (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0))
             continue;
         if (!n_conts++)
-            hands_available = (yield* u_handsy());
+            hands_available = (yield* u_handsy());  /* might issue message */
+        /* container-to-container tip requires free hands;
+           exclude container as possible target when known to be locked */
         exclude_it = schar((!hands_available || ((cptr.ldI32o(otmp, $obj_olocked) & 1) | 0 && (cptr.ldI32o(otmp, $obj_lknown) & 1) | 0) ? 1 : 0));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stPtr(any, !exclude_it ? otmp : null);
         void cptr.sprintf(cptr.decay(buf), __s_s_s__3, !exclude_it ? __s_empty : __s_sp4, (yield* doname(otmp)));
         (yield* add_menu(win, nul_glyphinfo.v, any, schar((!exclude_it ? cptr.ld1so(otmp, $obj_invlet) : 0)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
     }
+
     void cptr.sprintf(cptr.decay(buf), __s_where_to_tip_the_contents_of_s, (yield* doname(box)));
     (yield* Y.icall(end_menu()(win, cptr.decay(buf))));
     n = (yield* select_menu(win, NHM.PICK_ONE, pick_list));
     (yield* Y.icall(destroy_nhwindow()(win)));
+
     otmp = null;
     if (pick_list.v) {
         otmp = cptr.ldPtro(pick_list.v, 0, $sizeof_menu_item);
+        /* PICK_ONE with a preselected item might return 2;
+           if so, choose the one that wasn't preselected */
         if (n > 1 && cptr.eq(otmp, dummyobj))
             otmp = cptr.ldPtro(pick_list.v, 1, $sizeof_menu_item);
         if (cptr.eq(otmp, dummyobj))
@@ -3184,29 +4043,45 @@ function* tipcontainer_gettarget(box, cancelled) {
     return otmp;
 }
 
+/* Perform check on box if we can tip it.
+   Returns one of TIPCHECK_foo values.
+   If allowempty if TRUE, return TIPCHECK_OK instead of TIPCHECK_EMPTY. */
 /** C ref: pickup.c:3954 — @param {CPtr<struct obj>} box @param {CPtr<struct obj>} targetbox @param {CInt} allowempty @returns {CInt} */
 function* tipcontainer_checks(box, targetbox, allowempty) {
+    /* undiscovered bag of tricks is acceptable as a container-to-container
+       destination but it can't receive items; it has to be opened in
+       preparation so apply it once before even trying to tip source box */
     if (targetbox && cptr.ldI16o(targetbox, $obj_otyp) == NHC.BAG_OF_TRICKS) {
         let seencount = cptr.box(0);
+
         (yield* bagotricks(targetbox, 0, seencount));
         return NHC.TIPCHECK_CANNOT;
     }
+
+    /* caveat: this assumes that cknown, lknown, olocked, and otrapped
+       fields haven't been overloaded to mean something special for the
+       non-standard "container" horn of plenty */
     if (!(cptr.ldI32o(box, $obj_lknown) & 1)) {
         cptr.stI32o(box, $obj_lknown, 1);
         if ((cptr.ld1so((box), $obj_where) == NHM.OBJ_INVENT))
-            (yield* update_inventory());
+            (yield* update_inventory());  /* jumping the gun slightly; hope that's ok */
     }
+
     if ((cptr.ldI32o(box, $obj_olocked) & 1)) {
         (yield* pline(__s_s_is_locked, upstart((yield* thesimpleoname(box)))));
         return NHC.TIPCHECK_LOCKED;
+
     } else if ((cptr.ldI32o(box, $obj_otrapped) & 1)) {
+        /* we're not reaching inside but we're still handling it... */
         void (yield* chest_trap(box, NHC.HAND, 0));
+        /* even if the trap fails, you've used up this turn */
         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
             nomul(-1);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_tipping_a_container);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
         }
         return NHC.TIPCHECK_TRAPPED;
+
     } else if (cptr.ldI16o(box, $obj_otyp) == NHC.BAG_OF_TRICKS || cptr.ldI16o(box, $obj_otyp) == NHC.HORN_OF_PLENTY) {
         let res = NHC.TIPCHECK_OK;
         let bag = schar((cptr.ldI16o(box, $obj_otyp) == NHC.BAG_OF_TRICKS));
@@ -3216,44 +4091,57 @@ function* tipcontainer_checks(box, targetbox, allowempty) {
         let maybeshopgoods = schar((!(cptr.ld1so((box), $obj_where) == NHM.OBJ_INVENT) && (yield* costly_spot(cptr.ldI16o(box, $obj_ox), cptr.ldI16o(box, $obj_oy))) ? 1 : 0));
         let ox = cptr.box(cptr.ldI16(u));
         let oy = cptr.box(cptr.ldI16o(u, $you_uy));
+
         if (targetbox && ((res = (yield* tipcontainer_checks(targetbox, null, 1))) != NHC.TIPCHECK_OK))
             return res;
+
         if (get_obj_location(box, ox, oy, 0))
             cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);
+
         if (maybeshopgoods && !(cptr.ldI32o(box, $obj_no_charge) & 1))
             (yield* addtobill(box, 0, 0, 1));
+        /* apply this bag/horn until empty or monster/object creation fails
+           (if the latter occurs, force the former...) */
         seen.v = (totseen = 0);
         do {
             if (!(bag ? (yield* bagotricks(box, 1, seen)) : (yield* hornoplenty(box, 1, targetbox))))
                 break;
             totseen = (totseen + seen.v) | 0;
         } while (cptr.ld1so(box, $obj_spe) > 0);
+
         if (cptr.ld1so(box, $obj_spe) < old_spe) {
             if (bag && !totseen)
                 (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)));
+            /* check_unpaid wants to see a non-zero charge count */
             cptr.st1o(box, $obj_spe, schar(old_spe));
             (yield* check_unpaid_usage(box, 1));
-            cptr.st1o(box, $obj_spe, 0);
+            cptr.st1o(box, $obj_spe, 0);  /* empty */
             cptr.stI32o(box, $obj_cknown, 1);
         }
         if (maybeshopgoods && !(cptr.ldI32o(box, $obj_no_charge) & 1))
             (yield* subfrombill(box, (yield* shop_keeper(cptr.ld1s((yield* in_rooms(ox.v, oy.v, NHC.SHOPBASE)))))));
-        return NHC.TIPCHECK_CANNOT;
+        return NHC.TIPCHECK_CANNOT;  /* actually means 'already done' */
+
     } else if (SchroedingersBox(box)) {
         let yourbuf = new Uint8Array(256);
         let empty_it = 0;
+
         (yield* observe_quantum_cat(box, 1, 1));
         if (!(cptr.ldPtro((box), $obj_cobj) !== null))
+            /* container type of "large box" is inferred */
             (yield* pline(__s_sbox_is_now_empty, (yield* Shk_Your(cptr.decay(yourbuf), box))));
         else
             empty_it = 1;
         cptr.stI32o(box, $obj_cknown, 1);
         return (empty_it || allowempty) ? NHC.TIPCHECK_OK : NHC.TIPCHECK_EMPTY;
+
     } else if (!allowempty && !(cptr.ldPtro((box), $obj_cobj) !== null)) {
         cptr.stI32o(box, $obj_cknown, 1);
         (yield* pline(__s_s_is_empty, upstart((yield* thesimpleoname(box)))));
         return NHC.TIPCHECK_EMPTY;
+
     }
+
     return NHC.TIPCHECK_OK;
 }
 

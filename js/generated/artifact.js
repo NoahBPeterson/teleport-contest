@@ -1224,9 +1224,15 @@ cptr.st1o(artilist, 2720 + $artifact_gift_value, 0);
 cptr.stI64o(artilist, 2720 + $artifact_cost, 0n);
 cptr.st1o(artilist, 2720 + $artifact_acolor, NHM.NO_COLOR);
 
+/* arti_info struct definition moved to artifact.h */
+
+/* array of flags tracking which artifacts exist, indexed by ART_xx;
+   ART_xx values are 1..N, element [0] isn't used; no terminator needed */
 /** C ref: artifact.c:70 — struct arti_info[34] */
 const artiexist = cptr.alloc(34 * $sizeof_arti_info);
 
+/* discovery list; for N discovered artifacts, the first N entries are ART_xx
+   values in discovery order, the remaining (NROFARTIFACTS-N) slots are 0 */
 /** C ref: artifact.c:73 — short[33] */
 const artidisco = cptr.alloc(33 * 2);
 
@@ -1234,15 +1240,22 @@ const artidisco = cptr.alloc(33 * 2);
 let zero_artiexist = cptr.alloc($sizeof_arti_info);
 cptr.stI32(zero_artiexist, 0);
 
+/* handle some special cases; must be called after u_init() */
 /** C ref: artifact.c:87 */
 function hack_artifacts() {
     let art;
     let alignmnt = cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value);
+
+    /* Fix up the alignments of "gift" artifacts */
     for (art = cptr.add(artilist, 1, 80); cptr.ldI16(art); art = cptr.add(art, 1, 80))
         if (cptr.ldI16o(art, $artifact_role) == Role_switch() && cptr.ld1so(art, $artifact_alignment) != -128)
             cptr.st1o(art, $artifact_alignment, schar(alignmnt));
+
+    /* Excalibur can be used by any lawful character, not just knights */
     if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT))
         cptr.stI16o2(artilist, NHC.ART_EXCALIBUR, $sizeof_artifact, $artifact_role, NHC.NON_PM);
+
+    /* Fix up the quest artifact */
     if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)) {
         cptr.st1o2(artilist, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti), $sizeof_artifact, $artifact_alignment, schar(alignmnt));
         cptr.stI16o2(artilist, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti), $sizeof_artifact, $artifact_role, Role_switch());
@@ -1250,6 +1263,7 @@ function hack_artifacts() {
     return;
 }
 
+/* zero out the artifact existence list */
 /** C ref: artifact.c:111 */
 export function init_artifacts() {
     void __builtin___memset_chk(artiexist, 0, 1224n, __builtin_object_size(artiexist, 0));
@@ -1260,8 +1274,10 @@ export function init_artifacts() {
 /** C ref: artifact.c:119 — @param {CPtr<NHFILE>} nhfp */
 export function save_artifacts(nhfp) {
     let i;
+
     for (i = 0; i < ((NHC.NROFARTIFACTS + 1) | 0); ++i)
         sfo_arti_info(nhfp, cptr.add(artiexist, i, $sizeof_arti_info), __s_artiexist);
+
     for (i = 0; i < NHC.NROFARTIFACTS; ++i)
         sfo_xint16(nhfp, cptr.add(artidisco, i, 2), __s_artidisco);
 }
@@ -1269,11 +1285,12 @@ export function save_artifacts(nhfp) {
 /** C ref: artifact.c:133 — @param {CPtr<NHFILE>} nhfp */
 export function restore_artifacts(nhfp) {
     let i;
+
     for (i = 0; i < ((NHC.NROFARTIFACTS + 1) | 0); ++i)
         sfi_arti_info(nhfp, cptr.add(artiexist, i, $sizeof_arti_info), __s_artiexist);
     for (i = 0; i < NHC.NROFARTIFACTS; ++i)
         sfi_short(nhfp, cptr.add(artidisco, i, 2), __s_artidisco);
-    hack_artifacts();
+    hack_artifacts();  /* redo non-saved special cases */
 }
 
 /** C ref: artifact.c:151 — @param {CInt} artinum @returns {CPtr<char>} */
@@ -1283,6 +1300,19 @@ export function artiname(artinum) {
     return cptr.ldPtro2(artilist, artinum, $sizeof_artifact, $artifact_name);
 }
 
+/*
+   Make an artifact.  If a specific alignment is specified, then an object of
+   the appropriate alignment is created from scratch, or 0 is returned if
+   none is available.  (If at least one aligned artifact has already been
+   given, then unaligned ones also become eligible for this.)
+   If no alignment is given, then 'otmp' is converted
+   into an artifact of matching type, or returned as-is if that's not
+   possible.
+   For the 2nd case, caller should use ``obj = mk_artifact(obj, A_NONE, 99);''
+   For the 1st, ``obj = mk_artifact((struct obj *) 0, some_alignment, ...);''.
+   The max_giftvalue is the value of the sacrifice, for an artifact obtained
+   by sacrificing, or 99 otherwise.
+ */
 /** C ref: artifact.c:172 — @param {CPtr<struct obj>} otmp @param {CInt} alignment @param {CUInt} max_giftvalue @param {CInt} adjust_spe @returns {CPtr<struct obj>} */
 export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let a;
@@ -1294,8 +1324,10 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let unique = schar((!by_align && otmp && (cptr.ldI32o2(objects, o_typ, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 ? 1 : 0));
     let eligible = cptr.alloc(33 * 2);
     let skill_compatibility;
-    n = (altn = 0);
-    cptr.stI16o(eligible, 0, 0, 2);
+
+    n = (altn = 0);  /* no candidates found yet */
+    cptr.stI16o(eligible, 0, 0, 2);  /* lint suppression */
+    /* gather eligible artifacts */
     for (m = 1, a = cptr.add(artilist, m, $sizeof_artifact); cptr.ldI16(a); a = cptr.add(a, 1, 80), m++) {
         if ((cptr.ldI32o(artiexist, m, $sizeof_arti_info) & 1))
             continue;
@@ -1303,17 +1335,27 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
             continue;
         if (cptr.ld1uo(a, $artifact_gift_value) > max_giftvalue && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(a, $artifact_role))))
             continue;
+
         if (!by_align) {
+            /* looking for a particular type of item; not producing a
+               divine gift so we don't care about role's first choice */
             if (cptr.ldI16(a) == o_typ)
                 cptr.stI16o(eligible, n++, i16(m), 2);
-            continue;
+            continue;  /* move on to next possibility */
         }
+
+        /* we're looking for an alignment-specific item
+           suitable for hero's role+race */
         if ((cptr.ld1so(a, $artifact_alignment) == alignment || cptr.ld1so(a, $artifact_alignment) == -128) && (cptr.ldI16o(a, $artifact_race) == NHC.NON_PM || !((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(a, $artifact_race), $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hatemask)))) != 0n))) {
+            /* when a role-specific first choice is available, use it */
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(a, $artifact_role)))) {
+                /* make this be the only possibility in the list */
                 cptr.stI16o(eligible, 0, i16(m), 2);
                 n = 1;
-                break;
+                break;  /* skip all other candidates */
             }
+
+            /* check if this is skill-compatible */
             skill_compatibility = NHC.P_SKILLED;
             if (cptr.ld1so2(objects, cptr.ldI16(a), $sizeof_objclass, $objclass_oc_class) == NHC.WEAPON_CLASS) {
                 let skill = cptr.ld1so2(objects, cptr.ldI16(a), $sizeof_objclass, $objclass_oc_subtyp);
@@ -1322,41 +1364,81 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
                 else
                     skill_compatibility = (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills + $skills_max_skill));
             }
+
+            /* found something to consider for random selection */
             if ((cptr.ld1so(a, $artifact_alignment) != -128 || cptr.ldI32o(u, $you_ugifts) > 0 || !rn2_at(__s_artifact_c, 230, __s_mk_artifact, 3)) && (!rn2_at(__s_artifact_c, 231, __s_mk_artifact, 4) || skill_compatibility >= NHC.P_SKILLED || (skill_compatibility >= NHC.P_BASIC && rn2_at(__s_artifact_c, 232, __s_mk_artifact, 2)))) {
+                /* right alignment, or non-aligned with at least 1
+                   previous gift bestowed, makes this one viable;
+                   unaligned artifacts are possible even as the first
+                   gift, but less likely; if it's a bad weapon type
+                   for the role that also makes it less likely */
                 cptr.stI16o(eligible, n++, i16(m), 2);
             } else {
+                /* if no candidates have been found yet, record
+                   this one as a[nother] fallback possibility in
+                   case all aligned candidates have been used up
+                   (via wishing, naming, bones, random generation)
+                   or failed the randomized compatibility checks */
                 if (!n)
                     cptr.stI16o(eligible, altn++, i16(m), 2);
+                /* [once a regular candidate is found, the list
+                   is overwritten and `altn' becomes irrelevant] */
             }
         }
     }
+
+    /* resort to fallback list if main list was empty */
     if (!n)
         n = altn;
+
     if (n) {
-        m = cptr.ldI16o(eligible, rn2_at(__s_artifact_c, 259, __s_mk_artifact, n), 2);
+        /* found at least one candidate; pick one at random */
+        m = cptr.ldI16o(eligible, rn2_at(__s_artifact_c, 259, __s_mk_artifact, n), 2);  /* [0..n-1] */
         a = cptr.add(artilist, m, $sizeof_artifact);
+
+        /* make an appropriate object if necessary, then christen it */
         if (by_align) {
+            /* 'by_align' indicates that an alignment was passed as
+             * an argument, but also that the 'otmp' argument is not
+             * relevant */
             let artiobj = mksobj(cptr.ldI16(a), 1, 0);
+
+            /* nonnull value of 'otmp' is unexpected. Cope. */
             if (otmp)
                 dispose_of_orig_obj(otmp);
             otmp = artiobj;
         }
+        /*
+         * otmp should be nonnull at this point:
+         * either the passed argument (if !by_align == A_NONE), or
+         * the result of mksobj() just above if by_align is an alignment. */
         (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__s_mk_artifact, __s_artifact_c, 278, __s_otmp_0) : void 0);
+        /* prevent erosion from generating */
         cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
         otmp = oname(otmp, cptr.ldPtro(a, $artifact_name), NHM.ONAME_NO_FLAGS);
-        cptr.st1o(otmp, $obj_oartifact, schar(m));
-        artifact_origin(otmp, NHM.ONAME_RANDOM);
+        cptr.st1o(otmp, $obj_oartifact, schar(m));  /* probably already set by this point, but */
+        /* set existence and reason for creation bits */
+        artifact_origin(otmp, NHM.ONAME_RANDOM);  /* 'random' is default */
         if (adjust_spe) {
             let new_spe;
+
+            /* Adjust artiobj->spe by a->gen_spe. (This is a no-op for
+               non-weapons, which always have a gen_spe of 0, and for many
+               weapons, too.) The result is clamped into the "normal" range to
+               prevent an outside chance of +12 artifacts generating. */
             new_spe = (cptr.ld1so(otmp, $obj_spe) + cptr.ld1so(a, $artifact_gen_spe)) | 0;
             if (new_spe >= -10 && new_spe < 10)
                 cptr.st1o(otmp, $obj_spe, schar(new_spe));
         }
     } else {
+        /* nothing appropriate could be found; return original object */
         if (by_align && otmp) {
+            /* (there shouldn't have been an original object). Deal with it.
+             * The callers that passed an alignment and a NULL otmp are
+             * prepared to get a potential NULL return value, so this is okay */
             dispose_of_orig_obj(otmp);
             otmp = null;
-        }
+        }  /* otherwise, otmp has not changed; just fallthrough to return it */
     }
     if (otmp && permapoisoned(otmp))
         cptr.stI32o(otmp, $obj_otrapped, 1);
@@ -1367,16 +1449,26 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
 function dispose_of_orig_obj(obj) {
     if (!obj)
         return;
+
     obj_extract_self(obj);
     obfree(obj, null);
 }
 
+/*
+ * Returns the full name (with articles and correct capitalization) of an
+ * artifact named "name" if one exists, or NULL, it not.
+ * The given name must be rather close to the real name for it to match.
+ * The object type of the artifact is returned in otyp if the return value
+ * is non-NULL.
+ */
 /** C ref: artifact.c:329 — @param {CPtr<char>} name @param {CPtr<short>} otyp_p @param {CInt} fuzzy @returns {CPtr<char>} */
 export function artifact_name(name, otyp_p, fuzzy) {
     let a;
     let aname;
+
     if (!strncmpi(name, __s_the, 4))
         name = cptr.add(name, 4);
+
     for (a = cptr.add(artilist, 1, 80); cptr.ldI16(a); a = cptr.add(a, 1, 80)) {
         aname = cptr.ldPtro(a, $artifact_name);
         if (!strncmpi(aname, __s_the, 4))
@@ -1387,6 +1479,7 @@ export function artifact_name(name, otyp_p, fuzzy) {
             return cptr.ldPtro(a, $artifact_name);
         }
     }
+
     return null;
 }
 
@@ -1394,6 +1487,7 @@ export function artifact_name(name, otyp_p, fuzzy) {
 export function exist_artifact(otyp, name) {
     let a;
     let arex;
+
     if (otyp && cptr.ld1s(name))
         for (a = cptr.add(artilist, 1, 80), arex = cptr.add(artiexist, 1, 36); cptr.ldI16(a); a = cptr.add(a, 1, 80), arex = cptr.add(arex, 1, 36))
             if (cptr.ldI16(a) == otyp && !strcmp(cptr.ldPtro(a, $artifact_name), name))
@@ -1401,22 +1495,31 @@ export function exist_artifact(otyp, name) {
     return 0;
 }
 
+/* an artifact has just been created or is being "un-created" for a chance
+   to be created again later */
 /** C ref: artifact.c:371 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} name @param {CInt} mod @param {CUInt} flgs */
 export function artifact_exists(otmp, name, mod, flgs) {
     let a;
+
     if (otmp && cptr.ld1s(name))
         for (a = cptr.add(artilist, 1, 80); cptr.ldI16(a); a = cptr.add(a, 1, 80))
             if (cptr.ldI16(a) == cptr.ldI16o(otmp, $obj_otyp) && !strcmp(cptr.ldPtro(a, $artifact_name), name)) {
                 let m = Number(BigInt.asIntN(32, (cptr.diff(a, artilist) / 80n)));
+
                 cptr.st1o(otmp, $obj_oartifact, schar((mod ? m : 0)));
                 cptr.stI64o(otmp, $obj_age, 0n);
                 if (cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_INCREASE_DAMAGE)
                     cptr.st1o(otmp, $obj_spe, 0);
                 if (mod) {
+                    /* one--and only one--of these should always be set */
                     if (((flgs & 254) >>> 0) == 0)
-                        flgs |= NHM.ONAME_RANDOM;
+                        flgs |= NHM.ONAME_RANDOM;  /* the default origin */
+                    /* 'exists' bit will become set (in artifact_origin();
+                       there's no ONAME_ flag) and flgs might also contain
+                       the know_arti bit (hero knows that artifact exists) */
                     artifact_origin(otmp, flgs);
                 } else {
+                    /* clear all the flag bits */
                     cptr.memcpy(cptr.add(artiexist, m, $sizeof_arti_info), zero_artiexist, 36);
                 }
                 break;
@@ -1424,6 +1527,7 @@ export function artifact_exists(otmp, name, mod, flgs) {
     return;
 }
 
+/* mark an artifact as 'found' */
 /** C ref: artifact.c:409 — @param {CInt} a */
 export function found_artifact(a) {
     if (a < 1 || a > NHC.NROFARTIFACTS)
@@ -1434,12 +1538,29 @@ export function found_artifact(a) {
         cptr.stI32o2(artiexist, a, $sizeof_arti_info, $arti_info_found, 1);
 }
 
+/* if an artifact hasn't already been designated 'found', do that now
+   and generate a livelog event about finding it */
 /** C ref: artifact.c:422 — @param {CPtr<struct obj>} otmp */
 export function find_artifact(otmp) {
     let a = cptr.ld1so(otmp, $obj_oartifact);
+
     if (a && !(cptr.ldI32o2(artiexist, a, $sizeof_arti_info, $arti_info_found) & 1)) {
         let where;
-        found_artifact(a);
+
+        found_artifact(a);  /* artiexist[a].found = 1 */
+        /*
+         * Unlike costly_spot(), inside_shop() includes the "free spot"
+         * in front of the door.  And it doesn't care whether or not
+         * there is a shopkeeper present.
+         *
+         * If hero sees a monster pick up a not-yet-found artifact, it
+         * will have its dknown flag set even if far away and will be
+         * described as 'found on the floor'.  Similarly for dropping
+         * (possibly upon monster's death), dknown will be set and the
+         * artifact will be described as 'carried by a monster'.
+         * That's handled by caller:  dog_invent(), mpickstuff(), or
+         * mdrop_obj() so that we get called before obj->where changes.
+         */
         where = ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR) ? ((inside_shop(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy)) != NHM.NO_ROOM) ? __s_in_a_shop : __s_on_the_floor) : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_CONTAINED) ? __s_in_a_container : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_MINVENT) ? __s_carried_by_a_monster : __s_empty)));
         livelog_printf(64n, __s_found_s_s, bare_artifactname(otmp), where);
     }
@@ -1449,21 +1570,34 @@ export function find_artifact(otmp) {
 export function nartifact_exist() {
     let i;
     let a = 0;
+
     for (i = 1; i <= NHC.NROFARTIFACTS; ++i)
         if ((cptr.ldI32o(artiexist, i, $sizeof_arti_info) & 1))
             ++a;
+
     return a;
 }
 
+/* set artifact tracking flags;
+   calling sequence: oname() -> artifact_exists() -> artifact_origin() or
+   mksobj(),others -> mk_artifact() -> artifact_origin(random) possibly
+   followed by mksobj(),others -> artifact_origin(non-random origin) */
 /** C ref: artifact.c:478 — @param {CPtr<struct obj>} arti @param {CUInt} aflags */
 export function artifact_origin(arti, aflags) {
     let ct;
     let a = cptr.ld1so(arti, $obj_oartifact);
+
     if (a) {
+        /* start by clearing all bits; most are mutually exclusive */
         cptr.memcpy(cptr.add(artiexist, a, $sizeof_arti_info), zero_artiexist, 36);
+        /* set 'exists' bit back on; not specified via flag bit in aflags */
         cptr.stI32o(artiexist, a, 1, $sizeof_arti_info);
+        /* 'hero knows it exists' is expected for wish, gift, viadip, or
+           named and could eventually become set for any of the others */
         if (((aflags & NHM.ONAME_KNOW_ARTI) >>> 0) != 0)
             cptr.stI32o2(artiexist, a, $sizeof_arti_info, $arti_info_found, 1);
+        /* should be exactly one of wish, gift, via_dip, via_naming,
+           level_def (quest), bones, and random (floor or monst's minvent) */
         ct = 0;
         if (((aflags & NHM.ONAME_WISH) >>> 0) != 0)
             cptr.stI32o2(artiexist, a, $sizeof_arti_info, $arti_info_wish, 1), ++ct;
@@ -1487,39 +1621,56 @@ export function artifact_origin(arti, aflags) {
 /** C ref: artifact.c:516 — @param {CPtr<struct obj>} otmp @param {CLongLong} abil @returns {CInt} */
 export function spec_ability(otmp, abil) {
     let arti = get_artifact(otmp);
+
     return schar((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && (cptr.ldU64o(arti, $artifact_spfx) & abil) != 0n ? 1 : 0));
 }
 
+/* used so that callers don't need to known about SPFX_ codes */
 /** C ref: artifact.c:526 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function confers_luck(obj) {
+    /* might as well check for this too */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.LUCKSTONE)
         return 1;
+
     return schar((cptr.ld1so(obj, $obj_oartifact) && spec_ability(obj, 524288n) ? 1 : 0));
 }
 
+/* used to check whether a monster is getting reflection from an artifact */
 /** C ref: artifact.c:537 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function arti_reflects(obj) {
     let arti = get_artifact(obj);
+
     if (!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) {
+        /* while being worn */
         if ((cptr.ldI64o(obj, $obj_owornmask) & -4097n) && (cptr.ldU64o(arti, $artifact_spfx) & 67108864n))
             return 1;
+        /* just being carried */
         if (cptr.ldU64o(arti, $artifact_cspfx) & 67108864n)
             return 1;
     }
     return 0;
 }
 
+/* decide whether this obj is effective when attacking against shades;
+   does not consider the bonus for blessed objects versus undead */
 /** C ref: artifact.c:555 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function shade_glare(obj) {
     let arti;
+
+    /* any silver object is effective */
     if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER)
         return 1;
+    /* non-silver artifacts with bonus against undead also are effective */
     arti = get_artifact(obj);
     if (!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && (cptr.ldU64o(arti, $artifact_spfx) & 8388608n) && cptr.ldU64o(arti, $artifact_mtype) == 2n)
         return 1;
+    /* [if there was anything with special bonus against noncorporeals,
+       it would be effective too] */
+    /* otherwise, harmless to shades */
     return 0;
 }
 
+/* returns 1 if name is restricted for otmp->otyp */
 /** C ref: artifact.c:575 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} name @returns {CInt} */
 export function restrict_name(otmp, name) {
     let a;
@@ -1532,11 +1683,18 @@ export function restrict_name(otmp, name) {
     let hi = cptr.box(0);
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     let ocls = cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class);
+
     if (!cptr.ld1s(name))
         return 0;
     if (!strncmpi(name, __s_the, 4))
         name = cptr.add(name, 4);
-    void __builtin___memset_chk(cptr.decay(sametype), 0, 481n, __builtin_object_size(cptr.decay(sametype), 0));
+
+    /* decide what types of objects are the same as otyp;
+       if it's been discovered, then only itself matches;
+       otherwise, include all other undiscovered objects
+       of the same class which have the same description
+       or share the same pool of shuffled descriptions */
+    void __builtin___memset_chk(cptr.decay(sametype), 0, 481n, __builtin_object_size(cptr.decay(sametype), 0));  /* FALSE */
     cptr.st1o(cptr.decay(sametype), otyp, 1, 1);
     if (!(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) && (odesc = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) !== null) {
         obj_shuffle_range(otyp, lo, hi);
@@ -1547,6 +1705,11 @@ export function restrict_name(otmp, name) {
                 cptr.st1o(cptr.decay(sametype), i, 1, 1);
         }
     }
+
+    /* Since almost every artifact is SPFX_RESTR, it doesn't cost
+       us much to do the string comparison before the spfx check.
+       Bug fix:  don't name multiple elven daggers "Sting".
+     */
     for (a = cptr.add(artilist, 1, 80); cptr.ldI16(a); a = cptr.add(a, 1, 80)) {
         if (!cptr.ld1so(cptr.decay(sametype), cptr.ldI16(a), 1))
             continue;
@@ -1556,12 +1719,14 @@ export function restrict_name(otmp, name) {
         if (!strcmp(aname, name))
             return schar(((cptr.ldU64o(a, $artifact_spfx) & 3n) != 0n || cptr.ldI64o(otmp, $obj_quan) > 1n ? 1 : 0));
     }
+
     return 0;
 }
 
 /** C ref: artifact.c:626 — @param {CInt} adtyp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function attacks(adtyp, otmp) {
     let weap;
+
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return schar((cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == adtyp));
     return 0;
@@ -1570,23 +1735,29 @@ export function attacks(adtyp, otmp) {
 /** C ref: artifact.c:636 — @param {CInt} adtyp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function defends(adtyp, otmp) {
     let weap;
+
     if (!otmp)
         return 0;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return schar((cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == adtyp));
     if (Is_dragon_armor(otmp)) {
         let otyp = cptr.ldI16o(otmp, $obj_otyp);
+
+        /* convert mail to scales to simplify testing */
         if (Is_dragon_mail(otmp))
             otyp = (otyp + ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0)) | 0;
+
         switch (adtyp) {
             case NHM.AD_MAGM:
             return schar((otyp == NHC.GRAY_DRAGON_SCALES));
             case NHM.AD_HALU:
             return schar((otyp == NHC.GOLD_DRAGON_SCALES));
             case NHM.AD_FIRE:
-            return schar((otyp == NHC.RED_DRAGON_SCALES));
+            /*case AD_BLND: -- gives infravision but does not prevent blindness */
+            return schar((otyp == NHC.RED_DRAGON_SCALES));  /* red but not gold */
             case NHM.AD_COLD:
-            return schar((otyp == NHC.WHITE_DRAGON_SCALES));
+            /*case AD_FAMN: -- slows digestion but does not override Famine */
+            return schar((otyp == NHC.WHITE_DRAGON_SCALES));  /* white but not silver */
             case NHM.AD_DRST:
             case NHM.AD_DISE:
             return schar((otyp == NHC.GREEN_DRAGON_SCALES));
@@ -1603,23 +1774,28 @@ export function defends(adtyp, otmp) {
             case NHM.AD_STON:
             return schar((otyp == NHC.YELLOW_DRAGON_SCALES));
             default:
+            /* SILVER_DRAGON_SCALES don't resist any particular attack type */
             break;
         }
     }
     return 0;
 }
 
+/* used for monsters */
 /** C ref: artifact.c:687 — @param {CInt} adtyp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function defends_when_carried(adtyp, otmp) {
     let weap;
+
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return schar((cptr.ld1uo(weap, $artifact_cary + $attack_adtyp) == adtyp));
     return 0;
 }
 
+/* determine whether an item confers Protection */
 /** C ref: artifact.c:698 — @param {CPtr<struct obj>} otmp @param {CInt} being_worn @returns {CInt} */
 export function protects(otmp, being_worn) {
     let arti;
+
     if (being_worn && cptr.ld1uo2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == NHC.PROTECTION)
         return 1;
     arti = get_artifact(otmp);
@@ -1628,6 +1804,10 @@ export function protects(otmp, being_worn) {
     return schar(((cptr.ldU64o(arti, $artifact_cspfx) & 134217728n) != 0n || (being_worn && (cptr.ldU64o(arti, $artifact_spfx) & 134217728n) != 0n) ? 1 : 0));
 }
 
+/*
+ * a potential artifact has just been worn/wielded/picked-up or
+ * unworn/unwielded/dropped.  Pickup/drop only set/reset the W_ART mask.
+ */
 /** C ref: artifact.c:716 — @param {CPtr<struct obj>} otmp @param {CInt} on @param {CLongLong} wp_mask */
 export function set_artifact_intrinsic(otmp, on, wp_mask) {
     let mask = null;
@@ -1636,9 +1816,13 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     let obj;
     let dtyp;
     let spfx;
+
     if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return;
+
+    /* effects from the defn field */
     dtyp = uchar(((wp_mask != 4096n) ? cptr.ld1uo(oart, $artifact_defn + $attack_adtyp) : cptr.ld1uo(oart, $artifact_cary + $attack_adtyp)));
+
     if (dtyp == NHM.AD_FIRE)
         mask = cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop);
     else if (dtyp == NHM.AD_COLD)
@@ -1653,7 +1837,10 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
         mask = cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop);
     else if (dtyp == NHM.AD_DRLI)
         mask = cptr.add(cptr.add(u, $you_uprops), NHC.DRAIN_RES, $sizeof_prop);
+
     if (mask && wp_mask == 4096n && !on) {
+        /* find out if some other artifact also confers this intrinsic;
+           if so, leave the mask alone */
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
             if (!cptr.eq(obj, otmp) && cptr.ld1so(obj, $obj_oartifact)) {
                 art = get_artifact(obj);
@@ -1670,8 +1857,11 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
         else
             cptr.stI64(mask, cptr.ldI64(mask) & BigInt.asIntN(64, ~wp_mask));
     }
+
+    /* intrinsics from the spfx field; there could be more than one */
     spfx = BigInt.asIntN(64, ((wp_mask != 4096n) ? cptr.ldU64o(oart, $artifact_spfx) : cptr.ldU64o(oart, $artifact_cspfx)));
     if (spfx && wp_mask == 4096n && !on) {
+        /* don't change any spfx also conferred by other artifacts */
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
             if (!cptr.eq(obj, otmp) && cptr.ld1so(obj, $obj_oartifact)) {
                 art = get_artifact(obj);
@@ -1679,6 +1869,7 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
                     spfx &= BigInt.asIntN(64, BigInt.asUintN(64, ~cptr.ldU64o(art, $artifact_cspfx)));
             }
     }
+
     if (spfx & 512n) {
         if (on)
             cptr.stI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) | wp_mask);
@@ -1686,6 +1877,12 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
             cptr.stI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 2048n) {
+        /* make_hallucinated must (re)set the mask itself to get
+         * the display right */
+        /* restoring needed because this is the only artifact intrinsic
+         * that can print a message--need to guard against being printed
+         * when restoring a game
+         */
         void make_hallucinated(BigInt((!on)), schar((cptr.ldI32o(program_state, $sinfo_restoring) ? 0 : 1)), wp_mask);
     }
     if (spfx & 4096n) {
@@ -1750,6 +1947,7 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
             cptr.stI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
     }
     if (spfx & 33554432n) {
+        /* this assumes that no one else is using xray_range */
         if (on)
             cptr.stI32o(u, $you_xray_range, 3);
         else
@@ -1768,10 +1966,13 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
         else
             cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
     }
+
     if (wp_mask == 4096n && !on && cptr.ld1uo(oart, $artifact_inv_prop)) {
+        /* might have to turn off invoked power too */
         if (cptr.ld1uo(oart, $artifact_inv_prop) <= NHC.LAST_PROP && (cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) & 8192n))
             void arti_invoke(otmp);
     }
+
     if (wp_mask == 256n && is_art(otmp, NHC.ART_SUNSWORD)) {
         if (on)
             cptr.stI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops) | wp_mask);
@@ -1780,9 +1981,19 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
 }
 
+/* touch_artifact()'s return value isn't sufficient to tell whether it
+   dished out damage, and tracking changes to u.uhp, u.mh, Lifesaved
+   when trying to avoid second wounding is too cumbersome */
 /** C ref: artifact.c:898 — signed char */
 let touch_blasted = 0;
 
+/*
+ * creature (usually hero) tries to touch (pick up or wield) an artifact obj.
+ * Returns 0 if the object refuses to be touched.
+ * This routine does not change any object chains.
+ * Ignores such things as gauntlets, assuming the artifact is not
+ * fooled by such trappings.
+ */
 /** C ref: artifact.c:908 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @returns {CInt} */
 export function touch_artifact(obj, mon) {
     let oart = get_artifact(obj);
@@ -1790,10 +2001,14 @@ export function touch_artifact(obj, mon) {
     let badalign;
     let self_willed;
     let yours;
+
     touch_blasted = 0;
     if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return 1;
+
     yours = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
+    /* all quest artifacts are self-willed; if this ever changes, `badclass'
+       will have to be extended to explicitly include quest artifacts */
     self_willed = schar(((cptr.ldU64o(oart, $artifact_spfx) & 4n) != 0n));
     if (yours) {
         badclass = schar((self_willed && ((cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(oart, $artifact_role)))) || (cptr.ldI16o(oart, $artifact_race) != NHC.NON_PM && !(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == (cptr.ldI16o(oart, $artifact_race))))) ? 1 : 0));
@@ -1802,25 +2017,34 @@ export function touch_artifact(obj, mon) {
         badclass = schar((self_willed && cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !cptr.eq(oart, cptr.add(artilist, NHC.ART_EXCALIBUR, $sizeof_artifact)) ? 1 : 0));
         badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) && cptr.ld1so(oart, $artifact_alignment) != -128 && (cptr.ld1so(oart, $artifact_alignment) != mon_aligntyp(mon)) ? 1 : 0));
     } else {
+        /* special monsters trying to take the Amulet, invocation tools or
+           quest item can touch anything except `spec_applies' artifacts */
         badclass = (badalign = 0);
     }
+    /* weapons which attack specific categories of monsters are
+       bad for them even if their alignments happen to match */
     if (!badalign)
         badalign = bane_applies(oart, mon);
+
     if (((badclass || badalign) && self_willed) || (badalign && (!yours || !rn2_at(__s_artifact_c, 945, __s_touch_artifact, 4)))) {
         let dmg;
         let tmp;
         let buf = new Uint8Array(256);
+
         if (!yours)
             return 0;
         You(__s_are_blasted_by_s_power, s_suffix(the(xname(obj))));
         touch_blasted = 1;
         dmg = d_at(__s_artifact_c, 953, __s_touch_artifact, ((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)));
+        /* add half (maybe quarter) of the usual silver damage bonus */
         if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
             tmp = rnd_at(__s_artifact_c, 956, __s_touch_artifact, 10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
         void cptr.sprintf(cptr.decay(buf), __s_touching_s, cptr.ldPtro(oart, $artifact_name));
-        losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);
+        losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);  /* magic damage, not physical */
         exercise(NHC.A_WIS, 0);
     }
+
+    /* can pick it up unless you're totally non-synch'd with the artifact */
     if (badclass && badalign && self_willed) {
         if (yours) {
             if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
@@ -1830,39 +2054,48 @@ export function touch_artifact(obj, mon) {
         }
         return 0;
     }
+
     return 1;
 }
 
+/* decide whether an artifact itself is vulnerable to a particular type
+   of erosion damage, independent of the properties of its bearer */
 /** C ref: artifact.c:979 — @param {CPtr<struct obj>} obj @param {CInt} dtyp @returns {CInt} */
 export function arti_immune(obj, dtyp) {
     let weap = get_artifact(obj);
+
     if (cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return 0;
     if (dtyp == NHM.AD_PHYS)
-        return 0;
+        return 0;  /* nothing is immune to phys dmg */
     return schar((cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == dtyp || cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == dtyp || cptr.ld1uo(weap, $artifact_cary + $attack_adtyp) == dtyp ? 1 : 0));
 }
 
 /** C ref: artifact.c:993 — @param {CPtr<struct artifact>} oart @param {CPtr<struct monst>} mon @returns {CInt} */
 function bane_applies(oart, mon) {
     let atmp = cptr.alloc(80);
+
     if (!cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && (cptr.ldU64o(oart, $artifact_spfx) & 32505856n) != 0n) {
         cptr.memcpy(atmp, oart, 80);
-        cptr.stU64o(atmp, $artifact_spfx, cptr.ldU64o(atmp, $artifact_spfx) & 32505856n);
+        cptr.stU64o(atmp, $artifact_spfx, cptr.ldU64o(atmp, $artifact_spfx) & 32505856n);  /* clear other spfx fields */
         if (spec_applies(atmp, mon))
             return 1;
     }
     return 0;
 }
 
+/* decide whether an artifact's special attacks apply against mtmp */
 /** C ref: artifact.c:1009 — @param {CPtr<struct artifact>} weap @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function spec_applies(weap, mtmp) {
     let ptr;
     let yours;
+
     if (!(cptr.ldU64o(weap, $artifact_spfx) & 32505920n))
         return (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS);
+
     yours = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))));
     ptr = cptr.ldPtro(mtmp, $monst_data);
+
     if (cptr.ldU64o(weap, $artifact_spfx) & 1048576n) {
         return (cptr.eq(ptr, cptr.add(mons, Number(BigInt.asIntN(32, cptr.ldU64o(weap, $artifact_mtype))), $sizeof_permonst)));
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 2097152n) {
@@ -1876,6 +2109,7 @@ function spec_applies(weap, mtmp) {
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 64n) {
         if (defended(mtmp, cptr.ld1uo(weap, $artifact_attk + $attack_adtyp)))
             return 0;
+
         switch (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp)) {
             case NHM.AD_FIRE:
             return !(yours ? Fire_resistance() : Resists_Elem(mtmp, NHC.FIRE_RES));
@@ -1899,50 +2133,73 @@ function spec_applies(weap, mtmp) {
     return 0;
 }
 
+/* return the M2 flags of monster that an artifact's special attacks apply
+ * against */
 /** C ref: artifact.c:1065 — @param {CPtr<struct obj>} otmp @returns {CLongLong} */
 export function spec_m2(otmp) {
     let artifact = get_artifact(otmp);
+
     if (!cptr.eq(artifact, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return BigInt.asIntN(64, cptr.ldU64o(artifact, $artifact_mtype));
     return 0n;
 }
 
+/* special attack bonus */
 /** C ref: artifact.c:1076 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @returns {CInt} */
 export function spec_abon(otmp, mon) {
     let weap = get_artifact(otmp);
+
+    /* no need for an extra check for `NO_ATTK' because this will
+       always return 0 for any artifact which has that attribute */
+
     if (!cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && cptr.ld1uo(weap, $artifact_attk + $attack_damn) && spec_applies(weap, mon))
         return rnd_at(__s_artifact_c, 1085, __s_spec_abon, cptr.ld1uo(weap, $artifact_attk + $attack_damn));
     return 0;
 }
 
+/* special damage bonus */
 /** C ref: artifact.c:1091 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @param {CInt} tmp @returns {CInt} */
 export function spec_dbon(otmp, mon, tmp) {
     let weap = get_artifact(otmp);
+
     if ((cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) || (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS && cptr.ld1uo(weap, $artifact_attk + $attack_damn) == 0 && cptr.ld1uo(weap, $artifact_attk + $attack_damd) == 0))
         cptr.stI32(gs, 0);
     else if (is_art(otmp, NHC.ART_GRIMTOOTH))
+        /* Grimtooth has SPFX settings to warn against elves but we want its
+           damage bonus to apply to all targets, so bypass spec_applies() */
         cptr.stI32(gs, 1);
     else
         cptr.stI32(gs, spec_applies(weap, mon));
+
     if (cptr.ldI32(gs))
         return cptr.ld1uo(weap, $artifact_attk + $attack_damd) ? rnd_at(__s_artifact_c, 1107, __s_spec_dbon, cptr.ld1uo(weap, $artifact_attk + $attack_damd)) : ((tmp) > 1 ? (tmp) : 1);
     return 0;
 }
 
+/* add identified artifact to discoveries list */
 /** C ref: artifact.c:1113 — @param {CInt} m */
 export function discover_artifact(m) {
     let i;
+
+    /* look for this artifact in the discoveries list;
+       if we hit an empty slot then it's not present, so add it */
     for (i = 0; i < NHC.NROFARTIFACTS; i++)
         if (cptr.ldI16o(artidisco, i, 2) == 0 || cptr.ldI16o(artidisco, i, 2) == m) {
             cptr.stI16o(artidisco, i, m, 2);
             return;
         }
+    /* there is one slot per artifact, so we should never reach the
+       end without either finding the artifact or an empty slot... */
     impossible(__s_couldn_t_discover_artifact_d, m);
 }
 
+/* used to decide whether an artifact has been fully identified */
 /** C ref: artifact.c:1131 — @param {CInt} m @returns {CInt} */
 export function undiscovered_artifact(m) {
     let i;
+
+    /* look for this artifact in the discoveries list;
+       if we hit an empty slot then it's undiscovered */
     for (i = 0; i < NHC.NROFARTIFACTS; i++)
         if (cptr.ldI16o(artidisco, i, 2) == m)
             return 0;
@@ -1951,6 +2208,7 @@ export function undiscovered_artifact(m) {
     return 1;
 }
 
+/* display a list of discovered artifacts; return their count */
 /** C ref: artifact.c:1147 — @param {CInt} tmpwin @returns {CInt} */
 export function disp_artifact_discoveries(tmpwin) {
     let i;
@@ -1958,11 +2216,13 @@ export function disp_artifact_discoveries(tmpwin) {
     let otyp;
     let algnstr;
     let buf = new Uint8Array(256);
+
     for (i = 0; i < NHC.NROFARTIFACTS; i++) {
         if (cptr.ldI16o(artidisco, i, 2) == 0)
-            break;
+            break;  /* empty slot implies end of list */
         if (tmpwin == -1)
-            continue;
+            continue;  /* for WIN_ERR, we just count */
+
         if (i == 0)
             putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __s_artifacts);
         m = cptr.ldI16o(artidisco, i, 2);
@@ -1970,25 +2230,51 @@ export function disp_artifact_discoveries(tmpwin) {
         algnstr = align_str(cptr.ld1so2(artilist, m, $sizeof_artifact, $artifact_alignment));
         if (!strcmp(algnstr, __s_unaligned))
             algnstr = __s_non_aligned;
+
         void cptr.sprintf(cptr.decay(buf), __s_s_s_s, artiname(m), algnstr, simple_typename(otyp));
         putstr()(tmpwin, 0, cptr.decay(buf));
     }
     return i;
 }
 
+/* (wizard mode only) show all artifacts and their flags */
 /** C ref: artifact.c:1177 — @param {CInt} tmpwin */
 export function dump_artifact_info(tmpwin) {
     let m;
     let buf = new Uint8Array(256);
     let buf2 = new Uint8Array(256);
+
+    /* not a menu, but header uses same bold or whatever attribute as such */
     putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __s_artifacts);
     for (m = 1; m <= NHC.NROFARTIFACTS; ++m) {
         nh_snprintf(__s_dump_artifact_info, 1197, cptr.decay(buf2), 256n, __s_s_s_s_s_s_s_s_s_s, (cptr.ldI32o(artiexist, m, $sizeof_arti_info) & 1) | 0 ? __s_exists : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_found) & 1) | 0 ? __s_hero_knows : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_gift) & 1) | 0 ? __s_gift : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_wish) & 1) | 0 ? __s_wish : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_named) & 1) | 0 ? __s_named : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_viadip) & 1) | 0 ? __s_viadip : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_lvldef) & 1) | 0 ? __s_lvldef : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_bones) & 1) | 0 ? __s_bones : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_rndm) & 1) | 0 ? __s_random : __s_empty);
+        /* "The Platinum Yendorian Express Card" is 35 characters */
         nh_snprintf(__s_dump_artifact_info, 1204, cptr.decay(buf), 256n, __s_36_36s_s, artiname(m), cptr.decay(buf2));
         putstr()(tmpwin, 0, cptr.decay(buf));
     }
     return;
 }
+
+/*
+ * Magicbane's intrinsic magic is incompatible with normal
+ * enchantment magic.  Thus, its effects have a negative
+ * dependence on spe.  Against low mr victims, it typically
+ * does "double athame" damage, 2d4.  Occasionally, it will
+ * cast unbalancing magic which effectively averages out to
+ * 4d4 damage (3d4 against high mr victims), for spe = 0.
+ *
+ * Prior to 3.4.1, the cancel (aka purge) effect always
+ * included the scare effect too; now it's one or the other.
+ * Likewise, the stun effect won't be combined with either
+ * of those two; it will be chosen separately or possibly
+ * used as a fallback when scare or cancel fails.
+ *
+ * [Historical note: a change to artifact_hit() for 3.4.0
+ * unintentionally made all of Magicbane's special effects
+ * be blocked if the defender successfully saved against a
+ * stun attack.  As of 3.4.1, those effects can occur but
+ * will be slightly less likely than they were in 3.3.x.]
+ */
 
 /** C ref: artifact.c:1232 — enum */
 export const MB_INDEX_PROBE = 0;
@@ -2008,6 +2294,7 @@ cptr.stPtro(cptr.decay(mb_verb[1]), 8, __s_amaze);
 cptr.stPtro(cptr.decay(mb_verb[1]), 16, __s_tickle);
 cptr.stPtro(cptr.decay(mb_verb[1]), 24, __s_purge);
 
+/* called when someone is being hit by Magicbane */
 /** C ref: artifact.c:1249 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} mb @param {CPtr<int>} dmgptr @param {CInt} dieroll @param {CInt} vis @param {CPtr<char>} hittee @returns {CInt} */
 function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     let old_mdat;
@@ -2021,43 +2308,70 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     let attack_indx;
     let fakeidx;
     let scare_dieroll = 4;
-    result = 0;
+
+    result = 0;  /* no message given yet */
+    /* the most severe effects are less likely at higher enchantment */
     if (cptr.ld1so(mb, $obj_spe) >= 3)
         scare_dieroll = (scare_dieroll / (1 << ((cptr.ld1so(mb, $obj_spe) / 3) | 0))) | 0;
+    /* if target successfully resisted the artifact damage bonus,
+       reduce overall likelihood of the assorted special effects */
     if (!cptr.ldI32(gs))
         dieroll = (dieroll + 1) | 0;
+
+    /* might stun even when attempting a more severe effect, but
+       in that case it will only happen if the other effect fails;
+       extra damage will apply regardless; 3.4.1: sometimes might
+       just probe even when it hasn't been enchanted */
     do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) < rn2_at(__s_artifact_c, 1277, __s_mb_hit, cptr.ldI32(gs) ? 11 : 7)));
+
+    /* the special effects also boost physical damage; increments are
+       generally cumulative, but since the stun effect is based on a
+       different criterium its damage might not be included; the base
+       damage is either 1d4 (athame) or 2d4 (athame+spec_dbon) depending
+       on target's resistance check against AD_STUN (handled by caller)
+       [note that a successful save against AD_STUN doesn't actually
+       prevent the target from ending up stunned] */
     attack_indx = NHC.MB_INDEX_PROBE;
-    cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1287, __s_mb_hit, 4)) | 0);
+    cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1287, __s_mb_hit, 4)) | 0);  /* (2..3)d4 */
     if (do_stun) {
         attack_indx = NHC.MB_INDEX_STUN;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1290, __s_mb_hit, 4)) | 0);
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1290, __s_mb_hit, 4)) | 0);  /* (3..4)d4 */
     }
     if (dieroll <= scare_dieroll) {
         attack_indx = NHC.MB_INDEX_SCARE;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1294, __s_mb_hit, 4)) | 0);
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1294, __s_mb_hit, 4)) | 0);  /* (3..5)d4 */
     }
     if (dieroll <= ((scare_dieroll / 2) | 0)) {
         attack_indx = NHC.MB_INDEX_CANCEL;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1298, __s_mb_hit, 4)) | 0);
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1298, __s_mb_hit, 4)) | 0);  /* (4..6)d4 */
     }
+
+    /* give the hit message prior to inflicting the effects */
     verb = cptr.ldPtro(cptr.decay(mb_verb[!!Hallucination() ? 1 : 0]), attack_indx, 8);
     if (youattack || youdefend || vis) {
         result = 1;
         pline_The(__s_magic_absorbing_blade_s_s, vtense(null, verb), hittee);
+        /* assume probing has some sort of noticeable feedback
+           even if it is being done by one monster to another */
         if (attack_indx == NHC.MB_INDEX_PROBE && !canspotmon(mdef))
             map_invisible(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my));
     }
+
+    /* now perform special effects */
     switch (attack_indx) {
         case NHC.MB_INDEX_CANCEL:
         old_mdat = youdefend ? cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data) : cptr.ldPtro(mdef, $monst_data);
+        /* No mdef->mcan check: even a cancelled monster can be polymorphed
+         * into a golem, and the "cancel" effect acts as if some magical
+         * energy remains in spellcasting defenders to be absorbed later.
+         */
         if (!cancel_monst(mdef, mb, youattack, 0, 0)) {
             resisted = 1;
         } else {
             do_stun = 0;
             if (youdefend) {
                 if (!cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), old_mdat))
-                    cptr.stI32(dmgptr, 0);
+                    cptr.stI32(dmgptr, 0);  /* rehumanized, so no more damage */
                 if (cptr.ldI32o(u, $you_uenmax) > 0) {
                     (cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uenmax) + -1)) - (-1);
                     if (cptr.ldI32o(u, $you_uen) > 0)
@@ -2066,10 +2380,12 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                     You(__s_lose_magical_energy);
                 }
             } else {
+                /* canceled shapeshifter/vamp may have changed forms, so
+                   update its name if necessary */
                 if (!cptr.eq(cptr.ldPtro(mdef, $monst_data), old_mdat))
                     void cptr.strcpy(hittee, mon_nam(mdef));
                 if (cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_CLAY_GOLEM, $sizeof_permonst)))
-                    cptr.stI32o(mdef, $monst_mhp, 1);
+                    cptr.stI32o(mdef, $monst_mhp, 1);  /* cancelled clay golems will die */
                 if (youattack && attacktype(cptr.ldPtro(mdef, $monst_data), NHM.AT_MAGC)) {
                     (cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uenmax) + 1)) - (1);
                     if (cptr.ldI32o(u, $you_uenmax) > cptr.ldI32o(u, $you_uenpeak))
@@ -2104,23 +2420,27 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
             do_stun = 0;
         break;
         case NHC.MB_INDEX_STUN:
-        do_stun = 1;
+        do_stun = 1;  /* (this is redundant...) */
         break;
         case NHC.MB_INDEX_PROBE:
         if (youattack && (cptr.ld1so(mb, $obj_spe) == 0 || !(rng_log_enabled() ? (rng_log_set_caller(__s_artifact_c, 1382, __s_mb_hit), rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))) : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
             pline_The(__s_s_is_insightful, verb);
+            /* pre-damage status */
             probe_monster(mdef);
         }
         break;
     }
+    /* stun if that was selected and a worse effect didn't occur */
     if (do_stun) {
         if (youdefend)
             make_stunned((BigInt.asIntN(64, (HStun() & 16777215n) + 3n)), 0);
         else
             cptr.stI32o(mdef, $monst_mstun, 1);
+        /* avoid extra stun message below if we used mb_verb["stun"] above */
         if (attack_indx == NHC.MB_INDEX_STUN)
             do_stun = 0;
     }
+    /* lastly, all this magic can be confusing... */
     do_confuse = schar((!rn2_at(__s_artifact_c, 1400, __s_mb_hit, 12)));
     if (do_confuse) {
         if (youdefend)
@@ -2128,15 +2448,19 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         else
             cptr.stI32o(mdef, $monst_mconf, 1);
     }
+
+    /* now give message(s) describing side-effects; Use fakename
+       so vtense() won't be fooled by assigned name ending in 's' */
     fakeidx = youdefend ? 1 : 0;
     if (youattack || youdefend || vis) {
-        void upstart(hittee);
+        void upstart(hittee);  /* capitalize */
         if (resisted) {
             pline(__s_s_s, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __s_resist));
             shieldeff(i16((youdefend ? cptr.ldI16(u) : cptr.ldI16o(mdef, $monst_mx))), i16((youdefend ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mdef, $monst_my))));
         }
         if ((do_stun || do_confuse) && cptr.ld1so(flags, $flag_verbose)) {
             let buf = new Uint8Array(256);
+
             cptr.st1o(cptr.decay(buf), 0, 0, 1);
             if (do_stun)
                 void cptr.strcat(cptr.decay(buf), __s_stunned);
@@ -2147,9 +2471,18 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
             pline(__s_s_s_s_c, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __s_are), cptr.decay(buf), (do_stun && do_confuse) ? 33 : 46);
         }
     }
+
     return result;
 }
 
+/* Function used when someone attacks someone else with an artifact
+ * weapon.  Only adds the special (artifact) damage, and returns a 1 if it
+ * did something special (in which case the caller won't print the normal
+ * hit message).  This should be called once upon every artifact attack;
+ * dmgval() no longer takes artifact bonuses into account.  Possible
+ * extension: change the killer so that when an orc kills you with
+ * Stormbringer it's "killed by Stormbringer" instead of "killed by an orc".
+ */
 const __static_artifact_hit_you = cptr.bytes("you"); /** C ref: artifact.c:1461 — char[4] (function-static) */
 const __static_artifact_hit_behead_msg = cptr.alloc(2 * 8);
 cptr.stPtro(__static_artifact_hit_behead_msg, 0, __s_s_beheads_s);
@@ -2163,20 +2496,30 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     let realizes_damage;
     let wepdesc;
     let hittee = new Uint8Array(256);
+
     void cptr.strcpy(cptr.decay(hittee), youdefend ? cptr.decay(__static_artifact_hit_you) : mon_nam(mdef));
+
+    /* The following takes care of most of the damage, but not all--
+     * the exception being for level draining, which is specially
+     * handled.  Messages are done in this function, however.
+     */
     cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + spec_dbon(otmp, mdef, cptr.ldI32(dmgptr))) | 0);
+
     if (youattack && youdefend) {
         impossible(__s_attacking_yourself_with_weapon);
         return 0;
     }
+
     realizes_damage = schar((youdefend || vis || (youattack && cptr.eq(mdef, cptr.ldPtro(u, $you_ustuck))) ? 1 : 0));
+
+    /* the four basic attacks: fire, cold, shock and missiles */
     if (attacks(NHM.AD_FIRE, otmp)) {
         if (realizes_damage)
             pline_The(__s_fiery_blade_s_s_c, !cptr.ldI32(gs) ? __s_hits : ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_WATER_ELEMENTAL, $sizeof_permonst))) ? __s_vaporizes_part_of : __s_burns), cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
         if (!rn2_at(__s_artifact_c, 1491, __s_artifact_hit, 4)) {
             let itemdmg = destroy_items(mdef, NHM.AD_FIRE, cptr.ldI32(dmgptr));
             if (!youdefend)
-                cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);
+                cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);  /* item destruction dmg */
             ignite_items(cptr.ldPtro(mdef, $monst_minvent));
         }
         if (youdefend && Slimed())
@@ -2189,7 +2532,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         if (!rn2_at(__s_artifact_c, 1506, __s_artifact_hit, 4)) {
             let itemdmg = destroy_items(mdef, NHM.AD_COLD, cptr.ldI32(dmgptr));
             if (!youdefend)
-                cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);
+                cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);  /* item destruction dmg */
         }
         return realizes_damage;
     }
@@ -2201,7 +2544,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         if (!rn2_at(__s_artifact_c, 1520, __s_artifact_hit, 5)) {
             let itemdmg = destroy_items(mdef, NHM.AD_ELEC, cptr.ldI32(dmgptr));
             if (!youdefend)
-                cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);
+                cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);  /* item destruction dmg */
         }
         return realizes_damage;
     }
@@ -2210,23 +2553,34 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             pline_The(__s_imaginary_widget_hits_s_s_c, !cptr.ldI32(gs) ? __s_empty : __s_a_hail_of_magic_missiles_strikes, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
         return realizes_damage;
     }
+
     if (attacks(NHM.AD_STUN, otmp) && dieroll <= 8) {
+        /* Magicbane's special attacks (possibly modifies hittee[]) */
         return Mb_hit(magr, mdef, otmp, dmgptr, dieroll, vis, cptr.decay(hittee));
     }
+
     if (!cptr.ldI32(gs)) {
+        /* since damage bonus didn't apply, nothing more to do;
+           no further attacks have side-effects on inventory */
         return 0;
     }
+
+    /* We really want "on a natural 20" but Nethack does it in */
+    /* reverse from AD&D. */
     if (spec_ability(otmp, 1024n)) {
         if (is_art(otmp, NHC.ART_TSURUGI_OF_MURAMASA) && dieroll == 1) {
             wepdesc = __s_the_razor_sharp_blade;
+            /* not really beheading, but so close, why add another SPFX */
             if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
                 You(__s_slice_s_wide_open, mon_nam(mdef));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
                 return 1;
             }
             if (!youdefend) {
+                /* allow normal cutworm() call to add extra damage */
                 if (cptr.ld1so(gn, $instance_globals_n_notonhead))
                     return 0;
+
                 if ((cptr.ld1uo((cptr.ldPtro(mdef, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
                     if (youattack)
                         You(__s_slice_deeply_into_s, mon_nam(mdef));
@@ -2245,12 +2599,19 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
                     return 1;
                 }
+
+                /* Players with negative AC's take less damage instead
+                 * of just not getting hit.  We must add a large enough
+                 * value to the damage so that this reduction in
+                 * damage does not prevent death.
+                 */
                 cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
                 pline(__s_s_cuts_you_in_half, wepdesc);
                 observe_object(otmp);
                 return 1;
             }
         } else if (is_art(otmp, NHC.ART_VORPAL_BLADE) && (dieroll == 1 || cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_JABBERWOCK, $sizeof_permonst)))) {
+
             if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
                 return 0;
             wepdesc = cptr.ldPtro2(artilist, NHC.ART_VORPAL_BLADE, $sizeof_artifact, $artifact_name);
@@ -2286,34 +2647,49 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
                 pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2_at(__s_artifact_c, 1638, __s_artifact_hit, 2), 8), wepdesc, __s_you);
                 observe_object(otmp);
+                /* Should amulets fall off? */
                 return 1;
             }
         }
     }
     if (spec_ability(otmp, 256n)) {
+        /* some non-living creatures (golems, vortices) are vulnerable to
+           life drain effects so can get "<Arti> draws the <life>" feedback */
         let life = nonliving(cptr.ldPtro(mdef, $monst_data)) ? __s_animating_force : __s_life;
+
         if (!youdefend) {
             let m_lev = cptr.ld1uo(mdef, $monst_m_lev);
             let mhpmax = cptr.ldI32o(mdef, $monst_mhpmax);
-            let drain = monhp_per_lvl(mdef);
+            let drain = monhp_per_lvl(mdef);  /* usually 1d8 */
+            /* note: DRLI attack uses 2d6, attacker doesn't get healed */
+
+            /* stop draining HP if it drops too low (still drains level;
+               also caller still inflicts regular weapon damage) */
             if (((mhpmax - drain) | 0) <= m_lev)
                 drain = (mhpmax > m_lev) ? ((mhpmax - ((m_lev + 1) | 0)) | 0) : 0;
+
             if (vis) {
+                /* call distant_name() for possible side-effects even if
+                   the result won't be printed */
                 let otmpname = distant_name(otmp, xname);
+
                 if (is_art(otmp, NHC.ART_STORMBRINGER))
                     pline_The(__s_s_blade_draws_the_s_from_s, hcolor(cptr.ldPtr(c_color_names)), life, mon_nam(mdef));
                 else
                     pline(__s_s_draws_the_s_from_s, The(otmpname), life, mon_nam(mdef));
             }
             if (cptr.ld1uo(mdef, $monst_m_lev) == 0) {
+                /* losing a level when at 0 is fatal */
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
             } else {
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + drain) | 0);
                 cptr.stI32o(mdef, $monst_mhpmax, (cptr.ldI32o(mdef, $monst_mhpmax) - drain) | 0);
                 (cptr.st1o(mdef, $monst_m_lev, cptr.ld1uo(mdef, $monst_m_lev) + -1)) - (-1);
             }
+
             if (drain > 0) {
-                drain = (((drain + 1) | 0) / 2) | 0;
+                /* drain: was target's damage, now heal attacker by half */
+                drain = (((drain + 1) | 0) / 2) | 0;  /* drain/2 rounded up */
                 if (youattack) {
                     healup(drain, 0, 0, 0);
                 } else {
@@ -2324,10 +2700,14 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             return vis;
         } else {
             let oldhpmax = cptr.ldI32o(u, $you_uhpmax);
+
             if (Blind()) {
                 You_feel(__s_an_s_drain_your_s, is_art(otmp, NHC.ART_STORMBRINGER) ? __s_unholy_blade : __s_object, life);
             } else {
+                /* call distant_name() for possible side-effects even if
+                   the result won't be printed */
                 let otmpname = distant_name(otmp, xname);
+
                 if (is_art(otmp, NHC.ART_STORMBRINGER))
                     pline_The(__s_s_blade_drains_your_s, hcolor(cptr.ldPtr(c_color_names)), life);
                 else
@@ -2343,20 +2723,31 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     return 0;
 }
 
+/* getobj callback for object to be invoked */
 /** C ref: artifact.c:1727 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
+    /* artifacts and other special items */
     if (cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1) | 0 || (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(obj, $obj_known) & 1)))
         return NHC.GETOBJ_SUGGEST;
+
+    /* synonym for apply, though actually invoking it will do different things
+     * depending if it's a regular crystal ball, an artifact one that has an
+     * invoke power, and a (theoretical) artifact one that doesn't have an
+     * invoke power */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CRYSTAL_BALL)
         return NHC.GETOBJ_SUGGEST;
+
     return NHC.GETOBJ_EXCLUDE;
 }
 
+/* the #invoke command */
 /** C ref: artifact.c:1749 @returns {CInt} */
 export function doinvoke() {
     let obj = cptr.box(0);
+
     obj.v = getobj(__s_invoke, invoke_ok, NHM.GETOBJ_PROMPT);
     if (!obj.v)
         return NHM.ECMD_CANCEL;
@@ -2374,7 +2765,8 @@ function nothing_special(obj) {
 /** C ref: artifact.c:1769 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_taming(obj) {
     let pseudo = cptr.alloc(216);
-    cptr.memcpy(pseudo, cg, 216);
+
+    cptr.memcpy(pseudo, cg, 216);  /* neither cursed nor blessed, zero oextra too */
     cptr.stI16o(pseudo, $obj_otyp, NHC.SCR_TAMING);
     void seffects(pseudo);
     return NHM.ECMD_TIME;
@@ -2384,6 +2776,7 @@ function invoke_taming(obj) {
 function invoke_healing(obj) {
     let healamt = (((((cptr.ldI32o(u, $you_uhpmax) + 1) | 0) - cptr.ldI32o(u, $you_uhp)) | 0) / 2) | 0;
     let creamed = BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0);
+
     if (Upolyd())
         healamt = (((((cptr.ldI32o(u, $you_mhmax) + 1) | 0) - cptr.ldI32o(u, $you_mh)) | 0) / 2) | 0;
     if (healamt || Sick() || Slimed() || BigInt((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0)) > creamed)
@@ -2413,8 +2806,9 @@ function invoke_healing(obj) {
 /** C ref: artifact.c:1818 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_energy_boost(obj) {
     let epboost = (((((cptr.ldI32o(u, $you_uenmax) + 1) | 0) - cptr.ldI32o(u, $you_uen)) | 0) / 2) | 0;
+
     if (epboost > 120)
-        epboost = 120;
+        epboost = 120;  /* arbitrary */
     else if (epboost < 12)
         epboost = (cptr.ldI32o(u, $you_uenmax) - cptr.ldI32o(u, $you_uen)) | 0;
     if (epboost) {
@@ -2431,7 +2825,7 @@ function invoke_energy_boost(obj) {
 /** C ref: artifact.c:1838 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_untrap(obj) {
     if (!untrap(1, 0, 0, null)) {
-        cptr.stI64o(obj, $obj_age, 0n);
+        cptr.stI64o(obj, $obj_age, 0n);  /* don't charge for changing their mind */
         return NHM.ECMD_CANCEL;
     }
     return NHM.ECMD_TIME;
@@ -2442,6 +2836,7 @@ function invoke_charge_obj(obj) {
     let oart = get_artifact(obj);
     let otmp = getobj(__s_charge, charge_ok, 3);
     let b_effect;
+
     if (!otmp) {
         cptr.stI64o(obj, $obj_age, 0n);
         return NHM.ECMD_CANCEL;
@@ -2461,8 +2856,10 @@ function invoke_create_portal(obj) {
     let tmpwin = create_nhwindow()(NHM.NHW_MENU);
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
-    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* set all bits to zero */
     start_menu()(tmpwin, 0n);
+    /* use index+1 (can't use 0) as identifier */
     for (i = (num_ok_dungeons = 0); i < cptr.ldI32(svn); i++) {
         if (!cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached))
             continue;
@@ -2475,8 +2872,10 @@ function invoke_create_portal(obj) {
     }
     end_menu()(tmpwin, __s_open_a_portal_to_which_dungeon);
     if (num_ok_dungeons > 1) {
+        /* more than one entry; display menu for choices */
         let selected = cptr.box(0);
         let n;
+
         n = select_menu(tmpwin, NHM.PICK_ONE, selected);
         if (n <= 0) {
             destroy_nhwindow()(tmpwin);
@@ -2486,13 +2885,21 @@ function invoke_create_portal(obj) {
         i = (cptr.ldI32o(selected.v, 0, $sizeof_menu_item) - 1) | 0;
         cptr.free(selected.v);
     } else
-        i = last_ok_dungeon;
+        i = last_ok_dungeon;  /* also first & only OK dungeon */
     destroy_nhwindow()(tmpwin);
+
+    /*
+     * i is now index into dungeon structure for the new dungeon.
+     * Find the closest level in the given dungeon, open
+     * a use-once portal to that dungeon and go there.
+     * The closest level is either the entry or dunlev_ureached.
+     */
     cptr.stI16(newlev, i16(i));
     if (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start) >= depth(cptr.add(u, $you_uz)))
         cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_entry_lev));
     else
         cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached));
+
     if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((newlev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || cptr.ldI16(newlev) == cptr.ldI16o(u, $you_uz) || !next_to_u()) {
         You_feel(__s_very_disoriented_for_a_moment);
     } else {
@@ -2508,6 +2915,7 @@ function invoke_create_portal(obj) {
 /** C ref: artifact.c:1934 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_create_ammo(obj) {
     let otmp = mksobj(NHC.ARROW, 1, 0);
+
     if (!otmp) {
         nothing_special(obj);
         return NHM.ECMD_TIME;
@@ -2538,9 +2946,12 @@ function invoke_banish(obj) {
     let mtmp;
     let mtmp2;
     let dest = cptr.alloc(4);
+
     find_hell(dest);
+
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
         let chance = 1;
+
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || !isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
             continue;
@@ -2550,16 +2961,19 @@ function invoke_banish(obj) {
             continue;
         if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
             continue;
+
         if (In_quest(cptr.add(u, $you_uz)) && !(cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))
             chance = (chance + 10) | 0;
         if (is_dprince(cptr.ldPtro(mtmp, $monst_data)))
             chance = (chance + 2) | 0;
         if (is_dlord(cptr.ldPtro(mtmp, $monst_data)))
             chance++;
+
         cptr.stI32o(mtmp, $monst_msleeping, cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0))));
         if (chance <= 1 || !rn2_at(__s_artifact_c, 1992, __s_invoke_banish, chance)) {
             if (!In_hell(cptr.add(u, $you_uz))) {
                 nvanished++;
+                /* banish to a random level in Gehennom */
                 cptr.stI16o(dest, $d_level_dlevel, i16(rn2_at(__s_artifact_c, 1996, __s_invoke_banish, dunlevs_in_dungeon(dest))));
                 migrate_mon(mtmp, ledger_no(dest), NHM.MIGR_RANDOM);
             } else {
@@ -2569,10 +2983,12 @@ function invoke_banish(obj) {
             nstayed++;
         }
     }
+
     if (nvanished) {
         let subject = cptr.bytes("demons");
+
         if (nvanished == 1)
-            cptr.st1((cptr.add(eos(cptr.decay(subject)), -(1))), 0);
+            cptr.st1((cptr.add(eos(cptr.decay(subject)), -(1))), 0);  /* remove 's' */
         pline(__s_s_s_s_in_a_cloud_of_brimstone, nstayed ? ((nvanished > nstayed) ? __s_most_of_the : __s_some_of_the) : __s_the__2, cptr.decay(subject), vtense(cptr.decay(subject), __s_disappear));
     }
     return NHM.ECMD_TIME;
@@ -2583,9 +2999,11 @@ function invoke_fling_poison(obj) {
     if (getdir(null)) {
         let venom = rn2_at(__s_artifact_c, 2025, __s_invoke_fling_poison, 2) ? NHC.BLINDING_VENOM : NHC.ACID_VENOM;
         let otmp = mksobj(venom, 1, 0);
-        cptr.st1o(otmp, $obj_spe, 1);
+
+        cptr.st1o(otmp, $obj_spe, 1);  /* the poison is yours */
         throwit(otmp, 0n, 0, null);
     } else {
+        /* no direction picked */
         pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         cptr.stI64o(obj, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
         return NHM.ECMD_CANCEL;
@@ -2599,6 +3017,7 @@ function invoke_storm_spell(obj) {
     let storm = cptr.ld1uo(oart, $artifact_inv_prop) == NHC.SNOWSTORM ? NHC.SPE_CONE_OF_COLD : NHC.SPE_FIREBALL;
     let skill = spell_skilltype(storm);
     let expertise = (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills));
+
     cptr.stI16o2(u, skill, $sizeof_skills, $you_weapon_skills, NHC.P_EXPERT);
     void spelleffects(storm, 0, 1);
     cptr.stI16o2(u, skill, $sizeof_skills, $you_weapon_skills, i16(expertise));
@@ -2611,17 +3030,23 @@ function invoke_blinding_ray(obj) {
         if (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) {
             do_blinding_ray(obj);
         } else if (cptr.ldI32o(u, $you_dz)) {
+            /* up or down => light this map spot; litroom() uses
+               radius 0 for Sunsword, except on Rogue level where
+               whole room gets lit and corridor spots remain unlit */
             litroom(1, obj);
             pline(__s_pct_s, ((!Blind() && (cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 && !(cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit) & 1)) ? __s_it_is_lit_here_now : cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)));
         } else {
             let vulnerable = schar((cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN));
             let damg = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 15 : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 10 : 5);
+
             if (vulnerable)
                 void lightdamage(obj, 1, Math.imul(2, damg));
+
             if (!flashburn(BigInt(((damg + rnd_at(__s_artifact_c, 2075, __s_invoke_blinding_ray, damg)) | 0)), 0) && !vulnerable)
                 pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
         }
     } else {
+        /* no direction picked */
         pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         cptr.stI64o(obj, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
         return NHM.ECMD_CANCEL;
@@ -2629,24 +3054,34 @@ function invoke_blinding_ray(obj) {
     return NHM.ECMD_TIME;
 }
 
+/* return the amount of Pw invoking an object costs.
+   return a negative value, if obj invoking cannot be paid with Pw */
 /** C ref: artifact.c:2091 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function arti_invoke_cost_pw(obj) {
     let oart = get_artifact(obj);
+
     if (cptr.ld1uo(oart, $artifact_inv_prop) == NHC.FLING_POISON || cptr.ld1uo(oart, $artifact_inv_prop) == NHC.BLINDING_RAY) {
+        /* pretend it's a level 5 spell */
         return 25;
     }
+
     return -1;
 }
 
+/* return TRUE if artifact object's invoke cost can be paid (and pay it) */
 /** C ref: artifact.c:2106 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function arti_invoke_cost(obj) {
     if (cptr.ldI64o(obj, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         let pw_cost = arti_invoke_cost_pw(obj);
+
         if (pw_cost < 0 || cptr.ldI32o(u, $you_uen) < pw_cost) {
+            /* the artifact is tired :-) */
             You_feel(__s_that_s_s_ignoring_you, the(xname(obj)), otense(obj, __s_are));
+            /* and just got more so; patience is essential... */
             cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt(d_at(__s_artifact_c, 2116, __s_arti_invoke_cost, 3, 10)));
             return 0;
         } else {
+            /* you pay invoke cost with your own magic */
             You_feel(__s_drained);
             cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - pw_cost) | 0);
             cptr.st1(disp, 1);
@@ -2662,6 +3097,7 @@ function arti_invoke(obj) {
     obj = cptr.box(obj);
     let oart;
     let res = NHM.ECMD_OK;
+
     if (!obj.v) {
         impossible(__s_arti_invoke_without_obj);
         return NHM.ECMD_OK;
@@ -2674,9 +3110,12 @@ function arti_invoke(obj) {
             pline(__s_pct_s, cptr.ldPtr(c_common_strings));
         return NHM.ECMD_TIME;
     }
+
+    /* It's a special power, not "just" a property */
     if (cptr.ld1uo(oart, $artifact_inv_prop) > NHC.LAST_PROP) {
         if (!arti_invoke_cost(obj.v))
             return NHM.ECMD_TIME;
+
         switch (cptr.ld1uo(oart, $artifact_inv_prop)) {
             case NHC.TAMING:
             res = invoke_taming(obj.v);
@@ -2715,6 +3154,7 @@ function arti_invoke(obj) {
             break;
             case NHC.SNOWSTORM:
             case NHC.FIRESTORM:
+            /*FALLTHRU*/
             res = invoke_storm_spell(obj.v);
             break;
             case NHC.BLINDING_RAY:
@@ -2728,16 +3168,23 @@ function arti_invoke(obj) {
     } else {
         let eprop = (cptr.stI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops, cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^ 8192n));
         let iprop = cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops + $prop_intrinsic);
-        let on = schar(((eprop & 8192n) != 0n));
+        let on = schar(((eprop & 8192n) != 0n));  /* true if prop just set */
+
         if (on && cptr.ldI64o(obj.v, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
+            /* the artifact is tired :-) */
             cptr.stI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops, cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^ 8192n);
             You_feel(__s_that_s_s_ignoring_you, the(xname(obj.v)), otense(obj.v, __s_are));
+            /* can't just keep repeatedly trying */
             cptr.stI64o(obj.v, $obj_age, cptr.ldI64o(obj.v, $obj_age) + BigInt(d_at(__s_artifact_c, 2189, __s_arti_invoke, 3, 10)));
             return NHM.ECMD_TIME;
         } else if (!on) {
+            /* when turning off property, determine downtime */
+            /* arbitrary for now until we can tune this -dlc */
             cptr.stI64o(obj.v, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz_at(__s_artifact_c, 2194, __s_arti_invoke, 100))));
         }
+
         if ((eprop & -8193n) || iprop) {
+            /* you had the property from some other source too */
             nothing_special(obj.v);
             return NHM.ECMD_TIME;
         }
@@ -2768,16 +3215,27 @@ function arti_invoke(obj) {
             break;
         }
     }
+
     return NHM.ECMD_TIME;
 }
 
+/* will freeing this object from inventory cause levitation to end? */
 /** C ref: artifact.c:2236 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function finesse_ahriman(obj) {
     let oart;
     let save_Lev = cptr.alloc(24);
     let result;
+
+    /* if we aren't levitating or this isn't an artifact which confers
+       levitation via #invoke then freeinv() won't toggle levitation */
     if (!Levitation() || cptr.eq((oart = get_artifact(obj)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) || cptr.ld1uo(oart, $artifact_inv_prop) != NHC.LEVITATION || !(ELevitation() & 8192n))
         return 0;
+
+    /* arti_invoke(off) -> float_down() clears I_SPECIAL|TIMEOUT & W_ARTI;
+       probe ahead to see whether that actually results in floating down;
+       (this assumes that there aren't two simultaneously invoked artifacts
+       both conferring levitation--safe, since if there were two of them,
+       invoking the 2nd would negate the 1st rather than stack with it) */
     cptr.memcpy(save_Lev, cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), 24);
     cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-553648128n));
     cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & (-8193n));
@@ -2786,20 +3244,28 @@ export function finesse_ahriman(obj) {
     return result;
 }
 
+/* WAC return TRUE if artifact is always lit */
 /** C ref: artifact.c:2264 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function artifact_light(obj) {
+    /* not artifacts but treat them as if they were because they emit
+       light without burning */
     if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALE_MAIL || cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALES) && (cptr.ldI64o(obj, $obj_owornmask) & 1n) != 0n)
         return 1;
+
     return schar(((!cptr.eq(get_artifact(obj), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) && is_art(obj, NHC.ART_SUNSWORD) ? 1 : 0));
 }
 
+/* KMH -- Talking artifacts are finally implemented */
 /** C ref: artifact.c:2279 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function arti_speak(obj) {
     let oart = get_artifact(obj);
     let line;
     let buf = new Uint8Array(256);
+
+    /* Is this a speaking artifact? */
     if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) || !(cptr.ldU64o(oart, $artifact_spfx) & 8n))
-        return NHM.ECMD_OK;
+        return NHM.ECMD_OK;  /* nothing happened */
+
     line = getrumor(bcsign(obj), cptr.decay(buf), 1);
     if (!cptr.ld1s(line))
         line = __s_nethack_rumors_file_closed_for;
@@ -2812,9 +3278,11 @@ export function arti_speak(obj) {
 /** C ref: artifact.c:2299 — @param {CPtr<struct obj>} otmp @param {CUInt} inv_prop @returns {CInt} */
 export function artifact_has_invprop(otmp, inv_prop) {
     let arti = get_artifact(otmp);
+
     return schar(((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) && (cptr.ld1uo(arti, $artifact_inv_prop) == inv_prop) ? 1 : 0));
 }
 
+/* Return the price sold to the hero of a given artifact or unique item */
 /** C ref: artifact.c:2309 — @param {CPtr<struct obj>} otmp @returns {CLongLong} */
 export function arti_cost(otmp) {
     if (!cptr.ld1so(otmp, $obj_oartifact))
@@ -2829,6 +3297,7 @@ export function arti_cost(otmp) {
 function abil_to_adtyp(abil) {
     let abil2adtyp = cptr.alloc(7 * $sizeof_abil2adtyp_tag); cptr.stPtro(abil2adtyp, 0, cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 0 + $abil2adtyp_tag_adtyp, NHM.AD_FIRE); cptr.stPtro(abil2adtyp, 16, cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 16 + $abil2adtyp_tag_adtyp, NHM.AD_COLD); cptr.stPtro(abil2adtyp, 32, cptr.add(cptr.add(u, $you_uprops), NHC.SHOCK_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 32 + $abil2adtyp_tag_adtyp, NHM.AD_ELEC); cptr.stPtro(abil2adtyp, 48, cptr.add(cptr.add(u, $you_uprops), NHC.ANTIMAGIC, $sizeof_prop)); cptr.st1o(abil2adtyp, 48 + $abil2adtyp_tag_adtyp, NHM.AD_MAGM); cptr.stPtro(abil2adtyp, 64, cptr.add(cptr.add(u, $you_uprops), NHC.DISINT_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 64 + $abil2adtyp_tag_adtyp, NHM.AD_DISN); cptr.stPtro(abil2adtyp, 80, cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 80 + $abil2adtyp_tag_adtyp, NHM.AD_DRST); cptr.stPtro(abil2adtyp, 96, cptr.add(cptr.add(u, $you_uprops), NHC.DRAIN_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 96 + $abil2adtyp_tag_adtyp, NHM.AD_DRLI);
     let k;
+
     for (k = 0; k < 7; k++) {
         if (cptr.eq(cptr.ldPtro(abil2adtyp, k, $sizeof_abil2adtyp_tag), abil))
             return cptr.ld1uo2(abil2adtyp, k, $sizeof_abil2adtyp_tag, $abil2adtyp_tag_adtyp);
@@ -2865,6 +3334,7 @@ cptr.stU64o(__static_abil_to_spfx_abil2spfx, 176 + $abil2spfx_tag_spfx, 67108864
 /** C ref: artifact.c:2344 — @param {CPtr<long>} abil @returns {CLongLong} */
 function abil_to_spfx(abil) {
     let k;
+
     for (k = 0; k < 12; k++) {
         if (cptr.eq(cptr.ldPtro(__static_abil_to_spfx_abil2spfx, k, $sizeof_abil2spfx_tag), abil))
             return cptr.ldU64o2(__static_abil_to_spfx_abil2spfx, k, $sizeof_abil2spfx_tag, $abil2spfx_tag_spfx);
@@ -2872,6 +3342,9 @@ function abil_to_spfx(abil) {
     return 0n;
 }
 
+/*
+ * Return the first item that is conveying a particular intrinsic.
+ */
 /** C ref: artifact.c:2376 — @param {CPtr<long>} abil @returns {CPtr<struct obj>} */
 export function what_gives(abil) {
     let obj;
@@ -2879,27 +3352,32 @@ export function what_gives(abil) {
     let spfx;
     let wornbits;
     let wornmask = 995455n;
+
     if (cptr.ld1so(u, $you_twoweap))
         wornmask |= 1024n;
     dtyp = abil_to_adtyp(abil);
     spfx = abil_to_spfx(abil);
     wornbits = (wornmask & cptr.ldI64(abil));
+
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
         if (cptr.ld1so(obj, $obj_oartifact) && (!cptr.eq(abil, cptr.add(cptr.add(u, $you_uprops), NHC.WARN_OF_MON, $sizeof_prop)) || cptr.ldU64o(svc, $context_info_warntype))) {
             let art = get_artifact(obj);
+
             if (!cptr.eq(art, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) {
                 if (dtyp) {
                     if (cptr.ld1uo(art, $artifact_cary + $attack_adtyp) == dtyp || (cptr.ld1uo(art, $artifact_defn + $attack_adtyp) == dtyp && (cptr.ldI64o(obj, $obj_owornmask) & -12289n)))
                         return obj;
                 }
                 if (spfx) {
+                    /* property conferred when carried */
                     if ((cptr.ldU64o(art, $artifact_cspfx) & spfx) == spfx)
                         return obj;
+                    /* property conferred when wielded or worn */
                     if ((cptr.ldU64o(art, $artifact_spfx) & spfx) == spfx && cptr.ldI64o(obj, $obj_owornmask))
                         return obj;
                 }
                 if (cptr.eq(obj, uwep.v) && cptr.eq(abil, cptr.add(cptr.add(u, $you_uprops), NHC.BLND_RES, $sizeof_prop)) && (cptr.ldI64(abil) & 256n) != 0n) {
-                    return obj;
+                    return obj;  /* Sunsword */
                 }
             }
         } else {
@@ -2914,9 +3392,11 @@ export function what_gives(abil) {
 export function glow_color(arti_indx) {
     let colornum = cptr.ld1so2(artilist, arti_indx, $sizeof_artifact, $artifact_acolor);
     let colorstr = clr2colorname(colornum);
+
     return hcolor(colorstr);
 }
 
+/* glow verb; [0] holds the value used when blind */
 /** C ref: artifact.c:2436 — char *[4] */
 const glow_verbs = cptr.alloc(4 * 8);
 cptr.stPtro(glow_verbs, 0, __s_quiver);
@@ -2924,8 +3404,12 @@ cptr.stPtro(glow_verbs, 8, __s_flicker);
 cptr.stPtro(glow_verbs, 16, __s_glimmer);
 cptr.stPtro(glow_verbs, 24, __s_gleam);
 
+/* relative strength that Sting is glowing (0..3), to select verb */
 /** C ref: artifact.c:2442 — @param {CInt} count @returns {CInt} */
 function glow_strength(count) {
+    /* glow strength should also be proportional to proximity and
+       probably difficulty, but we don't have that information and
+       gathering it is more trouble than this would be worth */
     return (count > 12) ? 3 : ((count > 4) ? 2 : (count > 0));
 }
 
@@ -2933,54 +3417,87 @@ const __static_glow_verb_resbuf = new Uint8Array(20); /** C ref: artifact.c:2454
 
 /** C ref: artifact.c:2451 — @param {CInt} count @param {CInt} ingsfx @returns {CPtr<char>} */
 export function glow_verb(count, ingsfx) {
+
     void cptr.strcpy(cptr.decay(__static_glow_verb_resbuf), cptr.ldPtro(glow_verbs, glow_strength(count), 8));
+    /* ing_suffix() will double the last consonant for all the words
+       we're using and none of them should have that, so bypass it */
     if (ingsfx)
         void cptr.strcat(cptr.decay(__static_glow_verb_resbuf), __s_ing);
     return cptr.decay(__static_glow_verb_resbuf);
 }
 
+/* use for warning "glow" for Sting, Orcrist, and Grimtooth */
 /** C ref: artifact.c:2466 — @param {CInt} orc_count */
 export function Sting_effects(orc_count) {
     if (is_art(uwep.v, NHC.ART_STING) || is_art(uwep.v, NHC.ART_ORCRIST) || is_art(uwep.v, NHC.ART_GRIMTOOTH)) {
         let oldstr = glow_strength(cptr.ldI32(gw));
         let newstr = glow_strength(orc_count);
+
         if (orc_count == -1 && cptr.ldI32(gw) > 0) {
+            /* -1 means that blindness has just been toggled; give a
+               'continue' message that eventual 'stop' message will match */
             pline(__s_s_is_s, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
         } else if (newstr > 0 && newstr != oldstr) {
-            maybe_lvltport_feedback();
+            /* goto_level() -> docrt() -> see_monsters() -> Sting_effects();
+               if "you materialize on a different level" is pending, give
+               it now so that start-glowing message comes after it */
+            maybe_lvltport_feedback();  /* usually called by goto_level() */
+
+            /* 'start' message */
             if (!Blind())
                 pline(__s_s_s_s_c, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, 0)), glow_color(cptr.ld1so(uwep.v, $obj_oartifact)), (newstr > oldstr) ? 33 : 46);
             else if (oldstr == 0)
                 pline(__s_s_s_slightly, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, 0)));
         } else if (orc_count == 0 && cptr.ldI32(gw) > 0) {
+            /* 'stop' message */
             pline(__s_s_stops_s, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
         }
     }
 }
 
+/* called when hero is wielding/applying/invoking a carried item, or
+   after undergoing a transformation (alignment change, lycanthropy,
+   polymorph) which might affect item access */
 /** C ref: artifact.c:2508 — @param {CPtr<struct obj *>} objp @param {CInt} loseit @returns {CInt} */
 export function retouch_object(objp, loseit) {
     let obj = cptr.ldPtr(objp);
+
+    /* allow hero in silver-hating form to try to perform invocation ritual */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING && invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         return 1;
     }
+
     if (touch_artifact(obj, cptr.add(gy, $instance_globals_y_youmonst))) {
         let buf = new Uint8Array(256);
         let dmg = 0;
         let tmp;
         let ag = schar((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? 1 : 0));
         let bane = bane_applies(get_artifact(obj), cptr.add(gy, $instance_globals_y_youmonst));
+
+        /* nothing else to do if hero can successfully handle this object */
         if (!ag && !bane)
             return 1;
+
+        /* hero can't handle this object, but didn't get touch_artifact()'s
+           "<obj> evades your grasp|control" message; give an alternate one */
         You_cant(__s_handle_s_s, yname(obj), cptr.ldI64o(obj, $obj_owornmask) ? __s_anymore : __s_empty);
+        /* also inflict damage unless touch_artifact() already did so */
         if (!touch_blasted) {
             let what = killer_xname(obj);
+
             if (ag && !cptr.ld1so(obj, $obj_oartifact) && !bane) {
+                /* 'obj' is silver; for rings and wands it ended up that
+                   way due to randomization at start of game; showing this
+                   game's silver item without stating that it is silver
+                   potentially leads to confusion about cause of death */
                 if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS)
                     what = __s_a_silver_ring;
                 else if (cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS)
                     what = __s_a_silver_wand;
+                /* for anything else, stick with killer_xname() */
             }
+            /* damage is somewhat arbitrary; half the usual 1d20 physical
+               for silver, 1d10 magical for <foo>bane, potentially both */
             if (ag)
                 tmp = rnd_at(__s_artifact_c, 2552, __s_retouch_object, 10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
             if (bane)
@@ -2990,8 +3507,13 @@ export function retouch_object(objp, loseit) {
             exercise(NHC.A_CON, 0);
         }
     }
+
+    /* removing a worn item might result in loss of levitation,
+       dropping the hero onto a polymorph trap or into water or
+       lava and potentially dropping or destroying the item */
     if (cptr.ldI64o(obj, $obj_owornmask)) {
         let otmp;
+
         remove_worn_item(obj, 0);
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (cptr.eq(otmp, obj))
@@ -2999,20 +3521,28 @@ export function retouch_object(objp, loseit) {
         if (!otmp)
             cptr.stPtr(objp, obj = null);
     }
+
+    /* if we still have it and caller wants us to drop it, do so now */
     if (loseit && obj) {
         if (Levitation()) {
             freeinv(obj);
             hitfloor(obj, 1);
         } else {
+            /* dropx gives a message if a dropped item lands on an altar;
+               we provide one for other terrain */
             if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
                 pline(__s_s_to_the_s, Tobjnam(obj, __s_fall), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             dropx(obj);
         }
-        cptr.stPtr(objp, obj = null);
+        cptr.stPtr(objp, obj = null);  /* no longer in inventory */
     }
     return 0;
 }
 
+/* hero has changed form or alignment; an item which is worn/wielded
+   or an artifact which conveys something via being carried or which
+   has an #invoke effect currently in operation undergoes a touch test;
+   if it fails, it will be unworn/unwielded and maybe dropped */
 /** C ref: artifact.c:2598 — @param {CPtr<struct obj>} obj @param {CInt} drop_untouchable @returns {CInt} */
 function untouchable(obj, drop_untouchable) {
     obj = cptr.box(obj);
@@ -3021,23 +3551,32 @@ function untouchable(obj, drop_untouchable) {
     let carryeffect;
     let invoked;
     let wearmask = BigInt.asIntN(64, ~(512n | (cptr.ld1so(u, $you_twoweap) ? 0n : 1024n) | 2097152n));
+
     beingworn = schar((obj.v && ((cptr.ldI64o(obj.v, $obj_owornmask) & wearmask) != 0n || (cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS && ((cptr.ldI32o(obj.v, $obj_lamplit) & 1) | 0 || (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj.v, $obj_corpsenm)) || (Is_container(obj.v) && (cptr.ldPtro((obj.v), $obj_cobj) !== null))))) ? 1 : 0));
+
     if (!cptr.eq((art = get_artifact(obj.v)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) {
         carryeffect = schar((cptr.ld1uo(art, $artifact_cary + $attack_adtyp) || cptr.ldU64o(art, $artifact_cspfx) ? 1 : 0));
         invoked = schar((cptr.ld1uo(art, $artifact_inv_prop) > 0 && cptr.ld1uo(art, $artifact_inv_prop) <= NHC.LAST_PROP && (cptr.ldI64o2(u, cptr.ld1uo(art, $artifact_inv_prop), $sizeof_prop, $you_uprops) & 8192n) != 0n ? 1 : 0));
     } else {
         carryeffect = (invoked = 0);
     }
+
     if (beingworn || carryeffect || invoked) {
         if (!retouch_object(obj, drop_untouchable)) {
+            /* "<artifact> is beyond your control" or "you can't handle
+               <object>" has been given and it is now unworn/unwielded
+               and possibly dropped (depending upon caller); if dropped,
+               carried effect was turned off, else we leave that alone;
+               we turn off invocation property here if still carried */
             if (invoked && obj.v)
-                void arti_invoke(obj.v);
+                void arti_invoke(obj.v);  /* reverse #invoke */
             return 1;
         }
     }
     return 0;
 }
 
+/* check all items currently in use (mostly worn) for touchability */
 let __static_retouch_equipment_nesting = 0; /** C ref: artifact.c:2643 — int (function-static) */
 
 /** C ref: artifact.c:2640 — @param {CInt} dropflag */
@@ -3046,30 +3585,64 @@ export function retouch_equipment(dropflag) {
     let dropit;
     let had_gloves = schar((uarmg.v !== null));
     let had_rings = ((!!uleft.v + !!uright.v) | 0);
+
+    /*
+     * We can potentially be called recursively if losing/unwearing
+     * an item causes worn helm of opposite alignment to come off or
+     * be destroyed.
+     *
+     * BUG: if the initial call was due to putting on a helm of
+     * opposite alignment and it does come off to trigger recursion,
+     * after the inner call executes, the outer call will finish
+     * using the non-helm alignment rather than the helm alignment
+     * which triggered this in the first place.
+     */
     if (!__static_retouch_equipment_nesting++)
-        clear_bypasses();
-    dropit = schar((dropflag > 0));
+        clear_bypasses();  /* init upon initial entry */
+
+    dropit = schar((dropflag > 0));  /* drop all or drop weapon */
+    /* check secondary weapon first, before possibly unwielding primary */
     if (cptr.ld1so(u, $you_twoweap)) {
-        bypass_obj(uswapwep.v);
+        bypass_obj(uswapwep.v);  /* so loop below won't process it again */
         void untouchable(uswapwep.v, dropit);
     }
+    /* check primary weapon next so that they're handled together */
     if (uwep.v) {
-        bypass_obj(uwep.v);
+        bypass_obj(uwep.v);  /* so loop below won't process it again */
         void untouchable(uwep.v, dropit);
     }
+
+    /* in case someone is daft enough to add artifact or silver saddle */
     if (cptr.ldPtro(u, $you_usteed) && (obj = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null) {
+        /* untouchable() calls retouch_object() which expects an object in
+           hero's inventory, but remove_worn_item() will be harmless for
+           saddle and we're suppressing drop, so this works as intended */
         if (untouchable(obj, 0))
             dismount_steed(NHC.DISMOUNT_THROWN);
     }
-    dropit = schar((dropflag == 1));
+    /*
+     * TODO?  Force off gloves if either or both rings are going to
+     * become unworn; force off cloak [suit] before suit [shirt].
+     * The torso handling is hypothetical; the case for gloves is
+     * not, due to the possibility of unwearing silver rings.
+     */
+
+    dropit = schar((dropflag == 1));  /* all untouchable items */
+    /* loss of levitation (silver ring, or Heart of Ahriman invocation)
+       might cause hero to lose inventory items (by dropping into lava,
+       for instance), so inventory traversal needs to rescan the whole
+       gi.invent chain each time it moves on to another object; we use bypass
+       handling to keep track of which items have already been processed */
     while ((obj = nxt_unbypassed_obj(cptr.ldPtro(gi, $instance_globals_i_invent))) !== null)
         void untouchable(obj, dropit);
+
     if (had_rings != ((!!uleft.v + !!uright.v) | 0) && uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
-        uncurse(uarmg.v);
+        uncurse(uarmg.v);  /* temporary? hack for ring removal plausibility */
     if (had_gloves && !uarmg.v)
         selftouch(__s_after_losing_your_gloves_you);
+
     if (!--__static_retouch_equipment_nesting)
-        clear_bypasses();
+        clear_bypasses();  /* reset upon final exit */
 }
 
 /** C ref: artifact.c:2708 — @param {CInt} x @param {CInt} y @returns {CInt} */
@@ -3080,10 +3653,16 @@ function count_surround_traps(x, y) {
     let dy;
     let glyph;
     let ret = 0;
+
     for (dx = i16(((x - 1) | 0)); dx < ((x + 2) | 0); ++dx)
         for (dy = i16(((y - 1) | 0)); dy < ((y + 2) | 0); ++dy) {
             if (!isok(dx, dy))
                 continue;
+            /* If a trap is shown here, don't count it; the hero
+             * should be expecting it.  But if there is a trap here
+             * that's not shown, either undiscovered or covered by
+             * something, do count it.
+             */
             glyph = glyph_at(dx, dy);
             if (glyph_is_trap(glyph))
                 continue;
@@ -3098,13 +3677,20 @@ function count_surround_traps(x, y) {
             }
             for (o = cptr.ldPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_objects); o; o = cptr.ldPtro(o, $obj_v))
                 if (Is_container(o) && (cptr.ldI32o(o, $obj_otrapped) & 1) | 0) {
-                    ++ret;
-                    break;
+                    ++ret;  /* we're counting locations, so just */
+                    break;  /* count the first one in a pile     */
                 }
         }
+    /*
+     * [Shouldn't we also check inventory for a trapped container?
+     * Even if its trap has already been found, there's no 'tknown'
+     * flag to help hero remember that so we have nothing comparable
+     * to a shown glyph to justify skipping it.]
+     */
     return ret;
 }
 
+/* sense adjacent traps if wielding MKoT without wearing gloves */
 const __static_mkot_trap_warn_heat = cptr.alloc(7 * 8);
 cptr.stPtro(__static_mkot_trap_warn_heat, 0, __s_cool);
 cptr.stPtro(__static_mkot_trap_warn_heat, 8, __s_slightly_warm);
@@ -3116,9 +3702,11 @@ cptr.stPtro(__static_mkot_trap_warn_heat, 48, __s_like_fire); /** C ref: artifac
 
 /** C ref: artifact.c:2753 */
 export function mkot_trap_warn() {
+
     if (!uarmg.v && is_art(uwep.v, NHC.ART_MASTER_KEY_OF_THIEVERY)) {
         let idx;
         let ntraps = count_surround_traps(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+
         if (ntraps != cptr.ldI32(gm)) {
             idx = ((ntraps) < ((7 - 1) | 0) ? (ntraps) : ((7 - 1) | 0));
             pline_The(__s_key_feels_s_c, cptr.ldPtro(__static_mkot_trap_warn_heat, idx, 8), (ntraps > 3) ? 33 : 46);
@@ -3128,20 +3716,25 @@ export function mkot_trap_warn() {
         cptr.stI32(gm, 0);
 }
 
+/* Master Key is magic key if its bless/curse state meets our criteria:
+   not cursed for rogues or blessed for non-rogues */
 /** C ref: artifact.c:2775 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_magic_key(mon, obj) {
     if (is_art(obj, NHC.ART_MASTER_KEY_OF_THIEVERY)) {
         if ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) : (mon && cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ROGUE, $sizeof_permonst)) ? 1 : 0))
-            return schar((!(cptr.ldI32o(obj, $obj_cursed) & 1)));
+            return schar((!(cptr.ldI32o(obj, $obj_cursed) & 1)));  /* a rogue; non-cursed suffices for magic */
+        /* not a rogue; key must be blessed to behave as a magic one */
         return schar((cptr.ldI32o(obj, $obj_blessed) & 1));
     }
     return 0;
 }
 
+/* figure out whether 'mon' (usually youmonst) is carrying the magic key */
 /** C ref: artifact.c:2790 — @param {CPtr<struct monst>} mon @returns {CPtr<struct obj>} */
 export function has_magic_key(mon) {
     let o;
     let key = cptr.ldI16o(artilist, NHC.ART_MASTER_KEY_OF_THIEVERY, $sizeof_artifact);
+
     if (!mon)
         mon = cptr.add(gy, $instance_globals_y_youmonst);
     for (o = ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(mon, $monst_minvent)); o; o = nxtobj(o, key, 0)) {
@@ -3151,6 +3744,8 @@ export function has_magic_key(mon) {
     return null;
 }
 
+/* #define is_art(o,art) ((o) && (o)->oartifact == (art)) */
+
 /** C ref: artifact.c:2808 — @param {CPtr<struct obj>} obj @param {CInt} art @returns {CInt} */
 export function is_art(obj, art) {
     if (obj && cptr.ld1so(obj, $obj_oartifact) == art)
@@ -3158,16 +3753,26 @@ export function is_art(obj, art) {
     return 0;
 }
 
+/* #define get_artifact(o) \
+    (((o) && ((o)->artifact > 0 && (o)->artifact < AFTER_LAST_ARTIFACT)) \
+                             ? &artilist[(int) (o)->oartifact] \
+                             : &artilist[ART_NONARTIFACT]) */
+
 /** C ref: artifact.c:2821 — @param {CPtr<struct obj>} obj @returns {CPtr<struct artifact>} */
 function get_artifact(obj) {
     if (obj) {
         let artidx = cptr.ld1so(obj, $obj_oartifact);
+
+        /* skip 0, 1st artifact at 1 */
+        /* SIZE(artilist) would include the terminator,
+           so use AFTER_LAST_ARTIFACT instead */
         if (artidx > 0 && artidx < NHC.AFTER_LAST_ARTIFACT)
             return cptr.add(artilist, artidx, $sizeof_artifact);
     }
     return cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact);
 }
 
+/* is object permanently poisoned? (currently only Grimtooth) */
 /** C ref: artifact.c:2837 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function permapoisoned(obj) {
     return schar((obj && is_art(obj, NHC.ART_GRIMTOOTH) ? 1 : 0));

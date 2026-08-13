@@ -57,9 +57,12 @@ const __s_w = cptr.lit("w");
 const __s_bt_quit_y = cptr.lit("bt\nquit\ny");
 const __s_signal_received = cptr.lit("\nSignal received.\n");
 
+/* Binary ID - Use only as a hint to contact.html for recognizing our own
+   binaries.  This is easily spoofed! */
 /** C ref: report.c:109 — char[40] */
 const bid = new Uint8Array(40);
 
+/* ARGSUSED */
 let __static_crashreport_init_once = 0; /** C ref: report.c:115 — int (function-static) */
 const __static_crashreport_init_hexdigits = cptr.bytes("0123456789abcdef"); /** C ref: report.c:148 — char[17] (function-static) */
 
@@ -77,15 +80,18 @@ export function crashreport_init(argc, argv) {
         if (!CC_MD4_Init(ctxp))
             break __lbl_skip;
         if (!binfile || !cptr.ld1s(binfile)) {
-            break __lbl_skip;
+            break __lbl_skip;  /* Does "goto skip" on error. */
         }
         ;
+
         let fd = open(binfile, 0, 0);
         if (fd == -1) {
             break __lbl_skip;
         }
+
         let segsize;
         let segment = new Uint8Array(4096);
+
         while (0 < (segsize = Number(BigInt.asIntN(32, cptr.read(fd, cptr.decay(segment), 4096n))))) {
             if (!CC_MD4_Update(ctxp, cptr.decay(segment), segsize >>> 0))
                 break __lbl_skip;
@@ -101,9 +107,13 @@ export function crashreport_init(argc, argv) {
         let in$ = cptr.box(0);
         cptr.stPtr(in$, ctxp);
         let cnt = 16;
+        /* Just in case, make sure not to overflow the bid buffer.
+           Divide size by 2 because each octet in the hash uses two slots
+           in bid[] when formatted as a pair of hexadecimal digits. */
         if (cnt >= 20)
             cnt = 19;
         while (cnt) {
+            /* sprintf(p, "%02x", *in++), p += 2; */
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1so(cptr.decay(__static_crashreport_init_hexdigits), (cptr.ld1u(in$.v) >> 4) & 15, 1));
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1so(cptr.decay(__static_crashreport_init_hexdigits), cptr.ld1u(cptr.postinc(() => in$.v, (v) => { in$.v = v; })) & 15, 1));
             --cnt;
@@ -126,6 +136,7 @@ export function crashreport_bidshow() {
     }
 }
 
+/* On overflow, truncate to markp (but only if markp != NULL). */
 /** C ref: report.c:237 — @param {CPtr<char>} in @param {CPtr<char *>} out @param {CPtr<int>} remaining @param {CPtr<char>} markp @returns {CInt} */
 export function swr_add_uricoded(in$, out, remaining, markp) {
     while (cptr.ld1s(in$)) {
@@ -144,8 +155,9 @@ export function swr_add_uricoded(in$, out, remaining, markp) {
                 cptr.st1(cptr.ldPtr(out), 0);
                 return 1;
             } else {
-                let chr = new Uint8Array(40);
+                let chr = new Uint8Array(40);  /* [4] should suffice */
                 let x;
+
                 void cptr.sprintf(cptr.decay(chr), __s_02x, cptr.ld1s(in$));
                 x = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(chr))));
                 if (x <= cptr.ldI32(remaining)) {
@@ -164,7 +176,7 @@ export function swr_add_uricoded(in$, out, remaining, markp) {
         }
         cptr.st1(cptr.ldPtr(out), 0);
     }
-    return 0;
+    return 0;  /* normal return */
 }
 
 /** C ref: report.c:283 — char[8192] */
@@ -188,7 +200,9 @@ export function submit_web_report(cos, msg, why) {
         urem.v = (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) < 0 || cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)) ? 8192 : (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
-        let countpp = 0;
+        let countpp = 0;  /* pre and post traceback lines */
+        //  URL loaded for creating reports to the NetHack DevTeam
+        // CRASHREPORTURL=https://nethack.org/links/cr-5.0.0.html
         if (!cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))
             return 0;
         utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))));
@@ -200,6 +214,12 @@ export function submit_web_report(cos, msg, why) {
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
         ;
+        /*
+         * Note: all snprintf() calls here changed to sprintf() to avoid
+         *       complaints from static analyzer.  All but one were unnecessary
+         *       since they were formatting int or unsigned into a large buffer.
+         */
+        /* cos - operation, v - version */
         void cptr.sprintf(cptr.decay(temp), __s_cos_d_v_1, cos);
         utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(temp))));
         mark = uend.v;
@@ -210,6 +230,8 @@ export function submit_web_report(cos, msg, why) {
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
         ;
+
+        /* msg==NULL for #bugreport */
         if (msg) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_subject)));
             mark = uend.v;
@@ -225,6 +247,7 @@ export function submit_web_report(cos, msg, why) {
                 break __lbl_full;
             ;
         }
+
         utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_gitver)));
         mark = uend.v;
         if (utmp >= urem.v)
@@ -237,6 +260,7 @@ export function submit_web_report(cos, msg, why) {
         if (swr_add_uricoded(getversionstring(cptr.decay(temp2), 200n), uend, urem, mark))
             break __lbl_full;
         ;
+
         if (cptr.ldPtro(gc, $instance_globals_c_crash_name)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_name)));
             mark = uend.v;
@@ -251,6 +275,7 @@ export function submit_web_report(cos, msg, why) {
                 break __lbl_full;
             ;
         }
+
         if (cptr.ldPtro(gc, $instance_globals_c_crash_email)) {
             utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_email)));
             mark = uend.v;
@@ -265,6 +290,10 @@ export function submit_web_report(cos, msg, why) {
                 break __lbl_full;
             ;
         }
+        // hardware: leave for user
+        // software: leave for user
+        // comments: leave for user
+
         utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_details)));
         mark = uend.v;
         if (utmp >= urem.v)
@@ -285,6 +314,7 @@ export function submit_web_report(cos, msg, why) {
             countpp++;
         }
         if (swr_add_uricoded(__s_bid, uend, urem, mark))
+
             break __lbl_full;
         ;
         if (swr_add_uricoded(cptr.decay(bid), uend, urem, mark))
@@ -295,15 +325,18 @@ export function submit_web_report(cos, msg, why) {
         ;
         mark = uend.v;
         countpp++;
+
         let count = 0;
         if (cos == 1) {
             let bt = cptr.alloc(20 * 8);
             let x;
             let info;
+
             count = backtrace(bt, 20);
             info = backtrace_symbols(bt, count);
             for (x = 0; x < count; x++) {
-                copynchars(cptr.decay(temp), cptr.ldPtro(info, x, 8), 198);
+                copynchars(cptr.decay(temp), cptr.ldPtro(info, x, 8), 198);  /* \n\0 */
+                /* try to remove up to 16 blank spaces by removing 8 twice */
                 void strsubst(cptr.decay(temp), __s_sp8, __s_empty);
                 void strsubst(cptr.decay(temp), __s_sp8, __s_empty);
                 void __builtin___strncat_chk(cptr.decay(temp), __s_nl, 199n, __builtin_object_size(cptr.decay(temp), 1));
@@ -313,6 +346,7 @@ export function submit_web_report(cos, msg, why) {
                 mark = uend.v;
             }
         }
+        // config.h turns this on, but make it easy to turn off if needed
         if (cos == 1) {
             let k;
             if (swr_add_uricoded(__s_latest_messages, uend, urem, mark))
@@ -334,6 +368,9 @@ export function submit_web_report(cos, msg, why) {
                 mark = uend.v;
             }
         }
+
+        // detailrows: Guess since we can't know the
+        //     width of the window.
         utmp = Number(BigInt.asIntN(32, cptr.strlen(__s_detailrows)));
         mark = uend.v;
         if (utmp >= urem.v)
@@ -353,6 +390,7 @@ export function submit_web_report(cos, msg, why) {
     let pid = fork();
     if (pid == 0) {
         let err = new Uint8Array(400);
+
         void execve(__s_usr_bin_open, xargv, environ);
         void cptr.sprintf(cptr.decay(err), __s_can_t_start_usr_bin_open_s, 372, strerror((cptr.ldI32(__error()))));
         raw_print()(cptr.decay(err));
@@ -376,6 +414,7 @@ export function dobugreport() {
     return NHM.ECMD_OK;
 }
 
+/*ARGSUSED*/
 /** C ref: report.c:485 @returns {CInt} */
 export function NH_panictrace_libc() {
     let bt = cptr.alloc(20 * 8);
@@ -383,35 +422,42 @@ export function NH_panictrace_libc() {
     let x;
     let info;
     let buf = new Uint8Array(256);
+
     raw_print()(__s_generating_more_information_you_may);
     count = backtrace(bt, 20);
     info = backtrace_symbols(bt, count);
     for (x = 0; x < count; x++) {
         copynchars(cptr.decay(buf), cptr.ldPtro(info, x, 8), 255);
+        /* try to remove up to 16 blank spaces by removing 8 twice */
         void strsubst(cptr.decay(buf), __s_sp8, __s_empty);
         void strsubst(cptr.decay(buf), __s_sp8, __s_empty);
         raw_printf(__s_02lu_s, BigInt.asUintN(64, BigInt(x)), cptr.decay(buf));
     }
+    /* free(info);   -- Don't risk it. */
     return 1;
 }
 
 /** C ref: report.c:529 @returns {CInt} */
 export function NH_panictrace_gdb() {
+    /* A (more) generic method to get a stack trace - invoke
+     * gdb on ourself. */
     let gdbpath = cptr.ldPtro(sysopt, $sysopt_s_gdbpath);
     let greppath = cptr.ldPtro(sysopt, $sysopt_s_greppath);
     let buf = new Uint8Array(256);
     let gdb;
+
     if (cptr.eq(gdbpath, (null)) || cptr.ld1so(gdbpath, 0) == 0)
         return 0;
     if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0)
         return 0;
+
     nh_snprintf(__s_nh_panictrace_gdb, 545, cptr.decay(buf), 256n, __s_s_n_q_s_d_2_1_s, gdbpath, ARGV0.v, getpid(), greppath);
     gdb = popen(cptr.decay(buf), __s_w);
     if (gdb) {
         raw_print()(__s_generating_more_information_you_may);
         void fprintf(gdb, __s_bt_quit_y);
         void fflush(gdb);
-        sleep(4);
+        sleep(4);  /* ugly */
         void pclose(gdb);
         return 1;
     } else {
@@ -419,13 +465,17 @@ export function NH_panictrace_gdb() {
     }
 }
 
+/* lineno==0 gives the most recent message (e.g.
+   "Do you want to call panic..." if called from #panic) */
 /** C ref: report.c:571 — @param {CInt} lineno @returns {CPtr<char>} */
 export function get_saved_pline(lineno) {
     let p;
     let limit = NHM.DUMPLOG_MSG_COUNT;
+
     if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
     p = u32mod(((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
+
     while (limit--) {
         if (cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines)) {
             if (lineno--) {
@@ -438,12 +488,15 @@ export function get_saved_pline(lineno) {
     return null;
 }
 
+/* called as signal() handler, so sent at least one arg */
+/*ARGUSED*/
 /** C ref: report.c:600 — @param {CInt} sig_unused */
 export function panictrace_handler(sig_unused) {
     let f2;
+
     f2 = Number(BigInt.asIntN(32, cptr.write(2, __s_signal_received, 18n)));
-    (void (f2));
-    NH_abort(null);
+    (void (f2));  /* what could we do if write to fd#2 (stderr) fails  */
+    NH_abort(null);  /* ... and we're already in the process of quitting? */
 }
 
 /** C ref: report.c:625 — @param {CInt} set */

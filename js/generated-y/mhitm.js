@@ -221,6 +221,7 @@ const brief_feeling = cptr.bytes("have a %s feeling for a moment, then it passes
 /** C ref: mhitm.c:27 — @param {CPtr<struct monst>} magr @param {CPtr<struct attack>} mattk */
 function* noises(magr, mattk) {
     let farq = schar((dist2((cptr.ldI16o((magr), $monst_mx)), (cptr.ldI16o((magr), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 15));
+
     if (!Deaf() && (farq != cptr.ld1so(gf, $instance_globals_f_far_noise) || BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(gn, $instance_globals_n_noisetime)) > 10n)) {
         cptr.st1o(gf, $instance_globals_f_far_noise, farq);
         cptr.stI64o(gn, $instance_globals_n_noisetime, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
@@ -231,6 +232,9 @@ function* noises(magr, mattk) {
 /** C ref: mhitm.c:41 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef */
 function* pre_mm_attack(magr, mdef) {
     let showit = 0;
+
+    /* unhiding or unmimicking happens even if hero can't see it
+       because the formerly concealed monster is now in action */
     if ((cptr.ld1uo((mdef), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
         (yield* seemimic(mdef));
         showit = schar(showit | cptr.ld1so(gv, $instance_globals_v_vis));
@@ -245,6 +249,7 @@ function* pre_mm_attack(magr, mdef) {
         cptr.stI32o(magr, $monst_mundetected, 0);
         showit = schar(showit | cptr.ld1so(gv, $instance_globals_v_vis));
     }
+
     if (cptr.ld1so(gv, $instance_globals_v_vis)) {
         if (!canspotmon(magr))
             (yield* map_invisible(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my)));
@@ -257,9 +262,11 @@ function* pre_mm_attack(magr, mdef) {
     }
 }
 
+/* feedback for when a monster-vs-monster attack misses */
 /** C ref: mhitm.c:76 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk */
 function* missmm(magr, mdef, mattk) {
     (yield* pre_mm_attack(magr, mdef));
+
     if (cptr.ld1so(gv, $instance_globals_v_vis)) {
         (yield* pline(__s_s_s_s, (yield* Monnam(magr)), ((cptr.ldI32o(magr, $monst_mcan) & 1) | 0 || !could_seduce(magr, mdef, mattk)) ? __s_misses : __s_pretends_to_be_friendly_to, (yield* mon_nam_too(mdef, magr))));
     } else {
@@ -267,23 +274,44 @@ function* missmm(magr, mdef, mattk) {
     }
 }
 
+/*
+ *  fightm()  -- fight some other monster
+ *
+ *  Returns:
+ *      0 - Monster did nothing.
+ *      1 - If the monster made an attack.  The monster might have died.
+ *
+ *  There is an exception to the above.  If mtmp has the hero swallowed,
+ *  then we report that the monster did nothing so it will continue to
+ *  digest the hero.
+ */
+/* have monsters fight each other */
 /** C ref: mhitm.c:106 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function* fightm(mtmp) {
     let mon;
     let nmon;
     let result;
     let has_u_swallowed;
+    /* perhaps the monster will resist Conflict */
     if (resist_conflict(mtmp))
         return 0;
+
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
+        /* perhaps we're holding it... */
         if ((yield* itsstuck(mtmp)))
             return 0;
     }
     has_u_swallowed = ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp))) ? 1 : 0);
+
     for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = nmon) {
         nmon = cptr.ldPtr(mon);
         if (cptr.eq(nmon, mtmp))
             nmon = cptr.ldPtr(mtmp);
+        /* Be careful to ignore monsters that are already dead, since we
+         * might be calling this before we've cleaned them up.  This can
+         * happen if the monster attacked a cockatrice bare-handedly, for
+         * instance.
+         */
         if (!cptr.eq(mon, mtmp) && !(cptr.ldI32o((mon), $monst_mhp) < 1)) {
             if (monnear(mtmp, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
                 if (!(cptr.ldI32o(u, $you_uswallow) & 1) && (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))) {
@@ -293,13 +321,23 @@ export function* fightm(mtmp) {
                     } else
                         break;
                 }
+
+                /* mtmp can be killed */
                 cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mon, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mon, $monst_my));
                 cptr.st1o(gn, $instance_globals_n_notonhead, 0);
                 result = (yield* mattackm(mtmp, mon));
+
                 if (result & NHM.M_ATTK_AGR_DIED)
-                    return 1;
+                    return 1;  /* mtmp died */
+                /*
+                 * If mtmp has the hero swallowed, lie and say there
+                 * was no attack (this allows mtmp to digest the hero).
+                 */
                 if (has_u_swallowed)
                     return 0;
+
+                /* allow attacked monsters a chance to hit back, primarily
+                   to allow monsters that resist conflict to respond */
                 if ((result & 3) == NHM.M_ATTK_HIT && rn2_at(__s_mhitm_c, 157, __s_fightm, 4) && cptr.ldI16o(mon, $monst_movement) > rn2_at(__s_mhitm_c, 157, __s_fightm, NHM.NORMAL_SPEED)) {
                     if (cptr.ldI16o(mon, $monst_movement) > NHM.NORMAL_SPEED)
                         cptr.stI16o(mon, $monst_movement, cptr.ldI16o(mon, $monst_movement) - NHM.NORMAL_SPEED);
@@ -307,8 +345,9 @@ export function* fightm(mtmp) {
                         cptr.stI16o(mon, $monst_movement, 0);
                     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
                     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
-                    void (yield* mattackm(mon, mtmp));
+                    void (yield* mattackm(mon, mtmp));  /* return attack */
                 }
+
                 return (result & NHM.M_ATTK_HIT) ? 1 : 0;
             }
         }
@@ -316,6 +355,10 @@ export function* fightm(mtmp) {
     return 0;
 }
 
+/*
+ * mdisplacem() -- attacker moves defender out of the way;
+ *                 returns same results as mattackm().
+ */
 /** C ref: mhitm.c:179 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} quietly @returns {CInt} */
 export function* mdisplacem(magr, mdef, quietly) {
     let pa;
@@ -324,30 +367,48 @@ export function* mdisplacem(magr, mdef, quietly) {
     let ty;
     let fx;
     let fy;
+
+    /* sanity checks; could matter if we unexpectedly get a long worm */
     if (!magr || !mdef || cptr.eq(magr, mdef))
         return NHM.M_ATTK_MISS;
     pa = cptr.ldPtro(magr, $monst_data), pd = cptr.ldPtro(mdef, $monst_data);
-    tx = cptr.ldI16o(mdef, $monst_mx), ty = cptr.ldI16o(mdef, $monst_my);
-    fx = cptr.ldI16o(magr, $monst_mx), fy = cptr.ldI16o(magr, $monst_my);
+    tx = cptr.ldI16o(mdef, $monst_mx), ty = cptr.ldI16o(mdef, $monst_my);  /* destination */
+    fx = cptr.ldI16o(magr, $monst_mx), fy = cptr.ldI16o(magr, $monst_my);  /* current location */
     if (!cptr.eq((cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), magr) || !cptr.eq((cptr.ldPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), mdef))
         return NHM.M_ATTK_MISS;
+
+    /* The 1 in 7 failure below matches the chance in do_attack()
+     * for pet displacement.
+     */
     if (!rn2_at(__s_mhitm_c, 199, __s_mdisplacem, 7))
         return NHM.M_ATTK_MISS;
+
+    /* Grid bugs cannot displace at an angle. */
     if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, $sizeof_permonst)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
         return NHM.M_ATTK_MISS;
+
+    /* undetected monster becomes un-hidden if it is displaced */
     if ((cptr.ldI32o(mdef, $monst_mundetected) & 1))
         cptr.stI32o(mdef, $monst_mundetected, 0);
     if ((cptr.ld1uo((mdef), $monst_m_ap_type) & NHM.M_AP_TYPMASK) && (cptr.ld1uo((mdef), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER)
         (yield* seemimic(mdef));
+    /* wake up the displaced defender */
     cptr.stI32o(mdef, $monst_msleeping, 0);
     cptr.stU64o(mdef, $monst_mstrategy, cptr.ldU64o(mdef, $monst_mstrategy) & 18446744072904245247n);
     (yield* finish_meating(mdef));
+
+    /*
+     * Set up the visibility of action.
+     * You can observe monster displacement if you can see both of
+     * the monsters involved.
+     */
     cptr.st1o(gv, $instance_globals_v_vis, schar((canspotmon(magr) && canspotmon(mdef) ? 1 : 0)));
+
     if (touch_petrifies(pd) && !(yield* Resists_Elem(magr, NHC.STONE_RES))) {
         if (!(yield* which_armor(magr, 16n))) {
             if (poly_when_stoned(pa)) {
                 (yield* mon_to_stone(magr));
-                return NHM.M_ATTK_HIT;
+                return NHM.M_ATTK_HIT;  /* no damage during the polymorph */
             }
             if (!quietly && canspotmon(magr)) {
                 if (cptr.ld1so(gv, $instance_globals_v_vis)) {
@@ -357,31 +418,58 @@ export function* mdisplacem(magr, mdef, quietly) {
             }
             (yield* monstone(magr));
             if (!(cptr.ldI32o((magr), $monst_mhp) < 1))
-                return NHM.M_ATTK_HIT;
+                return NHM.M_ATTK_HIT;  /* lifesaved */
             else if (cptr.ld1so(magr, $monst_mtame) && !cptr.ld1so(gv, $instance_globals_v_vis))
                 (yield* You(cptr.decay(brief_feeling), __s_peculiarly_sad));
             return NHM.M_ATTK_AGR_DIED;
         }
     }
-    cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+
+    cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);  /* pick up from orig position */
     if ((cptr.ldI32o(mdef, $monst_wormno) & 31))
         (yield* remove_worm(mdef));
     else
         cptr.stPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
-    (yield* place_monster(magr, i16(tx), i16(ty)));
+    (yield* place_monster(magr, i16(tx), i16(ty)));  /* put down at target spot */
     (yield* place_monster(mdef, i16(fx), i16(fy)));
     if ((cptr.ldI32o(mdef, $monst_wormno) & 31))
         (yield* place_worm_tail_randomly(mdef, i16(fx), i16(fy)));
+    /* either creature might move into or out of a poison gas cloud */
     (yield* update_monster_region(magr));
     (yield* update_monster_region(mdef));
+
     if (cptr.ld1so(gv, $instance_globals_v_vis) && !quietly)
         (yield* pline(__s_s_moves_s_out_of_s_way, (yield* Monnam(magr)), (yield* mon_nam(mdef)), is_rider(pa) ? __s_the : (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his))));
-    (yield* newsym(i16(fx), i16(fy)));
-    (yield* newsym(i16(tx), i16(ty)));
-    (yield* flush_screen(0));
+    (yield* newsym(i16(fx), i16(fy)));  /* see it       */
+    (yield* newsym(i16(tx), i16(ty)));  /*   all happen */
+    (yield* flush_screen(0));  /* make sure it shows up */
+
     return NHM.M_ATTK_HIT;
 }
 
+/*
+ * mattackm() -- a monster attacks another monster.
+ *
+ *          --------- aggressor died
+ *         /  ------- defender died
+ *        /  /  ----- defender was hit
+ *       /  /  /
+ *      x  x  x
+ *
+ *      0x8     M_ATTK_AGR_DONE
+ *      0x4     M_ATTK_AGR_DIED
+ *      0x2     M_ATTK_DEF_DIED
+ *      0x1     M_ATTK_HIT
+ *      0x0     M_ATTK_MISS
+ *
+ * Each successive attack has a lower probability of hitting.  Some rely on
+ * success of previous attacks.  ** this doesn't seem to be implemented -dl **
+ *
+ * Attacker has targeted <bhitpos.x,bhitpos.y> rather than
+ * <mdef->mx,mdef->my>; matters for long worms.
+ *
+ * In the case of exploding monsters, the monster dies as well.
+ */
 /** C ref: mhitm.c:293 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @returns {CInt} */
 export function* mattackm(magr, mdef) {
     let i;
@@ -396,19 +484,26 @@ export function* mattackm(magr, mdef) {
     let mwep;
     let pa;
     let pd;
+
     if (!magr || !mdef)
-        return NHM.M_ATTK_MISS;
+        return NHM.M_ATTK_MISS;  /* mike@genat */
     if (helpless(magr))
         return NHM.M_ATTK_MISS;
     pa = cptr.ldPtro(magr, $monst_data);
     pd = cptr.ldPtro(mdef, $monst_data);
+
+    /* Grid bugs cannot attack at an angle. */
     if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, $sizeof_permonst)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
         return NHM.M_ATTK_MISS;
+
+    /* Calculate the armour class differential. */
     tmp = (find_mac(mdef) + cptr.ld1uo(magr, $monst_m_lev)) | 0;
     if ((cptr.ldI32o(mdef, $monst_mconf) & 1) | 0 || helpless(mdef)) {
         tmp = (tmp + 4) | 0;
         cptr.stI32o(mdef, $monst_msleeping, 0);
     }
+
+    /* mundetected monsters become un-hidden if they are attacked */
     if ((cptr.ldI32o(mdef, $monst_mundetected) & 1)) {
         cptr.stI32o(mdef, $monst_mundetected, 0);
         (yield* newsym(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)));
@@ -416,6 +511,7 @@ export function* mattackm(magr, mdef) {
             if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
                 let justone = schar((BigInt((cptr.ldU16o(cptr.ldPtro(mdef, $monst_data), $permonst_geno) & NHM.G_UNIQ)) != 0n));
                 let montype;
+
                 montype = (yield* noname_monnam(mdef, justone ? NHM.ARTICLE_THE : NHM.ARTICLE_NONE));
                 if (!justone)
                     montype = (yield* makeplural(montype));
@@ -430,25 +526,51 @@ export function* mattackm(magr, mdef) {
             }
         }
     }
+
+    /* Elves hate orcs. */
     if (((cptr.ldU64o((pa), $permonst_mflags2) & 16n) != 0n) && ((cptr.ldU64o((pd), $permonst_mflags2) & 128n) != 0n))
         tmp++;
+
+    /* Set up the visibility of action */
     cptr.st1o(gv, $instance_globals_v_vis, schar(((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(magr, $monst_my), 8), cptr.ldI16o(magr, $monst_mx)) & NHM.IN_SIGHT) != 0) && canspotmon(magr)) || (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mdef, $monst_my), 8), cptr.ldI16o(mdef, $monst_mx)) & NHM.IN_SIGHT) != 0) && canspotmon(mdef)) ? 1 : 0)));
+
+    /* Set flag indicating monster has moved this turn.  Necessary since a
+     * monster might get an attack out of sequence (i.e. before its move) in
+     * some cases, in which case this still counts as its move for the round
+     * and it shouldn't move again.
+     */
     cptr.stI64o(magr, $monst_mlstmv, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
+
+    /* controls whether a mind flayer uses all of its tentacle-for-DRIN
+       attacks; when fighting a headless monster, stop after the first
+       one because repeating the same failing hit (or even an ordinary
+       tentacle miss) is very verbose and makes the flayer look stupid */
     cptr.st1o(gs, $instance_globals_s_skipdrin, 0);
+
+    /* Now perform all attacks for the monster. */
     for (i = 0; i < NHM.NATTK; i++) {
         cptr.stI32o(res, i, NHM.M_ATTK_MISS, 4);
+
+        /* target might no longer be there */
         if (i > 0 && (!cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 168, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), mdef) || (cptr.ldI32o((magr), $monst_mhp) < 1) || (cptr.ldI32o((mdef), $monst_mhp) < 1)))
             continue;
+
         mattk = (yield* getmattk(magr, mdef, i, res, alt_attk));
+        /* reduce verbosity for mind flayer attacking creature without a
+           head (or worm's tail); this is similar to monster with multiple
+           attacks after a wildmiss against displaced or invisible hero */
         if (cptr.ld1so(gs, $instance_globals_s_skipdrin) && cptr.ld1u(mattk) == NHM.AT_TENT && cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DRIN)
             continue;
         mwep = null;
         attk = 1;
+
         switch (cptr.ld1u(mattk)) {
             case NHM.AT_WEAP:
             if (distmin(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) > 1) {
+                /* D: Do a ranged attack here! */
                 strike = ((yield* thrwmm(magr, mdef)) == NHM.M_ATTK_MISS) ? 0 : 1;
                 if (strike)
+                    /* don't really know if we hit or not; pretend we did */
                     cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_HIT, 4);
                 if ((cptr.ldI32o((mdef), $monst_mhp) < 1))
                     cptr.stI32o(res, i, NHM.M_ATTK_DEF_DIED, 4);
@@ -478,17 +600,28 @@ export function* mattackm(magr, mdef) {
             case NHM.AT_TENT:
             if (cptr.ld1u(mattk) == NHM.AT_KICK && mtrapped_in_pit(magr))
                 continue;
+            /* Nymph that teleported away on first attack? */
             if (distmin(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) > 1)
+                /* Continue because the monster may have a ranged attack. */
                 continue;
+            /* Monsters won't attack cockatrices physically if they
+             * have a weapon instead.  This instinct doesn't work for
+             * players, or under conflict or confusion.
+             */
             if (!(cptr.ldI32o(magr, $monst_mconf) & 1) && !Conflict() && mwep && cptr.ld1u(mattk) != NHM.AT_WEAP && touch_petrifies(cptr.ldPtro(mdef, $monst_data))) {
                 strike = 0;
                 break;
             }
             dieroll = rnd_at(__s_mhitm_c, 441, __s_mattackm, (20 + i) | 0);
             strike = (tmp > dieroll);
+            /* KMH -- don't accumulate to-hit bonuses */
             if (mwep)
                 tmp = (tmp - (yield* hitval(mwep, mdef))) | 0;
             if (strike) {
+                /* for eel AT_TUCH+AD_WRAP attack: can't grab an unsolid
+                   target; the unsolid test is redundant since failed_grab
+                   checks it too, but is cheap and avoids calling failed_grab
+                   for ordinary targets */
                 if (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 1048576n) != 0n) && (yield* failed_grab(magr, mdef, mattk))) {
                     strike = 0;
                     break;
@@ -496,6 +629,7 @@ export function* mattackm(magr, mdef) {
                 cptr.stI32o(res, i, (yield* hitmm(magr, mdef, mattk, mwep, dieroll)), 4);
                 if ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_BLACK_PUDDING, $sizeof_permonst)) || cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_BROWN_PUDDING, $sizeof_permonst))) && (mwep && (((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.IRON || ((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.METAL)) && cptr.ldI32o(mdef, $monst_mhp) > 1 && !(cptr.ldI32o(mdef, $monst_mcan) & 1)) {
                     let mclone;
+
                     if ((mclone = (yield* clone_mon(mdef, 0, 0))) !== null) {
                         if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef))
                             (yield* pline(__s_s_divides_as_s_hits_it, (yield* Monnam(mdef)), (yield* mon_nam(magr))));
@@ -510,6 +644,11 @@ export function* mattackm(magr, mdef) {
             case NHM.AT_HUGS:
             strike = (i >= 2 && cptr.ldI32o(res, (i - 1) | 0, 4) == NHM.M_ATTK_HIT && cptr.ldI32o(res, (i - 2) | 0, 4) == NHM.M_ATTK_HIT ? 1 : 0);
             if (strike) {
+                /* note: monsters with hug attacks don't wear cloaks or gloves
+                   so this doesn't need a special case for hugging a shade
+                   while covered by blessed armor (which does damage but does
+                   not achieve a successful hold); likewise, rope golems can't
+                   wield weapons so ability to choke isn't affected by such */
                 if ((yield* failed_grab(magr, mdef, mattk)))
                     strike = 0;
                 else
@@ -521,14 +660,16 @@ export function* mattackm(magr, mdef) {
             cptr.stI32o(res, i, (yield* gazemm(magr, mdef, mattk)), 4);
             break;
             case NHM.AT_EXPL:
+            /* D: Prevent explosions from a distance */
             if (distmin(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) > 1)
                 continue;
+
             cptr.stI32o(res, i, (yield* explmm(magr, mdef, mattk)), 4);
             if (cptr.ldI32o(res, i, 4) == NHM.M_ATTK_MISS) {
                 strike = 0;
                 attk = 0;
             } else
-                strike = 1;
+                strike = 1;  /* automatic hit */
             break;
             case NHM.AT_ENGL:
             if (cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst))) {
@@ -541,13 +682,15 @@ export function* mattackm(magr, mdef) {
                 strike = 0;
                 break;
             }
+            /* D: Prevent engulf from a distance */
             if (distmin(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) > 1)
                 continue;
+            /* Engulfing attacks are directed at the hero if possible. -dlc */
             if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (magr))))) {
                 strike = 0;
             } else if ((strike = (tmp > rnd_at(__s_mhitm_c, 528, __s_mattackm, (20 + i) | 0))) != 0) {
                 if ((yield* failed_grab(magr, mdef, mattk)))
-                    strike = 0;
+                    strike = 0;  /* purple worm can't swallow unsolid mons */
                 else
                     cptr.stI32o(res, i, (yield* gulpmm(magr, mdef, mattk)), 4);
             } else {
@@ -556,9 +699,18 @@ export function* mattackm(magr, mdef) {
             break;
             case NHM.AT_BREA:
             case NHM.AT_SPIT:
+            /*
+             * Ranged attacks aren't allowed at point blank range.
+             *
+             * That impacts pet use of ranged attacks.  It's rather arbitrary
+             * but various parts of the code assume it to be the case, not to
+             * mention a part of player tactics when fighting dragons.
+             */
             if (!monnear(magr, cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my))) {
                 let mmtmp = ((cptr.ld1u(mattk) == NHM.AT_BREA) ? (yield* breamm(magr, mattk, mdef)) : (yield* spitmm(magr, mattk, mdef)));
+
                 strike = (mmtmp == NHM.M_ATTK_MISS) ? 0 : 1;
+                /* We don't really know if we hit or not; pretend we did. */
                 if (strike)
                     cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_HIT, 4);
                 if ((cptr.ldI32o((mdef), $monst_mhp) < 1))
@@ -575,22 +727,29 @@ export function* mattackm(magr, mdef) {
             attk = 0;
             break;
         }
+
         if (attk && !(cptr.ldI32o(res, i, 4) & NHM.M_ATTK_AGR_DIED) && distmin(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) <= 1)
             cptr.stI32o(res, i, (yield* passivemm(magr, mdef, schar(strike), (cptr.ldI32o(res, i, 4) & NHM.M_ATTK_DEF_DIED), mwep)), 4);
+
         if (cptr.ldI32o(res, i, 4) & NHM.M_ATTK_DEF_DIED)
             return cptr.ldI32o(res, i, 4);
         if (cptr.ldI32o(res, i, 4) & NHM.M_ATTK_AGR_DIED)
             return cptr.ldI32o(res, i, 4);
+        /* return if aggressor can no longer attack */
         if ((cptr.ldI32o(res, i, 4) & NHM.M_ATTK_AGR_DONE) || helpless(magr))
             return cptr.ldI32o(res, i, 4);
+        /* eg. defender was knocked into a level teleport trap */
         if ((cptr.ldI64o((mdef), $monst_mstate) != 0n))
             return cptr.ldI32o(res, i, 4);
         if (cptr.ldI32o(res, i, 4) & NHM.M_ATTK_HIT)
-            struck = 1;
-    }
+            struck = 1;  /* at least one hit */
+    }  /* for (;i < NATTK;) loop */
+
     return (struck ? NHM.M_ATTK_HIT : NHM.M_ATTK_MISS);
 }
 
+/* can't hold an unsolid target (ghosts, lights, vortices, most elementals)
+   or a long worm tail */
 /** C ref: mhitm.c:597 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function* failed_grab(magr, mdef, mattk) {
     if ((((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 1048576n) != 0n) || cptr.ld1so(gn, $instance_globals_n_notonhead)) && (cptr.ld1u(mattk) == NHM.AT_HUGS || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_WRAP || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_STCK || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST)) {
@@ -599,12 +758,21 @@ export function* failed_grab(magr, mdef, mattk) {
             let mdefnam = new Uint8Array(256);
             let tailmiss = cptr.ld1so(gn, $instance_globals_n_notonhead);
             let verb = (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST) ? __s_gulp : ((cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_STCK) ? __s_adhere : __s_grab);
+
+            /* beware of "Foo's grab passes through Bar's ghost";
+               mon_nam(x_monnam) calls s_suffix() for named ghosts and
+               s_suffix() uses a single static buffer; make copies of both
+               names to overcome that [note: comment predates 'tailmiss'] */
             void cptr.strcpy(cptr.decay(magrnam), (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) ? __s_your : (yield* s_suffix((yield* Monnam(magr)))));
             if (!tailmiss) {
                 void cptr.strcpy(cptr.decay(mdefnam), (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you : (yield* mon_nam(mdef)));
             } else {
+                /* hero poly'd into long worm can't grow tail
+                   so no 'youmonst' handling is needed here */
                 void cptr.sprintf(cptr.decay(mdefnam), __s_s_tail, (yield* s_suffix((yield* some_mon_nam(mdef)))));
             }
+            /* unsolid grab misses are actually somewhat iffy--how come
+               ordinary attacks don't also pass right through? */
             (yield* pline(__s_99s_s_attempt_s_99s, cptr.decay(magrnam), verb, !tailmiss ? __s_passes_right_through : __s_fails_to_hold, cptr.decay(mdefnam)));
         }
         return 1;
@@ -612,18 +780,23 @@ export function* failed_grab(magr, mdef, mattk) {
     return 0;
 }
 
+/* Returns the result of mdamagem(). */
 /** C ref: mhitm.c:644 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @param {CPtr<struct obj>} mwep @param {CInt} dieroll @returns {CInt} */
 function* hitmm(magr, mdef, mattk, mwep, dieroll) {
     let compat;
     let weaponhit = schar((cptr.ld1u(mattk) == NHM.AT_WEAP || (cptr.ld1u(mattk) == NHM.AT_CLAW && mwep) ? 1 : 0));
     let silverhit = schar((weaponhit && mwep && ((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER ? 1 : 0));
+
     (yield* pre_mm_attack(magr, mdef));
+
     compat = !(cptr.ldI32o(magr, $monst_mcan) & 1) ? could_seduce(magr, mdef, mattk) : 0;
     if (!compat && (yield* shade_miss(magr, mdef, mwep, 0, cptr.ld1so(gv, $instance_globals_v_vis))))
-        return NHM.M_ATTK_MISS;
+        return NHM.M_ATTK_MISS;  /* bypass mdamagem() */
+
     if (cptr.ld1so(gv, $instance_globals_v_vis)) {
         let buf = new Uint8Array(256);
         let magr_name = new Uint8Array(256);
+
         void cptr.strcpy(cptr.decay(magr_name), (yield* Monnam(magr)));
         if (compat) {
             nh_snprintf(__s_hitmm, 669, cptr.decay(buf), 256n, __s_s_s__2, cptr.decay(magr_name), (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 ? __s_smiles_at : __s_talks_to);
@@ -660,8 +833,13 @@ function* hitmm(magr, mdef, mattk, mwep, dieroll) {
             }
             if (cptr.ld1s(cptr.decay(buf)))
                 (yield* pline(__s_s_s__3, cptr.decay(buf), (yield* mon_nam_too(mdef, magr))));
+
             if (mon_hates_silver(mdef) && silverhit) {
                 let mdef_name = (yield* mon_nam_too(mdef, magr));
+
+                /* note: mon_nam_too returns a modifiable buffer; so
+                   does s_suffix, but it returns a single static buffer
+                   and we might be calling it twice for this message */
                 void cptr.strcpy(cptr.decay(magr_name), (yield* s_suffix(cptr.decay(magr_name))));
                 if (!(cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GHOST) && !((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
                     if (!cptr.eq(mdef, magr)) {
@@ -673,31 +851,41 @@ function* hitmm(magr, mdef, mattk, mwep, dieroll) {
                     }
                     void cptr.strcat(mdef_name, __s_flesh);
                 }
+
                 (yield* pline(__s_s_s_sears_s, cptr.decay(magr_name), (yield* simpleonames(mwep)), mdef_name));
             }
         }
     } else
         (yield* noises(magr, mattk));
+
     return (yield* mdamagem(magr, mdef, mattk, mwep, dieroll));
 }
 
+/* Returns the same values as mdamagem(). */
 /** C ref: mhitm.c:736 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* gazemm(magr, mdef, mattk) {
     let buf = new Uint8Array(256);
+    /* an Archon's gaze affects target even if Archon itself is blinded */
     let archon = schar((cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_ARCHON, $sizeof_permonst)) && cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_BLND ? 1 : 0));
     let altmesg = schar((archon && !(cptr.ldI32o(magr, $monst_mcansee) & 1) ? 1 : 0));
+
+    /* bring target out of hiding even if hero doesn't see it happen (this
+       is already done in pre_mm_attack() and shouldn't be needed here) */
     if (cptr.ld1so(cptr.ldPtro(mdef, $monst_data), $permonst_mlet) == NHC.S_MIMIC && (cptr.ld1uo((mdef), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING)
         (yield* seemimic(mdef));
     cptr.stI32o(mdef, $monst_mundetected, 0);
+
     if (cptr.ld1so(gv, $instance_globals_v_vis)) {
         void cptr.sprintf(cptr.decay(buf), __s_s_gazes_s, altmesg ? (yield* Adjmonnam(magr, __s_blinded)) : (yield* Monnam(magr)), altmesg ? __s_toward : __s_at);
         (yield* pline(__s_s_s__4, cptr.decay(buf), canspotmon(mdef) ? (yield* mon_nam(mdef)) : __s_something));
     }
+
     if ((cptr.ldI32o(magr, $monst_mcan) & 1) | 0 || !(cptr.ldI32o(mdef, $monst_mcansee) & 1) || (archon ? (yield* resists_blnd(mdef)) : !(cptr.ldI32o(magr, $monst_mcansee) & 1)) || ((cptr.ldI32o(magr, $monst_minvis) & 1) | 0 && !((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) || (cptr.ldI32o(mdef, $monst_msleeping) & 1) | 0) {
         if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef))
             (yield* pline(__s_but_nothing_happens));
         return NHM.M_ATTK_MISS;
     }
+    /* call mon_reflects 2x, first test, then, if visible, print message */
     if (cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) && (yield* mon_reflects(mdef, null))) {
         if (canseemon(mdef))
             void (yield* mon_reflects(mdef, __s_the_gaze_is_reflected_away_by_s_s));
@@ -722,12 +910,19 @@ function* gazemm(magr, mdef, mattk) {
         }
     } else if (archon) {
         (yield* mhitm_ad_blnd(magr, mattk, mdef, null));
+        /* an Archon's blinding radiance also stuns;
+           this is different from the way the hero gets stunned because
+           a stunned monster recovers randomly instead of via countdown;
+           both cases make an effort to prevent the target from being
+           continuously stunned due to repeated gaze attacks */
         if (rn2_at(__s_mhitm_c, 798, __s_gazemm, 2))
             cptr.stI32o(mdef, $monst_mstun, 1);
     }
+
     return (yield* mdamagem(magr, mdef, mattk, null, 0));
 }
 
+/* return True if magr is allowed to swallow mdef, False otherwise */
 /** C ref: mhitm.c:807 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @returns {CInt} */
 export function engulf_target(magr, mdef) {
     let lev;
@@ -737,10 +932,20 @@ export function engulf_target(magr, mdef) {
     let dy;
     let uatk = schar((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))));
     let udef = schar((cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))));
+
+    /* can't swallow something that's too big */
     if (cptr.ld1uo(cptr.ldPtro(mdef, $monst_data), $permonst_msize) >= NHM.MZ_HUGE || (cptr.ld1uo(cptr.ldPtro(magr, $monst_data), $permonst_msize) < cptr.ld1uo(cptr.ldPtro(mdef, $monst_data), $permonst_msize) && !is_whirly(cptr.ldPtro(magr, $monst_data))))
         return 0;
+
+    /* can't (move to) swallow if trapped. TODO: could do some? */
     if ((cptr.ldI32o(mdef, $monst_mtrapped) & 1) | 0 || (cptr.ldI32o(magr, $monst_mtrapped) & 1) | 0)
         return 0;
+
+    /* if attacker is phasing in solid rock and defender can't move there,
+       or vice versa, don't allow engulf to succeed; otherwise expelling
+       might not be able to place attacker and defender both back on map;
+       when defender is the hero, a sanity_check complaint about placing
+       the hero on top of a monster can occur */
     dx = (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI16(u) : cptr.ldI16o(mdef, $monst_mx);
     dy = (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mdef, $monst_my);
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dx, $sizeof_rm_x21), dy, $sizeof_rm);
@@ -751,9 +956,11 @@ export function engulf_target(magr, mdef) {
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), ax, $sizeof_rm_x21), ay, $sizeof_rm);
     if (!(uatk ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || closed_door(i16(ax), i16(ay)) || IS_TREE(cptr.ld1so(lev, $rm_typ)) || (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS && !is_whirly(cptr.ldPtro(mdef, $monst_data)))))
         return 0;
+
     return 1;
 }
 
+/* Returns the same values as mattackm(). */
 /** C ref: mhitm.c:849 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* gulpmm(magr, mdef, mattk) {
     let ax;
@@ -762,8 +969,10 @@ function* gulpmm(magr, mdef, mattk) {
     let dy;
     let status;
     let obj;
+
     if (!engulf_target(magr, mdef))
         return NHM.M_ATTK_MISS;
+
     if (cptr.ld1so(gv, $instance_globals_v_vis)) {
         (yield* pline(__s_s_s_s, (yield* Monnam(magr)), (dmgtype_fromattack((cptr.ldPtro(magr, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallows : ((dmgtype_fromattack((cptr.ldPtro(magr, $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_encloses : __s_engulfs), (yield* mon_nam(mdef))));
     }
@@ -771,41 +980,72 @@ function* gulpmm(magr, mdef, mattk) {
         for (obj = cptr.ldPtro(mdef, $monst_minvent); obj; obj = cptr.ldPtr(obj))
             void (yield* snuff_lit(obj));
     }
+
     if (is_vampshifter(mdef) && (yield* newcham(mdef, cptr.add(mons, cptr.ldI16o(mdef, $monst_cham), $sizeof_permonst), NHM.NO_NC_FLAGS))) {
         if (cptr.ld1so(gv, $instance_globals_v_vis)) {
+            /* 'it' -- previous form is no longer available and
+               using that would be excessively verbose */
             (yield* pline(__s_s_expels_s, (yield* Monnam(magr)), canspotmon(mdef) ? __s_it : cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
             if (canspotmon(mdef)) {
                 (yield* pline(__s_it_turns_into_s, (yield* x_monnam(mdef, NHM.ARTICLE_A, null, 35, 0))));
             }
         }
-        return NHM.M_ATTK_HIT;
+        return NHM.M_ATTK_HIT;  /* bypass mdamagem() */
     }
+
+    /*
+     *  All of this manipulation is needed to keep the display correct.
+     *  There is a flush at the next pline().
+     */
     ax = cptr.ldI16o(magr, $monst_mx);
     ay = cptr.ldI16o(magr, $monst_my);
     dx = cptr.ldI16o(mdef, $monst_mx);
     dy = cptr.ldI16o(mdef, $monst_my);
+    /*
+     *  Leave the defender in the monster chain at its current position,
+     *  but don't leave it on the screen.  Move the aggressor to the
+     *  defender's position.
+     */
     cptr.stPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
     cptr.stPtro3(svl, ax, 168, ay, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
     (yield* place_monster(magr, dx, dy));
-    (yield* newsym(ax, ay));
-    (yield* newsym(dx, dy));
-    cptr.stPtro(gm, $instance_globals_m_mswallower, magr);
+    (yield* newsym(ax, ay));  /* erase old position */
+    (yield* newsym(dx, dy));  /* update new position */
+
+    cptr.stPtro(gm, $instance_globals_m_mswallower, magr);  /* corpse_chance() wants this */
     status = (yield* mdamagem(magr, mdef, mattk, null, 0));
-    cptr.stPtro(gm, $instance_globals_m_mswallower, null);
+    cptr.stPtro(gm, $instance_globals_m_mswallower, null);  /* reset */
+
     if ((status & 6) == 6) {
-        ;
+        ;  /* both died -- do nothing  */
     } else if (status & NHM.M_ATTK_DEF_DIED) {
+        /*
+         *  Note: mdamagem() -> monkilled() -> mondead() -> m_detach()
+         *  -> relmon() used to call remove_monster() for the dead
+         *  monster even when it wasn't the one on the map, so we
+         *  needed to put magr back after mdef was killed and removed
+         *  from their shared spot.  But now [5.0] relmon() calls
+         *  mon_leaving_level() and that checks whether the monster at
+         *  dying monster's coordinates is that dying monster and only
+         *  removes it when they match.  So magr is still at mdef's
+         *  former spot these days.
+         *
+         *  We still potentially do one fixup:  if the gulp targeted
+         *  an inhospitable location, magr will return to its previous
+         *  spot instead of staying.
+         */
         if (!(yield* goodpos(dx, dy, magr, NHM.MM_IGNOREWATER))) {
             if (cptr.eq((cptr.ldPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), magr)) {
                 cptr.stPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
                 (yield* newsym(dx, dy));
             }
-            dx = ax, dy = ay;
+            dx = ax, dy = ay;  /* magr's spot at start of the attack */
         }
         if (!cptr.eq((cptr.ldPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), magr)) {
             (yield* place_monster(magr, dx, dy));
             (yield* newsym(dx, dy));
         }
+        /* aggressor moves to <dx,dy> and might encounter trouble there */
         if ((yield* minliquid(magr)) || (t_at(dx, dy) && (yield* mintrap(magr, NHM.NO_TRAP_FLAGS)) == NHC.Trap_Killed_Mon))
             status |= NHM.M_ATTK_AGR_DIED;
     } else if (status & NHM.M_ATTK_AGR_DIED) {
@@ -815,44 +1055,61 @@ function* gulpmm(magr, mdef, mattk) {
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), dy, 8), dx) & NHM.IN_SIGHT) != 0)) {
             (yield* pline(__s_s_is_s, (yield* Monnam(mdef)), (dmgtype_fromattack((cptr.ldPtro(magr, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_regurgitated : ((dmgtype_fromattack((cptr.ldPtro(magr, $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_released : __s_expelled)));
         }
+
         cptr.stPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* place_monster(magr, ax, ay));
         (yield* place_monster(mdef, dx, dy));
         (yield* newsym(ax, ay));
         (yield* newsym(dx, dy));
     }
+
     return status;
 }
 
 /** C ref: mhitm.c:970 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* explmm(magr, mdef, mattk) {
     let result;
+
     if ((cptr.ldI32o(magr, $monst_mcan) & 1))
         return NHM.M_ATTK_MISS;
+
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(magr, $monst_my), 8), cptr.ldI16o(magr, $monst_mx)) & NHM.IN_SIGHT) != 0))
         (yield* pline_mon(magr, __s_s_explodes, (yield* Monnam(magr))));
     else
         (yield* noises(magr, mattk));
+
+    /* monster explosion types which actually create an explosion */
     if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_FIRE || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_COLD || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_ELEC) {
         (yield* mon_explodes(magr, mattk));
+        /* unconditionally set AGR_DIED here; lifesaving is accounted below */
         result = NHM.M_ATTK_AGR_DIED | ((cptr.ldI32o((mdef), $monst_mhp) < 1) ? NHM.M_ATTK_DEF_DIED : 0);
     } else {
         result = (yield* mdamagem(magr, mdef, mattk, null, 0));
     }
+
+    /* Kill off aggressor if it didn't die. */
     if (!(result & NHM.M_ATTK_AGR_DIED)) {
         let was_leashed = schar((((cptr.ldI32o(magr, $monst_mleashed) & 1) | 0) != 0));
+
         (yield* mondead(magr));
         if (!(cptr.ldI32o((magr), $monst_mhp) < 1))
-            return result;
+            return result;  /* life saved */
         result |= NHM.M_ATTK_AGR_DIED;
+
+        /* mondead() -> m_detach() -> m_unleash() always suppresses
+           the m_unleash() slack message, so deliver it here instead */
         if (was_leashed)
             (yield* Your(__s_leash_falls_slack));
     }
     if (cptr.ld1so(magr, $monst_mtame))
         (yield* You(cptr.decay(brief_feeling), __s_melancholy));
+
     return result;
 }
 
+/*
+ *  See comment at top of mattackm(), for return values.
+ */
 /** C ref: mhitm.c:1016 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @param {CPtr<struct obj>} mwep @param {CInt} dieroll @returns {CInt} */
 function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
     let pa = cptr.ldPtro(magr, $monst_data);
@@ -864,38 +1121,47 @@ function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
     cptr.stI32o(mhm, $mhitm_data_specialdmg, 0);
     cptr.stI32o(mhm, $mhitm_data_dieroll, dieroll);
     cptr.st1o(mhm, $mhitm_data_done, 0);
+
     if ((touch_petrifies(pd) || (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST && cptr.eq(pd, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)))) && !(yield* Resists_Elem(magr, NHC.STONE_RES))) {
         let protector = attk_protection(cptr.ld1u(mattk));
         let wornitems = cptr.ldI64o(magr, $monst_misc_worn_check);
+
+        /* wielded weapon gives same protection as gloves here */
         if (mwep)
             wornitems |= 16n;
+
         if (protector == 0n || (protector != -1n && (wornitems & protector) != protector)) {
             if (poly_when_stoned(pa)) {
                 (yield* mon_to_stone(magr));
-                return NHM.M_ATTK_HIT;
+                return NHM.M_ATTK_HIT;  /* no damage during the polymorph */
             }
             if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(magr))
                 (yield* pline_mon(magr, __s_s_turns_to_stone, (yield* Monnam(magr))));
             (yield* monstone(magr));
             if (!(cptr.ldI32o((magr), $monst_mhp) < 1))
-                return NHM.M_ATTK_HIT;
+                return NHM.M_ATTK_HIT;  /* lifesaved */
             else if (cptr.ld1so(magr, $monst_mtame) && !cptr.ld1so(gv, $instance_globals_v_vis))
                 (yield* You(cptr.decay(brief_feeling), __s_peculiarly_sad));
             return NHM.M_ATTK_AGR_DIED;
         }
     }
+
     (yield* mhitm_adtyping(magr, mattk, mdef, mhm));
+
     if ((yield* mhitm_knockback(magr, mdef, mattk, cptr.add(mhm, $mhitm_data_hitflags), schar(((cptr.ldPtro((magr), $monst_mw)) !== null)))) && ((cptr.ldI32o(mhm, $mhitm_data_hitflags) & 3) != 0 || (cptr.ldI64o((mdef), $monst_mstate) != 0n)))
         return cptr.ldI32o(mhm, $mhitm_data_hitflags);
+
     if (cptr.ld1so(mhm, $mhitm_data_done))
         return cptr.ldI32o(mhm, $mhitm_data_hitflags);
+
     if (!cptr.ldI32(mhm))
         return cptr.ldI32o(mhm, $mhitm_data_hitflags);
+
     cptr.stI32o(mdef, $monst_mhp, (cptr.ldI32o(mdef, $monst_mhp) - cptr.ldI32(mhm)) | 0);
     if (cptr.ldI32o(mdef, $monst_mhp) < 1) {
         if (cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(mdef, $monst_mx), 168, cptr.ldI16o(mdef, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), magr)) {
             cptr.stPtro3(svl, cptr.ldI16o(mdef, $monst_mx), 168, cptr.ldI16o(mdef, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
-            cptr.stI32o(mdef, $monst_mhp, 1);
+            cptr.stI32o(mdef, $monst_mhp, 1);  /* otherwise place_monster will complain */
             (yield* place_monster(mdef, cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)));
             cptr.stI32o(mdef, $monst_mhp, 0);
         }
@@ -903,25 +1169,31 @@ function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
             cptr.st1o(gm, $instance_globals_m_mkcorpstat_norevive, schar((troll_baned(mdef, mwep) ? 1 : 0)));
         cptr.st1(gz, schar((!mwep && zombie_maker(magr) && (cptr.ld1u(mattk) == NHM.AT_TUCH || cptr.ld1u(mattk) == NHM.AT_CLAW || cptr.ld1u(mattk) == NHM.AT_BITE) && zombie_form(cptr.ldPtro(mdef, $monst_data)) != NHC.NON_PM ? 1 : 0)));
         (yield* monkilled(mdef, __s_empty, cptr.ld1uo(mattk, $attack_adtyp)));
-        cptr.st1(gz, 0);
+        cptr.st1(gz, 0);  /* reset */
         cptr.st1o(gm, $instance_globals_m_mkcorpstat_norevive, 0);
         if (!(cptr.ldI32o((mdef), $monst_mhp) < 1))
-            return cptr.ldI32o(mhm, $mhitm_data_hitflags);
+            return cptr.ldI32o(mhm, $mhitm_data_hitflags);  /* mdef lifesaved */
         else if (cptr.ldI32o(mhm, $mhitm_data_hitflags) == NHM.M_ATTK_AGR_DIED)
             return 6;
+
         if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST) {
+            /* various checks similar to dog_eat and meatobj.
+             * after monkilled() to provide better message ordering */
             if (ismnum(cptr.ldI16o(mdef, $monst_cham))) {
                 void (yield* newcham(magr, null, NHM.NC_SHOW_MSG));
             } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst)) && !slimeproof(pa)) {
                 void (yield* newcham(magr, cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst), NHM.NC_SHOW_MSG));
             } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_WRAITH, $sizeof_permonst))) {
                 void (yield* grow_up(magr, null));
+                /* don't grow up twice */
                 return (NHM.M_ATTK_DEF_DIED | (!(cptr.ldI32o((magr), $monst_mhp) < 1) ? 0 : NHM.M_ATTK_AGR_DIED));
             } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_NURSE, $sizeof_permonst))) {
                 (yield* healmon(magr, cptr.ldI32o(magr, $monst_mhpmax), 0));
             }
             (yield* mon_givit(magr, pd));
         }
+        /* caveat: above digestion handling doesn't keep `pa' up to date */
+
         return (NHM.M_ATTK_DEF_DIED | ((yield* grow_up(magr, mdef)) ? 0 : NHM.M_ATTK_AGR_DIED));
     }
     return (cptr.ldI32o(mhm, $mhitm_data_hitflags) == NHM.M_ATTK_AGR_DIED) ? NHM.M_ATTK_AGR_DIED : NHM.M_ATTK_HIT;
@@ -932,12 +1204,14 @@ const __static_mon_poly_freaky = cptr.bytes(" undergoes a freakish metamorphosis
 /** C ref: mhitm.c:1122 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} dmg @returns {CInt} */
 export function* mon_poly(magr, mdef, dmg) {
     let oldform = cptr.ldPtro(mdef, $monst_data);
+
     if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) {
         if (Antimagic()) {
             (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         } else if (Unchanging()) {
-            ;
+            ;  /* just take a little damage */
         } else {
+            /* system shock might take place in polyself() */
             if (cptr.ldI32o(u, $you_ulycn) == NHC.NON_PM) {
                 (yield* You(__s_are_subjected_to_a_freakish));
                 (yield* polyself(NHC.POLY_NOFLAGS));
@@ -952,15 +1226,21 @@ export function* mon_poly(magr, mdef, dmg) {
         }
     } else {
         let Before = new Uint8Array(256);
+
         void cptr.strcpy(cptr.decay(Before), (yield* Monnam(mdef)));
         if (resists_magm(mdef)) {
+            /* Magic resistance */
             if (cptr.ld1so(gv, $instance_globals_v_vis))
                 (yield* shieldeff_mon(mdef));
         } else if ((yield* resist(mdef, NHC.WAND_CLASS, 0, NHM.TELL))) {
+            /* general resistance to magic... */
             ;
         } else if (!rn2_at(__s_mhitm_c, 1157, __s_mon_poly, 25) && cptr.ldI16o(mdef, $monst_cham) == NHC.NON_PM && ((cptr.ldI32o(mdef, $monst_mcan) & 1) | 0 || pm_to_cham((cptr.ldI32o((cptr.ldPtro(mdef, $monst_data)), $permonst_pmidx))) != NHC.NON_PM)) {
+            /* system shock; this variation takes away half of mon's HP
+               rather than kill outright */
             if (cptr.ld1so(gv, $instance_globals_v_vis))
                 (yield* pline(__s_s_shudders, cptr.decay(Before)));
+
             dmg = (dmg + ((((cptr.ldI32o(mdef, $monst_mhpmax) + 1) | 0) / 2) | 0)) | 0;
             cptr.stI32o(mdef, $monst_mhp, (cptr.ldI32o(mdef, $monst_mhp) - dmg) | 0);
             dmg = 0;
@@ -974,6 +1254,7 @@ export function* mon_poly(magr, mdef, dmg) {
             if (cptr.ld1so(gv, $instance_globals_v_vis)) {
                 let was_seen = schar((!!(yield* strncmpi((__s_it__2), cptr.decay((Before)), -1))));
                 let verbosely = schar((cptr.ld1so(flags, $flag_verbose) || !was_seen ? 1 : 0));
+
                 if (canspotmon(mdef))
                     (yield* pline(__s_s_s_s_turns_into_s, cptr.decay(Before), verbosely ? cptr.decay(__static_mon_poly_freaky) : __s_empty, verbosely ? __s_and : __s_empty, (yield* x_monnam(mdef, NHM.ARTICLE_A, null, 35, 0))));
                 else if (was_seen || cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)))
@@ -991,8 +1272,11 @@ export function* mon_poly(magr, mdef, dmg) {
                 (yield* pline(__s_pct_s, cptr.ldPtr(c_common_strings)));
         }
     }
+    /* when a transformation has happened, can't attack again for poly
+       effect during next turn or two; not enforced for poly'd hero */
     if (!cptr.eq(cptr.ldPtro(mdef, $monst_data), oldform) && !cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)))
         cptr.stI32o(magr, $monst_mspec_used, (cptr.ldI32o(magr, $monst_mspec_used) + rnd_at(__s_mhitm_c, 1204, __s_mon_poly, 2)) | 0);
+
     return dmg;
 }
 
@@ -1000,20 +1284,24 @@ export function* mon_poly(magr, mdef, dmg) {
 export function paralyze_monst(mon, amt) {
     if (amt > 127)
         amt = 127;
+
     cptr.stI32o(mon, $monst_mcanmove, 0);
     cptr.stI32o(mon, $monst_mfrozen, amt >>> 0);
-    cptr.stI32o(mon, $monst_meating, 0);
+    cptr.stI32o(mon, $monst_meating, 0);  /* terminate any meal-in-progress */
     cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744073172680703n);
 }
 
+/* `mon' is hit by a sleep attack; return 1 if it's affected, 0 otherwise */
 /** C ref: mhitm.c:1223 — @param {CPtr<struct monst>} mon @param {CInt} amt @param {CInt} how @returns {CInt} */
 export function* sleep_monst(mon, amt, how) {
+    /* reveal mimic unless already asleep or paralyzed (won't be 'busy') */
     if (how >= 0 && !(cptr.ldI32o(mon, $monst_msleeping) & 1) && !(cptr.ldI32o(mon, $monst_mfrozen) & 127) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_MIMIC && ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))
         (yield* seemimic(mon));
+
     if ((yield* Resists_Elem(mon, NHC.SLEEP_RES)) || (yield* defended(mon, NHM.AD_SLEE)) || (how >= 0 && (yield* resist(mon, schar(how), 0, NHM.NOTELL)))) {
         (yield* shieldeff(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
     } else if ((cptr.ldI32o(mon, $monst_mcanmove) & 1)) {
-        (yield* finish_meating(mon));
+        (yield* finish_meating(mon));  /* terminate any meal-in-progress */
         amt = (amt + ((cptr.ldI32o(mon, $monst_mfrozen) & 127) | 0)) | 0;
         if (amt > 0) {
             cptr.stI32o(mon, $monst_mcanmove, 0);
@@ -1026,6 +1314,7 @@ export function* sleep_monst(mon, amt, how) {
     return 0;
 }
 
+/* sleeping grabber releases, engulfer doesn't; don't use for paralysis! */
 /** C ref: mhitm.c:1250 — @param {CPtr<struct monst>} mon */
 export function* slept_monst(mon) {
     if (helpless(mon) && cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -1038,8 +1327,10 @@ export function* slept_monst(mon) {
 export function* rustm(mdef, obj) {
     let dmgtyp = -1;
     let chance = 1;
+
     if (!mdef || !obj)
-        return;
+        return;  /* just in case */
+    /* AD_ACID and AD_ENCH are handled in passivemm() and passiveum() */
     if (dmgtype(cptr.ldPtro(mdef, $monst_data), NHM.AD_CORR)) {
         dmgtyp = NHM.ERODE_CORRODE;
     } else if (dmgtype(cptr.ldPtro(mdef, $monst_data), NHM.AD_RUST)) {
@@ -1048,6 +1339,7 @@ export function* rustm(mdef, obj) {
         dmgtyp = NHM.ERODE_BURN;
         chance = 6;
     }
+
     if (dmgtyp != -1 && !rn2_at(__s_mhitm_c, 1278, __s_rustm, chance))
         void (yield* erode_obj(obj, null, dmgtyp, 5));
 }
@@ -1056,10 +1348,15 @@ export function* rustm(mdef, obj) {
 function* mswingsm(magr, mdef, otemp) {
     if (cptr.ld1so(flags, $flag_verbose) && !Blind() && mon_visible(magr)) {
         let bash = schar((is_pole(otemp) && !is_art(otemp, NHC.ART_SNICKERSNEE) && (dist2(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) <= 2) ? 1 : 0));
+
         (yield* pline(__s_s_s_s_s_s_at_s, (yield* Monnam(magr)), mswings_verb(otemp, bash), (cptr.ldI64o(otemp, $obj_quan) > 1n) ? __s_one_of : __s_empty, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), (yield* xname(otemp)), (yield* mon_nam(mdef))));
     }
 }
 
+/*
+ * Passive responses by defenders.  Does not replicate responses already
+ * handled above.  Returns same values as mattackm.
+ */
 /** C ref: mhitm.c:1304 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} mhitb @param {CInt} mdead @param {CPtr<struct obj>} mwep @returns {CInt} */
 function* passivemm(magr, mdef, mhitb, mdead, mwep) {
     let mddat = cptr.ldPtro(mdef, $monst_data);
@@ -1069,9 +1366,10 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
     let tmp;
     let mhit = mhitb ? NHM.M_ATTK_HIT : NHM.M_ATTK_MISS;
     __lbl_assess_dmg: {
+
         for (i = 0; ; i++) {
             if (i >= NHM.NATTK)
-                return (mdead | mhit);
+                return (mdead | mhit);  /* no passive attacks */
             if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk) == NHM.AT_NONE)
                 break;
         }
@@ -1081,6 +1379,8 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
             tmp = d_at(__s_mhitm_c, 1326, __s_passivemm, ((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
         else
             tmp = 0;
+
+        /* These affect the enemy even if defender killed */
         switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
             case NHM.AD_ACID:
             if (mhitb && !rn2_at(__s_mhitm_c, 1333, __s_passivemm, 2)) {
@@ -1102,6 +1402,7 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
             case NHM.AD_ENCH:
             if (mhitb && !(cptr.ldI32o(mdef, $monst_mcan) & 1) && mwep) {
                 void (yield* drain_item(mwep, 0));
+                /* No message */
             }
             break;
             default:
@@ -1109,6 +1410,8 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
         }
         if (mdead || (cptr.ldI32o(mdef, $monst_mcan) & 1) | 0)
             return (mdead | mhit);
+
+        /* These affect the enemy only if defender is still alive */
         if (rn2_at(__s_mhitm_c, 1363, __s_passivemm, 3))
             switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                 case NHM.AD_PLYS:
@@ -1118,6 +1421,7 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
                     if (!rn2_at(__s_mhitm_c, 1369, __s_passivemm, 4))
                         tmp = 127;
                     if ((cptr.ldI32o(magr, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((madat), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 && (((cptr.ldU64o((madat), $permonst_mflags1) & 16777216n) != 0n) || !(cptr.ldI32o(mdef, $monst_minvis) & 1))) {
+                        /* construct format string; guard against '%' in Monnam */
                         void cptr.strcpy(cptr.decay(buf), (yield* s_suffix((yield* Monnam(mdef)))));
                         void (yield* strNsubst(cptr.decay(buf), __s_pct, __s_pct2, 0));
                         void cptr.strcat(cptr.decay(buf), __s_gaze_is_reflected_by_s_s);
@@ -1198,6 +1502,7 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
     return (mdead | mhit);
 }
 
+/* hero or monster has successfully hit target mon with drain energy attack */
 /** C ref: mhitm.c:1461 — @param {CPtr<struct monst>} mon @param {CInt} givemsg */
 export function* xdrainenergym(mon, givemsg) {
     if (cptr.ldI32o(mon, $monst_mspec_used) < 20 && (attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_MAGC) || attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_BREA))) {
@@ -1207,9 +1512,12 @@ export function* xdrainenergym(mon, givemsg) {
     }
 }
 
+/* "aggressive defense"; what type of armor prevents specified attack
+   from touching its target? */
 /** C ref: mhitm.c:1475 — @param {CInt} aatyp @returns {CLongLong} */
 export function attk_protection(aatyp) {
     let w_mask = 0n;
+
     switch (aatyp) {
         case NHM.AT_NONE:
         case NHM.AT_SPIT:
@@ -1218,12 +1526,12 @@ export function attk_protection(aatyp) {
         case NHM.AT_GAZE:
         case NHM.AT_BREA:
         case NHM.AT_MAGC:
-        w_mask = -1n;
+        w_mask = -1n;  /* special case; no defense needed */
         break;
         case NHM.AT_CLAW:
         case NHM.AT_TUCH:
         case NHM.AT_WEAP:
-        w_mask = 16n;
+        w_mask = 16n;  /* caller needs to check for weapon */
         break;
         case NHM.AT_KICK:
         w_mask = 32n;
@@ -1232,14 +1540,14 @@ export function attk_protection(aatyp) {
         w_mask = 4n;
         break;
         case NHM.AT_HUGS:
-        w_mask = 18n;
+        w_mask = 18n;  /* attacker needs both to be protected */
         break;
         case NHM.AT_BITE:
         case NHM.AT_STNG:
         case NHM.AT_ENGL:
         case NHM.AT_TENT:
         default:
-        w_mask = 0n;
+        w_mask = 0n;  /* no defense available */
         break;
     }
     return w_mask;

@@ -310,24 +310,31 @@ const __s_gold_hits_the_s_then_falls_back_on_top = cptr.lit("gold hits the %s, t
 const __s_fortunately_you_are_wearing_s = cptr.lit("Fortunately, you are wearing %s!");
 const __s_gold_hits_the_s = cptr.lit("gold hits the %s.");
 
+/* gt.thrownobj (decl.c) tracks an object until it lands */
+
 /** C ref: dothrow.c:39 — @param {CInt} pm @param {CPtr<struct obj>} ammo @param {CPtr<struct obj>} launcher @returns {CInt} */
 export function multishot_class_bonus(pm, ammo, launcher) {
     let multishot = 0;
     let skill = cptr.ld1so2(objects, cptr.ldI16o(ammo, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp);
+
     switch (pm) {
         case NHC.PM_CAVE_DWELLER:
+        /* give bonus for low-tech gear */
         if (skill == -21 || skill == NHC.P_SPEAR)
             multishot++;
         break;
         case NHC.PM_MONK:
+        /* allow higher volley count despite skill limitation */
         if (skill == -24)
             multishot++;
         break;
         case NHC.PM_RANGER:
+        /* arbitrary; encourage use of other missiles beside daggers */
         if (skill != NHC.P_DAGGER)
             multishot++;
         break;
         case NHC.PM_ROGUE:
+        /* possibly should add knives... */
         if (skill == NHC.P_DAGGER)
             multishot++;
         break;
@@ -337,15 +344,18 @@ export function multishot_class_bonus(pm, ammo, launcher) {
         // @FallThrough
         ;
         case NHC.PM_SAMURAI:
+        /* role-specific launcher and its ammo */
         if (cptr.ldI16o(ammo, $obj_otyp) == NHC.YA && launcher && cptr.ldI16o(launcher, $obj_otyp) == NHC.YUMI)
             multishot++;
         break;
         default:
-        break;
+        break;  /* No bonus */
     }
+
     return multishot;
 }
 
+/* Throw the selected object, asking for direction */
 /** C ref: dothrow.c:87 — @param {CPtr<struct obj>} obj @param {CInt} shotlimit @returns {CInt} */
 function* throw_obj(obj, shotlimit) {
     let otmp;
@@ -358,13 +368,28 @@ function* throw_obj(obj, shotlimit) {
     let res = NHM.ECMD_TIME;
     let save_osplit = cptr.alloc(8); cptr.memcpy(save_osplit, cptr.add(svc, $context_info_objsplit), $sizeof_obj_split);
     __lbl_unsplit_stack: {
+
+        /* ask "in what direction?" */
         if (!(yield* getdir(null))) {
-            res = NHM.ECMD_CANCEL;
+            /* No direction specified, so cancel the throw */
+            res = NHM.ECMD_CANCEL;  /* no time passes */
             break __lbl_unsplit_stack;
         }
+
+        /*
+         * Throwing gold is usually for getting rid of it when
+         * a leprechaun approaches, or for bribing an oncoming
+         * angry monster.  So throw the whole object.
+         *
+         * If the gold is in quiver, throw one coin at a time,
+         * possibly using a sling.
+         */
         if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS && !cptr.eq(obj, uquiver.v)) {
-            return (yield* throw_gold(obj));
+            /* throw_gold will unsplit the stack itself if necessary and may have
+               freed the object, so don't route through unsplit_stack here */
+            return (yield* throw_gold(obj));  /* check */
         }
+
         if (!(yield* canletgo(obj, __s_throw))) {
             res = NHM.ECMD_OK;
             break __lbl_unsplit_stack;
@@ -397,10 +422,17 @@ function* throw_obj(obj, shotlimit) {
         }
         if (is_wet_towel(obj))
             (yield* dry_a_towel(obj, -1, 0));
+
+        /* Multishot calculations
+         * (potential volley of up to N missiles; default for N is 1)
+         */
         multishot = 1;
         skill = cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp);
         if (cptr.ldI64o(obj, $obj_quan) > 1n && (is_ammo(obj) ? matching_launcher(obj, uwep.v) : cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) && !(HConfusion() || HStun())) {
+            /* some roles don't get a volley bonus until becoming expert */
             weakmultishot = schar(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) || ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER) && skill != NHC.P_KNIFE) || ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST) && skill != -23) || Fumbling() || (acurr(NHC.A_DEX)) <= 6 ? 1 : 0));
+
+            /* Bonus if the player is proficient in this weapon... */
             switch ((cptr.ldI16o2(u, weapon_type(obj), $sizeof_skills, $you_weapon_skills))) {
                 case NHC.P_EXPERT:
                 multishot++;
@@ -413,7 +445,10 @@ function* throw_obj(obj, shotlimit) {
                 default:
                 break;
             }
+            /* ...or is using a special weapon for their role... */
             multishot = (multishot + multishot_class_bonus(Role_switch(), obj, uwep.v)) | 0;
+
+            /* ...or using their race's special bow; no bonus for spears */
             if (!weakmultishot) {
                 switch (Race_switch()) {
                     case NHC.PM_ELF:
@@ -425,36 +460,53 @@ function* throw_obj(obj, shotlimit) {
                         multishot++;
                     break;
                     case NHC.PM_GNOME:
+                    /* arbitrary; there isn't any gnome-specific gear */
                     if (skill == -22)
                         multishot++;
                     break;
                     case NHC.PM_HUMAN:
                     case NHC.PM_DWARF:
                     default:
-                    break;
+                    break;  /* No bonus */
                 }
+
+                /* when launcher is own quest artifact, give extra +1 with any
+                   type of ammo appropriate for that launcher (compensates for
+                   elven and orcish rangers loss of bonus for use of racial bow
+                   plus racial arrows if they switch to the Longbow of Diana) */
                 if (uwep.v && is_quest_artifact(uwep.v) && ammo_and_launcher(obj, uwep.v))
                     ++multishot;
             }
+
+            /* crossbows are slow to load and probably shouldn't allow multiple
+               shots at all, but that would result in players never using them;
+               instead, high strength is necessary to load and shoot quickly */
             if (multishot > 1 && skill == -22 && ammo_and_launcher(obj, uwep.v) && (acurrstr()) < ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME) ? 16 : 18))
                 multishot = rnd_at(__s_dothrow_c, 231, __s_throw_obj, multishot);
+
             multishot = rnd_at(__s_dothrow_c, 233, __s_throw_obj, multishot);
             if (BigInt(multishot) > cptr.ldI64o(obj, $obj_quan))
                 multishot = Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan)));
             if (shotlimit > 0 && multishot > shotlimit)
                 multishot = shotlimit;
         }
+
         cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, schar((ammo_and_launcher(obj, uwep.v) ? 1 : 0)));
+        /* give a message if shooting more than one, or if player
+           attempted to specify a count */
         if (multishot > 1 || shotlimit > 0) {
+            /* "You shoot N arrows." or "You throw N daggers." */
             (yield* You(__s_s_d_s, cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __s_shoot : __s_throw, multishot, (multishot == 1) ? (yield* singular(obj, xname)) : (yield* xname(obj))));
         }
+
         wep_mask = cptr.ldI64o(obj, $obj_owornmask);
         oldslot = null;
         cptr.stI16o(gm, $instance_globals_m_m_shot + $multishot_o, cptr.ldI16o(obj, $obj_otyp));
         cptr.stI32o(gm, $instance_globals_m_m_shot, multishot);
         for (cptr.stI32o(gm, $instance_globals_m_m_shot + $multishot_i, 1); cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i) <= cptr.ldI32o(gm, $instance_globals_m_m_shot); (cptr.stI32o(gm, $instance_globals_m_m_shot + $multishot_i, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i) + 1)) - (1)) {
             twoweap = cptr.ld1so(u, $you_twoweap);
-            (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_throw_obj, __s_dothrow_c, 256, __s_obj_null) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_throw_obj, __s_dothrow_c, 256, __s_obj_null) : void 0);  /* m_shot.i <= m_shot.n guarantees this */
+            /* split this object off from its slot if necessary */
             if (cptr.ldI64o(obj, $obj_quan) > 1n) {
                 otmp = (yield* splitobj(obj, 1n));
             } else {
@@ -462,6 +514,8 @@ function* throw_obj(obj, shotlimit) {
                 if (cptr.ldI64o(otmp, $obj_owornmask))
                     (yield* remove_worn_item(otmp, 0));
                 oldslot = cptr.ldPtr(obj);
+                /* obj will leave inventory and may be freed by throwit, don't
+                   try to unsplit it from potential parent stack below */
                 obj = null;
             }
             (yield* freeinv(otmp));
@@ -472,60 +526,101 @@ function* throw_obj(obj, shotlimit) {
         cptr.stI16o(gm, $instance_globals_m_m_shot + $multishot_o, NHC.STRANGE_OBJECT);
         cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, 0);
     }
+    /* might need to undo an object split.
+     * We used to use freeinv(obj),addinv(obj) here, but that can
+     * merge obj into another stack--usually quiver--even if it hadn't
+     * been split from there (possibly triggering a panic in addinv),
+     * and freeinv+addinv potentially has other side-effects.
+     */
     if (obj && !cptr.eq(obj, uquiver.v) && (cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32(save_osplit) || cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(save_osplit, $obj_split_child_oid))) {
+        /* futureproofing: objsplit will have been affected if partial stack
+           was thrown; objects will have been split off stack to throw. */
         cptr.memcpy(cptr.add(svc, $context_info_objsplit), save_osplit, 8);
         void (yield* unsplitobj(obj));
     }
     return res;
 }
 
+/* common to dothrow() and dofire() */
 /** C ref: dothrow.c:297 — @param {CPtr<int>} shotlimit_p @returns {CInt} */
 function* ok_to_throw(shotlimit_p) {
     cptr.stI32(shotlimit_p, (Number(BigInt.asIntN(32, ((cptr.ldI64o(gc, $instance_globals_c_command_count)) < 0n ? 0n : ((cptr.ldI64o(gc, $instance_globals_c_command_count)) > 32767n ? 32767n : (cptr.ldI64o(gc, $instance_globals_c_command_count))))))));
-    cptr.stI64o(gm, $instance_globals_m_multi, 0n);
+    cptr.stI64o(gm, $instance_globals_m_multi, 0n);  /* reset; it's been used up */
+
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2048n) != 0n)) {
         (yield* You(__s_are_physically_incapable_of_throwing_or));
         return 0;
     } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
-        (yield* You_cant(__s_throw_or_shoot_without_hands));
+        (yield* You_cant(__s_throw_or_shoot_without_hands));  /* not body_part(HAND) */
         return 0;
+        /*[what about !freehand(), aside from cursed missile launcher?]*/
     }
     if ((yield* check_capacity(null)))
         return 0;
     return 1;
 }
 
+/* getobj callback for object to be thrown */
 /** C ref: dothrow.c:317 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* throw_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
     if ((cptr.ldI32o(obj, $obj_bknown) & 1) | 0 && (yield* welded(obj)))
         return NHC.GETOBJ_DOWNPLAY;
+
     if (((((cptr.ldI64o(obj, $obj_owornmask)) & 256n) != 0n && (cptr.ldI16o((obj), $obj_otyp) == NHC.AKLYS || (cptr.ld1so((obj), $obj_oartifact) == NHC.ART_MJOLLNIR && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_VALKYRIE)))) || cptr.ldI16o((obj), $obj_otyp) == NHC.BOOMERANG) && (cptr.ld1so(obj, $obj_oartifact) != NHC.ART_MJOLLNIR || (acurr(NHC.A_STR)) >= 125))
         return NHC.GETOBJ_SUGGEST;
+
     if (cptr.ldI64o(obj, $obj_quan) == 1n && (cptr.eq(obj, uwep.v) || (cptr.eq(obj, uswapwep.v) && cptr.ld1so(u, $you_twoweap))))
         return NHC.GETOBJ_DOWNPLAY;
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_SUGGEST;
+
     if (!(uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_SLING) && cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS)
         return NHC.GETOBJ_SUGGEST;
+    /* Possible extension: exclude weapons that make no sense to throw,
+       such as whips, bows, slings, rubber hoses. */
+
     if ((uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_SLING) && cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS)
         return NHC.GETOBJ_SUGGEST;
+
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n) && cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER)
         return NHC.GETOBJ_SUGGEST;
+
     return NHC.GETOBJ_DOWNPLAY;
 }
 
+/* the #throw command */
 /** C ref: dothrow.c:352 @returns {CInt} */
 export function* dothrow() {
     let obj;
     let shotlimit = cptr.box(0);
+
+    /*
+     * Since some characters shoot multiple missiles at one time,
+     * allow user to specify a count prefix for 'f' or 't' to limit
+     * number of items thrown (to avoid possibly hitting something
+     * behind target after killing it, or perhaps to conserve ammo).
+     *
+     * Prior to 3.3.0, command ``3t'' meant ``t(shoot) t(shoot) t(shoot)''
+     * and took 3 turns.  Now it means ``t(shoot at most 3 missiles)''.
+     *
+     * [3.6.0:  shot count setup has been moved into ok_to_throw().]
+     */
     if (!(yield* ok_to_throw(shotlimit)))
         return NHM.ECMD_OK;
+
     obj = (yield* getobj(__s_throw, throw_ok, 3));
+    /* it is also possible to throw food */
+    /* (or jewels, or iron balls... ) */
+
     return obj ? (yield* throw_obj(obj, shotlimit.v)) : NHM.ECMD_CANCEL;
 }
 
+/* KMH -- Automatically fill quiver */
+/* Suggested by Jeffrey Bay <jbay@convex.hp.com> */
 /** C ref: dothrow.c:381 */
 function* autoquiver() {
     let otmp;
@@ -533,11 +628,14 @@ function* autoquiver() {
     let omissile = null;
     let omisc = null;
     let altammo = null;
+
     if (uquiver.v)
         return;
+
+    /* Scan through the inventory */
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if (cptr.ldI64o(otmp, $obj_owornmask) || cptr.ld1so(otmp, $obj_oartifact) || !(cptr.ldI32o(otmp, $obj_dknown) & 1)) {
-            ;
+            ;  /* Skip it */
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK || (cptr.ldI16o(otmp, $obj_otyp) == NHC.FLINT && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) || (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS && ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)) {
             if ((uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_SLING))
                 oammo = otmp;
@@ -549,14 +647,18 @@ function* autoquiver() {
             ;
         } else if (is_ammo(otmp)) {
             if (ammo_and_launcher(otmp, uwep.v))
+                /* Ammo matched with launcher (bow+arrow, crossbow+bolt) */
                 oammo = otmp;
             else if (ammo_and_launcher(otmp, uswapwep.v))
                 altammo = otmp;
             else
+                /* Mismatched ammo (no better than an ordinary weapon) */
                 omisc = otmp;
         } else if (is_missile(otmp)) {
+            /* Missile (dart, shuriken, etc.) */
             omissile = otmp;
         } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && throwing_weapon(otmp)) {
+            /* Ordinary weapon */
             if (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_DAGGER && !omissile)
                 omissile = otmp;
             else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AKLYS)
@@ -565,6 +667,8 @@ function* autoquiver() {
                 omisc = otmp;
         }
     }
+
+    /* Pick the best choice */
     if (oammo)
         (yield* setuqwep(oammo));
     else if (omissile)
@@ -573,52 +677,88 @@ function* autoquiver() {
         (yield* setuqwep(altammo));
     else if (omisc)
         (yield* setuqwep(omisc));
+
     return;
 }
 
+/* look through hero inventory for launcher matching ammo,
+   avoiding known cursed items. Returns NULL if no match. */
 /** C ref: dothrow.c:447 — @param {CPtr<struct obj>} ammo @returns {CPtr<struct obj>} */
 function find_launcher(ammo) {
     let otmp;
     let oX;
+
     if (!ammo)
         return null;
+
     for (oX = null, otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)
-            continue;
+            continue;  /* known to be cursed, so skip */
         if (ammo_and_launcher(ammo, otmp)) {
             if ((cptr.ldI32o(otmp, $obj_bknown) & 1))
-                return otmp;
+                return otmp;  /* known-B or known-U (known-C won't get here) */
             if (!oX)
-                oX = otmp;
+                oX = otmp;  /* unknown-BUC; used if no known-BU item found */
         }
     }
     return oX;
 }
 
+/* the #fire command -- throw from the quiver or use wielded polearm */
 /** C ref: dothrow.c:469 @returns {CInt} */
 export function* dofire() {
     let shotlimit = cptr.box(0);
     let obj;
+    /* AutoReturn() verifies Valkyrie if weapon is Mjollnir, but it relies
+       on its caller to make sure hero is strong enough to throw that */
     let uwep_Throw_and_Return = schar((uwep.v && ((((cptr.ldI64o(uwep.v, $obj_owornmask)) & 256n) != 0n && (cptr.ldI16o((uwep.v), $obj_otyp) == NHC.AKLYS || (cptr.ld1so((uwep.v), $obj_oartifact) == NHC.ART_MJOLLNIR && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_VALKYRIE)))) || cptr.ldI16o((uwep.v), $obj_otyp) == NHC.BOOMERANG) && (cptr.ld1so(uwep.v, $obj_oartifact) != NHC.ART_MJOLLNIR || (acurr(NHC.A_STR)) >= 125) ? 1 : 0));
     let skip_fireassist = 0;
     let altres;
     let res = NHM.ECMD_OK;
+
+    /*
+     * Same as dothrow(), except we use quivered missile instead
+     * of asking what to throw/shoot.  [Note: with the advent of
+     * fireassist that is no longer accurate...]
+     *
+     * If hero is wielding a thrown-and-return weapon and quiver
+     * is empty or contains ammo, use the wielded weapon (won't
+     * have any ammo's launcher wielded due to the weapon).
+     * If quiver is empty, use autoquiver to fill it when the
+     * corresponding option is on.
+     * If option is off or autoquiver doesn't select anything,
+     * we ask what to throw.
+     * Then we put the chosen item into the quiver slot unless
+     * it is already in another slot.  [Matters most if it is a
+     * stack but also matters for single item if this throw gets
+     * aborted (ESC at the direction prompt).]
+     */
     if (!(yield* ok_to_throw(shotlimit)))
         return NHM.ECMD_OK;
+
     obj = uquiver.v;
+    /* if wielding a throw-and-return weapon, throw it if quiver is empty
+       or has ammo rather than missiles [since the throw/return weapon is
+       wielded, the ammo's launcher isn't; the ammo-only policy avoids
+       throwing Mjollnir if quiver contains daggers] */
     if (uwep_Throw_and_Return && (!obj || is_ammo(obj))) {
         obj = uwep.v;
         skip_fireassist = 1;
+
     } else if (!obj) {
         if (!cptr.ld1so(flags, $flag_autoquiver)) {
+            /* if we're wielding a polearm, apply it */
             if (uwep.v && is_pole(uwep.v)) {
                 return (yield* use_pole(uwep.v, 1));
+                /* if we're wielding a bullwhip, apply it */
             } else if (uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.BULLWHIP) {
                 return (yield* use_whip(uwep.v));
             } else if (cptr.ld1so(iflags, $instance_flags_fireassist) && uswapwep.v && is_pole(uswapwep.v) && !((cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0 && (cptr.ldI32o(uswapwep.v, $obj_bknown) & 1) | 0)) {
+                /* we have a known not-cursed polearm as swap weapon.
+                   swap to it and retry */
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, doswapweapon));
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dofire));
-                return NHM.ECMD_OK;
+                return NHM.ECMD_OK;  /* haven't taken any time yet */
             } else {
                 (yield* You(__s_have_no_ammunition_readied));
             }
@@ -626,7 +766,8 @@ export function* dofire() {
             (yield* autoquiver());
             obj = uquiver.v;
             if (obj) {
-                cptr.stI64o(uquiver.v, $obj_owornmask, cptr.ldI64o(uquiver.v, $obj_owornmask) & (-513n));
+                /* give feedback if quiver has now been filled */
+                cptr.stI64o(uquiver.v, $obj_owornmask, cptr.ldI64o(uquiver.v, $obj_owornmask) & (-513n));  /* less verbose */
                 (yield* prinv(__s_you_ready, obj, 0n));
                 cptr.stI64o(uquiver.v, $obj_owornmask, cptr.ldI64o(uquiver.v, $obj_owornmask) | 512n);
             } else {
@@ -634,24 +775,36 @@ export function* dofire() {
             }
         }
     }
+
+    /* if autoquiver is disabled or has failed, prompt for missile */
     if (!obj) {
+        /* in case we're using ^A to repeat prior 'f' command, don't
+           use direction of previous throw as getobj()'s choice here */
         cptr.stI32(gi, 0);
+
+        /* this gives its own feedback about populating the quiver slot */
         res = (yield* doquiver_core(__s_fire));
         if (res != NHM.ECMD_OK && res != NHM.ECMD_TIME)
             return res;
+
         obj = uquiver.v;
     }
+
     if (uquiver.v && is_ammo(uquiver.v) && cptr.ld1so(iflags, $instance_flags_fireassist) && !skip_fireassist) {
         let olauncher;
+
         if (uwep.v && is_pole(uwep.v) && could_pole_mon())
             return (yield* use_pole(uwep.v, 1));
+        /* Try to find a launcher */
         if (ammo_and_launcher(uquiver.v, uwep.v)) {
             obj = uquiver.v;
         } else if (ammo_and_launcher(uquiver.v, uswapwep.v)) {
+            /* swap weapons and retry fire */
             (yield* cmdq_add_ec(NHC.CQ_CANNED, doswapweapon));
             (yield* cmdq_add_ec(NHC.CQ_CANNED, dofire));
             return res;
         } else if ((olauncher = find_launcher(uquiver.v)) !== null) {
+            /* wield launcher, retry fire */
             if (uwep.v && !cptr.ld1so(flags, $flag_pushweapon))
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, doswapweapon));
             (yield* cmdq_add_ec(NHC.CQ_CANNED, dowield));
@@ -660,20 +813,26 @@ export function* dofire() {
             return res;
         }
     }
+
     altres = obj ? (yield* throw_obj(obj, shotlimit.v)) : NHM.ECMD_CANCEL;
+    /* fire can take time by filling quiver (if that causes something which
+       was wielded to be unwielded) even if the throw itself gets cancelled */
     return (res == NHM.ECMD_TIME) ? res : altres;
 }
 
+/* if in midst of multishot shooting/throwing, stop early */
 /** C ref: dothrow.c:590 — @param {CInt} verbose */
 export function* endmultishot(verbose) {
     if (cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i) < cptr.ldI32o(gm, $instance_globals_m_m_shot)) {
         if (verbose && !cptr.ld1so(svc, $context_info_mon_moving)) {
             (yield* You(__s_stop_s_after_the_d_s_s, cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __s_firing : __s_throwing, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i), ordin(cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i)), cptr.ld1so(gm, $instance_globals_m_m_shot + $multishot_s) ? __s_shot : __s_toss));
         }
-        cptr.stI32o(gm, $instance_globals_m_m_shot, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i));
+        cptr.stI32o(gm, $instance_globals_m_m_shot, cptr.ldI32o(gm, $instance_globals_m_m_shot + $multishot_i));  /* make current shot be the last */
     }
 }
 
+/* Object hits floor at hero's feet.
+   Called from drop(), throwit(), hold_another_object(), litter(). */
 /** C ref: dothrow.c:606 — @param {CPtr<struct obj>} obj @param {CInt} verbosely */
 export function* hitfloor(obj, verbosely) {
     if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP)) || (cptr.ldI32o(u, $you_uinwater) & 1) | 0 || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
@@ -686,6 +845,9 @@ export function* hitfloor(obj, verbosely) {
         let verb = (cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_STRIKING) ? __s_strike : __s_hit;
         let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+
+        /* describe something that might keep the object where it is
+           or precede next message stating that it falls */
         if (t && (cptr.ldI32o(t, $trap_tseen) & 1) | 0) {
             switch ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) {
                 case NHC.TRAPDOOR:
@@ -704,6 +866,7 @@ export function* hitfloor(obj, verbosely) {
         }
         (yield* pline(__s_s_s_the_s, (yield* Doname2(obj)), (yield* otense(obj, verb)), surf));
     }
+
     if ((yield* hero_breaks(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.BRK_FROM_INV)))
         return;
     if ((yield* ship_object(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0)))
@@ -711,6 +874,12 @@ export function* hitfloor(obj, verbosely) {
     (yield* dropz(obj, 1));
 }
 
+/*
+ * Walk a path from src_cc to dest_cc, calling a proc for each location
+ * except the starting one.  If the proc returns FALSE, stop walking
+ * and return FALSE.  If stopped early, dest_cc will be the location
+ * before the failed callback.
+ */
 /** C ref: dothrow.c:656 — @param {CPtr<coord>} src_cc @param {CPtr<coord>} dest_cc @param {CPtr} check_proc @param {CPtr} arg @returns {CInt} */
 export function* walk_path(src_cc, dest_cc, check_proc, arg) {
     let err;
@@ -724,10 +893,28 @@ export function* walk_path(src_cc, dest_cc, check_proc, arg) {
     let prev_x;
     let prev_y;
     let keep_going = 1;
+
+    /* Use Bresenham's Line Algorithm to walk from src to dest.
+     *
+     * This should be replaced with a more versatile algorithm
+     * since it handles slanted moves in a suboptimal way.
+     * Going from 'x' to 'y' needs to pass through 'z', and will
+     * fail if there's an obstacle there, but it could choose to
+     * pass through 'Z' instead if that way imposes no obstacle.
+     *     ..y          .Zy
+     *     xz.    vs    x..
+     * Perhaps we should check both paths and accept whichever
+     * one isn't blocked.  But then multiple zigs and zags could
+     * potentially produce a meandering path rather than the best
+     * attempt at a straight line.  And (*check_proc)() would
+     * need to work more like 'travel', distinguishing between
+     * testing a possible move and actually attempting that move.
+     */
     dx = i16(((cptr.ldI16(dest_cc) - cptr.ldI16(src_cc)) | 0));
     dy = i16(((cptr.ldI16o(dest_cc, $coord_y) - cptr.ldI16o(src_cc, $coord_y)) | 0));
     prev_x = (x = cptr.ldI16(src_cc));
     prev_y = (y = cptr.ldI16o(src_cc, $coord_y));
+
     if (dx < 0) {
         x_change = -1;
         dx = i16((-dx));
@@ -751,6 +938,7 @@ export function* walk_path(src_cc, dest_cc, check_proc, arg) {
                 x = i16(x + x_change);
                 err = (err - (dy << 1)) | 0;
             }
+            /* check for early exit condition */
             if (!(keep_going = (yield* Y.icall((check_proc)(arg, x, y)))))
                 break;
         }
@@ -764,27 +952,54 @@ export function* walk_path(src_cc, dest_cc, check_proc, arg) {
                 y = i16(y + y_change);
                 err = (err - (dx << 1)) | 0;
             }
+            /* check for early exit condition */
             if (!(keep_going = (yield* Y.icall((check_proc)(arg, x, y)))))
                 break;
         }
     }
+
     if (keep_going)
-        return 1;
+        return 1;  /* successful */
+
     cptr.stI16(dest_cc, prev_x);
     cptr.stI16o(dest_cc, $coord_y, prev_y);
     return 0;
 }
 
+/* hack for hurtle_step() -- it ought to be changed to take an argument
+   indicating lev/fly-to-dest vs lev/fly-to-dest-minus-one-land-on-dest
+   vs drag-to-dest; original callers use first mode, jumping wants second,
+   grappling hook backfire and thrown chained ball need third */
 /** C ref: dothrow.c:742 — @param {CPtr} arg @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* hurtle_jump(arg, x, y) {
     let res;
     let save_EWwalking = EWwalking();
+
+    /* prevent jumping over water from being placed in that water */
     cptr.stI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops) | 536870912n);
     res = (yield* hurtle_step(arg, x, y));
     cptr.stI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops, save_EWwalking);
     return res;
 }
 
+/*
+ * Single step for the hero flying through the air from jumping, flying,
+ * etc.  Called from hurtle() and jump() via walk_path().  We expect the
+ * argument to be a pointer to an integer -- the range -- which is
+ * used in the calculation of points off if we hit something.
+ *
+ * Bumping into monsters won't cause damage but will wake them and make
+ * them angry.  Auto-pickup isn't done, since you don't have control over
+ * your movements at the time.
+ *
+ * Possible additions/changes:
+ *      o really attack monster if we hit one
+ *      o set stunned if we hit a wall or door
+ *      o reset nomul when we stop
+ *      o creepy feeling if pass through monster (if ever implemented...)
+ *      o bounce off walls
+ *      o let jumps go over boulders
+ */
 /** C ref: dothrow.c:773 — @param {CPtr} arg @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* hurtle_step(arg, x, y) {
     let ox;
@@ -799,23 +1014,26 @@ export function* hurtle_step(arg, x, y) {
     let lev;
     let ltyp;
     let dmg = 0;
+
     if (!isok(x, y)) {
         (yield* You_feel(__s_the_spirits_holding_you_back));
         return 0;
     } else if (!(yield* in_out_region(x, y))) {
         return 0;
     } else if (cptr.ldI32(range) == 0) {
-        return 0;
+        return 0;  /* previous step wants to stop now */
     }
     via_jumping = schar(((EWwalking() & 536870912n) != 0n));
     stopping_short = schar((via_jumping && cptr.ldI32(range) < 2 ? 1 : 0));
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     ltyp = cptr.ld1so(lev, $rm_typ);
+
     if (!Passes_walls() || !(may_pass = may_passwall(x, y))) {
         let why = null;
         let diagonal = schar((((cptr.ldI16(u) - x) | 0) != 0 && ((cptr.ldI16o(u, $you_uy) - y) | 0) != 0 ? 1 : 0));
         let open_door = schar((((ltyp) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN) != 0 ? 1 : 0));
         let odoor_diag = schar((open_door && diagonal ? 1 : 0));
+
         if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(x, y) || odoor_diag) {
             why = IS_TREE(ltyp) ? __s_bumping_into_a_tree : (((ltyp) < NHC.POOL) ? __s_bumping_into_a_wall : (odoor_diag ? __s_bumping_into_a_door_frame : __s_bumping_into_a_closed_door));
             if (odoor_diag)
@@ -828,10 +1046,12 @@ export function* hurtle_step(arg, x, y) {
             why = __s_bumping_into_a_boulder;
             (yield* You(__s_bump_into_a_s_ouch, (yield* xname(obj))));
         } else if (!may_pass) {
+            /* did we hit a no-dig non-wall position? */
             why = __s_touching_the_edge_of_the_universe;
             (yield* You(__s_smack_into_something));
         } else if (diagonal && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ldI16(u), y) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), x, cptr.ldI16o(u, $you_uy))) {
             let too_much = schar((cptr.ldPtro(gi, $instance_globals_i_invent) && (((inv_weight() + weight_cap()) | 0) > NHC.WT_TOOMUCH_DIAGONAL) ? 1 : 0));
+
             if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) || too_much) {
                 why = __s_wedging_into_a_narrow_crevice;
                 (yield* You(__s_sget_forcefully_wedged_into_a_crevice, too_much ? __s_and_all_your_belongings : __s_empty));
@@ -844,10 +1064,14 @@ export function* hurtle_step(arg, x, y) {
             return 0;
         }
     }
+
     if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
         let mnam;
         let glyph = glyph_at(x, y);
-        cptr.stI32o(mon, $monst_mundetected, 0);
+
+        cptr.stI32o(mon, $monst_mundetected, 0);  /* wakeup() will handle mimic */
+        /* after unhiding; combination of a_monnam() and some_mon_nam();
+           yields "someone" or "something" instead of "it" for unseen mon */
         mnam = (yield* x_monnam(mon, NHM.ARTICLE_A, null, ((has_mgivenname(mon) ? NHM.SUPPRESS_SADDLE : 0) | NHM.AUGMENT_IT), 0));
         if (!glyph_is_monster(glyph) && !((glyph) == NHC.GLYPH_INVIS_OFF))
             (yield* You(__s_find_s_by_bumping_into_s, mnam, (cptr.ldPtro2(genders, pronoun_gender(mon, 3), $sizeof_Gender, $Gender_him))));
@@ -867,12 +1091,17 @@ export function* hurtle_step(arg, x, y) {
         (yield* wake_nearto(x, y, 10));
         return 0;
     }
+
     if (((cptr.ldI16(u) - x) | 0) && ((cptr.ldI16o(u, $you_uy) - y) | 0) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ldI16(u), y) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), x, cptr.ldI16o(u, $you_uy))) {
+        /* Move at a diagonal. */
         if (Sokoban()) {
             (yield* You(__s_come_to_an_abrupt_halt));
             return 0;
         }
     }
+
+    /* caller has already determined that dragging the ball is allowed;
+       if ball is carried we might still need to drag the chain */
     if (Punished()) {
         let bc_control = cptr.box(0);
         let ballx = cptr.box(0);
@@ -880,20 +1109,31 @@ export function* hurtle_step(arg, x, y) {
         let chainx = cptr.box(0);
         let chainy = cptr.box(0);
         let cause_delay = cptr.box(0);
+
         if ((yield* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_delay, 1)))
             (yield* move_bc(0, bc_control.v, ballx.v, bally.v, chainx.v, chainy.v));
     }
+
     ox = cptr.ldI16(u);
     oy = cptr.ldI16o(u, $you_uy);
-    (yield* u_on_newpos(x, y));
-    (yield* newsym(ox, oy));
-    (yield* vision_recalc(1));
+    (yield* u_on_newpos(x, y));  /* set u.<ux,uy>, u.usteed-><mx,my>; cliparound(); */
+    (yield* newsym(ox, oy));  /* update old position */
+    (yield* vision_recalc(1));  /* update for new position */
     (yield* flush_screen(1));
+    /* if terrain type changes, levitation or flying might become blocked
+       or unblocked; might issue message, so do this after map+vision has
+       been updated for new location instead of right after u_on_newpos() */
     if (ltyp != cptr.ld1so3(svl, ox, $sizeof_rm_x21, oy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))
         (yield* switch_terrain());
+
+    /* might be entering a special room (treasure zoo, thrown room, &c) that
+       has a first-time entry message, or leaving shop with unpaid goods */
     (yield* check_special_room(0));
+
     if (is_pool(x, y) && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
         if (is_waterwall(x, y) || !(Levitation() || Flying() || ((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))))) {
+            /* couldn't move while hurtling; allow movement now so that
+               drown() will give a chance to crawl out of pool and survive */
             cptr.stI64o(gm, $instance_globals_m_multi, 0n);
             void (yield* drown());
             return 0;
@@ -903,18 +1143,28 @@ export function* hurtle_step(arg, x, y) {
     } else if (is_lava(x, y) && !stopping_short) {
         (yield* Norep(__s_you_move_over_some_lava));
     }
+
+    /* FIXME:
+     * Each trap should really trigger on the recoil if it would
+     * trigger during normal movement. However, not all the possible
+     * side-effects of this are tested [as of 3.4.0] so we trigger
+     * those that we have tested, and offer a message for the ones
+     * that we have not yet tested.
+     */
     if ((ttmp = t_at(x, y)) !== null) {
         if (stopping_short) {
-            ;
+            ;  /* see the comment above hurtle_jump() */
         } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
             (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
             return 0;
         } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE) {
             (yield* pline(__s_the_ground_vibrates_as_you_pass_it));
-            (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
+            (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));  /* doesn't print messages */
         } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP) {
             (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
         } else if ((is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0) {
+            /* air currents overcome the recoil in Sokoban;
+               when jumping, caller performs last step and enters trap */
             if (!via_jumping)
                 (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
             cptr.stI32(range, 0);
@@ -931,12 +1181,19 @@ export function* hurtle_step(arg, x, y) {
     return 1;
 }
 
+/* used by mhurtle_step() for actual hurtling and also to vary message
+   if target will/won't change location when knocked back */
 /** C ref: dothrow.c:977 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* will_hurtle(mon, x, y) {
     if (!isok(x, y))
         return 0;
+    /* redundant when called by mhurtle() but needed for mhitm_knockback() */
     if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) >= NHM.MZ_HUGE || cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) || (cptr.ldI32o(mon, $monst_mtrapped) & 1) | 0)
         return 0;
+    /*
+     * TODO: Treat walls, doors, iron bars, etc. specially
+     * rather than just stopping before.
+     */
     return (yield* goodpos(x, y, mon, 524296));
 }
 
@@ -944,20 +1201,24 @@ export function* will_hurtle(mon, x, y) {
 function* mhurtle_step(arg, x, y) {
     let mon = arg;
     let mtmp;
+
     if (!isok(x, y))
         return 0;
+
     if ((yield* will_hurtle(mon, x, y)) && (yield* m_in_out_region(mon, x, y))) {
         let res;
+
         if (!cptr.eq(mon, cptr.ldPtro(u, $you_usteed))) {
             cptr.stPtro3(svl, cptr.ldI16o(mon, $monst_mx), 168, cptr.ldI16o(mon, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
             (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
             (yield* place_monster(mon, x, y));
             (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         } else {
+            /* steed is hurtling, move hero which will also move steed */
             cptr.stI16o(u, $you_ux0, cptr.ldI16(u)), cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
             (yield* u_on_newpos(x, y));
-            (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));
-            (yield* vision_recalc(0));
+            (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));  /* update old position */
+            (yield* vision_recalc(0));  /* new location => different lines of sight */
         }
         (yield* flush_screen(1));
         (yield* Y.icall(nh_delay_output()()));
@@ -973,35 +1234,58 @@ function* mhurtle_step(arg, x, y) {
         if (canseemon(mon) || canseemon(mtmp))
             (yield* pline(__s_s_bumps_into_s, (yield* Monnam(mon)), (yield* a_monnam(mtmp))));
         (yield* wakeup(mtmp, schar((!cptr.ld1so(svc, $context_info_mon_moving)))));
+        /* check whether 'mon' is turned to stone by touching 'mtmp' */
         if (touch_petrifies(cptr.ldPtro(mtmp, $monst_data)) && !(yield* which_armor(mon, 67n))) {
             (yield* minstapetrify(mon, schar((!cptr.ld1so(svc, $context_info_mon_moving)))));
             (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         }
+        /* and whether 'mtmp' is turned to stone by being touched by 'mon' */
         if (touch_petrifies(cptr.ldPtro(mon, $monst_data)) && !(yield* which_armor(mtmp, 67n))) {
             (yield* minstapetrify(mtmp, schar((!cptr.ld1so(svc, $context_info_mon_moving)))));
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
         }
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
+        /* a monster has caused 'mon' to hurtle against hero */
         (yield* pline(__s_s_bumps_into_you, (yield* Some_Monnam(mon))));
         (yield* stop_occupation());
+        /* check whether 'mon' is turned to stone by touching poly'd hero */
         if (Upolyd() && touch_petrifies(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !(yield* which_armor(mon, 67n))) {
+            /* give poly'd hero credit/blame despite a monster causing it */
             (yield* minstapetrify(mon, 1));
             (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
         }
+        /* and whether hero is turned to stone by being touched by 'mon' */
         if (touch_petrifies(cptr.ldPtro(mon, $monst_data)) && !(uarmu.v || uarm.v || uarmc.v)) {
             nh_snprintf(__s_mhurtle_step, 1061, cptr.add(svk, $kinfo_name), 256n, __s_being_hit_by_s, (yield* x_monnam(mon, cptr.ld1so(mon, $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_A, __s_hurtling, 63, 0)));
             (yield* instapetrify(cptr.add(svk, $kinfo_name)));
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         }
     }
+
     return 0;
 }
 
+/*
+ * The player moves through the air for a few squares as a result of
+ * throwing or kicking something.
+ *
+ * dx and dy should be the direction of the hurtle, not of the original
+ * kick or throw.
+ */
 /** C ref: dothrow.c:1078 — @param {CInt} dx @param {CInt} dy @param {CInt} range @param {CInt} verbose */
 export function* hurtle(dx, dy, range, verbose) {
     range = cptr.box(range);
     let uc = cptr.alloc(4);
     let cc = cptr.alloc(4);
+
+    /* The chain is stretched vertically, so you shouldn't be able to move
+     * very far diagonally.  The premise that you should be able to move one
+     * spot leads to calculations that allow you to only move one spot away
+     * from the ball, if you are levitating over the ball, or one spot
+     * towards the ball, if you are at the end of the chain.  Rather than
+     * bother with all of that, assume that there is no slack in the chain
+     * for diagonal movement, give the player a message and return.
+     */
     if (Punished() && !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
         (yield* You_feel(__s_a_tug_from_the_iron_ball));
         nomul(0);
@@ -1011,47 +1295,67 @@ export function* hurtle(dx, dy, range, verbose) {
         nomul(0);
         return;
     }
+
+    /* make sure dx and dy are [-1,0,1] */
     dx = sgn(dx);
     dy = sgn(dy);
+
     if (!range.v || (!dx && !dy) || cptr.ldPtro(u, $you_ustuck))
-        return;
+        return;  /* paranoia */
+
     nomul(-range.v);
     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_moving_through_the_air);
-    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
+    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);  /* it just happens */
     if (verbose)
         (yield* You(__s_s_in_the_opposite_direction, (range.v > 1) ? __s_hurtle : __s_float));
+    /* if we're in the midst of shooting multiple projectiles, stop */
     (yield* endmultishot(1));
     cptr.stI16(uc, cptr.ldI16(u));
     cptr.stI16o(uc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+    /* this setting of cc is only correct if dx and dy are [-1,0,1] only */
     cptr.stI16(cc, i16(((cptr.ldI16(u) + (Math.imul(dx, range.v))) | 0)));
     cptr.stI16o(cc, $nhcoord_y, i16(((cptr.ldI16o(u, $you_uy) + (Math.imul(dy, range.v))) | 0)));
     void (yield* walk_path(uc, cc, hurtle_step, range));
 }
 
+/* Move a monster through the air for a few squares. */
 /** C ref: dothrow.c:1130 — @param {CPtr<struct monst>} mon @param {CInt} dx @param {CInt} dy @param {CInt} range */
 export function* mhurtle(mon, dx, dy, range) {
     let mc = cptr.alloc(4);
     let cc = cptr.alloc(4);
+
     (yield* wakeup(mon, schar((!cptr.ld1so(svc, $context_info_mon_moving)))));
+    /* At the very least, debilitate the monster */
     cptr.stI16o(mon, $monst_movement, 0);
     cptr.stI32o(mon, $monst_mstun, 1);
+
+    /* Is the monster stuck or too heavy to push?
+     * (very large monsters have too much inertia, even floaters and flyers)
+     */
     if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) >= NHM.MZ_HUGE || cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) || (cptr.ldI32o(mon, $monst_mtrapped) & 1) | 0) {
         if (canseemon(mon))
             (yield* pline(__s_s_doesn_t_budge, (yield* Monnam(mon))));
         return;
     }
+
+    /* Make sure dx and dy are [-1,0,1] */
     dx = sgn(dx);
     dy = sgn(dy);
     if (!range || (!dx && !dy))
-        return;
+        return;  /* paranoia */
+    /* don't let grid bugs be hurtled diagonally */
     if (dx && dy && (((cptr.ldI32o((cptr.ldPtro(mon, $monst_data)), $permonst_pmidx))) == NHC.PM_GRID_BUG))
         return;
+
+    /* undetected monster can be moved by your strike */
     if ((cptr.ldI32o(mon, $monst_mundetected) & 1)) {
         cptr.stI32o(mon, $monst_mundetected, 0);
         (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
     }
     if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
         (yield* seemimic(mon));
+
+    /* Send the monster along the path */
     cptr.stI16(mc, cptr.ldI16o(mon, $monst_mx));
     cptr.stI16o(mc, $nhcoord_y, cptr.ldI16o(mon, $monst_my));
     cptr.stI16(cc, i16(((cptr.ldI16o(mon, $monst_mx) + (Math.imul(dx, range))) | 0)));
@@ -1070,19 +1374,26 @@ export function* mhurtle(mon, dx, dy, range) {
 function* check_shop_obj(obj, x, y, broken) {
     let costly_xy;
     let shkp = (yield* shop_keeper(cptr.ld1so(u, $you_ushops)));
+
     if (!shkp)
         return;
+
     costly_xy = (yield* costly_spot(x, y));
     if (broken || !costly_xy || cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))) != cptr.ld1so(u, $you_ushops)) {
+        /* thrown out of a shop or into a different shop */
         if (is_unpaid(obj))
             void (yield* stolen_value(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)), 0));
         if (broken)
             cptr.stI32o(obj, $obj_no_charge, 1);
     } else if (costly_xy) {
         let oshops = (yield* in_rooms(x, y, NHC.SHOPBASE));
+
+        /* ushops0: in case we threw while levitating and recoiled
+           out of shop (most likely to the shk's spot in front of door) */
         if (cptr.ld1s(oshops) == cptr.ld1so(u, $you_ushops) || cptr.ld1s(oshops) == cptr.ld1so(u, $you_ushops0)) {
             if (is_unpaid(obj)) {
                 let gtg = (cptr.ldPtro((obj), $obj_cobj) !== null) ? contained_gold(obj, 1) : 0n;
+
                 (yield* subfrombill(obj, shkp));
                 if (gtg > 0n)
                     (yield* donate_gold(gtg, shkp, 1));
@@ -1093,9 +1404,14 @@ function* check_shop_obj(obj, x, y, broken) {
     }
 }
 
+/* Will 'obj' cause damage if it falls on hero's head when thrown upward?
+   Not used to handle things which break when they hit.
+   Stone missile hitting hero w/ Passes_walls attribute handled separately. */
 /** C ref: dothrow.c:1220 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function harmless_missile(obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
+
+    /* this list is fairly arbitrary */
     switch (otyp) {
         case NHC.SLING:
         case NHC.EUCALYPTUS_LEAF:
@@ -1121,17 +1437,26 @@ export function harmless_missile(obj) {
     return 0;
 }
 
+/*
+ * Hero tosses an object upwards with appropriate consequences.
+ *
+ * Returns FALSE if the object is gone.
+ */
 /** C ref: dothrow.c:1256 — @param {CPtr<struct obj>} obj @param {CInt} hitsroof @returns {CInt} */
 function* toss_up(obj, hitsroof) {
     let action;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let petrifier = schar(((otyp == NHC.EGG || otyp == NHC.CORPSE) && ismnum(cptr.ldI32o(obj, $obj_corpsenm)) && touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)) ? 1 : 0));
+    /* note: obj->quan == 1 */
+
     if (!has_ceiling(cptr.add(u, $you_uz))) {
-        action = __s_flies_up_into;
+        action = __s_flies_up_into;  /* into "the sky" or "the water above" */
     } else if (hitsroof) {
         if (breaktest(obj)) {
             (yield* pline(__s_s_hits_the_s, (yield* Doname2(obj)), (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
             (yield* breakmsg(obj, schar((!Blind()))));
+            /* crackable armor will return True for breaktest() but will
+               usually return False for breakobj() */
             if (!(yield* breakobj(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1, 1))) {
                 (yield* hitfloor(obj, 0));
                 cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
@@ -1144,26 +1469,35 @@ function* toss_up(obj, hitsroof) {
         action = __s_almost_hits;
     }
     (yield* pline(__s_s_s_the_s_then_falls_back_on_top_of, (yield* Doname2(obj)), action, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
+
+    /* object now hits you */
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
         (yield* potionhit(cptr.add(gy, $instance_globals_y_youmonst), obj, NHM.POTHIT_HERO_THROW));
     } else if (breaktest(obj)) {
         let blindinc;
+
+        /* need to check for blindness result prior to destroying obj */
         blindinc = ((otyp == NHC.CREAM_PIE || otyp == NHC.BLINDING_VENOM) && (yield* can_blnd(cptr.add(gy, $instance_globals_y_youmonst), cptr.add(gy, $instance_globals_y_youmonst), NHM.AT_WEAP, obj))) ? rnd_at(__s_dothrow_c, 1298, __s_toss_up, 25) : 0;
         (yield* breakmsg(obj, schar((!Blind()))));
         if ((yield* breakobj(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1, 1)))
-            obj = null;
+            obj = null;  /* it's now gone */
+
         switch (otyp) {
             case NHC.EGG:
             if (petrifier && !Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
+                /* egg ends up "all over your face"; perhaps
+                   visored helmet should still save you here */
                 if (uarmh.v)
                     (yield* Your(__s_s_fails_to_protect_you, helm_simple_name(uarmh.v)));
                 {
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
+                    /* what goes up... */
                     void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_elementary_physics);
                     (yield* You(__s_turn_to_stone));
                     if (obj)
-                        (yield* dropy(obj));
-                    cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
+                        (yield* dropy(obj));  /* bypass most of hitfloor() */
+                    cptr.stPtro(gt, $instance_globals_t_thrownobj, null);  /* now either gone or on floor */
                     (yield* done(NHC.STONING));
                     return schar((obj ? 1 : 0));
                 }
@@ -1187,6 +1521,7 @@ function* toss_up(obj, hitsroof) {
         }
         if (!obj)
             return 0;
+        /* 'obj' still exists, so drop it and return True */
         (yield* hitfloor(obj, 0));
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     } else if (harmless_missile(obj)) {
@@ -1200,13 +1535,22 @@ function* toss_up(obj, hitsroof) {
         let harmless = schar((stone_missile(obj) && passes_rocks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
         let artimsg = 0;
         let dmg = cptr.box((yield* dmgval(obj, cptr.add(gy, $instance_globals_y_youmonst))));
+
         if (cptr.ld1so(obj, $obj_oartifact) && !harmless)
+            /* need a fake die roll here; rn1(18,2) avoids 1 and 20 */
             artimsg = (yield* artifact_hit(null, cptr.add(gy, $instance_globals_y_youmonst), obj, dmg, ((rn2_at(__s_dothrow_c, 1354, __s_toss_up, 18) + 2) | 0)));
+
         if (!dmg.v) {
             dmg.v = ((((cptr.ldI32o(obj, $obj_owt) | 0) + ((NHC.WT_TO_DMG - 1) | 0)) | 0) / NHC.WT_TO_DMG) | 0;
             dmg.v = (dmg.v <= 1) ? 1 : rnd_at(__s_dothrow_c, 1358, __s_toss_up, dmg.v);
             if (dmg.v > 6)
                 dmg.v = 6;
+            /* since obj is a non-weapon, bonuses for silver and blessed
+               haven't been applied (otherwise '!dmg' test will fail when
+               they're applicable here); we don't have to worry about
+               dmgval()'s artifact light against gremlin or axe against
+               woody creature since both involve weapons; hero-as-shade is
+               hypothetical because hero can't polymorph into that form */
             if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)) && !is_silver)
                 dmg.v = 0;
             if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && mon_hates_blessings(cptr.add(gy, $instance_globals_y_youmonst)))
@@ -1219,20 +1563,26 @@ function* toss_up(obj, hitsroof) {
         if (dmg.v > 0)
             dmg.v = (dmg.v + cptr.ld1so(u, $you_udaminc)) | 0;
         if (dmg.v < 0)
-            dmg.v = 0;
+            dmg.v = 0;  /* beware negative rings of increase damage */
         dmg.v = ((Half_physical_damage()) ? (((((dmg.v) + 1) | 0) / 2) | 0) : (dmg.v));
+
         if (uarmh.v) {
+            /* note: 'harmless' and 'petrifier' are mutually exclusive */
             if ((less_damage && dmg.v < (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) || harmless) {
                 if (!artimsg) {
                     if (!harmless)
                         (yield* pline(__s_fortunately_you_are_wearing_a_hard));
                     else
-                        (yield* pline(__s_unfortunately_you_are_wearing_s, (yield* an(helm_simple_name(uarmh.v)))));
+                        (yield* pline(__s_unfortunately_you_are_wearing_s, (yield* an(helm_simple_name(uarmh.v)))));  /* helm or hat */
                 }
+
+                /* helmet definitely protects you when it blocks petrification */
             } else if (!petrifier) {
                 if (cptr.ld1so(flags, $flag_verbose))
                     (yield* Your(__s_s_does_not_protect_you, helm_simple_name(uarmh.v)));
             }
+            /* stone missile against hero in xorn form would have been
+               harmless, but hitting a worn helmet negates that */
             harmless = 0;
         } else if (petrifier && !Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -1248,6 +1598,7 @@ function* toss_up(obj, hitsroof) {
             (yield* pline_The(__s_silver_sears_you));
         if (harmless)
             (yield* hit((yield* thesimpleoname(obj)), cptr.add(gy, $instance_globals_y_youmonst), __s_but_doesn_t_hurt));
+
         (yield* hitfloor(obj, 1));
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
         if (!harmless)
@@ -1256,16 +1607,20 @@ function* toss_up(obj, hitsroof) {
     return 1;
 }
 
+/* return true for weapon meant to be thrown; excludes ammo */
 /** C ref: dothrow.c:1430 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function throwing_weapon(obj) {
     return schar((is_missile(obj) || is_spear(obj) || (is_blade(obj) && !is_sword(obj) && (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_dir) & 7) | 0) & NHM.PIERCE)) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAR_HAMMER || cptr.ldI16o(obj, $obj_otyp) == NHC.AKLYS ? 1 : 0));
 }
 
+/* the currently thrown object is returning to you (not for boomerangs) */
 /** C ref: dothrow.c:1442 — @param {CPtr<struct obj>} obj */
 function* sho_obj_return_to_u(obj) {
+    /* might already be our location (bounced off a wall) */
     if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos) != cptr.ldI16(u) || cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) != cptr.ldI16o(u, $you_uy))) {
         let x = (cptr.ldI16o(gb, $instance_globals_b_bhitpos) - cptr.ldI32o(u, $you_dx)) | 0;
         let y = (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) - cptr.ldI32o(u, $you_dy)) | 0;
+
         (yield* tmp_at(-4, i16(((cptr.ldI16o((obj), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj), $obj_corpsenm) + (((cptr.ld1so((obj), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj), $obj_corpsenm) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(obj) ? (((cptr.ld1so((obj), $obj_oclass) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj), $obj_otyp) + ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj), $obj_ox), 168, cptr.ldI16o((obj), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)))))))));
         while (isok(i16(x), i16(y)) && (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy))) {
             (yield* tmp_at(i16(x), i16(y)));
@@ -1287,31 +1642,41 @@ function throwit_return(clear_thrownobj) {
 /** C ref: dothrow.c:1468 — @param {CPtr<struct obj>} obj */
 function* swallowit(obj) {
     if (!cptr.eq(obj, uball.v)) {
-        void (yield* mpickobj(cptr.ldPtro(u, $you_ustuck), obj));
+        void (yield* mpickobj(cptr.ldPtro(u, $you_ustuck), obj));  /* clears 'gt.thrownobj' */
         throwit_return(0);
     } else
         throwit_return(1);
 }
 
+/* thrown object hits a monster.
+   mon may be NULL.
+   returns TRUE if shopkeeper caught the object.
+   may delete object, clearing gt.thrownobj */
 /** C ref: dothrow.c:1482 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* throwit_mon_hit(obj, mon) {
     if (mon) {
         let obj_gone;
+
         if ((cptr.ldI32o(mon, $monst_isshk) & 1) | 0 && cptr.ld1so(obj, $obj_where) == NHM.OBJ_MINVENT && cptr.eq(cptr.ldPtro(obj, $obj_v), mon)) {
             return 1;
         }
         void (yield* snuff_candle(obj));
         cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI16o(gb, $instance_globals_b_bhitpos) != cptr.ldI16o(mon, $monst_mx) || cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) != cptr.ldI16o(mon, $monst_my) ? 1 : 0)));
         obj_gone = schar((yield* thitmonst(mon, obj)));
+        /* Monster may have been tamed; this frees old mon [obsolete] */
         mon = (cptr.ldPtro3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 168, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
+        /* [perhaps this should be moved into thitmonst or hmon] */
         if (mon && (cptr.ldI32o(mon, $monst_isshk) & 1) | 0 && (!inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !cptr.strchr((yield* in_rooms(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), NHC.SHOPBASE)), cptr.ld1so(u, $you_ushops))))
             hot_pursuit(mon);
+
         if (obj_gone)
             cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     }
     return 0;
 }
 
+/* throw an object, NB: obj may be consumed in the process */
 /** C ref: dothrow.c:1510 — @param {CPtr<struct obj>} obj @param {CLongLong} wep_mask @param {CInt} twoweap @param {CPtr<struct obj>} oldslot */
 export function* throwit(obj, wep_mask, twoweap, oldslot) {
     obj = cptr.box(obj);
@@ -1322,13 +1687,18 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
     let crossbowing;
     let impaired = schar((HConfusion() || HStun() || Blind() || Hallucination() || Fumbling() ? 1 : 0));
     let tethered_weapon = schar((arw && (cptr.ldI32o(arw, $throw_and_return_weapon_tethered) & 1) | 0 && (wep_mask & 256n) != 0n ? 1 : 0));
-    cptr.st1o(gn, $instance_globals_n_notonhead, 0);
+
+    cptr.st1o(gn, $instance_globals_n_notonhead, 0);  /* reset potentially stale value */
     if (((cptr.ldI32o(obj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(obj.v, $obj_greased) & 1) | 0) && (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && !rn2_at(__s_dothrow_c, 1526, __s_throwit, 7)) {
         let slipok = 1;
+
         if (ammo_and_launcher(obj.v, uwep.v)) {
             (yield* pline(__s_pct_s_bang, (yield* Tobjnam(obj.v, __s_misfire))));
         } else {
+            /* only slip if it's greased or meant to be thrown */
             if ((cptr.ldI32o(obj.v, $obj_greased) & 1) | 0 || throwing_weapon(obj.v))
+                /* BUG: this message is grammatically incorrect if obj has
+                   a plural name; greased gloves or boots for instance. */
                 (yield* pline(__s_s_as_you_throw_it, (yield* Tobjnam(obj.v, __s_slip))));
             else
                 slipok = 0;
@@ -1341,15 +1711,20 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             impaired = 1;
         }
     }
+
     if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) || (cptr.ldI32o(u, $you_dz) < 1)) && calc_capacity(cptr.ldI32o(obj.v, $obj_owt) | 0) > NHC.SLT_ENCUMBER && (Upolyd() ? (cptr.ldI32o(u, $you_mh) < 5 && cptr.ldI32o(u, $you_mh) != cptr.ldI32o(u, $you_mhmax) ? 1 : 0) : (cptr.ldI32o(u, $you_uhp) < 10 && cptr.ldI32o(u, $you_uhp) != cptr.ldI32o(u, $you_uhpmax) ? 1 : 0)) && cptr.ldI32o(obj.v, $obj_owt) > (Math.imul((Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)), 2)) >>> 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
         (yield* You(__s_have_so_little_stamina_s_drops_from, (yield* the((yield* xname(obj.v))))));
         (yield* exercise(NHC.A_CON, 0));
         cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
         cptr.stI32o(u, $you_dz, 1);
     }
+
     cptr.stPtro(gt, $instance_globals_t_thrownobj, obj.v);
     cptr.stI32o(cptr.ldPtro(gt, $instance_globals_t_thrownobj), $obj_how_lost, NHM.LOST_THROWN);
     cptr.stPtro(iflags, $instance_flags_returning_missile, ((((wep_mask) & 256n) != 0n && (cptr.ldI16o((obj.v), $obj_otyp) == NHC.AKLYS || (cptr.ld1so((obj.v), $obj_oartifact) == NHC.ART_MJOLLNIR && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_VALKYRIE)))) || cptr.ldI16o((obj.v), $obj_otyp) == NHC.BOOMERANG) ? obj.v : null);
+    /* NOTE:  No early returns after this point or returning_missile
+       will be left with a stale pointer. */
+
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (cptr.eq(obj.v, uball.v)) {
             cptr.stI16o(uball.v, $obj_ox, cptr.stI16o(uchain.v, $obj_ox, cptr.ldI16(u)));
@@ -1367,17 +1742,20 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         } else if (cptr.ldI32o(u, $you_dz) < 0) {
             void (yield* toss_up(obj.v, schar((rn2_at(__s_dothrow_c, 1589, __s_throwit, 5) && !Underwater() ? 1 : 0))));
         } else if (cptr.ldI32o(u, $you_dz) > 0 && cptr.ldPtro(u, $you_usteed) && cptr.ld1so(obj.v, $obj_oclass) == NHC.POTION_CLASS && rn2_at(__s_dothrow_c, 1591, __s_throwit, 6)) {
+            /* alternative to prayer or wand of opening/spell of knock
+               for dealing with cursed saddle:  throw holy water > */
             (yield* potionhit(cptr.ldPtro(u, $you_usteed), obj.v, NHM.POTHIT_HERO_THROW));
         } else {
             (yield* hitfloor(obj.v, 1));
         }
         throwit_return(1);
         return;
+
     } else if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.BOOMERANG && !Underwater()) {
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation())
             (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1));
         mon = (yield* boomhit(obj.v, cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy)));
-        cptr.stPtro(iflags, $instance_flags_returning_missile, null);
+        cptr.stPtro(iflags, $instance_flags_returning_missile, null);  /* has returned or isn't going to */
         if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) {
             (yield* exercise(NHC.A_DEX, 1));
             obj.v = (yield* return_throw_to_inv(obj.v, wep_mask, twoweap, oldslot));
@@ -1385,8 +1763,14 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             return;
         }
     } else {
+        /* crossbow range is independent of strength */
         crossbowing = schar((ammo_and_launcher(obj.v, uwep.v) && weapon_type(uwep.v) == NHC.P_CROSSBOW ? 1 : 0));
         urange = ((crossbowing ? 18 : (acurrstr())) / 2) | 0;
+        /* balls are easy to throw or at least roll;
+         * also, this insures the maximum range of a ball is greater
+         * than 1, so the effects from throwing attached balls are
+         * actually possible
+         */
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.HEAVY_IRON_BALL)
             range = (urange - ((u32div(cptr.ldI32o(obj.v, $obj_owt), 100)) | 0)) | 0;
         else
@@ -1399,6 +1783,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         }
         if (range < 1)
             range = 1;
+
         if (is_ammo(obj.v)) {
             if (ammo_and_launcher(obj.v, uwep.v)) {
                 if (crossbowing)
@@ -1410,7 +1795,9 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
                 (yield* pline(__s_you_aren_t_wielding_s_so_you_throw_your, (yield* an(skill_name(weapon_type(obj.v)))), (yield* weapon_descr(obj.v)), (yield* body_part(NHC.HAND))));
             }
         }
+
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation()) {
+            /* action, reaction... */
             urange = (urange - range) | 0;
             if (urange < 1)
                 urange = 1;
@@ -1418,56 +1805,76 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             if (range < 1)
                 range = 1;
         }
+
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.BOULDER)
-            range = 20;
+            range = 20;  /* you must be giant */
         else if (is_art(obj.v, NHC.ART_MJOLLNIR))
-            range = (((range + 1) | 0) / 2) | 0;
+            range = (((range + 1) | 0) / 2) | 0;  /* it's heavy */
         else if (tethered_weapon)
+            /* range of a tethered_weapon is limited by the
+               length of the attached cord [implicit aspect of item] */
             range = min(range, isqrt(cptr.ldI32o(arw, $throw_and_return_weapon_range)));
         else if (cptr.eq(obj.v, uball.v) && cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR)
             range = 1;
+
         if (Underwater())
             range = 1;
+
         mon = (yield* bhit(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), range, tethered_weapon ? NHC.THROWN_TETHERED_WEAPON : NHC.THROWN_WEAPON, null, null, obj));
-        cptr.stPtro(gt, $instance_globals_t_thrownobj, obj.v);
+        cptr.stPtro(gt, $instance_globals_t_thrownobj, obj.v);  /* obj may be null now */
+
+        /* have to do this after bhit() so u.ux & u.uy are correct */
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation())
             (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), urange, 1));
+
         if (!obj.v) {
+            /* bhit display cleanup was left with this caller
+               for tethered_weapon, but clean it up now since
+               we're about to return */
             if (tethered_weapon)
                 (yield* tmp_at(-7, 0));
             throwit_return(0);
             return;
         }
     }
+
     if ((yield* throwit_mon_hit(obj.v, mon))) {
-        throwit_return(1);
+        throwit_return(1);  /* alert shk caught it */
         return;
     }
+
     if (!cptr.ldPtro(gt, $instance_globals_t_thrownobj)) {
+        /* missile has already been handled */
         if (tethered_weapon)
             (yield* tmp_at(-7, 0));
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !cptr.ldPtro(iflags, $instance_flags_returning_missile)) {
         (yield* swallowit(obj.v));
         return;
     } else {
+        /* Mjollnir must be wielded to be thrown--caller verifies this;
+           aklys must be wielded as primary to return when thrown */
         if (cptr.ldPtro(iflags, $instance_flags_returning_missile)) {
             if (rn2_at(__s_dothrow_c, 1711, __s_throwit, 100)) {
                 if (tethered_weapon)
                     (yield* tmp_at(-7, -1));
                 else
-                    (yield* sho_obj_return_to_u(obj.v));
+                    (yield* sho_obj_return_to_u(obj.v));  /* display its flight */
+
                 if (!impaired && rn2_at(__s_dothrow_c, 1717, __s_throwit, 100)) {
                     (yield* pline(__s_s_to_your_hand, (yield* Tobjnam(obj.v, __s_return))));
                     obj.v = (yield* addinv_before(obj.v, oldslot));
                     (yield* encumber_msg());
+                    /* addinv autoquivers an aklys if quiver is empty;
+                       if obj is quivered, remove it before wielding */
                     if (cptr.ldI64o(obj.v, $obj_owornmask) & 512n)
                         (yield* setuqwep(null));
                     (yield* setuwep(obj.v));
-                    set_twoweap(twoweap);
+                    set_twoweap(twoweap);  /* u.twoweap = twoweap */
                     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0))
                         (yield* newsym(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
                 } else {
                     let dmg = cptr.box(rn2_at(__s_dothrow_c, 1730, __s_throwit, 2));
+
                     if (!dmg.v) {
                         (yield* pline(Blind() ? __s_s_lands_s_your_s : __s_s_back_to_you_landing_s_your_s, Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_Something) : (yield* Tobjnam(obj.v, __s_return)), Levitation() ? __s_beneath : __s_at, (yield* makeplural((yield* body_part(NHC.FOOT))))));
                     } else {
@@ -1477,6 +1884,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
                             void (yield* artifact_hit(null, cptr.add(gy, $instance_globals_y_youmonst), obj.v, dmg, 0));
                         (yield* losehp(((Half_physical_damage()) ? (((((dmg.v) + 1) | 0) / 2) | 0) : (dmg.v)), (yield* killer_xname(obj.v)), NHM.KILLED_BY));
                     }
+
                     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
                         (yield* swallowit(obj.v));
                         return;
@@ -1489,13 +1897,23 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             } else {
                 if (tethered_weapon)
                     (yield* tmp_at(-7, 0));
+                /* when this location is stepped on, the weapon will be
+                   auto-picked up due to 'obj->how_lost' of LOST_THROWN;
+                   addinv() prevents thrown Mjollnir from being placed
+                   into the quiver slot, but an aklys will end up there if
+                   that slot is empty at the time; since hero will need to
+                   explicitly rewield the weapon to get throw-and-return
+                   capability back anyway, quivered or not shouldn't matter */
                 (yield* pline(__s_s_to_return, (yield* Tobjnam(obj.v, __s_fail))));
+
                 if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
                     (yield* swallowit(obj.v));
                     return;
                 }
+                /* continue below with placing 'obj' at target location */
             }
         }
+
         if ((!((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD || ((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP)) && breaktest(obj.v)) || cptr.ld1so(obj.v, $obj_oclass) == NHC.VENOM_CLASS) {
             (yield* tmp_at(-4, i16(((cptr.ldI16o((obj.v), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS))))) + ((!(yield* Y.icall((rn2_on_display_rng)(2)))) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((obj.v), $obj_corpsenm) + (((cptr.ld1so((obj.v), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((yield* Y.icall((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)))) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((yield* Y.icall((rn2_on_display_rng)(NHC.NUMMONS)))) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((obj.v), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((obj.v), $obj_corpsenm) + ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(obj.v) ? (((cptr.ld1so((obj.v), $obj_oclass) + ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((obj.v), $obj_otyp) + ((cptr.ld1so((obj.v), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((obj.v), $obj_ox), 168, cptr.ldI16o((obj.v), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((obj.v), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)))))))));
             (yield* tmp_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
@@ -1508,6 +1926,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
             }
         }
         if (!Deaf() && !Underwater()) {
+            /* Some sound effects when item lands in water or lava */
             if (is_pool(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) || (is_lava(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) && !is_flammable(obj.v))) {
                 ;
                 (yield* pline(((yield* weight(obj.v)) > NHC.WT_SPLASH_THRESHOLD) ? __s_splash : __s_plop));
@@ -1523,7 +1942,7 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
                 (yield* pline(__s_s_snatches_up_s, (yield* Monnam(mon)), (yield* the((yield* xname(obj.v))))));
             if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj.v, $obj_unpaid) & 1) | 0)
                 (yield* check_shop_obj(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 0));
-            void (yield* mpickobj(mon, obj.v));
+            void (yield* mpickobj(mon, obj.v));  /* may merge and free obj */
             throwit_return(1);
             return;
         }
@@ -1534,12 +1953,19 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         }
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
         (yield* place_object(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
+        /* container contents might break;
+           do so before turning ownership of gt.thrownobj over to shk
+           (container_impact_dmg handles item already owned by shop) */
         if (!((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD || ((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP))) {
+            /* <x,y> is spot where you initiated throw, not gb.bhitpos */
             (yield* container_impact_dmg(obj.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             (yield* impact_disturbs_zombies(obj.v, 1));
         }
+        /* charge for items thrown out of shop;
+           shk takes possession for items thrown into one */
         if ((cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj.v, $obj_unpaid) & 1) | 0) && !cptr.eq(obj.v, uball.v))
             (yield* check_shop_obj(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 0));
+
         (yield* stackobj(obj.v));
         if (cptr.eq(obj.v, uball.v))
             (yield* drop_ball(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)));
@@ -1548,13 +1974,20 @@ export function* throwit(obj, wep_mask, twoweap, oldslot) {
         if (obj_sheds_light(obj.v))
             cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
     }
+
     throwit_return(0);
     return;
 }
 
+/* handle a throw-and-return missile coming back into inventory; makes sure
+   that if it was wielded, it will be re-wielded; if it was split off of a
+   stack (boomerang), don't let it merge with a different compatible stack */
 /** C ref: dothrow.c:1855 — @param {CPtr<struct obj>} obj @param {CLongLong} wep_mask @param {CInt} twoweap @param {CPtr<struct obj>} oldslot @returns {CPtr<struct obj>} */
 function* return_throw_to_inv(obj, wep_mask, twoweap, oldslot) {
     let otmp = null;
+
+    /* if 'obj' is from a stack split, we can put it back by undoing split
+       so there's no chance of merging with some other compatible stack */
     if (cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit) || cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
         cptr.stPtr(obj, cptr.ldPtro(gi, $instance_globals_i_invent));
         cptr.stPtro(gi, $instance_globals_i_invent, obj);
@@ -1568,32 +2001,49 @@ function* return_throw_to_inv(obj, wep_mask, twoweap, oldslot) {
             obj = otmp;
         }
     }
+
+    /* if 'obj' wasn't from a stack split or if it wouldn't merge back
+       (maybe new erosion damage?) then it needs to be added to invent;
+       don't merge with any other stack even if there is a compatible one
+       (others with similar erosion?); can't use addinv_nomerge() here */
     if (!otmp) {
-        cptr.stI32o(obj, $obj_nomerge, 1);
+        cptr.stI32o(obj, $obj_nomerge, 1);  /* redundant unless 'oldslot' somehow went away */
         obj = (yield* addinv_before(obj, oldslot));
         cptr.stI32o(obj, $obj_nomerge, 0);
+
+        /* in case addinv() autoquivered */
         if ((cptr.ldI64o(obj, $obj_owornmask) & 512n) != 0n && ((cptr.ldI64o(obj, $obj_owornmask) | wep_mask) & 1280n) != 0n)
             (yield* setuqwep(null));
+
         if ((wep_mask & 256n) && !uwep.v)
             (yield* setuwep(obj));
         else if ((wep_mask & 1024n) && !uswapwep.v)
             (yield* setuswapwep(obj));
         else if ((wep_mask & 512n) && !uquiver.v)
             (yield* setuqwep(obj));
+
+        /* in case the throw ended dual-wielding, reinstate it after
+           successful catch (not needed for boomerang split/unsplit) */
         if (twoweap && !cptr.ld1so(u, $you_twoweap))
-            set_twoweap(1);
+            set_twoweap(1);  /* u.twoweap = TRUE */
     }
+
     (yield* encumber_msg());
     return obj;
 }
 
+/* an object may hit a monster; various factors adjust chance of hitting */
 /** C ref: dothrow.c:1913 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} mon_notices @returns {CInt} */
 export function* omon_adj(mon, obj, mon_notices) {
     let tmp = 0;
-    tmp = (tmp + ((cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) - NHM.MZ_MEDIUM) | 0)) | 0;
+
+    /* size of target affects the chance of hitting */
+    tmp = (tmp + ((cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) - NHM.MZ_MEDIUM) | 0)) | 0;  /* -2..+5 */
+    /* sleeping target is more likely to be hit */
     if ((cptr.ldI32o(mon, $monst_msleeping) & 1)) {
         tmp = (tmp + 2) | 0;
     }
+    /* ditto for immobilized target */
     if (!(cptr.ldI32o(mon, $monst_mcanmove) & 1) || !cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove)) {
         tmp = (tmp + 4) | 0;
         if (mon_notices && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) && !rn2_at(__s_dothrow_c, 1926, __s_omon_adj, 10)) {
@@ -1601,6 +2051,7 @@ export function* omon_adj(mon, obj, mon_notices) {
             cptr.stI32o(mon, $monst_mfrozen, 0);
         }
     }
+    /* some objects are more likely to hit than others */
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.HEAVY_IRON_BALL:
         if (!cptr.eq(obj, uball.v))
@@ -1617,9 +2068,16 @@ export function* omon_adj(mon, obj, mon_notices) {
     return tmp;
 }
 
+/* thrown object misses target monster */
 /** C ref: dothrow.c:1951 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @param {CInt} maybe_wakeup */
 function* tmiss(obj, mon, maybe_wakeup) {
     let missile = (yield* mshot_xname(obj));
+
+    /* If the target can't be seen or doesn't look like a valid target,
+       avoid "the arrow misses it," or worse, "the arrows misses the mimic."
+       An attentive player will still notice that this is different from
+       an arrow just landing short of any target (no message in that case),
+       so will realize that there is a valid target here anyway. */
     if (!canseemon(mon) || ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER))
         (yield* pline(__s_s_s, (yield* The(missile)), (yield* otense(obj, __s_miss))));
     else
@@ -1629,30 +2087,59 @@ function* tmiss(obj, mon, maybe_wakeup) {
     return;
 }
 
+/* whether or not object should be destroyed when it hits its target */
 /** C ref: dothrow.c:1976 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function should_mulch_missile(obj) {
     let broken;
     let chance;
+
+    /* only ammo (excluding magic stones) or missiles will break */
     if (!obj || !(is_ammo(obj) || is_missile(obj)) || cptr.ldI16o(obj, $obj_otyp) == NHC.BOOMERANG || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) & 1) | 0)
         return 0;
+
+    /* we had been breaking 2/3 of everything unconditionally.  we still don't
+       want anything to survive unconditionally, but we need ammo to stay
+       around longer on average. */
     chance = (((3 + greatest_erosion(obj)) | 0) - cptr.ld1so(obj, $obj_spe)) | 0;
     broken = schar((chance > 1 ? rn2_at(__s_dothrow_c, 1991, __s_should_mulch_missile, chance) : !rn2_at(__s_dothrow_c, 1991, __s_should_mulch_missile, 4)));
     if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && (cptr.ld1so(svc, $context_info_mon_moving) ? !rn2_at(__s_dothrow_c, 1992, __s_should_mulch_missile, 3) : !rnl_at(__s_dothrow_c, 1992, __s_should_mulch_missile, 4)))
         broken = 0;
+
+    /* Flint and hard gems don't break easily */
     if (((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_tough) & 1) | 0) || cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT) && !rn2_at(__s_dothrow_c, 1998, __s_should_mulch_missile, 2))
         broken = 0;
+
     return broken;
 }
 
+/*
+ * Object thrown by player arrives at monster's location.
+ * Return 1 if obj has disappeared or otherwise been taken care of,
+ * 0 if caller must take care of it.
+ * Also used for kicked objects and for polearms/grapnel applied at range.
+ */
 /** C ref: dothrow.c:2011 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* thitmonst(mon, obj) {
-    let tmp;
-    let disttmp;
+    let tmp;  /* Base chance to hit */
+    let disttmp;  /* distance modifier */
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let hmode;
     let guaranteed_hit = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon))) ? 1 : 0));
     let dieroll;
+
     hmode = (cptr.eq(obj, uwep.v)) ? NHC.HMON_APPLIED : ((cptr.eq(obj, cptr.ldPtro(gk, $instance_globals_k_kickedobj))) ? NHC.HMON_KICKED : NHC.HMON_THROWN);
+
+    /* Differences from melee weapons:
+     *
+     * Dex still gives a bonus, but strength does not.
+     * Polymorphed players lacking attacks may still throw.
+     * There's a base -1 to hit.
+     * No bonuses for fleeing or stunned targets (they don't dodge
+     *    melee blows as readily, but dodging arrows is hard anyway).
+     * Not affected by traps, etc.
+     * Certain items which don't in themselves do damage ignore 'tmp'.
+     * Distance and monster size affect chance to hit.
+     */
     tmp = (((((((-1 + Luck()) | 0) + find_mac(mon)) | 0) + cptr.ld1so(u, $you_uhitinc)) | 0) + (Upolyd() ? (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) : (cptr.ldI32o(u, $you_ulevel)))) | 0;
     if ((acurr(NHC.A_DEX)) < 4)
         tmp = (tmp - 3) | 0;
@@ -1662,10 +2149,17 @@ export function* thitmonst(mon, obj) {
         tmp = (tmp - 1) | 0;
     else if ((acurr(NHC.A_DEX)) >= 14)
         tmp = (tmp + (((acurr(NHC.A_DEX)) - 14) | 0)) | 0;
+
+    /* Modify to-hit depending on distance; but keep it sane.
+     * Polearms get a distance penalty even when wielded; it's
+     * hard to hit at a distance.
+     */
     disttmp = (3 - distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) | 0;
     if (disttmp < -4)
         disttmp = -4;
     tmp = (tmp + disttmp) | 0;
+
+    /* gloves are a hindrance to proper use of bows */
     if (uarmg.v && uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_BOW) {
         switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
             case NHC.GAUNTLETS_OF_POWER:
@@ -1682,12 +2176,19 @@ export function* thitmonst(mon, obj) {
             break;
         }
     }
+
     tmp = (tmp + (yield* omon_adj(mon, obj, 1))) | 0;
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 128n) != 0n) && (Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
         tmp++;
     if (guaranteed_hit) {
-        tmp = (tmp + 1000) | 0;
+        tmp = (tmp + 1000) | 0;  /* Guaranteed hit */
     }
+
+    /* throwing real gems to co-aligned unicorns boosts Luck,
+       to cross-aligned unicorns changes Luck by random amount;
+       throwing worthless glass doesn't affect Luck but doesn't anger them;
+       5.0: treat rocks and gray stones as attacks rather than like glass
+       and also treat gems or glass shot via sling as attacks */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && is_unicorn(cptr.ldPtro(mon, $monst_data)) && ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) != NHC.MINERAL && !(uwep.v && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_SLING)) {
         if (helpless(mon)) {
             (yield* tmiss(obj, mon, 0));
@@ -1700,13 +2201,26 @@ export function* thitmonst(mon, obj) {
             return (yield* gem_accept(mon, obj));
         }
     }
+
+    /* don't make game unwinnable if naive player throws artifact
+       at leader... (kicked artifact is ok too; HMON_APPLIED could
+       occur if quest artifact polearm or grapnel ever gets added) */
     if (hmode != NHC.HMON_APPLIED && ((is_quest_artifact(obj) || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1) | 0 || (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(obj, $obj_known) & 1))) && cptr.ldI32o(mon, $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id))) {
+        /* AIS: changes to wakeup() means that it's now less inappropriate
+           here than it used to be, but manual version works just as well */
         cptr.stI32o(mon, $monst_msleeping, 0);
         cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744072904245247n);
+
         if ((cptr.ldI32o(mon, $monst_mcanmove) & 1)) {
             (yield* pline(__s_s_catches_s, (yield* Some_Monnam(mon)), (yield* the((yield* xname(obj))))));
+            /* leader will keep tossed invocation item after you've done the
+               invocation and it's become unnecessary for completion.. */
             if (((cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1) | 0 && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR) || !(cptr.ldI32o(mon, $monst_mpeaceful) & 1)) {
+                /* give an explanation for keeping the item only if leader is
+                   not doing it out of anger */
                 if ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 && !Deaf()) {
+                    /* just in case, identify the object so its name will
+                       appear in the message */
                     (yield* fully_identify_obj(obj));
                     (yield* verbalize(__s_s_part_in_this_is_finished, (yield* s_suffix((yield* The((yield* xname(obj))))))));
                     (yield* verbalize(__s_we_will_guard_it_in_case_it_is_ever, (yield* align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)))));
@@ -1715,22 +2229,28 @@ export function* thitmonst(mon, obj) {
                     (yield* check_shop_obj(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), 0));
                 void (yield* mpickobj(mon, obj));
             } else {
+                /* under normal circumstances, leader will say something and
+                   then return the item to the hero */
                 let next2u = monnear(mon, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                (yield* finish_quest(obj));
+
+                (yield* finish_quest(obj));  /* acknowledge quest completion */
                 (yield* pline(__s_s_s_s_back_to_you, (yield* Some_Monnam(mon)), (next2u ? __s_hands : __s_tosses), (yield* the((yield* xname(obj))))));
                 if (!next2u)
                     (yield* sho_obj_return_to_u(obj));
-                obj = (yield* addinv(obj));
+                obj = (yield* addinv(obj));  /* back into your inventory */
                 (void (obj));
                 (yield* encumber_msg());
             }
-            return 1;
+            return 1;  /* caller doesn't need to place it */
         }
         return 0;
     }
+
     dieroll = rnd_at(__s_dothrow_c, 2152, __s_thitmonst, 20);
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
         if (hmode == NHC.HMON_KICKED) {
+            /* throwing adjustments and weapon skill bonus don't apply */
             tmp = (tmp - (is_ammo(obj) ? 5 : 3)) | 0;
         } else if (is_ammo(obj)) {
             if (!ammo_and_launcher(obj, uwep.v)) {
@@ -1740,6 +2260,11 @@ export function* thitmonst(mon, obj) {
                 tmp = (tmp + (yield* weapon_hit_bonus(uwep.v))) | 0;
                 if (cptr.ld1so(uwep.v, $obj_oartifact))
                     tmp = (tmp + (yield* spec_abon(uwep.v, mon))) | 0;
+                /*
+                 * Elves and Samurais are highly trained w/bows,
+                 * especially their own special types of bow.
+                 * Polymorphing won't make you a bow expert.
+                 */
                 if (((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) && (!Upolyd() || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) && cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_BOW) {
                     ++tmp;
                     if (((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.ELVEN_BOW) || ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.YUMI))
@@ -1753,12 +2278,20 @@ export function* thitmonst(mon, obj) {
                 tmp = (tmp + 2) | 0;
             else if (cptr.eq(obj, cptr.ldPtro(gt, $instance_globals_t_thrownobj)))
                 tmp = (tmp - 2) | 0;
+            /* we know we're dealing with a weapon or weptool handled
+               by WEAPON_SKILLS once ammo objects have been excluded */
             tmp = (tmp + (yield* weapon_hit_bonus(obj))) | 0;
         }
+
         if (tmp >= dieroll) {
             let wasthrown = schar((cptr.ldPtro(gt, $instance_globals_t_thrownobj) !== null));
             let chopper = schar(is_axe(obj));
+
+            /* attack hits mon */
             if (hmode == NHC.HMON_APPLIED) {
+                /* hmon()'s caller is expected to do this; however, hmon()
+                   delivers the "hit with wielded weapon for first time"
+                   gamelog message when applicable */
                 (cptr.stI64o(u, $you_uconduct + $u_conduct_weaphit, cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit) + 1n)) - (1n);
             }
             if ((yield* hmon(mon, obj, hmode, dieroll))) {
@@ -1766,8 +2299,16 @@ export function* thitmonst(mon, obj) {
                     (yield* cutworm(mon, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), chopper));
             }
             (yield* exercise(NHC.A_DEX, 1));
+            /* if hero was swallowed and projectile killed the engulfer,
+               'obj' got added to engulfer's inventory and then dropped,
+               so we can't safely use that pointer anymore; it escapes
+               the chance to be used up here... */
             if (wasthrown && !cptr.ldPtro(gt, $instance_globals_t_thrownobj))
                 return 1;
+
+            /* projectiles other than magic stones sometimes disappear
+               when thrown; projectiles aren't among the types of weapon
+               that hmon() might have destroyed so obj is intact */
             if (should_mulch_missile(obj)) {
                 if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
                     (yield* check_shop_obj(obj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 1));
@@ -1780,18 +2321,21 @@ export function* thitmonst(mon, obj) {
             if (hmode == NHC.HMON_APPLIED)
                 (yield* wakeup(mon, 1));
         }
+
     } else if (otyp == NHC.HEAVY_IRON_BALL) {
         (yield* exercise(NHC.A_STR, 1));
         if (tmp >= dieroll) {
             let was_swallowed = guaranteed_hit;
+
             (yield* exercise(NHC.A_DEX, 1));
             if (!(yield* hmon(mon, obj, hmode, dieroll))) {
                 if (was_swallowed && !(cptr.ldI32o(u, $you_uswallow) & 1) && cptr.eq(obj, uball.v))
-                    return 1;
+                    return 1;  /* already did placebc() */
             }
         } else {
             (yield* tmiss(obj, mon, 1));
         }
+
     } else if (otyp == NHC.BOULDER) {
         (yield* exercise(NHC.A_STR, 1));
         if (tmp >= dieroll) {
@@ -1800,15 +2344,18 @@ export function* thitmonst(mon, obj) {
         } else {
             (yield* tmiss(obj, mon, 1));
         }
+
     } else if ((otyp == NHC.EGG || otyp == NHC.CREAM_PIE || otyp == NHC.BLINDING_VENOM || otyp == NHC.ACID_VENOM) && (guaranteed_hit || (acurr(NHC.A_DEX)) > rnd_at(__s_dothrow_c, 2258, __s_thitmonst, 25))) {
         void (yield* hmon(mon, obj, hmode, dieroll));
-        return 1;
+        return 1;  /* hmon used it up */
+
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS && (guaranteed_hit || (acurr(NHC.A_DEX)) > rnd_at(__s_dothrow_c, 2263, __s_thitmonst, 25))) {
         (yield* potionhit(mon, obj, NHM.POTHIT_HERO_THROW));
         return 1;
+
     } else if (befriend_with_obj(cptr.ldPtro(mon, $monst_data), obj) || (cptr.ld1so(mon, $monst_mtame) && (yield* dogfood(mon, obj)) <= NHC.ACCFOOD)) {
         if ((yield* tamedog(mon, obj, 1))) {
-            return 1;
+            return 1;  /* obj is gone */
         } else {
             (yield* tmiss(obj, mon, 0));
             cptr.stI32o(mon, $monst_msleeping, 0);
@@ -1818,10 +2365,13 @@ export function* thitmonst(mon, obj) {
         let trail = new Uint8Array(256);
         let monname;
         let md = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
+
+        /* this assumes that guaranteed_hit is due to swallowing */
         (yield* wakeup(mon, 1));
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) {
             if (((cptr.ldU64o((md), $permonst_mflags1) & 262144n) != 0n)) {
                 (yield* minstapetrify(cptr.ldPtro(u, $you_ustuck), 1));
+                /* Don't leave a cockatrice corpse available in a statue */
                 if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
                     (yield* delobj(obj));
                     return 1;
@@ -1836,6 +2386,7 @@ export function* thitmonst(mon, obj) {
     } else {
         (yield* tmiss(obj, mon, 1));
     }
+
     return 0;
 }
 
@@ -1852,9 +2403,12 @@ function* gem_accept(mon, obj) {
     let is_gem = schar((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GEMSTONE));
     let ret = 0;
     __lbl_nopick: {
+
         void cptr.strcpy(cptr.decay(buf), (yield* Monnam(mon)));
         cptr.stI32o(mon, $monst_mpeaceful, 1);
         cptr.stI32o(mon, $monst_mavenge, 0);
+
+        /* object properly identified */
         if ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
             if (is_gem) {
                 if (is_buddy) {
@@ -1868,6 +2422,8 @@ function* gem_accept(mon, obj) {
                 void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_nogood));
                 break __lbl_nopick;
             }
+
+            /* making guesses */
         } else if (has_oname(obj) || cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uname)) {
             if (is_gem) {
                 if (is_buddy) {
@@ -1881,6 +2437,8 @@ function* gem_accept(mon, obj) {
                 void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_nogood));
                 break __lbl_nopick;
             }
+
+            /* value completely unknown to @ */
         } else {
             if (is_gem) {
                 if (is_buddy) {
@@ -1897,7 +2455,7 @@ function* gem_accept(mon, obj) {
         void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_acceptgift));
         if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
             (yield* check_shop_obj(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), 1));
-        void (yield* mpickobj(mon, obj));
+        void (yield* mpickobj(mon, obj));  /* may merge and free obj */
         ret = 1;
     }
     if (!Blind())
@@ -1907,22 +2465,65 @@ function* gem_accept(mon, obj) {
     return ret;
 }
 
+/*
+ * Comments about the restructuring of the old breaks() routine.
+ *
+ * There are now three distinct phases to object breaking:
+ *     breaktest() - which makes the check/decision about whether the
+ *                   object is going to break.
+ *     breakmsg()  - which outputs a message about the breakage,
+ *                   appropriate for that particular object. Should
+ *                   only be called after a positive breaktest().
+ *                   on the object and, if it going to be called,
+ *                   it must be called before calling breakobj().
+ *                   Calling breakmsg() is optional.
+ *     breakobj()  - which actually does the breakage and the side-effects
+ *                   of breaking that particular object. This should
+ *                   only be called after a positive breaktest() on the
+ *                   object.
+ *
+ * Each of the above routines is currently static to this source module.
+ * There are two routines callable from outside this source module which
+ * perform the routines above in the correct sequence.
+ *
+ *   hero_breaks() - called when an object is to be broken as a result
+ *                   of something that the hero has done. (throwing it,
+ *                   kicking it, etc.)
+ *   breaks()      - called when an object is to be broken for some
+ *                   reason other than the hero doing something to it.
+ */
+
+/*
+ * The hero causes breakage of an object (throwing, dropping it, etc.)
+ * Return 0 if the object didn't break, 1 if the object broke.
+ */
 /** C ref: dothrow.c:2417 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CUInt} breakflags @returns {CInt} */
 export function* hero_breaks(obj, x, y, breakflags) {
+    /* from_invent: thrown or dropped by player; maybe on shop bill;
+       by-hero is implicit so callers don't need to specify BRK_BY_HERO */
     let from_invent = schar((((breakflags & NHM.BRK_FROM_INV) >>> 0) != 0));
     let in_view = schar((Blind() ? 0 : (from_invent || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) ? 1 : 0)));
     let brk = ((breakflags & 12) >>> 0);
+
+    /* only call breaktest if caller hasn't already specified the outcome */
     if (!brk)
         brk = (breaktest(obj) ? NHM.BRK_KNOWN2BREAK : NHM.BRK_KNOWN2NOTBREAK) >>> 0;
     if (brk == NHM.BRK_KNOWN2NOTBREAK)
         return 0;
+
     (yield* breakmsg(obj, in_view));
     return (yield* breakobj(obj, x, y, 1, from_invent));
 }
 
+/*
+ * The object is going to break for a reason other than the hero doing
+ * something to it.
+ * Return 0 if the object doesn't break, 1 if the object broke.
+ */
 /** C ref: dothrow.c:2444 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* breaks(obj, x, y) {
     let in_view = schar((Blind() ? 0 : ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)));
+
     if (!breaktest(obj))
         return 0;
     (yield* breakmsg(obj, in_view));
@@ -1940,28 +2541,40 @@ export function* release_camera_demon(obj, x, y) {
     }
 }
 
+/*
+ * Break an object.  Breakable armor goes through erosion steps; other
+ * items break unconditionally.  Assumes all resistance checks
+ * and break messages have been delivered prior to getting here.
+ * (No longer true; breakmsg() is silent for crackable armor and we
+ * call erode_obj() for it and that delivers a damaged-the-item message.)
+ */
 /** C ref: dothrow.c:2480 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} hero_caused @param {CInt} from_invent @returns {CInt} */
 export function* breakobj(obj, x, y, hero_caused, from_invent) {
     let fracture = 0;
     let explosion = 0;
+
     if (is_crackable(obj))
         return ((yield* erode_obj(obj, (yield* armor_simple_name(obj)), NHM.ERODE_CRACK, 6)) == NHM.ER_DESTROYED);
+
     switch (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS ? NHC.POT_WATER : cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.MIRROR:
         if (hero_caused)
             change_luck(-2);
         break;
         case NHC.POT_WATER:
-        cptr.stI32o(obj, $obj_in_use, 1);
+        cptr.stI32o(obj, $obj_in_use, 1);  /* in case it's fatal */
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) {
             (yield* explode_oil(obj, x, y));
         } else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
             if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n)) {
+                /* wet towel protects both eyes and breathing */
                 if (cptr.ldI16o(obj, $obj_otyp) != NHC.POT_WATER && !Half_gas_damage()) {
                     if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n)) {
+                        /* [what about "familiar odor" when known?] */
                         (yield* You(__s_smell_a_peculiar_odor));
                     } else {
                         let eyes = (yield* body_part(NHC.EYE));
+
                         if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) != 1)
                             eyes = (yield* makeplural(eyes));
                         (yield* Your(__s_s_s, eyes, (yield* vtense(eyes, __s_water))));
@@ -1970,11 +2583,13 @@ export function* breakobj(obj, x, y, hero_caused, from_invent) {
                 (yield* potionbreathe(obj));
             }
         }
+        /* monster breathing isn't handled... [yet?] */
         break;
         case NHC.EXPENSIVE_CAMERA:
         (yield* release_camera_demon(obj, x, y));
         break;
         case NHC.EGG:
+        /* breaking your own eggs is bad luck */
         if (hero_caused && cptr.ld1so(obj, $obj_spe) && ismnum(cptr.ldI32o(obj, $obj_corpsenm)))
             change_luck(Number(BigInt.asIntN(8, (-((cptr.ldI64o(obj, $obj_quan)) < 5n ? (cptr.ldI64o(obj, $obj_quan)) : 5n)))));
         if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK)
@@ -1982,24 +2597,35 @@ export function* breakobj(obj, x, y, hero_caused, from_invent) {
         break;
         case NHC.BOULDER:
         case NHC.STATUE:
+        /* caller will handle object disposition;
+           we're just doing the shop theft handling */
         fracture = 1;
         break;
         default:
         break;
     }
+
     if (hero_caused) {
         if (from_invent || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) {
             if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
                 (yield* check_shop_obj(obj, x, y, 1));
         } else if (!(cptr.ldI32o(obj, $obj_no_charge) & 1) && (yield* costly_spot(x, y))) {
+            /* it is assumed that the obj is a floor-object */
             let o_shop = (yield* in_rooms(x, y, NHC.SHOPBASE));
             let shkp = (yield* shop_keeper(cptr.ld1s(o_shop)));
+
             if (shkp) {
                 let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
+
+                /* base shk actions on her peacefulness at start of
+                   this turn, so that "simultaneous" multiple breakage
+                   isn't drastically worse than single breakage */
                 if (cptr.ldI64o(gh, $instance_globals_h_hero_seq) != cptr.ldI64o(eshkp, $eshk_break_seq))
                     cptr.st1o(eshkp, $eshk_seq_peaceful, schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)));
                 if (((yield* stolen_value(obj, x, y, cptr.ld1so(eshkp, $eshk_seq_peaceful), 0)) > 0n) && (cptr.ld1s(o_shop) != cptr.ld1so2(u, 0, 1, $you_ushops) || !inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && cptr.ldI64o(gh, $instance_globals_h_hero_seq) != cptr.ldI64o(eshkp, $eshk_break_seq))
                     (yield* make_angry_shk(shkp, x, y));
+                /* make_angry_shk() is only called on the first instance
+                   of breakage during any particular hero move */
                 cptr.stI64o(eshkp, $eshk_break_seq, cptr.ldI64o(gh, $instance_globals_h_hero_seq));
             }
         }
@@ -2011,11 +2637,21 @@ export function* breakobj(obj, x, y, hero_caused, from_invent) {
     return 1;
 }
 
+/*
+ * Check to see if obj (which has just hit hard something at speed, e.g.
+ * thrown or dropped from height) is going to break, but don't actually
+ * break it. Return 0 if the object isn't going to break, 1 if it is.
+ */
 /** C ref: dothrow.c:2582 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function breaktest(obj) {
-    let nonbreakchance = 1;
+    let nonbreakchance = 1;  /* chance for non-artifacts to resist */
+
+    /* this may need to be changed if actual glass armor gets added someday;
+       for now, it affects crystal plate mail and helm of brilliance;
+       either of them will have to be cracked 4 times before breaking */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS)
         nonbreakchance = 90;
+
     if (obj_resists(obj, nonbreakchance, 99))
         return 0;
     if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS && !cptr.ld1so(obj, $obj_oartifact) && cptr.ld1so(obj, $obj_oclass) != NHC.GEM_CLASS)
@@ -2037,8 +2673,10 @@ export function breaktest(obj) {
 /** C ref: dothrow.c:2612 — @param {CPtr<struct obj>} obj @param {CInt} in_view */
 function* breakmsg(obj, in_view) {
     let to_pieces;
+
     if (is_crackable(obj))
         return;
+
     to_pieces = __s_empty;
     switch (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS ? NHC.POT_WATER : cptr.ldI16o(obj, $obj_otyp)) {
         default:
@@ -2081,8 +2719,11 @@ function* throw_gold(obj) {
     let odx;
     let ody;
     let mon;
+
     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
         (yield* You(__s_cannot_throw_gold_at_yourself));
+        /* If we tried to throw part of a stack, force it to merge back
+           together (same as in throw_obj).  Essential for gold. */
         if (cptr.ldI32o(obj.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit) || cptr.ldI32o(obj.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid))
             void (yield* unsplitobj(obj.v));
         return NHM.ECMD_CANCEL;
@@ -2090,22 +2731,29 @@ function* throw_gold(obj) {
     (yield* freeinv(obj.v));
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let swallower = (yield* mon_nam(cptr.ldPtro(u, $you_ustuck)));
+
         if ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null))
+            /* note: s_suffix() returns a modifiable buffer */
             swallower = cptr.strcat((yield* s_suffix(swallower)), __s_entrails);
         (yield* pline_The(__s_gold_disappears_into_s, swallower));
         (yield* add_to_minv(cptr.ldPtro(u, $you_ustuck), obj.v));
         return NHM.ECMD_TIME;
     }
+
     if (cptr.ldI32o(u, $you_dz)) {
         if (cptr.ldI32o(u, $you_dz) < 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && !Underwater() && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
             (yield* pline_The(__s_gold_hits_the_s_then_falls_back_on_top, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))), (yield* body_part(NHC.HEAD))));
+            /* some self damage? */
             if (uarmh.v)
                 (yield* pline(__s_fortunately_you_are_wearing_s, (yield* an(helm_simple_name(uarmh.v)))));
         }
         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16(u));
         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
     } else {
+        /* consistent with range for normal objects */
         range = (((((((acurrstr())) / 2) | 0) >>> 0) - u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) >>> 0) | 0;
+
+        /* see if the gold has a place to move into */
         odx = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0;
         ody = (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0;
         if (!isok(i16(odx), i16(ody)) || !((cptr.ld1so3(svl, odx, $sizeof_rm_x21, ody, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL) || closed_door(i16(odx), i16(ody))) {
@@ -2114,7 +2762,7 @@ function* throw_gold(obj) {
         } else {
             mon = (yield* bhit(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), range, NHC.THROWN_WEAPON, null, null, obj));
             if (!obj.v)
-                return NHM.ECMD_TIME;
+                return NHM.ECMD_TIME;  /* object is gone */
             if (mon) {
                 if ((yield* ghitm(mon, obj.v)))
                     return NHM.ECMD_TIME;
@@ -2124,6 +2772,7 @@ function* throw_gold(obj) {
             }
         }
     }
+
     if ((yield* flooreffects(obj.v, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), __s_fall)))
         return NHM.ECMD_TIME;
     if (cptr.ldI32o(u, $you_dz) > 0)

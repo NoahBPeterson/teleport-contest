@@ -93,21 +93,40 @@ function currentpc(ci) {
     return (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, $CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)), $Proto_code)) / 4n))))) - 1) | 0);
 }
 
+/*
+** Get a "base line" to find the line corresponding to an instruction.
+** Base lines are regularly placed at MAXIWTHABS intervals, so usually
+** an integer division gets the right place. When the source file has
+** large sequences of empty/comment lines, it may need extra entries,
+** so the original estimate needs a correction.
+** If the original estimate is -1, the initial 'if' ensures that the
+** 'while' will run at least once.
+** The assertion that the estimate is a lower bound for the correct base
+** is valid as long as the debug info has been generated with the same
+** value for MAXIWTHABS or smaller. (Previous releases use a little
+** smaller value.)
+*/
 /** C ref: ldebug.c:63 — @param {CPtr<Proto>} f @param {CInt} pc @param {CPtr<int>} basepc @returns {CInt} */
 function getbaseline(f, pc, basepc) {
     if (cptr.ldI32o(f, $Proto_sizeabslineinfo) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), 0, $sizeof_AbsLineInfo)) {
-        cptr.stI32(basepc, -1);
+        cptr.stI32(basepc, -1);  /* start from the beginning */
         return cptr.ldI32o(f, $Proto_linedefined);
     } else {
-        let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;
+        let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;  /* get an estimate */
+        /* estimate must be a lower bound of the correct base */
         (void 0);
         while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) && pc >= cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), (i + 1) | 0, $sizeof_AbsLineInfo))
-            i++;
+            i++;  /* low estimate; adjust it */
         cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo));
         return cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line);
     }
 }
 
+/*
+** Get the line corresponding to instruction 'pc' in function 'f';
+** first gets a base line and from there does the increments until
+** the desired instruction.
+*/
 /** C ref: ldebug.c:86 — @param {CPtr<Proto>} f @param {CInt} pc @returns {CInt} */
 export function luaG_getfuncline(f, pc) {
     if (cptr.eq(cptr.ldPtro(f, $Proto_lineinfo), (null)))
@@ -117,7 +136,7 @@ export function luaG_getfuncline(f, pc) {
         let baseline = getbaseline(f, pc, basepc);
         while (basepc.v++ < pc) {
             (void 0);
-            baseline = (baseline + cptr.ld1uo(cptr.ldPtro(f, $Proto_lineinfo), basepc.v)) | 0;
+            baseline = (baseline + cptr.ld1uo(cptr.ldPtro(f, $Proto_lineinfo), basepc.v)) | 0;  /* correct line */
         }
         return baseline;
     }
@@ -128,6 +147,17 @@ function getcurrentline(ci) {
     return luaG_getfuncline(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci));
 }
 
+/*
+** Set 'trap' for all active Lua frames.
+** This function can be called during a signal, under "reasonable"
+** assumptions. A new 'ci' is completely linked in the list before it
+** becomes part of the "active" list, and we assume that pointers are
+** atomic; see comment in next function.
+** (A compiler doing interprocedural optimizations could, theoretically,
+** reorder memory writes in such a way that the list could be
+** temporarily broken while inserting a new element. We simply assume it
+** has no good reasons to do that.)
+*/
 /** C ref: ldebug.c:117 — @param {CPtr<CallInfo>} ci */
 function settraps(ci) {
     for (; !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, $CallInfo_previous))
@@ -135,6 +165,16 @@ function settraps(ci) {
             cptr.stI32o(ci, $CallInfo_u + 8, 1);
 }
 
+/*
+** This function can be called during a signal, under "reasonable"
+** assumptions.
+** Fields 'basehookcount' and 'hookcount' (set by 'resethookcount')
+** are for debug only, and it is no problem if they get arbitrary
+** values (causes at most one wrong hook call). 'hookmask' is an atomic
+** value. We assume that pointers are atomic too (e.g., gcc ensures that
+** for all platforms where it runs). Moreover, 'hook' is always checked
+** before being called (see 'luaD_hook').
+*/
 /** C ref: ldebug.c:134 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} mask @param {CInt} count */
 export function lua_sethook(L, func, mask, count) {
     if (func === (null) || mask == 0) {
@@ -146,7 +186,7 @@ export function lua_sethook(L, func, mask, count) {
     (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_basehookcount)));
     cptr.stI32o(L, $lua_State_hookmask, (uchar(((mask)))));
     if (mask)
-        settraps(cptr.ldPtro(L, $lua_State_ci));
+        settraps(cptr.ldPtro(L, $lua_State_ci));  /* to trace inside 'luaV_execute' */
 }
 
 /** C ref: ldebug.c:148 — @param {CPtr<lua_State>} L @returns {*} */
@@ -169,7 +209,7 @@ export function lua_getstack(L, level, ar) {
     let status;
     let ci;
     if (level < 0)
-        return 0;
+        return 0;  /* invalid (negative) level */
     (void 0);
     for (ci = cptr.ldPtro(L, $lua_State_ci); level > 0 && !cptr.eq(ci, cptr.add(L, $lua_State_base_ci)); ci = cptr.ldPtro(ci, $CallInfo_previous))
         level--;
@@ -177,7 +217,7 @@ export function lua_getstack(L, level, ar) {
         status = 1;
         cptr.stPtro(ar, $lua_Debug_i_ci, ci);
     } else
-        status = 0;
+        status = 0;  /* no such level */
     (void 0);
     return status;
 }
@@ -197,10 +237,10 @@ function findvararg(ci, n, pos) {
         let nextra = cptr.ldI32o(ci, $CallInfo_u + 12);
         if (n >= -nextra) {
             cptr.stPtr(pos, cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), -(((n + 1) | 0)), 16));
-            return __s_vararg;
+            return __s_vararg;  /* generic name for any vararg */
         }
     }
-    return null;
+    return null;  /* no such vararg */
 }
 
 /** C ref: ldebug.c:199 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CInt} n @param {CPtr<StkId>} pos @returns {CPtr<char>} */
@@ -216,9 +256,10 @@ export function luaG_findlocal(L, ci, n, pos) {
     if (cptr.eq(name, (null))) {
         let limit = (cptr.eq(ci, cptr.ldPtro(L, $lua_State_ci))) ? cptr.ldPtro(L, $lua_State_top) : cptr.ldPtr(cptr.ldPtro(ci, $CallInfo_next));
         if (cptr.diff(limit, base) / 16n >= BigInt(n) && n > 0) {
+            /* generic name for any valid slot */
             name = (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)) ? __s_temporary : __s_c_temporary;
         } else
-            return null;
+            return null;  /* no name */
     }
     if (pos)
         cptr.stPtr(pos, cptr.add(base, ((n - 1) | 0), 16));
@@ -235,7 +276,7 @@ export function lua_getlocal(L, ar, n) {
         else
             name = luaF_getlocalname(cptr.ldPtro(((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))))))))))), $LClosure_p), n, 0);
     } else {
-        let pos = cptr.box(null);
+        let pos = cptr.box(null);  /* to avoid warnings */
         name = luaG_findlocal(L, cptr.ldPtro(ar, $lua_Debug_i_ci), n, pos);
         if (name) {
             {
@@ -260,7 +301,7 @@ export function lua_getlocal(L, ar, n) {
 
 /** C ref: ldebug.c:245 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar @param {CInt} n @returns {CPtr<char>} */
 export function lua_setlocal(L, ar, n) {
-    let pos = cptr.box(null);
+    let pos = cptr.box(null);  /* to avoid warnings */
     let name;
     (void 0);
     name = luaG_findlocal(L, cptr.ldPtro(ar, $lua_Debug_i_ci), n, pos);
@@ -274,7 +315,7 @@ export function lua_setlocal(L, ar, n) {
             (void 0);
         }
         ;
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop value */
     }
     (void 0);
     return name;
@@ -324,9 +365,9 @@ function collectvalidlines(L, f) {
     } else {
         let p = cptr.ldPtro(f, $LClosure_p);
         let currentline = cptr.ldI32o(p, $Proto_linedefined);
-        let t = luaH_new(L);
+        let t = luaH_new(L);  /* new table to store active lines */
         {
-            let io = (((cptr.ldPtro(L, $lua_State_top))));
+            let io = (((cptr.ldPtro(L, $lua_State_top))));  /* push it on stack */
             let x_ = (t);
             cptr.stPtr(((io)), ((((x_)))));
             (cptr.st1o((io), $TValue_tt_, 69));
@@ -341,17 +382,17 @@ function collectvalidlines(L, f) {
         if (!cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), (null))) {
             let i;
             let v = cptr.alloc(16);
-            (cptr.st1o((v), $TValue_tt_, 17));
+            (cptr.st1o((v), $TValue_tt_, 17));  /* boolean 'true' to be the value of all indices */
             if (!cptr.ld1uo(p, $Proto_is_vararg))
-                i = 0;
+                i = 0;  /* consider all instructions */
             else {
                 (void 0);
                 currentline = nextline(p, currentline, 0);
-                i = 1;
+                i = 1;  /* skip first instruction (OP_VARARGPREP) */
             }
             for (; i < cptr.ldI32o(p, $Proto_sizelineinfo); i++) {
-                currentline = nextline(p, currentline, i);
-                luaH_setint(L, t, BigInt(currentline), v);
+                currentline = nextline(p, currentline, i);  /* get its line */
+                luaH_setint(L, t, BigInt(currentline), v);  /* table[line] = true */
             }
         }
     }
@@ -359,10 +400,11 @@ function collectvalidlines(L, f) {
 
 /** C ref: ldebug.c:324 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr<char *>} name @returns {CPtr<char>} */
 function getfuncname(L, ci, name) {
+    /* calling function is a known function? */
     if (!cptr.eq(ci, (null)) && !(cptr.ldU16o(ci, $CallInfo_callstatus) & 32))
         return funcnamefromcall(L, cptr.ldPtro(ci, $CallInfo_previous), name);
     else
-        return null;
+        return null;  /* no way to find a name */
 }
 
 /** C ref: ldebug.c:332 — @param {CPtr<lua_State>} L @param {CPtr<char>} what @param {CPtr<lua_Debug>} ar @param {CPtr<Closure>} f @param {CPtr<CallInfo>} ci @returns {CInt} */
@@ -401,7 +443,7 @@ function auxgetinfo(L, what, ar, f, ci) {
             {
                 cptr.stPtro(ar, $lua_Debug_namewhat, getfuncname(L, ci, cptr.add(ar, $lua_Debug_name)));
                 if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_namewhat), (null))) {
-                    cptr.stPtro(ar, $lua_Debug_namewhat, __s_empty);
+                    cptr.stPtro(ar, $lua_Debug_namewhat, __s_empty);  /* not found */
                     cptr.stPtro(ar, $lua_Debug_name, null);
                 }
                 break;
@@ -420,7 +462,7 @@ function auxgetinfo(L, what, ar, f, ci) {
             case 102:
             break;
             default:
-            status = 0;
+            status = 0;  /* invalid option */
         }
     }
     return status;
@@ -437,8 +479,8 @@ export function lua_getinfo(L, what, ar) {
         ci = null;
         func = ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)));
         (void L, (void 0));
-        what = cptr.add(what, 1);
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        what = cptr.add(what, 1);  /* skip the '>' */
+        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop function */
     } else {
         ci = cptr.ldPtro(ar, $lua_Debug_i_ci);
         func = ((cptr.ldPtr(ci)));
@@ -468,26 +510,35 @@ export function lua_getinfo(L, what, ar) {
     return status;
 }
 
+/*
+** {======================================================
+** Symbolic Execution
+** =======================================================
+*/
+
 /** C ref: ldebug.c:426 — @param {CInt} pc @param {CInt} jmptarget @returns {CInt} */
 function filterpc(pc, jmptarget) {
     if (pc < jmptarget)
-        return -1;
+        return -1;  /* cannot know who sets that register */
     else
-        return pc;
+        return pc;  /* current position sets that register */
 }
 
+/*
+** Try to find last instruction before 'lastpc' that modified register 'reg'.
+*/
 /** C ref: ldebug.c:436 — @param {CPtr<Proto>} p @param {CInt} lastpc @param {CInt} reg @returns {CInt} */
 function findsetreg(p, lastpc, reg) {
     let pc;
-    let setreg = -1;
-    let jmptarget = 0;
+    let setreg = -1;  /* keep last instruction that changed 'reg' */
+    let jmptarget = 0;  /* any code before this address is conditional */
     if ((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc, 4)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 128))
-        lastpc--;
+        lastpc--;  /* previous instruction was not actually executed */
     for (pc = 0; pc < lastpc; pc++) {
         let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         let a = (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));
-        let change;
+        let change;  /* true if current instruction changed 'reg' */
         switch (op) {
             case NHC.OP_LOADNIL:
             {
@@ -510,8 +561,9 @@ function findsetreg(p, lastpc, reg) {
             {
                 let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0);
                 let dest = (((pc + 1) | 0) + b) | 0;
+                /* jump does not skip 'lastpc' and is larger than current one? */
                 if (dest <= lastpc && dest > jmptarget)
-                    jmptarget = dest;
+                    jmptarget = dest;  /* update 'jmptarget' */
                 change = 0;
                 break;
             }
@@ -525,6 +577,9 @@ function findsetreg(p, lastpc, reg) {
     return setreg;
 }
 
+/*
+** Find a "name" for the constant 'c'.
+*/
 /** C ref: ldebug.c:485 — @param {CPtr<Proto>} p @param {CInt} index @param {CPtr<char *>} name @returns {CPtr<char>} */
 function kname(p, index, name) {
     let kvalue = cptr.add(cptr.ldPtro(p, $Proto_k), index, $sizeof_TValue);
@@ -543,6 +598,7 @@ function basicgetobjname(p, ppc, reg, name) {
     cptr.stPtr(name, luaF_getlocalname(p, (reg + 1) | 0, pc));
     if (cptr.ldPtr(name))
         return cptr.decay(strlocal);
+    /* else try symbolic execution */
     cptr.stI32(ppc, pc = findsetreg(p, pc, reg));
     if (pc != -1) {
         let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
@@ -550,9 +606,9 @@ function basicgetobjname(p, ppc, reg, name) {
         switch (op) {
             case NHC.OP_MOVE:
             {
-                let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* move from 'b' to 'a' */
                 if (b < (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
-                    return basicgetobjname(p, ppc, b, name);
+                    return basicgetobjname(p, ppc, b, name);  /* get name for 'b' */
                 break;
             }
             case NHC.OP_GETUPVAL:
@@ -568,41 +624,57 @@ function basicgetobjname(p, ppc, reg, name) {
             break;
         }
     }
-    return null;
+    return null;  /* could not find reasonable name */
 }
 
+/*
+** Find a "name" for the register 'c'.
+*/
 /** C ref: ldebug.c:532 — @param {CPtr<Proto>} p @param {CInt} pc @param {CInt} c @param {CPtr<char *>} name */
 function rname(p, pc, c, name) {
     pc = cptr.box(pc);
-    let what = basicgetobjname(p, pc, c, name);
+    let what = basicgetobjname(p, pc, c, name);  /* search for 'c' */
     if (!(what && cptr.ld1s(what) == 99))
         cptr.stPtr(name, __s_query);
 }
 
+/*
+** Find a "name" for a 'C' value in an RK instruction.
+*/
 /** C ref: ldebug.c:542 — @param {CPtr<Proto>} p @param {CInt} pc @param {CUInt} i @param {CPtr<char *>} name */
 function rkname(p, pc, i, name) {
-    let c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+    let c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
     if (((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
         kname(p, c, name);
     else
         rname(p, pc, c, name);
 }
 
+/*
+** Check whether table being indexed by instruction 'i' is the
+** environment '_ENV'. If the table is an upvalue, get its name;
+** otherwise, find some "name" for the table and check whether
+** that name is the name of a local variable (and not, for instance,
+** a string). Then check that, if there is a name, it is '_ENV'.
+*/
 /** C ref: ldebug.c:558 — @param {CPtr<Proto>} p @param {CInt} pc @param {CUInt} i @param {CInt} isup @returns {CPtr<char>} */
 function isEnv(p, pc, i, isup) {
     pc = cptr.box(pc);
-    let t = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-    let name = cptr.box(0);
+    let t = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* table index */
+    let name = cptr.box(0);  /* name of indexed variable */
     if (isup)
         name.v = upvalname(p, t);
     else {
         let what = basicgetobjname(p, pc, t, name);
         if (!cptr.eq(what, cptr.decay(strlocal)) && !cptr.eq(what, cptr.decay(strupval)))
-            name.v = null;
+            name.v = null;  /* cannot be the variable _ENV */
     }
     return (name.v && strcmp(name.v, __s_env) == 0) ? __s_global : __s_field;
 }
 
+/*
+** Extend 'basicgetobjname' to handle table accesses
+*/
 /** C ref: ldebug.c:575 — @param {CPtr<Proto>} p @param {CInt} lastpc @param {CInt} reg @param {CPtr<char *>} name @returns {CPtr<char>} */
 function getobjname(p, lastpc, reg, name) {
     lastpc = cptr.box(lastpc);
@@ -615,13 +687,13 @@ function getobjname(p, lastpc, reg, name) {
         switch (op) {
             case NHC.OP_GETTABUP:
             {
-                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
                 kname(p, k, name);
                 return isEnv(p, lastpc.v, i, 1);
             }
             case NHC.OP_GETTABLE:
             {
-                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
                 rname(p, lastpc.v, k, name);
                 return isEnv(p, lastpc.v, i, 0);
             }
@@ -632,7 +704,7 @@ function getobjname(p, lastpc, reg, name) {
             }
             case NHC.OP_GETFIELD:
             {
-                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
                 kname(p, k, name);
                 return isEnv(p, lastpc.v, i, 0);
             }
@@ -642,20 +714,26 @@ function getobjname(p, lastpc, reg, name) {
                 return __s_method;
             }
             default:
-            break;
+            break;  /* go through to return NULL */
         }
     }
-    return null;
+    return null;  /* could not find reasonable name */
 }
 
+/*
+** Try to find a name for a function based on the code that called it.
+** (Only works when function was called by a Lua function.)
+** Returns what the name is (e.g., "for iterator", "method",
+** "metamethod") and sets '*name' to point to the name.
+*/
 /** C ref: ldebug.c:620 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} p @param {CInt} pc @param {CPtr<char *>} name @returns {CPtr<char>} */
 function funcnamefromcode(L, p, pc, name) {
-    let tm = 0;
-    let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
+    let tm = 0;  /* (initial value avoids warnings) */
+    let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);  /* calling instruction */
     switch (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
         case NHC.OP_CALL:
         case NHC.OP_TAILCALL:
-        return getobjname(p, pc, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), name);
+        return getobjname(p, pc, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), name);  /* get function name */
         case NHC.OP_TFORCALL:
         {
             cptr.stPtr(name, __s_for_iterator);
@@ -699,6 +777,7 @@ function funcnamefromcode(L, p, pc, name) {
         case NHC.OP_LT:
         case NHC.OP_LTI:
         case NHC.OP_GTI:
+        /* no cases for OP_EQI and OP_EQK, as they don't call metamethods */
         tm = NHC.TM_LT;
         break;
         case NHC.OP_LE:
@@ -711,12 +790,15 @@ function funcnamefromcode(L, p, pc, name) {
         tm = NHC.TM_CLOSE;
         break;
         default:
-        return null;
+        return null;  /* cannot find a reasonable name */
     }
     cptr.stPtr(name, cptr.add((cptr.add((cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), tm, 8, $global_State_tmname)), $TString_contents)), 2));
     return __s_metamethod;
 }
 
+/*
+** Try to find a name for a function based on how it was called.
+*/
 /** C ref: ldebug.c:664 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr<char *>} name @returns {CPtr<char>} */
 function funcnamefromcall(L, ci, name) {
     if (cptr.ldU16o(ci, $CallInfo_callstatus) & 8) {
@@ -724,13 +806,21 @@ function funcnamefromcall(L, ci, name) {
         return __s_hook;
     } else if (cptr.ldU16o(ci, $CallInfo_callstatus) & 128) {
         cptr.stPtr(name, __s_gc);
-        return __s_metamethod;
+        return __s_metamethod;  /* report it as such */
     } else if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
         return funcnamefromcode(L, cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci), name);
     else
         return null;
 }
 
+/* }====================================================== */
+
+/*
+** Check whether pointer 'o' points to some value in the stack frame of
+** the current function and, if so, returns its index.  Because 'o' may
+** not point to a value in this stack, we cannot compare it with the
+** region boundaries (undefined behavior in ISO C).
+*/
 /** C ref: ldebug.c:690 — @param {CPtr<CallInfo>} ci @param {CPtr<TValue>} o @returns {CInt} */
 function instack(ci, o) {
     let pos;
@@ -739,9 +829,14 @@ function instack(ci, o) {
         if (cptr.eq(o, ((cptr.add(base, pos, 16)))))
             return pos;
     }
-    return -1;
+    return -1;  /* not found */
 }
 
+/*
+** Checks whether value 'o' came from an upvalue. (That can only happen
+** with instructions OP_GETTABUP/OP_SETTABUP, which operate directly on
+** upvalues.)
+*/
 /** C ref: ldebug.c:706 — @param {CPtr<CallInfo>} ci @param {CPtr<TValue>} o @param {CPtr<char *>} name @returns {CPtr<char>} */
 function getupvalname(ci, o, name) {
     let c = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
@@ -758,20 +853,24 @@ function getupvalname(ci, o, name) {
 /** C ref: ldebug.c:720 — @param {CPtr<lua_State>} L @param {CPtr<char>} kind @param {CPtr<char>} name @returns {CPtr<char>} */
 function formatvarinfo(L, kind, name) {
     if (cptr.eq(kind, (null)))
-        return __s_empty;
+        return __s_empty;  /* no information */
     else
         return luaO_pushfstring(L, __s_s_s, kind, name);
 }
 
+/*
+** Build a string with a "description" for the value 'o', such as
+** "variable 'x'" or "upvalue 'y'".
+*/
 /** C ref: ldebug.c:732 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @returns {CPtr<char>} */
 function varinfo(L, o) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
-    let name = cptr.box(null);
+    let name = cptr.box(null);  /* to avoid warnings */
     let kind = null;
     if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
-        kind = getupvalname(ci, o, name);
+        kind = getupvalname(ci, o, name);  /* check whether 'o' is an upvalue */
         if (!kind) {
-            let reg = instack(ci, o);
+            let reg = instack(ci, o);  /* try a register */
             if (reg >= 0)
                 kind = getobjname(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci), reg, name);
         }
@@ -779,21 +878,33 @@ function varinfo(L, o) {
     return formatvarinfo(L, kind, name.v);
 }
 
+/*
+** Raise a type error
+*/
 /** C ref: ldebug.c:751 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} op @param {CPtr<char>} extra */
 function typeerror(L, o, op, extra) {
     let t = luaT_objtypename(L, o);
     luaG_runerror(L, __s_attempt_to_s_a_s_value_s, op, t, extra);
 }
 
+/*
+** Raise a type error with "standard" information about the faulty
+** object 'o' (using 'varinfo').
+*/
 /** C ref: ldebug.c:762 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} op */
 export function luaG_typeerror(L, o, op) {
     typeerror(L, o, op, varinfo(L, o));
 }
 
+/*
+** Raise an error for calling a non-callable object. Try to find a name
+** for the object based on how it was called ('funcnamefromcall'); if it
+** cannot get a name there, try 'varinfo'.
+*/
 /** C ref: ldebug.c:772 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o */
 export function luaG_callerror(L, o) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
-    let name = cptr.box(null);
+    let name = cptr.box(null);  /* to avoid warnings */
     let kind = funcnamefromcall(L, ci, name);
     let extra = kind ? formatvarinfo(L, kind, name.v) : varinfo(L, o);
     typeerror(L, o, __s_call, extra);
@@ -814,10 +925,13 @@ export function luaG_concaterror(L, p1, p2) {
 /** C ref: ldebug.c:793 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr<char>} msg */
 export function luaG_opinterror(L, p1, p2, msg) {
     if (!(((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3))
-        p2 = p1;
+        p2 = p1;  /* now second is wrong */
     luaG_typeerror(L, p2, msg);
 }
 
+/*
+** Error when both values are convertible to numbers, but not to integers
+*/
 /** C ref: ldebug.c:804 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
 export function luaG_tointerror(L, p1, p2) {
     let temp = cptr.box(0n);
@@ -836,6 +950,7 @@ export function luaG_ordererror(L, p1, p2) {
         luaG_runerror(L, __s_attempt_to_compare_s_with_s, t1, t2);
 }
 
+/* add src:line information to 'msg' */
 /** C ref: ldebug.c:823 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CPtr<TString>} src @param {CInt} line @returns {CPtr<char>} */
 export function luaG_addinfo(L, msg, src, line) {
     let buff = new Uint8Array(60);
@@ -854,7 +969,7 @@ export function luaG_errormsg(L) {
         let errfunc = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_errfunc)))));
         (void 0);
         {
-            let io1 = (((cptr.ldPtro(L, $lua_State_top))));
+            let io1 = (((cptr.ldPtro(L, $lua_State_top))));  /* move argument */
             let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -863,7 +978,7 @@ export function luaG_errormsg(L) {
         }
         ;
         {
-            let io1 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
+            let io1 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));  /* push function */
             let io2 = (((errfunc)));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -871,8 +986,8 @@ export function luaG_errormsg(L) {
             (void 0);
         }
         ;
-        cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
-        luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16), 1);
+        cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* assume EXTRA_STACK */
+        luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16), 1);  /* call it */
     }
     luaD_throw(L, 2);
 }
@@ -884,7 +999,7 @@ export function luaG_runerror(L, fmt, ...__va) {
     let argp;
     {
         if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
-            void 0;
+            void 0;  /* error message uses memory */
             luaC_step(L);
             void 0;
         }
@@ -893,12 +1008,12 @@ export function luaG_runerror(L, fmt, ...__va) {
     }
     ;
     argp = cptr.vaList(__va);
-    msg = luaO_pushvfstring(L, fmt, argp);
+    msg = luaO_pushvfstring(L, fmt, argp);  /* format message */
     argp = null;
     if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
         luaG_addinfo(L, msg, cptr.ldPtro(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), $Proto_source), getcurrentline(ci));
         {
-            let io1 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))));
+            let io1 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))));  /* remove 'msg' */
             let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -911,39 +1026,69 @@ export function luaG_runerror(L, fmt, ...__va) {
     luaG_errormsg(L);
 }
 
+/*
+** Check whether new instruction 'newpc' is in a different line from
+** previous instruction 'oldpc'. More often than not, 'newpc' is only
+** one or a few instructions after 'oldpc' (it must be after, see
+** caller), so try to avoid calling 'luaG_getfuncline'. If they are
+** too far apart, there is a good chance of a ABSLINEINFO in the way,
+** so it goes directly to 'luaG_getfuncline'.
+*/
 /** C ref: ldebug.c:873 — @param {CPtr<Proto>} p @param {CInt} oldpc @param {CInt} newpc @returns {CInt} */
 function changedline(p, oldpc, newpc) {
     if (cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), (null)))
         return 0;
     if (((newpc - oldpc) | 0) < 64) {
-        let delta = 0;
+        let delta = 0;  /* line difference */
         let pc = oldpc;
         for (; ; ) {
             let lineinfo = cptr.ld1uo(cptr.ldPtro(p, $Proto_lineinfo), ++pc);
             if (lineinfo == -128)
-                break;
+                break;  /* cannot compute delta; fall through */
             delta = (delta + lineinfo) | 0;
             if (pc == newpc)
-                return (delta != 0);
+                return (delta != 0);  /* delta computed successfully */
         }
     }
+    /* either instructions are too far apart or there is an absolute line
+       info in the way; compute line difference explicitly */
     return (luaG_getfuncline(p, oldpc) != luaG_getfuncline(p, newpc));
 }
 
+/*
+** Traces Lua calls. If code is running the first instruction of a function,
+** and function is not vararg, and it is not coming from an yield,
+** calls 'luaD_hookcall'. (Vararg functions will call 'luaD_hookcall'
+** after adjusting its variable arguments; otherwise, they could call
+** a line/count hook before the call hook. Functions coming from
+** an yield already called 'luaD_hookcall' before yielding.)
+*/
 /** C ref: ldebug.c:902 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaG_tracecall(L) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
-    cptr.stI32o(ci, $CallInfo_u + 8, 1);
+    cptr.stI32o(ci, $CallInfo_u + 8, 1);  /* ensure hooks will be checked */
     if (cptr.eq(cptr.ldPtro(ci, $CallInfo_u), cptr.ldPtro(p, $Proto_code))) {
         if (cptr.ld1uo(p, $Proto_is_vararg))
-            return 0;
+            return 0;  /* hooks will start at VARARGPREP instruction */
         else if (!(cptr.ldU16o(ci, $CallInfo_callstatus) & 64))
-            luaD_hookcall(L, ci);
+            luaD_hookcall(L, ci);  /* check 'call' hook */
     }
-    return 1;
+    return 1;  /* keep 'trap' on */
 }
 
+/*
+** Traces the execution of a Lua function. Called before the execution
+** of each opcode, when debug is on. 'L->oldpc' stores the last
+** instruction traced, to detect line changes. When entering a new
+** function, 'npci' will be zero and will test as a new line whatever
+** the value of 'oldpc'.  Some exceptional conditions may return to
+** a function without setting 'oldpc'. In that case, 'oldpc' may be
+** invalid; if so, use zero as a valid value. (A wrong but valid 'oldpc'
+** at most causes an extra call to a line hook.)
+** This function is not "Protected" when called, so it should correct
+** 'L->top.p' before calling anything that can run the GC.
+*/
 /** C ref: ldebug.c:928 — @param {CPtr<lua_State>} L @param {CPtr<Instruction>} pc @returns {CInt} */
 export function luaG_traceexec(L, pc) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
@@ -951,40 +1096,41 @@ export function luaG_traceexec(L, pc) {
     let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
     let counthook;
     if (!(mask & 12)) {
-        cptr.stI32o(ci, $CallInfo_u + 8, 0);
-        return 0;
+        cptr.stI32o(ci, $CallInfo_u + 8, 0);  /* don't need to stop again */
+        return 0;  /* turn off 'trap' */
     }
-    pc = cptr.add(pc, 1, 4);
-    cptr.stPtro(ci, $CallInfo_u, pc);
+    pc = cptr.add(pc, 1, 4);  /* reference is always next instruction */
+    cptr.stPtro(ci, $CallInfo_u, pc);  /* save 'pc' */
     counthook = (mask & 8) && (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_hookcount) + -1) == 0) ? 1 : 0;
     if (counthook)
-        (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_basehookcount)));
+        (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_basehookcount)));  /* reset count */
     else if (!(mask & 4))
-        return 1;
+        return 1;  /* no line hook and count != 0; nothing to be done now */
     if (cptr.ldU16o(ci, $CallInfo_callstatus) & 64) {
-        cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & -65);
-        return 1;
+        cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & -65);  /* erase mark */
+        return 1;  /* do not call hook again (VM yielded, so it did not move) */
     }
     if (!((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 32) && ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0))
-        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));
+        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top */
     if (counthook)
-        luaD_hook(L, 3, -1, 0, 0);
+        luaD_hook(L, 3, -1, 0, 0);  /* call count hook */
     if (mask & 4) {
+        /* 'L->oldpc' may be invalid; use zero in this case */
         let oldpc = (cptr.ldI32o(L, $lua_State_oldpc) < cptr.ldI32o(p, $Proto_sizecode)) ? cptr.ldI32o(L, $lua_State_oldpc) : 0;
         let npci = (((Number(BigInt.asIntN(32, ((cptr.diff((pc), cptr.ldPtro((p), $Proto_code)) / 4n))))) - 1) | 0);
         if (npci <= oldpc || changedline(p, oldpc, npci)) {
             let newline = luaG_getfuncline(p, npci);
-            luaD_hook(L, 2, newline, 0, 0);
+            luaD_hook(L, 2, newline, 0, 0);  /* call line hook */
         }
-        cptr.stI32o(L, $lua_State_oldpc, npci);
+        cptr.stI32o(L, $lua_State_oldpc, npci);  /* 'pc' of last call to line hook */
     }
     if (cptr.ld1uo(L, $lua_State_status) == 1) {
         if (counthook)
-            cptr.stI32o(L, $lua_State_hookcount, 1);
-        cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | 64);
+            cptr.stI32o(L, $lua_State_hookcount, 1);  /* undo decrement to zero */
+        cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | 64);  /* mark that it yielded */
         luaD_throw(L, 1);
     }
-    return 1;
+    return 1;  /* keep 'trap' on */
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

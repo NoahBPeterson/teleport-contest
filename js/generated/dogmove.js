@@ -158,6 +158,7 @@ const __s_appear = cptr.lit("appear");
 const __s_has_appeared = cptr.lit("has appeared");
 const __s_sense_that_s_feels_rather_s_ish = cptr.lit("sense that %s feels rather %s-ish.");
 
+/* pick a carried item for pet to drop */
 let __static_droppables_dummy = cptr.alloc($sizeof_obj); /** C ref: dogmove.c:41 — struct obj (function-static) */
 
 /** C ref: dogmove.c:28 — @param {CPtr<struct monst>} mon @returns {CPtr<struct obj>} */
@@ -167,16 +168,21 @@ export function droppables(mon) {
     let pickaxe;
     let unihorn;
     let key;
+
     cptr.memcpy(__static_droppables_dummy, cg, 216);
-    cptr.stI16o(__static_droppables_dummy, $obj_otyp, NHC.GOLD_PIECE);
-    cptr.st1o(__static_droppables_dummy, $obj_oartifact, 1);
+    cptr.stI16o(__static_droppables_dummy, $obj_otyp, NHC.GOLD_PIECE);  /* not STRANGE_OBJECT or tools of interest */
+    cptr.st1o(__static_droppables_dummy, $obj_oartifact, 1);  /* so real artifact won't override "don't keep it" */
     pickaxe = (unihorn = (key = null));
     wep = (cptr.ldPtro((mon), $monst_mw));
+
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 262144n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) {
-        pickaxe = (unihorn = (key = __static_droppables_dummy));
+        /* won't hang on to any objects of these types */
+        pickaxe = (unihorn = (key = __static_droppables_dummy));  /* act as if already have them */
     } else {
+        /* don't hang on to pick-axe if can't use one or don't need one */
         if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 32n) != 0n) || !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 64n) != 0n))
             pickaxe = __static_droppables_dummy;
+        /* don't hang on to key if can't open doors */
         if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n) || (cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) < NHM.MZ_SMALL))
             key = __static_droppables_dummy;
     }
@@ -185,40 +191,49 @@ export function droppables(mon) {
             pickaxe = wep;
         if (cptr.ldI16o(wep, $obj_otyp) == NHC.UNICORN_HORN)
             unihorn = wep;
+        /* don't need any wielded check for keys... */
     }
+
     for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
         switch (cptr.ldI16o(obj, $obj_otyp)) {
             case NHC.DWARVISH_MATTOCK:
+            /* reject mattock if couldn't wield it */
             if (which_armor(mon, 8n))
                 break;
+            /* keep mattock in preference to pick unless pick is already
+               wielded or is an artifact and mattock isn't */
             if (pickaxe && cptr.ldI16o(pickaxe, $obj_otyp) == NHC.PICK_AXE && !cptr.eq(pickaxe, wep) && (!cptr.ld1so(pickaxe, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
-                return pickaxe;
+                return pickaxe;  /* drop the one we earlier decided to keep */
             // @FallThrough
             ;
             case NHC.PICK_AXE:
             if (!pickaxe || (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(pickaxe, $obj_oartifact))) {
                 if (pickaxe)
                     return pickaxe;
-                pickaxe = obj;
+                pickaxe = obj;  /* keep this digging tool */
                 continue;
             }
             break;
             case NHC.UNICORN_HORN:
+            /* reject cursed unicorn horns */
             if ((cptr.ldI32o(obj, $obj_cursed) & 1))
                 break;
+            /* keep artifact unihorn in preference to ordinary one */
             if (!unihorn || (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(unihorn, $obj_oartifact))) {
                 if (unihorn)
                     return unihorn;
-                unihorn = obj;
+                unihorn = obj;  /* keep this unicorn horn */
                 continue;
             }
             break;
             case NHC.SKELETON_KEY:
+            /* keep key in preference to lock-pick */
             if (key && cptr.ldI16o(key, $obj_otyp) == NHC.LOCK_PICK && (!cptr.ld1so(key, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
-                return key;
+                return key;  /* drop the one we earlier decided to keep */
             // @FallThrough
             ;
             case NHC.LOCK_PICK:
+            /* keep lock-pick in preference to credit card */
             if (key && cptr.ldI16o(key, $obj_otyp) == NHC.CREDIT_CARD && (!cptr.ld1so(key, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
                 return key;
             // @FallThrough
@@ -227,17 +242,19 @@ export function droppables(mon) {
             if (!key || (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(key, $obj_oartifact))) {
                 if (key)
                     return key;
-                key = obj;
+                key = obj;  /* keep this unlocking tool */
                 continue;
             }
             break;
             default:
             break;
         }
+
         if (!cptr.ldI64o(obj, $obj_owornmask) && !cptr.eq(obj, wep))
             return obj;
     }
-    return null;
+
+    return null;  /* don't drop anything */
 }
 
 /** C ref: dogmove.c:138 — char[4] */
@@ -246,6 +263,7 @@ const nofetch = [NHC.BALL_CLASS, NHC.CHAIN_CLASS, NHC.ROCK_CLASS, 0];
 /** C ref: dogmove.c:145 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function cursed_object_at(x, y) {
     let otmp;
+
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
         if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
             return 1;
@@ -255,6 +273,11 @@ export function cursed_object_at(x, y) {
 /** C ref: dogmove.c:156 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function dog_nutrition(mtmp, obj) {
     let nutrit;
+
+    /*
+     * It is arbitrary that the pet takes the same length of time to eat
+     * as a human, but gets more nutritional value.
+     */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) {
             cptr.stI32o(mtmp, $monst_meating, ((3 + (cptr.ldI32o2(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst, $permonst_cwt) >>> 6)) >>> 0) | 0);
@@ -296,12 +319,18 @@ export function dog_nutrition(mtmp, obj) {
         if (nutrit < 0)
             nutrit = 0;
     } else {
+        /* Unusual pet such as gelatinous cube eating odd stuff.
+         * meating made consistent with wild monsters in mon.c.
+         * nutrit made consistent with polymorphed player nutrit in
+         * eat.c.  (This also applies to pets eating gold.)
+         */
         cptr.stI32o(mtmp, $monst_meating, ((u32div(cptr.ldI32o(obj, $obj_owt), 20) + 1) >>> 0) | 0);
         nutrit = Math.imul(5, cptr.ldU16o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_nutrition));
     }
     return nutrit;
 }
 
+/* returns 2 if pet dies, otherwise 1 */
 /** C ref: dogmove.c:218 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} devour @returns {CInt} */
 export function dog_eat(mtmp, obj, x, y, devour) {
     let edog = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog));
@@ -310,10 +339,12 @@ export function dog_eat(mtmp, obj, x, y, devour) {
     let oprice;
     let objnambuf = new Uint8Array(256);
     let obj_name;
+
     cptr.st1o(cptr.decay(objnambuf), 0, 0, 1);
     if (cptr.ldI64o(edog, $edog_hungrytime) < cptr.ldI64o(svm, $instance_globals_saved_m_moves))
         cptr.stI64o(edog, $edog_hungrytime, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     nutrit = dog_nutrition(mtmp, obj);
+
     if (devour) {
         if (cptr.ldI32o(mtmp, $monst_meating) > 1)
             cptr.stI32o(mtmp, $monst_meating, (cptr.ldI32o(mtmp, $monst_meating) / 2) | 0);
@@ -323,6 +354,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
     cptr.stI64o(edog, $edog_hungrytime, cptr.ldI64o(edog, $edog_hungrytime) + BigInt(nutrit));
     cptr.stI32o(mtmp, $monst_mconf, 0);
     if (cptr.ldI32o(edog, $edog_mhpmax_penalty)) {
+        /* no longer starving */
         cptr.stI32o(mtmp, $monst_mhpmax, (cptr.ldI32o(mtmp, $monst_mhpmax) + cptr.ldI32o(edog, $edog_mhpmax_penalty)) | 0);
         cptr.stI32o(edog, $edog_mhpmax_penalty, 0);
     }
@@ -335,16 +367,33 @@ export function dog_eat(mtmp, obj, x, y, devour) {
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     }
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) && cptr.ldI16o(obj, $obj_otyp) == NHC.LUMP_OF_ROYAL_JELLY && (res = bee_eat_jelly(mtmp, obj)) >= 0)
-        return ((res + 1) | 0);
+        /* bypass most of dog_eat(), including apport update */
+        return ((res + 1) | 0);  /* 1 -> 2, 0 -> 1; -1, keep going */
+
+    /* food items are eaten one at a time; entire stack for other stuff */
     if (cptr.ldI64o(obj, $obj_quan) > 1n && cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS)
         obj = splitobj(obj, 1n);
     if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
     if (is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && !Underwater()) {
+        /* Don't print obj */
+        /* TODO: Reveal presence of sea monster (especially sharks) */
     } else {
+        /* food is at monster's current location, <mx,my>;
+           <x,y> was monster's location at start of this turn;
+           they might be the same but will be different when
+           the monster is moving+eating on same turn */
         let seeobj = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0));
         let sawpet = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && mon_visible(mtmp) ? 1 : 0));
+
+        /* Observe the action if either the food location or the pet
+           itself is in view.  When pet which was in view moves to an
+           unseen spot to eat the food there, avoid referring to that
+           pet as "it".  However, we want "it" if invisible/unsensed
+           pet eats visible food. */
         if (sawpet || (seeobj && canspotmon(mtmp))) {
+            /* call distant_name() for possible side-effects even if the
+               result won't be printed */
             obj_name = distant_name(obj, doname);
             if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32n) != 0n))
                 pline_mon(mtmp, __s_s_digs_in, noit_Monnam(mtmp));
@@ -360,18 +409,22 @@ export function dog_eat(mtmp, obj, x, y, devour) {
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
     }
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)) && (cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0) {
+        /* The object's rustproofing is gone now */
         if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
             costly_alteration(obj, NHC.COST_DEGRD);
         cptr.stI32o(obj, $obj_oerodeproof, 0);
         cptr.stI32o(mtmp, $monst_mstun, 1);
         if (canseemon(mtmp)) {
-            obj_name = distant_name(obj, doname);
+            obj_name = distant_name(obj, doname);  /* (see above) */
             if (cptr.ld1so(flags, $flag_verbose))
                 pline(__s_s_spits_s_out_in_disgust, Monnam(mtmp), obj_name);
         }
     } else {
+        /* It's a reward if it's DOGFOOD and the player dropped/threw it.
+           We know the player had it if invlet is set. -dlc */
         if (dogfood(mtmp, obj) == NHC.DOGFOOD && cptr.ld1so(obj, $obj_invlet)) {
             let prior_apport = cptr.ldI32o(edog, $edog_apport);
+
             cptr.stI32o(edog, $edog_apport, (cptr.ldI32o(edog, $edog_apport) + Number(BigInt.asIntN(32, (200n / (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32o(edog, $edog_dropdist) >>> 0) + cptr.ldI64o(svm, $instance_globals_saved_m_moves)) - cptr.ldI64o(edog, $edog_droptime))))))) | 0);
             if (cptr.ldI32o(edog, $edog_apport) <= 0) {
                 impossible(__s_dog_eat_pet_apport_0_d_d_ld_ld_d_u_u, cptr.ldI32o(edog, $edog_apport), cptr.ldI32o(edog, $edog_dropdist), cptr.ldI64o(edog, $edog_droptime), cptr.ldI64o(svm, $instance_globals_saved_m_moves), prior_apport, cptr.ldI32o(mtmp, $monst_m_id), cptr.ldI32(edog));
@@ -379,11 +432,16 @@ export function dog_eat(mtmp, obj, x, y, devour) {
             }
         }
         if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
+            /* edible item owned by shop has been thrown or kicked
+               by hero and caught by tame or food-tameable monst */
             oprice = unpaid_cost(obj, NHC.COST_CONTENTS);
             pline(__s_that_s_will_cost_you_ld_s, cptr.decay(objnambuf), oprice, currency(oprice));
+            /* m_consume_obj() -> delobj() -> obfree() will handle the shop
+               billing update */
         }
         m_consume_obj(mtmp, obj);
     }
+
     return ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) ? 2 : 1;
 }
 
@@ -398,12 +456,15 @@ function dog_starve(mtmp) {
     mondied(mtmp);
 }
 
+/* hunger effects -- returns TRUE on starvation */
 /** C ref: dogmove.c:362 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct edog>} edog @returns {CInt} */
 function dog_hunger(mtmp, edog) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > BigInt.asIntN(64, cptr.ldI64o(edog, $edog_hungrytime) + 500n)) {
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1073741824n) != 0n)) {
             cptr.stI64o(edog, $edog_hungrytime, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 500n));
+            /* but not too high; it might polymorph */
         } else if (!cptr.ldI32o(edog, $edog_mhpmax_penalty)) {
+            /* starving pets are limited in healing */
             let newmhpmax = (cptr.ldI32o(mtmp, $monst_mhpmax) / 3) | 0;
             cptr.stI32o(mtmp, $monst_mconf, 1);
             cptr.stI32o(edog, $edog_mhpmax_penalty, (cptr.ldI32o(mtmp, $monst_mhpmax) - newmhpmax) | 0);
@@ -429,6 +490,9 @@ function dog_hunger(mtmp, edog) {
     return 0;
 }
 
+/* do something with object (drop, pick up, eat) at current position
+ * returns 1 if object eaten (since that counts as dog's move), 2 if died
+ */
 /** C ref: dogmove.c:400 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct edog>} edog @param {CInt} udist @returns {CInt} */
 function dog_invent(mtmp, edog, udist) {
     let omx;
@@ -436,10 +500,17 @@ function dog_invent(mtmp, edog, udist) {
     let carryamt = 0;
     let obj;
     let otmp;
+
     if (helpless(mtmp) || cptr.ldI32o(mtmp, $monst_meating))
         return 0;
+
     omx = cptr.ldI16o(mtmp, $monst_mx);
     omy = cptr.ldI16o(mtmp, $monst_my);
+
+    /* If we are carrying something then we drop it (perhaps near @).
+     * Note: if apport == 1 then our behavior is independent of udist.
+     * Use udist+1 so steed won't cause divide by zero.
+     */
     if (droppables(mtmp)) {
         (__builtin_expect(BigInt((!(cptr.ldI32o(edog, $edog_apport) > 0))), 0n) ? __assert_rtn(__s_dog_invent, __s_dogmove_c, 417, __s_edog_apport_0) : void 0);
         if (!rn2_at(__s_dogmove_c, 418, __s_dog_invent, (udist + 1) | 0) || !rn2_at(__s_dogmove_c, 418, __s_dog_invent, cptr.ldI32o(edog, $edog_apport)))
@@ -447,14 +518,16 @@ function dog_invent(mtmp, edog, udist) {
                 relobj(mtmp, (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0, 1);
                 if (cptr.ldI32o(edog, $edog_apport) > 1)
                     (cptr.stI32o(edog, $edog_apport, cptr.ldI32o(edog, $edog_apport) + -1)) - (-1);
-                cptr.stI32o(edog, $edog_dropdist, udist >>> 0);
+                cptr.stI32o(edog, $edog_dropdist, udist >>> 0);  /* hpscdi!jon */
                 cptr.stI64o(edog, $edog_droptime, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
             }
     } else {
         if ((obj = cptr.ldPtro3(svl, omx, 168, omy, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null && !cptr.strchr(cptr.decay(nofetch), cptr.ld1so(obj, $obj_oclass)) && cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_MAIL && !((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) || (cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid)))) {
             let edible = dogfood(mtmp, obj);
+
             if ((edible <= NHC.CADAVER || (cptr.ldI32o(edog, $edog_mhpmax_penalty) && edible == NHC.ACCFOOD)) && could_reach_item(mtmp, cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))
                 return dog_eat(mtmp, obj, omx, omy, 0);
+
             carryamt = can_carry(mtmp, obj);
             if (carryamt > 0 && !(cptr.ldI32o(obj, $obj_cursed) & 1) && could_reach_item(mtmp, cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy))) {
                 if (rn2_at(__s_dogmove_c, 446, __s_dog_invent, 20) < ((cptr.ldI32o(edog, $edog_apport) + 3) | 0)) {
@@ -463,7 +536,13 @@ function dog_invent(mtmp, edog, udist) {
                         if (BigInt(carryamt) != cptr.ldI64o(obj, $obj_quan))
                             otmp = splitobj(obj, BigInt(carryamt));
                         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0)) {
+                            /* call distant_name() for possible side-effects
+                               even if the result won't be printed; should be
+                               done before extract+pickup for distant_name()
+                               -> doname() -> xname() -> find_artifact()
+                               while otmp is still on floor */
                             let otmpname = distant_name(otmp, doname);
+
                             if (cptr.ld1so(flags, $flag_verbose))
                                 pline_xy(omx, omy, __s_s_picks_up_s, Monnam(mtmp), otmpname);
                         }
@@ -483,6 +562,8 @@ function dog_invent(mtmp, edog, udist) {
     return 0;
 }
 
+/* set dog's goal -- gtyp, gx, gy;
+   returns -1/0/1 (dog's desire to approach player) or -2 (abort move) */
 /** C ref: dogmove.c:483 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct edog>} edog @param {CInt} after @param {CInt} udist @param {CInt} whappr @returns {CInt} */
 function dog_goal(mtmp, edog, after, udist, whappr) {
     let omx;
@@ -492,12 +573,17 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
     let obj;
     let otyp;
     let appr;
+
+    /* Steeds don't move on their own will */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         return -2;
+
     omx = cptr.ldI16o(mtmp, $monst_mx);
     omy = cptr.ldI16o(mtmp, $monst_my);
+
     in_masters_sight = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.COULD_SEE) != 0));
     dog_has_minvent = schar((droppables(mtmp) !== null));
+
     if (!edog || (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0) {
         cptr.stI16o(gg, $instance_globals_g_gtyp, NHC.APPORT);
         cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16(u));
@@ -509,8 +595,10 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
         let max_y;
         let nx;
         let ny;
-        cptr.stI16o(gg, $instance_globals_g_gtyp, NHC.UNDEF);
-        cptr.stI16o(gg, $instance_globals_g_gx, cptr.stI16o(gg, $instance_globals_g_gy, 0));
+
+        cptr.stI16o(gg, $instance_globals_g_gtyp, NHC.UNDEF);  /* no goal as yet */
+        cptr.stI16o(gg, $instance_globals_g_gx, cptr.stI16o(gg, $instance_globals_g_gy, 0));  /* suppress 'used before set' message */
+
         if ((min_x = (omx - 5) | 0) < 1)
             min_x = 1;
         if ((max_x = (omx + 5) | 0) >= NHM.COLNO)
@@ -519,15 +607,20 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             min_y = 0;
         if ((max_y = (omy + 5) | 0) >= NHM.ROWNO)
             max_y = 20;
+
+        /* nearby food is the first choice, then other objects */
         for (obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); obj; obj = cptr.ldPtr(obj)) {
             nx = cptr.ldI16o(obj, $obj_ox);
             ny = cptr.ldI16o(obj, $obj_oy);
             if (nx >= min_x && nx <= max_x && ny >= min_y && ny <= max_y) {
                 otyp = i16(dogfood(mtmp, obj));
+                /* skip inferior goals */
                 if (otyp > cptr.ldI16o(gg, $instance_globals_g_gtyp) || otyp == NHC.UNDEF)
                     continue;
+                /* avoid cursed items unless starving */
                 if (cursed_object_at(nx, ny) && !(cptr.ldI32o(edog, $edog_mhpmax_penalty) && otyp < NHC.MANFOOD))
                     continue;
+                /* skip completely unreachable goals */
                 if (!could_reach_item(mtmp, nx, ny) || !can_reach_location(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), nx, ny))
                     continue;
                 if (otyp < NHC.MANFOOD) {
@@ -544,6 +637,8 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             }
         }
     }
+
+    /* follow player if appropriate */
     if (cptr.ldI16o(gg, $instance_globals_g_gtyp) == NHC.UNDEF || (cptr.ldI16o(gg, $instance_globals_g_gtyp) != NHC.DOGFOOD && cptr.ldI16o(gg, $instance_globals_g_gtyp) != NHC.APPORT && cptr.ldI64o(svm, $instance_globals_saved_m_moves) < cptr.ldI64o(edog, $edog_hungrytime))) {
         cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16(u));
         cptr.stI16o(gg, $instance_globals_g_gy, cptr.ldI16o(u, $you_uy));
@@ -554,6 +649,9 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || !rn2_at(__s_dogmove_c, 575, __s_dog_goal, 4) || whappr || (dog_has_minvent && rn2_at(__s_dogmove_c, 576, __s_dog_goal, cptr.ldI32o(edog, $edog_apport))))
                 appr = 1;
         }
+        /* if you have dog food it'll follow you more closely; if you are
+           on stairs (or ladder) or on or next to a magic portal, it will
+           behave as if you have dog food */
         if (appr == 0) {
             if (On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                 appr = 1;
@@ -565,6 +663,9 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                     }
                 if (appr == 0) {
                     let t;
+
+                    /* assume at most one magic portal per level;
+                       [should this be limited to known portals?] */
                     for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
                         if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
                             if (dist2((cptr.ldI16o(t, $trap_tx)), (cptr.ldI16o(t, $trap_ty)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)
@@ -575,11 +676,12 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             }
         }
     } else
-        appr = 1;
+        appr = 1;  /* gtyp != UNDEF */
     if ((cptr.ldI32o(mtmp, $monst_mconf) & 1))
         appr = 0;
     if (((cptr.ldI16o(gg, $instance_globals_g_gx)) == cptr.ldI16(u) && (cptr.ldI16o(gg, $instance_globals_g_gy)) == cptr.ldI16o(u, $you_uy)) && !in_masters_sight) {
         let cp;
+
         cp = gettrack(omx, omy);
         if (cp) {
             cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16(cp));
@@ -587,14 +689,17 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             if (edog)
                 cptr.stI16o(edog, $edog_ogoal, 0);
         } else {
+            /* assume master hasn't moved far, and reuse previous goal */
             if (edog && cptr.ldI16o(edog, $edog_ogoal) && (cptr.ldI16o(edog, $edog_ogoal) != omx || cptr.ldI16o(edog, $edog_ogoal + $nhcoord_y) != omy)) {
                 cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16o(edog, $edog_ogoal));
                 cptr.stI16o(gg, $instance_globals_g_gy, cptr.ldI16o(edog, $edog_ogoal + $nhcoord_y));
                 cptr.stI16o(edog, $edog_ogoal, 0);
             } else {
                 let fardist = cptr.box(6724);
-                cptr.stI16o(gg, $instance_globals_g_gx, cptr.stI16o(gg, $instance_globals_g_gy, 82));
+                cptr.stI16o(gg, $instance_globals_g_gx, cptr.stI16o(gg, $instance_globals_g_gy, 82));  /* random */
                 do_clear_area(omx, omy, 9, wantdoor, fardist);
+
+                /* here gx == FARAWAY e.g. when dog is in a vault */
                 if (cptr.ldI16o(gg, $instance_globals_g_gx) == 82 || (cptr.ldI16o(gg, $instance_globals_g_gx) == omx && cptr.ldI16o(gg, $instance_globals_g_gy) == omy)) {
                     cptr.stI16o(gg, $instance_globals_g_gx, cptr.ldI16(u));
                     cptr.stI16o(gg, $instance_globals_g_gy, cptr.ldI16o(u, $you_uy));
@@ -616,18 +721,33 @@ function find_targ(mtmp, dx, dy, maxdist) {
     let curx = cptr.ldI16o(mtmp, $monst_mx);
     let cury = cptr.ldI16o(mtmp, $monst_my);
     let dist = 0;
+
+    /* Walk outwards */
     for (; dist < maxdist; ++dist) {
         curx = (curx + dx) | 0;
         cury = (cury + dy) | 0;
         if (!isok(i16(curx), i16(cury)))
             break;
+
+        /* FIXME: Check if we hit a wall/door/boulder to
+         *        short-circuit unnecessary subsequent checks
+         */
+
+        /* If we can't see up to here, forget it - will this
+         * mean pets in corridors don't breathe at monsters
+         * in rooms? If so, is that necessarily bad?
+         */
         if (!m_cansee(mtmp, curx, cury))
             break;
+
         if (curx == cptr.ldI16o(mtmp, $monst_mux) && cury == cptr.ldI16o(mtmp, $monst_muy))
             return cptr.add(gy, $instance_globals_y_youmonst);
+
         if ((targ = (cptr.ldPtro3(svl, curx, 168, cury, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
+            /* Is the monster visible to the pet? */
             if ((!(cptr.ldI32o(targ, $monst_minvis) & 1) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !(cptr.ldI32o(targ, $monst_mundetected) & 1) && cptr.ldI16o(targ, $monst_mx) == curx && cptr.ldI16o(targ, $monst_my) == cury)
                 break;
+            /* If the pet can't see it, it assumes it ain't there */
             targ = null;
         }
     }
@@ -642,21 +762,33 @@ function find_friends(mtmp, mtarg, maxdist) {
     let curx = cptr.ldI16o(mtarg, $monst_mx);
     let cury = cptr.ldI16o(mtarg, $monst_my);
     let dist = distmin(cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my), cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+
     for (; dist <= maxdist; ++dist) {
         curx = (curx + dx) | 0;
         cury = (cury + dy) | 0;
+
         if (!isok(i16(curx), i16(cury)))
             return 0;
+
+        /* If the pet can't see beyond this point, don't
+         * check any farther
+         */
         if (!m_cansee(mtmp, curx, cury))
             return 0;
+
+        /* Does pet think you're here? */
         if (cptr.ldI16o(mtmp, $monst_mux) == curx && cptr.ldI16o(mtmp, $monst_muy) == cury)
             return 1;
+
         pal = (cptr.ldPtro3(svl, curx, 168, cury, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
         if (pal) {
             if (cptr.ld1so(pal, $monst_mtame)) {
+                /* Pet won't notice invisible pets */
                 if (!(cptr.ldI32o(pal, $monst_minvis) & 1) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n))
                     return 1;
             } else {
+                /* Quest leaders and guardians are always seen */
                 if (cptr.ld1uo(cptr.ldPtro(pal, $monst_data), $permonst_msound) == NHC.MS_LEADER || cptr.ld1uo(cptr.ldPtro(pal, $monst_data), $permonst_msound) == NHC.MS_GUARDIAN)
                     return 1;
             }
@@ -668,12 +800,20 @@ function find_friends(mtmp, mtarg, maxdist) {
 /** C ref: dogmove.c:738 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct monst>} mtarg @returns {CLongLong} */
 function score_targ(mtmp, mtarg) {
     let score = 0n;
+
+    /* If the monster is confused, normal scoring is disrupted -
+     * anything may happen
+     */
+
+    /* Give 1 in 3 chance of safe breathing even if pet is confused or
+     * if you're on the quest start level */
     if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) || !rn2_at(__s_dogmove_c, 748, __s_score_targ, 3) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
         let mtmp_lev;
         let align1 = -128;
-        let align2 = -128;
+        let align2 = -128;  /* For priests, minions */
         let faith1 = 1;
         let faith2 = 1;
+
         if ((cptr.ldI32o(mtmp, $monst_isminion) & 1))
             align1 = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_min_align);
         else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
@@ -681,47 +821,75 @@ function score_targ(mtmp, mtarg) {
         else
             faith1 = 0;
         if ((cptr.ldI32o(mtarg, $monst_isminion) & 1))
-            align2 = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtarg), $monst_mextra), $mextra_emin)), $emin_min_align);
+            align2 = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtarg), $monst_mextra), $mextra_emin)), $emin_min_align);  /* MAR */
         else if ((cptr.ldI32o(mtarg, $monst_ispriest) & 1))
-            align2 = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtarg), $monst_mextra), $mextra_epri)), $epri_shralign);
+            align2 = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtarg), $monst_mextra), $mextra_epri)), $epri_shralign);  /* MAR */
         else
             faith2 = 0;
+
+        /* Never target quest friendlies */
         if (cptr.ld1uo(cptr.ldPtro(mtarg, $monst_data), $permonst_msound) == NHC.MS_LEADER || cptr.ld1uo(cptr.ldPtro(mtarg, $monst_data), $permonst_msound) == NHC.MS_GUARDIAN)
             return -5000n;
+        /* D: Fixed angelic beings using gaze attacks on coaligned priests */
         if (faith1 && faith2 && align1 == align2 && (cptr.ldI32o(mtarg, $monst_mpeaceful) & 1) | 0) {
             score -= 5000n;
             return score;
         }
+        /* Is monster adjacent? */
         if (distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my)) <= 1) {
             score -= 3000n;
             return score;
         }
+        /* Is the monster peaceful or tame? */
         if (cptr.ld1so(mtarg, $monst_mtame) || cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))) {
+            /* Pets will never be targeted */
             score -= 3000n;
             return score;
         }
+        /* Is master/pet behind monster? Check up to 15 squares beyond pet. */
         if (find_friends(mtmp, mtarg, 15)) {
             score -= 3000n;
             return score;
         }
+        /* Target hostile monsters in preference to peaceful ones */
         if (!(cptr.ldI32o(mtarg, $monst_mpeaceful) & 1))
             score += 10n;
+        /* Is the monster passive? Don't waste energy on it, if so */
         if (cptr.ld1uo2(cptr.ldPtro(mtarg, $monst_data), 0, $sizeof_attack, $permonst_mattk) == NHM.AT_NONE)
             score -= 1000n;
+        /* Even weak pets with breath attacks shouldn't take on very
+           low-level monsters. Wasting breath on lichens is ridiculous. */
         if ((cptr.ld1uo(mtarg, $monst_m_lev) < 2 && cptr.ld1uo(mtmp, $monst_m_lev) > 5) || (cptr.ld1uo(mtmp, $monst_m_lev) > 12 && cptr.ld1uo(mtarg, $monst_m_lev) < ((cptr.ld1uo(mtmp, $monst_m_lev) - 9) | 0) && cptr.ldI32o(u, $you_ulevel) > 8 && cptr.ld1uo(mtarg, $monst_m_lev) < ((cptr.ldI32o(u, $you_ulevel) - 7) | 0)))
             score -= 25n;
+        /* for strength purposes, a vampshifter in weak form (vampire bat,
+           fog cloud, maybe wolf) will attack as if in vampire form;
+           otherwise if won't do much and usually wouldn't suffer enough
+           damage (from counterattacks) to switch back to vampire form;
+           make it be more aggressive by behaving as if stronger */
         mtmp_lev = cptr.ld1uo(mtmp, $monst_m_lev);
         if (is_vampshifter(mtmp) && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_VAMPIRE) {
+            /* is_vampshifter() implies (mtmp->cham >= LOW_PM) */
             mtmp_lev = cptr.ld1so2(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst, $permonst_mlevel);
+            /* actual vampire level would range from 1.0*mlvl to 1.5*mlvl */
             mtmp_lev = (mtmp_lev + rn2_at(__s_dogmove_c, 813, __s_score_targ, (((mtmp_lev / 2) | 0) + 1) | 0)) | 0;
+            /* we don't expect actual level in weak form to exceed
+               base level of strong form, but handle that if it happens */
             if (cptr.ld1uo(mtmp, $monst_m_lev) > mtmp_lev)
                 mtmp_lev = cptr.ld1uo(mtmp, $monst_m_lev);
         }
+        /* And pets will hesitate to attack vastly stronger foes.
+           This penalty will be discarded if master's in trouble. */
         if (BigInt(cptr.ld1uo(mtarg, $monst_m_lev) >>> 0) > BigInt.asIntN(64, BigInt(mtmp_lev) + 4n))
             score -= BigInt.asIntN(64, BigInt(((cptr.ld1uo(mtarg, $monst_m_lev) - mtmp_lev) | 0)) * 20n);
+        /* All things being the same, go for the beefiest monster. This
+           bonus should not be large enough to override the pet's aversion
+           to attacking much stronger monsters. */
         score += BigInt(((Math.imul(cptr.ld1uo(mtarg, $monst_m_lev), 2) + ((cptr.ldI32o(mtarg, $monst_mhp) / 3) | 0)) | 0));
     }
+    /* Fuzz factor to make things less predictable when very
+       similar targets are abundant. */
     score += BigInt(rnd_at(__s_dogmove_c, 830, __s_score_targ, 5));
+    /* Pet may decide not to use ranged attack when confused */
     if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && !rn2_at(__s_dogmove_c, 832, __s_score_targ, 3))
         score -= 1000n;
     return score;
@@ -735,53 +903,105 @@ function best_target(mtmp, forced) {
     let currscore;
     let best_targ = null;
     let temp_targ = null;
+
+    /* Help! */
     if (!mtmp)
         return null;
+
+    /* If the pet is blind, it's not going to see any target */
     if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
         return null;
+
+    /* Search for any monsters lined up with the pet, within an arbitrary
+     * distance from the pet (7 squares, even along diagonals). Monsters
+     * are assigned scores and the best score is chosen.
+     */
     for (dy = -1; dy < 2; ++dy) {
         for (dx = -1; dx < 2; ++dx) {
             if (!dx && !dy)
                 continue;
+            /* Traverse the line to find the first monster within 7
+             * squares. Invisible monsters are skipped (if the
+             * pet doesn't have see invisible).
+             */
             temp_targ = find_targ(mtmp, dx, dy, 7);
+
+            /* Nothing in this line? */
             if (!temp_targ)
                 continue;
+
+            /* Decide how attractive the target is */
             currscore = score_targ(mtmp, temp_targ);
+
             if (currscore > bestscore) {
                 bestscore = currscore;
                 best_targ = temp_targ;
             }
         }
     }
+
+    /* Filter out targets the pet doesn't like */
     if (!forced && bestscore < 0n)
         best_targ = null;
+
     return best_targ;
 }
 
+/* Pet considers and maybe executes a ranged attack */
 /** C ref: dogmove.c:889 — @param {CPtr<struct monst>} mtmp @param {CInt} forced @returns {CInt} */
 export function pet_ranged_attk(mtmp, forced) {
     let mtarg;
     let hungry = 0;
+
+    /* How hungry is the pet? */
     if (!(cptr.ldI32o(mtmp, $monst_isminion) & 1)) {
         let dog = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog));
+
         hungry = (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > (BigInt.asIntN(64, cptr.ldI64o(dog, $edog_hungrytime) + 300n)));
     }
+
+    /* Identify the best target in a straight line from the pet;
+     * if there is such a target, we'll let the pet attempt an attack.
+     */
     mtarg = best_target(mtmp, forced);
+
+    /* Hungry pets are unlikely to use breath/spit attacks */
     if (mtarg && (!hungry || !rn2_at(__s_dogmove_c, 907, __s_pet_ranged_attk, 5))) {
         let mstatus = NHM.M_ATTK_MISS;
+
         if (cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))) {
             if (mattacku(mtmp))
                 return NHM.MMOVE_DIED;
+            /* Treat this as the pet having initiated an attack even if it
+             * didn't, so it will lose its move.  This isn't entirely fair,
+             * but mattacku doesn't distinguish between "did not attack"
+             * and "attacked but didn't die" cases, and this is preferable
+             * to letting the pet attack the player and continuing to move.
+             */
             mstatus = NHM.M_ATTK_HIT;
         } else {
             cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
             cptr.st1o(gn, $instance_globals_n_notonhead, 0);
             mstatus = mattackm(mtmp, mtarg);
+
+            /* Shouldn't happen, really */
             if (mstatus & NHM.M_ATTK_AGR_DIED)
                 return NHM.MMOVE_DIED;
+
+            /* Allow the targeted nasty to strike back - if
+             * the targeted beast doesn't have a ranged attack,
+             * nothing will happen.
+             */
             if ((mstatus & NHM.M_ATTK_HIT) && !(mstatus & NHM.M_ATTK_DEF_DIED) && rn2_at(__s_dogmove_c, 934, __s_pet_ranged_attk, 4) && !cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))) {
+
+                /* Can monster see?  If it can, it can retaliate
+                 * even if the pet is invisible, since it'll see
+                 * the direction from which the ranged attack came;
+                 * if it's blind or unseeing, it can't retaliate
+                 */
                 if ((cptr.ldI32o(mtarg, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(mtarg, $monst_data)), $permonst_mflags1) & 4096n) == 0n)) {
                     let mresp;
+
                     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
                     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
                     mresp = mattackm(mtarg, mtmp);
@@ -790,6 +1010,16 @@ export function pet_ranged_attk(mtmp, forced) {
                 }
             }
         }
+        /* Only return 3 if the pet actually made a ranged attack, and
+         * thus should lose the rest of its move.
+         * There's a chain of assumptions here:
+         * 1. score_targ and best_target will never select a monster
+         *    that can be attacked in melee, so the mattackm call can
+         *    only ever try ranged options
+         * 2. if the only attacks available to mattackm are ranged
+         *    options, and the monster cannot make a ranged attack, it
+         *    will return M_ATTK_MISS.
+         */
         if (mstatus != NHM.M_ATTK_MISS)
             return NHM.MMOVE_DONE;
     } else if (forced)
@@ -797,10 +1027,17 @@ export function pet_ranged_attk(mtmp, forced) {
     return NHM.MMOVE_NOTHING;
 }
 
+/* Return values (same as m_move):
+ * 0: did not move, but can still attack and do other stuff.
+ * 1: moved, possibly can attack.
+ * 2: monster died.
+ * 3: did not move, and can't do anything else either.
+ *    (may have attacked something)
+ */
 /** C ref: dogmove.c:977 — @param {CPtr<struct monst>} mtmp @param {CInt} after @returns {CInt} */
 export function dog_move(mtmp, after) {
     let omx;
-    let omy;
+    let omy;  /* original mtmp position */
     let appr;
     let whappr;
     let udist;
@@ -815,9 +1052,9 @@ export function dog_move(mtmp, after) {
     let better_with_displacing = 0;
     let ranged_only;
     let nix;
-    let niy;
+    let niy;  /* position mtmp is (considering) moving to */
     let nx;
-    let ny;
+    let ny;  /* temporary coordinates */
     let cnt;
     let uncursedcnt;
     let chcnt;
@@ -827,15 +1064,26 @@ export function dog_move(mtmp, after) {
     let allowflags;
     let mfp = cptr.alloc(112);
     __lbl_newdogpos: {
+
+        /*
+         * Tame Angels have isminion set and an ispriest structure instead of
+         * an edog structure.  Fortunately, guardian Angels need not worry
+         * about mundane things like eating and fetching objects, and can
+         * spend all their energy defending the player.  (They are the only
+         * monsters with other structures that can be tame.)
+         */
         if (!edog && !(cptr.ldI32o(mtmp, $monst_isminion) & 1)) {
             impossible(__s_dog_move_for_non_pet);
             return NHM.MMOVE_NOTHING;
         }
+
         omx = cptr.ldI16o(mtmp, $monst_mx);
         omy = cptr.ldI16o(mtmp, $monst_my);
         if (edog && dog_hunger(mtmp, edog))
-            return NHM.MMOVE_DIED;
+            return NHM.MMOVE_DIED;  /* starved */
+
         udist = dist2(i16((omx)), i16((omy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        /* Let steeds eat and maybe throw rider during Conflict */
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
             if (Conflict() && !resist_conflict(mtmp)) {
                 dismount_steed(NHC.DISMOUNT_THROWN);
@@ -843,31 +1091,45 @@ export function dog_move(mtmp, after) {
             }
             udist = 1;
         } else if (!udist) {
+            /* maybe we tamed him while being swallowed --jgm */
             return NHM.MMOVE_NOTHING;
         }
-        nix = i16(omx);
+
+        nix = i16(omx);  /* set before newdogpos */
         niy = i16(omy);
-        cptr.st1o(cptr.decay(cursemsg), 0, 0, 1);
+        cptr.st1o(cptr.decay(cursemsg), 0, 0, 1);  /* lint suppression */
+
         if (edog) {
             j = dog_invent(mtmp, edog, udist);
             if (j == 2 || (cptr.ldI64o((mtmp), $monst_mstate) != 0n))
                 return (cptr.ldI32o((mtmp), $monst_mhp) < 1) ? NHM.MMOVE_DIED : NHM.MMOVE_DONE;
             else if (j == 1)
-                break __lbl_newdogpos;
+                break __lbl_newdogpos;  /* eating something */
+
             whappr = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(edog, $edog_whistletime)) < 5n);
         } else
             whappr = 0;
+
         appr = dog_goal(mtmp, edog, after, udist, whappr);
         if (appr == -2)
             return NHM.MMOVE_NOTHING;
+
         if (Conflict() && !resist_conflict(mtmp)) {
             if (!edog) {
+                /* Guardian angel refuses to be conflicted; rather,
+                 * it disappears, angrily, and sends in some nasties
+                 */
                 lose_guardian_angel(mtmp);
-                return NHM.MMOVE_DIED;
+                return NHM.MMOVE_DIED;  /* current monster is gone */
             }
         }
         allowflags = mon_allowflags(mtmp);
         cnt = i16(mfndpos(mtmp, mfp, allowflags));
+
+        /* Normally dogs don't step on cursed items, but if they have no
+         * other choice they will.  This requires checking ahead of time
+         * to see how many uncursed item squares are around.
+         */
         uncursedcnt = 0;
         for (i = 0; i < cnt; i++) {
             nx = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss);
@@ -878,45 +1140,76 @@ export function dog_move(mtmp, after) {
                 continue;
             uncursedcnt++;
         }
+
         better_with_displacing = should_displace(mtmp, mfp, cptr.ldI16o(gg, $instance_globals_g_gx), cptr.ldI16o(gg, $instance_globals_g_gy));
+
         chcnt = 0;
         chi = -1;
         nidist = (dist2(nix, niy, cptr.ldI16o(gg, $instance_globals_g_gx), cptr.ldI16o(gg, $instance_globals_g_gy)));
+
         for (i = 0; i < cnt; i++) {
             __lbl_nxti: {
                 nx = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss);
                 ny = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss + $nhcoord_y);
                 cptr.st1o(cptr.decay(cursemsg), i, 0, 1);
+
+                /* if leashed, we drag him along. */
                 if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 && dist2((nx), (ny), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 4)
                     continue;
+
+                /* if a guardian, try to stay close by choice */
                 if (!edog && (j = dist2((nx), (ny), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) > 16 && j >= udist)
                     continue;
+
                 ranged_only = 0;
+
                 if ((cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n) && (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
                     let mstatus;
                     let mtmp2 = (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+                    /* weight the audacity of the pet to attack a differently-leveled
+                     * foe based on its fraction of max HP:
+                     *       100%: up to level + 2
+                     * 80% and up: up to level + 1
+                     * 60% to 80%: up to level
+                     * 40% to 60%: up to level - 1
+                     * 25% to 40%: up to level - 2
+                     *  below 25%: won't attack peacefuls of any level (different case)
+                     *  below 20%: up to level - 3
+                     *
+                     * note that balk's maximum value is +3, as it is the lowest level
+                     * the pet will balk at attacking rather than the highest level
+                     * they are willing to attack; note the >= used when comparing it.
+                     */
                     let balk = (((cptr.ld1uo(mtmp, $monst_m_lev) + (((Math.imul(5, cptr.ldI32o(mtmp, $monst_mhp))) / cptr.ldI32o(mtmp, $monst_mhpmax)) | 0)) | 0) - 2) | 0;
+
                     if (cptr.ld1uo(mtmp2, $monst_m_lev) >= balk || (cptr.ld1so(mtmp2, $monst_mtame) && cptr.ld1so(mtmp, $monst_mtame) && !Conflict()) || (max_passive_dmg(mtmp2, mtmp) >= cptr.ldI32o(mtmp, $monst_mhp)) || ((Math.imul(cptr.ldI32o(mtmp, $monst_mhp), 4) < cptr.ldI32o(mtmp, $monst_mhpmax) || cptr.ld1uo(cptr.ldPtro(mtmp2, $monst_data), $permonst_msound) == NHC.MS_GUARDIAN || cptr.ld1uo(cptr.ldPtro(mtmp2, $monst_data), $permonst_msound) == NHC.MS_LEADER) && (cptr.ldI32o(mtmp2, $monst_mpeaceful) & 1) | 0 && !Conflict())) {
                         continue;
                     }
                     if ((cptr.eq(cptr.ldPtro(mtmp2, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && rn2_at(__s_dogmove_c, 1130, __s_dog_move, 10) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mtmp2, $monst_mcansee) & 1) | 0 && (!(cptr.ldI32o(mtmp2, $monst_minvis) & 1) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !mon_reflects(mtmp, (null))) || (cptr.eq(cptr.ldPtro(mtmp2, $monst_data), cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) && rn2_at(__s_dogmove_c, 1134, __s_dog_move, 10)) || (touch_petrifies(cptr.ldPtro(mtmp2, $monst_data)) && !Resists_Elem(mtmp, NHC.STONE_RES))) {
+                        /* only skip this foe if a ranged attack isn't viable */
                         if (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp2, $monst_mx), cptr.ldI16o(mtmp2, $monst_my)) <= 2 || !cptr.eq(best_target(mtmp, 0), mtmp2))
                             continue;
                         ranged_only = 1;
                     }
+                    /** FIXME: 'ranged_only' isn't used as intended yet **/
                     if (ranged_only)
                         continue;
+
                     if (after)
-                        return NHM.MMOVE_NOTHING;
+                        return NHM.MMOVE_NOTHING;  /* hit only once each move */
+
                     cptr.stI16o(gb, $instance_globals_b_bhitpos, nx), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, ny);
                     cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI16o(mtmp2, $monst_mx) != nx || cptr.ldI16o(mtmp2, $monst_my) != ny ? 1 : 0)));
                     mstatus = mattackm(mtmp, mtmp2);
+
+                    /* aggressor (pet) died */
                     if (mstatus & NHM.M_ATTK_AGR_DIED)
                         return NHM.MMOVE_DIED;
+
                     if ((mstatus & 3) == NHM.M_ATTK_HIT && rn2_at(__s_dogmove_c, 1158, __s_dog_move, 4) && cptr.ldI64o(mtmp2, $monst_mlstmv) != cptr.ldI64o(svm, $instance_globals_saved_m_moves) && !onscary(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), mtmp2) && monnear(mtmp2, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
                         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
                         cptr.st1o(gn, $instance_globals_n_notonhead, 0);
-                        mstatus = mattackm(mtmp2, mtmp);
+                        mstatus = mattackm(mtmp2, mtmp);  /* return attack */
                         if (mstatus & NHM.M_ATTK_DEF_DIED)
                             return NHM.MMOVE_DIED;
                     }
@@ -925,44 +1218,73 @@ export function dog_move(mtmp, after) {
                 if ((cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 4096n) && (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && better_with_displacing && !undesirable_disp(mtmp, nx, ny)) {
                     let mstatus;
                     let mtmp2 = (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-                    mstatus = mdisplacem(mtmp, mtmp2, 0);
+
+                    mstatus = mdisplacem(mtmp, mtmp2, 0);  /* displace monster */
                     if (mstatus & NHM.M_ATTK_DEF_DIED)
                         return NHM.MMOVE_DIED;
                     return NHM.MMOVE_NOTHING;
                 }
+
+                /* avoid a location hero just kicked */
                 if (m_avoid_kicked_loc(mtmp, nx, ny))
                     continue;
                 if (m_avoid_soko_push_loc(mtmp, nx, ny))
                     continue;
+
                 {
+                    /* Dog avoids harmful traps, but perhaps it has to pass one
+                     * in order to follow player.  (Non-harmful traps do not
+                     * have ALLOW_TRAPS in info[].)  The dog only avoids the
+                     * trap if you've seen it, unlike enemies who avoid traps
+                     * if they've seen some trap of that type sometime in the
+                     * past.  (Neither behavior is really realistic.)
+                     */
                     let trap;
+
                     if ((cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 131072n) && (trap = t_at(nx, ny))) {
                         if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
                             if (!Deaf())
                                 whimper(mtmp);
                         } else {
+                            /* 1/40 chance of stepping on it anyway, in case
+                             * it has to pass one to follow the player...
+                             */
                             if ((cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && rn2_at(__s_dogmove_c, 1206, __s_dog_move, 40))
                                 continue;
                         }
                     }
                 }
+
+                /* dog eschews cursed objects, but likes dog food */
+                /* (minion isn't interested; `cursemsg' stays FALSE) */
                 if (edog) {
                     let can_reach_food = could_reach_item(mtmp, nx, ny);
+
                     for (obj = cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v)) {
                         if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
                             cptr.st1o(cptr.decay(cursemsg), i, 1, 1);
                         } else if (can_reach_food && (otyp = i16(dogfood(mtmp, obj))) < NHC.MANFOOD && (otyp < NHC.ACCFOOD || cptr.ldI64o(edog, $edog_hungrytime) <= cptr.ldI64o(svm, $instance_globals_saved_m_moves))) {
+                            /* Note: our dog likes the food so much that he
+                             * might eat it even when it conceals a cursed object */
                             nix = nx;
                             niy = ny;
                             chi = i;
                             do_eat = 1;
-                            cptr.st1o(cptr.decay(cursemsg), i, 0, 1);
+                            cptr.st1o(cptr.decay(cursemsg), i, 0, 1);  /* not reluctant */
                             break __lbl_newdogpos;
                         }
                     }
                 }
+                /* didn't find something to eat; if we saw a cursed item and
+                   aren't being forced to walk on it, usually keep looking */
                 if (cptr.ld1so(cptr.decay(cursemsg), i, 1) && !(cptr.ldI32o(mtmp, $monst_mleashed) & 1) && uncursedcnt > 0 && rn2_at(__s_dogmove_c, 1238, __s_dog_move, Math.imul(13, uncursedcnt)))
                     continue;
+
+                /*
+                 * Lessen the chance of backtracking to previous position(s).
+                 * This causes unintended issues for pets trying to follow the
+                 * hero.  Thus, only run it if not leashed and >5 tiles away.
+                 */
                 if (!(cptr.ldI32o(mtmp, $monst_mleashed) & 1) && distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 5) {
                     k = edog ? uncursedcnt : cnt;
                     for (j = 0; j < NHM.MTSZ && j < ((k - 1) | 0); j++)
@@ -970,6 +1292,7 @@ export function dog_move(mtmp, after) {
                             if (rn2_at(__s_dogmove_c, 1250, __s_dog_move, Math.imul(NHM.MTSZ, ((k - j) | 0))))
                                 break __lbl_nxti;
                 }
+
                 j = Math.imul((((ndist = (dist2(nx, ny, cptr.ldI16o(gg, $instance_globals_g_gx), cptr.ldI16o(gg, $instance_globals_g_gy)))) - nidist) | 0), appr);
                 if ((j == 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_dogmove_c, 1255, __s_dog_move), rn2(++chcnt)) : rn2(++chcnt))) || j < 0 || (j > 0 && !whappr && ((omx == nix && omy == niy && !rn2_at(__s_dogmove_c, 1257, __s_dog_move, 3)) || !rn2_at(__s_dogmove_c, 1257, __s_dog_move, 12)))) {
                     nix = nx;
@@ -982,11 +1305,17 @@ export function dog_move(mtmp, after) {
             }
             ;
         }
+
+        /* Pet hasn't attacked anything but is considering moving -
+         * now's the time for ranged attacks. Note that the pet can move
+         * after it performs its ranged attack. Should this be changed?
+         */
         if ((i = pet_ranged_attk(mtmp, 0)) != NHM.MMOVE_NOTHING)
             return i;
     }
     if (nix != omx || niy != omy) {
         let wasseen;
+
         if (cptr.ldI64o2(mfp, chi, 8, $mfndposdata_info) & 262144n) {
             if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
                 pline_mon(mtmp, __s_s_breaks_loose_of_s_leash, Monnam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)));
@@ -999,28 +1328,43 @@ export function dog_move(mtmp, after) {
             return NHM.MMOVE_MOVED;
         if (m_digweapon_check(mtmp, nix, niy))
             return NHM.MMOVE_NOTHING;
+
+        /* insert a worm_move() if worms ever begin to eat things */
         wasseen = schar(canseemon(mtmp));
         cptr.stPtro3(svl, omx, 168, omy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         place_monster(mtmp, nix, niy);
         if (cptr.ld1so(cptr.decay(cursemsg), chi, 1) && (wasseen || canseemon(mtmp))) {
+            /* describe top item of pile, not necessarily cursed item itself;
+               don't use glyph_at() here--it would return the pet but we want
+               to know whether an object is remembered at this map location */
             let o = (!Hallucination() && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0 && (((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_OBJ_OFF || ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) || ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_OBJ_PILETOP_OFF || ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) && (cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) || (((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) > NHC.GLYPH_OBJ_OFF && (cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) || ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) > NHC.GLYPH_OBJ_PILETOP_OFF && (cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) || (((((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= NHC.GLYPH_STATUE_MALE_OFF) && ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) || (((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) && ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_STATUE_MALE_PILETOP_OFF + NHC.NUMMONS) | 0)))) || ((((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= NHC.GLYPH_STATUE_FEM_OFF) && ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_STATUE_FEM_OFF + NHC.NUMMONS) | 0))) || (((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= NHC.GLYPH_STATUE_FEM_PILETOP_OFF) && ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0))))) || ((((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= NHC.GLYPH_BODY_OFF) && ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_BODY_OFF + NHC.NUMMONS) | 0))) || (((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) >= NHC.GLYPH_BODY_PILETOP_OFF) && ((cptr.ldI32o3(svl, nix, $sizeof_rm_x21, niy, $sizeof_rm, $instance_globals_saved_l_level)) < ((NHC.GLYPH_BODY_PILETOP_OFF + NHC.NUMMONS) | 0)))))) ? (cptr.ldPtro3(svl, nix, 168, niy, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) : null;
             let what = o ? distant_name(o, doname) : cptr.ldPtro(c_common_strings, $c_common_strings_c_something);
+
             pline_mon(mtmp, __s_s_s_reluctantly_s_s, noit_Monnam(mtmp), vtense(null, locomotion(cptr.ldPtro(mtmp, $monst_data), __s_step)), (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n) || is_floater(cptr.ldPtro(mtmp, $monst_data))) ? __s_over : __s_onto, what);
         }
         mon_track_add(mtmp, i16(omx), i16(omy));
+        /* We have to know if the pet's going to do a combined eat and
+         * move before moving it, but it can't eat until after being
+         * moved.  Thus the do_eat flag.
+         */
         if (do_eat) {
             if (dog_eat(mtmp, obj, i16(omx), i16(omy), 0) == 2)
                 return NHM.MMOVE_DIED;
         }
     } else if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 && dist2(i16((omx)), i16((omy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 4) {
+        /* an incredible kludge, but the only way to keep pooch near
+         * after it spends time eating or in a trap, etc.
+         */
         let cc = cptr.alloc(4);
         __lbl_dognext: {
+
             nx = i16(sgn((omx - cptr.ldI16(u)) | 0));
             ny = i16(sgn((omy - cptr.ldI16o(u, $you_uy)) | 0));
             cptr.stI16(cc, i16(((cptr.ldI16(u) + nx) | 0)));
             cptr.stI16o(cc, $nhcoord_y, i16(((cptr.ldI16o(u, $you_uy) + ny) | 0)));
             if (goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), mtmp, 0))
                 break __lbl_dognext;
+
             i = xytodir(nx, ny);
             for (j = ((((i) + 7) | 0) % ((NHC.N_DIRS_Z - 2) | 0)); j < ((((i) + 1) | 0) % ((NHC.N_DIRS_Z - 2) | 0)); j++) {
                 dirtocoord(cc, j);
@@ -1045,6 +1389,7 @@ export function dog_move(mtmp, after) {
     return NHM.MMOVE_MOVED;
 }
 
+/* check if a monster could pick up objects from a location */
 /** C ref: dogmove.c:1362 — @param {CPtr<struct monst>} mon @param {CInt} nx @param {CInt} ny @returns {CInt} */
 export function could_reach_item(mon, nx, ny) {
     if ((!is_pool(nx, ny) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2n) != 0n)) && (!is_lava(nx, ny) || likes_lava(cptr.ldPtro(mon, $monst_data))) && (!sobj_at(NHC.BOULDER, nx, ny) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 134217728n) != 0n)))
@@ -1052,15 +1397,24 @@ export function could_reach_item(mon, nx, ny) {
     return 0;
 }
 
+/* Hack to prevent a dog from being endlessly stuck near an object that
+ * it can't reach, such as caught in a teleport scroll niche.  It recursively
+ * checks to see if the squares in between are good.  The checking could be
+ * a little smarter; a full check would probably be useful in m_move() too.
+ * Since the maximum food distance is 5, this should never be more than 5
+ * calls deep.
+ */
 /** C ref: dogmove.c:1379 — @param {CPtr<struct monst>} mon @param {CInt} mx @param {CInt} my @param {CInt} fx @param {CInt} fy @returns {CInt} */
 function can_reach_location(mon, mx, my, fx, fy) {
     let i;
     let j;
     let dist;
+
     if (mx == fx && my == fy)
         return 1;
     if (!isok(mx, my))
-        return 0;
+        return 0;  /* should not happen */
+
     dist = dist2(mx, my, fx, fy);
     for (i = (mx - 1) | 0; i <= ((mx + 1) | 0); i++) {
         for (j = (my - 1) | 0; j <= ((my + 1) | 0); j++) {
@@ -1081,10 +1435,12 @@ function can_reach_location(mon, mx, my, fx, fy) {
     return 0;
 }
 
+/* do_clear_area client */
 /** C ref: dogmove.c:1418 — @param {CInt} x @param {CInt} y @param {CPtr} distance */
 function wantdoor(x, y, distance) {
     let ndist;
     let dist_ptr = distance;
+
     if (cptr.ldI32(dist_ptr) > (ndist = dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
         cptr.stI16o(gg, $instance_globals_g_gx, x);
         cptr.stI16o(gg, $instance_globals_g_gy, y);
@@ -1137,12 +1493,15 @@ cptr.st1o(qm, 128 + $qmchoices_m_ap_type, NHC.M_AP_OBJECT);
 export function finish_meating(mtmp) {
     cptr.stI32o(mtmp, $monst_meating, 0);
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_MIMIC) {
+        /* was eating a mimic and now appearance needs resetting */
         cptr.st1o(mtmp, $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(mtmp, $monst_mappearance, 0);
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     }
 }
 
+/*
+ * variation of leashable() that takes a PM_ index */
 /** C ref: dogmove.c:1462 — @param {CInt} mnum @returns {CInt} */
 function mnum_leashable(mnum) {
     return schar((((mnum >= NHC.LOW_PM && mnum <= NHC.HIGH_PM) && mnum != NHC.PM_LONG_WORM && !((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 1048576n) != 0n) && (!((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 24576n) == 24576n) || ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 32768n) == 0n))) ? 1 : 0));
@@ -1156,10 +1515,19 @@ export function quickmimic(mtmp) {
     let seeloc;
     let was_leashed = schar((cptr.ldI32o(mtmp, $monst_mleashed) & 1));
     let buf = new Uint8Array(256);
+
     if (Protection_from_shape_changers() || !cptr.ldI32o(mtmp, $monst_meating))
         return;
+
+    /* with polymorph, the steed's equipment would be re-checked and its
+       saddle would come off, triggering DISMOUNT_FELL, but mimicking
+       doesn't impact monster's equipment; normally DISMOUNT_POLY is for
+       rider taking on an unsuitable shape, but its message works fine
+       for this and also avoids inflicting damage during forced dismount;
+       do this before changing so that dismount refers to original shape */
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         dismount_steed(NHC.DISMOUNT_POLY);
+
     do {
         idx = rn2_at(__s_dogmove_c, 1491, __s_quickmimic, 9);
         if (cptr.ldI32o(qm, idx, $sizeof_qmchoices) != 0 && (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == cptr.ldI32o(qm, idx, $sizeof_qmchoices))
@@ -1171,14 +1539,18 @@ export function quickmimic(mtmp) {
     } while (--trycnt > 0);
     if (trycnt == 0)
         idx = (9 - 1) | 0;
-    void cptr.strcpy(cptr.decay(buf), y_monnam(mtmp));
+
+    void cptr.strcpy(cptr.decay(buf), y_monnam(mtmp));  /* "your <pet>" or "the <mon>" or "Fang" */
     spotted = canspotmon(mtmp);
     seeloc = ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0);
+
     cptr.st1o(mtmp, $monst_m_ap_type, cptr.ld1uo2(qm, idx, $sizeof_qmchoices, $qmchoices_m_ap_type));
     cptr.stI32o(mtmp, $monst_mappearance, cptr.ldI32o2(qm, idx, $sizeof_qmchoices, $qmchoices_mappearance));
+
     if (spotted || seeloc || canspotmon(mtmp)) {
         let prev_glyph = glyph_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         let what = ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE) ? cptr.ldPtro2(defsyms, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_symdef, $symdef_explanation) : (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) ? (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)) : (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_objclass))), $sizeof_objdescr))) ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_objclass))), $sizeof_objdescr)) : (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER) ? pmname(cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_permonst), Mgender(mtmp)) : cptr.ldPtro(c_common_strings, $c_common_strings_c_something))));
+
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         if (was_leashed && ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER || !mnum_leashable(cptr.ldI32o(mtmp, $monst_mappearance) | 0))) {
             Your(__s_leash_goes_slack);
@@ -1188,6 +1560,7 @@ export function quickmimic(mtmp) {
             You(__s_s_s_s_where_s_was, seeloc ? __s_see : __s_sense_that, (!cptr.eq(what, cptr.ldPtro(c_common_strings, $c_common_strings_c_something))) ? an(what) : what, seeloc ? __s_appear : __s_has_appeared, cptr.decay(buf));
         else
             You(__s_sense_that_s_feels_rather_s_ish, cptr.decay(buf), what);
+
         display_nhwindow()(WIN_MAP.v, 1);
     }
 }

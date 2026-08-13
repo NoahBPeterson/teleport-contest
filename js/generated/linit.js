@@ -34,6 +34,10 @@ const __s_math = cptr.lit("math");
 const __s_utf8 = cptr.lit("utf8");
 const __s_debug = cptr.lit("debug");
 
+/*
+** these libs are loaded by lua.c and are readily available to any Lua
+** program
+*/
 /** C ref: linit.c:42 — luaL_Reg[11] */
 const loadedlibs = cptr.alloc(11 * $sizeof_luaL_Reg);
 cptr.stPtro(loadedlibs, 0, __s_us_g);
@@ -62,8 +66,9 @@ cptr.stPtro(loadedlibs, 160 + $luaL_Reg_func, null);
 /** C ref: linit.c:57 — @param {CPtr<lua_State>} L */
 export function luaL_openlibs(L) {
     let lib;
+    /* "require" functions from 'loadedlibs' and set results to global table */
     for (lib = loadedlibs; cptr.ldPtro(lib, $luaL_Reg_func); lib = cptr.add(lib, 1, 16)) {
         luaL_requiref(L, cptr.ldPtr(lib), cptr.ldPtro(lib, $luaL_Reg_func), 1);
-        lua_settop(L, -2);
+        lua_settop(L, -2);  /* remove lib */
     }
 }

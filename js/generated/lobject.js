@@ -33,6 +33,9 @@ const __s_dot3 = cptr.lit("...");
 const __s_string = cptr.lit("[string \"");
 const __s_quot_rbrack = cptr.lit("\"]");
 
+/*
+** Computes ceil(log2(x))
+*/
 const __static_luaO_ceillog2_log_2 = [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]; /** C ref: lobject.c:36 — unsigned char[256] (function-static) */
 
 /** C ref: lobject.c:35 — @param {CUInt} x @returns {CInt} */
@@ -125,7 +128,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
                 ;
                 return 1;
             } else
-                return 0;
+                return 0;  /* fail */
         }
         case 5:
         case 4:
@@ -141,7 +144,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
                 ;
                 return 1;
             } else
-                return 0;
+                return 0;  /* fail */
         }
         default:
         {
@@ -164,7 +167,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
                 ;
                 return 1;
             } else
-                return 0;
+                return 0;  /* fail */
         }
     }
 }
@@ -172,6 +175,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
 /** C ref: lobject.c:126 — @param {CPtr<lua_State>} L @param {CInt} op @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr} res */
 export function luaO_arith(L, op, p1, p2, res) {
     if (!luaO_rawarith(L, op, p1, p2, ((res)))) {
+        /* could not perform raw operation; try metamethod */
         luaT_trybinTM(L, p1, p2, res, (((((op - 0) | 0) + NHC.TM_ADD) | 0)));
     }
 }
@@ -194,35 +198,53 @@ function isneg(s) {
     return 0;
 }
 
+/*
+** Convert string 's' to a Lua number (put in 'result'). Return NULL on
+** fail or the address of the ending '\0' on success. ('mode' == 'x')
+** means a hexadecimal numeral.
+*/
 /** C ref: lobject.c:228 — @param {CPtr<char>} s @param {CPtr<lua_Number>} result @param {CInt} mode @returns {CPtr<char>} */
 function l_str2dloc(s, result, mode) {
     let endptr = cptr.box(0);
     cptr.stF64(result, (mode == 120) ? strtod((s), (endptr)) : strtod((s), (endptr)));
     if (cptr.eq(endptr.v, s))
-        return null;
+        return null;  /* nothing recognized? */
     while ((cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(endptr.v)))))) + 1) | 0, 1) & 8))
-        endptr.v = cptr.add(endptr.v, 1);
-    return (cptr.ld1s(endptr.v) == 0) ? endptr.v : null;
+        endptr.v = cptr.add(endptr.v, 1);  /* skip trailing spaces */
+    return (cptr.ld1s(endptr.v) == 0) ? endptr.v : null;  /* OK iff no trailing chars */
 }
 
+/*
+** Convert string 's' to a Lua number (put in 'result') handling the
+** current locale.
+** This function accepts both the current locale or a dot as the radix
+** mark. If the conversion fails, it may mean number has a dot but
+** locale accepts something else. In that case, the code copies 's'
+** to a buffer (because 's' is read-only), changes the dot to the
+** current locale radix mark, and tries to convert again.
+** The variable 'mode' checks for special characters in the string:
+** - 'n' means 'inf' or 'nan' (which should be rejected)
+** - 'x' means a hexadecimal numeral
+** - '.' just optimizes the search for the common case (no special chars)
+*/
 /** C ref: lobject.c:251 — @param {CPtr<char>} s @param {CPtr<lua_Number>} result @returns {CPtr<char>} */
 function l_str2d(s, result) {
     let endptr;
-    let pmode = strpbrk(s, __s_xxnn);
+    let pmode = strpbrk(s, __s_xxnn);  /* look for special chars */
     let mode = pmode ? (((uchar(((cptr.ld1s(pmode)))))) | 32) : 0;
     if (mode == 110)
         return null;
-    endptr = l_str2dloc(s, result, mode);
+    endptr = l_str2dloc(s, result, mode);  /* try to convert */
     if (cptr.eq(endptr, (null))) {
         let buff = new Uint8Array(201);
         let pdot = cptr.strchr(s, 46);
         if (cptr.eq(pdot, (null)) || cptr.strlen(s) > 200n)
-            return null;
-        cptr.strcpy(cptr.decay(buff), s);
-        cptr.st1o(cptr.decay(buff), cptr.diff(pdot, s), (cptr.ld1so(cptr.ldPtr(localeconv()), 0)), 1);
-        endptr = l_str2dloc(cptr.decay(buff), result, mode);
+            return null;  /* string too long or no dot; fail */
+        cptr.strcpy(cptr.decay(buff), s);  /* copy string to buffer */
+        cptr.st1o(cptr.decay(buff), cptr.diff(pdot, s), (cptr.ld1so(cptr.ldPtr(localeconv()), 0)), 1);  /* correct decimal point */
+        endptr = l_str2dloc(cptr.decay(buff), result, mode);  /* try again */
         if (!cptr.eq(endptr, (null)))
-            endptr = cptr.add(s, (cptr.diff(endptr, cptr.decay(buff))));
+            endptr = cptr.add(s, (cptr.diff(endptr, cptr.decay(buff))));  /* make relative to 's' */
     }
     return endptr;
 }
@@ -234,10 +256,10 @@ function l_str2int(s, result) {
     let empty = 1;
     let neg;
     while ((cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 8))
-        s.v = cptr.add(s.v, 1);
+        s.v = cptr.add(s.v, 1);  /* skip initial spaces */
     neg = isneg(s);
     if (cptr.ld1so(s.v, 0) == 48 && (cptr.ld1so(s.v, 1) == 120 || cptr.ld1so(s.v, 1) == 88)) {
-        s.v = cptr.add(s.v, 2);
+        s.v = cptr.add(s.v, 2);  /* skip '0x' */
         for (; (cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 16); s.v = cptr.add(s.v, 1)) {
             a = BigInt.asUintN(64, BigInt.asUintN(64, a * 16n) + BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ld1s(s.v)))));
             empty = 0;
@@ -246,15 +268,15 @@ function l_str2int(s, result) {
         for (; (cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 2); s.v = cptr.add(s.v, 1)) {
             let d = (cptr.ld1s(s.v) - 48) | 0;
             if (a >= 922337203685477580n && (a > 922337203685477580n || d > ((7 + neg) | 0)))
-                return null;
+                return null;  /* do not accept it (as integer) */
             a = BigInt.asUintN(64, BigInt.asUintN(64, a * 10n) + BigInt.asUintN(64, BigInt(d)));
             empty = 0;
         }
     }
     while ((cptr.ld1uo(cptr.decay(luai_ctype_), (((uchar(((cptr.ld1s(s.v)))))) + 1) | 0, 1) & 8))
-        s.v = cptr.add(s.v, 1);
+        s.v = cptr.add(s.v, 1);  /* skip trailing spaces */
     if (empty || cptr.ld1s(s.v) != 0)
-        return null;
+        return null;  /* something wrong in the numeral */
     else {
         cptr.stI64(result, (BigInt.asIntN(64, ((neg) ? BigInt.asUintN(64, 0n - a) : a))));
         return s.v;
@@ -281,28 +303,31 @@ export function luaO_str2num(s, o) {
         }
         ;
     } else
-        return 0n;
-    return BigInt.asUintN(64, BigInt.asIntN(64, (cptr.diff(e, s)) + 1n));
+        return 0n;  /* conversion failed */
+    return BigInt.asUintN(64, BigInt.asIntN(64, (cptr.diff(e, s)) + 1n));  /* success; return string size */
 }
 
 /** C ref: lobject.c:323 — @param {CPtr<char>} buff @param {CLongLong} x @returns {CInt} */
 export function luaO_utf8esc(buff, x) {
-    let n = 1;
+    let n = 1;  /* number of bytes put in buffer (backwards) */
     (void 0);
     if (x < 128n)
         cptr.st1o(buff, 7, (Number(BigInt.asIntN(8, ((x))))));
     else {
-        let mfb = 63;
+        let mfb = 63;  /* maximum that fits in first byte */
         do {
             cptr.st1o(buff, (8 - (n++)) | 0, (Number(BigInt.asIntN(8, ((128n | (x & 63n)))))));
-            x >>= 6n;
-            mfb >>= 1;
-        } while (x > BigInt(mfb >>> 0));
-        cptr.st1o(buff, (8 - n) | 0, (Number(BigInt.asIntN(8, ((BigInt(((~mfb << 1) >>> 0) >>> 0) | x))))));
+            x >>= 6n;  /* remove added bits */
+            mfb >>= 1;  /* now there is one less bit available in first byte */
+        } while (x > BigInt(mfb >>> 0));  /* still needs continuation byte? */
+        cptr.st1o(buff, (8 - n) | 0, (Number(BigInt.asIntN(8, ((BigInt(((~mfb << 1) >>> 0) >>> 0) | x))))));  /* add first byte */
     }
     return n;
 }
 
+/*
+** Convert a number object to a string, adding it to a buffer
+*/
 /** C ref: lobject.c:355 — @param {CPtr<TValue>} obj @param {CPtr<char>} buff @returns {CInt} */
 function tostringbuff(obj, buff) {
     let len;
@@ -313,12 +338,15 @@ function tostringbuff(obj, buff) {
         len = cptr.snprintf((buff), 44n, __s_14g, ((cptr.ldF64(((obj))))));
         if (cptr.ld1so(buff, strspn(buff, __s_0123456789)) == 0) {
             cptr.st1o(buff, len++, (cptr.ld1so(cptr.ldPtr(localeconv()), 0)));
-            cptr.st1o(buff, len++, 48);
+            cptr.st1o(buff, len++, 48);  /* adds '.0' to result */
         }
     }
     return len;
 }
 
+/*
+** Convert a number object to a Lua string, replacing the value at 'obj'
+*/
 /** C ref: lobject.c:374 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} obj */
 export function luaO_tostring(L, obj) {
     let buff = new Uint8Array(44);
@@ -333,10 +361,20 @@ export function luaO_tostring(L, obj) {
     ;
 }
 
+/* buffer used by 'luaO_pushvfstring' */
 /** C ref: lobject.c:397 — struct BuffFS { L, pushed, blen, space } (memory model v0.5) */
 
 /** C ref: lobject.c:402 — typedef BuffFS (type alias only, no runtime output) */
 
+/*
+** Push given string to the stack, as part of the result, and
+** join it to previous partial result if there is one.
+** It may call 'luaV_concat' while using one slot from EXTRA_STACK.
+** This call cannot invoke metamethods, as both operands must be
+** strings. It can, however, raise an error if the result is too
+** long. In that case, 'luaV_concat' frees the extra slot before
+** raising the error.
+*/
 /** C ref: lobject.c:414 — @param {CPtr<BuffFS>} buff @param {CPtr<char>} str @param {CLongLong} lstr */
 function pushstr(buff, str, lstr) {
     let L = cptr.ldPtr(buff);
@@ -348,19 +386,26 @@ function pushstr(buff, str, lstr) {
         (void L, (void 0));
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* may use one slot from EXTRA_STACK */
     if (!cptr.ldI32o(buff, $BuffFS_pushed))
-        cptr.stI32o(buff, $BuffFS_pushed, 1);
+        cptr.stI32o(buff, $BuffFS_pushed, 1);  /* now there is one */
     else
         luaV_concat(L, 2);
 }
 
+/*
+** empty the buffer space into the stack
+*/
 /** C ref: lobject.c:428 — @param {CPtr<BuffFS>} buff */
 function clearbuff(buff) {
-    pushstr(buff, cptr.add(buff, $BuffFS_space), BigInt.asUintN(64, BigInt(cptr.ldI32o(buff, $BuffFS_blen))));
-    cptr.stI32o(buff, $BuffFS_blen, 0);
+    pushstr(buff, cptr.add(buff, $BuffFS_space), BigInt.asUintN(64, BigInt(cptr.ldI32o(buff, $BuffFS_blen))));  /* push buffer contents */
+    cptr.stI32o(buff, $BuffFS_blen, 0);  /* space now is empty */
 }
 
+/*
+** Get a space of size 'sz' in the buffer. If buffer has not enough
+** space, empty it. 'sz' must fit in an empty buffer.
+*/
 /** C ref: lobject.c:438 — @param {CPtr<BuffFS>} buff @param {CInt} sz @returns {CPtr<char>} */
 function getbuff(buff, sz) {
     (void 0);
@@ -370,33 +415,44 @@ function getbuff(buff, sz) {
     return cptr.add(cptr.add(buff, $BuffFS_space), cptr.ldI32o(buff, $BuffFS_blen));
 }
 
+/*
+** Add 'str' to the buffer. If string is larger than the buffer space,
+** push the string directly to the stack.
+*/
 /** C ref: lobject.c:453 — @param {CPtr<BuffFS>} buff @param {CPtr<char>} str @param {CLongLong} slen */
 function addstr2buff(buff, str, slen) {
     if (slen <= 199n) {
         let bf = getbuff(buff, (Number(BigInt.asIntN(32, ((slen))))));
-        cptr.memcpy(bf, str, slen);
+        cptr.memcpy(bf, str, slen);  /* add string to buffer */
         (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + ((Number(BigInt.asIntN(32, ((slen))))))) | 0));
     } else {
-        clearbuff(buff);
-        pushstr(buff, str, slen);
+        clearbuff(buff);  /* string comes after buffer's content */
+        pushstr(buff, str, slen);  /* push string */
     }
 }
 
+/*
+** Add a numeral to the buffer.
+*/
 /** C ref: lobject.c:469 — @param {CPtr<BuffFS>} buff @param {CPtr<TValue>} num */
 function addnum2buff(buff, num) {
     let numbuff = getbuff(buff, 44);
-    let len = tostringbuff(num, numbuff);
+    let len = tostringbuff(num, numbuff);  /* format number into 'numbuff' */
     (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0));
 }
 
+/*
+** this function handles only '%d', '%c', '%f', '%p', '%s', and '%%'
+   conventional formats, plus Lua-specific '%I' and '%U'
+*/
 /** C ref: lobject.c:480 — @param {CPtr<lua_State>} L @param {CPtr<char>} fmt @param {CPtr} argp @returns {CPtr<char>} */
 export function luaO_pushvfstring(L, fmt, argp) {
-    let buff = cptr.alloc(216);
-    let e;
+    let buff = cptr.alloc(216);  /* holds last part of the result */
+    let e;  /* points to next '%' */
     cptr.stI32o(buff, $BuffFS_pushed, cptr.stI32o(buff, $BuffFS_blen, 0));
     cptr.stPtr(buff, L);
     while (!cptr.eq((e = cptr.strchr(fmt, 37)), (null))) {
-        addstr2buff(buff, fmt, BigInt.asUintN(64, cptr.diff(e, fmt)));
+        addstr2buff(buff, fmt, BigInt.asUintN(64, cptr.diff(e, fmt)));  /* add 'fmt' up to '%' */
         switch (cptr.ld1s((cptr.add(e, 1)))) {
             case 115:
             {
@@ -450,7 +506,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
             }
             case 112:
             {
-                let sz = 32;
+                let sz = 32;  /* enough space for '%p' */
                 let bf = getbuff(buff, sz);
                 let p = cptr.vaArg(argp, 'ptr');
                 let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __s_pct_p, p);
@@ -474,10 +530,10 @@ export function luaO_pushvfstring(L, fmt, argp) {
                 luaG_runerror(L, __s_invalid_option_c_to_lua_pushfstring, cptr.ld1s((cptr.add(e, 1))));
             }
         }
-        fmt = cptr.add(e, 2);
+        fmt = cptr.add(e, 2);  /* skip '%' and the specifier */
     }
-    addstr2buff(buff, fmt, cptr.strlen(fmt));
-    clearbuff(buff);
+    addstr2buff(buff, fmt, cptr.strlen(fmt));  /* rest of 'fmt' */
+    clearbuff(buff);  /* empty buffer into the stack */
     (void 0);
     return (cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))))), $TString_contents));
 }
@@ -494,7 +550,7 @@ export function luaO_pushfstring(L, fmt, ...__va) {
 
 /** C ref: lobject.c:567 — @param {CPtr<char>} out @param {CPtr<char>} source @param {CLongLong} srclen */
 export function luaO_chunkid(out, source, srclen) {
-    let bufflen = 60n;
+    let bufflen = 60n;  /* free space in buffer */
     if (cptr.ld1s(source) == 61) {
         if (srclen <= bufflen)
             cptr.memcpy(out, cptr.add(source, 1), BigInt.asUintN(64, srclen * 1n));
@@ -511,14 +567,14 @@ export function luaO_chunkid(out, source, srclen) {
             cptr.memcpy(out, cptr.add(cptr.add(cptr.add(source, 1), srclen), -(bufflen)), BigInt.asUintN(64, bufflen * 1n));
         }
     } else {
-        let nl = cptr.strchr(source, 10);
-        (cptr.memcpy(out, __s_string, BigInt.asUintN(64, ((BigInt.asUintN(64, 10n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n)))));
-        bufflen -= BigInt.asUintN(64, (BigInt.asUintN(64, 15n / 1n - 1n)) + 1n);
+        let nl = cptr.strchr(source, 10);  /* find first new line (if any) */
+        (cptr.memcpy(out, __s_string, BigInt.asUintN(64, ((BigInt.asUintN(64, 10n / 1n - 1n))) * 1n)), out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n)))));  /* add prefix */
+        bufflen -= BigInt.asUintN(64, (BigInt.asUintN(64, 15n / 1n - 1n)) + 1n);  /* save space for prefix+suffix+'\0' */
         if (srclen < bufflen && cptr.eq(nl, (null))) {
-            (cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)), out = cptr.add(out, (srclen)));
+            (cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)), out = cptr.add(out, (srclen)));  /* keep it */
         } else {
             if (!cptr.eq(nl, (null)))
-                srclen = BigInt.asUintN(64, cptr.diff(nl, source));
+                srclen = BigInt.asUintN(64, cptr.diff(nl, source));  /* stop at first newline */
             if (srclen > bufflen)
                 srclen = bufflen;
             (cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)), out = cptr.add(out, (srclen)));

@@ -25,6 +25,7 @@ const __s_04ld_02d_02d_02d_02d_02d = cptr.lit("%04ld%02d%02d%02d%02d%02d");
 export function getnow() {
     let fixed_dt = nh_getenv(__s_nethack_fixed_datetime);
     let datetime = cptr.box(0n);
+
     if (fixed_dt && cptr.ld1s(fixed_dt)) {
         let parsed = time_from_yyyymmddhhmmss(fixed_dt);
         if (parsed != 0n)
@@ -37,6 +38,7 @@ export function getnow() {
 /** C ref: calendar.c:47 @returns {CPtr<struct tm>} */
 function getlt() {
     let date = cptr.box(getnow());
+
     return localtime(date);
 }
 
@@ -50,15 +52,21 @@ export function yyyymmdd(date) {
     date = cptr.box(date);
     let datenum;
     let lt;
+
     if (date.v == 0n)
         lt = getlt();
     else
         lt = localtime(date);
+
+    /* just in case somebody's localtime supplies (year % 100)
+       rather than the expected (year - 1900) */
     if (cptr.ldI32o(lt, $tm_tm_year) < 70)
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 2000n);
     else
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
+    /* yyyy --> yyyymm */
     datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0)));
+    /* yyyymm --> yyyymmdd */
     datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, $tm_tm_mday)));
     return datenum;
 }
@@ -68,10 +76,12 @@ export function hhmmss(date) {
     date = cptr.box(date);
     let timenum;
     let lt;
+
     if (date.v == 0n)
         lt = getlt();
     else
         lt = localtime(date);
+
     timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_hour)) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_min)) * 100n)) + BigInt(cptr.ldI32(lt)));
     return timenum;
 }
@@ -83,15 +93,20 @@ export function yyyymmddhhmmss(date) {
     date = cptr.box(date);
     let datenum;
     let lt;
+
     if (date.v == 0n)
         lt = getlt();
     else
         lt = localtime(date);
+
+    /* just in case somebody's localtime supplies (year % 100)
+       rather than the expected (year - 1900) */
     if (cptr.ldI32o(lt, $tm_tm_year) < 70)
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 2000n);
     else
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
     nh_snprintf(__s_yyyymmddhhmmss, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __s_04ld_02d_02d_02d_02d_02d, datenum, (cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0, cptr.ldI32o(lt, $tm_tm_mday), cptr.ldI32o(lt, $tm_tm_hour), cptr.ldI32o(lt, $tm_tm_min), cptr.ldI32(lt));
+    //debugpline1("yyyymmddhhmmss() produced date string %s", datestr);
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
 
@@ -110,32 +125,34 @@ export function time_from_yyyymmddhhmmss(buf) {
     let h = new Uint8Array(3);
     let mi = new Uint8Array(3);
     let s = new Uint8Array(3);
+
     if (buf && cptr.strlen(buf) == 14n) {
         d = buf;
-        p = cptr.decay(y);
+        p = cptr.decay(y);  /* year */
         for (k = 0; k < 4; ++k)
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
         cptr.st1(p, 0);
-        p = cptr.decay(mo);
+        p = cptr.decay(mo);  /* month */
         for (k = 0; k < 2; ++k)
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
         cptr.st1(p, 0);
-        p = cptr.decay(md);
+        p = cptr.decay(md);  /* day */
         for (k = 0; k < 2; ++k)
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
         cptr.st1(p, 0);
-        p = cptr.decay(h);
+        p = cptr.decay(h);  /* hour */
         for (k = 0; k < 2; ++k)
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
         cptr.st1(p, 0);
-        p = cptr.decay(mi);
+        p = cptr.decay(mi);  /* minutes */
         for (k = 0; k < 2; ++k)
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
         cptr.st1(p, 0);
-        p = cptr.decay(s);
+        p = cptr.decay(s);  /* seconds */
         for (k = 0; k < 2; ++k)
             cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
         cptr.st1(p, 0);
+        /* Avoid recursion when getnow() itself is using fixed datetime. */
         void time(now);
         lt = localtime(now);
         if (lt) {
@@ -156,29 +173,47 @@ export function time_from_yyyymmddhhmmss(buf) {
     return 0n;
 }
 
+/*
+ * moon period = 29.53058 days ~= 30, year = 365.2422 days
+ * days moon phase advances on first day of year compared to preceding year
+ *      = 365.2422 - 12*29.53058 ~= 11
+ * years in Metonic cycle (time until same phases fall on the same days of
+ *      the month) = 18.6 ~= 19
+ * moon phase on first day of year (epact) ~= (11*(year%19) + 29) % 30
+ *      (29 as initial condition)
+ * current phase in days = first day phase + days elapsed in year
+ * 6 moons ~= 177 days
+ * 177 ~= 8 reported phases * 22
+ * + 11/22 for rounding
+ */
 /** C ref: calendar.c:200 @returns {CInt} */
 export function phase_of_the_moon() {
     let lt = getlt();
     let epact;
     let diy;
     let goldn;
+
     diy = cptr.ldI32o(lt, $tm_tm_yday);
     goldn = ((cptr.ldI32o(lt, $tm_tm_year) % 19) + 1) | 0;
     epact = ((Math.imul(11, goldn) + 18) | 0) % 30;
     if ((epact == 25 && goldn > 11) || epact == 24)
         epact++;
+
     return (((((((Math.imul(((diy + epact) | 0), 6)) + 11) | 0) % 177) / 22) | 0) & 7);
 }
 
 /** C ref: calendar.c:215 @returns {CInt} */
 export function friday_13th() {
     let lt = getlt();
+
+    /* tm_wday (day of week; 0==Sunday) == 5 => Friday */
     return schar((cptr.ldI32o(lt, $tm_tm_wday) == 5 && cptr.ldI32o(lt, $tm_tm_mday) == 13 ? 1 : 0));
 }
 
 /** C ref: calendar.c:224 @returns {CInt} */
 export function night() {
     let hour = cptr.ldI32o(getlt(), $tm_tm_hour);
+
     return (hour < 6 || hour > 21 ? 1 : 0);
 }
 

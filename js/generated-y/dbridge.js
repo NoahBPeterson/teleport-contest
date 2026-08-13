@@ -169,9 +169,13 @@ export function is_waterwall(x, y) {
 /** C ref: dbridge.c:46 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_pool(x, y) {
     let ltyp;
+
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    /* The ltyp == MOAT is not redundant with is_moat, because the
+     * Juiblex level does not have moats, although it has MOATs. There
+     * is probably a better way to express this. */
     if (ltyp == NHC.POOL || ltyp == NHC.MOAT || ltyp == NHC.WATER || is_moat(x, y))
         return 1;
     return 0;
@@ -180,6 +184,7 @@ export function is_pool(x, y) {
 /** C ref: dbridge.c:62 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_lava(x, y) {
     let ltyp;
+
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
@@ -199,6 +204,7 @@ export function is_pool_or_lava(x, y) {
 /** C ref: dbridge.c:86 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_ice(x, y) {
     let ltyp;
+
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
@@ -210,6 +216,7 @@ export function is_ice(x, y) {
 /** C ref: dbridge.c:100 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_moat(x, y) {
     let ltyp;
+
     if (!isok(x, y))
         return 0;
     ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
@@ -232,14 +239,23 @@ export function db_under_typ(mask) {
     }
 }
 
+/*
+ * We want to know whether a wall (or a door) is the portcullis (passageway)
+ * of an eventual drawbridge.
+ *
+ * Return value:  the direction of the drawbridge, or -1 if not valid
+ */
 /** C ref: dbridge.c:137 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_drawbridge_wall(x, y) {
     let lev;
+
     if (!isok(x, y))
         return -1;
+
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (cptr.ld1so(lev, $rm_typ) != NHC.DOOR && cptr.ld1so(lev, $rm_typ) != NHC.DBWALL)
         return -1;
+
     if (isok(i16(((x + 1) | 0)), y) && ((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_WEST)
         return NHM.DB_WEST;
     if (isok(i16(((x - 1) | 0)), y) && ((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_EAST)
@@ -248,17 +264,28 @@ export function is_drawbridge_wall(x, y) {
         return NHM.DB_SOUTH;
     if (isok(x, i16(((y + 1) | 0))) && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_NORTH)
         return NHM.DB_NORTH;
+
     return -1;
 }
 
+/*
+ * Use is_db_wall where you want to verify that a
+ * drawbridge "wall" is UP in the location x, y
+ * (instead of UP or DOWN, as with is_drawbridge_wall).
+ */
 /** C ref: dbridge.c:170 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_db_wall(x, y) {
     return schar((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DBWALL));
 }
 
+/*
+ * Return true with x,y pointing to the drawbridge if x,y initially indicate
+ * a drawbridge or drawbridge wall.
+ */
 /** C ref: dbridge.c:180 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @returns {CInt} */
 export function find_drawbridge(x, y) {
     let dir;
+
     if (((cptr.ld1so3(svl, cptr.ldI16(x), $sizeof_rm_x21, cptr.ldI16(y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16(x), $sizeof_rm_x21, cptr.ldI16(y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN))
         return 1;
     dir = is_drawbridge_wall(cptr.ldI16(x), cptr.ldI16(y));
@@ -282,6 +309,9 @@ export function find_drawbridge(x, y) {
     return 0;
 }
 
+/*
+ * Find the drawbridge wall associated with a drawbridge.
+ */
 /** C ref: dbridge.c:211 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 function get_wall_for_db(x, y) {
     switch (((cptr.ldI32o3(svl, cptr.ldI16(x), $sizeof_rm_x21, cptr.ldI16(y), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) {
@@ -300,12 +330,18 @@ function get_wall_for_db(x, y) {
     }
 }
 
+/*
+ * Creation of a drawbridge at pos x,y.
+ *     dir is the direction.
+ *     flag must be put to TRUE if we want the drawbridge to be opened.
+ */
 /** C ref: dbridge.c:235 — @param {CInt} x @param {CInt} y @param {CInt} dir @param {CInt} flag @returns {CInt} */
 export function* create_drawbridge(x, y, dir, flag) {
     let x2;
     let y2;
     let horiz;
-    let lava = schar((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL));
+    let lava = schar((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL));  /* assume initialized map */
+
     x2 = x;
     y2 = y;
     switch (dir) {
@@ -339,6 +375,7 @@ export function* create_drawbridge(x, y, dir, flag) {
     } else {
         cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DRAWBRIDGE_UP);
         cptr.st1o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DBWALL);
+        /* Drawbridges are non-diggable. */
         cptr.stI32o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.W_NONDIGGABLE);
     }
     cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, (!horiz) >>> 0);
@@ -352,6 +389,7 @@ export function* create_drawbridge(x, y, dir, flag) {
 /** C ref: dbridge.c:286 — @param {CInt} x @param {CInt} y @returns {CPtr<struct entity>} */
 function* e_at(x, y) {
     let entitycnt;
+
     for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++)
         if (cptr.ldPtro2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_edata) && cptr.ldI32o2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_ex) == x && cptr.ldI32o2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_ey) == y)
             break;
@@ -397,15 +435,27 @@ function set_entity(x, y, etmp) {
         m_to_e((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), x, y, etmp);
 }
 
+/*
+ * e_strg is a utility routine which is not actually in use anywhere, since
+ * the specialized routines below suffice for all current purposes.
+ */
+
+/* #define e_strg(etmp, func) (is_u(etmp) ? (char *) 0 : func(etmp->emon)) */
+
 /** C ref: dbridge.c:351 — @param {CPtr<struct entity>} etmp @returns {CPtr<char>} */
 function* e_nam(etmp) {
     return (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you : (yield* mon_nam(cptr.ldPtr(etmp)));
 }
 
+/*
+ * Generates capitalized entity name, makes 2nd -> 3rd person conversion on
+ * verb, where necessary.
+ */
 const __static_E_phrase_wholebuf = new Uint8Array(80); /** C ref: dbridge.c:363 — char[80] (function-static) */
 
 /** C ref: dbridge.c:361 — @param {CPtr<struct entity>} etmp @param {CPtr<char>} verb @returns {CPtr<char>} */
 function* E_phrase(etmp, verb) {
+
     void cptr.strcpy(cptr.decay(__static_E_phrase_wholebuf), (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you__2 : (yield* Monnam(cptr.ldPtr(etmp))));
     if (!verb || !cptr.ld1s(verb))
         return cptr.decay(__static_E_phrase_wholebuf);
@@ -417,12 +467,16 @@ function* E_phrase(etmp, verb) {
     return cptr.decay(__static_E_phrase_wholebuf);
 }
 
+/*
+ * Simple-minded "can it be here?" routine
+ */
 /** C ref: dbridge.c:380 — @param {CPtr<struct entity>} etmp @param {CInt} x @param {CInt} y @returns {CInt} */
 function e_survives_at(etmp, x, y) {
     if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST))
         return 1;
     if (is_pool(x, y))
         return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) || is_floater(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
+    /* must force call to lava_effects in e_died if is_u */
     if (is_lava(x, y))
         return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (Levitation() || Flying())) || likes_lava(cptr.ldPtro(etmp, $entity_edata)) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) ? 1 : 0));
     if (is_db_wall(x, y))
@@ -434,48 +488,64 @@ function e_survives_at(etmp, x, y) {
 function* e_died(etmp, xkill_flags, how) {
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
         if (how == NHC.DROWNING) {
-            cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+            cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* drown() sets its own killer */
             void (yield* drown());
         } else if (how == NHC.BURNING) {
-            cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+            cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* lava_effects() sets own killer */
             void (yield* lava_effects());
         } else {
             let xy = cptr.alloc(4);
+
+            /* use more specific killer if specified */
             if (!cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_falling_drawbridge);
             }
             (yield* done(how));
+            /* So, you didn't die */
             if (!e_survives_at(etmp, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)))) {
                 if ((yield* enexto(xy, i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)), cptr.ldPtro(etmp, $entity_edata)))) {
                     (yield* pline(__s_a_s_force_teleports_you_away, Hallucination() ? __s_normal : __s_strange));
                     (yield* teleds(cptr.ldI16(xy), cptr.ldI16o(xy, $nhcoord_y), NHM.TELEDS_NO_FLAGS));
                 }
+                /* otherwise on top of the drawbridge is the
+                 * only viable spot in the dungeon, so stay there
+                 */
             }
         }
+        /* we might have crawled out of the moat to survive */
         cptr.stI32o(etmp, $entity_ex, cptr.ldI16(u)), cptr.stI32o(etmp, $entity_ey, cptr.ldI16o(u, $you_uy));
     } else {
         let entitycnt;
+
         cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+        /* if monsters are moving, one of them caused the destruction */
         if (cptr.ld1so(svc, $context_info_mon_moving))
             (yield* monkilled(cptr.ldPtr(etmp), (((xkill_flags & NHM.XKILL_NOMSG) != 0) ? null : __s_empty), (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
         else
             (yield* xkilled(cptr.ldPtr(etmp), xkill_flags));
+
+        /* if etmp gets life-saved, kill it again; otherwise we might end up
+           trying to place another monster (probably a xorn) on same spot */
         if (!(cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
             let seeit = canspotmon(cptr.ldPtr(etmp));
+
             xkill_flags |= 5;
             if (cptr.ld1so(svc, $context_info_mon_moving))
                 (yield* monkilled(cptr.ldPtr(etmp), __s_empty, (((xkill_flags & NHM.XKILL_NOCORPSE) != 0) ? NHM.AD_DGST : NHM.AD_PHYS)));
             else
                 (yield* xkilled(cptr.ldPtr(etmp), xkill_flags));
+
             if ((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
                 if (seeit)
                     (yield* pline(__s_unfortunately_for_s_s_is_still_crushed, (yield* mon_nam(cptr.ldPtr(etmp))), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he))));
             } else {
-                ;
+                ;  /* FIXME: still not dead?  What should we do now? */
             }
         }
         cptr.stPtro(etmp, $entity_edata, null);
+
+        /* dead long worm handling */
         for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++) {
             if (!cptr.eq(etmp, cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, $sizeof_entity)) && cptr.eq(cptr.ldPtr(etmp), cptr.ldPtro2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants)))
                 cptr.stPtro2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_edata, null);
@@ -483,14 +553,21 @@ function* e_died(etmp, xkill_flags, how) {
     }
 }
 
+/*
+ * These are never directly affected by a bridge or portcullis.
+ */
 /** C ref: dbridge.c:486 — @param {CPtr<struct entity>} etmp @returns {CInt} */
 function automiss(etmp) {
     return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 8n) != 0n)) || (cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
 }
 
+/*
+ * Does falling drawbridge or portcullis miss etmp?
+ */
 /** C ref: dbridge.c:496 — @param {CPtr<struct entity>} etmp @param {CInt} chunks @returns {CInt} */
 function* e_missed(etmp, chunks) {
     let misses;
+
     if (chunks) {
         {
             if ((yield* debugcore(__s_dbridge_c, 1))) {
@@ -502,39 +579,52 @@ function* e_missed(etmp, chunks) {
     }
     if (automiss(etmp))
         return 1;
+
     if (((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) && ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) : !helpless(cptr.ldPtr(etmp))))
-        misses = 5;
+        /* flying requires mobility */
+        misses = 5;  /* out of 8 */
     else if (is_floater(cptr.ldPtro(etmp, $entity_edata)) || ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && Levitation()))
         misses = 3;
     else if (chunks && is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
-        misses = 2;
+        misses = 2;  /* sitting ducks */
     else
         misses = 0;
+
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
-        misses = (misses - 3) | 0;
+        misses = (misses - 3) | 0;  /* less airspace */
     {
         if ((yield* debugcore(__s_dbridge_c, 1))) {
+
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__s_miss_chance_d_out_of_8, misses));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
+
     return schar(((misses >= rnd_at(__s_dbridge_c, 524, __s_e_missed, 8)) ? 1 : 0));
 }
 
+/*
+ * Can etmp jump from death?
+ */
 /** C ref: dbridge.c:531 — @param {CPtr<struct entity>} etmp @returns {CInt} */
 function* e_jumps(etmp) {
-    let tmp = 4;
+    let tmp = 4;  /* out of 10 */
+
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (helpless(cptr.ldPtr(etmp)) || !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0 ? 1 : 0))
         return 0;
+
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? HConfusion() : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mconf) & 1) >>> 0))
         tmp = (tmp - 2) | 0;
+
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? HStun() : BigInt((cptr.ldI32o(cptr.ldPtr(etmp), $monst_mstun) & 1) >>> 0))
         tmp = (tmp - 3) | 0;
+
     if (is_db_wall(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
-        tmp = (tmp - 2) | 0;
+        tmp = (tmp - 2) | 0;  /* less room to maneuver */
     {
         if ((yield* debugcore(__s_dbridge_c, 1))) {
+
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__s_s_to_jump_d_chances_in_10, (yield* E_phrase(etmp, __s_try)), tmp));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -554,13 +644,16 @@ function* do_entity(etmp) {
     let relocates = 0;
     let e_inview;
     let crm;
+
     if (!cptr.ldPtro(etmp, $entity_edata))
         return;
+
     e_inview = schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp)) ? 1 : 0));
     oldx = i16(cptr.ldI32o(etmp, $entity_ex));
     oldy = i16(cptr.ldI32o(etmp, $entity_ey));
     at_portcullis = is_db_wall(oldx, oldy);
     crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), oldx, $sizeof_rm_x21), oldy, $sizeof_rm);
+
     if (automiss(etmp) && e_survives_at(etmp, oldx, oldy)) {
         if (e_inview && (at_portcullis || IS_DRAWBRIDGE(cptr.ld1so(crm, $rm_typ))))
             (yield* pline_The(__s_s_passes_through_s, at_portcullis ? __s_portcullis : __s_drawbridge, (yield* e_nam(etmp))));
@@ -593,7 +686,7 @@ function* do_entity(etmp) {
             if (at_portcullis)
                 must_jump = 1;
             else
-                relocates = 1;
+                relocates = 1;  /* just ride drawbridge in */
         }
     } else {
         if (cptr.ld1so(crm, $rm_typ) == NHC.DRAWBRIDGE_DOWN) {
@@ -601,12 +694,12 @@ function* do_entity(etmp) {
                 cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_crushed_to_death_underneath_a_drawbridge);
             }
-            (yield* pline(__s_s_crushed_underneath_the_drawbridge, (yield* E_phrase(etmp, __s_are))));
-            (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
-            return;
-        }
-        must_jump = 1;
-    }
+            (yield* pline(__s_s_crushed_underneath_the_drawbridge, (yield* E_phrase(etmp, __s_are))));  /* no jump */
+            (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));  /* no corpse */
+            return;  /* Note: Beyond this point, we know we're  */
+        }  /* not at an opened drawbridge, since all  */
+        must_jump = 1;  /* *missable* creatures survive on the     */
+    }  /* square, and all the unmissed ones die.  */
     if (must_jump) {
         if (at_portcullis) {
             if ((yield* e_jumps(etmp))) {
@@ -626,6 +719,7 @@ function* do_entity(etmp) {
                     (yield* You_hear(__s_a_crushing_sound));
                 }
                 (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
+                /* no corpse */
                 return;
             }
         } else {
@@ -641,6 +735,14 @@ function* do_entity(etmp) {
     }
     {
         if ((yield* debugcore(__s_dbridge_c, 1))) {
+
+            /*
+             * Here's where we try to do relocation.  Assumes that etmp is not
+             * arriving at the portcullis square while the drawbridge is
+             * falling, since this square would be inaccessible (i.e. etmp
+             * started on drawbridge square) or unnecessary (i.e. etmp started
+             * here) in such a situation.
+             */
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__s_doing_relocation));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
@@ -659,7 +761,14 @@ function* do_entity(etmp) {
         }
     }
     if (relocates && ((yield* e_at(newx.v, newy.v)))) {
+        /*
+         * Standoff problem: one or both entities must die, and/or
+         * both switch places.  Avoid infinite recursion by checking
+         * first whether the other entity is staying put.  Clean up if
+         * we happen to move/die in recursion.
+         */
         let other;
+
         other = (yield* e_at(newx.v, newy.v));
         {
             if ((yield* debugcore(__s_dbridge_c, 1))) {
@@ -669,7 +778,7 @@ function* do_entity(etmp) {
             }
         }
         if (e_survives_at(other, newx.v, newy.v) && automiss(other)) {
-            relocates = 0;
+            relocates = 0;  /* "other" won't budge */
             {
                 if ((yield* debugcore(__s_dbridge_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -791,7 +900,9 @@ function* do_entity(etmp) {
         }
         if (is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) || is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))))
             if (e_inview && !(cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
+                /* drown() will supply msgs if nec. */
                 let lava = is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey)));
+
                 if (Hallucination())
                     (yield* pline(__s_s_the_s_and_disappears, (yield* E_phrase(etmp, __s_drink)), lava ? __s_lava : __s_moat));
                 else
@@ -799,11 +910,12 @@ function* do_entity(etmp) {
             }
         cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
         void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_fell_from_a_drawbridge);
-        (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) ? NHC.DROWNING : (is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) ? NHC.BURNING : NHC.CRUSHING)));
+        (yield* e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), is_pool(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) ? NHC.DROWNING : (is_lava(i16(cptr.ldI32o(etmp, $entity_ex)), i16(cptr.ldI32o(etmp, $entity_ey))) ? NHC.BURNING : NHC.CRUSHING)));  /*no corpse*/
         return;
     }
 }
 
+/* clear stale reason for death and both 'entities' before returning */
 /** C ref: dbridge.c:763 */
 function nokiller() {
     cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
@@ -812,6 +924,9 @@ function nokiller() {
     m_to_e(null, 0, 0, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
 }
 
+/*
+ * Close the drawbridge located at x,y
+ */
 /** C ref: dbridge.c:775 — @param {CInt} x @param {CInt} y */
 export function* close_drawbridge(x, y) {
     let lev1;
@@ -819,6 +934,7 @@ export function* close_drawbridge(x, y) {
     let t;
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
+
     lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (cptr.ld1so(lev1, $rm_typ) != NHC.DRAWBRIDGE_DOWN)
         return;
@@ -847,8 +963,8 @@ export function* close_drawbridge(x, y) {
     cptr.stI32o(lev2, $rm_flags, NHM.W_NONDIGGABLE);
     set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
     set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
-    (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity)));
-    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
+    (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity)));  /* Do set_entity after first */
+    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));  /* do_entity for worm tail */
     (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity)));
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !Deaf()) {
         ;
@@ -866,10 +982,13 @@ export function* close_drawbridge(x, y) {
     (yield* del_engr_at(x2.v, y2.v));
     (yield* newsym(x, y));
     (yield* newsym(x2.v, y2.v));
-    (yield* block_point(x2.v, y2.v));
+    (yield* block_point(x2.v, y2.v));  /* vision */
     nokiller();
 }
 
+/*
+ * Open the drawbridge located at x,y
+ */
 /** C ref: dbridge.c:840 — @param {CInt} x @param {CInt} y */
 export function* open_drawbridge(x, y) {
     let lev1;
@@ -877,6 +996,7 @@ export function* open_drawbridge(x, y) {
     let t;
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
+
     lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (cptr.ld1so(lev1, $rm_typ) != NHC.DRAWBRIDGE_UP)
         return;
@@ -895,8 +1015,8 @@ export function* open_drawbridge(x, y) {
     cptr.stI32o(lev2, $rm_flags, NHM.D_NODOOR);
     set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
     set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
-    (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity)));
-    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
+    (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity)));  /* do set_entity after first */
+    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));  /* do_entity for worm tails */
     (yield* do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity)));
     void (yield* revive_nasty(x, y, null));
     (yield* delallobj(x, y));
@@ -908,12 +1028,15 @@ export function* open_drawbridge(x, y) {
     (yield* del_engr_at(x2.v, y2.v));
     (yield* newsym(x, y));
     (yield* newsym(x2.v, y2.v));
-    unblock_point(x2.v, y2.v);
+    unblock_point(x2.v, y2.v);  /* vision */
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
         cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
     nokiller();
 }
 
+/*
+ * Let's destroy the drawbridge located at x,y
+ */
 /** C ref: dbridge.c:888 — @param {CInt} x @param {CInt} y */
 export function* destroy_drawbridge(x, y) {
     let lev1;
@@ -926,6 +1049,7 @@ export function* destroy_drawbridge(x, y) {
     let e_inview;
     let etmp1 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity);
     let etmp2 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity);
+
     lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (!IS_DRAWBRIDGE(cptr.ld1so(lev1, $rm_typ)))
         return;
@@ -936,17 +1060,18 @@ export function* destroy_drawbridge(x, y) {
     if ((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT || (((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA) {
         let otmp2;
         let lava = schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA));
-        ;
+
+        ;  /* Deaf-aware */
         if (cptr.ld1so(lev1, $rm_typ) == NHC.DRAWBRIDGE_UP) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8), x2.v) & NHM.IN_SIGHT) != 0) || ((x2.v) == cptr.ldI16(u) && (y2.v) == cptr.ldI16o(u, $you_uy)))
                 (yield* pline_The(__s_portcullis_of_the_drawbridge_falls_into, lava ? hliquid(__s_lava) : __s_moat));
             else
-                (yield* You_hear(__s_a_loud_splash));
+                (yield* You_hear(__s_a_loud_splash));  /* Deaf-aware */
         } else {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 (yield* pline_The(__s_drawbridge_collapses_into_the_s, lava ? hliquid(__s_lava) : __s_moat));
             else
-                (yield* You_hear(__s_a_loud_splash));
+                (yield* You_hear(__s_a_loud_splash));  /* Deaf-aware */
         }
         cptr.st1o(lev1, $rm_typ, schar((lava ? NHC.LAVAPOOL : NHC.MOAT)));
         cptr.stI32o(lev1, $rm_flags, 0);
@@ -955,11 +1080,12 @@ export function* destroy_drawbridge(x, y) {
             void (yield* flooreffects(otmp2, x, y, __s_fall));
         }
     } else {
-        ;
+        /* no moat beneath */
+        ;  /* Deaf-aware */
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
             (yield* pline_The(__s_drawbridge_disintegrates));
         else
-            (yield* You_hear(__s_a_loud_crash));
+            (yield* You_hear(__s_a_loud_crash));  /* Deaf-aware */
         cptr.st1o(lev1, $rm_typ, schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_ICE) ? NHC.ICE : NHC.ROOM)));
         cptr.stI32o(lev1, $rm_flags, ((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_ICE) ? NHM.ICED_MOAT : 0) >>> 0);
     }
@@ -973,17 +1099,23 @@ export function* destroy_drawbridge(x, y) {
     (yield* del_engr_at(x, y));
     (yield* del_engr_at(x2.v, y2.v));
     for (i = rn2_at(__s_dbridge_c, 949, __s_destroy_drawbridge, 6); i > 0; --i) {
+        /* doesn't matter if we happen to pick <x,y2> or <x2,y>;
+           since drawbridges are never placed diagonally, those
+           pairings will always match one of <x,y> or <x2,y2> */
         otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16((rn2_at(__s_dbridge_c, 953, __s_destroy_drawbridge, 2) ? x : x2.v)), i16((rn2_at(__s_dbridge_c, 953, __s_destroy_drawbridge, 2) ? y : y2.v)), 1, 0));
+        /* a force of 5 here would yield a radius of 2 for
+           iron chain; anything less produces a radius of 1 */
         void (yield* scatter(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy), 1, 6, otmp));
     }
     (yield* newsym(x, y));
     (yield* newsym(x2.v, y2.v));
     if (!(yield* does_block(x2.v, y2.v, lev2)))
-        unblock_point(x2.v, y2.v);
+        unblock_point(x2.v, y2.v);  /* vision */
     (yield* vision_recalc(0));
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
         cptr.stI32o(u, $you_uevent + $u_event_uopened_dbridge, 1);
-    set_entity(x2.v, y2.v, etmp2);
+
+    set_entity(x2.v, y2.v, etmp2);  /* currently only automissers can be here */
     if (cptr.ldPtro(etmp2, $entity_edata)) {
         e_inview = schar(((cptr.eq(cptr.ldPtr(etmp2), cptr.add(gy, $instance_globals_y_youmonst))) || canseemon(cptr.ldPtr(etmp2)) ? 1 : 0));
         if (!automiss(etmp2)) {
@@ -991,8 +1123,8 @@ export function* destroy_drawbridge(x, y) {
                 (yield* pline(__s_s_blown_apart_by_flying_debris, (yield* E_phrase(etmp2, __s_are))));
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_exploding_drawbridge);
-            (yield* e_died(etmp2, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
-        }
+            (yield* e_died(etmp2, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));  /*no corpse*/
+        }  /* nothing which is vulnerable can survive this */
     }
     set_entity(x, y, etmp1);
     if (cptr.ldPtro(etmp1, $entity_edata)) {
@@ -1005,6 +1137,7 @@ export function* destroy_drawbridge(x, y) {
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
+            /* if there is water or lava here, fall in now */
             if ((cptr.eq(cptr.ldPtr(etmp1), cptr.add(gy, $instance_globals_y_youmonst))))
                 (yield* spoteffects(0));
             else
@@ -1031,14 +1164,14 @@ export function* destroy_drawbridge(x, y) {
             }
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_collapsing_drawbridge);
-            (yield* e_died(etmp1, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));
+            (yield* e_died(etmp1, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING));  /*no corpse*/
             if (cptr.ld1so3(svl, cptr.ldI32o(etmp1, $entity_ex), $sizeof_rm_x21, cptr.ldI32o(etmp1, $entity_ey), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT)
                 (yield* do_entity(etmp1));
         }
     }
     nokiller();
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
-        cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 3);
+        cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 3);  /* bridge is gone so tune is now useless */
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

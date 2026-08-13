@@ -17,19 +17,23 @@ const $strbuf_t_buf = FLD.strbuf_t_buf, $strbuf_t_str = FLD.strbuf_t_str;
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_d_string_too_long = cptr.lit("%s:%d string too long");
 
+/* strbuf_init() initializes strbuf state for use */
 /** C ref: strutil.c:9 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_init(strbuf) {
     cptr.stPtro(strbuf, $strbuf_t_str, null);
     cptr.stI32(strbuf, 0);
 }
 
+/* strbuf_append() appends given str to strbuf->str */
 /** C ref: strutil.c:17 — @param {CPtr<strbuf_t>} strbuf @param {CPtr<char>} str */
 export function strbuf_append(strbuf, str) {
     let len = (Number(BigInt.asIntN(32, cptr.strlen(str))) + 1) | 0;
+
     strbuf_reserve(strbuf, (len + (cptr.ldPtro(strbuf, $strbuf_t_str) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str)))) : 0)) | 0);
     void cptr.strcat(cptr.ldPtro(strbuf, $strbuf_t_str), str);
 }
 
+/* strbuf_reserve() ensure strbuf->str has storage for len characters */
 /** C ref: strutil.c:28 — @param {CPtr<strbuf_t>} strbuf @param {CInt} len */
 export function strbuf_reserve(strbuf, len) {
     if (cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null))) {
@@ -37,8 +41,10 @@ export function strbuf_reserve(strbuf, len) {
         cptr.st1o(cptr.ldPtro(strbuf, $strbuf_t_str), 0, 0);
         cptr.stI32(strbuf, 256);
     }
+
     if (len > cptr.ldI32(strbuf)) {
         let oldbuf = cptr.ldPtro(strbuf, $strbuf_t_str);
+
         cptr.stI32(strbuf, (len + 256) | 0);
         cptr.stPtro(strbuf, $strbuf_t_str, alloc(cptr.ldI32(strbuf) >>> 0));
         void cptr.strcpy(cptr.ldPtro(strbuf, $strbuf_t_str), oldbuf);
@@ -47,6 +53,7 @@ export function strbuf_reserve(strbuf, len) {
     }
 }
 
+/* strbuf_empty() frees allocated memory and set strbuf to initial state */
 /** C ref: strutil.c:49 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_empty(strbuf) {
     if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null)) && !cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.add(strbuf, $strbuf_t_buf)))
@@ -54,12 +61,14 @@ export function strbuf_empty(strbuf) {
     strbuf_init(strbuf);
 }
 
+/* strbuf_nl_to_crlf() converts all occurrences of \n to \r\n */
 /** C ref: strutil.c:58 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_nl_to_crlf(strbuf) {
     if (cptr.ldPtro(strbuf, $strbuf_t_str)) {
         let len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str))));
         let count = 0;
         let cp = cptr.ldPtro(strbuf, $strbuf_t_str);
+
         while (cptr.ld1s(cp))
             if (cptr.ld1s(cptr.postinc(() => cp, (v) => { cp = v; })) == 10)
                 count++;
@@ -74,18 +83,25 @@ export function strbuf_nl_to_crlf(strbuf) {
     }
 }
 
+/* strlen() but returns unsigned and panics if string is unreasonably long;
+   used by dlb as well as by nethack */
 /** C ref: strutil.c:82 — @param {CPtr<char>} str @param {CPtr<char>} file @param {CInt} line @returns {CUInt} */
 export function Strlen_(str, file, line) {
     let p;
     let len;
+
+    /* strnlen(str, LARGEST_INT) w/o requiring posix.1 headers or libraries */
     for (p = str, len = 0n; len < 32767n; ++len)
         if (cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; })) == 0)
             break;
+
     if (len == 32767n)
         panic(__s_s_d_string_too_long, file, line);
     return Number(BigInt.asUintN(32, len));
 }
 
+/* guts of pmatch(), pmatchi(), and pmatchz();
+   match a string against a pattern */
 /** C ref: strutil.c:105 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @param {CInt} ci @param {CPtr<char>} sk @returns {CInt} */
 function pmatch_internal(patrn, strng, ci, sk) {
     let s;
@@ -93,8 +109,9 @@ function pmatch_internal(patrn, strng, ci, sk) {
     __lbl_pmatch_top: while (true) {
         if (!sk) {
             s = cptr.ld1s(cptr.postinc(() => strng, (v) => { strng = v; }));
-            p = cptr.ld1s(cptr.postinc(() => patrn, (v) => { patrn = v; }));
+            p = cptr.ld1s(cptr.postinc(() => patrn, (v) => { patrn = v; }));  /* get next chars and pre-advance */
         } else {
+            /* fuzzy match variant of pmatch; particular characters are ignored */
             do {
                 s = cptr.ld1s(cptr.postinc(() => strng, (v) => { strng = v; }));
             } while (cptr.strchr(sk, s));
@@ -103,22 +120,24 @@ function pmatch_internal(patrn, strng, ci, sk) {
             } while (cptr.strchr(sk, p));
         }
         if (!p)
-            return schar((s == 0));
+            return schar((s == 0));  /* matches iff end of string too */
         else if (p == 42)
             return schar(((!cptr.ld1s(patrn) || pmatch_internal(patrn, cptr.add(strng, -(1)), ci, sk)) ? 1 : (s ? pmatch_internal(cptr.add(patrn, -(1)), strng, ci, sk) : 0)));
         else if ((ci ? lowc(p) != lowc(s) : p != s) && (p != 63 || !s))
-            return 0;
+            return 0;  /* doesn't match */
         else
-            continue __lbl_pmatch_top;
+            continue __lbl_pmatch_top;  /* optimize tail recursion */
         break __lbl_pmatch_top;
     }
 }
 
+/* case-sensitive wildcard match */
 /** C ref: strutil.c:145 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @returns {CInt} */
 export function pmatch(patrn, strng) {
     return pmatch_internal(patrn, strng, 0, null);
 }
 
+/* case-insensitive wildcard match */
 /** C ref: strutil.c:152 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @returns {CInt} */
 export function pmatchi(patrn, strng) {
     return pmatch_internal(patrn, strng, 1, null);

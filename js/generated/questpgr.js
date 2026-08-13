@@ -136,13 +136,16 @@ export function quest_info(typ) {
     return 0;
 }
 
+/* return your role leader's name */
 /** C ref: questpgr.c:50 @returns {CPtr<char>} */
 export function ldrname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
+
     void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
+/* return your intermediate target string */
 /** C ref: questpgr.c:61 @returns {CPtr<char>} */
 function intermed() {
     return cptr.ldPtro(gu, $instance_globals_u_urole + $Role_intermed);
@@ -157,6 +160,7 @@ export function is_quest_artifact(otmp) {
 function find_qarti(ochain) {
     let otmp;
     let qarti;
+
     for (otmp = ochain; otmp; otmp = cptr.ldPtr(otmp)) {
         if (is_quest_artifact(otmp))
             return otmp;
@@ -166,10 +170,13 @@ function find_qarti(ochain) {
     return null;
 }
 
+/* check several object chains for the quest artifact to determine
+   whether it is present on the current level */
 /** C ref: questpgr.c:89 — @param {CUInt} whichchains @returns {CPtr<struct obj>} */
 export function find_quest_artifact(whichchains) {
     let mtmp;
     let qarti = null;
+
     if (((whichchains & 8) >>> 0) != 0)
         qarti = find_qarti(cptr.ldPtro(gi, $instance_globals_i_invent));
     if (!qarti && ((whichchains & 2) >>> 0) != 0)
@@ -182,6 +189,7 @@ export function find_quest_artifact(whichchains) {
                 break;
         }
     if (!qarti && ((whichchains & 32) >>> 0) != 0) {
+        /* check migrating objects and minvent of migrating monsters */
         for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp)) {
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 continue;
@@ -193,12 +201,15 @@ export function find_quest_artifact(whichchains) {
     }
     if (!qarti && ((whichchains & 64) >>> 0) != 0)
         qarti = find_qarti(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist));
+
     return qarti;
 }
 
+/* return your role nemesis' name */
 /** C ref: questpgr.c:124 @returns {CPtr<char>} */
 function neminame() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
+
     void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
@@ -206,6 +217,7 @@ function neminame() {
 /** C ref: questpgr.c:134 @returns {CPtr<char>} */
 function guardname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
+
     return cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
 }
 
@@ -214,34 +226,58 @@ function homebase() {
     return cptr.ldPtro(gu, $instance_globals_u_urole + $Role_homebase);
 }
 
+/* returns 1 if nemesis death message mentions noxious fumes, otherwise 0;
+   does not display the message */
 /** C ref: questpgr.c:150 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function stinky_nemesis(mon) {
     let mesg = cptr.box(null);
     let res = 0;
     (void (mon));
+    /* since nemdead() just gave the message for hero's nemesis even if 'mon'
+       is some other role's nemesis (feasible in wizard mode), base any gas
+       cloud on the text that was shown even if not appropriate for 'mon' */
     void com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), __s_killed_nemesis, 0, mesg);
+
+    /* this is somewhat fragile; it assumes that when both {noxious or
+       poisonous or toxic} and {gas or fumes} are present, the latter
+       refers to the former rather than to something unrelated; it does
+       make sure that fumes occurs after noxious rather than before */
     if (mesg.v) {
         let p;
+
+        /* change newlines into spaces to cope with "...noxious\nfumes..." */
         void strNsubst(mesg.v, __s_nl, __s_sp, 0);
+
         if (((p = strstri(mesg.v, __s_noxious)) !== null || (p = strstri(mesg.v, __s_poisonous)) !== null || (p = strstri(mesg.v, __s_toxic)) !== null) && (strstri(p, __s_gas) || strstri(p, __s_fumes)))
             res = 1;
+
         cptr.free(mesg.v);
     }
     return res;
 }
 
+/* replace deity, leader, nemesis, or artifact name with pronoun;
+   overwrites cvt_buf[] */
 /** C ref: questpgr.c:199 — @param {CInt} who @param {CInt} which */
 function qtext_pronoun(who, which) {
     let pnoun;
     let godgend;
-    let lwhich = lowc(which);
+    let lwhich = lowc(which);  /* H,I,J -> h,i,j */
+
+    /*
+     * Invalid subject (not d,l,n,o) yields neuter, singular result.
+     *
+     * For %o, treat all artifacts as neuter; some have plural names,
+     * which genders[] doesn't handle; cvt_buf[] already contains name.
+     */
     if (who == 111 && (strstri(cptr.add(gc, $instance_globals_c_cvt_buf), __s_eyes) || strncmpi((cptr.add(gc, $instance_globals_c_cvt_buf)), (makesingular(cptr.add(gc, $instance_globals_c_cvt_buf))), -1))) {
         pnoun = (lwhich == 104) ? __s_they : ((lwhich == 105) ? __s_them : ((lwhich == 106) ? __s_their : __s_query));
     } else {
-        godgend = (who == 100) ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));
+        godgend = (who == 100) ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));  /* default to neuter */
         pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_he) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_him) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_his) : __s_query));
     }
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), pnoun);
+    /* capitalize for H,I,J */
     if (lwhich != which)
         cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
     return;
@@ -250,6 +286,7 @@ function qtext_pronoun(who, which) {
 /** C ref: questpgr.c:236 — @param {CInt} c */
 function convert_arg(c) {
     let str;
+
     switch (c) {
         case 112:
         str = svp;
@@ -279,7 +316,10 @@ function convert_arg(c) {
         case 111:
         str = the(artiname(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)));
         if (c == 79) {
+            /* shorten "the Foo of Bar" to "the Foo"
+               (buffer returned by the() is modifiable) */
             let p = strstri(str, __s_of);
+
             if (p)
                 cptr.st1(p, 0);
         }
@@ -337,6 +377,7 @@ function convert_arg(c) {
 function convert_line(in_line, out_line) {
     let c;
     let cc;
+
     cc = out_line;
     for (c = in_line; cptr.ld1s(c); c = cptr.add(c, 1)) {
         cptr.st1(cc, 0);
@@ -352,11 +393,11 @@ function convert_line(in_line, out_line) {
                     case 65:
                     void cptr.strcat(cc, An(cptr.add(gc, $instance_globals_c_cvt_buf)));
                     cc = cptr.add(cc, cptr.strlen(cc));
-                    continue;
+                    continue;  /* for */
                     case 97:
                     void cptr.strcat(cc, an(cptr.add(gc, $instance_globals_c_cvt_buf)));
                     cc = cptr.add(cc, cptr.strlen(cc));
-                    continue;
+                    continue;  /* for */
                     case 67:
                     cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
                     break;
@@ -369,7 +410,7 @@ function convert_line(in_line, out_line) {
                     if (cptr.strchr(__s_dlno, lowc(cptr.ld1s((cptr.add(c, -(1)))))))
                         qtext_pronoun(cptr.ld1s((cptr.add(c, -(1)))), cptr.ld1s(c));
                     else
-                        c = cptr.add(c, -1);
+                        c = cptr.add(c, -1);  /* default action */
                     break;
                     case 80:
                     cptr.st1o2(gc, 0, 1, $instance_globals_c_cvt_buf, highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf)));
@@ -389,11 +430,11 @@ function convert_line(in_line, out_line) {
                     if (!strncmpi(cptr.add(gc, $instance_globals_c_cvt_buf), __s_the, 4)) {
                         void cptr.strcat(cc, cptr.add(cptr.add(gc, $instance_globals_c_cvt_buf), 4, 1));
                         cc = cptr.add(cc, cptr.strlen(cc));
-                        continue;
+                        continue;  /* for */
                     }
                     break;
                     default:
-                    c = cptr.add(c, -1);
+                    c = cptr.add(c, -1);  /* undo switch increment */
                     break;
                 }
                 void cptr.strcat(cc, cptr.add(gc, $instance_globals_c_cvt_buf));
@@ -419,9 +460,12 @@ function deliver_by_pline(str) {
     let out_line = new Uint8Array(256);
     let msgp = str;
     let msgend = eos(str);
+
     while (cptr.cmp(msgp, msgend) < 0) {
+        /* copynchars() will stop at newline if it finds one */
         copynchars(cptr.decay(in_line), msgp, 255);
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
+
         convert_line(cptr.decay(in_line), cptr.decay(out_line));
         pline(__s_pct_s, cptr.decay(out_line));
     }
@@ -434,18 +478,23 @@ function deliver_by_window(msg, how) {
     let msgp = msg;
     let msgend = eos(msg);
     let datawin = create_nhwindow()(how);
+
     while (cptr.cmp(msgp, msgend) < 0) {
+        /* copynchars() will stop at newline if it finds one */
         copynchars(cptr.decay(in_line), msgp, 255);
         msgp = cptr.add(msgp, BigInt.asUintN(64, cptr.strlen(cptr.decay(in_line)) + 1n));
+
         convert_line(cptr.decay(in_line), cptr.decay(out_line));
         putstr()(datawin, 0, cptr.decay(out_line));
     }
+
     display_nhwindow()(datawin, 1);
     destroy_nhwindow()(datawin);
 }
 
 /** C ref: questpgr.c:459 — @param {CInt} common @returns {CInt} */
 function skip_pager(common) {
+    /* WIZKIT: suppress plot feedback if starting with quest artifact */
     if (cptr.ldI32o(program_state, $sinfo_wizkit_wishing))
         return 1;
     return 0;
@@ -475,8 +524,10 @@ function com_pager_core(section, msgid, showerror, rawtext) {
     let fallback_msgid = null;
     let res = 0;
     let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
+
     if (skip_pager(1))
         return 0;
+
     L = nhl_init(sbi);
     if (!L) {
         if (showerror)
@@ -492,6 +543,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             return res;
         }
     }
+
     if (!nhl_loadlua(L, __s_quest_lua)) {
         if (showerror)
             impossible(__s_com_pager_s_not_found, __s_quest_lua);
@@ -506,6 +558,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             return res;
         }
     }
+
     lua_settop(L, 0);
     lua_getglobal(L, __s_questtext);
     if (!(lua_type(L, -1) == 5)) {
@@ -522,6 +575,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             return res;
         }
     }
+
     lua_getfield(L, -1, section);
     if (!(lua_type(L, -1) == 5)) {
         if (showerror)
@@ -541,6 +595,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
         lua_getfield(L, -1, fallback_msgid ? fallback_msgid : msgid);
         if (!(lua_type(L, -1) == 5)) {
             if (!fallback_msgid) {
+                /* Do we have questtxt[msg_fallbacks][<msgid>]? */
                 lua_getfield(L, -3, __s_msg_fallbacks);
                 if ((lua_type(L, -1) == 5)) {
                     fallback_msgid = get_table_str_opt(L, msgid, null);
@@ -566,6 +621,7 @@ function com_pager_core(section, msgid, showerror, rawtext) {
                 return res;
             }
         }
+
         text = get_table_str_opt(L, __s_text, null);
         if (rawtext) {
             cptr.stPtr(rawtext, dupstr(text));
@@ -583,8 +639,10 @@ function com_pager_core(section, msgid, showerror, rawtext) {
         }
         synopsis = get_table_str_opt(L, __s_synopsis, null);
         output = cptr.ldI32o(__static_com_pager_core_howtoput2i, get_table_option(L, __s_output, __s_default, __static_com_pager_core_howtoput), 4);
+
         if (!text) {
             let nelems;
+
             lua_len(L, -1);
             nelems = Number(BigInt.asIntN(32, lua_tointegerx(L, -1, null)));
             lua_settop(L, -2);
@@ -607,24 +665,38 @@ function com_pager_core(section, msgid, showerror, rawtext) {
             lua_gettable(L, -2);
             text = dupstr((luaL_checklstring(L, -1, null)));
         }
+
+        /* switch from by_pline to by_window if line has multiple segments or
+           is unreasonably long (the latter ought to checked after formatting
+           conversions rather than before...) */
         if (output == 0 && (cptr.strchr(text, 10) || cptr.strlen(text) >= 255n)) {
             output = 2;
+
+            /*
+             * FIXME:  should update quest.lua to include proper synopsis line
+             * for any item subject to having its delivery converted to by_window.
+             */
             if (!synopsis) {
                 let tmpbuf = new Uint8Array(256);
+
                 void cptr.sprintf(cptr.decay(tmpbuf), __s_lbrack_pct_dot_star_s_rbrack, 253, text);
+                /* change every newline character to a space */
                 void strNsubst(cptr.decay(tmpbuf), __s_nl, __s_sp, 0);
                 synopsis = dupstr(cptr.decay(tmpbuf));
             }
         }
+
         if (output == 0 || output == 1)
             deliver_by_pline(text);
         else
             deliver_by_window(text, (output == 3) ? NHM.NHW_MENU : NHM.NHW_TEXT);
+
         if (synopsis) {
             let in_line = new Uint8Array(256);
             let out_line = new Uint8Array(256);
             void cptr.strcpy(cptr.decay(in_line), synopsis);
             convert_line(cptr.decay(in_line), cptr.decay(out_line));
+            /* bypass message delivery but be available for ^P recall */
             putmsghistory()(cptr.decay(out_line), 0);
         }
         res = 1;
@@ -653,6 +725,7 @@ export function qt_pager(msgid) {
 /** C ref: questpgr.c:637 @returns {CPtr<struct permonst>} */
 export function qt_montype() {
     let qpm;
+
     if (rn2_at(__s_questpgr_c, 641, __s_qt_montype, 5)) {
         qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy1num);
         if (qpm != NHC.NON_PM && rn2_at(__s_questpgr_c, 643, __s_qt_montype, 5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
@@ -665,10 +738,13 @@ export function qt_montype() {
     return mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy2sym), 0);
 }
 
+/* special levels can include a custom arrival message; display it */
 /** C ref: questpgr.c:655 */
 export function deliver_splev_message() {
+    /* there's no provision for delivering via window instead of pline */
     if (cptr.ldPtro(gl, $instance_globals_l_lev_message)) {
         deliver_by_pline(cptr.ldPtro(gl, $instance_globals_l_lev_message));
+
         cptr.free(cptr.ldPtro(gl, $instance_globals_l_lev_message));
         cptr.stPtro(gl, $instance_globals_l_lev_message, null);
     }

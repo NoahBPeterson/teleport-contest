@@ -928,8 +928,11 @@ const have_never = cptr.bytes("have never ");
 /** C ref: insight.c:48 — char[7] */
 const never = cptr.bytes("never ");
 
+/* for livelogging: */
 /** C ref: insight.c:51 — struct ll_achieve_msg { llflag, msg } (memory model v0.5) */
 
+/* ordered per 'enum achievements' in you.h */
+/* take care to keep them in sync! */
 /** C ref: insight.c:57 — struct ll_achieve_msg[33] */
 const achieve_msg = cptr.alloc(33 * $sizeof_ll_achieve_msg);
 cptr.stI64o(achieve_msg, 0, 0n);
@@ -1025,6 +1028,7 @@ cptr.stPtro(__static_enlght_line_contra, 80 + $contrctn_contrctn, __s_couldn_t);
 function* enlght_line(start, middle, end, ps) {
     let i;
     let buf = new Uint8Array(256);
+
     void cptr.sprintf(cptr.decay(buf), __s_s_s_s_s, start, middle, end, ps);
     if ((yield* strstri(cptr.decay(buf), __s_not))) {
         for (i = 0; i < 6; ++i)
@@ -1033,15 +1037,21 @@ function* enlght_line(start, middle, end, ps) {
     (yield* enlght_out(cptr.decay(buf)));
 }
 
+/* format increased chance to hit or damage or defense (Protection) */
 /** C ref: insight.c:160 — @param {CPtr<char>} inctyp @param {CInt} incamt @param {CInt} final @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function* enlght_combatinc(inctyp, incamt, final, outbuf) {
     let modif;
     let bonus;
     let invrt;
     let absamt;
+
     absamt = Math.abs(incamt);
+    /* Protection amount is typically larger than damage or to-hit;
+       reduce magnitude by a third in order to stretch modifier ranges
+       (small:1..5, moderate:6..10, large:11..19, huge:20+) */
     if (!strcmp(inctyp, __s_defense))
         absamt = ((Math.imul(absamt, 2)) / 3) | 0;
+
     if (absamt <= 3)
         modif = __s_small;
     else if (absamt <= 6)
@@ -1050,19 +1060,25 @@ function* enlght_combatinc(inctyp, incamt, final, outbuf) {
         modif = __s_large;
     else
         modif = __s_huge;
-    modif = !incamt ? __s_no : (yield* an(modif));
+
+    modif = !incamt ? __s_no : (yield* an(modif));  /* ("no" case shouldn't happen) */
     bonus = (incamt >= 0) ? __s_bonus : __s_penalty;
+    /* "bonus <foo>" (to hit) vs "<bar> bonus" (damage, defense) */
     invrt = schar((strcmp(inctyp, __s_to_hit) ? 1 : 0));
+
     void cptr.sprintf(outbuf, __s_s_s_s, modif, invrt ? inctyp : bonus, invrt ? bonus : inctyp);
     if (final || wizard())
         void cptr.sprintf(eos(outbuf), __s_s_d, (incamt > 0) ? __s_plus : __s_empty, incamt);
+
     return outbuf;
 }
 
+/* report half physical or half spell damage */
 /** C ref: insight.c:201 — @param {CInt} category @param {CInt} final */
 function* enlght_halfdmg(category, final) {
     let category_name;
     let buf = new Uint8Array(256);
+
     switch (category) {
         case NHC.HALF_PHDAM:
         category_name = __s_physical;
@@ -1078,6 +1094,7 @@ function* enlght_halfdmg(category, final) {
     (yield* enlght_line(cptr.decay((You_)), final ? (__s_took) : (__s_take), cptr.decay((buf)), ((yield* from_what(category)))));
 }
 
+/* is hero actively using water walking capability on water (or lava)? */
 /** C ref: insight.c:224 @returns {CInt} */
 function walking_on_water() {
     if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 || Levitation() || Flying())
@@ -1085,9 +1102,12 @@ function walking_on_water() {
     return schar((((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0));
 }
 
+/* describe u.utraptype; used by status_enlightenment() and self_lookat() */
 /** C ref: insight.c:233 — @param {CPtr<char>} outbuf @param {CInt} final @param {CInt} wizxtra @returns {CPtr<char>} */
 export function* trap_predicament(outbuf, final, wizxtra) {
     let t;
+
+    /* caller has verified u.utrap */
     cptr.st1(outbuf, 0);
     switch (cptr.ldI32o(u, $you_utraptype)) {
         case NHC.TT_BURIEDBALL:
@@ -1106,15 +1126,23 @@ export function* trap_predicament(outbuf, final, wizxtra) {
         break;
     }
     if (wizxtra) {
+        /* curly braces: u.utrap is an escape attempt counter rather than a
+           turn timer so use different ornamentation than usual parentheses */
         void cptr.sprintf(eos(outbuf), __s_sp_lbrace_pct_u_rbrace, cptr.ldI32o(u, $you_utrap));
     }
     return outbuf;
 }
 
+/* check whether hero is wearing something that player definitely knows
+   confers the target property; item must have been seen and its type
+   discovered but it doesn't necessarily have to be fully identified */
 /** C ref: insight.c:267 — @param {CInt} propindx @returns {CInt} */
 function cause_known(propindx) {
     let o;
     let mask = 983167n;
+
+    /* simpler than from_what()/what_gives(); we don't attempt to
+       handle artifacts and we deliberately ignore wielded items */
     for (o = cptr.ldPtro(gi, $instance_globals_i_invent); o; o = cptr.ldPtr(o)) {
         if (!(cptr.ldI64o(o, $obj_owornmask) & mask))
             continue;
@@ -1124,6 +1152,7 @@ function cause_known(propindx) {
     return 0;
 }
 
+/* format a characteristic value, accommodating Strength's strangeness */
 /** C ref: insight.c:287 — @param {CInt} attrindx @param {CInt} attrvalue @param {CPtr<char>} resultbuf @returns {CPtr<char>} */
 function attrval(attrindx, attrvalue, resultbuf) {
     if (attrindx != NHC.A_STR || attrvalue <= 18)
@@ -1135,6 +1164,18 @@ function attrval(attrindx, attrvalue, resultbuf) {
     return resultbuf;
 }
 
+/* format urealtime.realtime as
+      " D days, H hours, M minutes and S seconds"
+   with any fields having a value of 0 omitted:
+      0-00:00:20 => " 20 seconds"
+      0-00:15:05 => " 15 minutes and 5 seconds"
+      0-00:16:00 => " 16 minutes"
+      0-01:15:10 => " 1 hour, 15 minutes and 10 seconds"
+      0-02:00:01 => " 2 hours and 1 second"
+      3-00:25:40 => " 3 days, 25 minutes and 40 seconds"
+   (note: for a list of more than two entries, nethack usually includes the
+   [style-wise] optional comma before "and" but in this instance it does not)
+ */
 /** C ref: insight.c:314 — @param {CPtr<char>} outbuf @param {CInt} final @returns {CPtr<char>} */
 function* fmt_elapsed_time(outbuf, final) {
     let fieldcnt;
@@ -1142,37 +1183,49 @@ function* fmt_elapsed_time(outbuf, final) {
     let ehours;
     let eminutes;
     let eseconds;
+    /* for a game that's over, reallydone() has updated urealtime.realtime
+       to its final value before calling us during end of game disclosure;
+       for a game that's still in progress, it holds the amount of elapsed
+       game time from previous sessions up through most recent save/restore
+       (or up through latest level change when 'checkpoint' is On);
+       '.start_timing' has a non-zero value even if '.realtime' is 0 */
     let etim = cptr.ldI64(urealtime);
+
     if (!final)
         etim += timet_delta((yield* getnow()), cptr.ldI64o(urealtime, $u_realtime_start_timing));
+    /* we could use localtime() to convert the value into a 'struct tm'
+       to get date and time fields but this is simple and straightforward */
     eseconds = etim % 60n, etim /= 60n;
     eminutes = etim % 60n, etim /= 60n;
     ehours = etim % 24n;
     edays = etim / 24n;
     fieldcnt = (((((!!edays + !!ehours) | 0) + !!eminutes) | 0) + !!eseconds) | 0;
-    void cptr.strcpy(outbuf, fieldcnt ? __s_empty : __s_none);
+
+    void cptr.strcpy(outbuf, fieldcnt ? __s_empty : __s_none);  /* 'none' should never happen */
     if (edays) {
         void cptr.sprintf(eos(outbuf), __s_ld_day_s, edays, (((edays) == 1n) ? __s_empty : __s_s));
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, (fieldcnt == 2) ? __s_and : __s_comma);
-        --fieldcnt;
+        --fieldcnt;  /* edays has been processed */
     }
     if (ehours) {
         void cptr.sprintf(eos(outbuf), __s_ld_hour_s, ehours, (((ehours) == 1n) ? __s_empty : __s_s));
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, (fieldcnt == 2) ? __s_and : __s_comma);
-        --fieldcnt;
+        --fieldcnt;  /* ehours has been processed */
     }
     if (eminutes) {
         void cptr.sprintf(eos(outbuf), __s_ld_minute_s, eminutes, (((eminutes) == 1n) ? __s_empty : __s_s));
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, __s_and);
+        /* eminutes has been processed but no need to decrement fieldcnt */
     }
     if (eseconds)
         void cptr.sprintf(eos(outbuf), __s_ld_second_s, eseconds, (((eseconds) == 1n) ? __s_empty : __s_s));
     return outbuf;
 }
 
+/* "once" vs "twice" vs "17 times", used in several places */
 /** C ref: insight.c:362 — @param {CLongLong} n @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function N_times(n, outbuf) {
     switch (n) {
@@ -1197,31 +1250,51 @@ function N_times(n, outbuf) {
 export function* enlightenment(mode, final) {
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(256);
+
     cptr.stI32(ge, (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU))));
     cptr.st1o(ge, $instance_globals_e_en_via_menu, schar((!final)));
     if (cptr.ld1so(ge, $instance_globals_e_en_via_menu))
         (yield* Y.icall(start_menu()(cptr.ldI32(ge), 0n)));
+
     void cptr.strcpy(cptr.decay(tmpbuf), svp);
-    cptr.st1(cptr.decay(tmpbuf), highc(cptr.ld1s(cptr.decay(tmpbuf))));
+    cptr.st1(cptr.decay(tmpbuf), highc(cptr.ld1s(cptr.decay(tmpbuf))));  /* same adjustment as bottom line */
+    /* as in background_enlightenment, when poly'd we need to use the saved
+       gender in u.mfemale rather than the current you-as-monster gender */
     nh_snprintf(__s_enlightenment, 401, cptr.decay(buf), 256n, __s_s_the_s_s_attributes, cptr.decay(tmpbuf), ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole));
-    (yield* enlght_out(cptr.decay(buf)));
+
+    /* title */
+    (yield* enlght_out(cptr.decay(buf)));  /* "Conan the Archeologist's attributes:" */
+    /* background and characteristics; ^X or end-of-game disclosure */
     if (mode & NHM.BASICENLIGHTENMENT) {
+        /* role, race, alignment, deities, dungeon level, time, experience */
         (yield* background_enlightenment(mode, final));
+        /* hit points, energy points, armor class, gold */
         (yield* basics_enlightenment(mode, final));
+        /* strength, dexterity, &c */
         (yield* characteristics_enlightenment(mode, final));
     }
+    /* expanded status line information, including things which aren't
+       included there due to space considerations;
+       shown for both basic and magic enlightenment */
     (yield* status_enlightenment(mode, final));
+    /* remaining attributes; shown for potion,&c or wizard mode and
+       explore mode ^X or end of game disclosure */
     if (mode & NHM.MAGICENLIGHTENMENT) {
+        /* intrinsics and other traditional enlightenment feedback */
         (yield* attributes_enlightenment(mode, final));
     }
-    (yield* enlght_out(__s_empty));
+
+    (yield* enlght_out(__s_empty));  /* separator */
     (yield* enlght_out(__s_miscellaneous));
+    /* reminder to player and/or information for dumplog */
     if ((mode & NHM.BASICENLIGHTENMENT) != 0 && (wizard() || discover() || final)) {
         if (wizard() || discover()) {
             void cptr.sprintf(cptr.decay(buf), __s_running_in_s_mode, wizard() ? __s_debug : __s_explore);
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
         }
+
         if (!cptr.ld1so(flags, $flag_bones)) {
+            /* mention not saving bones iff hero just died */
             void cptr.sprintf(cptr.decay(buf), __s_disabled_loading_s_of_bones_levels, (final == NHM.ENL_GAMEOVERDEAD) ? __s_and_storing : __s_empty);
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
         } else if (!cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones)) {
@@ -1233,10 +1306,12 @@ export function* enlightenment(mode, final) {
     }
     void (yield* fmt_elapsed_time(cptr.decay(buf), final));
     (yield* enlght_line((__s_total_elapsed_playing_time), final ? (__s_was) : (__s_is), cptr.decay((buf)), (__s_empty)));
+
     if (!cptr.ld1so(ge, $instance_globals_e_en_via_menu)) {
         (yield* Y.icall(display_nhwindow()(cptr.ldI32(ge), 1)));
     } else {
         let selected = cptr.box(null);
+
         (yield* Y.icall(end_menu()(cptr.ldI32(ge), null)));
         if ((yield* select_menu(cptr.ldI32(ge), NHM.PICK_NONE, selected)) > 0)
             cptr.free(selected.v);
@@ -1246,6 +1321,8 @@ export function* enlightenment(mode, final) {
     cptr.stI32(ge, -1);
 }
 
+/*ARGSUSED*/
+/* display role, race, alignment and such to en_win */
 /** C ref: insight.c:468 — @param {CInt} unused_mode @param {CInt} final */
 function* background_enlightenment(unused_mode, final) {
     let role_titl;
@@ -1255,16 +1332,29 @@ function* background_enlightenment(unused_mode, final) {
     let difalgn;
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(256);
+
+    /* note that if poly'd, we need to use u.mfemale instead of flags.female
+       to access hero's saved gender-as-human/elf/&c rather than current */
     innategend = (Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) ? 1 : 0;
     role_titl = (innategend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole);
     rank_titl = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), schar(innategend));
-    (yield* enlght_out(__s_empty));
+
+    (yield* enlght_out(__s_empty));  /* separator after title */
     (yield* enlght_out(__s_background));
+
+    /* if polymorphed, report current shape before underlying role;
+       will be repeated as first status: "you are transformed" and also
+       among various attributes: "you are in beast form" (after being
+       told about lycanthropy) or "you are polymorphed into <a foo>"
+       (with countdown timer appended for wizard mode); we really want
+       the player to know he's not a samurai at the moment... */
     if (Upolyd()) {
-        let anbuf = new Uint8Array(20);
+        let anbuf = new Uint8Array(20);  /* includes trailing space; [4] suffices */
         let uasmon = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
         let altphrasing = schar(vampshifted(cptr.add(gy, $instance_globals_y_youmonst)));
+
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
+        /* here we always use current gender, not saved role gender */
         if (!((cptr.ldU64o((uasmon), $permonst_mflags2) & 65536n) != 0n) && !((cptr.ldU64o((uasmon), $permonst_mflags2) & 131072n) != 0n) && !((cptr.ldU64o((uasmon), $permonst_mflags2) & 262144n) != 0n))
             void cptr.sprintf(cptr.decay(tmpbuf), __s_pct_s_sp, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender));
         if (altphrasing)
@@ -1272,20 +1362,30 @@ function* background_enlightenment(unused_mode, final) {
         nh_snprintf(__s_background_enlightenment, 506, cptr.decay(buf), 256n, __s_s_s_s_s_form, !final ? __s_currently : __s_empty, altphrasing ? (yield* just_an(cptr.decay(anbuf), cptr.decay(tmpbuf))) : __s_in, cptr.decay(tmpbuf), pmname(uasmon, cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     }
+
+    /* report role; omit gender if it's redundant (eg, "female priestess") */
     cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
     if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) && ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) == 12288 || innategend != cptr.ldI32o(flags, $flag_initgend)))
         void cptr.sprintf(cptr.decay(tmpbuf), __s_pct_s_sp, cptr.ldPtro(genders, innategend, $sizeof_Gender));
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (Upolyd())
-        void cptr.strcpy(cptr.decay(buf), __s_actually);
+        void cptr.strcpy(cptr.decay(buf), __s_actually);  /* "You are actually a ..." */
     if (!(yield* strncmpi((rank_titl), (role_titl), -1))) {
+        /* omit role when rank title matches it */
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_level_d_s_s, (yield* an(rank_titl)), cptr.ldI32o(u, $you_ulevel), cptr.decay(tmpbuf), cptr.ldPtro(gu, $instance_globals_u_urace));
     } else {
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_a_level_d_s_s_s, (yield* an(rank_titl)), cptr.ldI32o(u, $you_ulevel), cptr.decay(tmpbuf), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj), role_titl);
     }
     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+
+    /* report alignment (bypass you_are() in order to omit ending period);
+       adverb is used to distinguish between temporary change (helm of opp.
+       alignment), permanent change (one-time conversion), and original */
     void cptr.sprintf(cptr.decay(buf), __s_s_s_s_son_a_mission_for_s, cptr.decay(You_), !final ? cptr.decay(are) : cptr.decay(were), align_str(cptr.ld1so(u, $you_ualign)), (cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)) ? (!final ? __s_currently : __s_temporarily) : ((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) ? (!final ? __s_now : __s_belatedly) : ((!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) && cptr.ldI64o(svm, $instance_globals_saved_m_moves) > 1000n) ? __s_nominally : __s_empty)), (yield* u_gname()));
     (yield* enlght_out(cptr.decay(buf)));
+    /* show the rest of this game's pantheon (finishes previous sentence)
+       [appending "also Moloch" at the end would allow for straightforward
+       trailing "and" on all three aligned entries but looks too verbose] */
     void cptr.sprintf(cptr.decay(buf), __s_who_s_opposed_by, !final ? __s_is : __s_was);
     if (cptr.ld1so(u, $you_ualign) != NHM.A_LAWFUL)
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_and, (yield* align_gname(NHM.A_LAWFUL)), align_str(NHM.A_LAWFUL));
@@ -1293,34 +1393,55 @@ function* background_enlightenment(unused_mode, final) {
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s__2, (yield* align_gname(NHM.A_NEUTRAL)), align_str(NHM.A_NEUTRAL), (cptr.ld1so(u, $you_ualign) != -1) ? __s_and : __s_empty);
     if (cptr.ld1so(u, $you_ualign) != -1)
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, (yield* align_gname(-1)), align_str(-1));
-    void cptr.strcat(cptr.decay(buf), __s_dot);
+    void cptr.strcat(cptr.decay(buf), __s_dot);  /* terminate sentence */
     (yield* enlght_out(cptr.decay(buf)));
+
+    /* show original alignment,gender,race,role if any have been changed;
+       giving separate message for temporary alignment change bypasses need
+       for tricky phrasing otherwise necessitated by possibility of having
+       helm of opposite alignment mask a permanent alignment conversion */
     difgend = (innategend != cptr.ldI32o(flags, $flag_initgend));
     difalgn = ((((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)) ? 1 : 0) + ((cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) ? 2 : 0)) | 0);
     if (difalgn & 1) {
         void cptr.sprintf(cptr.decay(buf), __s_actually_s, align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
-        difalgn &= -2;
+        difalgn &= -2;  /* suppress helm from "started out <foo>" message */
     }
     if (difgend || difalgn) {
         void cptr.sprintf(cptr.decay(buf), __s_you_started_out_s_s_s, difgend ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender) : __s_empty, (difgend && difalgn) ? __s_and__2 : __s_empty, difalgn ? align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) : __s_empty);
         (yield* enlght_out(cptr.decay(buf)));
     }
+
+    /* "You are left-handed." won't work well if polymorphed into something
+       without hands; use "You are normally left-handed." in that situation */
     void cptr.sprintf(cptr.decay(buf), __s_s_s_handed, !strcmp((yield* body_part(NHC.HANDED)), __s_handed) ? __s_empty : __s_normally, URIGHTY() ? __s_right : __s_left);
     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+
+    /* As of 3.6.2: dungeon level, so that ^X really has all status info as
+       claimed by the comment below; this reveals more information than
+       the basic status display, but that's one of the purposes of ^X;
+       similar information is revealed by #overview; the "You died in
+       <location>" given by really_done() is more rudimentary than this */
     cptr.st1(cptr.decay(buf), cptr.st1(cptr.decay(tmpbuf), 0));
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
         let egdepth = observable_depth(cptr.add(u, $you_uz));
+
         void endgamelevelname(cptr.decay(tmpbuf), egdepth);
         nh_snprintf(__s_background_enlightenment, 609, cptr.decay(buf), 256n, __s_in_the_endgame_on_the_s_s, !cptr.strncmp(cptr.decay(tmpbuf), __s_plane, 5n) ? __s_elemental : __s_empty, cptr.decay(tmpbuf));
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))) {
+        /* this gives away the fact that the knox branch is only 1 level */
         void cptr.sprintf(cptr.decay(buf), __s_on_the_s_level, cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon));
+        /* TODO? maybe phrase it differently when actually inside the fort,
+           if we're able to determine that (not trivial) */
     } else {
         let dgnbuf = new Uint8Array(128);
+
         void cptr.strcpy(cptr.decay(dgnbuf), cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon));
         if (!(yield* strncmpi(cptr.decay(dgnbuf), __s_the, 4)))
             cptr.st1(cptr.decay(dgnbuf), lowc(cptr.ld1s(cptr.decay(dgnbuf))));
         void cptr.sprintf(cptr.decay(tmpbuf), __s_level_d, In_quest(cptr.add(u, $you_uz)) ? dunlev(cptr.add(u, $you_uz)) : depth(cptr.add(u, $you_uz)));
+        /* TODO? maybe extend this bit to include various other automatic
+           annotations from the dungeon overview code */
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             void cptr.strcat(cptr.decay(tmpbuf), __s_a_primitive_area);
         else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)))) && !Blind())
@@ -1328,37 +1449,73 @@ function* background_enlightenment(unused_mode, final) {
         nh_snprintf(__s_background_enlightenment, 629, cptr.decay(buf), 256n, __s_in_s_on_s, cptr.decay(dgnbuf), cptr.decay(tmpbuf));
     }
     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+
+    /* this is shown even if the 'time' option is off */
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 1n) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_just_started_your_adventure)), ((__s_empty))));
     } else {
+        /* 'turns' grates on the nerves in this context... */
         void cptr.sprintf(cptr.decay(buf), __s_the_dungeon_ld_turn_s_ago, cptr.ldI64o(svm, $instance_globals_saved_m_moves), (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __s_empty : __s_s));
+        /* same phrasing for current and final: "entered" is unconditional */
         (yield* enlght_line(cptr.decay(You_), __s_entered, cptr.decay(buf), __s_empty));
     }
+
+    /* for gameover, these have been obtained in really_done() so that they
+       won't vary if user leaves a disclosure prompt or --More-- unanswered
+       long enough for the dynamic value to change between then and now */
     if (final ? cptr.ldI32o(iflags, $instance_flags_at_midnight) : (yield* midnight())) {
         (yield* enlght_line((__s_it), final ? (__s_was__2) : (__s_is__2), (__s_the_midnight_hour), (__s_empty)));
     } else if (final ? cptr.ldI32o(iflags, $instance_flags_at_night) : (yield* night())) {
         (yield* enlght_line((__s_it), final ? (__s_was__2) : (__s_is__2), (__s_nighttime), (__s_empty)));
     }
+    /* other environmental factors */
     if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON || cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON) {
+        /* [This had "tonight" but has been changed to "in effect".
+           There is a similar issue to Friday the 13th--it's the value
+           at the start of the current session but that session might
+           have dragged on for an arbitrary amount of time.  We want to
+           report the values that currently affect play--or affected
+           play when game ended--rather than actual outside situation.] */
         void cptr.sprintf(cptr.decay(buf), __s_a_s_moon_in_effect_s, (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON) ? __s_full : ((cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON) ? __s_new : ((cptr.ldI32o(flags, $flag_moonphase) < NHM.FULL_MOON) ? __s_first_quarter : __s_last_quarter)), final ? __s_when_your_adventure_ended : __s_empty);
         (yield* enlght_line((__s_there), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
     }
     if (cptr.ld1so(flags, $flag_friday13)) {
+        /* let player know that friday13 penalty is/was in effect;
+           we don't say "it is/was Friday the 13th" because that was at
+           the start of the session and it might be past midnight (or
+           days later if the game has been paused without save/restore),
+           so phrase this similar to the start up message */
         void cptr.sprintf(cptr.decay(buf), __s_bad_things_s_on_friday_the_13th, !final ? __s_can_happen : ((final == NHM.ENL_GAMEOVERALIVE) ? __s_could_have_happened : __s_happened));
         (yield* enlght_out(cptr.decay(buf)));
     }
+
     if (!Upolyd()) {
         let ulvl = cptr.ldI32o(u, $you_ulevel);
+        /* [flags.showexp currently does not matter; should it?] */
+
+        /* experience level is already shown above */
         void cptr.sprintf(cptr.decay(buf), __s_1ld_experience_point_s, cptr.ldI64o(u, $you_uexp), (((cptr.ldI64o(u, $you_uexp)) == 1n) ? __s_empty : __s_s));
+        /* TODO?
+         *  Remove wizard-mode restriction since patient players can
+         *  determine the numbers needed without resorting to spoilers
+         *  (even before this started being disclosed for 'final';
+         *  just enable 'showexp' and look at normal status lines
+         *  after drinking gain level potions or eating wraith corpses
+         *  or being level-drained by vampires).
+         */
         if (ulvl < 30 && (final || wizard())) {
             let nxtlvl = newuexp(ulvl);
             let delta = BigInt.asIntN(64, nxtlvl - cptr.ldI64o(u, $you_uexp));
+
             void cptr.sprintf(eos(cptr.decay(buf)), __s_ld_s_sneeded_s_level_d, delta, (cptr.ldI64o(u, $you_uexp) > 0n) ? __s_more : __s_empty, !final ? __s_empty : ((delta == 1n) ? __s_was__2 : __s_were), (ulvl < 18) ? __s_to_attain : __s_for, ((ulvl + 1) | 0));
         }
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
     }
 }
 
+/* hit points, energy points, armor class -- essential information which
+   doesn't fit very well in other categories */
+/*ARGSUSED*/
 const __static_basics_enlightenment_Power = cptr.bytes("energy points (spell power)"); /** C ref: insight.c:730 — char[28] (function-static) */
 
 /** C ref: insight.c:728 — @param {CInt} mode @param {CInt} final */
@@ -1368,15 +1525,20 @@ function* basics_enlightenment(mode, final) {
     let hp = (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp));
     let pwmax = cptr.ldI32o(u, $you_uenmax);
     let hpmax = (Upolyd() ? cptr.ldI32o(u, $you_mhmax) : cptr.ldI32o(u, $you_uhpmax));
-    (yield* enlght_out(__s_empty));
+
+    (yield* enlght_out(__s_empty));  /* separator after background */
     (yield* enlght_out(__s_basics));
+
     if (hp < 0)
         hp = 0;
+    /* "1 out of 1" rather than "all" if max is only 1; should never happen */
     if (hp == hpmax && hpmax > 1)
         void cptr.sprintf(cptr.decay(buf), __s_all_d_hit_points, hpmax);
     else
         void cptr.sprintf(cptr.decay(buf), __s_d_out_of_d_hit_point_s, hp, hpmax, (((hpmax) == 1) ? __s_empty : __s_s));
     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+
+    /* low max energy is feasible, so handle couple of extra special cases */
     if (pwmax == 0 || (pw == pwmax && pwmax == 2))
         void cptr.sprintf(cptr.decay(buf), __s_s_s__2, !pwmax ? __s_no : __s_both, cptr.decay(__static_basics_enlightenment_Power));
     else if (pw == pwmax && pwmax > 2)
@@ -1384,9 +1546,11 @@ function* basics_enlightenment(mode, final) {
     else
         void cptr.sprintf(cptr.decay(buf), __s_d_out_of_d_s, pw, pwmax, cptr.decay(__static_basics_enlightenment_Power));
     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+
     if (Upolyd()) {
         switch (cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel)) {
             case 0:
+            /* status line currently being explained shows "HD:0" */
             void cptr.strcpy(cptr.decay(buf), __s_0_hit_dice_actually_1_2);
             break;
             case 1:
@@ -1398,36 +1562,49 @@ function* basics_enlightenment(mode, final) {
         }
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
     }
-    find_ac();
+
+    find_ac();  /* enforces AC_MAX cap */
     void cptr.sprintf(cptr.decay(buf), __s_pct_d, cptr.ld1so(u, $you_uac));
     if (Math.abs(cptr.ld1so(u, $you_uac)) == NHM.AC_MAX)
         void cptr.sprintf(eos(cptr.decay(buf)), __s_the_s_possible, (cptr.ld1so(u, $you_uac) < 0) ? __s_best : __s_worst);
     (yield* enlght_line((__s_your_armor_class), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
+
+    /* gold; similar to doprgold (#showgold) but without shop billing info;
+       includes container contents, unlike status line but like doprgold */
     {
         let umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
         let hmoney = hidden_gold(schar(final));
+
         if (!umoney) {
             void cptr.sprintf(cptr.decay(buf), __s_your_wallet_s_empty, !final ? __s_is : __s_was);
         } else {
             void cptr.sprintf(cptr.decay(buf), __s_your_wallet_contain_s_ld_s, !final ? __s_s : __s_ed, umoney, (yield* currency(umoney)));
         }
+        /* terminate the wallet line if appropriate, otherwise add an
+           introduction to subsequent continuation; output now either way */
         void cptr.strcat(cptr.decay(buf), !hmoney ? __s_dot : (!umoney ? __s_but : __s_and__3));
         (yield* enlght_out(cptr.decay(buf)));
+
+        /* put contained gold on its own line to avoid excessive width; it's
+           phrased as a continuation of the wallet line so not capitalized */
         if (hmoney) {
             void cptr.sprintf(cptr.decay(buf), __s_ld_s_stashed_away_in_your_pack, hmoney, umoney ? __s_more__2 : (yield* currency(hmoney)));
             (yield* enlght_line((__s_you), final ? (__s_had) : (__s_have), cptr.decay((buf)), (__s_empty)));
         }
     }
+
     if (cptr.ld1so(flags, $flag_pickup)) {
         let ocl = new Uint8Array(19);
+
         void cptr.strcpy(cptr.decay(buf), __s_on);
         if ((yield* costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
+            /* being in a shop inhibits autopickup, even 'pickup_thrown' */
             void cptr.strcat(cptr.decay(buf), __s_but_temporarily_disabled_while_inside);
         } else {
             (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
             void cptr.sprintf(eos(cptr.decay(buf)), __s_for_s_s_s, cptr.ld1s(cptr.decay(ocl)) ? __s_apos : __s_empty, cptr.ld1s(cptr.decay(ocl)) ? cptr.decay(ocl) : __s_all_types, cptr.ld1s(cptr.decay(ocl)) ? __s_apos : __s_empty);
             if (cptr.ld1so(flags, $flag_pickup_thrown) && cptr.ld1s(cptr.decay(ocl)))
-                void cptr.strcat(cptr.decay(buf), __s_plus_thrown);
+                void cptr.strcat(cptr.decay(buf), __s_plus_thrown);  /* show when not 'all types' */
             if (cptr.ldPtro(ga, $instance_globals_a_apelist))
                 void cptr.strcat(cptr.decay(buf), __s_with_exceptions);
         }
@@ -1436,20 +1613,25 @@ function* basics_enlightenment(mode, final) {
     (yield* enlght_line((__s_autopickup), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
 }
 
+/* characteristics: expanded version of bottom line strength, dexterity, &c */
 /** C ref: insight.c:827 — @param {CInt} mode @param {CInt} final */
 function* characteristics_enlightenment(mode, final) {
     let buf = new Uint8Array(256);
+
     (yield* enlght_out(__s_empty));
     void cptr.sprintf(cptr.decay(buf), __s_scharacteristics, !final ? __s_empty : __s_final);
     (yield* enlght_out(cptr.decay(buf)));
-    (yield* one_characteristic(mode, final, NHC.A_STR));
-    (yield* one_characteristic(mode, final, NHC.A_DEX));
-    (yield* one_characteristic(mode, final, NHC.A_CON));
-    (yield* one_characteristic(mode, final, NHC.A_INT));
-    (yield* one_characteristic(mode, final, NHC.A_WIS));
-    (yield* one_characteristic(mode, final, NHC.A_CHA));
+
+    /* bottom line order */
+    (yield* one_characteristic(mode, final, NHC.A_STR));  /* strength */
+    (yield* one_characteristic(mode, final, NHC.A_DEX));  /* dexterity */
+    (yield* one_characteristic(mode, final, NHC.A_CON));  /* constitution */
+    (yield* one_characteristic(mode, final, NHC.A_INT));  /* intelligence */
+    (yield* one_characteristic(mode, final, NHC.A_WIS));  /* wisdom */
+    (yield* one_characteristic(mode, final, NHC.A_CHA));  /* charisma */
 }
 
+/* display one attribute value for characteristics_enlightenment() */
 /** C ref: insight.c:846 — @param {CInt} mode @param {CInt} final @param {CInt} attrindx */
 function* one_characteristic(mode, final, attrindx) {
     let hide_innate_value = 0;
@@ -1462,6 +1644,13 @@ function* one_characteristic(mode, final, attrindx) {
     let subjbuf = new Uint8Array(256);
     let valubuf = new Uint8Array(256);
     let valstring = new Uint8Array(32);
+
+    /* being polymorphed or wearing certain cursed items prevents
+       hero from reliably tracking changes to characteristics so
+       we don't show base & peak values then; when the items aren't
+       cursed, hero could take them off to check underlying values
+       and we show those in such case so that player doesn't need
+       to actually resort to doing that */
     if (Upolyd()) {
         hide_innate_value = 1;
     } else if (Fixed_abil()) {
@@ -1490,18 +1679,29 @@ function* one_characteristic(mode, final, attrindx) {
         case NHC.A_CHA:
         break;
         default:
-        return;
+        return;  /* impossible */
     }
     ;
+    /* note: final disclosure includes MAGICENLIGHTENTMENT */
     if ((mode & NHM.MAGICENLIGHTENMENT) && !Upolyd())
         hide_innate_value = 0;
+
     acurrent = (acurr(attrindx));
-    void attrval(attrindx, acurrent, cptr.decay(valubuf));
+    void attrval(attrindx, acurrent, cptr.decay(valubuf));  /* Sprintf(valubuf,"%d",) */
     void cptr.sprintf(cptr.decay(subjbuf), __s_your_s, cptr.ldPtro(attrname, attrindx, 8));
+
     if (!hide_innate_value) {
+        /* show abase, amax, and/or attrmax if acurr doesn't match abase
+           (a magic bonus or penalty is in effect) or abase doesn't match
+           amax (some points have been lost to poison or exercise abuse
+           and are restorable) or attrmax is different from normal human
+           (while game is in progress; trying to reduce dependency on
+           spoilers to keep track of such stuff) or attrmax was different
+           from abase (at end of game; this attribute wasn't maxed out) */
         abase = (cptr.ld1so2(u, attrindx, 1, $you_acurr));
         apeak = (cptr.ld1so2(u, attrindx, 1, $you_amax));
         alimit = ((attrindx == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, attrindx, 2, $instance_globals_u_urace + $Race_attrmax));
+        /* criterium for whether the limit is interesting varies */
         interesting_alimit = schar((final ? 1 : (alimit != (attrindx != NHC.A_STR ? 18 : 118))));
         paren_pfx = final ? __s_sp_lparen : __s_current;
         if (acurrent != abase) {
@@ -1514,6 +1714,7 @@ function* one_characteristic(mode, final, attrindx) {
         }
         if (interesting_alimit) {
             void cptr.sprintf(eos(cptr.decay(valubuf)), __s_s_slimit_s, paren_pfx, (acurrent > alimit) ? __s_innate : __s_empty, attrval(attrindx, alimit, cptr.decay(valstring)));
+            /* paren_pfx = ", "; */
         }
         if (acurrent != abase || abase != apeak || interesting_alimit)
             void cptr.strcat(cptr.decay(valubuf), __s_rparen);
@@ -1521,6 +1722,7 @@ function* one_characteristic(mode, final, attrindx) {
     (yield* enlght_line(cptr.decay((subjbuf)), final ? (__s_was__2) : (__s_is__2), cptr.decay((valubuf)), (__s_empty)));
 }
 
+/* status: selected obvious capabilities, assorted troubles */
 /** C ref: insight.c:940 — @param {CInt} mode @param {CInt} final */
 function* status_enlightenment(mode, final) {
     let magic = schar(((mode & NHM.MAGICENLIGHTENMENT) ? 1 : 0));
@@ -1530,20 +1732,31 @@ function* status_enlightenment(mode, final) {
     let heldmon = new Uint8Array(256);
     let Riding = schar((cptr.ldPtro(u, $you_usteed) && !(final == NHM.ENL_GAMEOVERDEAD && !strcmp(cptr.add(svk, $kinfo_name), __s_riding_accident)) ? 1 : 0));
     let steedname = (!Riding ? null : (yield* x_monnam(cptr.ldPtro(u, $you_usteed), cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_THE, null, 12, 0)));
-    (yield* enlght_out(__s_empty));
+
+    /*\
+     * Status (many are abbreviated on bottom line; others are or
+     *     should be discernible to the hero hence to the player)
+    \*/
+    (yield* enlght_out(__s_empty));  /* separator after title or characteristics */
     (yield* enlght_out(final ? __s_final_status : __s_status));
+
     void cptr.strcpy(cptr.decay(youtoo), cptr.decay(You_));
+    /* not a traditional status but inherently obvious to player; more
+       detail given below (attributes section) for magic enlightenment */
     if (Upolyd()) {
         void cptr.strcpy(cptr.decay(buf), __s_transformed);
         if (ugenocided())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_and_s_s_inside, final ? __s_felt : __s_feel, udeadinside());
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     }
+    /* not a trouble, but we want to display riding status before maybe
+       reporting steed as trapped or hero stuck to cursed saddle */
     if (Riding) {
         void cptr.sprintf(cptr.decay(buf), __s_riding_s, steedname);
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
         void cptr.sprintf(eos(cptr.decay(youtoo)), __s_and_s, steedname);
     }
+    /* other movement situations that hero should always know */
     if (Levitation()) {
         if (Lev_at_will() && magic)
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_levitating_at_will)), ((__s_empty))));
@@ -1557,11 +1770,14 @@ function* status_enlightenment(mode, final) {
     } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((Swimming() ? __s_swimming : __s_in_water)), (((yield* from_what(NHC.SWIMMING))))));
     } else if (walking_on_water()) {
+        /* show active Wwalking here, potential Wwalking elsewhere */
         void cptr.sprintf(cptr.decay(buf), __s_walking_on_s, is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_water : (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_lava : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.WWALKING))))));
     }
     if (Upolyd() && ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || U_AP_TYPE() != NHC.M_AP_NOTHING))
         (yield* youhiding(1, final));
+
+    /* internal troubles, mostly in the order that prayer ranks them */
     if (Stoned()) {
         if (final && (Stoned() & 536870912n))
             (yield* enlght_out(__s_you_turned_into_stone));
@@ -1589,10 +1805,16 @@ function* status_enlightenment(mode, final) {
         }
     }
     if (Sick()) {
+        /* the two types of sickness are lumped together; hero can be
+           afflicted by both but there is only one timeout; botl status
+           puts TermIll before FoodPois and death due to timeout reports
+           terminal illness if both are in effect, so do the same here */
         if (final && (Sick() & 536870912n)) {
-            void cptr.sprintf(cptr.decay(buf), __s_sdied_from_s, cptr.decay(You_), (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) ? __s_terminal_illness : __s_food_poisoning);
+            void cptr.sprintf(cptr.decay(buf), __s_sdied_from_s, cptr.decay(You_), (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) ? __s_terminal_illness : __s_food_poisoning);  /* has trailing space */
             (yield* enlght_out(cptr.decay(buf)));
         } else {
+            /* unlike death due to sickness, report the two cases separately
+               because it is possible to cure one without curing the other */
             if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
                 (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_terminally_sick_from_illness)), ((__s_empty))));
             if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
@@ -1608,13 +1830,17 @@ function* status_enlightenment(mode, final) {
     if (Hallucination())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_hallucinating)), ((__s_empty))));
     if (Blind()) {
+        /* check the reasons in same order as from_what() */
         void cptr.sprintf(cptr.decay(buf), __s_s_blind, (HBlinded() & 67108864n) != 0n ? __s_permanently : ((HBlinded() & 268435456n) ? __s_innately : (Blindfolded_only() ? __s_deliberately : __s_temporarily__2)));
         if (wizard() && (HBlinded() == BlindedTimeout() && !EBlinded()))
             void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, BlindedTimeout());
+        /* !haseyes: avoid "you are innately blind innately" */
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? __s_empty : (yield* from_what(NHC.BLINDED))))));
     }
     if (Deaf())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_deaf)), (((yield* from_what(NHC.DEAF))))));
+
+    /* external troubles, more or less */
     if (Punished()) {
         if (uball.v) {
             void cptr.sprintf(cptr.decay(buf), __s_chained_to_s, (yield* ansimpleoname(uball.v)));
@@ -1627,6 +1853,7 @@ function* status_enlightenment(mode, final) {
     if (cptr.ldI32o(u, $you_utrap)) {
         let predicament = new Uint8Array(256);
         let anchored = schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL));
+
         void (yield* trap_predicament(cptr.decay(predicament), final, wizard()));
         if (cptr.ldPtro(u, $you_usteed)) {
             void cptr.sprintf(cptr.decay(buf), __s_s_s__3, anchored ? __s_you_and : __s_empty, steedname);
@@ -1634,17 +1861,19 @@ function* status_enlightenment(mode, final) {
             (yield* enlght_line(cptr.decay((buf)), final ? ((anchored ? __s_were : __s_was__2)) : ((anchored ? __s_are : __s_is__2)), cptr.decay((predicament)), (__s_empty)));
         } else
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((predicament))), ((__s_empty))));
-    }
-    cptr.st1o(cptr.decay(heldmon), 0, 0, 1);
+    }  /* (u.utrap) */
+    cptr.st1o(cptr.decay(heldmon), 0, 0, 1);  /* lint suppression */
     if (cptr.ldPtro(u, $you_ustuck)) {
         void cptr.strcpy(cptr.decay(heldmon), (yield* a_monnam(cptr.ldPtro(u, $you_ustuck))));
         if (!strcmp(cptr.decay(heldmon), __s_it__2) && (!has_mgivenname(cptr.ldPtro(u, $you_ustuck)) || strcmp((cptr.ldPtr(cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_mextra))), __s_it__2) != 0))
             void cptr.strcpy(cptr.decay(heldmon), __s_an_unseen_creature);
     }
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(u, $you_ustuck), (null))))), 0n) ? __assert_rtn(__s_status_enlightenment, __s_insight_c, 1108, __s_u_ustuck_null) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(u, $you_ustuck), (null))))), 0n) ? __assert_rtn(__s_status_enlightenment, __s_insight_c, 1108, __s_u_ustuck_null) : void 0);  /* implied by u.uswallow */
         nh_snprintf(__s_status_enlightenment, 1111, cptr.decay(buf), 256n, __s_s_by_s, (dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallowed : __s_engulfed, cptr.decay(heldmon));
         if (dmgtype(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AD_DGST)) {
+            /* if final, death via digestion can be deduced by u.uswallow
+               still being True and u.uswldtim having been decremented to 0 */
             if (final && !cptr.ldI32o(u, $you_uswldtim))
                 void cptr.strcat(cptr.decay(buf), __s_and_got_totally_digested);
             else
@@ -1657,29 +1886,39 @@ function* status_enlightenment(mode, final) {
         let ustick = schar((Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
         let dx = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_mx) - cptr.ldI16(u)) | 0;
         let dy = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_my) - cptr.ldI16o(u, $you_uy)) | 0;
+
         nh_snprintf(__s_status_enlightenment, 1130, cptr.decay(buf), 256n, __s_s_s_s__3, ustick ? __s_holding : __s_held_by, cptr.decay(heldmon), dxdy_to_dist_descr(i16(dx), i16(dy), 1));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     }
     if (Riding) {
         let saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n));
+
         if (saddle && (cptr.ldI32o(saddle, $obj_cursed) & 1) | 0) {
             void cptr.sprintf(cptr.decay(buf), __s_stuck_to_s_s, (yield* s_suffix(steedname)), (yield* simpleonames(saddle)));
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
         }
     }
     if (Wounded_legs()) {
+        /* EWounded_legs is used to track left/right/both rather than some
+           form of extrinsic impairment; HWounded_legs is used for timeout;
+           both apply to steed instead of hero when mounted */
         let whichleg = (EWounded_legs() & 393216n);
         let bp = cptr.ldPtro(u, $you_usteed) ? (yield* mbodypart(cptr.ldPtro(u, $you_usteed), NHC.LEG)) : (yield* body_part(NHC.LEG));
         let article = __s_a_sp;
         let leftright = __s_empty;
+
         if (whichleg == 393216n)
             bp = (yield* makeplural(bp)), article = __s_empty;
         else
             leftright = (whichleg == 131072n) ? __s_left__2 : __s_right__2;
         void cptr.sprintf(cptr.decay(buf), __s_swounded_s_s, article, leftright, bp);
+
+        /* when mounted, Wounded_legs applies to steed rather than to
+           hero; we only report steed's wounded legs in wizard mode */
         if (cptr.ldPtro(u, $you_usteed)) {
             if (wizard() && steedname) {
                 let steednambuf = new Uint8Array(256);
+
                 void cptr.strcpy(cptr.decay(steednambuf), steedname);
                 cptr.st1(cptr.decay(steednambuf), highc(cptr.ld1s(cptr.decay(steednambuf))));
                 (yield* enlght_line(cptr.decay((steednambuf)), final ? (__s_had__2) : (__s_has), cptr.decay((buf)), (__s_empty)));
@@ -1706,16 +1945,19 @@ function* status_enlightenment(mode, final) {
             (yield* enlght_line((__s_you__2), final ? (__s_fell) : (__s_fall), (__s_asleep_uncontrollably), cptr.decay((buf))));
         }
     }
+    /* hunger/nutrition */
     if (Hunger()) {
         if (magic || cause_known(NHC.HUNGER))
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_hungered) : (__s_hunger), (__s_rapidly), ((yield* from_what(NHC.HUNGER)))));
     }
-    void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8));
-    (yield* mungspaces(cptr.decay(buf)));
+    void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8));  /* hunger status; omitted if "normal" */
+    (yield* mungspaces(cptr.decay(buf)));  /* strip trailing spaces */
+    /* status line doesn't show hunger when state is "not hungry", we do;
+       needed for wizard mode's reveal of u.uhunger but add it for everyone */
     if (!cptr.ld1s(cptr.decay(buf)))
         void cptr.strcpy(cptr.decay(buf), __s_not_hungry);
     if (cptr.ld1s(cptr.decay(buf))) {
-        cptr.st1(cptr.decay(buf), lowc(cptr.ld1s(cptr.decay(buf))));
+        cptr.st1(cptr.decay(buf), lowc(cptr.ld1s(cptr.decay(buf))));  /* override capitalization */
         if (!strcmp(cptr.decay(buf), __s_weak))
             void cptr.strcat(cptr.decay(buf), __s_from_severe_hunger);
         else if (!cptr.strncmp(cptr.decay(buf), __s_faint, 5n))
@@ -1724,23 +1966,25 @@ function* status_enlightenment(mode, final) {
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lt_pct_d_gt, cptr.ldI32o(u, $you_uhunger));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     }
+    /* encumbrance */
     if ((cap = near_capacity()) > NHC.UNENCUMBERED) {
-        let adj = __s_query_us_query;
+        let adj = __s_query_us_query;  /* (should always get overridden) */
+
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(enc_stat, cap, 8));
         cptr.st1(cptr.decay(buf), lowc(cptr.ld1s(cptr.decay(buf))));
         switch (cap) {
             case NHC.SLT_ENCUMBER:
             adj = __s_slightly;
-            break;
+            break;  /* burdened */
             case NHC.MOD_ENCUMBER:
             adj = __s_moderately;
-            break;
+            break;  /* stressed */
             case NHC.HVY_ENCUMBER:
             adj = __s_very;
-            break;
+            break;  /* strained */
             case NHC.EXT_ENCUMBER:
             adj = __s_extremely;
-            break;
+            break;  /* overtaxed */
             case NHC.OVERLOADED:
             adj = __s_not_possible;
             break;
@@ -1750,17 +1994,26 @@ function* status_enlightenment(mode, final) {
         void cptr.sprintf(eos(cptr.decay(buf)), __s_movement_s_s_s, !final ? __s_is : __s_was, adj, (cap < NHC.OVERLOADED) ? __s_slowed : __s_empty);
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     } else {
+        /* last resort entry, guarantees Status section is non-empty
+           (no longer needed for that purpose since weapon status added;
+           still useful though) */
         void cptr.strcpy(cptr.decay(buf), __s_unencumbered);
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lt_pct_d_gt, inv_weight());
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     }
+    /* current weapon(s) and corresponding skill level(s) */
     (yield* weapon_insight(final));
+    /* unlike ring of increase accuracy's effect, the monk's suit penalty
+       is too blatant to be restricted to magical enlightenment */
     if (cptr.ld1so(iflags, $instance_flags_tux_penalty) && !Upolyd()) {
         void (yield* enlght_combatinc(__s_to_hit, -cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr), final, cptr.decay(buf)));
+        /* if from_what() ever gets extended from wizard mode to normal
+           play, it could be adapted to handle this */
         void cptr.sprintf(eos(cptr.decay(buf)), __s_due_to_your_s, suit_simple_name(uarm.v));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
     }
+    /* report 'nudity' */
     if (!uarm.v && !uarmu.v && !uarmc.v && !uarms.v && !uarmg.v && !uarmf.v && !uarmh.v) {
         if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist))
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_did) : (__s_do), (__s_not_wear_any_armor), (__s_empty)));
@@ -1769,6 +2022,7 @@ function* status_enlightenment(mode, final) {
     }
 }
 
+/* extracted from status_enlightenment() to reduce clutter there */
 const __static_weapon_insight_also_ = cptr.bytes("also "); /** C ref: insight.c:1335 — char[6] (function-static) */
 const __static_weapon_insight_also_wik_ = cptr.bytes(" and also with "); /** C ref: insight.c:1441 — char[16] (function-static) */
 
@@ -1776,31 +2030,54 @@ const __static_weapon_insight_also_wik_ = cptr.bytes(" and also with "); /** C r
 function* weapon_insight(final) {
     let buf = new Uint8Array(256);
     let wtype;
+
+    /* report being weaponless; distinguish whether gloves are worn
+       [perhaps mention silver ring(s) when not wearing gloves?] */
     if (!uwep.v) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((empty_handed())), ((__s_empty))));
+
+        /* two-weaponing implies hands and
+           a weapon or wep-tool (not other odd stuff) in each hand */
     } else if (cptr.ld1so(u, $you_twoweap)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_wielding_two_weapons_at_once)), ((__s_empty))));
+
+        /* report most weapons by their skill class (so a katana will be
+           described as a long sword, for instance; mattock, hook, and aklys
+           are exceptions), or wielded non-weapon item by its object class */
     } else {
         let what = (yield* weapon_descr(uwep.v));
+
+        /* [what about other silver items?] */
         if (cptr.ldI16o(uwep.v, $obj_otyp) == NHC.SHIELD_OF_REFLECTION)
-            what = shield_simple_name(uwep.v);
+            what = shield_simple_name(uwep.v);  /* silver|smooth shield */
         else if (is_wet_towel(uwep.v))
             what = __s_wet_towel;
+
         if (!(yield* strncmpi((what), (__s_armor), -1)) || !(yield* strncmpi((what), (__s_food), -1)) || !(yield* strncmpi((what), (__s_venom), -1)))
             void cptr.sprintf(cptr.decay(buf), __s_wielding_some_s, what);
         else
+            /* [maybe include known blessed?] */
             void cptr.sprintf(cptr.decay(buf), __s_wielding_s, (cptr.ldI64o(uwep.v, $obj_quan) == 1n) ? (yield* an(what)) : (yield* makeplural(what)));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     }
+
+    /*
+     * Skill with current weapon.  Might help players who've never
+     * noticed #enhance or decided that it was pointless.
+     */
     if ((wtype = weapon_type(uwep.v)) != NHC.P_NONE && (!uwep.v || !is_ammo(uwep.v))) {
         let sklvlbuf = new Uint8Array(20);
         let sklvl = (cptr.ldI16o2(u, wtype, $sizeof_skills, $you_weapon_skills));
         let hav = schar((sklvl != NHC.P_UNSKILLED && sklvl != NHC.P_SKILLED ? 1 : 0));
+
         if (sklvl == NHC.P_ISRESTRICTED)
             void cptr.strcpy(cptr.decay(sklvlbuf), __s_no);
         else
             void lcase(skill_level_name(wtype, cptr.decay(sklvlbuf)));
+        /* "you have no/basic/expert/master/grand-master skill with <skill>"
+           or "you are unskilled/skilled in <skill>" */
         void cptr.sprintf(cptr.decay(buf), __s_s_s_s, cptr.decay(sklvlbuf), hav ? __s_skill_with : __s_in__2, skill_name(wtype));
+
         if (!cptr.ld1so(u, $you_twoweap)) {
             if (can_advance(wtype, 0))
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_and_s_that, !final ? __s_can_enhance : __s_could_have_enhanced);
@@ -1808,6 +2085,7 @@ function* weapon_insight(final) {
                 (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
             else
                 (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+
         } else {
             let pfx = new Uint8Array(128);
             let sfx = new Uint8Array(128);
@@ -1826,18 +2104,30 @@ function* weapon_insight(final) {
             let a2;
             let ab;
             let hav2 = schar((sklvl2 != NHC.P_UNSKILLED && sklvl2 != NHC.P_SKILLED ? 1 : 0));
+
+            /* normally hero must have access to two-weapon skill in
+               order to initiate u.twoweap, but not if polymorphed into
+               a form which has multiple weapon attacks, so we need to
+               avoid getting bitten by unexpected skill value */
             if (twoskl == NHC.P_ISRESTRICTED) {
                 twoskl = NHC.P_UNSKILLED;
+                /* restricted is the same as unskilled as far as bonus
+                   or penalty goes, and it isn't ordinarily seen so
+                   skill_level_name() returns "Unknown" for it */
                 void cptr.strcpy(cptr.decay(twobuf), __s_restricted);
             } else {
                 void lcase(skill_level_name(NHC.P_TWO_WEAPON_COMBAT, cptr.decay(twobuf)));
             }
+
+            /* keep buf[] from above in case skill levels match */
             cptr.st1o(cptr.decay(pfx), 0, cptr.st1o(cptr.decay(sfx), 0, 0, 1), 1);
             if (twoskl < sklvl) {
+                /* twoskil won't be restricted so sklvl is at least basic */
                 void cptr.sprintf(cptr.decay(pfx), __s_your_skill_in_s, skill_name(wtype));
                 void cptr.sprintf(cptr.decay(sfx), __s_limited_by_being_s_with_two_weapons, cptr.decay(twobuf));
                 also = cptr.decay(__static_weapon_insight_also_);
             } else if (twoskl > sklvl) {
+                /* sklvl might be restricted */
                 void cptr.strcpy(cptr.decay(pfx), __s_your_two_weapon_skill);
                 void cptr.strcpy(cptr.decay(sfx), __s_limited_by);
                 if (sklvl > NHC.P_ISRESTRICTED)
@@ -1856,15 +2146,20 @@ function* weapon_insight(final) {
                 (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
             else
                 (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+
+            /* skip comparison between secondary and two-weapons if it is
+               identical to the comparison between primary and twoweap */
             if (wtype2 != wtype) {
                 void cptr.strcpy(cptr.decay(sknambuf2), skill_name(wtype2));
                 void lcase(skill_level_name(wtype2, cptr.decay(sklvlbuf2)));
                 verb_present = __s_is, verb_past = __s_was;
                 cptr.st1o(cptr.decay(pfx), 0, cptr.st1o(cptr.decay(sfx), 0, cptr.st1o(cptr.decay(buf), 0, 0, 1), 1), 1);
                 if (twoskl < sklvl2) {
+                    /* twoskil is at least unskilled, sklvl2 at least basic */
                     void cptr.sprintf(cptr.decay(pfx), __s_your_skill_in_s, cptr.decay(sknambuf2));
                     void cptr.sprintf(cptr.decay(sfx), __s_slimited_by_being_s_with_two_weapons, also, cptr.decay(twobuf));
                 } else if (twoskl > sklvl2) {
+                    /* sklvl2 might be restricted */
                     void cptr.strcpy(cptr.decay(pfx), __s_your_two_weapon_skill);
                     void cptr.sprintf(cptr.decay(sfx), __s_slimited_by, also2);
                     if (sklvl2 > NHC.P_ISRESTRICTED)
@@ -1873,6 +2168,10 @@ function* weapon_insight(final) {
                         void cptr.strcat(eos(cptr.decay(sfx)), __s_having_no_skill);
                     void cptr.sprintf(eos(cptr.decay(sfx)), __s_with_s, cptr.decay(sknambuf2));
                 } else {
+                    /* equal; two-weapon is at least unskilled, so sklvl2 is
+                       too; "you [also] have basic/expert/master/grand-master
+                       skill with <skill>" or "you [also] are unskilled/
+                       skilled in <skill> */
                     void cptr.sprintf(cptr.decay(buf), __s_s_s_s, cptr.decay(sklvlbuf2), hav2 ? __s_skill_with : __s_in__2, cptr.decay(sknambuf2));
                     void cptr.strcat(cptr.decay(buf), __s_and_two_weapons);
                     if (also3) {
@@ -1888,27 +2187,46 @@ function* weapon_insight(final) {
                     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
                 else
                     (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
-            }
+            }  /* wtype2 != wtype */
+
+            /* if training and available skill credits already allow
+               #enhance for any of primary, secondary, or two-weapon,
+               tell the player; avoid attempting figure out whether
+               spending skill credits enhancing one might make either
+               or both of the others become ineligible for enhancement */
             a1 = can_advance(wtype, 0);
             a2 = schar(((wtype2 != wtype) ? can_advance(wtype2, 0) : 0));
             ab = can_advance(NHC.P_TWO_WEAPON_COMBAT, 0);
             if (a1 || a2 || ab) {
+
+                /* for just one, the conditionals yield
+                   1) "skill with <that one>"; for more than one:
+                   2) "skills with <primary> and also with <secondary>" or
+                   3) "skills with <primary> and also with two-weapons" or
+                   4) "skills with <secondary> and also with two-weapons" or
+                   5) "skills with <primary>, <secondary>, and two-weapons"
+                   (no 'also's or extra 'with's for case 5); when primary
+                   and secondary use the same skill, only cases 1 and 3 are
+                   possible because 'a2' gets forced to False above */
                 void cptr.sprintf(cptr.decay(sfx), __s_skill_s_with_s_s_s_s_s, (((((a1 + a2) | 0) + ab) | 0) > 1) ? __s_s : __s_empty, a1 ? skill_name(wtype) : __s_empty, ((a1 && a2 && ab) ? __s_comma_sp : ((a1 && (a2 || ab)) ? cptr.decay(__static_weapon_insight_also_wik_) : __s_empty)), a2 ? skill_name(wtype2) : __s_empty, ((a1 && a2 && ab) ? __s_and__4 : ((a2 && ab) ? cptr.decay(__static_weapon_insight_also_wik_) : __s_empty)), ab ? __s_two_weapons : __s_empty);
                 (yield* enlght_line(cptr.decay((You_)), final ? (__s_could_have_enhanced) : (__s_can_enhance), cptr.decay((sfx)), (__s_empty)));
             }
-        }
-    }
+        }  /* two-weapon */
+    }  /* skill applies */
 }
 
 /** C ref: insight.c:1468 — @param {CInt} adtyp @param {CPtr<char>} prot_message @param {CInt} final */
 function* item_resistance_message(adtyp, prot_message, final) {
     let protection = u_adtyp_resistance_obj(adtyp);
+
     if (protection) {
         let somewhat = schar((protection < 99));
+
         (yield* enlght_line((__s_your_items), final ? (somewhat ? __s_were_somewhat : __s_were__2) : (somewhat ? __s_are_somewhat : __s_are__2), (prot_message), ((yield* item_what(adtyp)))));
     }
 }
 
+/* attributes: intrinsics and the like, other non-obvious capabilities */
 const __static_attributes_enlightenment_if_surroundings_permitted = cptr.bytes(" if surroundings permitted"); /** C ref: insight.c:1492 — char[27] (function-static) */
 const __static_attributes_enlightenment_hofe_titles = cptr.alloc(3 * 8);
 cptr.stPtro(__static_attributes_enlightenment_hofe_titles, 0, __s_the_hand_of_elbereth);
@@ -1926,20 +2244,29 @@ function* attributes_enlightenment(unused_mode, final) {
     let armpro;
     let warnspecies;
     let buf = new Uint8Array(256);
+
+    /*\
+     *  Attributes
+    \*/
     (yield* enlght_out(__s_empty));
     (yield* enlght_out(final ? __s_final_attributes : __s_attributes));
+
     if ((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((cptr.ldPtro(__static_attributes_enlightenment_hofe_titles, (((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0) - 1) | 0, 8))), ((__s_empty))));
     }
+
     void cptr.sprintf(cptr.decay(buf), __s_pct_s, piousness(1, __s_aligned));
     if (cptr.ldI32o(u, $you_ualign + $align_record) >= 0)
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     else
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+
     if (wizard()) {
         void cptr.sprintf(cptr.decay(buf), __s_sp_pct_d, cptr.ldI32o(u, $you_ualign + $align_record));
         (yield* enlght_line((__s_your_alignment), final ? (__s_was) : (__s_is), cptr.decay((buf)), (__s_empty)));
     }
+
+    /*** Resistances to troubles ***/
     if (Invulnerable())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_invulnerable)), (((yield* from_what(NHC.INVULNERABLE))))));
     if (Antimagic())
@@ -1977,8 +2304,10 @@ function* attributes_enlightenment(unused_mode, final) {
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_resisted) : (__s_resist), (__s_hallucinations), ((yield* from_what(NHC.HALLUC_RES)))));
     if ((cptr.ldI32o(u, $you_uedibility) & 1))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_recognize_detrimental_food)), ((__s_empty))));
+
+    /*** Vision and senses ***/
     if ((HBlinded() || EBlinded()) && BBlinded())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_see)), (((yield* from_what(-15))))));
+        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_see)), (((yield* from_what(-15))))));  /* Eyes of the Overworld */
     if (Blnd_resist() && !Blind())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_not_subject_to_light_induced_blindness)), (((yield* from_what(NHC.BLND_RES))))));
     if (See_invisible()) {
@@ -2023,6 +2352,7 @@ function* attributes_enlightenment(unused_mode, final) {
         void cptr.strcpy(cptr.decay(buf), __s_sensing_the_presence_of_monsters);
         if (wizard()) {
             let detectmon_timeout = (HDetect_monsters() & 16777215n);
+
             if (detectmon_timeout)
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, detectmon_timeout);
         }
@@ -2038,12 +2368,18 @@ function* attributes_enlightenment(unused_mode, final) {
         }
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_confused) : (__s_will_confuse), cptr.decay((buf)), (__s_empty)));
     }
+
+    /*** Appearance and behavior ***/
     if (Adornment()) {
         let adorn = 0;
+
         if (uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_ADORNMENT)
             adorn = (adorn + cptr.ld1so(uleft.v, $obj_spe)) | 0;
         if (uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_ADORNMENT)
             adorn = (adorn + cptr.ld1so(uright.v, $obj_spe)) | 0;
+        /* the sum might be 0 (+0 ring or two which negate each other);
+           that yields "you are charismatic" (which isn't pointless
+           because it potentially impacts seduction attacks) */
         void cptr.sprintf(cptr.decay(buf), __s_scharismatic, (adorn > 0) ? __s_more : ((adorn < 0) ? __s_less : __s_empty));
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.ADORNED))))));
     }
@@ -2065,42 +2401,58 @@ function* attributes_enlightenment(unused_mode, final) {
         (yield* enlght_line((__s_you_aggravate), final ? (__s_d) : (__s_empty), (__s_monsters), ((yield* from_what(NHC.AGGRAVATE_MONSTER)))));
     if (Conflict())
         (yield* enlght_line((__s_you_cause), final ? (__s_d) : (__s_empty), (__s_conflict), ((yield* from_what(NHC.CONFLICT)))));
+
+    /*** Transportation ***/
     if (Jumping())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_jump)), (((yield* from_what(NHC.JUMPING))))));
     if (Teleportation())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_teleport)), (((yield* from_what(NHC.TELEPORT))))));
     if (Teleport_control())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_teleport_control)), (((yield* from_what(NHC.TELEPORT_CONTROL))))));
+    /* actively levitating handled earlier as a status condition */
     if (BLevitation()) {
         let save_BLev = BLevitation();
+
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, 0n);
         if (Levitation()) {
+            /* either trapped in the floor or inside solid rock
+               (or both if chained to buried iron ball and have
+               moved one step into solid rock somehow) */
             let trapped = schar(((save_BLev & 536870912n) != 0n));
             let terrain = schar(((save_BLev & 67108864n) != 0n));
+
             void cptr.sprintf(cptr.decay(buf), __s_s_s_s__4, trapped ? __s_if_not_trapped : __s_empty, (trapped && terrain) ? __s_and : __s_empty, terrain ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted) : __s_empty);
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_levitated) : (__s_would_levitate), cptr.decay((buf)), (__s_empty)));
         }
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, save_BLev);
     }
+    /* actively flying handled earlier as a status condition */
     if (BFlying()) {
         let save_BFly = BFlying();
+
         cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, 0n);
         if (Flying()) {
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_flown) : (__s_would_fly), (Levitation() ? __s_if_you_weren_t_levitating : ((save_BFly == 536870912n) ? __s_if_you_weren_t_trapped : ((save_BFly == 67108864n) ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted) : __s_if_circumstances_permitted))), (__s_empty)));
         }
         cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, save_BFly);
     }
+    /* including this might bring attention to the fact that ceiling
+       clinging has inconsistencies... */
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n)) {
         let has_lid = has_ceiling(cptr.add(u, $you_uz));
+
         if (has_lid && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_cling_to_the_ceiling)), ((__s_empty))));
         } else {
             void cptr.sprintf(cptr.decay(buf), __s_to_the_ceiling_if_s_s_s, !has_lid ? __s_there_was_one : __s_empty, (!has_lid && (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __s_and__2 : __s_empty, (cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ? __s_you_weren_t_underwater : __s_you_weren_t_in_the_water) : __s_empty);
+            /* past tense is applicable for death while Unchanging */
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_could_have_clung) : (__s_could_cling), cptr.decay((buf)), (__s_empty)));
         }
     }
+    /* actively walking on water handled earlier as a status condition */
     if (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && !walking_on_water())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_walk_on_water)), (((yield* from_what(NHC.WWALKING))))));
+    /* actively swimming (in water but not under it) handled earlier */
     if (Swimming() && (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || !(cptr.ldI32o(u, $you_uinwater) & 1)))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_swim)), (((yield* from_what(NHC.SWIMMING))))));
     if (Breathless())
@@ -2109,6 +2461,8 @@ function* attributes_enlightenment(unused_mode, final) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_breathe_water)), (((yield* from_what(NHC.MAGICAL_BREATHING))))));
     if (Passes_walls())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_walk_through_walls)), (((yield* from_what(NHC.PASSES_WALLS))))));
+
+    /*** Physical attributes ***/
     if (Regeneration())
         (yield* enlght_line((__s_you_regenerate), final ? (__s_d) : (__s_empty), (__s_empty), ((yield* from_what(NHC.REGENERATION)))));
     if (Slow_digestion())
@@ -2123,6 +2477,7 @@ function* attributes_enlightenment(unused_mode, final) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), (((yield* enlght_combatinc(__s_damage, cptr.ld1so(u, $you_udaminc), final, cptr.decay(buf))))), ((__s_empty))));
     if (cptr.ld1uo(u, $you_uspellprot) || Protection()) {
         let prot = 0;
+
         if (uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_PROTECTION)
             prot = (prot + cptr.ld1so(uleft.v, $obj_spe)) | 0;
         if (uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION)
@@ -2136,6 +2491,7 @@ function* attributes_enlightenment(unused_mode, final) {
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), (((yield* enlght_combatinc(__s_defense, prot, final, cptr.decay(buf))))), ((__s_empty))));
     }
     if ((armpro = magic_negation(cptr.add(gy, $instance_globals_y_youmonst))) > 0) {
+        /* sanity check */
         if (armpro >= 4)
             armpro = (4 - 1) | 0;
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((cptr.ldPtro(__static_attributes_enlightenment_mc_types, armpro, 8))), ((__s_empty))));
@@ -2147,29 +2503,37 @@ function* attributes_enlightenment(unused_mode, final) {
     if (Half_gas_damage())
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_took) : (__s_take), (__s_reduced_poison_gas_damage), (__s_empty)));
     if (cptr.ldI16o(svs, 0, $sizeof_spell) > NHM.NO_SPELL) {
+        /* greatly simplified edition of percent_success(spell.c)--may need
+           to be suppressed if oversimplification leads to player confusion */
         let cast_adj = new Uint8Array(128);
         let suit = schar((uarm.v && is_metallic(uarm.v) ? 1 : 0));
         let robe = schar((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE ? 1 : 0));
+
         cptr.st1(cptr.decay(cast_adj), 0);
         if (suit)
             void cptr.sprintf(cptr.decay(cast_adj), __s_impaired_by_metallic_armor_s, robe ? __s_mitigated_by_your_robe : __s_empty);
         else if (robe)
             void cptr.strcpy(cptr.decay(cast_adj), __s_enhanced_by_wearing_a_robe);
+
         if (cptr.ld1s(cptr.decay(cast_adj)))
             (yield* enlght_line((__s_your_spell_casting), final ? (__s_was) : (__s_is), cptr.decay((cast_adj)), (__s_empty)));
     }
+    /* polymorph and other shape change */
     if (Protection_from_shape_changers())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_protected_from_shape_changers)), (((yield* from_what(NHC.PROT_FROM_SHAPE_CHANGERS))))));
     if (Unchanging()) {
         let what = null;
+
         if (!Upolyd())
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_not_change_from_your_current_form)), (((yield* from_what(NHC.UNCHANGING))))));
+        /* blocked shape changes */
         if (Polymorph())
             what = !final ? __s_polymorph : __s_have_polymorphed;
         else if (ismnum(cptr.ldI32o(u, $you_ulycn)))
             what = !final ? __s_change_shape : __s_have_changed_shape;
         if (what) {
             void cptr.sprintf(cptr.decay(buf), __s_would_s_periodically, what);
+            /* omit from_what(UNCHANGING); too verbose */
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((buf)) : cptr.decay((buf)), (__s_if_not_locked_into_your_current_form), (__s_empty)));
         }
     } else if (Polymorph()) {
@@ -2178,6 +2542,7 @@ function* attributes_enlightenment(unused_mode, final) {
     if (Polymorph_control())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_polymorph_control)), (((yield* from_what(NHC.POLYMORPH_CONTROL))))));
     if (Upolyd() && cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_ulycn) && !(final == NHM.ENL_GAMEOVERDEAD && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREEN_SLIME && !Unchanging())) {
+        /* foreign shape (except were-form which is handled below) */
         if (!vampshifted(cptr.add(gy, $instance_globals_y_youmonst)))
             void cptr.sprintf(cptr.decay(buf), __s_polymorphed_into_s, (yield* an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))));
         else
@@ -2189,6 +2554,7 @@ function* attributes_enlightenment(unused_mode, final) {
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_lay_eggs)), ((__s_empty))));
     if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
+        /* "you are a werecreature [in beast form]" */
         void cptr.strcpy(cptr.decay(buf), (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))));
         if (cptr.ldI32o(u, $you_umonnum) == cptr.ldI32o(u, $you_ulycn)) {
             void cptr.strcat(cptr.decay(buf), __s_in_beast_form);
@@ -2201,6 +2567,7 @@ function* attributes_enlightenment(unused_mode, final) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_not_change_from_your_current_form)), (((yield* from_what(NHC.UNCHANGING))))));
     if ((cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_harmed_by_silver)), ((__s_empty))));
+    /* movement and non-armor-based protection */
     if (Fast())
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((Very_fast() ? __s_very_fast : __s_fast)), (((yield* from_what(NHC.FAST))))));
     if (Reflecting())
@@ -2211,6 +2578,8 @@ function* attributes_enlightenment(unused_mode, final) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_fixed_abilities)), (((yield* from_what(NHC.FIXED_ABIL))))));
     if (Lifesaved())
         (yield* enlght_line((__s_your_life), final ? (__s_would_have_been) : (__s_will_be), (__s_saved), (__s_empty)));
+
+    /*** Miscellany ***/
     if (Luck()) {
         ltmp = Math.abs(Luck());
         void cptr.sprintf(cptr.decay(buf), __s_s_slucky, ltmp >= 10 ? __s_extremely__2 : (ltmp >= 5 ? __s_very__2 : __s_empty), Luck() < 0 ? __s_un : __s_empty);
@@ -2230,12 +2599,18 @@ function* attributes_enlightenment(unused_mode, final) {
         if (ltmp >= 0)
             (yield* enlght_line((__s_good_luck), final ? (__s_did) : (__s_does), (__s_not_time_out_for_you), (__s_empty)));
     }
+
     if (cptr.ldI32o(u, $you_ugangr)) {
         void cptr.sprintf(cptr.decay(buf), __s_sangry_with_you, cptr.ldI32o(u, $you_ugangr) > 6 ? __s_extremely__2 : (cptr.ldI32o(u, $you_ugangr) > 3 ? __s_very__2 : __s_empty));
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_d_rparen, cptr.ldI32o(u, $you_ugangr));
         (yield* enlght_line(((yield* u_gname())), final ? (__s_was__3) : (__s_is__3), cptr.decay((buf)), (__s_empty)));
     } else {
+        /*
+         * We need to suppress this when the game is over, because death
+         * can change the value calculated by can_pray(), potentially
+         * resulting in a false claim that you could have prayed safely.
+         */
         if (!final) {
             void cptr.sprintf(cptr.decay(buf), __s_ssafely_pray, (yield* can_pray(0)) ? __s_empty : __s_not__2);
             if (wizard())
@@ -2243,8 +2618,11 @@ function* attributes_enlightenment(unused_mode, final) {
             (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), cptr.decay(((buf))), ((__s_empty))));
         }
     }
+    /* named fruit debugging (doesn't really belong here...); to enable,
+       include 'fruit' in DEBUGFILES list (even though it isn't a file...) */
     if (wizard() && (yield* debugcore(__s_fruit, 0))) {
         let f;
+
         (yield* reorder_fruit(1));
         for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf)) {
             void cptr.sprintf(cptr.decay(buf), __s_fruit_d, cptr.ldI32o(f, $fruit_fid));
@@ -2254,8 +2632,10 @@ function* attributes_enlightenment(unused_mode, final) {
         void cptr.sprintf(cptr.decay(buf), __s_pct_d, cptr.ld1so(flags, $flag_made_fruit));
         (yield* enlght_line((__s_the_made_fruit_flag), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
     }
+
     {
         let p;
+
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         if (final < 2) {
             p = __s_survived_after_being_killed;
@@ -2271,7 +2651,7 @@ function* attributes_enlightenment(unused_mode, final) {
                 // @FallThrough
                 ;
                 case 1:
-                break;
+                break;  /* just "are dead" */
                 default:
                 void cptr.sprintf(cptr.decay(buf), __s_d_s_time, cptr.ldI32o(u, $you_umortality), ordin(cptr.ldI32o(u, $you_umortality)));
                 break;
@@ -2282,11 +2662,15 @@ function* attributes_enlightenment(unused_mode, final) {
     }
 }
 
+/* ^X command */
 /** C ref: insight.c:2009 @returns {CInt} */
 export function* doattributes() {
     let mode = NHM.BASICENLIGHTENMENT;
+
+    /* show more--as if final disclosure--for wizard and explore modes */
     if (wizard() || discover())
         mode |= NHM.MAGICENLIGHTENMENT;
+
     (yield* enlightenment(mode, NHM.ENL_GAMEINPROGRESS));
     return NHM.ECMD_OK;
 }
@@ -2295,8 +2679,12 @@ export function* doattributes() {
 export function* youhiding(via_enlghtmt, msgflag) {
     let bp;
     let buf = new Uint8Array(256);
+
     void cptr.strcpy(cptr.decay(buf), __s_hiding);
     if (U_AP_TYPE() != NHC.M_AP_NOTHING) {
+        /* mimic; hero is only able to mimic a strange object or gold
+           or hallucinatory alternative to gold, so we skip the details
+           for the hypothetical furniture and monster cases */
         bp = eos(cptr.strcpy(cptr.decay(buf), __s_mimicking));
         if (U_AP_TYPE() == NHC.M_AP_OBJECT) {
             void cptr.sprintf(bp, __s_sp_pct_s, (yield* an((yield* simple_typename(cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0)))));
@@ -2305,50 +2693,66 @@ export function* youhiding(via_enlghtmt, msgflag) {
         } else if (U_AP_TYPE() == NHC.M_AP_MONSTER) {
             void cptr.strcpy(bp, __s_someone);
         } else {
-            ;
+            ;  /* something unexpected; leave 'buf' as-is */
         }
     } else if ((cptr.ldI32o(u, $you_uundetected) & 1)) {
-        bp = eos(cptr.decay(buf));
+        bp = eos(cptr.decay(buf));  /* points past "hiding" */
         if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL) {
             if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
                 void cptr.sprintf(bp, __s_in_the_s, waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
             let o = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+
             if (o)
                 void cptr.sprintf(bp, __s_underneath_s, (yield* ansimpleoname(o)));
         } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) || Flying()) {
+            /* Flying: 'lurker above' hides on ceiling but doesn't cling */
             void cptr.sprintf(bp, __s_on_the_s, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
         } else {
+            /* on floor; is_hider() but otherwise not special: 'trapper' */
             if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                 let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+
                 void cptr.sprintf(bp, __s_in_a_spit, (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) ? __s_spiked : __s_empty);
             } else
                 void cptr.sprintf(bp, __s_on_the_s, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         }
     } else {
-        ;
+        ;  /* shouldn't happen; will result in generic "you are hiding" */
     }
+
     if (via_enlghtmt) {
-        let final = msgflag;
+        let final = msgflag;  /* 'final' is used by you_are() macro */
+
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
     } else {
+        /* for dohide(), when player uses '#monster' command */
         (yield* You(__s_are_s_s, msgflag ? __s_already : __s_now__2, cptr.decay(buf)));
     }
 }
 
+/* #conduct command [KMH]; shares enlightenment's tense handling */
 /** C ref: insight.c:2081 @returns {CInt} */
 export function* doconduct() {
     (yield* show_conduct(NHM.ENL_GAMEINPROGRESS));
     return NHM.ECMD_OK;
 }
 
+/* display conducts; for doconduct(), also disclose() and dump_everything() */
 /** C ref: insight.c:2089 — @param {CInt} final */
 export function* show_conduct(final) {
     let buf = new Uint8Array(256);
     let bufN = new Uint8Array(40);
     let ngenocided;
+
+    /* Create the conduct window */
     cptr.stI32(ge, (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU))));
     (yield* Y.icall(putstr()(cptr.ldI32(ge), 0, __s_voluntary_challenges)));
+
+    /* rerolling; "You <this or that>" is about the character, rerolling
+       is about the player so phrase it differently;
+       also, always use past tense since the chance to do something with it
+       is gone by time player can issue #conduct command or see disclosure */
     if (!cptr.ld1so(u, $you_uroleplay + $u_roleplay_reroll))
         void cptr.strcpy(cptr.decay(buf), __s_character_rerolling_was_not_enabled);
     else if (!cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls))
@@ -2356,22 +2760,31 @@ export function* show_conduct(final) {
     else
         void cptr.sprintf(cptr.decay(buf), __s_your_character_was_rerolled_s, N_times(cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls), cptr.decay(bufN)));
     (yield* enlght_out(cptr.decay(buf)));
+
     if (cptr.ld1so(u, $you_uroleplay))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_blind_from_birth)), (__s_empty)));
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_deaf))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_deaf_from_birth)), (__s_empty)));
+    /* note: we don't report "you are without possessions" unless the
+       game started with the pauper option set */
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_started_out) : (cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_started : __s_are__2), (__s_without_possessions), (__s_empty)));
+    /* nudist is far more than a subset of possessionless, and a much
+       more impressive accomplishment, but showing "started out without
+       possessions" before "faithfully nudist" looks more logical */
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_faithfully_nudist)), (__s_empty)));
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_food))
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_went) : (__s_have_gone), (__s_without_food), (__s_empty)));
     else if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan))
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_followed_a_strict_vegan_diet)), (__s_empty)));
     else if (!cptr.ldI64o(u, $you_uconduct))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_vegetarian)), (__s_empty)));
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_an_atheist)), (__s_empty)));
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_hit_with_a_wielded_weapon)), (__s_empty)));
     } else if (wizard()) {
@@ -2380,14 +2793,17 @@ export function* show_conduct(final) {
     }
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_killer))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_a_pacifist)), (__s_empty)));
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_illiterate)), (__s_empty)));
     } else if (wizard()) {
         void cptr.sprintf(cptr.decay(buf), __s_read_items_or_engraved_ld_time_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) == 1n) ? __s_empty : __s_s));
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
     }
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_pets))
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_had_a_pet)), (__s_empty)));
+
     ngenocided = (yield* num_genocides());
     if (ngenocided == 0) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_genocided_any_monsters)), (__s_empty)));
@@ -2395,36 +2811,52 @@ export function* show_conduct(final) {
         void cptr.sprintf(cptr.decay(buf), __s_genocided_d_type_s_of_monster_s, ngenocided, (((ngenocided) == 1) ? __s_empty : __s_s), (((ngenocided) == 1) ? __s_empty : __s_s));
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
     }
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_polymorphed_an_object)), (__s_empty)));
     } else if (wizard()) {
         void cptr.sprintf(cptr.decay(buf), __s_polymorphed_ld_item_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles)) == 1n) ? __s_empty : __s_s));
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
     }
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs)) {
         (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_changed_form)), (__s_empty)));
     } else if (wizard()) {
         void cptr.sprintf(cptr.decay(buf), __s_changed_form_ld_time_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs)) == 1n) ? __s_empty : __s_s));
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
     }
+
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes)) {
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_used_no_wishes)), (__s_empty)));
     } else {
         void cptr.sprintf(cptr.decay(buf), __s_used_ld_wish_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes), (cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes) > 1n) ? __s_es : __s_empty);
         if (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti)) {
+            /* if wisharti == wishes
+             *  1 wish (for an artifact)
+             *  2 wishes (both for artifacts)
+             *  N wishes (all for artifacts)
+             * else (N is at least 2 in order to get here; M < N)
+             *  N wishes (1 for an artifact)
+             *  N wishes (M for artifacts)
+             */
             if (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes))
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_s, (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) > 2n) ? __s_all : ((cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == 2n) ? __s_both__2 : __s_empty));
             else
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_ld__2, cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti));
+
             void cptr.sprintf(eos(cptr.decay(buf)), __s_for_s, (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == 1n) ? __s_an_artifact : __s_artifacts);
         }
         (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+
         if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti))
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_did_not_wish) : (__s_have_not_wished), (__s_for_any_artifacts), (__s_empty)));
     }
+
+    /* only report Sokoban conduct if the Sokoban branch has been entered */
     if (sokoban_in_play()) {
         let presentverb = __s_have_violated;
         let pastverb = __s_violated;
+
         if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_sokocheat)) {
             presentverb = __s_have_not_violated;
             pastverb = __s_did_not_violate;
@@ -2435,11 +2867,18 @@ export function* show_conduct(final) {
         }
         (yield* enlght_line(cptr.decay((You_)), final ? (pastverb) : (presentverb), cptr.decay((buf)), (__s_empty)));
     }
+
     (yield* show_achievements(final));
+
+    /* Pop up the window and wait for a key */
     (yield* Y.icall(display_nhwindow()(cptr.ldI32(ge), 1)));
     (yield* Y.icall(destroy_nhwindow()(cptr.ldI32(ge))));
     cptr.stI32(ge, -1);
 }
+
+/*
+ *      Achievements (see 'enum achievements' in you.h).
+ */
 
 /** C ref: insight.c:2243 — @param {CInt} final */
 function* show_achievements(final) {
@@ -2450,19 +2889,37 @@ function* show_achievements(final) {
     let title = new Uint8Array(128);
     let buf = new Uint8Array(128);
     let awin = -1;
+
+    /* unfortunately we can't show the achievements (at least not all of
+       them) while the game is in progress because it would give away the
+       ID of luckstone (at Mine's End) and of real Amulet of Yendor */
     if (!final && !wizard())
         return;
+
+    /* first, figure whether any achievements have been accomplished
+       so that we don't show the header for them if the resulting list
+       below it would be empty */
     if ((acnt = count_achievements()) == 0)
         return;
+
     if (cptr.ldI32(ge) != -1) {
-        awin = cptr.ldI32(ge);
+        awin = cptr.ldI32(ge);  /* end of game disclosure window */
         (yield* Y.icall(putstr()(awin, 0, __s_empty)));
     } else {
         awin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     }
     void cptr.sprintf(cptr.decay(title), __s_achievement_s, (((acnt) == 1) ? __s_empty : __s_s));
     (yield* Y.icall(putstr()(awin, 0, cptr.decay(title))));
+
+    /* display achievements in the order in which they were recorded;
+       lone exception is to defer the Amulet if we just ascended;
+       it warrants alternate wording when given away during ascension,
+       but the Amulet achievement is always attained before entering
+       endgame and the alternate wording looks strange if shown before
+       "reached endgame" and "reached Astral" */
     if (remove_achievement(NHC.ACH_UWIN)) {
+        /* for ascension, force it to be last and Amulet next to last
+           by taking them out and then adding them back */
         if (remove_achievement(NHC.ACH_AMUL))
             (yield* record_achievement(NHC.ACH_AMUL));
         (yield* record_achievement(NHC.ACH_UWIN));
@@ -2470,6 +2927,7 @@ function* show_achievements(final) {
     for (i = 0; i < acnt; ++i) {
         achidx = cptr.ld1so2(u, i, 1, $you_uachieved);
         absidx = Math.abs(achidx);
+
         switch (absidx) {
             case NHC.ACH_BLND:
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_explored) : (__s_are_exploring), (__s_without_being_able_to_see), (__s_empty)));
@@ -2514,6 +2972,8 @@ function* show_achievements(final) {
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_learned_the_tune_to_open_and_close_the)), (__s_empty)));
             break;
             case NHC.ACH_BELL:
+            /* alternate phrasing for present vs past and also for
+               possessing the item vs once held it */
             (yield* enlght_line(cptr.decay((You_)), final ? ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0 ? __s_had__3 : __s_handled) : ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0 ? __s_have__2 : __s_have_handled), (__s_the_bell_of_opening), (__s_empty)));
             break;
             case NHC.ACH_HELL:
@@ -2529,6 +2989,8 @@ function* show_achievements(final) {
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_gained_access_to_moloch_s_sanctum)), (__s_empty)));
             break;
             case NHC.ACH_AMUL:
+            /* alternate wording for ascended (always past tense) since
+               hero had it until #offer forced it to be relinquished */
             (yield* enlght_line(cptr.decay((You_)), final ? ((cptr.ldI32o(u, $you_uevent + $u_event_ascended) & 1) | 0 ? __s_delivered : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_had__3 : __s_had_obtained)) : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_have__2 : __s_have_obtained), (__s_the_amulet_of_yendor), (__s_empty)));
             break;
             case NHC.ACH_ENDG:
@@ -2538,6 +3000,7 @@ function* show_achievements(final) {
             (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_reached_the_astral_plane)), (__s_empty)));
             break;
             case NHC.ACH_UWIN:
+            /* the ultimate achievement... */
             (yield* enlght_out(__s_you_ascended));
             break;
             case NHC.ACH_RNK1:
@@ -2555,85 +3018,128 @@ function* show_achievements(final) {
             void cptr.sprintf(cptr.decay(buf), __s_unexpected_achievement_d, achidx);
             (yield* enlght_out(cptr.decay(buf)));
             break;
-        }
-    }
+        }  /* switch */
+    }  /* for */
+
     if (awin != cptr.ldI32(ge)) {
         (yield* Y.icall(display_nhwindow()(awin, 1)));
         (yield* Y.icall(destroy_nhwindow()(awin)));
     }
 }
 
+/* record an achievement (add at end of list unless already present) */
 /** C ref: insight.c:2407 — @param {CInt} achidx */
 export function* record_achievement(achidx) {
     let i;
     let absidx;
     let repeat_achievement = 0;
+
     absidx = Math.abs(achidx);
+    /* valid achievements range from 1 to N_ACH-1; however, ranks can be
+       stored as the complement (ie, negative) to track gender */
     if ((achidx < 1 && (absidx < NHC.ACH_RNK1 || absidx > NHC.ACH_RNK8)) || achidx >= NHC.N_ACH) {
         (yield* impossible(__s_achievement_d_is_out_of_range, achidx));
         return;
     }
+
+    /* the list has an extra slot so there is always at least one 0 at
+       its end (more than one unless all N_ACH-1 possible achievements
+       have been recorded); find first empty slot or achievement #achidx;
+       an attempt to duplicate an achievement can happen if any of Bell,
+       Candelabrum, Book, or Amulet is dropped then picked up again */
     for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); ++i)
         if (Math.abs(cptr.ld1so2(u, i, 1, $you_uachieved)) == absidx) {
             repeat_achievement = 1;
             break;
         }
+
+    /*
+     * We do the sound for an achievement, even if it has already been
+     * achieved before. Some players might have set up level-based
+     * theme music or something. We do let the sound interface know
+     * that it's not the original achievement though.
+     */
     ;
+
     if (repeat_achievement)
-        return;
+        return;  /* already recorded, don't duplicate it */
     cptr.st1o2(u, i, 1, $you_uachieved, achidx);
+
+    /* avoid livelog for achievements recorded during final disclosure:
+       nudist and blind-from-birth; also ascension which is suppressed
+       by this gets logged separately in really_done() */
     if (cptr.ldI32(program_state))
         return;
+
     if (absidx >= NHC.ACH_RNK1 && absidx <= NHC.ACH_RNK8) {
         (yield* livelog_printf(cptr.ldI64o(achieve_msg, absidx, $sizeof_ll_achieve_msg), __s_attained_the_rank_of_s_level_d, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), Role_switch(), schar(((achidx < 0) ? 1 : 0))), cptr.ldI32o(u, $you_ulevel)));
     } else if (achidx == NHC.ACH_SOKO_PRIZE || achidx == NHC.ACH_MINE_PRIZE) {
+        /* need to supply extra information for these two */
         let otyp = i16(((achidx == NHC.ACH_SOKO_PRIZE) ? cptr.ldI16o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_otyp) : cptr.ldI16o(svc, $context_info_achieveo + $achievement_tracking_mines_prize_otyp)));
+
+        /* note: OBJ_NAME() works here because both "bag of holding" and
+           "amulet of reflection" are fully named in their objects[] entry
+           but that's not true in the general case */
         (yield* livelog_printf(cptr.ldI64o(achieve_msg, achidx, $sizeof_ll_achieve_msg), __s_s_s__2, cptr.ldPtro2(achieve_msg, achidx, $sizeof_ll_achieve_msg, $ll_achieve_msg_msg), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr))));
     } else {
         (yield* livelog_printf(cptr.ldI64o(achieve_msg, absidx, $sizeof_ll_achieve_msg), __s_pct_s, cptr.ldPtro2(achieve_msg, absidx, $sizeof_ll_achieve_msg, $ll_achieve_msg_msg)));
     }
 }
 
+/* discard a recorded achievement; return True if removed, False otherwise */
 /** C ref: insight.c:2476 — @param {CInt} achidx @returns {CInt} */
 export function remove_achievement(achidx) {
     let i;
+
     for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); ++i)
         if (Math.abs(cptr.ld1so2(u, i, 1, $you_uachieved)) == Math.abs(achidx))
-            break;
+            break;  /* stop when found */
     if (!cptr.ld1so2(u, i, 1, $you_uachieved))
         return 0;
+    /* list is 0 terminated so any beyond the removed one move up a slot */
     do {
         cptr.st1o2(u, i, 1, $you_uachieved, cptr.ld1so2(u, (i + 1) | 0, 1, $you_uachieved));
     } while (cptr.ld1so2(u, ++i, 1, $you_uachieved));
     return 1;
 }
 
+/* used to decide whether there are any achievements to display */
 /** C ref: insight.c:2494 @returns {CInt} */
 export function count_achievements() {
     let i;
     let acnt = 0;
+
     for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); ++i)
         ++acnt;
     return acnt;
 }
 
+/* convert a rank index to an achievement number; encode it when female
+   in order to subsequently report gender-specific ranks accurately */
 /** C ref: insight.c:2506 — @param {CInt} rank @returns {CInt} */
 export function achieve_rank(rank) {
     let achidx = schar(((((rank - 1) | 0) + NHC.ACH_RNK1) | 0));
+
     if (cptr.ld1so(flags, $flag_female))
         achidx = schar((-achidx));
     return achidx;
 }
 
+/* return True if sokoban branch has been entered, False otherwise */
 /** C ref: insight.c:2517 @returns {CInt} */
 export function sokoban_in_play() {
     let achidx;
+
+    /* TODO? move this to dungeon.c and test furthest level reached of the
+       sokoban branch instead of relying on the entered-sokoban achievement */
+
     for (achidx = 0; cptr.ld1so2(u, achidx, 1, $you_uachieved); ++achidx)
         if (cptr.ld1so2(u, achidx, 1, $you_uachieved) == NHC.ACH_SOKO)
             return 1;
     return 0;
 }
 
+/* #chronicle command */
 /** C ref: insight.c:2532 @returns {CInt} */
 export function* do_gamelog() {
     if (cptr.ldPtro(gg, $instance_globals_g_gamelog)) {
@@ -2644,12 +3150,14 @@ export function* do_gamelog() {
     return NHM.ECMD_OK;
 }
 
+/* #chronicle details */
 /** C ref: insight.c:2561 — @param {CInt} final */
 export function* show_gamelog(final) {
     let llmsg;
     let win;
     let buf = new Uint8Array(256);
     let eventcnt = 0;
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     void cptr.sprintf(cptr.decay(buf), __s_s_events, final ? __s_major : __s_logged);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
@@ -2663,13 +3171,22 @@ export function* show_gamelog(final) {
         nh_snprintf(__s_show_gamelog, 2579, cptr.decay(buf), 256n, __s_5ld_s, cptr.ldI64(llmsg), cptr.ldPtro(llmsg, $gamelog_line_text));
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
+    /* since start of game is logged as a major event, 'eventcnt' should
+       never end up as 0; for 'final', end of game is a major event too */
     if (!eventcnt)
         (yield* Y.icall(putstr()(win, 0, __s_none)));
+
     (yield* Y.icall(display_nhwindow()(win, 1)));
     (yield* Y.icall(destroy_nhwindow()(win)));
     return;
 }
 
+/*
+ *      Vanquished monsters.
+ */
+
+/* the two uppercase choices are implemented but suppressed from menu.
+   also used in options.c */
 /** C ref: insight.c:2601 — char *[8][3] */
 export const vanqorders = (function () { const flat = new Uint8Array(8 * 3 * 8); const a = []; for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
 cptr.stPtro(cptr.decay(vanqorders[0]), 0, __s_t);
@@ -2717,17 +3234,20 @@ function* vanqsort_cmp(vptr1, vptr2) {
     let punct;
     let mcls1;
     let mcls2;
+
     switch (cptr.ld1uo(flags, $flag_vanq_sortmode)) {
         default:
         case NHC.VANQ_MLVL_MNDX:
+        /* sort by monster level */
         mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
         mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
-        res = (mlev2 - mlev1) | 0;
+        res = (mlev2 - mlev1) | 0;  /* mlevel high to low */
         break;
         case NHC.VANQ_MSTR_MNDX:
+        /* sort by monster toughness */
         mstr1 = cptr.ld1uo2(mons, indx1, $sizeof_permonst, $permonst_difficulty);
         mstr2 = cptr.ld1uo2(mons, indx2, $sizeof_permonst, $permonst_difficulty);
-        res = (mstr2 - mstr1) | 0;
+        res = (mstr2 - mstr1) | 0;  /* monstr high to low */
         break;
         case NHC.VANQ_ALPHA_SEP:
         uniq1 = ((cptr.ldU16o2(mons, indx1, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) && indx1 != NHC.PM_HIGH_CLERIC ? 1 : 0);
@@ -2735,50 +3255,66 @@ function* vanqsort_cmp(vptr1, vptr2) {
         if (uniq1 ^ uniq2) {
             res = (uniq2 - uniq1) | 0;
             break;
-        }
+        }  /* else both unique or neither unique */
         // @FallThrough
         ;
         case NHC.VANQ_ALPHA_MIX:
         name1 = cptr.ldPtro3(mons, indx1, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
         name2 = cptr.ldPtro3(mons, indx2, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
-        res = (yield* strncmpi((name1), (name2), -1));
+        res = (yield* strncmpi((name1), (name2), -1));  /* caseblind alpha, low to high */
         break;
         case NHC.VANQ_MCLS_HTOL:
         case NHC.VANQ_MCLS_LTOH:
+        /* mons[].mlet is a small integer, 1..N, of type plain char;
+           if 'char' happens to be unsigned, (mlet1 - mlet2) would yield
+           an inappropriate result when mlet2 is greater than mlet1,
+           so force our copies (mcls1, mcls2) to be signed */
         mcls1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlet);
         mcls2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlet);
+        /* S_ANT through S_ZRUTY correspond to lowercase monster classes,
+           S_ANGEL through S_ZOMBIE correspond to uppercase, and various
+           punctuation characters are used for classes beyond those */
         if (mcls1 > NHC.S_ZOMBIE && mcls2 > NHC.S_ZOMBIE) {
+
             if ((punct = cptr.strchr(cptr.decay(__static_vanqsort_cmp_punctclasses), mcls1)) !== null)
                 mcls1 = schar(((((NHC.S_ZOMBIE + 1) | 0) + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
             if ((punct = cptr.strchr(cptr.decay(__static_vanqsort_cmp_punctclasses), mcls2)) !== null)
                 mcls2 = schar(((((NHC.S_ZOMBIE + 1) | 0) + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
         }
-        res = (mcls1 - mcls2) | 0;
+        res = (mcls1 - mcls2) | 0;  /* class */
         if (res == 0) {
+            /* Riders are in the same class as major demons, yielding res==0
+               above when both mcls1 and mcls2 are either Riders or demons or
+               one of each; force Riders to be sorted before demons */
             res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) - is_rider(cptr.add(mons, indx1, $sizeof_permonst))) | 0;
+            /* res -1 => #1 is a Rider, #2 isn't;
+                    0 => both Riders or neither;
+                   +1 => #2 is a Rider, #1 isn't */
             if (res)
                 break;
             mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
             mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
-            res = (mlev1 - mlev2) | 0;
+            res = (mlev1 - mlev2) | 0;  /* mlevel low to high */
             if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL)
-                res = -res;
+                res = -res;  /* mlevel high to low */
         }
         break;
         case NHC.VANQ_COUNT_H_L:
         case NHC.VANQ_COUNT_L_H:
         died1 = cptr.ld1uo2(svm, indx1, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
         died2 = cptr.ld1uo2(svm, indx2, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
-        res = (died2 - died1) | 0;
+        res = (died2 - died1) | 0;  /* dead count high to low */
         if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
-            res = -res;
+            res = -res;  /* dead count low to high */
         break;
     }
+    /* tiebreaker: internal mons[] index */
     if (res == 0)
-        res = (indx1 - indx2) | 0;
+        res = (indx1 - indx2) | 0;  /* mndx low to high */
     return res;
 }
 
+/* returns -1 if cancelled via ESC */
 /** C ref: insight.c:2718 — @param {CInt} for_vanq @returns {CInt} */
 export function* set_vanq_order(for_vanq) {
     let tmpwin;
@@ -2790,15 +3326,20 @@ export function* set_vanq_order(for_vanq) {
     let n;
     let choice;
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
-    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* zero out all bits */
     for (i = 0; i < vanqorders.length; i++) {
         if (i == NHC.VANQ_ALPHA_MIX || i == NHC.VANQ_MCLS_HTOL)
             continue;
+        /* suppress some orderings if this menu if for 'm #genocided' */
         if (!for_vanq && (i == NHC.VANQ_COUNT_H_L || i == NHC.VANQ_COUNT_L_H))
             continue;
         desc = cptr.ldPtro(cptr.decay(vanqorders[i]), 2, 8);
+        /* unique monsters can't be genocided so "alpha, unique separate"
+           and "alpha, unique intermixed" are confusing descriptions when
+           this menu is for #genocided rather than for #vanquished */
         if (!for_vanq && i == NHC.VANQ_ALPHA_SEP)
             desc = __s_alphabetically;
         cptr.stI32(any, (i + 1) | 0);
@@ -2806,10 +3347,12 @@ export function* set_vanq_order(for_vanq) {
     }
     void cptr.sprintf(cptr.decay(buf), __s_sort_order_for_s, for_vanq ? __s_vanquished_monster_counts_also : __s_genocided_monster_types_also_vanquished);
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
+
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, selected));
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
         choice = (cptr.ldI32o(selected.v, 0, $sizeof_menu_item) - 1) | 0;
+        /* skip preselected entry if we have more than one item chosen */
         if (n > 1 && choice == cptr.ld1uo(flags, $flag_vanq_sortmode))
             choice = (cptr.ldI32o(selected.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.free(selected.v);
@@ -2818,6 +3361,7 @@ export function* set_vanq_order(for_vanq) {
     return (n < 0) ? -1 : cptr.ld1uo(flags, $flag_vanq_sortmode);
 }
 
+/* #vanquished command */
 /** C ref: insight.c:2769 @returns {CInt} */
 export function* dovanquished() {
     (yield* list_vanquished(schar((cptr.ld1so(iflags, $instance_flags_menu_requested) ? 65 : 121)), 0));
@@ -2825,6 +3369,7 @@ export function* dovanquished() {
     return NHM.ECMD_OK;
 }
 
+/* used for #vanquished and end of game disclosure and end of game dumplog */
 /** C ref: insight.c:2784 — @param {CInt} defquery @param {CInt} ask */
 export function* list_vanquished(defquery, ask) {
     let i;
@@ -2838,15 +3383,28 @@ export function* list_vanquished(defquery, ask) {
     let c;
     let buf = new Uint8Array(256);
     let buftoo = new Uint8Array(256);
+    /* 'A' is only supplied by 'm #vanquished'; 'd' is only supplied by
+       dump_everything() when writing dumplog, so won't happen if built
+       without '#define DUMPLOG' but there's no need for conditionals here */
     let force_sort = schar((defquery == 65));
     let dumping = schar((defquery == 100));
+
+    /* normally we don't ask about sort order for the vanquished list unless
+       it contains at least two entries; however, if player has used explicit
+       'm #vanquished', choose order no matter what it contains so far */
     if (force_sort) {
+        /* choose value for vanq_sortmode via menu; ESC cancels choosing
+           sort order but continues with vanquishd monsters display */
         void (yield* set_vanq_order(1));
     }
     if (dumping || force_sort) {
+        /* switch from 'A' or 'd' to 'y'; 'ask' is already False for the
+           cases that might supply 'A' or 'd' */
         defquery = 121;
-        ask = 0;
+        ask = 0;  /* redundant */
     }
+
+    /* get totals first */
     ntypes = 0;
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++) {
         if ((nkilled = cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died)) == 0)
@@ -2854,21 +3412,27 @@ export function* list_vanquished(defquery, ask) {
         cptr.stI16o(mindx, ntypes++, i16(i), 2);
         total_killed += BigInt(nkilled);
     }
+
+    /* vanquished creatures list;
+     * includes all dead monsters, not just those killed by the player
+     */
     if (ntypes != 0) {
         let mlet;
-        let prev_mlet = 0;
+        let prev_mlet = 0;  /* used as small integer, not character */
         let class_header;
         let uniq_header;
         let Rider;
         let was_uniq = 0;
         let special_hdr = 0;
+
         if (ask) {
             let allow_yn = new Uint8Array(10);
+
             if (ntypes > 1) {
                 void cptr.strcpy(cptr.decay(allow_yn), cptr.decay(ynaqchars));
             } else {
-                void cptr.strcpy(cptr.decay(allow_yn), cptr.decay(ynqchars));
-                void cptr.strcat(cptr.decay(allow_yn), __s_esc_a);
+                void cptr.strcpy(cptr.decay(allow_yn), cptr.decay(ynqchars));  /* don't include 'a', but */
+                void cptr.strcat(cptr.decay(allow_yn), __s_esc_a);  /* allow user to answer 'a' */
                 if (defquery == 97)
                     defquery = 121;
             }
@@ -2876,19 +3440,24 @@ export function* list_vanquished(defquery, ask) {
         } else {
             c = defquery;
         }
+
         if (c == 113)
             (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
         if (c == 121 || c == 97) {
             if (c == 97 && ntypes > 1) {
+                /* choose value for vanq_sortmode via menu; ESC cancels list
+                   of vanquished monsters but does not set 'done_stopprint' */
                 if ((yield* set_vanq_order(1)) < 0)
                     return;
             }
             uniq_header = schar((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_ALPHA_SEP));
             class_header = schar(((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_LTOH || cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL) && ntypes > 1 ? 1 : 0));
+
             klwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(putstr()(klwin, 0, __s_vanquished_creatures)));
             if (!dumping)
                 (yield* Y.icall(putstr()(klwin, 0, __s_empty)));
+
             (yield* nh_deterministic_qsort((mindx), BigInt((ntypes) >>> 0), 2n, (vanqsort_cmp)));
             for (ni = 0; ni < ntypes; ni++) {
                 i = cptr.ldI16o(mindx, ni, 2);
@@ -2903,6 +3472,8 @@ export function* list_vanquished(defquery, ask) {
                         void cptr.strcpy(cptr.decay(buf), __s_rider);
                         special_hdr = 1;
                     }
+                    /* 'ask' implies final disclosure, where highlighting
+                       of various header lines is suppressed */
                     (yield* Y.icall(putstr()(klwin, ask ? NHM.ATR_NONE : cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), upstart(cptr.decay(buf)))));
                     prev_mlet = mlet;
                 }
@@ -2916,17 +3487,24 @@ export function* list_vanquished(defquery, ask) {
                         (yield* Y.icall(putstr()(klwin, 0, __s_empty)));
                         was_uniq = 0;
                     }
+                    /* trolls or undead might have come back,
+                       but we don't keep track of that */
                     if (nkilled == 1)
                         void cptr.strcpy(cptr.decay(buf), (yield* an(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
                     else
                         void cptr.sprintf(cptr.decay(buf), __s_3d_s, nkilled, (yield* makeplural(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
                 }
+                /* number of leading spaces to match 3 digit prefix */
                 pfx = !(yield* strncmpi(cptr.decay(buf), __s_the__2, 4)) ? 0 : (!(yield* strncmpi(cptr.decay(buf), __s_an, 3)) ? 1 : (!(yield* strncmpi(cptr.decay(buf), __s_a_sp, 2)) ? 2 : (!digit(cptr.ld1so(cptr.decay(buf), 2, 1)) ? 4 : 0)));
                 if (class_header)
                     ++pfx;
                 nh_snprintf(__s_list_vanquished, 2916, cptr.decay(buftoo), 256n, __s_s_s__5, pfx, __s_empty, cptr.decay(buf));
                 (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buftoo))));
             }
+            /*
+             * if (Hallucination)
+             *     putstr(klwin, 0, "and a partridge in a pear tree");
+             */
             if (ntypes > 1) {
                 if (!dumping)
                     (yield* Y.icall(putstr()(klwin, 0, __s_empty)));
@@ -2936,15 +3514,27 @@ export function* list_vanquished(defquery, ask) {
             (yield* Y.icall(display_nhwindow()(klwin, 1)));
             (yield* Y.icall(destroy_nhwindow()(klwin)));
         }
+
+        /*
+         * For end-of-game disclosure, we're only called when some monsters
+         * were vanquished and won't reach these 'else-if's.
+         *
+         * If no monsters have been vanquished, we're either called for game
+         * still in progress, so use present tense via pline(), or for dumplog
+         * which needs putstr() and past tense.
+         */
     } else if (!cptr.ldI32(program_state)) {
+        /* #vanquished rather than final disclosure, so pline() is ok */
         (yield* pline(__s_no_creatures_have_been_vanquished));
     }
 }
 
+/* number of monster species which have been genocided */
 /** C ref: insight.c:2953 @returns {CInt} */
 export function* num_genocides() {
     let i;
     let n = 0;
+
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; ++i) {
         if (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
             ++n;
@@ -2955,10 +3545,12 @@ export function* num_genocides() {
     return n;
 }
 
+/* return a count of the number of extinct species */
 /** C ref: insight.c:2970 @returns {CInt} */
 function num_extinct() {
     let i;
     let n = 0;
+
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; ++i) {
         if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC))
             continue;
@@ -2968,21 +3560,29 @@ function num_extinct() {
     return n;
 }
 
+/* collect both genocides and extinctions, skipping uniques */
 /** C ref: insight.c:2985 — @param {CInt} mvflags @param {CPtr<int>} mindx @returns {CInt} */
 function num_gone(mvflags, mindx) {
     let mflg = uchar(mvflags);
     let i;
     let n = 0;
+
     void __builtin___memset_chk(mindx, 0, 1532n, __builtin_object_size(mindx, 0));
+
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; ++i) {
+        /* uniques can't be genocided but can become extinct;
+           however, they're never reported as extinct, so skip them */
         if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC))
             continue;
+
         if ((cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & mflg) != 0)
             cptr.stI32o(mindx, n++, i, 4);
     }
     return n;
 }
 
+/* show genocided and extinct monster types for final disclosure/dumplog
+   or for the #genocided command */
 /** C ref: insight.c:3007 — @param {CInt} defquery @param {CInt} ask */
 export function* list_genocided(defquery, ask) {
     let i;
@@ -2996,18 +3596,26 @@ export function* list_genocided(defquery, ask) {
     let klwin;
     let buf = new Uint8Array(256);
     let genoing;
-    let dumping;
+    let dumping;  /* for DUMPLOG; doesn't need to be conditional */
     let both = schar((cptr.ldI32(program_state) || wizard() || discover() ? 1 : 0));
+
     dumping = schar((defquery == 100));
     genoing = schar((defquery == 103));
     if (dumping || genoing)
         defquery = 121;
     if (genoing)
-        both = 0;
+        both = 0;  /* genocides only, not extinctions */
+
+    /* this goes through the whole monster list up to three times but will
+       happen rarely and is simpler than a more general single pass check;
+       extinctions are only revealed during end of game disclosure or when
+       running in wizard or explore mode */
     ngenocided = (yield* num_genocides());
     nextinct = both ? num_extinct() : 0;
     mvflags = NHM.G_GENOD | (both ? NHM.G_EXTINCT : 0);
     ngone = num_gone(mvflags, mindx);
+
+    /* genocided or extinct species list */
     if (ngone > 0) {
         void cptr.sprintf(cptr.decay(buf), __s_do_you_want_a_list_of_sspecies_s_s, (nextinct && !ngenocided) ? __s_extinct : __s_empty, (ngenocided) ? __s_genocided : __s_empty, (nextinct && ngenocided) ? __s_and_extinct : __s_empty);
         c = schar((ask ? (yield* yn_function(cptr.decay(buf), (ngone > 1) ? __s_ynaq : __s_ynq_a, defquery, 1)) : defquery));
@@ -3018,11 +3626,18 @@ export function* list_genocided(defquery, ask) {
             let mlet;
             let prev_mlet = 0;
             let class_header = 0;
+
             if (ngone > 1) {
                 if (c == 97) {
+                    /* #genocided shares #vanquished's sort order */
                     if ((yield* set_vanq_order(0)) < 0)
                         return;
                 }
+                /* sort orderings count-high-to-low or count-low-to-high
+                   don't make sense for genocides; if the preferred order
+                   to set to either of those, use alphabetical instead;
+                   note: the tie breaker for by-class is level-high-to-low
+                   or level-low-to-high rather than count so is ok as-is */
                 save_sortmode = cptr.ld1uo(flags, $flag_vanq_sortmode);
                 if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_H_L || cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
                     cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_ALPHA_MIX);
@@ -3030,20 +3645,34 @@ export function* list_genocided(defquery, ask) {
                 class_header = schar((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_LTOH || cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL ? 1 : 0));
                 cptr.st1o(flags, $flag_vanq_sortmode, uchar(save_sortmode));
             }
+
             klwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             void cptr.sprintf(cptr.decay(buf), __s_s_s_species, (ngenocided) ? __s_genocided__2 : __s_extinct__2, (nextinct && ngenocided) ? __s_or_extinct : __s_empty);
             (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buf))));
             if (!dumping)
                 (yield* Y.icall(putstr()(klwin, 0, __s_empty)));
+
             for (i = 0; i < ngone; ++i) {
                 mndx = cptr.ldI32o(mindx, i, 4);
                 mlet = cptr.ld1so2(mons, mndx, $sizeof_permonst, $permonst_mlet);
                 if (class_header && mlet != prev_mlet) {
                     void cptr.strcpy(cptr.decay(buf), cptr.ldPtro2(def_monsyms, mlet, $sizeof_class_sym, $class_sym_explain));
+                    /* 'ask' implies final disclosure, where highlighting
+                       of various header lines is suppressed */
                     (yield* Y.icall(putstr()(klwin, ask ? NHM.ATR_NONE : cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), upstart(cptr.decay(buf)))));
                     prev_mlet = mlet;
                 }
                 void cptr.sprintf(cptr.decay(buf), __s_sp_pct_s, (yield* makeplural(cptr.ldPtro3(mons, mndx, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
+                /*
+                 * "Extinct" is unfortunate terminology.  A species
+                 * is marked extinct when its birth limit is reached,
+                 * but there might be members of the species still
+                 * alive, contradicting the meaning of the word.
+                 *
+                 * We only append "(extinct)" if the G_GENOD bit is
+                 * clear.  During normal play, 'mndx' won't be in the
+                 * collected list unless that bit is set.
+                 */
                 if ((cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) == NHM.G_EXTINCT)
                     void cptr.strcat(cptr.decay(buf), __s_extinct__3);
                 (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buf))));
@@ -3058,20 +3687,27 @@ export function* list_genocided(defquery, ask) {
                 void cptr.sprintf(cptr.decay(buf), __s_d_species_extinct, nextinct);
                 (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buf))));
             }
+
             (yield* Y.icall(display_nhwindow()(klwin, 1)));
             (yield* Y.icall(destroy_nhwindow()(klwin)));
         }
+
+        /* See the comment for similar code near the end of list_vanquished(). */
     } else if (!cptr.ldI32(program_state)) {
+        /* #genocided rather than final disclosure, so pline() is ok and
+           extinction has been ignored */
         (yield* pline(__s_no_creatures_have_been_genocided_s, genoing ? __s_yet : __s_empty));
     }
 }
 
+/* M-g - #genocided command */
 /** C ref: insight.c:3135 @returns {CInt} */
 export function* dogenocided() {
     (yield* list_genocided(schar((cptr.ld1so(iflags, $instance_flags_menu_requested) ? 97 : 121)), 0));
     return NHM.ECMD_OK;
 }
 
+/* #wizborn extended command */
 const __static_doborn_fmt = cptr.bytes("%4i %4i %c %-30s"); /** C ref: insight.c:3147 — char[17] (function-static) */
 
 /** C ref: insight.c:3145 @returns {CInt} */
@@ -3081,6 +3717,7 @@ export function* doborn() {
     let buf = new Uint8Array(256);
     let nborn = 0;
     let ndied = 0;
+
     (yield* Y.icall(putstr()(datawin, 0, __s_died_born)));
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
         if (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals) || cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died) || (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) != 0) {
@@ -3089,12 +3726,21 @@ export function* doborn() {
             nborn = (nborn + cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals)) | 0;
             ndied = (ndied + cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died)) | 0;
         }
+
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_doborn_fmt), ndied, nborn, 32, __s_empty);
+
     (yield* Y.icall(display_nhwindow()(datawin, 0)));
     (yield* Y.icall(destroy_nhwindow()(datawin)));
+
     return NHM.ECMD_OK;
 }
+
+/*
+ * align_str(), piousness(), mstatusline() and ustatusline() once resided
+ * in pline.c, then got moved to priest.c just to be out of there.  They
+ * fit better here.
+ */
 
 /** C ref: insight.c:3187 — @param {CInt} alignment @returns {CPtr<char>} */
 export function align_str(alignment) {
@@ -3115,6 +3761,7 @@ const __static_size_str_outbuf = new Uint8Array(40); /** C ref: insight.c:3205 �
 
 /** C ref: insight.c:3203 — @param {CInt} msize @returns {CPtr<char>} */
 function size_str(msize) {
+
     switch (msize) {
         case NHM.MZ_TINY:
         void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_tiny);
@@ -3141,11 +3788,14 @@ function size_str(msize) {
     return cptr.decay(__static_size_str_outbuf);
 }
 
+/* used for self-probing */
 const __static_piousness_buf = new Uint8Array(32); /** C ref: insight.c:3237 — char[32] (function-static) */
 
 /** C ref: insight.c:3235 — @param {CInt} showneg @param {CPtr<char>} suffix @returns {CPtr<char>} */
 export function piousness(showneg, suffix) {
     let pio;
+
+    /* note: piousness 20 matches MIN_QUEST_ALIGN (quest.h) */
     if (cptr.ldI32o(u, $you_ualign + $align_record) >= 20)
         pio = __s_piously;
     else if (cptr.ldI32o(u, $you_ualign + $align_record) > 13)
@@ -3168,6 +3818,7 @@ export function piousness(showneg, suffix) {
         pio = __s_sinned;
     else
         pio = __s_transgressed;
+
     void cptr.sprintf(cptr.decay(__static_piousness_buf), __s_pct_s, pio);
     if (suffix && (!showneg || cptr.ldI32o(u, $you_ualign + $align_record) >= 0)) {
         if (cptr.ldI32o(u, $you_ualign + $align_record) != 3)
@@ -3177,11 +3828,13 @@ export function piousness(showneg, suffix) {
     return cptr.decay(__static_piousness_buf);
 }
 
+/* stethoscope or probing applied to monster -- one-line feedback */
 /** C ref: insight.c:3275 — @param {CPtr<struct monst>} mtmp */
 export function* mstatusline(mtmp) {
     let alignment = mon_aligntyp(mtmp);
     let info = new Uint8Array(256);
     let monnambuf = new Uint8Array(256);
+
     cptr.st1o(cptr.decay(info), 0, 0, 1);
     if (cptr.ld1so(mtmp, $monst_mtame)) {
         void cptr.strcat(cptr.decay(info), __s_tame);
@@ -3193,21 +3846,31 @@ export function* mstatusline(mtmp) {
         }
     } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         void cptr.strcat(cptr.decay(info), __s_peaceful);
+
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst))) {
         let segndx;
         let nsegs = count_wsegs(mtmp);
+
+        /* the worm code internals don't consider the head to be one of
+           the worm's segments, but we count it as such when presenting
+           worm feedback to the player */
         if (!nsegs) {
             void cptr.strcat(cptr.decay(info), __s_single_segment);
         } else {
-            ++nsegs;
+            ++nsegs;  /* include head in the segment count */
             segndx = wseg_at(mtmp, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
             void cptr.sprintf(eos(cptr.decay(info)), __s_d_s_of_d_segments, segndx, ordin(segndx), nsegs);
         }
     }
     if (ismnum(cptr.ldI16o(mtmp, $monst_cham)) && !cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst)))
+        /* don't reveal the innate form (chameleon, vampire, &c),
+           just expose the fact that this current form isn't it */
         void cptr.strcat(cptr.decay(info), __s_shapechanger);
+    /* pets eating mimic corpses mimic while eating, so this comes first */
     if (cptr.ldI32o(mtmp, $monst_meating))
         void cptr.strcat(cptr.decay(info), __s_eating);
+    /* a stethoscope exposes mimic before getting here so this
+       won't be relevant for it, but wand of probing doesn't */
     if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || cptr.ld1uo(mtmp, $monst_m_ap_type) || visible_region_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)))
         (yield* mhidden_description(mtmp, 15, eos(cptr.decay(info))));
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1))
@@ -3234,13 +3897,20 @@ export function* mstatusline(mtmp) {
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
         let pm = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
+
+        /* being swallowed/engulfed takes priority over sticks(youmonst);
+           this used to have that backwards and checked sticks() first */
         void cptr.strcat(cptr.decay(info), (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_digesting_you : ((((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) && !(dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null)) ? __s_swallowing_you : __s_engulfing_you)) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_holding_you : __s_held_by_you));
     }
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
         void cptr.strcat(cptr.decay(info), __s_carrying_you);
         if (Wounded_legs()) {
+            /* EWounded_legs is used to track left/right/both rather than
+               some form of extrinsic impairment; HWounded_legs is used for
+               timeout; both apply to steed instead of hero when mounted */
             let legs = (EWounded_legs() & 393216n);
             let what = (yield* mbodypart(mtmp, NHC.LEG));
+
             if (legs == 393216n)
                 what = (yield* makeplural(what));
             void cptr.sprintf(eos(cptr.decay(info)), __s_injured_s, what);
@@ -3248,15 +3918,21 @@ export function* mstatusline(mtmp) {
     }
     if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
         void cptr.strcat(cptr.decay(info), __s_leashed);
+
+    /* avoid "Status of the invisible newt ..., invisible" */
+    /* and unlike a normal mon_nam, use "saddled" even if it has a name */
     void cptr.strcpy(cptr.decay(monnambuf), (yield* x_monnam(mtmp, NHM.ARTICLE_YOUR, null, 3, 0)));
+
     (yield* pline(__s_status_of_s_s_s_level_d_hp_d_d_ac_d_s, cptr.decay(monnambuf), align_str(alignment), size_str(cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize)), cptr.ld1uo(mtmp, $monst_m_lev), cptr.ldI32o(mtmp, $monst_mhp), cptr.ldI32o(mtmp, $monst_mhpmax), find_mac(mtmp), cptr.decay(info)));
 }
 
+/* stethoscope or probing applied to hero -- one-line feedback */
 /** C ref: insight.c:3402 */
 export function* ustatusline() {
     let reg;
     let info = new Uint8Array(256);
     let ln;
+
     cptr.st1o(cptr.decay(info), 0, 0, 1);
     if (Sick()) {
         void cptr.strcat(cptr.decay(info), __s_dying_from);
@@ -3275,7 +3951,7 @@ export function* ustatusline() {
     if (Strangled())
         void cptr.strcat(cptr.decay(info), __s_being_strangled__2);
     if (Vomiting())
-        void cptr.strcat(cptr.decay(info), __s_nauseated__2);
+        void cptr.strcat(cptr.decay(info), __s_nauseated__2);  /* !"nauseous" */
     if (HConfusion())
         void cptr.strcat(cptr.decay(info), __s_confused__2);
     if (Blind()) {
@@ -3284,15 +3960,21 @@ export function* ustatusline() {
             if (BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) < BlindedTimeout() || EBlinded() || !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
                 void cptr.strcat(cptr.decay(info), __s_cover);
             void cptr.strcat(cptr.decay(info), __s_ed_by_sticky_goop);
-        }
+        }  /* note: "goop" == "glop"; variation is intentional */
     }
     if (HStun())
         void cptr.strcat(cptr.decay(info), __s_stunned__2);
     if (Wounded_legs() && !cptr.ldPtro(u, $you_usteed)) {
+        /* EWounded_legs is used to track left/right/both rather than some
+           form of extrinsic impairment; HWounded_legs is used for timeout;
+           both apply to steed instead of hero when mounted */
         let legs = (EWounded_legs() & 393216n);
         let what = (yield* body_part(NHC.LEG));
+
         if (legs == 393216n)
             what = (yield* makeplural(what));
+        /* when it's just one leg, ^X reports which, left or right;
+           ustatusline() doesn't, in order to keep the output a bit shorter */
         void cptr.sprintf(eos(cptr.decay(info)), __s_injured_s, what);
     }
     if (Glib())
@@ -3314,10 +3996,15 @@ export function* ustatusline() {
             void cptr.strcat(cptr.decay(info), __s_held_by__2);
         else
             void cptr.strcat(cptr.decay(info), __s_holding__2);
+        /* FIXME? a_monnam() uses x_monnam() which has a special case that
+           forces "the" instead of "a" when formatting u.ustuck while hero
+           is swallowed; we don't really want that here but it isn't worth
+           fiddling with just for self-probing while engulfed */
         void cptr.strcat(cptr.decay(info), (yield* a_monnam(cptr.ldPtro(u, $you_ustuck))));
     }
     if (!(cptr.ldI32o(u, $you_uswallow) & 1) && (reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null && (ln = cptr.strlen(cptr.decay(info))) < 256n)
         nh_snprintf(__s_ustatusline, 3483, eos(cptr.decay(info)), BigInt.asUintN(64, 256n - ln), __s_in_a_cloud_of_s, reg_damg(reg) ? __s_poison_gas : __s_vapor);
+
     (yield* pline(__s_status_of_s_s_level_d_hp_d_d_ac_d_s, svp, piousness(0, align_str(cptr.ld1so(u, $you_ualign))), Upolyd() ? cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel) : cptr.ldI32o(u, $you_ulevel), Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp), Upolyd() ? cptr.ldI32o(u, $you_mhmax) : cptr.ldI32o(u, $you_uhpmax), cptr.ld1so(u, $you_uac), cptr.decay(info)));
 }
 

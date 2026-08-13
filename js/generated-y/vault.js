@@ -206,6 +206,9 @@ export function free_egd(mtmp) {
     cptr.stI32o(mtmp, $monst_isgd, 0);
 }
 
+/* try to remove the temporary corridor (from vault to rest of map) being
+   maintained by guard 'grd'; if guard is still in it, removal will fail,
+   to be tried again later */
 /** C ref: vault.c:48 — @param {CPtr<struct monst>} grd @param {CInt} forceshow @returns {CInt} */
 function* clear_fcorr(grd, forceshow) {
     let fcx;
@@ -217,8 +220,13 @@ function* clear_fcorr(grd, forceshow) {
     let egrd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
     let trap;
     let lev;
+
     if (!on_level(cptr.add(egrd, $egd_gdlevel), cptr.add(u, $you_uz)))
         return 1;
+
+    /* note: guard remains on 'fmon' list (alive or dead, at off-map
+       coordinate <0,0>), until temporary corridor from vault back to
+       civilization has been removed */
     while ((fcbeg = i16(cptr.ldI32o(egrd, $egd_fcbeg))) < cptr.ldI32o(egrd, $egd_fcend)) {
         fcx = cptr.ldI16o2(egrd, fcbeg, $sizeof_fakecorridor, $egd_fakecorr);
         fcy = cptr.ldI16o2(egrd, fcbeg, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy);
@@ -226,6 +234,7 @@ function* clear_fcorr(grd, forceshow) {
             forceshow = 1;
         if ((((fcx) == cptr.ldI16(u) && (fcy) == cptr.ldI16o(u, $you_uy)) && !(cptr.ldI32o((grd), $monst_mhp) < 1)) || (!forceshow && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), fcy, 8), fcx) & NHM.COULD_SEE) != 0)) || (Punished() && !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && cptr.ldI16o(uball.v, $obj_ox) == fcx && cptr.ldI16o(uball.v, $obj_oy) == fcy))
             return 0;
+
         if ((mtmp = (cptr.ldPtro3(svl, fcx, 168, fcy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
             if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
                 return 0;
@@ -242,50 +251,70 @@ function* clear_fcorr(grd, forceshow) {
         cptr.st1o(lev, $rm_typ, cptr.ld1so2(egrd, fcbeg, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_ftyp));
         cptr.stI32o(lev, $rm_flags, cptr.ld1uo2(egrd, fcbeg, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_flags));
         if (((cptr.ld1so(lev, $rm_typ)) <= NHC.DBWALL)) {
+            /* destroy any trap here (pit dug by you, hole dug via
+               wand while levitating or by monster, bear trap or land
+               mine via object, spun web) when spot reverts to stone */
             if ((trap = t_at(fcx, fcy)) !== null)
                 (yield* deltrap(trap));
+            /* undo scroll/wand/spell of light affecting this spot */
             if (cptr.ld1so(lev, $rm_typ) == NHC.STONE)
                 blackout(fcx, fcy);
         }
         (yield* del_engr_at(fcx, fcy));
-        (yield* map_location(fcx, fcy, 1));
+        (yield* map_location(fcx, fcy, 1));  /* bypass vision */
         (yield* recalc_block_point(fcx, fcy));
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
         (cptr.stI32o(egrd, $egd_fcbeg, cptr.ldI32o(egrd, $egd_fcbeg) + 1)) - (1);
     }
     if (sawcorridor && !silently)
         (yield* pline_The(__s_corridor_disappears));
+    /* only give encased message if hero is still alive (might get here
+       via paygd() -> mongone() -> grddead() when game is over;
+       died: no message, quit: message) */
     if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)) > 0 && !silently)
         (yield* You(__s_are_encased_in_rock));
     return 1;
 }
 
+/* as a temporary corridor is removed, set stone locations and adjacent
+   spots to unlit; if player used scroll/wand/spell of light while inside
+   the corridor, we don't want the light to reappear if/when a new tunnel
+   goes through the same area */
 /** C ref: vault.c:123 — @param {CInt} x @param {CInt} y */
 function blackout(x, y) {
     let lev;
     let i;
     let j;
+
     for (i = (x - 1) | 0; i <= ((x + 1) | 0); ++i)
         for (j = (y - 1) | 0; j <= ((y + 1) | 0); ++j) {
             if (!isok(i16(i), i16(j)))
                 continue;
             lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), i, $sizeof_rm_x21), j, $sizeof_rm);
+            /* [possible bug: when (i != x || j != y), perhaps we ought
+               to check whether the spot on the far side is lit instead
+               of doing a blanket blackout of adjacent locations] */
             if (cptr.ld1so(lev, $rm_typ) == NHC.STONE)
                 cptr.stI32o(lev, $rm_lit, cptr.stI32o(lev, $rm_waslit, 0));
+            /* mark <i,j> as not having been seen from <x,y> */
             unset_seenv(lev, x, y, i16(i), i16(j));
         }
 }
 
 /** C ref: vault.c:144 — @param {CPtr<struct monst>} grd */
 function* restfakecorr(grd) {
+    /* it seems you left the corridor - let the guard disappear */
     if ((yield* clear_fcorr(grd, 0))) {
-        cptr.stI32o(grd, $monst_isgd, 0);
+        cptr.stI32o(grd, $monst_isgd, 0);  /* dmonsfree() should delete this mon */
         (yield* mongone(grd));
     }
 }
 
+/* move guard--dead to alive--to <0,0> until temporary corridor is removed */
 /** C ref: vault.c:155 — @param {CPtr<struct monst>} grd */
 function* parkguard(grd) {
+    /* either guard is dead or will now be treated as if so;
+       monster traversal loops should skip it */
     if (cptr.eq(grd, cptr.ldPtro(svc, $context_info_polearm)))
         cptr.stPtro(svc, $context_info_polearm, null);
     if (cptr.ldI16o(grd, $monst_mx)) {
@@ -294,21 +323,26 @@ function* parkguard(grd) {
     }
     if (!cptr.eq((cptr.ldPtro3(svl, 0, 168, 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), grd))
         (yield* place_monster(grd, 0, 0));
+    /* [grd->mx,my just got set to 0,0 by place_monster(), so this
+       just sets EGD(grd)->ogx,ogy to 0,0 too; is that what we want?] */
     cptr.stI16o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_ogx, cptr.ldI16o(grd, $monst_mx));
     cptr.stI16o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_ogy, cptr.ldI16o(grd, $monst_my));
 }
 
+/* called in mon.c */
 /** C ref: vault.c:175 — @param {CPtr<struct monst>} grd @returns {CInt} */
 export function* grddead(grd) {
     let dispose = (yield* clear_fcorr(grd, 1));
+
     if (!dispose) {
+        /* destroy guard's gold; drop any other inventory */
         (yield* relobj(grd, 0, 0));
         cptr.stI32o(grd, $monst_mhp, 0);
         (yield* parkguard(grd));
         dispose = (yield* clear_fcorr(grd, 1));
     }
     if (dispose)
-        cptr.stI32o(grd, $monst_isgd, 0);
+        cptr.stI32o(grd, $monst_isgd, 0);  /* for dmonsfree() */
     return dispose;
 }
 
@@ -316,6 +350,7 @@ export function* grddead(grd) {
 function in_fcorridor(grd, x, y) {
     let fci;
     let egrd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
+
     for (fci = cptr.ldI32o(egrd, $egd_fcbeg); fci < cptr.ldI32o(egrd, $egd_fcend); fci++)
         if (x == cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr) && y == cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy))
             return 1;
@@ -326,6 +361,8 @@ function in_fcorridor(grd, x, y) {
 export function* findgd() {
     let mtmp;
     let mprev;
+
+    /* this might find a guard parked at <0,0> since it'll be on fmon list */
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && on_level(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), $egd_gdlevel), cptr.add(u, $you_uz))) {
             if (!cptr.ldI16o(mtmp, $monst_mx) && !(cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), $egd_gddone) & 1))
@@ -333,14 +370,18 @@ export function* findgd() {
             return mtmp;
         }
     }
+    /* if not on fmon, look for a guard waiting to migrate to this level */
     for (mprev = cptr.add(gm, $instance_globals_m_migrating_mons); (mtmp = cptr.ldPtr(mprev)) !== null; mprev = mtmp) {
         if ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 && on_level(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), $egd_gdlevel), cptr.add(u, $you_uz))) {
+            /* take out of migrating_mons and place at <0,0>;
+               simplified mon_arrive(); avoid that because it would
+               send mtmp into limbo if no regular map spot is available */
             cptr.stPtr(mprev, cptr.ldPtr(mtmp));
             cptr.stPtr(mtmp, cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist));
             cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist, mtmp);
             mon_track_clear(mtmp);
             cptr.stI16o(mtmp, $monst_mux, cptr.ldI16(u)), cptr.stI16o(mtmp, $monst_muy, cptr.ldI16o(u, $you_uy));
-            cptr.stI16o(mtmp, $monst_mx, cptr.stI16o(mtmp, $monst_my, 0));
+            cptr.stI16o(mtmp, $monst_mx, cptr.stI16o(mtmp, $monst_my, 0));  /* not on map (note: mx is already 0) */
             (yield* parkguard(mtmp));
             return mtmp;
         }
@@ -357,24 +398,32 @@ export function* vault_summon_gd() {
 /** C ref: vault.c:244 — @param {CPtr<char>} array @returns {CInt} */
 export function vault_occupied(array) {
     let ptr;
+
     for (ptr = array; cptr.ld1s(ptr); ptr = cptr.add(ptr, 1))
         if (cptr.ld1so2(svr, (cptr.ld1s(ptr) - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == NHC.VAULT)
             return cptr.ld1s(ptr);
     return 0;
 }
 
+/* hero has teleported out of vault while a guard is active */
 /** C ref: vault.c:256 — @param {CPtr<struct monst>} grd */
 export function* uleftvault(grd) {
+    /* only called if caller has checked vault_occupied() and findgd() */
     if (!grd || !(cptr.ldI32o(grd, $monst_isgd) & 1) || (cptr.ldI32o((grd), $monst_mhp) < 1)) {
         (yield* impossible(__s_escaping_vault_without_guard));
         return;
     }
+    /* if carrying gold and arriving anywhere other than next to the guard,
+       set the guard loose */
     if ((money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) || hidden_gold(1)) && um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1)) {
         if ((cptr.ldI32o(grd, $monst_mpeaceful) & 1)) {
             if (canspotmon(grd))
                 (yield* pline(__s_s_becomes_irate, (yield* Monnam(grd))));
-            cptr.stI32o(grd, $monst_mpeaceful, 0);
+            cptr.stI32o(grd, $monst_mpeaceful, 0);  /* bypass setmangry() */
         }
+        /* if arriving outside guard's temporary corridor, give the
+           guard an extra move to deliver message(s) and to teleport
+           out of and remove that corridor */
         if (!in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             void (yield* gd_move(grd));
     }
@@ -387,6 +436,7 @@ function* find_guard_dest(guard, rx, ry) {
     let dd;
     let lx;
     let ly;
+
     for (dd = 2; (dd < NHM.ROWNO || dd < NHM.COLNO); dd++) {
         __lbl_incr_radius: {
             for (y = i16(((cptr.ldI16o(u, $you_uy) - dd) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + dd) | 0); y++) {
@@ -426,17 +476,23 @@ export function* invault() {
     let trycount;
     let vaultroom = vault_occupied(cptr.add(u, $you_urooms));
     let vgdeathcount;
+
     if (!vaultroom) {
         cptr.stI32o(u, $you_uinvault, 0);
         return;
     }
+    /* after a couple of guards don't come back from their trips to
+       the vault, future guards become more reluctant to turn up (even
+       if summoned via whistle) */
     vgdeathcount = cptr.ld1uo2(svm, NHC.PM_GUARD, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
     if (vgdeathcount < 2 || (vgdeathcount < 50 && !rn2_at(__s_vault_c, 334, __s_invault, Math.imul(vgdeathcount, vgdeathcount))))
         cptr.stI32o(u, $you_uinvault, cptr.ldI32o(u, $you_uinvault) + 1);
     if (cptr.ldI32o(u, $you_uinvault) < NHM.VAULT_GUARD_TIME || (cptr.ldI32o(u, $you_uinvault) % 15) != 0)
         return;
+
     guard = (yield* findgd());
     if (!guard) {
+        /* if time ok and no guard now. */
         let buf = new Uint8Array(256);
         let x;
         let y;
@@ -446,10 +502,14 @@ export function* invault() {
         let rx = cptr.box(0);
         let ry = cptr.box(0);
         let umoney;
+
+        /* first find the goal for the guard */
         if (!(yield* find_guard_dest(null, rx, ry)))
             return;
         gdx = rx.v, gdy = ry.v;
         vaultroom = (vaultroom - NHM.ROOMOFFSET) | 0;
+
+        /* next find a good place for a door in the wall */
         x = cptr.ldI16(u);
         y = cptr.ldI16o(u, $you_uy);
         if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) {
@@ -478,6 +538,7 @@ export function* invault() {
         while (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM) {
             let dx;
             let dy;
+
             dx = (gdx > x) ? 1 : ((gdx < x) ? -1 : 0);
             dy = (gdy > y) ? 1 : ((gdy < y) ? -1 : 0);
             if (Math.abs((gdx - x) | 0) >= Math.abs((gdy - y) | 0))
@@ -497,6 +558,8 @@ export function* invault() {
             else
                 return;
         }
+
+        /* make something interesting happen */
         if (!(guard = (yield* makemon(cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst), i16(x), i16(y), 131200))))
             return;
         cptr.stI32o(guard, $monst_isgd, 1);
@@ -508,17 +571,27 @@ export function* invault() {
         assign_level(cptr.add((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_gdlevel), cptr.add(u, $you_uz));
         cptr.stI32o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_vroom, vaultroom);
         cptr.st1o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_warncnt, 0);
+
+        /* ensure the guard doesn't respawn again next turn if killed
+           immediately */
         cptr.stI32o(u, $you_uinvault, cptr.ldI32o(u, $you_uinvault) + 1);
-        (yield* reset_faint());
+
+        (yield* reset_faint());  /* if fainted - wake up */
+        /* if there are any boulders in the guard's way, destroy them;
+           perhaps the guard knows a touch equivalent of force bolt;
+           otherwise the hero wouldn't be able to push one to follow the
+           guard out of the vault because that guard would be in its way */
         if ((otmp = sobj_at(NHC.BOULDER, cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my))) !== null) {
             let func;
             let bname = (yield* simpleonames(otmp));
             let bcnt = 0;
+
             do {
                 ++bcnt;
                 (yield* fracture_rock(otmp));
                 otmp = sobj_at(NHC.BOULDER, cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my));
             } while (otmp);
+            /* You_hear() will handle Deaf/!Deaf */
             func = !Blind() ? You_see : You_hear;
             (yield* Y.icall((func)(__s_s_shatter, (bcnt == 1) ? (yield* an(bname)) : (yield* makeplural(bname)))));
         }
@@ -528,9 +601,14 @@ export function* invault() {
             (yield* newsym(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my)));
         } else {
             (yield* pline(__s_someone_else_has_entered_the_vault));
+            /* make sure that hero who can't see the guard knows where the
+               wall is breeched, otherwise we couldn't follow the guard out;
+               the breech isn't necessarily adjacent to the hero */
             (yield* map_invisible(cptr.ldI16o(guard, $monst_mx), cptr.ldI16o(guard, $monst_my)));
         }
+
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+            /* can't interrogate hero, don't interrogate engulfer */
             if (!Deaf()) {
                 ;
                 (yield* verbalize(__s_what_s_going_on_here));
@@ -546,11 +624,15 @@ export function* invault() {
                     ;
                     (yield* verbalize(__s_hey_who_left_that_s_in_here, (yield* mimic_obj_name(cptr.add(gy, $instance_globals_y_youmonst)))));
                 }
+            /* You're mimicking some object or you're hidden. */
             (yield* pline(__s_puzzled_s_turns_around_and_leaves, (cptr.ldPtro2(genders, pronoun_gender(guard, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he))));
             (yield* mongone(guard));
             return;
         }
         if (Strangled() || (cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msound) == NHC.MS_SILENT) || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
+            /* [we ought to record whether this message has already
+               been given in order to vary it upon repeat visits, but
+               discarding the monster and its egd data renders that hard] */
             if (Deaf()) {
                 (yield* pline(__s_s_huffs_and_turns_to_leave, (yield* noit_Monnam(guard))));
             } else {
@@ -560,7 +642,8 @@ export function* invault() {
             (yield* mongone(guard));
             return;
         }
-        (yield* stop_occupation());
+
+        (yield* stop_occupation());  /* if occupied, stop it *now* */
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n) {
             nomul(0);
             (yield* unmul(null));
@@ -571,9 +654,11 @@ export function* invault() {
             (yield* getlin(Deaf() ? __s_you_are_required_to_supply_your_name : __s_hello_stranger_who_are_you, cptr.decay(buf)));
             void (yield* mungspaces(cptr.decay(buf)));
         } while (!cptr.ld1so(cptr.decay(buf), 0, 1) && --trycount > 0);
+
         if (cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL && (yield* strncmpi(cptr.decay(buf), svp, Number(BigInt.asIntN(32, cptr.strlen(svp))))) != 0) {
-            adjalign(-1);
+            adjalign(-1);  /* Liar! */
         }
+
         if (!(yield* strncmpi(cptr.decay((buf)), (__s_croesus), -1)) || !(yield* strncmpi(cptr.decay((buf)), (__s_kroisos), -1)) || !(yield* strncmpi(cptr.decay((buf)), (__s_creosote), -1))) {
             if (!cptr.ld1uo2(svm, NHC.PM_CROESUS, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died)) {
                 if (Deaf()) {
@@ -593,6 +678,7 @@ export function* invault() {
                     ;
                     (yield* verbalize(__s_back_from_the_dead_are_you_i_ll_remedy));
                 }
+                /* don't want guard to waste next turn wielding a weapon */
                 if (!(cptr.ldPtro((guard), $monst_mw))) {
                     cptr.stI16o(guard, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
                     void (yield* mon_wield_item(guard));
@@ -642,11 +728,15 @@ export function* invault() {
         cptr.stI16o2((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy, i16(y));
         typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
         if (!IS_WALL(typ)) {
+            /* guard arriving at non-wall implies a door; vault wall was
+               dug into an empty doorway (which could subsequently have
+               been plugged with an intact door by use of locking magic) */
             let vlt = cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_vroom);
             let lowx = cptr.ldI16o(svr, vlt, $sizeof_mkroom);
             let hix = cptr.ldI16o2(svr, vlt, $sizeof_mkroom, $mkroom_hx);
             let lowy = cptr.ldI16o2(svr, vlt, $sizeof_mkroom, $mkroom_ly);
             let hiy = cptr.ldI16o2(svr, vlt, $sizeof_mkroom, $mkroom_hy);
+
             if (x == ((lowx - 1) | 0) && y == ((lowy - 1) | 0))
                 typ = NHC.TLCORNER;
             else if (x == ((hix + 1) | 0) && y == ((lowy - 1) | 0))
@@ -659,16 +749,20 @@ export function* invault() {
                 typ = NHC.HWALL;
             else if (x == ((lowx - 1) | 0) || x == ((hix + 1) | 0))
                 typ = NHC.VWALL;
-            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(typ));
-            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
-            xy_set_wall_state(i16(x), i16(y));
+
+            /* we lack access to the original wall_info bit mask for this
+               former wall location so recreate it */
+            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(typ));  /* wall; will be changed to door below */
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);  /* will be reset too via doormask */
+            xy_set_wall_state(i16(x), i16(y));  /* set WA_MASK bits in .wall_info */
         }
         cptr.st1o2((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_ftyp, schar(typ));
         cptr.st1o2((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_flags, uchar((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31)));
+        /* guard's entry point where confrontation with hero takes place */
         (yield* spot_stop_timers(i16(x), i16(y), NHC.MELT_ICE_AWAY));
         cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DOOR);
         cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
-        unblock_point(x, y);
+        unblock_point(x, y);  /* empty doorway doesn't block light */
         cptr.stI32o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_fcend, 1);
         cptr.st1o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_warncnt, 1);
     }
@@ -678,6 +772,7 @@ export function* invault() {
 function* move_gold(gold, vroom) {
     let nx;
     let ny;
+
     (yield* remove_object(gold));
     (yield* newsym(cptr.ldI16o(gold, $obj_ox), cptr.ldI16o(gold, $obj_oy)));
     nx = i16(((cptr.ldI16o(svr, vroom, $sizeof_mkroom) + rn2_at(__s_vault_c, 638, __s_move_gold, 2)) | 0));
@@ -704,10 +799,13 @@ function* wallify_vault(grd) {
     let trap;
     let fixed = 0;
     let movedgold = 0;
+
     for (x = lox; x <= hix; x++)
         for (y = loy; y <= hiy; y++) {
+            /* if not on the room boundary, skip ahead */
             if (x != lox && x != hix && y != loy && y != hiy)
                 continue;
+
             if ((!((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || g_at(x, y) || sobj_at(NHC.ROCK, x, y) || sobj_at(NHC.BOULDER, x, y)) && !in_fcorridor(grd, x, y)) {
                 if ((mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && !cptr.eq(mon, grd)) {
                     if (cptr.ld1so(mon, $monst_mtame))
@@ -715,10 +813,13 @@ function* wallify_vault(grd) {
                     if (!(yield* rloc(mon, NHM.RLOC_MSG)))
                         (yield* m_into_limbo(mon));
                 }
+                /* move gold at wall locations into the vault */
                 if ((gold = g_at(x, y)) !== null) {
                     (yield* move_gold(gold, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom)));
                     movedgold = 1;
                 }
+                /* destroy rocks and boulders (subsume them into the walls);
+                   other objects present stay intact and become embedded */
                 while ((rocks = sobj_at(NHC.ROCK, x, y)) !== null) {
                     (yield* obj_extract_self(rocks));
                     (yield* obfree(rocks, null));
@@ -729,16 +830,22 @@ function* wallify_vault(grd) {
                 }
                 if ((trap = t_at(x, y)) !== null)
                     (yield* deltrap(trap));
+
                 if (x == lox)
                     typ = (y == loy) ? NHC.TLCORNER : ((y == hiy) ? NHC.BLCORNER : NHC.VWALL);
                 else if (x == hix)
                     typ = (y == loy) ? NHC.TRCORNER : ((y == hiy) ? NHC.BRCORNER : NHC.VWALL);
                 else
                     typ = NHC.HWALL;
+
                 cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(typ));
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
-                xy_set_wall_state(x, y);
+                xy_set_wall_state(x, y);  /* set WA_MASK bits in .wall_info */
                 (yield* del_engr_at(x, y));
+                /*
+                 * hack: player knows walls are restored because of the
+                 * message, below, so show this on the screen.
+                 */
                 tmp_viz = schar(cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x));
                 cptr.st1o(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x, 3);
                 (yield* newsym(x, y));
@@ -747,6 +854,7 @@ function* wallify_vault(grd) {
                 fixed = 1;
             }
         }
+
     if (movedgold || fixed) {
         if (in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8), cptr.ldI16o(grd, $monst_mx)) & NHM.IN_SIGHT) != 0))
             (yield* pline(__s_s_whispers_an_incantation, (yield* noit_Monnam(grd))));
@@ -762,6 +870,7 @@ function* wallify_vault(grd) {
 /** C ref: vault.c:734 — @param {CPtr<struct monst>} grd @param {CInt} nx @param {CInt} ny */
 function* gd_mv_monaway(grd, nx, ny) {
     let mtmp = (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
     if (mtmp && !cptr.eq(mtmp, grd)) {
         if (!Deaf()) {
             ;
@@ -773,6 +882,8 @@ function* gd_mv_monaway(grd, nx, ny) {
     }
 }
 
+/* have guard pick gold off the floor, possibly moving to the gold's
+   position before message and back to his current spot after */
 /** C ref: vault.c:752 — @param {CPtr<struct monst>} grd @param {CInt} goldx @param {CInt} goldy */
 function* gd_pick_corridor_gold(grd, goldx, goldy) {
     let gold;
@@ -786,7 +897,10 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
     let guardy = cptr.ldI16o(grd, $monst_my);
     let under_u = schar(((goldx) == cptr.ldI16(u) && (goldy) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
     let see_it = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), goldy, 8), goldx) & NHM.IN_SIGHT) != 0));
+
     if (under_u) {
+        /* Grab the gold from between the hero's feet.
+           If guard is two or more steps away; bring him closer first. */
         gold = g_at(i16(goldx), i16(goldy));
         if (!gold) {
             (yield* impossible(__s_vault_guard_no_gold_at_hero_s_feet));
@@ -798,6 +912,9 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
             cptr.stI16(bestcc, i16(guardx)), cptr.stI16o(bestcc, $nhcoord_y, i16(guardy));
             tryct = 9;
             do {
+                /* pick an available spot nearest the hero and also try
+                   to find the one meeting that criterium which is nearest
+                   the guard's current location */
                 if ((yield* enexto(newcc, i16(goldx), i16(goldy), cptr.ldPtro(grd, $monst_data)))) {
                     if ((newdelta = dist2((cptr.ldI16(newcc)), (cptr.ldI16o(newcc, $nhcoord_y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) < bestdelta || (newdelta == bestdelta && dist2(cptr.ldI16(newcc), cptr.ldI16o(newcc, $nhcoord_y), i16(guardx), i16(guardy)) < dist2(cptr.ldI16(bestcc), cptr.ldI16o(bestcc, $nhcoord_y), i16(guardx), i16(guardy)))) {
                         bestdelta = newdelta;
@@ -805,6 +922,7 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
                     }
                 }
             } while (--tryct >= 0);
+
             if (bestdelta < gdelta) {
                 cptr.stPtro3(svl, guardx, 168, guardy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
                 (yield* newsym(i16(guardx), i16(guardy)));
@@ -815,20 +933,28 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
         (yield* obj_extract_self(gold));
         (yield* add_to_minv(grd, gold));
         (yield* newsym(i16(goldx), i16(goldy)));
+
+        /* guard is already at gold's location */
     } else if (goldx == guardx && goldy == guardy) {
-        (yield* mpickgold(grd));
+        (yield* mpickgold(grd));  /* does a newsym */
+
+        /* gold is at some third spot, neither guard's nor hero's */
     } else {
-        (yield* gd_mv_monaway(grd, goldx, goldy));
+        /* just for insurance... */
+        (yield* gd_mv_monaway(grd, goldx, goldy));  /* make room for guard */
         if (see_it) {
             cptr.stPtro3(svl, cptr.ldI16o(grd, $monst_mx), 168, cptr.ldI16o(grd, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
             (yield* newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)));
-            (yield* place_monster(grd, i16(goldx), i16(goldy)));
+            (yield* place_monster(grd, i16(goldx), i16(goldy)));  /* sets <grd->mx, grd->my> */
         }
-        (yield* mpickgold(grd));
+        (yield* mpickgold(grd));  /* does a newsym */
     }
+
     if (see_it) {
         (yield* pline(__s_s_s_picks_up_the_gold_s, (yield* Some_Monnam(grd)), ((cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_warncnt) > 5) ? __s_calms_down_and : __s_empty, under_u ? __s_from_beneath_you : __s_empty));
     }
+
+    /* if guard was moved to get the gold, move him back */
     if (cptr.ldI16o(grd, $monst_mx) != guardx || cptr.ldI16o(grd, $monst_my) != guardy) {
         cptr.stPtro3(svl, cptr.ldI16o(grd, $monst_mx), 168, cptr.ldI16o(grd, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)));
@@ -838,14 +964,24 @@ function* gd_pick_corridor_gold(grd, goldx, goldy) {
     return;
 }
 
+/* return 1: guard moved, -2: died  */
 /** C ref: vault.c:836 — @param {CPtr<struct monst>} grd @param {CInt} semi_dead @param {CInt} disappear_msg_seen @returns {CInt} */
 function* gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     let x;
     let y;
     let see_guard;
+
+    /*
+     * The following is a kludge.  We need to keep the guard around in
+     * order to be able to make the fake corridor disappear as the
+     * player moves out of it, but we also need the guard out of the
+     * way.  We send the guard to never-never land.  We set ogx ogy to
+     * mx my in order to avoid a check at the top of this function.
+     * At the end of the process, the guard is killed in restfakecorr().
+     */
     x = cptr.ldI16o(grd, $monst_mx), y = cptr.ldI16o(grd, $monst_my);
     see_guard = schar(canspotmon(grd));
-    (yield* parkguard(grd));
+    (yield* parkguard(grd));  /* move to <0,0> */
     (yield* wallify_vault(grd));
     (yield* restfakecorr(grd));
     {
@@ -871,6 +1007,9 @@ function* gd_letknow(grd) {
         (yield* You(um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 2) ? __s_see_s_approaching : __s_are_confronted_by_s, (yield* x_monnam(grd, NHM.ARTICLE_A, __s_angry, 0, 0))));
 }
 
+/*
+ * return  1: guard moved,  0: guard didn't,  -1: let m_move do it,  -2: died
+ */
 /** C ref: vault.c:888 — @param {CPtr<struct monst>} grd @returns {CInt} */
 export function* gd_move(grd) {
     let x, y, nx, ny, m, n, ex, ey, dx, dy, ggx, ggy, fci, typ, crm, fcp, egrd, umoney, goldincorridor, u_in_vault, grd_in_vault, semi_dead, u_carry_gold, newspot, save_plnmsg, buf;
@@ -888,8 +1027,10 @@ export function* gd_move(grd) {
         semi_dead = schar((cptr.ldI32o((grd), $monst_mhp) < 1));
         u_carry_gold = 0;
         newspot = 0;
+
         if (!on_level(cptr.add(egrd, $egd_gdlevel), cptr.add(u, $you_uz)))
             return -1;
+
         if (semi_dead || !cptr.ldI16o(grd, $monst_mx) || (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
             cptr.stI32o(egrd, $egd_gddone, 1);
             return (yield* gd_move_cleanup(grd, semi_dead, 0));
@@ -901,10 +1042,12 @@ export function* gd_move(grd) {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
+
         u_in_vault = schar((vault_occupied(cptr.add(u, $you_urooms)) ? 1 : 0));
         grd_in_vault = schar((cptr.ld1s((yield* in_rooms(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), NHC.VAULT))) ? 1 : 0));
         if (!u_in_vault && !grd_in_vault)
             (yield* wallify_vault(grd));
+
         if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1)) {
             if (!u_in_vault && (grd_in_vault || (in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) && !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))) {
                 void (yield* rloc(grd, NHM.RLOC_MSG));
@@ -919,7 +1062,8 @@ export function* gd_move(grd) {
             return -1;
         }
         if (Math.abs((cptr.ldI16o(egrd, $egd_ogx) - cptr.ldI16o(grd, $monst_mx)) | 0) > 1 || Math.abs((cptr.ldI16o(egrd, $egd_ogy) - cptr.ldI16o(grd, $monst_my)) | 0) > 1)
-            return -1;
+            return -1;  /* teleported guard - treat as monster */
+
         if ((cptr.ldI32o(egrd, $egd_witness) & 3)) {
             if (!Deaf()) {
                 ;
@@ -929,12 +1073,14 @@ export function* gd_move(grd) {
             cptr.stI32o(grd, $monst_mpeaceful, 0);
             return -1;
         }
+
         umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
         u_carry_gold = schar((umoney > 0n || hidden_gold(1) > 0n ? 1 : 0));
         if (cptr.ldI32o(egrd, $egd_fcend) == 1) {
             if (u_in_vault && (u_carry_gold || um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1))) {
                 if (cptr.ld1so(egrd, $egd_warncnt) == 3 && !Deaf()) {
                     buf = new Uint8Array(256);
+
                     void cptr.sprintf(cptr.decay(buf), __s_sfollow_me, u_carry_gold ? (!umoney ? __s_drop_that_hidden_gold_and : __s_drop_that_gold_and) : __s_empty);
                     ;
                     if (cptr.ld1so(egrd, $egd_dropgoldcnt) || !u_carry_gold)
@@ -960,10 +1106,12 @@ export function* gd_move(grd) {
                     (yield* newsym(m, n));
                     return -1;
                 }
+                /* not fair to get mad when (s)he's fainted or paralyzed */
                 if (!is_fainted() && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
                     cptr.postinc1(cptr.add(egrd, $egd_warncnt));
                 return 0;
             }
+
             if (!u_in_vault) {
                 if (u_carry_gold) {
                     m = cptr.ldI16o(grd, $monst_mx);
@@ -971,7 +1119,7 @@ export function* gd_move(grd) {
                     void (yield* rloc(grd, NHM.RLOC_MSG));
                     cptr.st1o3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, cptr.ld1so2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_ftyp));
                     cptr.stI32o3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ld1uo2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_flags));
-                    (yield* recalc_block_point(m, n));
+                    (yield* recalc_block_point(m, n));  /* guard corridor goes away */
                     (yield* del_engr_at(m, n));
                     (yield* newsym(m, n));
                     cptr.stI32o(grd, $monst_mpeaceful, 0);
@@ -987,6 +1135,7 @@ export function* gd_move(grd) {
                 }
             }
         }
+
         if (cptr.ldI32o(egrd, $egd_fcend) > 1) {
             if (cptr.ldI32o(egrd, $egd_fcend) > 2 && in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) && !(cptr.ldI32o(egrd, $egd_gddone) & 1) && !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && (cptr.ld1so3(svl, cptr.ldI16o2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr), $sizeof_rm_x21, cptr.ldI16o2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == cptr.ld1so2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_ftyp))) {
                 (yield* pline(__s_s_confused_disappears, (yield* noit_Monnam(grd))));
@@ -1028,6 +1177,8 @@ export function* gd_move(grd) {
                 goldincorridor = 1;
                 break;
             }
+        /* new gold can appear if it was embedded in stone and hero kicks it
+           (on even via wish and drop) so don't assume hero has been warned */
         if (goldincorridor && !(cptr.ldI32o(egrd, $egd_gddone) & 1)) {
             (yield* gd_pick_corridor_gold(grd, m, n));
             if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1))
@@ -1041,7 +1192,7 @@ export function* gd_move(grd) {
                 (yield* verbalize(__s_move_along));
             }
             (yield* restfakecorr(grd));
-            return 0;
+            return 0;  /* didn't move */
         }
         x = cptr.ldI16o(grd, $monst_mx);
         y = cptr.ldI16o(grd, $monst_my);
@@ -1092,6 +1243,8 @@ export function* gd_move(grd) {
         { __pc = 14; continue; }
         }
         case 21: {
+
+        /* seems we found a good place to leave him alone */
         cptr.stI32o(egrd, $egd_gddone, 1);
         if (((typ) >= NHC.DOOR)) { __pc = 24; continue; }
         __pc = 23; continue;
@@ -1208,7 +1361,7 @@ export function* gd_move(grd) {
         }
         case 3 /* proceed: */: {
         newspot = 1;
-        unblock_point(nx, ny);
+        unblock_point(nx, ny);  /* doesn't block light */
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ny, 8), nx) & NHM.IN_SIGHT) != 0))
             (yield* newsym(nx, ny));
         if ((nx != ggx || ny != ggy) || (cptr.ldI16o(grd, $monst_mx) != ggx || cptr.ldI16o(grd, $monst_my) != ggy)) { __pc = 37; continue; }
@@ -1216,6 +1369,9 @@ export function* gd_move(grd) {
         }
         case 37: {
         fcp = cptr.add(cptr.add(egrd, $egd_fakecorr), cptr.ldI32o(egrd, $egd_fcend), $sizeof_fakecorridor);
+        /* fakecorr overflow does not occur because egrd->fakecorr[]
+           is too small, but it has occurred when the same <x,y> are
+           put into it repeatedly for some as yet unexplained reason */
         if ((cptr.stI32o(egrd, $egd_fcend, cptr.ldI32o(egrd, $egd_fcend) + 1)) - (1) == 101)
             (yield* panic(__s_fakecorr_overflow));
         cptr.stI16(fcp, nx);
@@ -1256,11 +1412,14 @@ export function* gd_move(grd) {
         (yield* gd_mv_monaway(grd, nx, ny));
         if ((cptr.ldI32o(egrd, $egd_gddone) & 1))
             return (yield* gd_move_cleanup(grd, semi_dead, 0));
-        cptr.stI16o(egrd, $egd_ogx, cptr.ldI16o(grd, $monst_mx));
+        cptr.stI16o(egrd, $egd_ogx, cptr.ldI16o(grd, $monst_mx));  /* update old positions */
         cptr.stI16o(egrd, $egd_ogy, cptr.ldI16o(grd, $monst_my));
         cptr.stPtro3(svl, cptr.ldI16o(grd, $monst_mx), 168, cptr.ldI16o(grd, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         (yield* place_monster(grd, nx, ny));
         if (newspot && g_at(nx, ny)) {
+            /* if there's gold already here (most likely from mineralize()),
+               pick it up now so that guard doesn't later think hero dropped
+               it and give an inappropriate message */
             (yield* mpickgold(grd));
             if (canspotmon(grd))
                 (yield* pline(__s_s_picks_up_some_gold, (yield* Monnam(grd))));
@@ -1274,6 +1433,7 @@ export function* gd_move(grd) {
     }
 }
 
+/* Routine when dying or quitting with a vault guard around */
 /** C ref: vault.c:1205 — @param {CInt} silently */
 export function* paygd(silently) {
     let grd = (yield* findgd());
@@ -1284,8 +1444,10 @@ export function* paygd(silently) {
     let gdy;
     let buf = new Uint8Array(256);
     __lbl_remove_guard: {
+
         if (!umoney || !grd)
             return;
+
         if (cptr.ldI32o(u, $you_uinvault)) {
             if (!silently)
                 (yield* Your(__s_ld_s_goes_into_the_magic_memory_vault, umoney, (yield* currency(umoney))));
@@ -1294,6 +1456,7 @@ export function* paygd(silently) {
         } else {
             if ((cptr.ldI32o(grd, $monst_mpeaceful) & 1))
                 break __lbl_remove_guard;
+
             (yield* mnexto(grd, NHM.RLOC_NOMSG));
             if (!silently)
                 (yield* pline(__s_s_remits_your_gold_to_the_vault, (yield* Monnam(grd))));
@@ -1315,16 +1478,27 @@ export function* paygd(silently) {
     return;
 }
 
+/*
+ * amount of gold in carried containers
+ *
+ * even_if_unknown:
+ *   True:  all gold
+ *   False: limit to known contents
+ */
 /** C ref: vault.c:1257 — @param {CInt} even_if_unknown @returns {CLongLong} */
 export function hidden_gold(even_if_unknown) {
     let value = 0n;
     let obj;
+
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
         if ((cptr.ldPtro((obj), $obj_cobj) !== null) && ((cptr.ldI32o(obj, $obj_cknown) & 1) | 0 || even_if_unknown))
             value += contained_gold(obj, even_if_unknown);
+    /* unknown gold stuck inside statues may cause some consternation... */
+
     return value;
 }
 
+/* prevent "You hear footsteps.." when inappropriate */
 /** C ref: vault.c:1272 @returns {CInt} */
 export function* gd_sound() {
     return schar((!(vault_occupied(cptr.add(u, $you_urooms)) || (yield* findgd()))));
@@ -1333,6 +1507,7 @@ export function* gd_sound() {
 /** C ref: vault.c:1278 — @param {CUInt} activity */
 export function* vault_gd_watching(activity) {
     let guard = (yield* findgd());
+
     if (guard && cptr.ldI16o(guard, $monst_mx) && (cptr.ldI32o(guard, $monst_mcansee) & 1) | 0 && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((guard), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((guard), $monst_my), 8), cptr.ldI16o((guard), $monst_mx)) & NHM.COULD_SEE) != 0))) {
         if (activity == NHM.GD_EATGOLD || activity == NHM.GD_DESTROYGOLD)
             cptr.stI32o((cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)), $egd_witness, activity);

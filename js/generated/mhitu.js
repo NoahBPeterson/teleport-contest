@@ -433,6 +433,7 @@ const __s_s_is_jolted_with_your_electricity = cptr.lit("%s is jolted with your e
 /** C ref: mhitu.c:9 — struct obj * */
 let mon_currwep = null;
 
+/* monster hits hero (most callers have been moved to uthim.c) */
 /** C ref: mhitu.c:29 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk */
 export function hitmsg(mtmp, mattk) {
     let compat;
@@ -440,6 +441,9 @@ export function hitmsg(mtmp, mattk) {
     let again;
     let punct = __s_bang;
     let Monst_name = Monnam(mtmp);
+
+    /* Note: if opposite gender, "seductively";
+       if same gender, "engagingly" for nymph, normal msg for others. */
     if ((compat = could_seduce(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk)) != 0 && !(cptr.ldI32o(mtmp, $monst_mcan) & 1) && !cptr.ldI32o(mtmp, $monst_mspec_used)) {
         pline_mon(mtmp, __s_s_s_you_s, Monst_name, !Blind() ? __s_smiles_at : (!Deaf() ? __s_talks_to : __s_touches), (compat == 2) ? __s_engagingly : __s_seductively);
     } else {
@@ -472,6 +476,7 @@ export function hitmsg(mtmp, mattk) {
             default:
             verb = __s_hits;
         }
+        /* if a monster hits more than once with similar attack, say so */
         again = (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(gh, $instance_globals_h_hitmsg_mid) && !cptr.eq(cptr.ldPtro(gh, $instance_globals_h_hitmsg_prev), (null)) && cptr.eq(mattk, cptr.add(cptr.ldPtro(gh, $instance_globals_h_hitmsg_prev), 1, 4)) && cptr.ld1u(mattk) == cptr.ld1u(cptr.ldPtro(gh, $instance_globals_h_hitmsg_prev))) ? __s_again : __s_empty;
         pline_mon(mtmp, __s_s_s_s_s, Monst_name, verb, again, punct);
     }
@@ -479,29 +484,40 @@ export function hitmsg(mtmp, mattk) {
     cptr.stPtro(gh, $instance_globals_h_hitmsg_prev, mattk);
 }
 
+/* monster missed you */
 /** C ref: mhitu.c:85 — @param {CPtr<struct monst>} mtmp @param {CInt} nearmiss @param {CPtr<struct attack>} mattk */
 function missmu(mtmp, nearmiss, mattk) {
     cptr.stI32o(gh, $instance_globals_h_hitmsg_mid, 0);
     cptr.stPtro(gh, $instance_globals_h_hitmsg_prev, null);
+
     if (!canspotmon(mtmp))
         map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+
     if (could_seduce(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1))
         pline_mon(mtmp, __s_s_pretends_to_be_friendly, Monnam(mtmp));
     else
         pline_mon(mtmp, __s_s_smisses, Monnam(mtmp), (nearmiss && cptr.ld1so(flags, $flag_verbose)) ? __s_just : __s_empty);
+
     stop_occupation();
 }
 
+/* strike types P|S|B: Pierce (pointed: stab) => "thrusts",
+   Slash (edged: slice) or whack (blunt: Bash) => "swings" */
 /** C ref: mhitu.c:105 — @param {CPtr<struct obj>} mwep @param {CInt} bash @returns {CPtr<char>} */
 export function mswings_verb(mwep, bash) {
     let verb;
     let otyp = cptr.ldI16o(mwep, $obj_otyp);
     let lash = (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_WHIP || is_wet_towel(mwep) ? 1 : 0);
     let thrust = ((((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) & NHM.PIERCE) != 0 && ((((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) & -2) == 0 || !rn2_at(__s_mhitu_c, 116, __s_mswings_verb, 2)) ? 1 : 0);
+
     verb = bash ? __s_bashes_with : (lash ? __s_lashes : (thrust ? __s_thrusts : __s_swings));
+    /* (might have caller also pass attacker's formatted name so that
+       if hallucination makes that be plural, we could use vtense() to
+       adjust the result to match) */
     return verb;
 }
 
+/* monster swings obj */
 /** C ref: mhitu.c:130 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otemp @param {CInt} bash */
 function mswings(mtmp, otemp, bash) {
     if (cptr.ld1so(flags, $flag_verbose) && !Blind() && mon_visible(mtmp)) {
@@ -509,16 +525,20 @@ function mswings(mtmp, otemp, bash) {
     }
 }
 
+/* return how a poison attack was delivered */
 /** C ref: mhitu.c:145 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CPtr<char>} */
 export function mpoisons_subj(mtmp, mattk) {
     if (cptr.ld1u(mattk) == NHM.AT_WEAP) {
         let mwep = (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? uwep.v : (cptr.ldPtro((mtmp), $monst_mw));
+        /* "Foo's attack was poisoned." is pretty lame, but at least
+           it's better than "sting" when not a stinging attack... */
         return (!mwep || !(cptr.ldI32o(mwep, $obj_otrapped) & 1)) ? __s_attack : __s_weapon;
     } else {
         return (cptr.ld1u(mattk) == NHM.AT_TUCH) ? __s_contact : ((cptr.ld1u(mattk) == NHM.AT_GAZE) ? __s_gaze : ((cptr.ld1u(mattk) == NHM.AT_BITE) ? __s_bite : __s_sting));
     }
 }
 
+/* called when your intrinsic speed is taken away */
 /** C ref: mhitu.c:163 */
 export function u_slow_down() {
     cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
@@ -529,26 +549,41 @@ export function u_slow_down() {
     exercise(NHC.A_DEX, 0);
 }
 
+/* monster attacked wrong location due to monster blindness, hero
+   invisibility, hero displacement, or hero being underwater */
 /** C ref: mhitu.c:176 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk */
 function wildmiss(mtmp, mattk) {
     let compat;
-    let Monst_name;
+    let Monst_name;  /* Monnam(), deferred until after early returns */
+    /* expected reasons for wildmiss() */
     let unotseen = schar((!(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) ? 1 : 0));
     let unotthere = schar((Displaced() != 0));
     let usubmerged = schar(((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0) != 0));
+
+    /* the reasons for wildmiss end up getting checked twice so that the
+       impossible can be given, if warranted, before the early returns */
     if (!unotseen && !unotthere && !usubmerged) {
+        /* this used to be the 'else' case below */
         impossible(__s_s_attacks_you_without_knowing_your, Some_Monnam(mtmp));
         return;
     }
+
+    /* no map_invisible() -- no way to tell where _this_ is coming from */
+
     if (!cptr.ld1so(flags, $flag_verbose))
         return;
+    /* no feedback if hero doesn't see the monster's spot */
     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0))
         return;
+    /* maybe it's attacking an image around the corner? */
+
     compat = ((cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SEDU || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SSEX) ? could_seduce(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk) : 0);
     Monst_name = Monnam(mtmp);
+
     set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     if (unotseen) {
         let swings = (cptr.ld1u(mattk) == NHM.AT_BITE) ? __s_snaps : ((cptr.ld1u(mattk) == NHM.AT_KICK) ? __s_kicks : ((cptr.ld1u(mattk) == NHM.AT_STNG || cptr.ld1u(mattk) == NHM.AT_BUTT || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n)) ? __s_lunges : __s_swings));
+
         if (compat) {
             pline(__s_s_tries_to_touch_you_and_misses, Monst_name);
         } else {
@@ -568,17 +603,22 @@ function wildmiss(mtmp, mattk) {
             }
         }
     } else if (unotthere) {
+        /* give 'displaced' message even if hero is Blind */
         if (compat)
             pline(__s_s_smiles_s_at_your_sdisplaced_image, Monst_name, (compat == 2) ? __s_engagingly : __s_seductively, Invis() ? __s_invisible : __s_empty);
         else
             pline(__s_s_strikes_at_your_sdisplaced_image_and, Monst_name, Invis() ? __s_invisible : __s_empty);
+
     } else if (usubmerged) {
+        /* monsters may miss especially on water level where
+           bubbles shake the player here and there */
         if (compat)
             pline(__s_s_reaches_towards_your_distorted_image, Monst_name);
         else
             pline(__s_s_is_fooled_by_water_reflections_and, Monst_name);
+
     } else {
-        ;
+        ;  /*NOTREACHED*/
     }
 }
 
@@ -593,6 +633,7 @@ export function expels(mtmp, mdat, message) {
         } else {
             let blast = new Uint8Array(40);
             let attk = attacktype_fordmg(mdat, NHM.AT_ENGL, -1);
+
             cptr.st1o(cptr.decay(blast), 0, 0, 1);
             if (!attk) {
                 impossible(__s_swallower_has_no_engulfing_attack);
@@ -613,21 +654,29 @@ export function expels(mtmp, mdat, message) {
             }
         }
     }
-    unstuck(mtmp);
+    unstuck(mtmp);  /* ball&chain returned in unstuck() */
     mnexto(mtmp, NHM.RLOC_NOMSG);
     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+    /* to cover for a case where mtmp is not in a next square */
     if (um_dist(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 1))
         pline(__s_brrooaa_you_land_hard_at_some_distance);
     spoteffects(1);
 }
 
+/* select a monster's next attack, possibly substituting for its usual one */
 /** C ref: mhitu.c:310 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} indx @param {CPtr<int>} prev_result @param {CPtr<struct attack>} alt_attk_buf @returns {CPtr<struct attack>} */
 export function getmattk(magr, mdef, indx, prev_result, alt_attk_buf) {
     let mptr = cptr.ldPtro(magr, $monst_data);
     let attk = cptr.add(cptr.add(mptr, $permonst_mattk), indx, $sizeof_attack);
     let weap = (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) ? uwep.v : (cptr.ldPtro((magr), $monst_mw));
     let udefend = schar(cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst)));
+
+    /* honor SEDUCE=0 */
     if (!SYSOPT_SEDUCE()) {
+
+        /* if the first attack is for SSEX damage, all six attacks will be
+           substituted (expected succubus/incubus handling); if it isn't
+           but another one is, only that other one will be substituted */
         if (cptr.ld1uo2(mptr, 0, $sizeof_attack, $permonst_mattk + $attack_adtyp) == NHM.AD_SSEX) {
             cptr.memcpy(alt_attk_buf, cptr.add(c_sa_no, indx, $sizeof_attack), 4);
             attk = alt_attk_buf;
@@ -637,81 +686,137 @@ export function getmattk(magr, mdef, indx, prev_result, alt_attk_buf) {
             cptr.st1o(attk, $attack_adtyp, NHM.AD_DRLI);
         }
     }
+
+    /* prevent a monster with two consecutive disease or hunger attacks
+       from hitting with both of them on the same turn; if the first has
+       already hit, switch to a stun attack for the second */
     if (indx > 0 && cptr.ldI32o(prev_result, (indx - 1) | 0, 4) > NHM.M_ATTK_MISS && (cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_DISE || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_PEST || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_FAMN) && cptr.ld1uo(attk, $attack_adtyp) == cptr.ld1uo2(mptr, (indx - 1) | 0, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
         cptr.memcpy(alt_attk_buf, attk, 4);
         attk = alt_attk_buf;
         cptr.st1o(attk, $attack_adtyp, NHM.AD_STUN);
+
+        /* make drain-energy damage be somewhat in proportion to energy */
     } else if (cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_DREN && udefend) {
         let ulev = ((cptr.ldI32o(u, $you_ulevel)) > 6 ? (cptr.ldI32o(u, $you_ulevel)) : 6);
+
         cptr.memcpy(alt_attk_buf, attk, 4);
         attk = alt_attk_buf;
+        /* 3.6.0 used 4d6 but since energy drain came out of max energy
+           once current energy was gone, that tended to have a severe
+           effect on low energy characters; it's now 2d6 with adjustments */
         if (cptr.ldI32o(u, $you_uen) <= Math.imul(5, ulev) && cptr.ld1uo(attk, $attack_damn) > 1) {
-            cptr.st1o(attk, $attack_damn, cptr.ld1uo(attk, $attack_damn) - 1);
+            cptr.st1o(attk, $attack_damn, cptr.ld1uo(attk, $attack_damn) - 1);  /* low energy: 2d6 -> 1d6 */
             if (cptr.ldI32o(u, $you_uenmax) <= Math.imul(2, ulev) && cptr.ld1uo(attk, $attack_damd) > 3)
-                cptr.st1o(attk, $attack_damd, cptr.ld1uo(attk, $attack_damd) - 3);
+                cptr.st1o(attk, $attack_damd, cptr.ld1uo(attk, $attack_damd) - 3);  /* very low energy: 1d6 -> 1d3 */
         } else if (cptr.ldI32o(u, $you_uen) > Math.imul(12, ulev)) {
-            cptr.st1o(attk, $attack_damn, cptr.ld1uo(attk, $attack_damn) + 1);
+            cptr.st1o(attk, $attack_damn, cptr.ld1uo(attk, $attack_damn) + 1);  /* high energy: 2d6 -> 3d6 */
             if (cptr.ldI32o(u, $you_uenmax) > Math.imul(20, ulev))
-                cptr.st1o(attk, $attack_damd, cptr.ld1uo(attk, $attack_damd) + 3);
+                cptr.st1o(attk, $attack_damd, cptr.ld1uo(attk, $attack_damd) + 3);  /* very high energy: 3d6 -> 3d9 */
+            /* note: 3d9 is slightly higher than previous 4d6 */
         }
+
+        /* holders/engulfers who release the hero have mspec_used set to rnd(2)
+           and can't re-hold/re-engulf until it has been decremented to zero;
+           likewise for transformation by genetic engineer */
     } else if (cptr.ldI32o(magr, $monst_mspec_used) && (cptr.ld1u(attk) == NHM.AT_ENGL || cptr.ld1u(attk) == NHM.AT_HUGS || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_STCK || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_POLY)) {
-        let wimpy = schar((cptr.ld1uo(attk, $attack_damd) == 0));
+        let wimpy = schar((cptr.ld1uo(attk, $attack_damd) == 0));  /* lichen, violet fungus */
+
+        /* can't re-engulf or re-grab yet; switch to simpler attack */
         cptr.memcpy(alt_attk_buf, attk, 4);
         attk = alt_attk_buf;
         if (cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_ACID || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_ELEC || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_COLD || cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_FIRE) {
             cptr.st1(attk, NHM.AT_TUCH);
         } else {
-            cptr.st1(attk, NHM.AT_CLAW);
+            cptr.st1(attk, NHM.AT_CLAW);  /* attack message will be "<foo> hits" */
             cptr.st1o(attk, $attack_adtyp, NHM.AD_PHYS);
         }
-        cptr.st1o(attk, $attack_damn, 1);
+        cptr.st1o(attk, $attack_damn, 1);  /* relatively weak: 1d6 */
         cptr.st1o(attk, $attack_damd, 6);
         if (wimpy && cptr.ld1u(attk) == NHM.AT_CLAW) {
             cptr.st1(attk, NHM.AT_TUCH);
             cptr.st1o(attk, $attack_damn, cptr.st1o(attk, $attack_damd, 0));
         }
+
+        /* barrow wight, Nazgul, erinys have weapon attack for non-physical
+           damage; force physical damage if attacker has been cancelled or
+           if weapon is sufficiently interesting; a few unique creatures
+           have two weapon attacks where one does physical damage and other
+           doesn't--avoid forcing physical damage for those */
     } else if (indx == 0 && !cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) && cptr.ld1u(attk) == NHM.AT_WEAP && cptr.ld1uo(attk, $attack_adtyp) != NHM.AD_PHYS && !(cptr.ld1uo2(mptr, 1, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP && cptr.ld1uo2(mptr, 1, $sizeof_attack, $permonst_mattk + $attack_adtyp) == NHM.AD_PHYS) && ((cptr.ldI32o(magr, $monst_mcan) & 1) | 0 || (weap && ((cptr.ldI16o(weap, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(weap, $obj_corpsenm), $sizeof_permonst))) || is_art(weap, NHC.ART_STORMBRINGER) || is_art(weap, NHC.ART_VORPAL_BLADE))))) {
         cptr.memcpy(alt_attk_buf, attk, 4);
         attk = alt_attk_buf;
         cptr.st1o(attk, $attack_adtyp, NHM.AD_PHYS);
+
+        /* liches have a touch attack for cold damage and also a spell attack;
+           they won't use the spell for monster vs monster so become impotent
+           against cold resistant foes; change the touch damage from cold to
+           physical if target will resist */
     } else if (indx == 0 && cptr.ld1u(attk) == NHM.AT_TUCH && cptr.ld1uo(attk, $attack_adtyp) == NHM.AD_COLD && (udefend ? Cold_resistance() : Resists_Elem(mdef, NHC.COLD_RES)) && !cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst))) {
         cptr.memcpy(alt_attk_buf, attk, 4);
         attk = alt_attk_buf;
         cptr.st1o(attk, $attack_adtyp, NHM.AD_PHYS);
+        /* lessen new physical damage compared to old cold damage:
+         *        before  after
+         * lich:    1d10  1d6
+         * demi:    3d4   2d4
+         * master:  3d6   2d6
+         * arch-:   5d6   3d6
+         */
         cptr.st1o(attk, $attack_damn, uchar(((((cptr.ld1uo(attk, $attack_damn) + 1) | 0) / 2) | 0)));
         if (cptr.ld1uo(attk, $attack_damd) == 10)
             cptr.st1o(attk, $attack_damd, 6);
+
     }
+
+    /* elementals on their home plane do double damage */
     if (!cptr.eq(attk, alt_attk_buf) && is_home_elemental(mptr)) {
         cptr.memcpy(alt_attk_buf, attk, 4);
         attk = alt_attk_buf;
         cptr.st1o(attk, $attack_damn, cptr.ld1uo(attk, $attack_damn) * 2);
     }
+
     return attk;
 }
 
+/* calc some variables needed for mattacku() */
 /** C ref: mhitu.c:448 — @param {CPtr<struct monst>} mtmp @param {CPtr<boolean>} ranged @param {CPtr<boolean>} range2 @param {CPtr<boolean>} foundyou @param {CPtr<boolean>} youseeit */
 function calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit) {
     cptr.st1(ranged, schar((dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 3)));
     cptr.st1(range2, schar((!monnear(mtmp, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)))));
     cptr.st1(foundyou, schar(((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy) ? 1 : 0)));
     cptr.st1(youseeit, schar(canseemon(mtmp)));
+
+    /* do_attack() uses bhitpos to set/clear notonhead; do likewise here */
     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16(u)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
+    /* hero poly'd into a long worm isn't allowed to grow a tail, so
+       hitting tail instead of head can't happen */
     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
 }
 
+/* return TRUE iff monster or hero is trapped in a (spiked) pit */
 /** C ref: mhitu.c:467 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mtrapped_in_pit(mtmp) {
     let ttmp = null;
+
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
         ttmp = (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) ? t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) : null;
     else
         ttmp = (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 ? t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) : null;
+
     if (ttmp && is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)))
         return 1;
     return 0;
 }
 
+/*
+ * mattacku: monster attacks you
+ *      returns 1 if monster dies (e.g. "yellow light"), 0 otherwise
+ *      Note: if you're displaced or invisible the monster might attack the
+ *              wrong position...
+ *      Assumption: it's attacking you or an empty square; if there's another
+ *              monster which it attacks by mistake, the caller had better
+ *              take care of it...
+ */
 /** C ref: mhitu.c:491 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mattacku(mtmp) {
     let mattk;
@@ -721,69 +826,107 @@ export function mattacku(mtmp) {
     let tmp;
     let sum = cptr.alloc(6 * 4);
     let mdat = cptr.ldPtro(mtmp, $monst_data);
+    /*
+     * ranged: Is it near you?  Affects your actions.
+     * range2: Does it think it's near you?  Affects its actions.
+     * foundyou: Is it attacking you or your image?
+     * youseeit: Can you observe the attack?  It might be attacking your
+     *     image around the corner, or invisible, or you might be blind.
+     * skipnonmagc: Are further physical attack attempts useless?  (After
+     *     a wild miss--usually due to attacking displaced image.  Avoids
+     *     excessively verbose miss feedback when monster can do multiple
+     *     attacks and would miss the same wrong spot each time.)
+     */
     let ranged = cptr.box(0);
     let range2 = cptr.box(0);
     let foundyou = cptr.box(0);
     let firstfoundyou;
     let youseeit = cptr.box(0);
     let skipnonmagc = 0;
+
     calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit);
+
     if (!ranged.v)
         nomul(0);
     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return 1;
     if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 2n) != 0n))
         return 0;
+
+    /* If swallowed, can only be affected by u.ustuck */
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
             return 0;
         cptr.stI16o(cptr.ldPtro(u, $you_ustuck), $monst_mux, cptr.ldI16(u));
         cptr.stI16o(cptr.ldPtro(u, $you_ustuck), $monst_muy, cptr.ldI16o(u, $you_uy));
         if ((cptr.ldI32o(u, $you_uinvulnerable) & 1))
-            return 0;
+            return 0;  /* stomachs can't hurt you! */
         range2.v = 0;
         foundyou.v = 1;
     } else if (cptr.ldPtro(u, $you_usteed)) {
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
+            /* Your steed won't attack you */
             return 0;
+        /* Orcs like to steal and eat horses and the like */
         if (!rn2_at(__s_mhitu_c, 534, __s_mattacku, ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) ? 2 : 4) && m_next2u(mtmp)) {
+            /* attack your steed instead; 'bhitpos' and 'notonhead' are
+               already set from targeting hero */
             i = mattackm(mtmp, cptr.ldPtro(u, $you_usteed));
             if ((i & NHM.M_ATTK_AGR_DIED) != 0)
                 return 1;
+            /* make sure steed is still alive and within range */
             if ((i & NHM.M_ATTK_DEF_DIED) != 0 || !cptr.ldPtro(u, $you_usteed) || !m_next2u(mtmp))
                 return 0;
+            /* Let your steed retaliate */
             cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
             cptr.st1o(gn, $instance_globals_n_notonhead, 0);
             return !!(mattackm(cptr.ldPtro(u, $you_usteed), mtmp) & NHM.M_ATTK_DEF_DIED);
         }
     }
+
     if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && !range2.v && foundyou.v && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!canspotmon(mtmp))
             map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         cptr.stI32o(u, $you_uundetected, 0);
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 256n) != 0n) && cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER) {
-            let cc = cptr.alloc(4);
+            /* ceiling hider */
+            let cc = cptr.alloc(4);  /* maybe we need a unexto() function? */
             let obj;
+
             You(__s_fall_from_the_s, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+            /* take monster off map now so that its location
+               is eligible for placing hero; we assume that a
+               removed monster remembers its old spot <mx,my> */
             cptr.stPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
             if (!enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL && is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
-                place_monster(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                /* couldn't find any spot for hero; this used to
+                   kill off attacker, but now we just give a "miss"
+                   message and keep both mtmp and hero at their
+                   original positions; hero has become unconcealed
+                   so mtmp's next move will be a regular attack */
+                place_monster(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));  /* put back */
+                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* u.uundetected was toggled */
                 pline_mon(mtmp, __s_s_draws_back_as_you_drop, Monnam(mtmp));
                 return 0;
             }
-            newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+
+            /* put mtmp at hero's spot and move hero to <cc.x,.y> */
+            newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));  /* finish removal */
             place_monster(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
                 worm_move(mtmp);
+                /* tail hasn't grown, so if it now occupies <cc.x,.y>
+                   then one of its original spots must be free */
                 if ((cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)))
                     void enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
             }
-            teleds(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), NHM.TELEDS_ALLOW_DRAG);
+            teleds(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), NHM.TELEDS_ALLOW_DRAG);  /* move hero */
             set_apparxy(mtmp);
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+
             if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_PIERCER)
-                return 0;
+                return 0;  /* lurkers don't attack */
+
             obj = which_armor(mtmp, 4n);
             if (hard_helmet(obj)) {
                 Your(__s_blow_glances_off_s_s, s_suffix(mon_nam(mtmp)), helm_simple_name(obj));
@@ -795,18 +938,30 @@ export function mattacku(mtmp) {
                 } else
                     pline(__s_s_is_almost_hit_by_a_falling_piercer_you, Monnam(mtmp));
             }
+
         } else {
+            /* surface hider */
             if (!youseeit.v) {
                 pline(__s_it_tries_to_move_where_you_are_hiding);
             } else {
+                /* Ugly kludge for eggs.  The message is phrased so as
+                 * to be directed at the monster, not the player,
+                 * which makes "laid by you" wrong.  For the
+                 * parallelism to work, we can't rephrase it, so we
+                 * zap the "laid by you" momentarily instead.
+                 */
                 let obj = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+
                 if (obj || cptr.ldI32o(u, $you_umonnum) == NHC.PM_TRAPPER || (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
-                    let save_spe = 0;
+                    let save_spe = 0;  /* suppress warning */
+
                     if (obj) {
                         save_spe = cptr.ld1so(obj, $obj_spe);
                         if (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
                             cptr.st1o(obj, $obj_spe, 0);
                     }
+                    /* note that m_monnam() overrides hallucination, which is
+                       what we want when message is from mtmp's perspective */
                     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL || cptr.ldI32o(u, $you_umonnum) == NHC.PM_TRAPPER)
                         pline(__s_wait_s_there_s_a_hidden_s_named_s_there, m_monnam(mtmp), pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), Ugender()), svp);
                     else
@@ -820,8 +975,11 @@ export function mattacku(mtmp) {
         }
         return 0;
     }
+
+    /* hero might be a mimic, concealed via #monster */
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_MIMIC && U_AP_TYPE() && !range2.v && foundyou.v && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         let sticky = sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
+
         if (!canspotmon(mtmp))
             map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         if (sticky && !youseeit.v)
@@ -835,6 +993,8 @@ export function mattacku(mtmp) {
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         return 0;
     }
+
+    /* non-mimic hero might be mimicking an object after eating m corpse */
     if (U_AP_TYPE() == NHC.M_AP_OBJECT && !range2.v && foundyou.v && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (!canspotmon(mtmp))
             map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
@@ -844,12 +1004,15 @@ export function mattacku(mtmp) {
             pline(__s_wait_s_that_s_is_really_s_named_s, m_monnam(mtmp), mimic_obj_name(cptr.add(gy, $instance_globals_y_youmonst)), an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), Ugender())), svp);
         if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
             let buf = new Uint8Array(256);
+
             void cptr.sprintf(cptr.decay(buf), __s_you_appear_to_be_s_again, Upolyd() ? an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female))) : __s_yourself);
-            unmul(cptr.decay(buf));
+            unmul(cptr.decay(buf));  /* immediately stop mimicking */
         }
         return 0;
     }
-    tmp = (((cptr.ld1so(u, $you_uac)) >= 0 ? (cptr.ld1so(u, $you_uac)) : -rnd_at(__s_mhitu_c, 709, __s_mattacku, -(cptr.ld1so(u, $you_uac)))) + 10) | 0;
+
+    /*  Work out the armor class differential   */
+    tmp = (((cptr.ld1so(u, $you_uac)) >= 0 ? (cptr.ld1so(u, $you_uac)) : -rnd_at(__s_mhitu_c, 709, __s_mattacku, -(cptr.ld1so(u, $you_uac)))) + 10) | 0;  /* tmp ~= 0 - 20 */
     tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)
         tmp = (tmp + 4) | 0;
@@ -859,18 +1022,31 @@ export function mattacku(mtmp) {
         tmp = (tmp - 2) | 0;
     if (tmp <= 0)
         tmp = 1;
+
+    /* make eels visible the moment they hit/miss us */
     if (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL && (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
         cptr.stI32o(mtmp, $monst_minvis, 0);
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     }
+
+    /* when not cancelled and not in current form due to shapechange, many
+       demons can summon more demons and were creatures can summon critters;
+       also, were creature might change from human to animal or vice versa */
     if (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM && !(cptr.ldI32o(mtmp, $monst_mcan) & 1) && !range2.v && (((cptr.ldU64o((mdat), $permonst_mflags2) & 256n) != 0n) || ((cptr.ldU64o((mdat), $permonst_mflags2) & 4n) != 0n))) {
         let already_fleeing = schar((((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0) != 0));
+
         summonmu(mtmp, youseeit.v);
+        /* were-creature might have changed to beast form; if that has
+           caused it to become afraid (due to non-human reacting to scroll
+           of scare monster or engraved "Elbereth" which was being ignored
+           while in human form), don't continue this attack */
         if ((cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 && !already_fleeing)
             return 0;
-        mdat = cptr.ldPtro(mtmp, $monst_data);
+        mdat = cptr.ldPtro(mtmp, $monst_data);  /* update cached value in case of were change */
     }
+
     if ((cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+        /* monsters won't attack you */
         if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
             pline_mon(mtmp, __s_s_loosens_its_grip_slightly, Monnam(mtmp));
         } else if (!range2.v) {
@@ -881,21 +1057,32 @@ export function mattacku(mtmp) {
         }
         return 0;
     }
+
+    /* Unlike defensive stuff, don't let them use item _and_ attack. */
     if (find_offensive(mtmp)) {
         let offended = use_offensive(mtmp);
+
         if (offended != 0)
             return (offended == 1);
     }
-    cptr.st1o(gs, $instance_globals_s_skipdrin, 0);
+
+    cptr.st1o(gs, $instance_globals_s_skipdrin, 0);  /* [see mattackm(mhitm.c)] */
     firstfoundyou = foundyou.v;
+
     for (i = 0; i < NHM.NATTK; i++) {
         cptr.stI32o(sum, i, NHM.M_ATTK_MISS, 4);
+        /* counterattack against attack [i-1] might have been fatal */
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             return 1;
         if (i > 0) {
+            /* recalc in case prior attack moved hero; mtmp doesn't make
+               another attempt to guess your location but might have
+               accidentally knocked you to where it thought you were
+               [not sure whether that's actually possible] */
             calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit);
+            /* if hero was found but isn't anymore, avoid wildmiss now */
             if (firstfoundyou && !foundyou.v)
-                continue;
+                continue;  /* set sum[i] to 'miss' but skip other actions */
             if (!((cptr.ldI16o(gb, $instance_globals_b_bhitpos)) == cptr.ldI16(u) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)))
                 continue;
         }
@@ -903,6 +1090,7 @@ export function mattacku(mtmp) {
         mattk = getmattk(mtmp, cptr.add(gy, $instance_globals_y_youmonst), i, sum, alt_attk);
         if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.ld1u(mattk) != NHM.AT_ENGL) || (skipnonmagc && cptr.ld1u(mattk) != NHM.AT_MAGC) || (cptr.ld1so(gs, $instance_globals_s_skipdrin) && cptr.ld1u(mattk) == NHM.AT_TENT && cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DRIN))
             continue;
+
         switch (cptr.ld1u(mattk)) {
             case NHM.AT_CLAW:
             case NHM.AT_KICK:
@@ -924,17 +1112,21 @@ export function mattacku(mtmp) {
                         missmu(mtmp, schar((tmp == j)), mattk);
                 } else {
                     wildmiss(mtmp, mattk);
+                    /* skip any remaining non-spell attacks */
                     skipnonmagc = 1;
                 }
             }
             break;
             case NHM.AT_HUGS:
+            /* Note: if displaced, prev attacks never succeeded */
             if ((!range2.v && i >= 2 && cptr.ldI32o(sum, (i - 1) | 0, 4) && cptr.ldI32o(sum, (i - 2) | 0, 4)) || cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
                 if (!failed_grab(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk))
                     cptr.stI32o(sum, i, hitmu(mtmp, mattk), 4);
             }
             break;
             case NHM.AT_GAZE:
+            /* Medusa gaze already operated through m_respond in
+               dochug(); don't gaze more than once per round. */
             if (!cptr.eq(mdat, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)))
                 cptr.stI32o(sum, i, gazemu(mtmp, mattk), 4);
             break;
@@ -946,6 +1138,8 @@ export function mattacku(mtmp) {
             if (!range2.v) {
                 if (foundyou.v) {
                     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!cptr.ldI32o(mtmp, $monst_mspec_used) && tmp > (j = rnd_at(__s_mhitu_c, 848, __s_mattacku, (20 + i) | 0)))) {
+                        /* force swallowing monster to be displayed
+                           even when hero is moving away */
                         flush_screen(1);
                         cptr.stI32o(sum, i, gulpmu(mtmp, mattk), 4);
                     } else {
@@ -968,10 +1162,12 @@ export function mattacku(mtmp) {
             case NHM.AT_BREA:
             if (range2.v)
                 cptr.stI32o(sum, i, breamu(mtmp, mattk), 4);
+            /* Note: breamu takes care of displacement */
             break;
             case NHM.AT_SPIT:
             if (range2.v)
                 cptr.stI32o(sum, i, spitmu(mtmp, mattk), 4);
+            /* Note: spitmu takes care of displacement */
             break;
             case NHM.AT_WEAP:
             if (range2.v) {
@@ -979,8 +1175,14 @@ export function mattacku(mtmp) {
                     thrwmu(mtmp);
             } else {
                 let hittmp = 0;
+
+                /* Rare but not impossible.  Normally the monster
+                 * wields when 2 spaces away, but it can be
+                 * teleported or whatever....
+                 */
                 if (cptr.ldI16o(mtmp, $monst_weapon_check) == NHC.NEED_WEAPON || !(cptr.ldPtro((mtmp), $monst_mw))) {
                     cptr.stI16o(mtmp, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
+                    /* mon_wield_item resets weapon_check as appropriate */
                     if (mon_wield_item(mtmp) != 0)
                         break;
                 }
@@ -988,6 +1190,7 @@ export function mattacku(mtmp) {
                     mon_currwep = (cptr.ldPtro((mtmp), $monst_mw));
                     if (mon_currwep) {
                         let bash = schar((is_pole(mon_currwep) && !is_art(mon_currwep, NHC.ART_SNICKERSNEE) && m_next2u(mtmp) ? 1 : 0));
+
                         hittmp = hitval(mon_currwep, cptr.add(gy, $instance_globals_y_youmonst));
                         tmp = (tmp + hittmp) | 0;
                         mswings(mtmp, mon_currwep, bash);
@@ -996,10 +1199,12 @@ export function mattacku(mtmp) {
                         cptr.stI32o(sum, i, hitmu(mtmp, mattk), 4);
                     else
                         missmu(mtmp, schar((tmp == j)), mattk);
+                    /* KMH -- Don't accumulate to-hit bonuses */
                     if (mon_currwep)
                         tmp = (tmp - hittmp) | 0;
                 } else {
                     wildmiss(mtmp, mattk);
+                    /* skip any remaining non-spell attacks */
                     skipnonmagc = 1;
                 }
             }
@@ -1015,6 +1220,7 @@ export function mattacku(mtmp) {
         }
         if (cptr.ld1s(disp))
             bot();
+        /* give player a chance of waking up before dying -kaa */
         if (cptr.ldI32o(sum, i, 4) == NHM.M_ATTK_HIT) {
             if (cptr.ldI64o(u, $you_usleep) && cptr.ldI64o(u, $you_usleep) < cptr.ldI64o(svm, $instance_globals_saved_m_moves) && !rn2_at(__s_mhitu_c, 940, __s_mattacku, 10)) {
                 cptr.stI64o(gm, $instance_globals_m_multi, -1n);
@@ -1022,24 +1228,37 @@ export function mattacku(mtmp) {
             }
         }
         if ((cptr.ldI32o(sum, i, 4) & NHM.M_ATTK_AGR_DIED))
-            return 1;
+            return 1;  /* attacker dead */
         if ((cptr.ldI32o(sum, i, 4) & NHM.M_ATTK_AGR_DONE))
-            break;
+            break;  /* attacker teleported, no more attacks */
+        /* sum[i] == 0: unsuccessful attack */
     }
     return 0;
 }
 
+/* monster summons help for its fight against hero */
 /** C ref: mhitu.c:956 — @param {CPtr<struct monst>} mtmp @param {CInt} youseeit */
 function summonmu(mtmp, youseeit) {
     let mdat = cptr.ldPtro(mtmp, $monst_data);
+
+    /*
+     * Extracted from mattacku() to reduce clutter there.
+     * Caller has verified that 'mtmp' hasn't been cancelled
+     * and isn't a shapechanger.
+     */
+
     if (((cptr.ldU64o((mdat), $permonst_mflags2) & 256n) != 0n)) {
         if (!cptr.eq(mdat, cptr.add(mons, NHC.PM_BALROG, $sizeof_permonst)) && !cptr.eq(mdat, cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst))) {
             if (!rn2_at(__s_mhitu_c, 968, __s_summonmu, In_hell(cptr.add(u, $you_uz)) ? 10 : 16))
                 void msummon(mtmp);
         }
-        return;
+        return;  /* no such thing as a demon were creature, so we're done */
     }
+
     if (((cptr.ldU64o((mdat), $permonst_mflags2) & 4n) != 0n)) {
+        /* if hero has Protection_from_shape_changers, new_were() will work
+           in the critter-to-human direction but be a no-op the other way;
+           we repeat the criteria here for clarity */
         if (((cptr.ldU64o((mdat), $permonst_mflags2) & 8n) != 0n)) {
             if (!Protection_from_shape_changers() && !(rng_log_enabled() ? (rng_log_set_caller(__s_mhitu_c, 979, __s_summonmu), rn2((5 - (Math.imul(night(), 2))) | 0)) : rn2((5 - (Math.imul(night(), 2))) | 0)))
                 new_were(mtmp);
@@ -1047,12 +1266,16 @@ function summonmu(mtmp, youseeit) {
             if (Protection_from_shape_changers() || !rn2_at(__s_mhitu_c, 982, __s_summonmu, 30))
                 new_were(mtmp);
         }
-        mdat = cptr.ldPtro(mtmp, $monst_data);
+        mdat = cptr.ldPtro(mtmp, $monst_data);  /* form change invalidates cached value */
+
+        /* maybe summon compatible critters;
+           not blocked by Protection_from_shape_changers */
         if (!rn2_at(__s_mhitu_c, 989, __s_summonmu, 10)) {
             let numseen = cptr.box(0);
             let numhelp;
             let buf = new Uint8Array(256);
             let genericwere = new Uint8Array(256);
+
             void cptr.strcpy(cptr.decay(genericwere), __s_creature);
             if (youseeit)
                 pline_mon(mtmp, __s_s_summons_help, Monnam(mtmp));
@@ -1066,6 +1289,7 @@ function summonmu(mtmp, youseeit) {
                 }
             } else {
                 let from_nowhere;
+
                 if (!Deaf()) {
                     pline(__s_s_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), makeplural(growl_sound(mtmp)));
                     from_nowhere = __s_empty;
@@ -1082,11 +1306,11 @@ function summonmu(mtmp, youseeit) {
                             void cptr.sprintf(cptr.decay(buf), __s_s_appear, makeplural(cptr.decay(genericwere)));
                         pline(__s_s_s__2, upstart(cptr.decay(buf)), from_nowhere);
                     }
-                }
+                }  /* else no help came; but you didn't know it tried */
             }
-        }
+        }  /* summon critters */
         return;
-    }
+    }  /* were creature */
 }
 
 /** C ref: mhitu.c:1033 — @param {CPtr<struct permonst>} mdat @returns {CInt} */
@@ -1100,18 +1324,26 @@ export function diseasemu(mdat) {
     }
 }
 
+/* check whether slippery clothing protects from hug or wrap attack */
 /** C ref: mhitu.c:1047 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function u_slip_free(mtmp, mattk) {
     let obj;
+
+    /* greased armor does not protect against AT_ENGL+AD_WRAP */
     if (cptr.ld1u(mattk) == NHM.AT_ENGL)
         return 0;
+
     obj = (uarmc.v ? uarmc.v : uarm.v);
     if (!obj)
         obj = uarmu.v;
     if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DRIN)
         obj = uarmh.v;
+
+    /* if your cloak/armor is greased, monster slips off; this
+       protection might fail (33% chance) when the armor is cursed */
     if (obj && ((cptr.ldI32o(obj, $obj_greased) & 1) | 0 || cptr.ldI16o(obj, $obj_otyp) == NHC.OILSKIN_CLOAK) && (!(cptr.ldI32o(obj, $obj_cursed) & 1) || rn2_at(__s_mhitu_c, 1066, __s_u_slip_free, 3))) {
         pline_mon(mtmp, __s_s_s_your_s_s, Monnam(mtmp), (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_WRAP) ? __s_slips_off_of : __s_grabs_you_but_cannot_hold_onto, (cptr.ldI32o(obj, $obj_greased) & 1) | 0 ? __s_greased : __s_slippery, ((cptr.ldI32o(obj, $obj_greased) & 1) | 0 || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) ? xname(obj) : cloak_simple_name(obj));
+
         if ((cptr.ldI32o(obj, $obj_greased) & 1) | 0 && !rn2_at(__s_mhitu_c, 1077, __s_u_slip_free, 2)) {
             pline_The(__s_grease_wears_off);
             cptr.stI32o(obj, $obj_greased, 0);
@@ -1122,6 +1354,7 @@ export function u_slip_free(mtmp, mattk) {
     return 0;
 }
 
+/* armor that sufficiently covers the body might be able to block magic */
 /** C ref: mhitu.c:1089 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function magic_negation(mon) {
     let o;
@@ -1131,7 +1364,9 @@ export function magic_negation(mon) {
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
     let via_amul = 0;
     let gotprot = schar((is_you ? (EProtection() != 0n) : (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)))));
+
     for (o = is_you ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(mon, $monst_minvent); o; o = cptr.ldPtr(o)) {
+        /* a_can field is only applicable for armor (which must be worn) */
         if ((cptr.ldI64o(o, $obj_owornmask) & 127n) != 0n) {
             armpro = cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2);
             if (armpro > mc)
@@ -1139,25 +1374,37 @@ export function magic_negation(mon) {
         } else if ((cptr.ldI64o(o, $obj_owornmask) & 65536n) != 0n) {
             via_amul = schar((cptr.ldI16o(o, $obj_otyp) == NHC.AMULET_OF_GUARDING));
         }
+        /* if we've already confirmed Protection, skip additional checks */
         if (is_you || gotprot)
             continue;
+
+        /* omit W_SWAPWEP+W_QUIVER; W_ART+W_ARTI handled by protects() */
         wearmask = 983167n;
         if (cptr.ld1so(o, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(o))
             wearmask |= 256n;
         if (protects(o, schar((((cptr.ldI64o(o, $obj_owornmask) & wearmask) != 0n) ? 1 : 0))))
             gotprot = 1;
     }
+
     if (gotprot) {
+        /* extrinsic Protection increases mc by 1 (2 for amulet of guarding);
+           multiple sources don't provide multiple increments */
         mc = (mc + (via_amul ? 2 : 1)) | 0;
         if (mc > 3)
             mc = 3;
     } else if (mc < 1) {
+        /* intrinsic Protection is weaker (play balance; obtaining divine
+           protection is too easy); it confers minimum mc 1 instead of 0 */
         if ((is_you && ((HProtection() && cptr.ldI32o(u, $you_ublessed) > 0) || cptr.ld1uo(u, $you_uspellprot))) || (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, $sizeof_permonst)) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4096n) != 0n)))
             mc = 1;
     }
     return mc;
 }
 
+/*
+ * hitmu: monster hits you
+ * returns MM_ flags
+*/
 /** C ref: mhitu.c:1144 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 function hitmu(mtmp, mattk) {
     let mdat = cptr.ldPtro(mtmp, $monst_data);
@@ -1168,14 +1415,20 @@ function hitmu(mtmp, mattk) {
     cptr.st1o(mhm, $mhitm_data_permdmg, 0);
     cptr.stI32o(mhm, $mhitm_data_specialdmg, 0);
     cptr.st1o(mhm, $mhitm_data_done, 0);
+
     if (!canspotmon(mtmp))
         map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+
+    /*  If the monster is undetected & hits you, you should know where
+     *  the attack came from.
+     */
     if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 && (((cptr.ldU64o((mdat), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL)) {
         cptr.stI32o(mtmp, $monst_mundetected, 0);
         if (!tp_sensemon(mtmp) && !Detect_monsters()) {
             let obj;
             let what;
             let Amonbuf = new Uint8Array(256);
+
             if ((obj = cptr.ldPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null) {
                 if (Blind() && !(cptr.ldI32o(obj, $obj_dknown) & 1))
                     what = cptr.ldPtro(c_common_strings, $c_common_strings_c_something);
@@ -1183,7 +1436,9 @@ function hitmu(mtmp, mattk) {
                     what = __s_the_water;
                 else
                     what = doname(obj);
+
                 void cptr.strcpy(cptr.decay(Amonbuf), Amonnam(mtmp));
+                /* mtmp might be invisible with hero unable to see same */
                 if (!strcmp(cptr.decay(Amonbuf), __s_it))
                     void cptr.strcpy(cptr.decay(Amonbuf), cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
                 pline(__s_s_was_hidden_under_s, cptr.decay(Amonbuf), what);
@@ -1191,28 +1446,51 @@ function hitmu(mtmp, mattk) {
             newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         }
     }
+
+    /*  First determine the base damage done */
     cptr.stI32(mhm, d_at(__s_mhitu_c, 1187, __s_hitmu, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd))));
     if ((((cptr.ldU64o((mdat), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && midnight())
-        cptr.stI32(mhm, (cptr.ldI32(mhm) + d_at(__s_mhitu_c, 1189, __s_hitmu, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))) | 0);
+        cptr.stI32(mhm, (cptr.ldI32(mhm) + d_at(__s_mhitu_c, 1189, __s_hitmu, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))) | 0);  /* extra dmg */
+
     mhitm_adtyping(mtmp, mattk, cptr.add(gy, $instance_globals_y_youmonst), mhm);
+
     void mhitm_knockback(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk, cptr.add(mhm, $mhitm_data_hitflags), schar(((cptr.ldPtro((mtmp), $monst_mw)) !== null)));
+
     if (cptr.ld1so(mhm, $mhitm_data_done))
         return cptr.ldI32o(mhm, $mhitm_data_hitflags);
+
     if ((Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)) < 1) {
+        /* already dead? call rehumanize() or done_in_by() as appropriate */
         mdamageu(mtmp, 1);
         cptr.stI32(mhm, 0);
     }
+
+    /*  Negative armor class reduces damage done instead of fully protecting
+     *  against hits.
+     */
     if (cptr.ldI32(mhm) && cptr.ld1so(u, $you_uac) < 0) {
         cptr.stI32(mhm, (cptr.ldI32(mhm) - rnd_at(__s_mhitu_c, 1209, __s_hitmu, -cptr.ld1so(u, $you_uac))) | 0);
         if (cptr.ldI32(mhm) < 1)
             cptr.stI32(mhm, 1);
     }
+
     if (cptr.ldI32(mhm) > 0) {
+        /* [Half_physical_damage isn't applied to mhm.permdmg] */
         if (Half_physical_damage() || ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && uarmh.v && is_quest_artifact(uarmh.v) && mon_hates_blessings(mtmp)))
             cptr.stI32(mhm, (((cptr.ldI32(mhm) + 1) | 0) / 2) | 0);
+
         if (cptr.ld1so(mhm, $mhitm_data_permdmg)) {
             let lowerlimit;
             let hpmax_p;
+            /*
+             * Apply some of the damage to permanent hit points:
+             *  polymorphed         100% against poly'd hpmax
+             *  hpmax > 25*lvl      100% against normal hpmax
+             *  hpmax > 10*lvl  50..100%
+             *  hpmax >  5*lvl  25..75%
+             *  otherwise        0..50%
+             * Never reduces hpmax below 1 hit point per level.
+             */
             cptr.st1o(mhm, $mhitm_data_permdmg, schar(rn2_at(__s_mhitu_c, 1233, __s_hitmu, (((cptr.ldI32(mhm) / 2) | 0) + 1) | 0)));
             if (Upolyd() || cptr.ldI32o(u, $you_uhpmax) > Math.imul(25, cptr.ldI32o(u, $you_ulevel)))
                 cptr.st1o(mhm, $mhitm_data_permdmg, schar(cptr.ldI32(mhm)));
@@ -1220,8 +1498,10 @@ function hitmu(mtmp, mattk) {
                 cptr.st1o(mhm, $mhitm_data_permdmg, cptr.ld1so(mhm, $mhitm_data_permdmg) + ((cptr.ldI32(mhm) / 2) | 0));
             else if (cptr.ldI32o(u, $you_uhpmax) > Math.imul(5, cptr.ldI32o(u, $you_ulevel)))
                 cptr.st1o(mhm, $mhitm_data_permdmg, cptr.ld1so(mhm, $mhitm_data_permdmg) + ((cptr.ldI32(mhm) / 4) | 0));
+
             if (Upolyd()) {
                 hpmax_p = cptr.add(u, $you_mhmax);
+                /* [can't use gy.youmonst.m_lev] */
                 lowerlimit = min(cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel), cptr.ldI32o(u, $you_ulevel));
             } else {
                 hpmax_p = cptr.add(u, $you_uhpmax);
@@ -1231,10 +1511,14 @@ function hitmu(mtmp, mattk) {
                 cptr.stI32(hpmax_p, (cptr.ldI32(hpmax_p) - cptr.ld1so(mhm, $mhitm_data_permdmg)) | 0);
             else if (cptr.ldI32(hpmax_p) > lowerlimit)
                 cptr.stI32(hpmax_p, lowerlimit);
+            /* else unlikely...
+             * already at or below minimum threshold, do nothing to hpmax */
             cptr.st1(disp, 1);
         }
+
         mdamageu(mtmp, cptr.ldI32(mhm));
     }
+
     if (cptr.ldI32(mhm))
         res = passiveum(olduasmon, mtmp, mattk);
     else
@@ -1243,17 +1527,22 @@ function hitmu(mtmp, mattk) {
     return res;
 }
 
+/* An interface for use when taking a blindfold off, for example,
+ * to see if an engulfing attack should immediately take affect, like
+ * a passive attack. TRUE if engulfing blindness occurred */
 /** C ref: mhitu.c:1273 @returns {CInt} */
 export function gulp_blnd_check() {
     let mattk;
+
     if (!Blinded() && (cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (mattk = attacktype_fordmg(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AT_ENGL, NHM.AD_BLND)) && can_blnd(cptr.ldPtro(u, $you_ustuck), cptr.add(gy, $instance_globals_y_youmonst), cptr.ld1u(mattk), null)) {
-        cptr.stI32o(u, $you_uswldtim, cptr.ldI32o(u, $you_uswldtim) + 1);
+        cptr.stI32o(u, $you_uswldtim, cptr.ldI32o(u, $you_uswldtim) + 1);  /* compensate for gulpmu change */
         void gulpmu(cptr.ldPtro(u, $you_ustuck), mattk);
         return 1;
     }
     return 0;
 }
 
+/* monster swallows you, or damage if already swallowed (u.uswallow != 0) */
 /** C ref: mhitu.c:1289 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 function gulpmu(mtmp, mattk) {
     let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -1263,24 +1552,29 @@ function gulpmu(mtmp, mattk) {
     let nextobj;
     let i;
     let physical_damage = 0;
+
     if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
         let omx = cptr.ldI16o(mtmp, $monst_mx);
         let omy = cptr.ldI16o(mtmp, $monst_my);
+
         if (!engulf_target(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
             return NHM.M_ATTK_MISS;
         if ((t && is_pit((cptr.ldI32o(t, $trap_ttyp) & 31))) && sobj_at(NHC.BOULDER, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             return NHM.M_ATTK_MISS;
         if (failed_grab(mtmp, cptr.add(gy, $instance_globals_y_youmonst), mattk))
             return NHM.M_ATTK_MISS;
+
         if (Punished())
-            unplacebc();
+            unplacebc();  /* ball&chain go away */
         cptr.stPtro3(svl, omx, 168, omy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
-        cptr.stI32o(mtmp, $monst_mtrapped, 0);
+        cptr.stI32o(mtmp, $monst_mtrapped, 0);  /* no longer on old trap */
         place_monster(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         set_ustuck(mtmp);
         newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
+        /* 5.0: dismount for all engulfers, not just for purple worms */
         if (cptr.ldPtro(u, $you_usteed)) {
             let buf = new Uint8Array(256);
+
             void cptr.strcpy(cptr.decay(buf), mon_nam(cptr.ldPtro(u, $you_usteed)));
             urgent_pline(__s_s_s_forward_and_plucks_you_off_s, Some_Monnam(mtmp), ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) ? __s_lunges : (is_whirly(cptr.ldPtro(mtmp, $monst_data)) ? __s_whirls : (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1048576n) != 0n) ? __s_flows : (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) ? __s_oozes : __s_surges))), cptr.decay(buf));
             dismount_steed(NHC.DISMOUNT_ENGULFED);
@@ -1288,40 +1582,61 @@ function gulpmu(mtmp, mattk) {
             urgent_pline(__s_s_s, Monnam(mtmp), (dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallows_you_whole : ((dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_folds_itself_around_you : __s_engulfs_you));
         }
         stop_occupation();
-        reset_occupations();
+        reset_occupations();  /* behave as if you had moved */
+
         if (cptr.ldI32o(u, $you_utrap)) {
             You(__s_are_released_from_the_s, (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) ? __s_web : __s_trap);
             reset_utrap(0);
         }
+
         i = number_leashed();
         if (i > 0) {
             let s = (i > 1) ? __s_leashes : __s_leash;
+
             pline_The(__s_s_s_loose, s, vtense(s, __s_snap));
             unleash_all();
         }
+
         if (touch_petrifies(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !Resists_Elem(mtmp, NHC.STONE_RES)) {
-            cptr.stPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+            /* put the attacker back where it started;
+               the resulting statue will end up there
+               [note: if poly'd hero could ride or non-poly'd hero could
+               acquire touch_petrifies() capability somehow, this code
+               would need to deal with possibility of steed having taken
+               engulfer's previous spot when hero was forcibly dismounted] */
+            cptr.stPtro3(svl, cptr.ldI16o(mtmp, $monst_mx), 168, cptr.ldI16o(mtmp, $monst_my), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);  /* u.ux,u.uy */
             place_monster(mtmp, i16(omx), i16(omy));
             minstapetrify(mtmp, 1);
+            /* normally unstuck() would do this, but we're not
+               fully swallowed yet so that won't work here */
             if (Punished())
                 placebc();
             set_ustuck(null);
             return (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) ? NHM.M_ATTK_MISS : NHM.M_ATTK_AGR_DIED;
         }
+
         display_nhwindow()(WIN_MESSAGE.v, 0);
-        vision_recalc(2);
+        vision_recalc(2);  /* hero can't see anything */
         cptr.stI32o(u, $you_uswallow, 1);
+        /* for digestion, shorter time is more dangerous;
+           for other swallowings, longer time means more
+           chances for the swallower to attack */
         if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST) {
+            /* having good armor & high constitution makes
+               it take longer for you to be digested, but
+               you'll end up trapped inside for longer too */
             tim_tmp = ((((((acurr(NHC.A_CON)) + 10) | 0) - cptr.ld1so(u, $you_uac)) | 0) + rn2_at(__s_mhitu_c, 1385, __s_gulpmu, 20)) | 0;
             if (tim_tmp < 0)
                 tim_tmp = 0;
             tim_tmp = (tim_tmp / cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
             tim_tmp = (tim_tmp + 3) | 0;
         } else {
+            /* higher level attacker takes longer to eject hero */
             tim_tmp = rnd_at(__s_mhitu_c, 1392, __s_gulpmu, (cptr.ld1uo(mtmp, $monst_m_lev) + 5) | 0);
         }
+        /* u.uswldtim always set > 1 */
         cptr.stI32o(u, $you_uswldtim, ((tim_tmp < 2) ? 2 : tim_tmp) >>> 0);
-        swallowed(1);
+        swallowed(1);  /* update the map display, shows hero swallowed */
         if (!flaming(cptr.ldPtro(mtmp, $monst_data))) {
             for (otmp2 = cptr.ldPtro(gi, $instance_globals_i_invent); otmp2; otmp2 = nextobj) {
                 nextobj = cptr.ldPtr(otmp2);
@@ -1329,9 +1644,12 @@ function gulpmu(mtmp, mattk) {
             }
         }
     }
+
     if (!cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
         return NHM.M_ATTK_MISS;
     if (Punished()) {
+        /* ball&chain are in limbo while swallowed; update their internal
+           location to be at swallower's spot */
         if (cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE)
             cptr.stI16o(uchain.v, $obj_ox, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(uchain.v, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
         if (cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE)
@@ -1339,17 +1657,19 @@ function gulpmu(mtmp, mattk) {
     }
     if (cptr.ldI32o(u, $you_uswldtim) > 0)
         cptr.stI32o(u, $you_uswldtim, (cptr.ldI32o(u, $you_uswldtim) - 1) | 0);
+
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_DGST:
         physical_damage = 1;
         if (Slow_digestion()) {
+            /* Messages are handled below */
             cptr.stI32o(u, $you_uswldtim, 0);
             tmp = 0;
         } else if (cptr.ldI32o(u, $you_uswldtim) == 0) {
             pline(__s_s_totally_digests_you, Monnam(mtmp));
             tmp = cptr.ldI32o(u, $you_uhp);
             if (Half_physical_damage())
-                tmp = Math.imul(tmp, 2);
+                tmp = Math.imul(tmp, 2);  /* sorry */
         } else {
             pline(__s_s_s_digests_you, Monnam(mtmp), (cptr.ldI32o(u, $you_uswldtim) == 2) ? __s_thoroughly : ((cptr.ldI32o(u, $you_uswldtim) == 1) ? __s_utterly : __s_empty));
             exercise(NHC.A_STR, 0);
@@ -1369,6 +1689,8 @@ function gulpmu(mtmp, mattk) {
         case NHM.AD_ACID:
         if (Acid_resistance()) {
             You(__s_are_covered_with_a_seemingly_harmless);
+            /* NB: the monst[un]seesu calls in gulpmu are no-ops since the
+               hero must be currently swallowed for the attack to hit... */
             monstseesu(128n);
             tmp = 0;
         } else {
@@ -1384,12 +1706,14 @@ function gulpmu(mtmp, mattk) {
         if (can_blnd(mtmp, cptr.add(gy, $instance_globals_y_youmonst), cptr.ld1u(mattk), null)) {
             if (!Blind()) {
                 let was_blinded = BigInt((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0));
+
                 if (!Blinded())
                     You_cant(__s_see_in_here);
                 make_blinded(BigInt(tmp), 0);
                 if (!was_blinded && !Blind())
                     Your(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears));
             } else
+                /* keep him blind until disgorged */
                 incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), 1);
         }
         tmp = 0;
@@ -1445,6 +1769,7 @@ function gulpmu(mtmp, mattk) {
             tmp = 0;
         break;
         case NHM.AD_DREN:
+        /* AC magic cancellation doesn't help when engulfed */
         if (!(cptr.ldI32o(mtmp, $monst_mcan) & 1) && rn2_at(__s_mhitu_c, 1539, __s_gulpmu, 4))
             drain_en(tmp, 0);
         tmp = 0;
@@ -1454,24 +1779,33 @@ function gulpmu(mtmp, mattk) {
         tmp = 0;
         break;
     }
+
     if (physical_damage) {
+        /* same damage reduction for AC as in hitmu */
         if (cptr.ld1so(u, $you_uac) < 0)
             tmp = (tmp - rnd_at(__s_mhitu_c, 1552, __s_gulpmu, -cptr.ld1so(u, $you_uac))) | 0;
         if (tmp < 0)
             tmp = 1;
+
         tmp = ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp));
     }
-    cptr.stPtro(gm, $instance_globals_m_mswallower, mtmp);
+
+    cptr.stPtro(gm, $instance_globals_m_mswallower, mtmp);  /* match gulpmm() */
     mdamageu(mtmp, tmp);
     cptr.stPtro(gm, $instance_globals_m_mswallower, null);
     if (tmp)
         stop_occupation();
+
     if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
-        ;
+        ;  /* life-saving has already expelled swallowed hero */
     } else if (touch_petrifies(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !Resists_Elem(mtmp, NHC.STONE_RES)) {
         pline(__s_s_very_hurriedly_s_you, Monnam(mtmp), (dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_regurgitates : ((dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_releases : __s_expels));
         expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 0);
     } else if (!cptr.ldI32o(u, $you_uswldtim) || cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_msize) >= NHM.MZ_HUGE) {
+        /* As of 3.6.2: u.uswldtim used to be set to 0 by life-saving but it
+           expels now so the !u.uswldtim case is no longer possible;
+           however, polymorphing into a huge form while already
+           swallowed is still possible */
         You(__s_get_s, (dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_regurgitated : ((dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_released : __s_expelled));
         if (cptr.ld1so(flags, $flag_verbose) && ((dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) && Slow_digestion()))
             pline(__s_obviously_s_doesn_t_like_your_taste, mon_nam(mtmp));
@@ -1480,31 +1814,37 @@ function gulpmu(mtmp, mattk) {
     return NHM.M_ATTK_HIT;
 }
 
+/* monster explodes in your face */
 /** C ref: mhitu.c:1591 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @param {CInt} ufound @returns {CInt} */
 function explmu(mtmp, mattk, ufound) {
     let kill_agr = 1;
     let not_affected;
     let tmp;
+
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1))
         return NHM.M_ATTK_MISS;
+
     tmp = d_at(__s_mhitu_c, 1603, __s_explmu, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)));
     not_affected = defended(mtmp, cptr.ld1uo(mattk, $attack_adtyp));
+
     if (!ufound) {
         pline(__s_s_explodes_at_a_spot_in_s, canseemon(mtmp) ? Monnam(mtmp) : __s_it, is_waterwall(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) ? __s_empty_water : __s_thin_air);
     } else {
         hitmsg(mtmp, mattk);
     }
+
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_COLD:
         case NHM.AD_FIRE:
         case NHM.AD_ELEC:
         mon_explodes(mtmp, mattk);
         if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
-            kill_agr = 0;
+            kill_agr = 0;  /* lifesaving? */
         break;
         case NHM.AD_BLND:
         not_affected = resists_blnd(cptr.add(gy, $instance_globals_y_youmonst));
         if (ufound && !not_affected) {
+            /* sometimes you're affected even if it's invisible */
             if (mon_visible(mtmp) || ((rng_log_enabled() ? (rng_log_set_caller(__s_mhitu_c, 1627, __s_explmu), rnd(tmp = (tmp / 2) | 0)) : rnd(tmp = (tmp / 2) | 0)) > cptr.ldI32o(u, $you_ulevel))) {
                 You(__s_are_blinded_by_a_blast_of_light);
                 make_blinded(BigInt(tmp), 0);
@@ -1520,8 +1860,9 @@ function explmu(mtmp, mattk, ufound) {
             let chg;
             if (!Hallucination())
                 You(__s_are_caught_in_a_blast_of_kaleidoscopic);
-            mondead(mtmp);
-            kill_agr = 0;
+            /* avoid hallucinating the black light as it dies */
+            mondead(mtmp);  /* remove it from map now */
+            kill_agr = 0;  /* already killed (maybe lifesaved) */
             chg = make_hallucinated(BigInt.asIntN(64, HHallucination() + BigInt(tmp)), 0, 0n);
             You(__s_pct_s_dot, chg ? __s_are_freaked_out : __s_seem_unaffected);
         }
@@ -1540,6 +1881,7 @@ function explmu(mtmp, mattk, ufound) {
     return (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) ? NHM.M_ATTK_MISS : NHM.M_ATTK_AGR_DIED;
 }
 
+/* monster gazes at you */
 const __static_gazemu_reactions = cptr.alloc(8 * 8);
 cptr.stPtro(__static_gazemu_reactions, 0, __s_confused);
 cptr.stPtro(__static_gazemu_reactions, 8, __s_stunned);
@@ -1558,19 +1900,33 @@ export function gazemu(mtmp, mattk) {
     let cancelled = schar((((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0) != 0));
     let already = 0;
     let mcanseeu = schar((canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 ? 1 : 0));
+
     if ((cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp)))))
         return NHM.M_ATTK_MISS;
+
     is_medusa = schar((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst))));
     reflectable = schar((Reflecting() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && is_medusa ? 1 : 0));
+    /* assumes that hero has to see monster's gaze in order to be
+       affected, rather than monster just having to look at hero;
+       Unaware:  asleep or unconscious => not blind but won't see;
+       when hallucinating, hero's brain doesn't register what
+       it's seeing correctly so the gaze is usually ineffective
+       [this could be taken a lot farther and select a gaze effect
+       appropriate to what's currently being displayed, giving
+       ordinary monsters a gaze attack when hero thinks he or she
+       is facing a gazing creature, but let's not go that far...] */
     if ((Hallucination() && rn2_at(__s_mhitu_c, 1698, __s_gazemu, 4)) || ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) && !reflectable))
         cancelled = 1;
+
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_STON:
+        /* note: Medusa is the only monster with stoning gaze, so
+           'is_medusa' will always be True here */
         if (cancelled || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1)) {
             if (!canseemon(mtmp))
-                break;
+                break;  /* silently */
             if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
-                react = is_medusa ? 4 : 2;
+                react = is_medusa ? 4 : 2;  /* irritated or puzzled */
                 break;
             }
             if (is_medusa && Hallucination() && !rn2_at(__s_mhitu_c, 1712, __s_gazemu, 3))
@@ -1580,7 +1936,9 @@ export function gazemu(mtmp, mattk) {
             break;
         }
         if (reflectable) {
+            /* hero has line of sight to Medusa and she's not blind */
             let useeit = schar(canseemon(mtmp));
+
             if (useeit)
                 void ureflects(__s_s_gaze_is_reflected_by_your_s, s_suffix(Monnam(mtmp)));
             if (mon_reflects(mtmp, !useeit ? null : __s_the_gaze_is_reflected_away_by_s_s))
@@ -1594,6 +1952,7 @@ export function gazemu(mtmp, mattk) {
                 pline_mon(mtmp, __s_s_is_turned_to_stone, Monnam(mtmp));
             cptr.st1o(gs, $instance_globals_s_stoned, 1);
             killed(mtmp);
+
             if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1))
                 break;
             return NHM.M_ATTK_AGR_DIED;
@@ -1612,10 +1971,11 @@ export function gazemu(mtmp, mattk) {
         case NHM.AD_CONF:
         if (mcanseeu && !cptr.ldI32o(mtmp, $monst_mspec_used) && rn2_at(__s_mhitu_c, 1760, __s_gazemu, 5)) {
             if (cancelled) {
-                react = 0;
+                react = 0;  /* "confused" */
                 already = schar((((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0) != 0));
             } else {
                 let conf = d_at(__s_mhitu_c, 1765, __s_gazemu, 3, 4);
+
                 cptr.stI32o(mtmp, $monst_mspec_used, (cptr.ldI32o(mtmp, $monst_mspec_used) + ((conf + rn2_at(__s_mhitu_c, 1767, __s_gazemu, 6)) | 0)) | 0);
                 if (!HConfusion())
                     pline_mon(mtmp, __s_s_gaze_confuses_you, s_suffix(Monnam(mtmp)));
@@ -1629,10 +1989,11 @@ export function gazemu(mtmp, mattk) {
         case NHM.AD_STUN:
         if (mcanseeu && !cptr.ldI32o(mtmp, $monst_mspec_used) && rn2_at(__s_mhitu_c, 1779, __s_gazemu, 5)) {
             if (cancelled) {
-                react = 1;
+                react = 1;  /* "stunned" */
                 already = schar((((cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0) != 0));
             } else {
                 let stun = d_at(__s_mhitu_c, 1784, __s_gazemu, 2, 6);
+
                 cptr.stI32o(mtmp, $monst_mspec_used, (cptr.ldI32o(mtmp, $monst_mspec_used) + ((stun + rn2_at(__s_mhitu_c, 1786, __s_gazemu, 6)) | 0)) | 0);
                 pline_mon(mtmp, __s_s_stares_piercingly_at_you, Monnam(mtmp));
                 make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(stun)), 1);
@@ -1643,20 +2004,29 @@ export function gazemu(mtmp, mattk) {
         case NHM.AD_BLND:
         if (canseemon(mtmp) && !resists_blnd(cptr.add(gy, $instance_globals_y_youmonst)) && dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 64) {
             if (cancelled) {
-                react = ((rn2_at(__s_mhitu_c, 1797, __s_gazemu, 2) + 2) | 0);
+                react = ((rn2_at(__s_mhitu_c, 1797, __s_gazemu, 2) + 2) | 0);  /* "puzzled" || "dazzled" */
                 already = schar((((cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) == 0));
+                /* Archons gaze every round; we don't want cancelled ones
+                   giving the "seems puzzled/dazzled" message that often */
                 if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 && cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCHON, $sizeof_permonst)) && rn2_at(__s_mhitu_c, 1801, __s_gazemu, 5))
                     react = -1;
             } else {
                 let blnd = d_at(__s_mhitu_c, 1804, __s_gazemu, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)));
+
                 You(__s_are_blinded_by_s_radiance, s_suffix(mon_nam(mtmp)));
                 make_blinded(BigInt(blnd), 0);
                 stop_occupation();
+                /* not blind at this point implies you're wearing
+                   the Eyes of the Overworld; make them block this
+                   particular stun attack too */
                 if (!Blind()) {
                     Your(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears));
                 } else {
                     let oldstun = (HStun() & 16777215n);
                     let newstun = BigInt(rnd_at(__s_mhitu_c, 1815, __s_gazemu, 3));
+
+                    /* we don't want to increment stun duration every time
+                       or sighted hero will become incapacitated */
                     make_stunned(max(oldstun, newstun), 1);
                 }
             }
@@ -1665,11 +2035,12 @@ export function gazemu(mtmp, mattk) {
         case NHM.AD_FIRE:
         if (mcanseeu && !cptr.ldI32o(mtmp, $monst_mspec_used) && rn2_at(__s_mhitu_c, 1825, __s_gazemu, 5)) {
             if (cancelled) {
-                react = ((rn2_at(__s_mhitu_c, 1827, __s_gazemu, 2) + 4) | 0);
+                react = ((rn2_at(__s_mhitu_c, 1827, __s_gazemu, 2) + 4) | 0);  /* "irritated" || "inflamed" */
             } else {
                 let dmg = d_at(__s_mhitu_c, 1829, __s_gazemu, 2, 6);
                 let orig_dmg = dmg;
                 let lev = cptr.ld1uo(mtmp, $monst_m_lev);
+
                 pline_mon(mtmp, __s_s_attacks_you_with_a_fiery_gaze, Monnam(mtmp));
                 stop_occupation();
                 if (Fire_resistance()) {
@@ -1700,21 +2071,26 @@ export function gazemu(mtmp, mattk) {
     if (react >= 0) {
         if (Hallucination() && rn2_at(__s_mhitu_c, 1888, __s_gazemu, 3))
             react = rn2_at(__s_mhitu_c, 1889, __s_gazemu, 8);
+        /* cancelled/hallucinatory feedback; monster might look "confused",
+           "stunned",&c but we don't actually set corresponding attribute */
         pline_mon(mtmp, __s_s_looks_s_s, Monnam(mtmp), !rn2_at(__s_mhitu_c, 1893, __s_gazemu, 3) ? __s_empty : (already ? __s_quite : (!rn2_at(__s_mhitu_c, 1894, __s_gazemu, 2) ? __s_a_bit : __s_somewhat)), cptr.ldPtro(__static_gazemu_reactions, react, 8));
     }
     return NHM.M_ATTK_MISS;
 }
 
+/* mtmp hits you for n points damage */
 /** C ref: mhitu.c:1902 — @param {CPtr<struct monst>} mtmp @param {CInt} n */
 export function mdamageu(mtmp, n) {
     if (n < 0) {
         impossible(__s_mdamageu_for_negative_damage_d, n);
         n = 0;
     }
+
     cptr.st1(disp, 1);
     if (Upolyd()) {
         cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) - n) | 0);
         showdamage(n);
+        /* caller might have reduced mhmax before calling mdamageu() */
         if (cptr.ldI32o(u, $you_mh) > cptr.ldI32o(u, $you_mhmax))
             cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
         if (cptr.ldI32o(u, $you_mh) < 1)
@@ -1722,6 +2098,7 @@ export function mdamageu(mtmp, n) {
     } else {
         cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) - n) | 0);
         showdamage(n);
+        /* caller might have reduced uhpmax before calling mdamageu() */
         if (cptr.ldI32o(u, $you_uhp) > cptr.ldI32o(u, $you_uhpmax))
             cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
         if (cptr.ldI32o(u, $you_uhp) < 1)
@@ -1729,6 +2106,10 @@ export function mdamageu(mtmp, n) {
     }
 }
 
+/* returns 0 if seduction impossible,
+ *         1 if fine,
+ *         2 if wrong gender for nymph
+ */
 /** C ref: mhitu.c:1934 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function could_seduce(magr, mdef, mattk) {
     let pagr;
@@ -1737,6 +2118,7 @@ export function could_seduce(magr, mdef, mattk) {
     let genagr;
     let gendef;
     let adtyp;
+
     if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 262144n) != 0n))
         return 0;
     if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -1755,27 +2137,37 @@ export function could_seduce(magr, mdef, mattk) {
         defperc = schar(((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 16777216n) != 0n));
         gendef = i16(gender(mdef));
     }
+
     adtyp = mattk ? cptr.ld1uo(mattk, $attack_adtyp) : (dmgtype(pagr, NHM.AD_SSEX) ? NHM.AD_SSEX : (dmgtype(pagr, NHM.AD_SEDU) ? NHM.AD_SEDU : NHM.AD_PHYS));
     if (adtyp == NHM.AD_SSEX && !SYSOPT_SEDUCE())
         adtyp = NHM.AD_SEDU;
+
     if (agrinvis && !defperc && adtyp == NHM.AD_SEDU)
         return 0;
+
+    /* nymphs have two attacks, one for steal-item damage and the other
+       for seduction, both pass the could_seduce() test;
+       incubi/succubi have three attacks, their claw attacks for damage
+       don't pass the test */
     if ((cptr.ld1so(pagr, $permonst_mlet) != NHC.S_NYMPH && !cptr.eq(pagr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst))) || (adtyp != NHM.AD_SEDU && adtyp != NHM.AD_SSEX && adtyp != NHM.AD_SITM))
         return 0;
+
     return (genagr == ((1 - gendef) | 0)) ? 1 : ((cptr.ld1so(pagr, $permonst_mlet) == NHC.S_NYMPH) ? 2 : 0);
 }
 
+/* returns 1 if monster teleported (or hero leaves monster's vicinity) */
 /** C ref: mhitu.c:1985 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function doseduce(mon) {
     let ring;
     let nring;
-    let fem = schar((cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst)) && Mgender(mon) == NHC.FEMALE ? 1 : 0));
+    let fem = schar((cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst)) && Mgender(mon) == NHC.FEMALE ? 1 : 0));  /* otherwise incubus */
     let seewho;
-    let naked;
+    let naked;  /* True iff no armor */
     let attr_tot;
     let tried_gloves = 0;
     let qbuf = new Uint8Array(128);
     let Who = new Uint8Array(128);
+
     if ((cptr.ldI32o(mon, $monst_mcan) & 1) | 0 || cptr.ldI32o(mon, $monst_mspec_used)) {
         pline_mon(mon, __s_s_acts_as_though_s_has_got_a_sheadache, Monnam(mon), (cptr.ldPtro2(genders, pronoun_gender(mon, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)), (cptr.ldI32o(mon, $monst_mcan) & 1) | 0 ? __s_severe : __s_empty);
         return 0;
@@ -1789,21 +2181,29 @@ export function doseduce(mon) {
         pline(__s_someone_caresses_you);
     else
         You_feel(__s_very_attracted_to_s, mon_nam(mon));
+    /* cache the seducer's name in a local buffer */
     void cptr.strcpy(cptr.decay(Who), (!seewho ? (fem ? __s_she : __s_he) : Monnam(mon)));
+
+    /* if in the process of putting armor on or taking armor off,
+       interrupt that activity now */
     void stop_donning(null);
+    /* don't try to take off gloves if cursed weapon blocks them */
     if (welded(uwep.v))
         tried_gloves = 1;
+
     for (ring = cptr.ldPtro(gi, $instance_globals_i_invent); ring; ring = nring) {
         nring = cptr.ldPtr(ring);
         if (cptr.ldI16o(ring, $obj_otyp) != NHC.RIN_ADORNMENT)
             continue;
         if (fem) {
             if (cptr.ldI64o(ring, $obj_owornmask) && uarmg.v) {
+                /* don't take off worn ring if gloves are in the way */
                 if (!tried_gloves++)
                     mayberem(mon, cptr.decay(Who), uarmg.v, __s_gloves);
                 if (uarmg.v)
-                    continue;
+                    continue;  /* next ring might not be worn */
             }
+            /* confirmation prompt when charisma is high bypassed if deaf */
             if (!Deaf() && rn2_at(__s_mhitu_c, 2032, __s_doseduce, 20) < (acurr(NHC.A_CHA))) {
                 void safe_qbuf(cptr.decay(qbuf), __s_that, __s_looks_pretty_may_i_have_it, ring, xname, simpleonames, __s_ring);
                 discover_object(NHC.RIN_ADORNMENT, 1, 1, 1);
@@ -1813,6 +2213,7 @@ export function doseduce(mon) {
             } else
                 pline(__s_s_decides_she_d_like_s_and_takes_it, cptr.decay(Who), yname(ring));
             discover_object(NHC.RIN_ADORNMENT, 1, 1, 1);
+            /* might be in left or right ring slot or weapon/alt-wep/quiver */
             if (cptr.ldI64o(ring, $obj_owornmask))
                 remove_worn_item(ring, 0);
             freeinv(ring);
@@ -1823,11 +2224,13 @@ export function doseduce(mon) {
             if (cptr.eq(ring, uleft.v) || cptr.eq(ring, uright.v))
                 continue;
             if (uarmg.v) {
+                /* don't put on ring if gloves are in the way */
                 if (!tried_gloves++)
                     mayberem(mon, cptr.decay(Who), uarmg.v, __s_gloves);
                 if (uarmg.v)
-                    break;
+                    break;  /* no point trying further rings */
             }
+            /* confirmation prompt when charisma is high bypassed if deaf */
             if (!Deaf() && rn2_at(__s_mhitu_c, 2063, __s_doseduce, 20) < (acurr(NHC.A_CHA))) {
                 void safe_qbuf(cptr.decay(qbuf), __s_that, __s_looks_pretty_would_you_wear_it_for_me, ring, xname, simpleonames, __s_ring);
                 discover_object(NHC.RIN_ADORNMENT, 1, 1, 1);
@@ -1846,12 +2249,19 @@ export function doseduce(mon) {
                 pline(__s_s_puts_s_on_your_left_s, cptr.decay(Who), the(xname(ring)), body_part(NHC.HAND));
                 setworn(ring, 131072n);
             } else if (uright.v && cptr.ldI16o(uright.v, $obj_otyp) != NHC.RIN_ADORNMENT) {
+                /* note: the "replaces" message might be inaccurate if
+                   hero's location changes and the process gets interrupted,
+                   but trying to figure that out in advance in order to use
+                   alternate wording is not worth the effort */
                 pline(__s_s_replaces_s_with_s, cptr.decay(Who), yname(uright.v), yname(ring));
                 Ring_gone(uright.v);
+                /* ring removal might cause loss of levitation which could
+                   drop hero onto trap that transports hero somewhere else */
                 if (cptr.ld1uo(u, $you_utotype) || !m_next2u(mon))
                     return 1;
                 setworn(ring, 262144n);
             } else if (uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) != NHC.RIN_ADORNMENT) {
+                /* see "replaces" note above */
                 pline(__s_s_replaces_s_with_s, cptr.decay(Who), yname(uleft.v), yname(ring));
                 Ring_gone(uleft.v);
                 if (cptr.ld1uo(u, $you_utotype) || !m_next2u(mon))
@@ -1863,6 +2273,7 @@ export function doseduce(mon) {
             prinv(null, ring, 0n);
         }
     }
+
     naked = schar((!uarmc.v && !uarmf.v && !uarmg.v && !uarms.v && !uarmh.v && !uarmu.v ? 1 : 0));
     urgent_pline(__s_s_s_s, cptr.decay(Who), Deaf() ? __s_seems_to_murmur_into_your_ear : (naked ? __s_murmurs_sweet_nothings_into_your_ear : __s_murmurs_in_your_ear), naked ? __s_empty : __s_while_helping_you_undress);
     mayberem(mon, cptr.decay(Who), uarmc.v, cloak_simple_name(uarmc.v));
@@ -1875,8 +2286,16 @@ export function doseduce(mon) {
     mayberem(mon, cptr.decay(Who), uarmh.v, helm_simple_name(uarmh.v));
     if (!uarmc.v && !uarm.v)
         mayberem(mon, cptr.decay(Who), uarmu.v, __s_shirt);
+
+    /* removing armor (levitation boots, or levitation ring to make
+       room for adornment ring with incubus case) might result in the
+       hero falling through a trap door or landing on a teleport trap
+       and changing location, so hero might not be adjacent to seducer
+       any more (mayberem() has its own adjacency test so we don't need
+       to check after each potential removal) */
     if (cptr.ld1uo(u, $you_utotype) || !m_next2u(mon))
         return 1;
+
     if (uarm.v || uarmc.v) {
         if (!Deaf()) {
             if (!(((BigInt.asIntN(64, yyyymmdd(0n) - (BigInt.asIntN(64, BigInt(getyear()) * 10000n)))) == 229n) && (cptr.ldI32o(mon, $monst_female) & 1) | 0)) {
@@ -1884,21 +2303,33 @@ export function doseduce(mon) {
                 verbalize(__s_you_re_such_a_s_i_wish, cptr.ld1so(flags, $flag_female) ? __s_sweet_lady : __s_nice_guy);
             } else {
                 let yourgloves = u_carried_gloves();
+
+                /* have her call your gloves by their correct
+                   name, possibly revealing them to you */
                 if (yourgloves)
                     observe_object(yourgloves);
                 verbalize(__s_well_then_you_owe_me_s_s, yourgloves ? yname(yourgloves) : __s_twelve_pairs_of_gloves, yourgloves ? __s_and_eleven_more_pairs_of_gloves : __s_empty);
             }
         } else if (seewho)
             pline_mon(mon, __s_s_appears_to_sigh, Monnam(mon));
+        /* else no regret message if can't see or hear seducer */
+
         if (!tele_restrict(mon))
             void rloc(mon, NHM.RLOC_MSG);
         return 1;
     }
     if (cptr.ld1so(u, $you_ualign) == -1)
         adjalign(1);
+
+    /* by this point you have discovered mon's identity, blind or not... */
     urgent_pline(__s_time_stands_still_while_you_and_s_lie, noit_mon_nam(mon));
+    /* 3.6.1: a combined total for charisma plus intelligence of 35-1
+       used to guarantee successful outcome; now total maxes out at 32
+       as far as deciding what will happen; chance for bad outcome when
+       Cha+Int is 32 or more is 2/35, a bit over 5.7% */
     attr_tot = ((acurr(NHC.A_CHA)) + (acurr(NHC.A_INT))) | 0;
     if (rn2_at(__s_mhitu_c, 2178, __s_doseduce, 35) > ((attr_tot) < 32 ? (attr_tot) : 32)) {
+        /* Don't bother with mspec_used here... it didn't get tired! */
         pline(__s_s_seems_to_have_enjoyed_it_more_than_you, noit_Monnam(mon));
         switch (rn2_at(__s_mhitu_c, 2182, __s_doseduce, 5)) {
             case 0:
@@ -1935,15 +2366,16 @@ export function doseduce(mon) {
             case 4:
             {
                 let tmp;
+
                 You_feel(__s_exhausted);
                 exercise(NHC.A_STR, 0);
                 tmp = ((rn2_at(__s_mhitu_c, 2219, __s_doseduce, 10) + 6) | 0);
                 losehp(((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp)), __s_exhaustion, NHM.KILLED_BY);
                 break;
-            }
-        }
+            }  /* case 4 */
+        }  /* switch */
     } else {
-        cptr.stI32o(mon, $monst_mspec_used, rnd_at(__s_mhitu_c, 2225, __s_doseduce, 100));
+        cptr.stI32o(mon, $monst_mspec_used, rnd_at(__s_mhitu_c, 2225, __s_doseduce, 100));  /* monster is worn out */
         You(__s_seem_to_have_enjoyed_it_more_than_s, noit_mon_nam(mon));
         switch (rn2_at(__s_mhitu_c, 2227, __s_doseduce, 5)) {
             case 0:
@@ -1980,6 +2412,7 @@ export function doseduce(mon) {
             break;
         }
     }
+
     if (cptr.ld1so(mon, $monst_mtame)) {
         ;
     } else if (rn2_at(__s_mhitu_c, 2265, __s_doseduce, 20) < (acurr(NHC.A_CHA))) {
@@ -1989,6 +2422,7 @@ export function doseduce(mon) {
     } else {
         let cost;
         let umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
+
         if (umoney > 32757n)
             cost = BigInt.asIntN(64, BigInt(rnd_at(__s_mhitu_c, 2276, __s_doseduce, NHM.LARGEST_INT)) + 500n);
         else
@@ -2014,28 +2448,35 @@ export function doseduce(mon) {
         }
     }
     if (!rn2_at(__s_mhitu_c, 2300, __s_doseduce, 25))
-        cptr.stI32o(mon, $monst_mcan, 1);
+        cptr.stI32o(mon, $monst_mcan, 1);  /* monster is worn out */
     if (!tele_restrict(mon))
         void rloc(mon, NHM.RLOC_MSG);
     return 1;
 }
 
+/* 'mon' tries to remove a piece of hero's armor */
 /** C ref: mhitu.c:2309 — @param {CPtr<struct monst>} mon @param {CPtr<char>} seducer @param {CPtr<struct obj>} obj @param {CPtr<char>} str */
 function mayberem(mon, seducer, obj, str) {
     let qbuf = new Uint8Array(128);
+
     if (!obj || !cptr.ldI64o(obj, $obj_owornmask))
         return;
+    /* removal of a previous item might have sent the hero elsewhere
+       (loss of levitation that leads to landing on a transport trap) */
     if (cptr.ld1uo(u, $you_utotype) || !m_next2u(mon))
         return;
+
+    /* being deaf overrides confirmation prompt for high charisma */
     if (Deaf()) {
         pline(__s_s_takes_off_your_s, seducer, str);
     } else if (rn2_at(__s_mhitu_c, 2325, __s_mayberem, 20) < (acurr(NHC.A_CHA))) {
-        ;
+        ;  /* y_n aka yn_function is set up for this */
         void cptr.sprintf(cptr.decay(qbuf), __s_shall_i_remove_your_s_s, str, (!rn2_at(__s_mhitu_c, 2328, __s_mayberem, 2) ? __s_lover : (!rn2_at(__s_mhitu_c, 2328, __s_mayberem, 2) ? __s_dear : __s_sweetheart)));
         if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) == 110)
             return;
     } else {
         let hairbuf = new Uint8Array(256);
+
         void cptr.sprintf(cptr.decay(hairbuf), __s_let_me_run_my_fingers_through_your_s, body_part(NHC.HAIR));
         ;
         verbalize(__s_take_off_your_s_s, str, (cptr.eq(obj, uarm.v)) ? __s_let_s_get_a_little_closer : ((cptr.eq(obj, uarmc.v) || cptr.eq(obj, uarms.v)) ? __s_it_s_in_the_way : ((cptr.eq(obj, uarmf.v)) ? __s_let_me_rub_your_feet : ((cptr.eq(obj, uarmg.v)) ? __s_they_re_too_clumsy : ((cptr.eq(obj, uarmu.v)) ? __s_let_me_massage_you : cptr.decay(hairbuf))))));
@@ -2055,20 +2496,29 @@ function assess_dmg(mtmp, tmp) {
     return NHM.M_ATTK_HIT;
 }
 
+/* can be used as ranged_attk_assessed() callback.
+   Returns TRUE if monster is avoiding use of this attack */
 /** C ref: mhitu.c:2393 — @param {CPtr<struct monst>} mtmp @param {CInt} attkidx @returns {CInt} */
 export function mon_avoiding_this_attack(mtmp, attkidx) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     let typ = -1;
+
     if (attkidx >= 0 && (typ = get_atkdam_type(cptr.ld1uo2(ptr, attkidx, $sizeof_attack, $permonst_mattk + $attack_adtyp))) >= 0 && (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(uchar(typ)))))
         return 1;
     return 0;
 }
 
+/*
+ * This would be equivalent to:
+ *     ranged_attk_assessed(mtmp, mon_avoiding_this_attack)
+ * but without the added assessment function call overhead.
+ */
 /** C ref: mhitu.c:2413 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function ranged_attk_available(mtmp) {
     let i;
     let typ = -1;
     let ptr = cptr.ldPtro(mtmp, $monst_data);
+
     for (i = 0; i < NHM.NATTK; i++) {
         if (DISTANCE_ATTK_TYPE(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk)) && (typ = get_atkdam_type(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp))) >= 0 && (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(uchar(typ)))) == 0n)
             return 1;
@@ -2076,11 +2526,24 @@ export function ranged_attk_available(mtmp) {
     return 0;
 }
 
+/* FIXME:
+ *  sequencing issue:  a monster's attack might cause poly'd hero
+ *  to revert to normal form.  The messages for passive counterattack
+ *  would look better if they came before reverting form, but we need
+ *  to know whether hero reverted in order to decide whether passive
+ *  damage applies.
+ */
 /** C ref: mhitu.c:2435 — @param {CPtr<struct permonst>} olduasmon @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 function passiveum(olduasmon, mtmp, mattk) {
     let i;
     let tmp;
     let oldu_mattk = null;
+
+    /*
+     * mattk      == mtmp's attack that hit you;
+     * oldu_mattk == your passive counterattack (even if mtmp's attack
+     *               has already caused you to revert to normal form).
+     */
     for (i = 0; !oldu_mattk; i++) {
         if (i >= NHM.NATTK)
             return NHM.M_ATTK_HIT;
@@ -2093,6 +2556,8 @@ function passiveum(olduasmon, mtmp, mattk) {
         tmp = d_at(__s_mhitu_c, 2458, __s_passiveum, ((cptr.ld1so(olduasmon, $permonst_mlevel) + 1) | 0), (cptr.ld1uo(oldu_mattk, $attack_damd)));
     else
         tmp = 0;
+
+    /* These affect the enemy even if you were "killed" (rehumanized) */
     switch (cptr.ld1uo(oldu_mattk, $attack_adtyp)) {
         case NHM.AD_ACID:
         if (!rn2_at(__s_mhitu_c, 2465, __s_passiveum, 2)) {
@@ -2112,8 +2577,11 @@ function passiveum(olduasmon, mtmp, mattk) {
         {
             let protector = attk_protection(cptr.ld1u(mattk));
             let wornitems = cptr.ldI64o(mtmp, $monst_misc_worn_check);
+
+            /* wielded weapon gives same protection as gloves here */
             if ((cptr.ldPtro((mtmp), $monst_mw)) !== null)
                 wornitems |= 16n;
+
             if (!Resists_Elem(mtmp, NHC.STONE_RES) && (protector == 0n || (protector != -1n && (wornitems & protector) != protector))) {
                 if (poly_when_stoned(cptr.ldPtro(mtmp, $monst_data))) {
                     mon_to_stone(mtmp);
@@ -2130,7 +2598,10 @@ function passiveum(olduasmon, mtmp, mattk) {
         }
         case NHM.AD_ENCH:
         if (mon_currwep) {
+            /* by_you==True: passive counterattack to hero's action
+               is hero's fault */
             void drain_item(mon_currwep, 1);
+            /* No message */
         }
         return NHM.M_ATTK_HIT;
         default:
@@ -2138,11 +2609,14 @@ function passiveum(olduasmon, mtmp, mattk) {
     }
     if (!Upolyd())
         return NHM.M_ATTK_HIT;
+
+    /* These affect the enemy only if you are still a monster */
     if (rn2_at(__s_mhitu_c, 2523, __s_passiveum, 3))
         switch (cptr.ld1uo(oldu_mattk, $attack_adtyp)) {
             case NHM.AD_PHYS:
             if (cptr.ld1u(oldu_mattk) == NHM.AT_BOOM) {
                 You(__s_explode);
+                /* KMH, balance patch -- this is okay with unchanging */
                 rehumanize();
                 return assess_dmg(mtmp, tmp);
             }
@@ -2218,6 +2692,7 @@ function passiveum(olduasmon, mtmp, mattk) {
         }
     else
         tmp = 0;
+
     return assess_dmg(mtmp, tmp);
 }
 
@@ -2225,6 +2700,7 @@ function passiveum(olduasmon, mtmp, mattk) {
 export function cloneu() {
     let mon;
     let mndx = (cptr.ldI32o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_pmidx));
+
     if (cptr.ldI32o(u, $you_mh) <= 1)
         return null;
     if (cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_EXTINCT)

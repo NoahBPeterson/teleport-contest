@@ -506,6 +506,7 @@ const __s_tty_perm_invent = cptr.lit("tty perm_invent");
 const __s_s_could_not_be_enabled = cptr.lit("%s could not be enabled.");
 const __s_s_needs_a_terminal_that_is_at_least_dx = cptr.lit("%s needs a terminal that is at least %dx%d, yours is %dx%d.");
 
+/* enum and structs are defined in wintype.h */
 /** C ref: invent.c:44 — struct win_request_info_t */
 let wri_info = cptr.alloc($sizeof_win_request_info_t);
 
@@ -515,9 +516,21 @@ let perminv_flags = NHC.InvOptNone;
 /** C ref: invent.c:46 — signed char */
 let in_perm_invent_toggled = 0;
 
+/* wizards can wish for venom, which will become an invisible inventory
+ * item without this.  putting it in inv_order would mean venom would
+ * suddenly become a choice for all the inventory-class commands, which
+ * would probably cause mass confusion.  the test for inventory venom
+ * is only WIZARD and not wizard because the wizard can leave venom lying
+ * around on a bones level for normal players to find.  [Note to the
+ * confused:  'WIZARD' used to be a compile-time conditional so this was
+ * guarded by #ifdef WIZARD/.../#endif.]
+ */
 /** C ref: invent.c:57 — char[2] */
 const venom_inv = [NHC.VENOM_CLASS, 0];
 
+/* menu heading lines used instead of object classes when sorting by in-use;
+   pointers aren't const because dispinv_with_action() might temporarily
+   change "Accessories" to "Rings" or "Amulet", then back again */
 /** C ref: invent.c:62 — char *[5] */
 const inuse_headers = cptr.alloc(5 * 8);
 cptr.stPtro(inuse_headers, 0, __s_empty);
@@ -526,14 +539,38 @@ cptr.stPtro(inuse_headers, 16, __s_worn_armor);
 cptr.stPtro(inuse_headers, 24, __s_wielded_readied_weapons);
 cptr.stPtro(inuse_headers, 32, __s_accessories);
 
+/* sortloot() classification for in-use sort;
+   called at most once [per sort] for each object */
 /** C ref: invent.c:70 — @param {CPtr<Loot>} sort_item @param {CPtr<struct obj>} obj */
 function inuse_classify(sort_item, obj) {
     let w_mask = (cptr.ldI64o(obj, $obj_owornmask) & 984959n);
     let rating = 0;
     let altclass = 0;
     __lbl_assign_rating: {
-        ++altclass;
+
+        /*
+         * In order of importance, least to most, somewhat arbitrarily.
+         *
+         * For instance, all accessories are grouped together even
+         * though they're usually less important than other stuff, so
+         * that they appear earlier within displayed list of used items.
+         * Amulet is rated as most important primarily because the
+         * default 'packorder' puts amulets first (possibly because one
+         * might be The Amulet).  Non-wielded alternate weapon and
+         * quiver are grouped with primary weapon.  Weapons are rated
+         * above armor because of default 'packorder'.
+         *
+         * These ratings don't match either subclasses or 'packorder'.
+         *
+         * USE_RATING() sets up 'rating' then jumps to 'assign_rating'
+         * if 'obj' warrants that.
+         */
+        /* "Miscellaneous" */
+        ++altclass;  /* 1 */
         {
+            /* lamp and leash might be used doubly, as a tool and also wielded
+               or readied-in-quiver; these tests for used-as-tool only pass
+               when owornmask is 0 so that used-as-weapon takes precedence */
             ++rating;
             if ((!w_mask && cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm) ? 1 : 0) != 0)
                 break __lbl_assign_rating;
@@ -543,7 +580,8 @@ function inuse_classify(sort_item, obj) {
             if ((!w_mask && cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? 1 : 0) != 0)
                 break __lbl_assign_rating;
         }
-        ++altclass;
+        /* "Armor" */
+        ++altclass;  /* 2 */
         {
             ++rating;
             if ((w_mask & 64n) != 0n)
@@ -579,8 +617,12 @@ function inuse_classify(sort_item, obj) {
             if ((w_mask & 1n) != 0n)
                 break __lbl_assign_rating;
         }
-        ++altclass;
+        /* "Weapons" */
+        ++altclass;  /* 3 */
         {
+            /* could get more complicated:  if uswapwep is just alternate weapon
+               rather than wielded secondary, swap order with quiver (unless
+               quiver is ammo for uswapwep without also being ammo for uwep) */
             ++rating;
             if ((w_mask & 512n) != 0n)
                 break __lbl_assign_rating;
@@ -595,19 +637,20 @@ function inuse_classify(sort_item, obj) {
             if ((w_mask & 256n) != 0n)
                 break __lbl_assign_rating;
         }
-        ++altclass;
+        /* "Accessories" */
+        ++altclass;  /* 4 */
         {
             ++rating;
             if ((w_mask & 524288n) != 0n)
                 break __lbl_assign_rating;
         }
         {
-            ++rating;
+            ++rating;  /* off hand */
             if ((w_mask & (ULEFTY() ? 262144n : 131072n)) != 0n)
                 break __lbl_assign_rating;
         }
         {
-            ++rating;
+            ++rating;  /* main hand */
             if ((w_mask & (URIGHTY() ? 262144n : 131072n)) != 0n)
                 break __lbl_assign_rating;
         }
@@ -616,15 +659,21 @@ function inuse_classify(sort_item, obj) {
             if ((w_mask & 65536n) != 0n)
                 break __lbl_assign_rating;
         }
+
+        /* if we get here, the USE_RATING() checks failed to find a match */
         rating = 0;
-        altclass = -1;
+        altclass = -1;  /* 'orderclass' must end up non-zero */
     }
     cptr.st1o(sort_item, $Loot_inuse, schar(rating));
-    cptr.st1o(sort_item, $Loot_orderclass, schar(altclass));
+    cptr.st1o(sort_item, $Loot_orderclass, schar(altclass));  /* used for alternate headings */
+
+    /* not applicable for in-use */
     cptr.st1o(sort_item, $Loot_subclass, 0);
     cptr.st1o(sort_item, $Loot_disco, 0);
 }
 
+/* sortloot() classification; called at most once [per sort] for each object;
+   also called by '\' command if discoveries use sortloot order */
 const __static_loot_classify_def_srt_order = [NHC.COIN_CLASS, NHC.AMULET_CLASS, NHC.RING_CLASS, NHC.WAND_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.SPBOOK_CLASS, NHC.GEM_CLASS, NHC.FOOD_CLASS, NHC.TOOL_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.ROCK_CLASS, NHC.BALL_CLASS, NHC.CHAIN_CLASS, 0]; /** C ref: invent.c:155 — char[18] (function-static) */
 const __static_loot_classify_armcat = new Uint8Array(8); /** C ref: invent.c:160 — char[8] (function-static) */
 
@@ -637,8 +686,13 @@ export function loot_classify(sort_item, obj) {
     let oclass = cptr.ld1so(obj, $obj_oclass);
     let seen;
     let discovered = schar(((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+
+    /*
+     * For the value types assigned by this classification, sortloot()
+     * will put lower valued ones before higher valued ones.
+     */
     if (!Blind())
-        observe_object(obj);
+        observe_object(obj);  /* xname(obj) does this; we want it sooner */
     seen = schar(((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 ? 1 : 0)), classorder = cptr.ld1so(flags, $flag_sortpack) ? cptr.add(flags, $flag_inv_order) : cptr.decay(__static_loot_classify_def_srt_order);
     p = cptr.strchr(classorder, oclass);
     if (p)
@@ -646,32 +700,41 @@ export function loot_classify(sort_item, obj) {
     else
         k = (((1 + Number(BigInt.asIntN(32, cptr.strlen(classorder)))) | 0) + (oclass != NHC.VENOM_CLASS)) | 0;
     cptr.st1o(sort_item, $Loot_orderclass, schar(k));
+    /* subclass designation; only a few classes have subclasses
+       and the non-armor ones we use are fairly arbitrary */
     switch (oclass) {
         case NHC.ARMOR_CLASS:
         if (!cptr.ld1so(cptr.decay(__static_loot_classify_armcat), 7, 1)) {
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_HELM, 1, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_GLOVES, 2, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_BOOTS, 3, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SHIELD, 4, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_CLOAK, 5, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SHIRT, 6, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SUIT, 7, 1);
-            cptr.st1o(cptr.decay(__static_loot_classify_armcat), 7, 8, 1);
+            /* one-time init; we use a different order than the subclass
+               values defined by objclass.h */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_HELM, 1, 1);  /* [2] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_GLOVES, 2, 1);  /* [3] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_BOOTS, 3, 1);  /* [4] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SHIELD, 4, 1);  /* [1] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_CLOAK, 5, 1);  /* [5] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SHIRT, 6, 1);  /* [6] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SUIT, 7, 1);  /* [0] */
+            cptr.st1o(cptr.decay(__static_loot_classify_armcat), 7, 8, 1);  /* sanity protection */
         }
         k = cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp);
+        /* oc_armcat overloads oc_subtyp which is an 'schar' so guard
+           against somebody assigning something unexpected to it */
         if (k < 0 || k >= 7)
             k = 7;
         k = cptr.ld1so(cptr.decay(__static_loot_classify_armcat), k, 1);
         break;
         case NHC.WEAPON_CLASS:
+        /* for weapons, group by ammo (arrows, bolts), launcher (bows),
+           missile (darts, boomerangs), stackable (daggers, knives, spears),
+           'other' (swords, axes, &c), polearms */
         k = cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp);
         k = (k < 0) ? ((k >= -22 && k <= -20) ? 1 : 3) : ((k >= NHC.P_BOW && k <= NHC.P_CROSSBOW) ? 2 : ((k == NHC.P_SPEAR || k == NHC.P_DAGGER || k == NHC.P_KNIFE) ? 4 : (!is_pole(obj) ? 5 : 6)));
         break;
         case NHC.TOOL_CLASS:
         if (seen && discovered && (otyp == NHC.BAG_OF_TRICKS || otyp == NHC.HORN_OF_PLENTY))
-            k = 2;
+            k = 2;  /* known pseudo-container */
         else if (Is_container(obj))
-            k = 1;
+            k = 1;  /* regular container or unknown bag of tricks */
         else
             switch (otyp) {
                 case NHC.WOODEN_FLUTE:
@@ -685,19 +748,21 @@ export function loot_classify(sort_item, obj) {
                 case NHC.LEATHER_DRUM:
                 case NHC.DRUM_OF_EARTHQUAKE:
                 case NHC.HORN_OF_PLENTY:
-                k = 3;
+                k = 3;  /* instrument or unknown horn of plenty */
                 break;
                 default:
-                k = 4;
+                k = 4;  /* 'other' tool */
                 break;
             }
         break;
         case NHC.FOOD_CLASS:
+        /* [what about separating "partly eaten" within each group?] */
         switch (otyp) {
             case NHC.SLIME_MOLD:
             k = 1;
             break;
             default:
+            /* [maybe separate one-bite foods from rations and such?] */
             k = (cptr.ldI32o(obj, $obj_globby) & 1) | 0 ? 6 : 2;
             break;
             case NHC.TIN:
@@ -712,6 +777,22 @@ export function loot_classify(sort_item, obj) {
         }
         break;
         case NHC.GEM_CLASS:
+        /*
+         * Normally subclass takes priority over discovery status, but
+         * that would give away information for gems (assuming we'll
+         * group them as valuable gems, next glass, then gray stones,
+         * and finally rocks once they're all fully identified).
+         *
+         * Order:
+         *  1) unseen gems and glass ("gem")
+         *  2) seen but undiscovered gems and glass ("blue gem"),
+         *  3) discovered gems ("sapphire"),
+         *  4) discovered glass ("worthless pieced of blue glass"),
+         *  5) unseen gray stones and rocks ("stone"),
+         *  6) seen but undiscovered gray stones ("gray stone"),
+         *  7) discovered gray stones ("touchstone"),
+         *  8) seen rocks ("rock").
+         */
         switch ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) {
             case NHC.GEMSTONE:
             k = !seen ? 1 : (!discovered ? 2 : 3);
@@ -725,47 +806,71 @@ export function loot_classify(sort_item, obj) {
         }
         break;
         default:
-        k = 1;
+        /* other classes don't have subclasses; we assign a nonzero
+           value because sortloot() uses 0 to mean 'not yet classified' */
+        k = 1;  /* any non-zero would do */
         break;
     }
     cptr.st1o(sort_item, $Loot_subclass, schar(k));
-    k = !seen ? 1 : ((discovered || !(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) ? 4 : ((cptr.ldPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname)) ? 3 : 2));
+    /* discovery status */
+    k = !seen ? 1 : ((discovered || !(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) ? 4 : ((cptr.ldPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname)) ? 3 : 2));  /* undiscovered */
     cptr.st1o(sort_item, $Loot_disco, schar(k));
+    /* not applicable */
     cptr.st1o(sort_item, $Loot_inuse, 0);
 }
 
+/* sortloot() formatting routine; for alphabetizing, not shown to user */
 /** C ref: invent.c:309 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function loot_xname(obj) {
     let saveo = cptr.alloc(216);
     let save_debug;
     let res;
     let save_oname;
+
+    /*
+     * Deal with things that xname() includes as a prefix.  We don't
+     * want such because they change alphabetical ordering.  First,
+     * remember 'obj's current settings.
+     */
     cptr.stI32o(saveo, $obj_oeroded, (cptr.ldI32o(obj, $obj_oeroded) & 3));
     cptr.stI32o(saveo, $obj_blessed, (cptr.ldI32o(obj, $obj_blessed) & 1)), cptr.stI32o(saveo, $obj_cursed, (cptr.ldI32o(obj, $obj_cursed) & 1));
     cptr.st1o(saveo, $obj_spe, cptr.ld1so(obj, $obj_spe));
     cptr.stI32o(saveo, $obj_owt, cptr.ldI32o(obj, $obj_owt));
     save_oname = has_oname(obj) ? (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))) : null;
     save_debug = cptr.ld1so(flags, $flag_debug);
+    /* suppress "diluted" for potions and "holy/unholy" for water;
+       sortloot() will deal with them using other criteria than name */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
         cptr.stI32o(obj, $obj_oeroded, 0);
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER)
             cptr.stI32o(obj, $obj_blessed, 0), cptr.stI32o(obj, $obj_cursed, 0);
     }
+    /* make "wet towel" and "moist towel" format as "towel" so that all
+       three group together */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL)
         cptr.st1o(obj, $obj_spe, 0);
+    /* group globs by monster type rather than by size:  force all to
+       have the same size adjective hence same "small glob of " prefix */
     if ((cptr.ldI32o(obj, $obj_globby) & 1))
-        cptr.stI32o(obj, $obj_owt, 20);
+        cptr.stI32o(obj, $obj_owt, 20);  /* weight of a fresh glob (one pudding's worth) */
+    /* suppress user-assigned name */
     if (save_oname && !cptr.ld1so(obj, $obj_oartifact))
         cptr.stPtr(cptr.ldPtro((obj), $obj_oextra), null);
+    /* avoid wizard mode formatting variations */
     if (wizard()) {
+        /* paranoia:  before toggling off wizard mode, guard against a
+           panic in xname() producing a normal mode panic save file */
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
         cptr.st1o(flags, $flag_debug, 0);
     }
+
     res = cxname_singular(obj);
+
     if (save_debug) {
         cptr.st1o(flags, $flag_debug, 1);
         cptr.stI32o(program_state, $sinfo_something_worth_saving, 1);
     }
+    /* restore the object */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS) {
         cptr.stI32o(obj, $obj_oeroded, (cptr.ldI32o(saveo, $obj_oeroded) & 3));
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER)
@@ -773,22 +878,33 @@ function loot_xname(obj) {
     }
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL) {
         cptr.st1o(obj, $obj_spe, cptr.ld1so(saveo, $obj_spe));
+        /* give "towel" a suffix that will force wet ones to come first,
+           moist ones next, and dry ones last regardless of whether
+           they've been flagged as having spe known */
         void cptr.strcat(res, is_wet_towel(obj) ? ((cptr.ld1so(obj, $obj_spe) >= 3) ? __s_x : __s_y) : __s_z);
     }
     if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
         cptr.stI32o(obj, $obj_owt, cptr.ldI32o(saveo, $obj_owt));
+        /* we've suppressed the size prefix (above); there normally won't
+           be more than one of a given creature type because they coalesce,
+           but globs with different bless/curse state won't merge so it is
+           feasible to have multiple at the same location; add a suffix to
+           get such sorted by size (small first) */
         void cptr.strcat(res, (cptr.ldI32o(obj, $obj_owt) <= 100) ? __s_a : ((cptr.ldI32o(obj, $obj_owt) <= 300) ? __s_b : ((cptr.ldI32o(obj, $obj_owt) <= 500) ? __s_c : __s_d)));
     }
     if (save_oname && !cptr.ld1so(obj, $obj_oartifact))
         cptr.stPtr(cptr.ldPtro((obj), $obj_oextra), save_oname);
+
     return res;
 }
 
+/* '$'==1, 'a'-'z'==2..27, 'A'-'Z'==28..53, '#'==54, catchall 55 */
 /** C ref: invent.c:391 — @param {CInt} c @returns {CInt} */
 function invletter_value(c) {
     return (97 <= c && c <= 122) ? ((((c - 97) | 0) + 2) | 0) : ((65 <= c && c <= 90) ? ((((((c - 65) | 0) + 2) | 0) + 26) | 0) : ((c == 36) ? 1 : ((c == 35) ? ((((1 + NHC.invlet_basic) | 0) + 1) | 0) : ((((((1 + NHC.invlet_basic) | 0) + 1) | 0) + 1) | 0))));
 }
 
+/* qsort comparison routine for sortloot() */
 /** C ref: invent.c:403 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function sortloot_cmp(vptr1, vptr2) {
     let sli1 = vptr1;
@@ -802,45 +918,82 @@ function sortloot_cmp(vptr1, vptr2) {
     let val2;
     let namcmp;
     __lbl_tiebreak: {
+
+        /* in-use takes precedence over all others */
         if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_INUSE) >>> 0) != 0) {
+            /* Classify each object at most once no matter how many
+               comparisons it is involved in. */
             if (!cptr.ld1so(sli1, $sortloot_item_orderclass))
                 inuse_classify(sli1, obj1);
             if (!cptr.ld1so(sli2, $sortloot_item_orderclass))
                 inuse_classify(sli2, obj2);
+
             val1 = cptr.ld1so(sli1, $sortloot_item_inuse);
             val2 = cptr.ld1so(sli2, $sortloot_item_inuse);
             if (val1 != val2)
-                return (val2 - val1) | 0;
+                return (val2 - val1) | 0;  /* bigger value comes before smaller */
+            /* neither item in use (or both are lit lamps/candles or both are
+               attached leashes; items using owornmask don't produce ties) */
             break __lbl_tiebreak;
         }
+
+        /* order by object class unless we're doing by-invlet without sortpack */
         if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & 3) >>> 0) != NHM.SORTLOOT_INVLET) {
+            /* Classify each object at most once no matter how many
+               comparisons it is involved in. */
             if (!cptr.ld1so(sli1, $sortloot_item_orderclass))
                 loot_classify(sli1, obj1);
             if (!cptr.ld1so(sli2, $sortloot_item_orderclass))
                 loot_classify(sli2, obj2);
+
+            /* Sort by class. */
             val1 = cptr.ld1so(sli1, $sortloot_item_orderclass);
             val2 = cptr.ld1so(sli2, $sortloot_item_orderclass);
             if (val1 != val2)
                 return (val1 - val2) | 0;
+
+            /* skip sub-classes when ordering by sortpack+invlet */
             if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_INVLET) >>> 0) == 0) {
+                /* Class matches; sort by subclass. */
                 val1 = cptr.ld1so(sli1, $sortloot_item_subclass);
                 val2 = cptr.ld1so(sli2, $sortloot_item_subclass);
                 if (val1 != val2)
                     return (val1 - val2) | 0;
+
+                /* Class and subclass match; sort by discovery status:
+                 * first unseen, then seen but not named or discovered,
+                 * then named, lastly discovered.
+                 * 1) potion
+                 * 2) pink potion
+                 * 3) dark green potion called confusion
+                 * 4) potion of healing
+                 * Multiple entries within each group will be put into
+                 * alphabetical order below.
+                 */
                 val1 = cptr.ld1so(sli1, $sortloot_item_disco);
                 val2 = cptr.ld1so(sli2, $sortloot_item_disco);
                 if (val1 != val2)
                     return (val1 - val2) | 0;
             }
         }
+
+        /* order by assigned inventory letter */
         if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_INVLET) >>> 0) != 0) {
             val1 = invletter_value(cptr.ld1so(obj1, $obj_invlet));
             val2 = invletter_value(cptr.ld1so(obj2, $obj_invlet));
             if (val1 != val2)
                 return (val1 - val2) | 0;
         }
+
         if (((cptr.ldI32o(gs, $instance_globals_s_sortlootmode) & NHM.SORTLOOT_LOOT) >>> 0) == 0)
             break __lbl_tiebreak;
+
+        /*
+         * Sort object names in lexicographical order, ignoring quantity.
+         *
+         * Each obj gets formatted at most once (per sort) no matter how many
+         * comparisons it gets subjected to.
+         */
         nam1 = cptr.ldPtro(sli1, $sortloot_item_str);
         if (!nam1) {
             tmpstr = loot_xname(obj1);
@@ -855,32 +1008,93 @@ function sortloot_cmp(vptr1, vptr2) {
         }
         if ((namcmp = strncmpi((nam1), (nam2), -1)) != 0)
             return namcmp;
+
+        /* Sort by BUCX. */
         val1 = (cptr.ldI32o(obj1, $obj_bknown) & 1) | 0 ? ((cptr.ldI32o(obj1, $obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj1, $obj_cursed) & 1) ? 2 : 1)) : 0;
         val2 = (cptr.ldI32o(obj2, $obj_bknown) & 1) | 0 ? ((cptr.ldI32o(obj2, $obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj2, $obj_cursed) & 1) ? 2 : 1)) : 0;
         if (val1 != val2)
-            return (val2 - val1) | 0;
+            return (val2 - val1) | 0;  /* bigger is better */
+
+        /* Sort by greasing.  This will put the objects in degreasing order. */
         val1 = (cptr.ldI32o(obj1, $obj_greased) & 1) | 0;
         val2 = (cptr.ldI32o(obj2, $obj_greased) & 1) | 0;
         if (val1 != val2)
-            return (val2 - val1) | 0;
+            return (val2 - val1) | 0;  /* bigger is better */
+
+        /* Sort by erosion.  The effective amount is what matters. */
         val1 = greatest_erosion(obj1);
         val2 = greatest_erosion(obj2);
         if (val1 != val2)
-            return (val1 - val2) | 0;
+            return (val1 - val2) | 0;  /* bigger is WORSE */
+
+        /* Sort by erodeproofing.  Map known-invulnerable to 1, and both
+           known-vulnerable and unknown-vulnerability to 0, because that's
+           how they're displayed. */
         val1 = (cptr.ldI32o(obj1, $obj_rknown) & 1) | 0 && (cptr.ldI32o(obj1, $obj_oerodeproof) & 1) | 0 ? 1 : 0;
         val2 = (cptr.ldI32o(obj2, $obj_rknown) & 1) | 0 && (cptr.ldI32o(obj2, $obj_oerodeproof) & 1) | 0 ? 1 : 0;
         if (val1 != val2)
-            return (val2 - val1) | 0;
+            return (val2 - val1) | 0;  /* bigger is better */
+
+        /* Sort by enchantment.  Map unknown to -1000, which is comfortably
+           below the range of obj->spe.  oc_uses_known means that obj->known
+           matters, which usually indirectly means that obj->spe is relevant.
+           Lots of objects use obj->spe for some other purpose (see obj.h). */
         if ((cptr.ldI32o2(objects, cptr.ldI16o(obj1, $obj_otyp), $sizeof_objclass, $objclass_oc_uses_known) & 1) | 0 && cptr.ld1so(obj1, $obj_oclass) != NHC.FOOD_CLASS) {
             val1 = (cptr.ldI32o(obj1, $obj_known) & 1) | 0 ? cptr.ld1so(obj1, $obj_spe) : -1000;
             val2 = (cptr.ldI32o(obj2, $obj_known) & 1) | 0 ? cptr.ld1so(obj2, $obj_spe) : -1000;
             if (val1 != val2)
-                return (val2 - val1) | 0;
+                return (val2 - val1) | 0;  /* bigger is better */
         }
     }
+    /* They're identical, as far as we're concerned.  We want
+       to force a deterministic order, and do so by producing a
+       stable sort: maintain the original order of equal items. */
     return ((cptr.ldI32o(sli1, $sortloot_item_indx) - cptr.ldI32o(sli2, $sortloot_item_indx)) | 0);
 }
 
+/*
+ * sortloot() - the story so far...
+ *
+ *      The original implementation constructed and returned an array
+ *      of pointers to objects in the requested order.  Callers had to
+ *      count the number of objects, allocate the array, pass one
+ *      object at a time to the routine which populates it, traverse
+ *      the objects via stepping through the array, then free the
+ *      array.  The ordering process used a basic insertion sort which
+ *      is fine for short lists but inefficient for long ones.
+ *
+ *      3.6.0 (and continuing with 3.6.1) changed all that so that
+ *      sortloot was self-contained as far as callers were concerned.
+ *      It reordered the linked list into the requested order and then
+ *      normal list traversal was used to process it.  It also switched
+ *      to qsort() on the assumption that the C library implementation
+ *      put some effort into sorting efficiently.  It also checked
+ *      whether the list was already sorted as it got ready to do the
+ *      sorting, so re-examining inventory or a pile of objects without
+ *      having changed anything would gobble up less CPU than a full
+ *      sort.  But it had at least two problems (aside from the ordinary
+ *      complement of bugs):
+ *      1) some players wanted to get the original order back when they
+ *      changed the 'sortloot' option back to 'none', but the list
+ *      reordering made that infeasible;
+ *      2) object identification giving the 'ID whole pack' result
+ *      would call makeknown() on each newly ID'd object, that would
+ *      call update_inventory() to update the persistent inventory
+ *      window if one existed, the interface would call the inventory
+ *      display routine which would call sortloot() which might change
+ *      the order of the list being traversed by the identify code,
+ *      possibly skipping the ID of some objects.  That could have been
+ *      avoided by suppressing 'perm_invent' during identification
+ *      (fragile) or by avoiding sortloot() during inventory display
+ *      (more robust).
+ *
+ *      As of 3.6.2: revert to the temporary array of ordered obj pointers
+ *      but have sortloot() do the counting and allocation.  Callers
+ *      need to use array traversal instead of linked list traversal
+ *      and need to free the temporary array when done.  And the
+ *      array contains 'struct sortloot_item' (aka 'Loot') entries
+ *      instead of simple 'struct obj *' entries.
+ */
 let __static_sortloot_zerosli = cptr.alloc($sizeof_sortloot_item); /** C ref: invent.c:599 — struct sortloot_item (function-static) */
 
 /** C ref: invent.c:593 — @param {CPtr<struct obj *>} olist @param {CUInt} mode @param {CInt} by_nexthere @param {CPtr} filterfunc @returns {CPtr<Loot>} */
@@ -890,11 +1104,16 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
     let n;
     let i;
     let augment_filter;
+
     for (n = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, $obj_v) : cptr.ldPtr(o))
         ++n;
+    /* note: if there is a filter function, this might overallocate */
     sliarray = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(((n + 1) >>> 0) >>> 0) * 24n))));
+
+    /* the 'keep cockatrice corpses' flag is overloaded with sort mode */
     augment_filter = schar((((mode & NHM.SORTLOOT_PETRIFY) >>> 0) ? 1 : 0));
-    mode &= 4294967263;
+    mode &= 4294967263;  /* remove flag, leaving mode */
+    /* populate aliarray[0..n-1] */
     for (i = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, $obj_v) : cptr.ldPtr(o)) {
         if (filterfunc && !(filterfunc)(o) && (!augment_filter || cptr.ldI16o(o, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(o, $obj_corpsenm), $sizeof_permonst))))
             continue;
@@ -903,12 +1122,17 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
         ++i;
     }
     n = i;
+    /* add a terminator so that we don't have to pass 'n' back to caller */
     cptr.memcpy(cptr.add(sliarray, n, $sizeof_Loot), __static_sortloot_zerosli, 24);
     cptr.stI32o2(sliarray, n, $sizeof_Loot, $sortloot_item_indx, -1);
+
+    /* do the sort; if no sorting is requested, we'll just return
+       a sortloot_item array reflecting the current ordering */
     if (mode && n > 1) {
-        cptr.stI32o(gs, $instance_globals_s_sortlootmode, mode);
+        cptr.stI32o(gs, $instance_globals_s_sortlootmode, mode);  /* extra input for sortloot_cmp() */
         nh_deterministic_qsort((sliarray), BigInt((n) >>> 0), 24n, (sortloot_cmp));
-        cptr.stI32o(gs, $instance_globals_s_sortlootmode, 0);
+        cptr.stI32o(gs, $instance_globals_s_sortlootmode, 0);  /* reset static mode flags */
+        /* if sortloot_cmp formatted any objects, discard their strings now */
         for (i = 0; i < n; ++i)
             if (cptr.ldPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str))
                 cptr.free(cptr.ldPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str)), cptr.stPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str, null);
@@ -916,6 +1140,7 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
     return sliarray;
 }
 
+/* sortloot() callers should use this to free up memory it allocates */
 /** C ref: invent.c:647 — @param {CPtr<Loot *>} loot_array_p */
 export function unsortloot(loot_array_p) {
     if (cptr.ldPtr(loot_array_p))
@@ -927,10 +1152,13 @@ export function assigninvlet(otmp) {
     let inuse = new Uint8Array(52);
     let i;
     let obj;
+
+    /* there should be at most one of these in inventory... */
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1o(otmp, $obj_invlet, NHC.GOLD_SYM);
         return;
     }
+
     for (i = 0; i < NHC.invlet_basic; i++)
         cptr.st1o(cptr.decay(inuse), i, 0, 1);
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
@@ -957,13 +1185,19 @@ export function assigninvlet(otmp) {
     cptr.stI32o(gl, $instance_globals_l_lastinvnr, i);
 }
 
+/* sort the inventory; used by addinv() and doorganize() */
 /** C ref: invent.c:739 */
 function reorder_invent() {
     let otmp;
     let prev;
     let next;
     let need_more_sorting;
+
     do {
+        /*
+         * We expect at most one item to be out of order, so this
+         * isn't nearly as inefficient as it may first appear.
+         */
         need_more_sorting = 0;
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent), prev = null; otmp; ) {
             next = cptr.ldPtr(otmp);
@@ -984,14 +1218,21 @@ function reorder_invent() {
     } while (need_more_sorting);
 }
 
+/* scan a list of objects to see whether another object will merge with
+   one of them; used in pickup.c when all 52 inventory slots are in use,
+   to figure out whether another object could still be picked up */
 /** C ref: invent.c:775 — @param {CPtr<struct obj>} objlist @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function merge_choice(objlist, obj) {
     let shkp;
     let save_nocharge;
+
     if (!objlist)
         return null;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_SCARE_MONSTER)
         return null;
+    /* if this is an item on the shop floor, the attributes it will
+       have when carried are different from what they are now; prevent
+       that from eliciting an incorrect result from mergable() */
     save_nocharge = (cptr.ldI32o(obj, $obj_no_charge) & 1);
     if (cptr.eq(objlist, cptr.ldPtro(gi, $instance_globals_i_invent)) && cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR && (shkp = shop_keeper(inside_shop(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy)))) !== null) {
         if ((cptr.ldI32o(obj, $obj_no_charge) & 1))
@@ -1000,6 +1241,7 @@ export function merge_choice(objlist, obj) {
             return null;
     }
     do {
+        /*assert(objlist != NULL);*/
         if (mergable(objlist, obj))
             break;
         objlist = cptr.ldPtr(objlist);
@@ -1008,16 +1250,31 @@ export function merge_choice(objlist, obj) {
     return objlist;
 }
 
+/* merge obj with otmp and delete obj if types agree */
 /** C ref: invent.c:814 — @param {CPtr<struct obj *>} potmp @param {CPtr<struct obj *>} pobj @returns {CInt} */
 export function merged(potmp, pobj) {
     let otmp = cptr.ldPtr(potmp);
     let obj = cptr.ldPtr(pobj);
     let discovered = 0;
+
     if (mergable(otmp, obj)) {
+        /* Approximate age: we do it this way because if we were to
+         * do it "accurately" (merge only when ages are identical)
+         * we'd wind up never merging any corpses.
+         * otmp->age = otmp->age*(1-proportion) + obj->age*proportion;
+         *
+         * Don't do the age manipulation if lit.  We would need
+         * to stop the burn on both items, then merge the age,
+         * then restart the burn.  Glob ages are averaged in the
+         * absorb routine, which uses weight rather than quantity
+         * to adjust for proportion (glob quantity is always 1).
+         */
         if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) && !(cptr.ldI32o(obj, $obj_globby) & 1))
             cptr.stI64o(otmp, $obj_age, (BigInt.asIntN(64, (BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_age) * cptr.ldI64o(otmp, $obj_quan))) + (BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) * cptr.ldI64o(obj, $obj_quan))))) / (BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_quan) + cptr.ldI64o(obj, $obj_quan))));
+
         if (!(cptr.ldI32o(otmp, $obj_globby) & 1))
             cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + cptr.ldI64o(obj, $obj_quan));
+        /* temporary special case for gold objects!!!! */
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
             cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0), cptr.stI32o(otmp, $obj_bknown, 0);
         else if (!Is_pudding(otmp))
@@ -1025,12 +1282,22 @@ export function merged(potmp, pobj) {
         if (!has_oname(otmp) && has_oname(obj))
             otmp = cptr.stPtr(potmp, oname(otmp, (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))), NHM.ONAME_SKIP_INVUPD));
         obj_extract_self(obj);
+
         if ((cptr.ldI32o(obj, $obj_pickup_prev) & 1) | 0 && cptr.ld1so(otmp, $obj_where) == NHM.OBJ_INVENT)
             cptr.stI32o(otmp, $obj_pickup_prev, 1);
+
+        /* really should merge the timeouts */
         if ((cptr.ldI32o(obj, $obj_lamplit) & 1))
             obj_merge_light_sources(obj, otmp);
         if (cptr.ldI16o(obj, $obj_timed))
-            obj_stop_timers(obj);
+            obj_stop_timers(obj);  /* follows lights */
+
+        /* objects can be identified by comparing them (unless Blind,
+           but that is handled in mergable()); the object becomes
+           identified in a particular dimension if either object was
+           previously identified in that dimension, and if the
+           identification states don't match, one of them must have
+           previously been identified */
         if (((cptr.ldI32o(obj, $obj_known) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_known) & 1) | 0)) {
             cptr.stI32o(otmp, $obj_known, 1);
             discovered = 1;
@@ -1045,8 +1312,19 @@ export function merged(potmp, pobj) {
             if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
                 discovered = 1;
         }
+
+        /* fixup for `#adjust' merging wielded darts, daggers, &c */
         if (cptr.ldI64o(obj, $obj_owornmask) && (cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT)) {
             let wmask = cptr.ldI64o(otmp, $obj_owornmask) | cptr.ldI64o(obj, $obj_owornmask);
+
+            /* Both the items might be worn in competing slots;
+               merger preference (regardless of which is which):
+             primary weapon + alternate weapon -> primary weapon;
+             primary weapon + quiver -> primary weapon;
+             alternate weapon + quiver -> alternate weapon.
+               (Prior to 3.3.0, it was not possible for the two
+               stacks to be worn in different slots and `obj'
+               didn't need to be unworn when merging.) */
             if ((wmask & 256n) != 0n) {
                 wmask = 256n;
             } else if ((wmask & 1024n) != 0n) {
@@ -1062,22 +1340,49 @@ export function merged(potmp, pobj) {
             setworn(otmp, wmask);
             setnotworn(obj);
         }
+
+        /* mergable() no longer requires 'bypass' to match; if 'obj' has
+           the bypass bit set, force the combined stack to have that too;
+           primarily in case this merge is occurring because stackobj()
+           is operating on an object just dropped by a monster that was
+           zapped with polymorph, we want bypass set in order to inhibit
+           the same zap from affecting the new combined stack when it hits
+           objects at the monster's spot (but also in case we're called by
+           code that's using obj->bypass to track 'already processed') */
         if ((cptr.ldI32o(obj, $obj_bypass) & 1))
             cptr.stI32o(otmp, $obj_bypass, 1);
+
+        /* handle puddings a bit differently; absorption will free the
+           other object automatically so we can just return out from here */
         if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
             pudding_merge_message(otmp, obj);
             obj_absorb(potmp, pobj);
             return 1;
         }
+
+        /* Print a message if item comparison discovers more
+           information about the items (with the exception of thrown
+           items, where this would be too spammy as such items get
+           unidentified by monsters very frequently). */
         if (discovered && cptr.ld1so(otmp, $obj_where) == NHM.OBJ_INVENT && ((cptr.ldI32o(obj, $obj_how_lost) & 7) | 0) != NHM.LOST_THROWN && ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) != NHM.LOST_THROWN) {
             pline(__s_you_learn_more_about_your_items_by);
         }
-        obfree(obj, otmp);
+
+        obfree(obj, otmp);  /* free(obj), bill->otmp */
         return 1;
     }
     return 0;
 }
 
+/*
+ * Adjust hero intrinsics as if this object was being added to the hero's
+ * inventory.  Called _before_ the object has been added to the hero's
+ * inventory.
+ *
+ * This is called when adding objects to the hero's inventory normally (via
+ * addinv) or when an object in the hero's inventory has been polymorphed
+ * in-place.
+ */
 /** C ref: invent.c:960 — @param {CPtr<struct obj>} obj */
 export function addinv_core1(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
@@ -1111,53 +1416,96 @@ export function addinv_core1(obj) {
         }
         set_artifact_intrinsic(obj, 1, 4096n);
     }
+
+    /* "special achievements"; revealed in end of game disclosure and
+       dumplog, originally just recorded in XLOGFILE */
     if ((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo))) {
         record_achievement(NHC.ACH_MINE_PRIZE);
-        cptr.stI32o(svc, $context_info_achieveo, 0);
-        cptr.stI32o(obj, $obj_nomerge, 0);
+        cptr.stI32o(svc, $context_info_achieveo, 0);  /* done w/ luckstone o_id */
+        cptr.stI32o(obj, $obj_nomerge, 0);  /* was set in create_object(sp_lev.c) */
     } else if ((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid))) {
         record_achievement(NHC.ACH_SOKO_PRIZE);
-        cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);
-        cptr.stI32o(obj, $obj_nomerge, 0);
+        cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);  /* done w/ bag/amulet o_id */
+        cptr.stI32o(obj, $obj_nomerge, 0);  /* (got set in sp_lev.c) */
     }
 }
 
+/*
+ * Adjust hero intrinsics (and perform other side effects) as if this
+ * object was being added to the hero's inventory.  Called _after_ the
+ * object has been added to the hero's inventory.
+ *
+ * This can be used either for updating intrinsics, or to allow the hero to
+ * react to objects that are now in inventory.
+ *
+ * This is called when adding objects to the hero's inventory normally (via
+ * addinv), when an object in the hero's inventory has been polymorphed
+ * in-place, or when the hero re-examines objects that they picked up while
+ * blind.
+ *
+ * This may occasionally be called on an item that was already in inventory,
+ * so it should be written to work even if called multiple times in a row
+ * (e.g. do not assume that the object was not in inventory already).
+ */
 /** C ref: invent.c:1025 — @param {CPtr<struct obj>} obj */
 export function addinv_core2(obj) {
     if (confers_luck(obj)) {
+        /* new luckstone must be in inventory by this point
+           for correct calculation */
         set_moreluck();
     }
+
+    /* Archeologists can decipher the writing on a scroll label to work out
+       what they are (exception: unlabeled scrolls don't have a label to
+       decipher) */
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS && cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER && !Blind() && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1)) {
         observe_object(obj);
         pline(__s_you_decipher_the_label_on_s, yname(obj));
         discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
+
+        /* conduct: this is avoidable via not picking up / wishing for
+           scrolls */
         if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
             livelog_printf(32n, __s_became_literate_by_deciphering_a_scroll);
     }
 }
 
+/*
+ * Add obj to the hero's inventory.  Make sure the object is "free".
+ * Adjust hero attributes as necessary.
+ */
 /** C ref: invent.c:1056 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} other_obj @param {CInt} update_perm_invent @returns {CPtr<struct obj>} */
 function addinv_core0(obj, other_obj, update_perm_invent) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
     let prev;
-    let saved_otyp = cptr.ldI16o(obj.v, $obj_otyp);
+    let saved_otyp = cptr.ldI16o(obj.v, $obj_otyp);  /* for panic */
     let obj_was_thrown;
     __lbl_added: {
+
         if (cptr.ld1so(obj.v, $obj_where) != NHM.OBJ_FREE)
             panic(__s_addinv_obj_not_free);
         if (((cptr.ldI32o(obj.v, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
             return (null);
-        cptr.stI32o(obj.v, $obj_no_charge, 0);
+
+        /* normally addtobill() clears no_charge when items in a shop are
+           picked up, but won't do so if the shop has become untended */
+        cptr.stI32o(obj.v, $obj_no_charge, 0);  /* should not be set in hero's invent */
         if ((cptr.ldPtro((obj.v), $obj_cobj) !== null))
-            picked_container(obj.v);
+            picked_container(obj.v);  /* clear no_charge */
         obj_was_thrown = schar((((cptr.ldI32o(obj.v, $obj_how_lost) & 7) | 0) == NHM.LOST_THROWN));
         cptr.stI32o(obj.v, $obj_how_lost, NHM.LOST_NONE);
+
         if (cptr.ld1so(gl, $instance_globals_l_loot_reset_justpicked)) {
             cptr.st1o(gl, $instance_globals_l_loot_reset_justpicked, 0);
             reset_justpicked(cptr.ldPtro(gi, $instance_globals_i_invent));
         }
-        addinv_core1(obj.v);
+
+        addinv_core1(obj.v);  /* handle most side effects of carrying obj */
+
+        /* for addinv_before(); if something has been removed and is now being
+           reinserted, try to put it in the same place instead of merging or
+           placing at end; for thrown-and-return weapon with !fixinv setting */
         if (other_obj) {
             for (otmp.v = cptr.ldPtro(gi, $instance_globals_i_invent); otmp.v; otmp.v = cptr.ldPtr(otmp.v)) {
                 if (cptr.eq(cptr.ldPtr(otmp.v), other_obj)) {
@@ -1168,12 +1516,17 @@ function addinv_core0(obj, other_obj, update_perm_invent) {
                 }
             }
         }
+
+        /* merge with quiver in preference to any other inventory slot
+           in case quiver and wielded weapon are both eligible; adding
+           extra to quivered stack is more useful than to wielded one */
         if (uquiver.v && merged(uquiver, obj)) {
             obj.v = uquiver.v;
             if (!obj.v)
                 panic(__s_addinv_null_obj_after_quiver_merge_otyp, saved_otyp);
             break __lbl_added;
         }
+        /* merge if possible; find end of chain in the process */
         for (prev = null, otmp.v = cptr.ldPtro(gi, $instance_globals_i_invent); otmp.v; prev = otmp.v, otmp.v = cptr.ldPtr(otmp.v))
             if (merged(otmp, obj)) {
                 obj.v = otmp.v;
@@ -1181,50 +1534,66 @@ function addinv_core0(obj, other_obj, update_perm_invent) {
                     panic(__s_addinv_null_obj_after_merge_otyp_d, saved_otyp);
                 break __lbl_added;
             }
+        /* didn't merge, so insert into chain */
         assigninvlet(obj.v);
         if (cptr.ld1so(flags, $flag_invlet_constant) || !prev) {
-            cptr.stPtr(obj.v, cptr.ldPtro(gi, $instance_globals_i_invent));
+            cptr.stPtr(obj.v, cptr.ldPtro(gi, $instance_globals_i_invent));  /* insert at beginning */
             cptr.stPtro(gi, $instance_globals_i_invent, obj.v);
             if (cptr.ld1so(flags, $flag_invlet_constant))
                 reorder_invent();
         } else {
-            cptr.stPtr(prev, obj.v);
+            cptr.stPtr(prev, obj.v);  /* insert at end */
             cptr.stPtr(obj.v, null);
         }
         cptr.st1o(obj.v, $obj_where, NHM.OBJ_INVENT);
+
+        /* fill empty quiver if obj was thrown */
         if (obj_was_thrown && cptr.ld1so(flags, $flag_pickup_thrown) && !uquiver.v && cptr.ld1so(obj.v, $obj_oartifact) != NHC.ART_MJOLLNIR && cptr.ldI16o(obj.v, $obj_otyp) != NHC.AKLYS && (throwing_weapon(obj.v) || is_ammo(obj.v)))
             setuqwep(obj.v);
     }
     cptr.stI32o(obj.v, $obj_pickup_prev, 1);
-    addinv_core2(obj.v);
-    carry_obj_effects(obj.v);
+    addinv_core2(obj.v);  /* handle extrinsics conferred by carrying obj */
+    carry_obj_effects(obj.v);  /* carrying affects the obj */
     if (update_perm_invent)
         update_inventory();
     return obj.v;
 }
 
+/* add obj to the hero's inventory in the default fashion */
 /** C ref: invent.c:1152 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function addinv(obj) {
     return addinv_core0(obj, null, 1);
 }
 
+/* add obj to the hero's inventory by inserting in front of a specific item;
+   used for throw-and-return in case '!fixinv' is in effect */
 /** C ref: invent.c:1160 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} other_obj @returns {CPtr<struct obj>} */
 export function addinv_before(obj, other_obj) {
+    /* if 'other_obj' is present this will implicitly be 'nomerge' */
     return addinv_core0(obj, other_obj, 1);
 }
 
+/* return value will always be 'obj' */
 /** C ref: invent.c:1169 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function addinv_nomerge(obj) {
     let result;
     let save_nomerge = (cptr.ldI32o(obj, $obj_nomerge) & 1);
+
     cptr.stI32o(obj, $obj_nomerge, 1);
     result = addinv(obj);
     cptr.stI32o(obj, $obj_nomerge, save_nomerge);
     return result;
 }
 
+/*
+ * Some objects are affected by being carried.
+ * Make those adjustments here. Called _after_ the object
+ * has been added to the hero's or monster's inventory,
+ * and after hero's intrinsics have been updated.
+ */
 /** C ref: invent.c:1187 — @param {CPtr<struct obj>} obj */
 export function carry_obj_effects(obj) {
+    /* Cursed figurines can spontaneously transform when carried. */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) {
         if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM && !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1)) {
             attach_fig_transform_timeout(obj);
@@ -1232,22 +1601,35 @@ export function carry_obj_effects(obj) {
     }
 }
 
+/* Add an item to the inventory unless we're fumbling or it refuses to be
+ * held (via touch_artifact), and give a message.
+ * If there aren't any free inventory slots, we'll drop it instead.
+ * If both success and failure messages are NULL, then we're just doing the
+ * fumbling/slot-limit checking for a silent grab.  In any case,
+ * touch_artifact will print its own messages if they are warranted.
+ */
 /** C ref: invent.c:1208 — @param {CPtr<struct obj>} obj @param {CPtr<char>} drop_fmt @param {CPtr<char>} drop_arg @param {CPtr<char>} hold_msg @returns {CPtr<struct obj>} */
 export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     let buf = new Uint8Array(256);
     __lbl_drop_it: {
+
         if (!Blind())
-            observe_object(obj);
+            observe_object(obj);  /* maximize mergeability */
         if (cptr.ld1so(obj, $obj_oartifact)) {
+            /* place_object may change these */
             let crysknife = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CRYSKNIFE));
             let oerode = (cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0;
             let wasUpolyd = schar((cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)));
+
+            /* in case touching this object turns out to be fatal */
             place_object(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+
             if (!touch_artifact(obj, cptr.add(gy, $instance_globals_y_youmonst))) {
-                obj_extract_self(obj);
-                dropy(obj);
+                obj_extract_self(obj);  /* remove it from the floor */
+                dropy(obj);  /* now put it back again :-) */
                 return obj;
             } else if (wasUpolyd && !Upolyd()) {
+                /* lose your grip if you revert your form */
                 if (drop_fmt)
                     pline(drop_fmt, drop_arg);
                 obj_extract_self(obj);
@@ -1262,6 +1644,8 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
         }
         if (Fumbling()) {
             cptr.stI32o(obj, $obj_nomerge, 1);
+            /* dropping expects obj to be in invent; since it's going to be
+               dropped, avoid perminv update when temporarily adding it */
             obj = addinv_core0(obj, null, 0);
             break __lbl_drop_it;
         } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && !u_safe_from_fatal_corpse(obj, NHC.st_all) && cptr.ldI32o(obj, $obj_usecount)) {
@@ -1270,13 +1654,23 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
             break __lbl_drop_it;
         } else {
             let oquan = cptr.ldI64o(obj, $obj_quan);
-            let prev_encumbr = near_capacity();
+            let prev_encumbr = near_capacity();  /* before addinv() */
+
+            /* encumbrance limit is max( current_state, pickup_burden );
+               this used to use hardcoded MOD_ENCUMBER (stressed) instead
+               of the 'pickup_burden' option (which defaults to stressed) */
             if (prev_encumbr < cptr.ldI32o(flags, $flag_pickup_burden))
                 prev_encumbr = cptr.ldI32o(flags, $flag_pickup_burden);
+            /* addinv() may redraw the entire inventory, overwriting
+               drop_arg when it is kept in an 'obuf' from doname();
+               [should no longer be necessary now that perm_invent update is
+               suppressed, but it's cheap to keep as a paranoid precaution] */
             if (drop_arg)
                 drop_arg = cptr.strcpy(cptr.decay(buf), drop_arg);
+
             obj = addinv_core0(obj, null, 0);
             if (inv_cnt(0) > NHC.invlet_basic || ((cptr.ldI16o(obj, $obj_otyp) != NHC.LOADSTONE || !(cptr.ldI32o(obj, $obj_cursed) & 1)) && near_capacity() > prev_encumbr)) {
+                /* undo any merge which took place */
                 if (cptr.ldI64o(obj, $obj_quan) > oquan)
                     obj = splitobj(obj, oquan);
                 break __lbl_drop_it;
@@ -1285,6 +1679,7 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
                     setuqwep(obj);
                 if (hold_msg || drop_fmt)
                     prinv(hold_msg, obj, oquan);
+                /* obj made it into inventory and is staying there */
                 update_inventory();
                 encumber_msg();
             }
@@ -1300,20 +1695,24 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
         freeinv(obj);
         hitfloor(obj, 0);
     }
-    return null;
+    return null;  /* might be gone */
 }
 
+/* useup() all of an item regardless of its quantity */
 /** C ref: invent.c:1312 — @param {CPtr<struct obj>} obj */
 export function useupall(obj) {
     setnotworn(obj);
     freeinv(obj);
-    obfree(obj, null);
+    obfree(obj, null);  /* deletes contents also */
 }
 
+/* an item in inventory is going away after being used */
 /** C ref: invent.c:1321 — @param {CPtr<struct obj>} obj */
 export function useup(obj) {
+    /* Note:  This works correctly for containers because they (containers)
+       don't merge. */
     if (cptr.ldI64o(obj, $obj_quan) > 1n) {
-        cptr.stI32o(obj, $obj_in_use, 0);
+        cptr.stI32o(obj, $obj_in_use, 0);  /* no longer in use */
         (cptr.stI64o(obj, $obj_quan, cptr.ldI64o(obj, $obj_quan) + -1n)) - (-1n);
         cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
         update_inventory();
@@ -1322,6 +1721,7 @@ export function useup(obj) {
     }
 }
 
+/* use one charge from an item and possibly incur shop debt for it */
 /** C ref: invent.c:1337 — @param {CPtr<struct obj>} obj @param {CInt} maybe_unpaid */
 export function consume_obj_charge(obj, maybe_unpaid) {
     if (maybe_unpaid)
@@ -1331,6 +1731,13 @@ export function consume_obj_charge(obj, maybe_unpaid) {
         update_inventory();
 }
 
+/*
+ * Adjust hero's attributes as if this object was being removed from the
+ * hero's inventory.  This should only be called from freeinv() and
+ * where we are polymorphing an object already in the hero's inventory.
+ *
+ * Should think of a better name...
+ */
 /** C ref: invent.c:1356 — @param {CPtr<struct obj>} obj */
 export function freeinv_core(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
@@ -1360,6 +1767,7 @@ export function freeinv_core(obj) {
         }
         set_artifact_intrinsic(obj, 0, 4096n);
     }
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE) {
         curse(obj);
     } else if (confers_luck(obj)) {
@@ -1368,12 +1776,14 @@ export function freeinv_core(obj) {
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE && cptr.ldI16o(obj, $obj_timed)) {
         void stop_timer(NHC.FIG_TRANSFORM, obj_to_any(obj));
     }
+
     if (cptr.eq(obj, cptr.ldPtro(svc, $context_info_tin))) {
         cptr.stPtro(svc, $context_info_tin, null);
         cptr.stI32o(svc, $context_info_tin + $tin_info_o_id, 0);
     }
 }
 
+/* remove an object from the hero's inventory */
 /** C ref: invent.c:1403 — @param {CPtr<struct obj>} obj */
 export function freeinv(obj) {
     extract_nobj(obj, cptr.add(gi, $instance_globals_i_invent));
@@ -1382,13 +1792,16 @@ export function freeinv(obj) {
     update_inventory();
 }
 
+/* drawbridge is destroying all objects at <x,y> */
 /** C ref: invent.c:1413 — @param {CInt} x @param {CInt} y */
 export function delallobj(x, y) {
     let otmp;
     let otmp2;
+
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = otmp2) {
         if (cptr.eq(otmp, uball.v))
             unpunish();
+        /* after unpunish(), or might get deallocated chain */
         otmp2 = cptr.ldPtro(otmp, $obj_v);
         if (cptr.eq(otmp, uchain.v))
             continue;
@@ -1396,16 +1809,27 @@ export function delallobj(x, y) {
     }
 }
 
+/* normal object deletion (if unpaid, it remains on the bill) */
 /** C ref: invent.c:1430 — @param {CPtr<struct obj>} obj */
 export function delobj(obj) {
     delobj_core(obj, 0);
 }
 
+/* destroy object; caller has control over whether to destroy something
+   that ordinarily shouldn't be destroyed */
 /** C ref: invent.c:1438 — @param {CPtr<struct obj>} obj @param {CInt} force */
 export function delobj_core(obj, force) {
     let update_map;
+
+    /* obj_resists(obj,0,0) protects the Amulet, the invocation tools,
+       and Rider corpses */
     if (!force && obj_resists(obj, 0, 0)) {
-        cptr.stI32o(obj, $obj_in_use, 0);
+        /* player might be doing something stupid, but we
+         * can't guarantee that.  assume special artifacts
+         * are indestructible via drawbridges, and exploding
+         * chests, and golem creation, and ...
+         */
+        cptr.stI32o(obj, $obj_in_use, 0);  /* in case caller has set this to 1 */
         return;
     }
     update_map = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR));
@@ -1414,48 +1838,62 @@ export function delobj_core(obj, force) {
         maybe_unhide_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy));
         newsym(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy));
     }
-    obfree(obj, null);
+    obfree(obj, null);  /* frees contents also */
 }
 
+/* try to find a particular type of object at designated map location */
 /** C ref: invent.c:1466 — @param {CInt} otyp @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function sobj_at(otyp, x, y) {
     let otmp;
+
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
         if (cptr.ldI16o(otmp, $obj_otyp) == otyp)
             break;
+
     return otmp;
 }
 
+/* sobj_at(&c) traversal -- find next object of specified type */
 /** C ref: invent.c:1479 — @param {CPtr<struct obj>} obj @param {CInt} type @param {CInt} by_nexthere @returns {CPtr<struct obj>} */
 export function nxtobj(obj, type, by_nexthere) {
     let otmp;
-    otmp = obj;
+
+    otmp = obj;  /* start with the object after this one */
     do {
         otmp = !by_nexthere ? cptr.ldPtr(otmp) : cptr.ldPtro(otmp, $obj_v);
         if (!otmp)
             break;
     } while (cptr.ldI16o(otmp, $obj_otyp) != type);
+
     return otmp;
 }
 
+/* return inventory object of type 'type' if hero has one, otherwise Null */
 /** C ref: invent.c:1495 — @param {CInt} type @returns {CPtr<struct obj>} */
 export function carrying(type) {
     let otmp;
+
+    /* this could be replaced by 'return m_carrying(&gy.youmonst, type);' */
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ldI16o(otmp, $obj_otyp) == type)
             break;
     return otmp;
 }
 
+/* return inventory object of type that will petrify on touch */
 /** C ref: invent.c:1508 @returns {CPtr<struct obj>} */
 export function carrying_stoning_corpse() {
     let otmp;
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)))
             break;
     return otmp;
 }
 
+/* Fictional and not-so-fictional currencies.
+ * http://concord.wikia.com/wiki/List_of_Fictional_Currencies
+ */
 /** C ref: invent.c:1521 — char *[21] */
 const currencies = cptr.alloc(21 * 8);
 cptr.stPtro(currencies, 0, __s_altarian_dollar);
@@ -1483,6 +1921,7 @@ cptr.stPtro(currencies, 160, __s_zorkmid);
 /** C ref: invent.c:1546 — @param {CLongLong} amount @returns {CPtr<char>} */
 export function currency(amount) {
     let res;
+
     res = Hallucination() ? cptr.ldPtro(currencies, rn2_at(__s_invent_c, 1550, __s_currency, 21), 8) : __s_zorkmid;
     if (amount != 1n)
         res = makeplural(res);
@@ -1493,6 +1932,7 @@ export function currency(amount) {
 export function u_carried_gloves() {
     let otmp;
     let gloves = null;
+
     if (uarmg.v) {
         gloves = uarmg.v;
     } else {
@@ -1505,9 +1945,11 @@ export function u_carried_gloves() {
     return gloves;
 }
 
+/* 3.6 tribute */
 /** C ref: invent.c:1576 @returns {CPtr<struct obj>} */
 export function u_have_novel() {
     let otmp;
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_NOVEL)
             return otmp;
@@ -1517,6 +1959,7 @@ export function u_have_novel() {
 /** C ref: invent.c:1587 — @param {CUInt} id @param {CPtr<struct obj>} objchn @returns {CPtr<struct obj>} */
 export function o_on(id, objchn) {
     let temp;
+
     while (objchn) {
         if (cptr.ldI32o(objchn, $obj_o_id) == id)
             return objchn;
@@ -1530,6 +1973,7 @@ export function o_on(id, objchn) {
 /** C ref: invent.c:1602 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CInt} */
 export function obj_here(obj, x, y) {
     let otmp;
+
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
         if (cptr.eq(obj, otmp))
             return 1;
@@ -1539,6 +1983,7 @@ export function obj_here(obj, x, y) {
 /** C ref: invent.c:1613 — @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function g_at(x, y) {
     let obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+
     while (obj) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
             return obj;
@@ -1547,6 +1992,7 @@ export function g_at(x, y) {
     return null;
 }
 
+/* compact a string of inventory letters by dashing runs of letters */
 /** C ref: invent.c:1627 — @param {CPtr<char>} buf */
 function compactify(buf) {
     let i1 = 1;
@@ -1554,6 +2000,7 @@ function compactify(buf) {
     let ilet;
     let ilet1;
     let ilet2;
+
     ilet2 = cptr.ld1so(buf, 0);
     ilet1 = cptr.ld1so(buf, 1);
     cptr.st1o(buf, ++i2, cptr.ld1so(buf, ++i1));
@@ -1569,6 +2016,8 @@ function compactify(buf) {
                 continue;
             }
         } else if (ilet == 35) {
+            /* compact three or more consecutive '#'
+               characters into "#-#" */
             if (i2 >= 2 && cptr.ld1so(buf, (i2 - 2) | 0) == 35 && cptr.ld1so(buf, (i2 - 1) | 0) == 35)
                 cptr.st1o(buf, (i2 - 1) | 0, 45);
             else if (i2 >= 3 && cptr.ld1so(buf, (i2 - 3) | 0) == 35 && cptr.ld1so(buf, (i2 - 2) | 0) == 45 && cptr.ld1so(buf, (i2 - 1) | 0) == 35)
@@ -1581,11 +2030,13 @@ function compactify(buf) {
     }
 }
 
+/* some objects shouldn't be split when count given to getobj or askchain */
 /** C ref: invent.c:1664 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function splittable(obj) {
     return schar((!((cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) || (cptr.eq(obj, uwep.v) && welded(uwep.v)))));
 }
 
+/* match the prompt for either 'T' or 'R' command */
 /** C ref: invent.c:1672 — @param {CPtr<char>} action @returns {CInt} */
 function taking_off(action) {
     return schar((!strcmp(action, __s_take_off) || !strcmp(action, __s_remove) ? 1 : 0));
@@ -1597,24 +2048,31 @@ function mime_action(word) {
     let bp;
     let pfx;
     let sfx;
+
     void cptr.strcpy(cptr.decay(buf), word);
     bp = (pfx = (sfx = null));
+
     if ((bp = cptr.strstr(cptr.decay(buf), __s_on_the)) !== null) {
+        /* rub on the stone[s] */
         cptr.st1(bp, 0);
-        sfx = (cptr.add(bp, 1));
+        sfx = (cptr.add(bp, 1));  /* "something <sfx>" */
     }
     if ((!cptr.strncmp(cptr.decay(buf), __s_rub_the, 8n) && cptr.strstr(cptr.add(cptr.decay(buf), 8), __s_on)) || (!cptr.strncmp(cptr.decay(buf), __s_dip, 4n) && cptr.strstr(cptr.add(cptr.decay(buf), 4), __s_into))) {
+        /* "rub the royal jelly on" -> "rubbing the royal jelly on", or
+           "dip <foo> into" => "dipping <foo> into" */
         cptr.st1o(cptr.decay(buf), 3, 0, 1);
-        pfx = cptr.add(cptr.decay(buf), 4, 1);
+        pfx = cptr.add(cptr.decay(buf), 4, 1);  /* "<pfx> something" */
     }
     if ((bp = cptr.strstr(cptr.decay(buf), __s_or)) !== null) {
         cptr.st1(bp, 0);
         bp = (rn2_at(__s_invent_c, 1700, __s_mime_action, 2) ? cptr.decay(buf) : (cptr.add(bp, 4)));
     } else
         bp = cptr.decay(buf);
+
     You(__s_mime_s_s_s_something_s_s, ing_suffix(bp), pfx ? __s_sp : __s_empty, pfx ? pfx : __s_empty, sfx ? __s_sp : __s_empty, sfx ? sfx : __s_empty);
 }
 
+/* getobj callback that allows any object - but not hands. */
 /** C ref: invent.c:1710 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function any_obj_ok(obj) {
     if (obj)
@@ -1622,6 +2080,7 @@ export function any_obj_ok(obj) {
     return NHC.GETOBJ_EXCLUDE;
 }
 
+/* return string describing your hands based on action. */
 /** C ref: invent.c:1719 — @param {CPtr<char>} action @param {CPtr<char>} qbuf @returns {CPtr<char>} */
 function getobj_hands_txt(action, qbuf) {
     if (!strcmp(action, __s_grease)) {
@@ -1638,6 +2097,19 @@ function getobj_hands_txt(action, qbuf) {
     return qbuf;
 }
 
+/*
+ * getobj returns:
+ *      struct obj *xxx:        object to do something with.
+ *      (struct obj *) 0        error return: no object.
+ *      &hands_obj              explicitly no object (as in w-).
+ * The obj_ok callback should not have side effects (apart from
+ * abnormal-behavior things like impossible calls); it can be called multiple
+ * times on the same object during the execution of this function.
+ * Callbacks' argument is either a valid object pointer or a null pointer,
+ * which represents the validity of doing that action on HANDS_SYM. getobj
+ * won't call it with &hands_obj, so its behavior can be undefined in that
+ * case.
+ */
 const __static_getobj_only_one = cptr.bytes("can only throw one at a time"); /** C ref: invent.c:2029 — char[29] (function-static) */
 
 /** C ref: invent.c:1752 — @param {CPtr<char>} word @param {CPtr} obj_ok @param {CUInt} ctrlflags @returns {CPtr<struct obj>} */
@@ -1679,16 +2151,20 @@ export function getobj(word, obj_ok, ctrlflags) {
         __pc = 7; continue;
         }
         case 8: {
-        otmp = null;
+        otmp = null;  /* in case of non-key or lookup failure */
         if (cptr.ldI32(cq) == NHC.CMDQ_KEY) { __pc = 10; continue; }
         __pc = 11; continue;
         }
         case 10: {
+
         if (cptr.ld1so(cq, $_cmd_queue_key) == 45) {
+            /* check whether the hands/self choice is suitable */
             v = (obj_ok)(null);
             if (v == NHC.GETOBJ_SUGGEST || v == NHC.GETOBJ_DOWNPLAY)
                 otmp = hands_obj;
         } else {
+            /* there could be more than one match if key is '#';
+               take first one which passes the obj_ok callback */
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_invlet) == cptr.ld1so(cq, $_cmd_queue_key)) {
                     v = (obj_ok)(otmp);
@@ -1714,6 +2190,7 @@ export function getobj(word, obj_ok, ctrlflags) {
         }
         case 16: {
         cmdq_clear(NHC.CQ_CANNED);
+        /* should maybe clear the CQ_REPEAT too? */
         return null;
         }
         case 14: {
@@ -1729,7 +2206,7 @@ export function getobj(word, obj_ok, ctrlflags) {
         __pc = 19; continue;
         }
         case 18: {
-        cmdq_clear(NHC.CQ_CANNED);
+        cmdq_clear(NHC.CQ_CANNED);  /* so discard any other queued cmnds */
         __pc = 17;
         continue;
         }
@@ -1738,6 +2215,7 @@ export function getobj(word, obj_ok, ctrlflags) {
         __pc = 20; continue;
         }
         case 21: {
+        /* if stack is smaller than count, drop the whole stack */
         if (cnt < 1n || cptr.ldI64o(otmp, $obj_quan) <= cnt)
             cntgiven = 0;
         { __pc = 3; continue; }
@@ -1761,11 +2239,13 @@ export function getobj(word, obj_ok, ctrlflags) {
         continue;
         }
         case 4: {
+
+        /* is "hands"/"self" a valid thing to do this action on? */
         switch ((obj_ok)(null)) {
             case NHC.GETOBJ_SUGGEST:
             allownone = 1;
             cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 45);
-            cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);
+            cptr.st1(cptr.postinc(() => bp, (v) => { bp = v; }), 32);  /* put a space after the '-' in the prompt */
             break;
             case NHC.GETOBJ_DOWNPLAY:
             case NHC.GETOBJ_EXCLUDE_INACCESS:
@@ -1780,44 +2260,61 @@ export function getobj(word, obj_ok, ctrlflags) {
             default:
             break;
         }
+
         if (!cptr.ld1so(flags, $flag_invlet_constant))
             reassign();
+
+        /* force invent to be in invlet order before collecting candidate
+           inventory letters */
         sortedinvent.v = sortloot(cptr.add(gi, $instance_globals_i_invent), NHM.SORTLOOT_INVLET, 0, null);
+
         for (srtinv = sortedinvent.v; (otmp = cptr.ldPtr(srtinv)) !== null; srtinv = cptr.add(srtinv, 1, 24)) {
             if (cptr.eq(cptr.add(bp, suggested), cptr.add(cptr.decay(buf), 255n, 1)) || cptr.eq(ap, cptr.add(cptr.decay(altlets), 255n, 1))) {
+                /* we must have a huge number of noinvsym items somehow */
                 impossible(__s_getobj_inventory_overflow);
                 break;
             }
+
             cptr.st1o(bp, suggested++, cptr.ld1so(otmp, $obj_invlet));
             switch ((obj_ok)(otmp)) {
                 case NHC.GETOBJ_EXCLUDE_INACCESS:
+                /* remove inaccessible things */
                 suggested--;
                 inaccess++;
                 break;
                 case NHC.GETOBJ_EXCLUDE:
                 case NHC.GETOBJ_EXCLUDE_SELECTABLE:
+                /* remove more inappropriate things, but unlike the first it won't
+                   trigger an "else" in "you don't have anything else to ___" */
                 suggested--;
                 break;
                 case NHC.GETOBJ_DOWNPLAY:
+                /* acceptable but not listed as likely candidates in the prompt
+                   or in the inventory subset if player responds with '?' - thus,
+                   don't add it to lets with bp, but add it to altlets with ap */
                 suggested--;
                 forceprompt = 1;
                 cptr.st1(cptr.postinc(() => ap, (v) => { ap = v; }), cptr.ld1so(otmp, $obj_invlet));
                 break;
                 case NHC.GETOBJ_SUGGEST:
-                break;
+                break;  /* adding otmp->invlet is all that's needed */
                 case NHC.GETOBJ_EXCLUDE_NONINVENT:
                 default:
                 impossible(__s_bad_return_from_getobj_callback);
             }
         }
         unsortloot(sortedinvent);
+
         cptr.st1o(bp, suggested, 0);
+        /* If no objects were suggested but we added '- ' at the beginning for
+         * hands, destroy the trailing space */
         if (suggested == 0 && cptr.cmp(bp, cptr.decay(buf)) > 0 && cptr.ld1so(bp, -1) == 32)
             cptr.st1(cptr.predec(() => bp, (v) => { bp = v; }), 0);
-        void cptr.strcpy(cptr.decay(lets), bp);
+        void cptr.strcpy(cptr.decay(lets), bp);  /* necessary since we destroy buf */
         if (suggested > 5)
             compactify(bp);
         cptr.st1(ap, 0);
+
         if (suggested == 0 && !forceprompt && !allownone) {
             You(__s_don_t_have_anything_sto_s, inaccess ? __s_else : __s_empty, word);
             return null;
@@ -1834,6 +2331,7 @@ export function getobj(word, obj_ok, ctrlflags) {
         if (cptr.ldI32(gi)) {
             ilet = readchar();
         } else if (cptr.ld1so(iflags, $instance_flags_force_invmenu)) {
+            /* don't overwrite a possible quitchars */
             if (!oneloop)
                 ilet = schar(((cptr.ld1s(cptr.decay(lets)) || cptr.ld1s(cptr.decay(altlets))) ? 63 : 42));
             if (!msggiven)
@@ -1891,8 +2389,10 @@ export function getobj(word, obj_ok, ctrlflags) {
         ctmp.v = 0n;
         menuquery = new Uint8Array(128);
         handsbuf = null;
+
         if (ilet == 63 && !cptr.ld1s(cptr.decay(lets)) && cptr.ld1s(cptr.decay(altlets)))
             allowed_choices = cptr.decay(altlets);
+
         cptr.st1o(cptr.decay(menuquery), 0, cptr.st1o(cptr.decay(qbuf), 0, 0, 1), 1);
         if (cptr.ld1so(iflags, $instance_flags_force_invmenu))
             nh_snprintf(__s_getobj, 1975, cptr.decay(menuquery), 128n, __s_what_do_you_want_to_s, word);
@@ -1930,14 +2430,22 @@ export function getobj(word, obj_ok, ctrlflags) {
         continue;
         }
         case 30: {
+        /* find the item which was picked */
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if (cptr.ld1so(otmp, $obj_invlet) == ilet)
                 break;
+        /* some items have restrictions */
         if (ilet == NHC.GOLD_SYM || (otmp && cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)) {
             if (otmp && obj_ok(otmp) <= NHC.GETOBJ_EXCLUDE) {
                 You(__s_cannot_s_gold, word);
                 return null;
             }
+            /*
+             * Historical note: early Nethack had a bug which was
+             * first reported for Larn, where trying to drop 2^32-n
+             * gold pieces was allowed, and did interesting things to
+             * your money supply.  The LRS is the tax bureau from Larn.
+             */
             if (cntgiven && cnt <= 0n) {
                 if (cnt < 0n)
                     pline_The(__s_lrs_would_be_very_interested_to_know);
@@ -1948,6 +2456,11 @@ export function getobj(word, obj_ok, ctrlflags) {
         __pc = 36; continue;
         }
         case 37: {
+
+        /* permit counts for throwing gold, but don't accept counts
+           for other things since the throw code will split off a
+           single item anyway; if populating quiver, 'word' will be
+           "ready" or "fire" and this restriction doesn't apply */
         if (cnt == 0n || !otmp)
             return null;
         coins = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS));
@@ -1966,7 +2479,7 @@ export function getobj(word, obj_ok, ctrlflags) {
         continue;
         }
         case 36: {
-        cptr.st1(disp, 1);
+        cptr.st1(disp, 1);  /* May have changed the amount of money */
         if (otmp && !cptr.ldI32(gi)) {
             if (cntgiven && cnt > 0n)
                 cmdq_add_int(NHC.CQ_REPEAT, Number(BigInt.asIntN(32, cnt)));
@@ -2015,9 +2528,11 @@ export function getobj(word, obj_ok, ctrlflags) {
             if (cnt == 0n)
                 return null;
             if (cnt != cptr.ldI64o(otmp, $obj_quan)) {
+                /* don't split a stack of cursed loadstones */
                 if (splittable(otmp))
                     otmp = splitobj(otmp, cnt);
                 else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
+                    /* kludge for canletgo()'s can't-drop-this message */
                     cptr.stI32o(otmp, $obj_corpsenm, Number(BigInt.asIntN(32, cnt)));
             }
         }
@@ -2030,6 +2545,8 @@ export function getobj(word, obj_ok, ctrlflags) {
 
 /** C ref: invent.c:2094 — @param {CPtr<char>} word @param {CPtr<struct obj>} otmp */
 export function silly_thing(word, otmp) {
+    /* see comment about Amulet of Yendor in objtyp_is_callable(do_name.c);
+       known fakes yield the silly thing feedback */
     if (!strcmp(word, __s_call) && (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR || (cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1))))
         pline_The(__s_amulet_doesn_t_like_being_called_names);
     else
@@ -2038,6 +2555,7 @@ export function silly_thing(word, otmp) {
 
 /** C ref: invent.c:2136 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function ckvalidcat(otmp) {
+    /* use allow_category() from pickup.c */
     return allow_category(otmp);
 }
 
@@ -2056,21 +2574,27 @@ export function is_worn(otmp) {
     return schar(((cptr.ldI64o(otmp, $obj_owornmask) & 2033535n) ? 1 : 0));
 }
 
+/* is 'obj' being used by the hero?  worn, wielded, active lamp or leash;
+   not to be confused with obj->in_use, which finishes using up an item
+   (destroys it) if restoring a save file finds that bit set */
 /** C ref: invent.c:2167 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_inuse(obj) {
     return schar(((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && (is_worn(obj) || tool_being_used(obj)) ? 1 : 0));
 }
 
+/* extra xprname() input that askchain() can't pass through safe_qbuf() */
 /** C ref: invent.c:2173 — struct xprnctx { let, dot } (memory model v0.5) */
 
 /** C ref: invent.c:2176 — struct xprnctx */
 let safeq_xprn_ctx = cptr.alloc(2);
 
+/* safe_qbuf() -> short_oname() callback */
 /** C ref: invent.c:2180 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function safeq_xprname(obj) {
     return xprname(obj, null, cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, $xprnctx_dot), 0n, 0n);
 }
 
+/* alternate safe_qbuf() -> short_oname() callback */
 /** C ref: invent.c:2188 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function safeq_shortxprname(obj) {
     return xprname(obj, ansimpleoname(obj), cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, $xprnctx_dot), 0n, 0n);
@@ -2079,6 +2603,9 @@ function safeq_shortxprname(obj) {
 /** C ref: invent.c:2194 — char[6] */
 const removeables = [NHC.ARMOR_CLASS, NHC.WEAPON_CLASS, NHC.RING_CLASS, NHC.AMULET_CLASS, NHC.TOOL_CLASS, 0];
 
+/* Interactive version of getobj - used for Drop, Identify, and Takeoff (A).
+   Return the number of times fn was called successfully.
+   If combo is TRUE, we just use this to get a category list. */
 /** C ref: invent.c:2202 — @param {CPtr<char>} word @param {CPtr} fn @param {CInt} mx @param {CInt} combo @param {CPtr<unsigned int>} resultflags @returns {CInt} */
 export function ggetobj(word, fn, mx, combo, resultflags) {
     let ckfn = null;
@@ -2096,9 +2623,10 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
     let ip;
     let olets = new Uint8Array(24);
     let ilets = new Uint8Array(29);
-    let extra_removeables = new Uint8Array(4);
+    let extra_removeables = new Uint8Array(4);  /* uwep,uswapwep,uquiver */
     let buf = [0];
     let qbuf = new Uint8Array(128);
+
     if (!cptr.ldPtro(gi, $instance_globals_i_invent)) {
         You(__s_have_nothing_to_s, word);
         if (resultflags)
@@ -2108,7 +2636,7 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
     if (resultflags)
         cptr.stI32(resultflags, 0);
     takeoff = (ident = (allflag = (m_seen = 0)));
-    add_valid_menu_class(0);
+    add_valid_menu_class(0);  /* reset */
     if (taking_off(word)) {
         takeoff = 1;
         ofilter = is_worn;
@@ -2116,10 +2644,12 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
         ident = 1;
         ofilter = not_fully_identified;
     }
+
     iletct = collect_obj_classes(cptr.decay(ilets), cptr.ldPtro(gi, $instance_globals_i_invent), 0, ofilter, itemcount);
     unpaid = count_unpaid(cptr.ldPtro(gi, $instance_globals_i_invent));
+
     if (ident && !iletct) {
-        return -1;
+        return -1;  /* no further identifications */
     } else if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         cptr.st1o(cptr.decay(ilets), iletct++, 32, 1);
         if (unpaid)
@@ -2138,21 +2668,25 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
     }
     cptr.st1o(cptr.decay(ilets), iletct++, 105, 1);
     if (!combo)
-        cptr.st1o(cptr.decay(ilets), iletct++, 109, 1);
+        cptr.st1o(cptr.decay(ilets), iletct++, 109, 1);  /* allow menu presentation on request */
     cptr.st1o(cptr.decay(ilets), iletct, 0, 1);
+
     for (; ; ) {
         void cptr.sprintf(cptr.decay(qbuf), __s_what_kinds_of_thing_do_you_want_to_s_s, word, cptr.decay(ilets));
         getlin(cptr.decay(qbuf), cptr.decay(buf));
         if (cptr.ld1so(cptr.decay(buf), 0, 1) == 27)
             return 0;
         if (cptr.strchr(cptr.decay(buf), 105)) {
-            let ailets = new Uint8Array(60);
+            let ailets = new Uint8Array(60);  /* $ + a-z + A-Z + # + slop + \0 */
             let otmp;
             let nextobj;
+
+            /* applicable inventory letters; if empty, show entire invent */
             cptr.st1o(cptr.decay(ailets), 0, 0, 1);
             if (ofilter)
                 for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
                     nextobj = cptr.ldPtr(otmp);
+                    /* strchr() check: limit overflow items to one '#' */
                     if ((ofilter)(otmp) && !cptr.strchr(cptr.decay(ailets), cptr.ld1so(otmp, $obj_invlet)))
                         void strkitten(cptr.decay(ailets), cptr.ld1so(otmp, $obj_invlet));
                 }
@@ -2161,8 +2695,11 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
         } else
             break;
     }
+
     cptr.st1o(cptr.decay(extra_removeables), 0, 0, 1);
     if (takeoff) {
+        /* arbitrary types of items can be placed in the weapon slots
+           [any duplicate entries in extra_removeables[] won't matter] */
         if (uwep.v)
             void strkitten(cptr.decay(extra_removeables), cptr.ld1so(uwep.v, $obj_oclass));
         if (uswapwep.v)
@@ -2170,6 +2707,7 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
         if (uquiver.v)
             void strkitten(cptr.decay(extra_removeables), cptr.ld1so(uquiver.v, $obj_oclass));
     }
+
     ip = cptr.decay(buf);
     cptr.st1o(cptr.decay(olets), oletct = 0, 0, 1);
     while ((sym = cptr.ld1s(cptr.postinc(() => ip, (v) => { ip = v; }))) != 0) {
@@ -2178,7 +2716,7 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
         oc_of_sym = def_char_to_objclass(sym);
         if (takeoff && oc_of_sym != NHC.MAXOCLASSES) {
             if (cptr.strchr(cptr.decay(extra_removeables), oc_of_sym)) {
-                ;
+                ;  /* skip rest of takeoff checks */
             } else if (!cptr.strchr(cptr.decay(removeables), oc_of_sym)) {
                 pline(__s_not_applicable);
                 return 0;
@@ -2199,15 +2737,16 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
                 return 0;
             }
         }
+
         if (sym == 97) {
             allflag = 1;
         } else if (sym == 65) {
-            ;
+            ;  /* same as the default */
         } else if (sym == 117) {
             add_valid_menu_class(117);
             ckfn = ckunpaid;
         } else if (cptr.strchr(__s_bucxp, sym)) {
-            add_valid_menu_class(sym);
+            add_valid_menu_class(sym);  /* 'B','U','C','X', or 'P' */
             ckfn = ckvalidcat;
         } else if (sym == 109) {
             m_seen = 1;
@@ -2221,18 +2760,30 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
             }
         }
     }
+
     if (m_seen) {
         return (allflag || (!oletct && ckfn !== ckunpaid && ckfn !== ckvalidcat)) ? -2 : -3;
     } else if (cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL && combo && !allflag) {
         return 0;
     } else {
         let cnt = askchain(cptr.add(gi, $instance_globals_i_invent), cptr.decay(olets), allflag, fn, ckfn, mx, word);
+        /*
+         * askchain() has already finished the job in this case
+         * so set a special flag to convey that back to the caller
+         * so that it won't continue processing.
+         * Fix for bug C331-1 reported by Irina Rempt-Drijfhout.
+         */
         if (combo && allflag && resultflags)
             cptr.stI32(resultflags, cptr.ldI32(resultflags) | NHM.ALL_FINISHED);
         return cnt;
     }
 }
 
+/*
+ * Walk through the chain starting at objchn and ask for all objects
+ * with olet in olets (if nonNULL) and satisfying ckfn (if nonnull)
+ * whether the action in question (i.e., fn) has to be performed.
+ */
 /** C ref: invent.c:2377 — @param {CPtr<struct obj *>} objchn @param {CPtr<char>} olets @param {CInt} allflag @param {CPtr} fn @param {CPtr} ckfn @param {CInt} mx @param {CPtr<char>} word @returns {CInt} */
 export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     let otmp;
@@ -2253,6 +2804,7 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     let qbuf = new Uint8Array(128);
     let qpfx = new Uint8Array(128);
     let sortedchn = cptr.box(null);
+
     takeoff = taking_off(word);
     ident = schar((!strcmp(word, __s_identify)));
     take_out = schar((!strcmp(word, __s_take_out)));
@@ -2260,18 +2812,34 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     nodot = schar((!strcmp(word, __s_nodot) || !strcmp(word, __s_drop) || ident || takeoff || take_out || put_in ? 1 : 0));
     ininv = schar((cptr.eq(cptr.ldPtr(objchn), cptr.ldPtro(gi, $instance_globals_i_invent))));
     bycat = schar((menu_class_present(117) || menu_class_present(66) || menu_class_present(85) || menu_class_present(67) || menu_class_present(88) || menu_class_present(80) ? 1 : 0));
+
+    /* someday maybe we'll sort by 'olets' too (temporarily replace
+       flags.packorder and pass SORTLOOT_PACK), but not yet... */
     sortedchn.v = sortloot(objchn, NHM.SORTLOOT_INVLET, 0, null);
+
     first = 1;
     __lbl_nextclass: while (true) {
         ilet = 96;
         if (cptr.ldPtr(objchn) && cptr.ld1so((cptr.ldPtr(objchn)), $obj_oclass) == NHC.COIN_CLASS)
-            ilet--;
-        bypass_objlist(cptr.ldPtr(objchn), 0);
+            ilet--;  /* extra iteration */
+        /*
+         * Multiple Drop can change the gi.invent chain while it operates
+         * (dropping a burning potion of oil while levitating creates
+         * an explosion which can destroy inventory items), so simple
+         * list traversal
+         *  for (otmp = *objchn; otmp; otmp = otmp2) {
+         *      otmp2 = otmp->nobj;
+         *      ...
+         *  }
+         * is inadequate here.  Use each object's bypass bit to keep
+         * track of which list elements have already been processed.
+         */
+        bypass_objlist(cptr.ldPtr(objchn), 0);  /* clear chain's bypass bits */
         while ((otmp = nxt_unbypassed_loot(sortedchn.v, cptr.ldPtr(objchn))) !== null) {
             if (ilet == 122)
                 ilet = 65;
             else if (ilet == 90)
-                ilet = 35;
+                ilet = 35;  /* '#' */
             else
                 ilet++;
             if (olets && cptr.ld1s(olets) && cptr.ld1so(otmp, $obj_oclass) != cptr.ld1s(olets))
@@ -2289,16 +2857,26 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                 cptr.st1o(safeq_xprn_ctx, $xprnctx_dot, schar((!nodot)));
                 cptr.st1(cptr.decay(qpfx), 0);
                 if (first) {
+                    /* traditional_loot() skips prompting when only one
+                       class of objects is involved, so prefix the first
+                       object being queried here with an explanation why */
                     if (take_out || put_in)
                         void cptr.sprintf(cptr.decay(qpfx), __s_pct_s_colon_sp, word), cptr.st1(cptr.decay(qpfx), highc(cptr.ld1s(cptr.decay(qpfx))));
                     first = 0;
                 }
                 void safe_qbuf(cptr.decay(qbuf), cptr.decay(qpfx), __s_query, otmp, ininv ? safeq_xprname : doname, ininv ? safeq_shortxprname : ansimpleoname, __s_item);
+                /* nyaq(qbuf) or nyNaq(qbuf), bypassing canned input for ^A */
                 sym = yn_function(cptr.decay(qbuf), (takeoff || ident || cptr.ldI64o(otmp, $obj_quan) < 2n) ? cptr.decay(ynaqchars) : cptr.decay(ynNaqchars), 110, 0);
             } else
                 sym = 121;
+
             otmpo = otmp;
             if (sym == 35) {
+                /* Number was entered; split the object unless it corresponds
+                   to 'none' or 'all'.  2 special cases: cursed loadstones and
+                   welded weapons (eg, multiple daggers) will remain as merged
+                   unit; done to avoid splitting an object that won't be
+                   droppable (even if we're picking up rather than dropping). */
                 if (!yn_number.v) {
                     sym = 110;
                 } else {
@@ -2316,13 +2894,19 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                 tmp = (fn)(otmp);
                 if (tmp <= 0) {
                     if (container_gone(fn)) {
-                        otmp = null;
+                        /* otmp caused magic bag to explode;
+                           both are now gone */
+                        otmp = null;  /* and return */
                     } else if (otmp && !cptr.eq(otmp, otmpo)) {
+                        /* split occurred, merge again */
                         void unsplitobj(otmp);
                     }
                     if (tmp < 0)
                         {
                             unsortloot(sortedchn);
+                            /* can't just clear bypass bit of items in objchn because the action
+                               applied to selected ones might move them to a different chain */
+                            /*bypass_objlist(*objchn, FALSE);*/
                             clear_bypasses();
                             return cnt;
                         }
@@ -2344,6 +2928,7 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
                 default:
                 break;
                 case 113:
+                /* special case for seffects() */
                 if (ident)
                     cnt = -1;
                 {
@@ -2355,6 +2940,7 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
         }
         if (olets && cptr.ld1s(olets) && cptr.ld1s(cptr.preinc(() => olets, (v) => { olets = v; })))
             continue __lbl_nextclass;
+
         if (!takeoff && (dud || cnt))
             pline(__s_that_was_all);
         else if (!dud && !cnt)
@@ -2365,6 +2951,13 @@ export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     }
 }
 
+/* The menu for rerolling attributes and inventory.
+
+   This is similar to the other inventory menus, but simpler to help it fit on
+   the screen (there's more text around it and rerolling is difficult if you
+   can't see the whole list at once).
+
+   Returns TRUE (and increases numrerolls) if a reroll was requested. */
 /** C ref: invent.c:2552 @returns {CInt} */
 export function reroll_menu() {
     let win;
@@ -2375,17 +2968,20 @@ export function reroll_menu() {
     let tmpglyphinfo = cptr.alloc(48);
     let option;
     let buf = new Uint8Array(256);
+
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
     cptr.st1(any, 110);
     add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : 112)), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_start_the_game_with_this_character, NHM.MENU_ITEMFLAGS_NONE);
     cptr.st1(any, 121);
     add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : 114)), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_reroll_another_character, NHM.MENU_ITEMFLAGS_NONE);
     cptr.st1(any, 0);
     add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_empty, NHM.MENU_ITEMFLAGS_NONE);
-    cptr.stI32o(gd, $instance_globals_d_distantname, cptr.ldI32o(gd, $instance_globals_d_distantname) + 1);
-    cptr.stI32o(iflags, $instance_flags_override_ID, cptr.ldI32o(iflags, $instance_flags_override_ID) + 1);
+
+    cptr.stI32o(gd, $instance_globals_d_distantname, cptr.ldI32o(gd, $instance_globals_d_distantname) + 1);  /* avoid adding items to discoveries */
+    cptr.stI32o(iflags, $instance_flags_override_ID, cptr.ldI32o(iflags, $instance_flags_override_ID) + 1);  /* identify them */
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         tmpglyph = ((cptr.ldI16o((otmp), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), $obj_corpsenm) + (((cptr.ld1so((otmp), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), $obj_corpsenm) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(otmp) ? (((cptr.ld1so((otmp), $obj_oclass) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), $obj_otyp) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
         map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
@@ -2393,17 +2989,23 @@ export function reroll_menu() {
     }
     cptr.stI32o(iflags, $instance_flags_override_ID, cptr.ldI32o(iflags, $instance_flags_override_ID) + -1);
     cptr.stI32o(gd, $instance_globals_d_distantname, cptr.ldI32o(gd, $instance_globals_d_distantname) + -1);
+
     add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_empty, NHM.MENU_ITEMFLAGS_NONE);
     void cptr.sprintf(cptr.decay(buf), __s_st_s_dx_1d_co_1d_in_1d_wi_1d_ch_1d, get_strength_str(), (acurr(NHC.A_DEX)), (acurr(NHC.A_CON)), (acurr(NHC.A_INT)), (acurr(NHC.A_WIS)), (acurr(NHC.A_CHA)));
     add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
+
     end_menu()(win, __s_reroll_this_character);
     if (select_menu(win, NHM.PICK_ONE, pick_list) > 0) {
         option = cptr.ld1so(pick_list.v, 0, $sizeof_menu_item);
         cptr.free(pick_list.v);
     } else {
+        /* user closed the menu without selecting; unclear what their choice
+           is here so ask again; but (e.g. for hangup handling) stop asking if
+           the user cancels out again */
         option = yn_function(__s_reroll_this_character, cptr.decay(ynchars), 110, 1);
     }
     destroy_nhwindow()(win);
+
     if (option == 121) {
         cptr.stI64o(u, $you_uroleplay + $u_roleplay_numrerolls, cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls) + 1n);
         return 1;
@@ -2411,15 +3013,23 @@ export function reroll_menu() {
     return 0;
 }
 
+/*
+ *      Object identification routines:
+ */
+
+/* set the cknown and lknown flags on an object if they're applicable */
 /** C ref: invent.c:2624 — @param {CPtr<struct obj>} obj */
 export function set_cknown_lknown(obj) {
     if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
         cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
     else if (cptr.ldI16o(obj, $obj_otyp) == NHC.TIN)
         cptr.stI32o(obj, $obj_cknown, 1);
+    /* TODO? cknown might be extended to candy bar, where it would mean that
+       wrapper's text was known which in turn indicates candy bar's content */
     return;
 }
 
+/* make an object actually be identified; no display updating */
 /** C ref: invent.c:2637 — @param {CPtr<struct obj>} otmp */
 export function fully_identify_obj(otmp) {
     discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1);
@@ -2427,11 +3037,12 @@ export function fully_identify_obj(otmp) {
         discover_artifact(i16(cptr.ld1so(otmp, $obj_oartifact)));
     observe_object(otmp);
     cptr.stI32o(otmp, $obj_known, cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1)));
-    set_cknown_lknown(otmp);
+    set_cknown_lknown(otmp);  /* set otmp->{cknown,lknown} if applicable */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && cptr.ldI32o(otmp, $obj_corpsenm) != NHC.NON_PM)
         learn_egg_type(cptr.ldI32o(otmp, $obj_corpsenm));
 }
 
+/* ggetobj callback routine; identify an object and give immediate feedback */
 /** C ref: invent.c:2651 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function identify(otmp) {
     fully_identify_obj(otmp);
@@ -2439,6 +3050,7 @@ export function identify(otmp) {
     return 1;
 }
 
+/* menu of unidentified objects; select and identify up to id_limit of them */
 /** C ref: invent.c:2660 — @param {CInt} id_limit */
 function menu_identify(id_limit) {
     let pick_list = cptr.box(0);
@@ -2447,9 +3059,12 @@ function menu_identify(id_limit) {
     let first = 1;
     let tryct = 5;
     let buf = new Uint8Array(256);
+    /* assumptions:  id_limit > 0 and at least one unID'd item is present */
+
     while (id_limit) {
         void cptr.sprintf(cptr.decay(buf), __s_what_would_you_like_to_identify_s, first ? __s_first : __s_next);
         n = query_objlist(cptr.decay(buf), cptr.add(gi, $instance_globals_i_invent), 120, pick_list, NHM.PICK_ANY, not_fully_identified);
+
         if (n > 0) {
             if (n > id_limit)
                 n = id_limit;
@@ -2457,7 +3072,7 @@ function menu_identify(id_limit) {
                 void identify(cptr.ldPtro(pick_list.v, i, $sizeof_menu_item));
             cptr.free(pick_list.v);
             if (id_limit)
-                wait_synch()();
+                wait_synch()();  /* Before we loop to pop open another menu */
             first = 0;
         } else if (n == -2) {
             break;
@@ -2473,24 +3088,30 @@ function menu_identify(id_limit) {
     }
 }
 
+/* count the unidentified items */
 /** C ref: invent.c:2698 — @param {CPtr<struct obj>} objchn @returns {CInt} */
 export function count_unidentified(objchn) {
     let unid_cnt = 0;
     let obj;
+
     for (obj = objchn; obj; obj = cptr.ldPtr(obj))
         if (not_fully_identified(obj))
             ++unid_cnt;
     return unid_cnt;
 }
 
+/* dialog with user to identify a given number of items; 0 means all */
 /** C ref: invent.c:2711 — @param {CInt} id_limit @param {CInt} learning_id */
 export function identify_pack(id_limit, learning_id) {
     let obj;
     let n;
     let unid_cnt = count_unidentified(cptr.ldPtro(gi, $instance_globals_i_invent));
+
     if (!unid_cnt) {
         You(__s_have_already_identified_s_of_your, !learning_id ? __s_all : __s_the_rest);
     } else if (!id_limit || id_limit >= unid_cnt) {
+        /* identify everything */
+        /* TODO:  use fully_identify_obj and cornline/menu/whatever here */
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
             if (not_fully_identified(obj)) {
                 void identify(obj);
@@ -2499,12 +3120,13 @@ export function identify_pack(id_limit, learning_id) {
             }
         }
     } else {
+        /* identify up to `id_limit' items */
         n = 0;
         if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL)
             do {
                 n = ggetobj(__s_identify, identify, id_limit, 0, null);
                 if (n < 0)
-                    break;
+                    break;  /* quit or no eligible items */
             } while ((id_limit = (id_limit - n) | 0) > 0);
         if (n == 0 || n < -1)
             menu_identify(id_limit);
@@ -2512,50 +3134,97 @@ export function identify_pack(id_limit, learning_id) {
     update_inventory();
 }
 
+/* called when regaining sight; mark inventory objects which were picked
+   up while blind as now having been seen */
 /** C ref: invent.c:2750 */
 export function learn_unseen_invent() {
     let otmp;
     let invupdated = 0;
+
     if (Blind())
-        return;
+        return;  /* sanity check */
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 && ((cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 || !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC)) && (cptr.ld1so(otmp, $obj_oclass) != NHC.SCROLL_CLASS || !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST)))
-            continue;
+            continue;  /* already seen */
         invupdated = 1;
+        /* xname() will set dknown, perhaps bknown (for priest[ess]);
+           result from xname() is immediately released for re-use */
         maybereleaseobuf(xname(otmp));
-        addinv_core2(otmp);
+        addinv_core2(otmp);  /* you react to seeing the object */
+
+        /*
+         * If object->eknown gets implemented (see learnwand(zap.c)),
+         * handle deferred discovery here.
+         */
     }
     if (invupdated)
         update_inventory();
 }
 
+/* persistent inventory window is maintained by interface code;
+   'update_inventory' used to be a macro for
+   (*windowprocs.win_update_inventory) but the restore hackery to suppress
+   screen updates was getting out of hand; this is now a central call point */
 /** C ref: invent.c:2782 */
 export function update_inventory() {
     let save_suppress_price;
+
     if (!cptr.ldI32o(program_state, $sinfo_in_moveloop))
         return;
     if (suppress_map_output())
         return;
+
+    /*
+     * Ought to check (windowprocs.wincap & WC_PERM_INVENT) here....
+     *
+     * We currently don't skip this call when iflags.perm_invent is False
+     * because curses uses that to disable a previous perm_invent window
+     * (after toggle via 'O'; perhaps the options code should handle that).
+     *
+     * perm_invent might get updated while some code is avoiding price
+     * feedback during obj name formatting for messages.  Temporarily
+     * force 'normal' formatting during the perm_invent update.  (Cited
+     * example was an update triggered by change in invent gold when
+     * transferring some to shk during itemized billing.  A previous fix
+     * attempt in the shop code handled it for unpaid items but not for
+     * paying for used-up shop items; that follows a different code path.)
+     */
     save_suppress_price = cptr.ldI32o(iflags, $instance_flags_suppress_price);
     cptr.stI32o(iflags, $instance_flags_suppress_price, 0);
     (cptr.ldPtro(windowprocs, $window_procs_win_update_inventory))(0);
     cptr.stI32o(iflags, $instance_flags_suppress_price, save_suppress_price);
 }
 
+/* the #perminv command - call interface's persistent inventory routine */
 /** C ref: invent.c:2814 @returns {CInt} */
 export function doperminv() {
+
     if ((cptr.ldU64o(windowprocs, $window_procs_wincap) & 134217728n) == 0n) {
+        /* [TODO? perhaps omit "by <interface>" if all the window ports
+           compiled into this binary lack support for perm_invent...] */
         pline(__s_persistent_inventory_display_is_not, cptr.ldPtr(windowprocs));
+
     } else if (!cptr.ld1so(iflags, $instance_flags_perm_invent)) {
         pline(__s_persistent_inventory_perm_invent_option);
+
     } else if (!cptr.ldPtro(gi, $instance_globals_i_invent)) {
+        /* [should this be left for the interface to decide?] */
         pline(__s_persistent_inventory_display_is_empty);
+
     } else {
+        /* note: we used to request a scrolling key here and pass that to
+           (*win_update_inventory)(key), but that limited the functionality
+           and also cluttered message history with prompt and response so
+           just send non-zero and have the interface be responsible for it */
         (cptr.ldPtro(windowprocs, $window_procs_win_update_inventory))(1);
-    }
+
+    }  /* iflags.perm_invent */
+
     return NHM.ECMD_OK;
 }
 
+/* should of course only be called for things in invent */
 /** C ref: invent.c:2861 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function obj_to_let(obj) {
     if (!cptr.ld1so(flags, $flag_invlet_constant)) {
@@ -2565,12 +3234,18 @@ function obj_to_let(obj) {
     return cptr.ld1so(obj, $obj_invlet);
 }
 
+/*
+ * Print the indicated quantity of the given object.  If quan == 0L then use
+ * the current quantity.
+ */
 /** C ref: invent.c:2875 — @param {CPtr<char>} prefix @param {CPtr<struct obj>} obj @param {CLongLong} quan */
 export function prinv(prefix, obj, quan) {
     let total_of = schar((quan && (quan < cptr.ldI64o(obj, $obj_quan)) ? 1 : 0));
     let totalbuf = new Uint8Array(128);
+
     if (!prefix)
         prefix = __s_empty;
+
     cptr.st1o(cptr.decay(totalbuf), 0, 0, 1);
     if (total_of)
         nh_snprintf(__s_prinv, 2886, cptr.decay(totalbuf), 128n, __s_ld_in_total, cptr.ldI64o(obj, $obj_quan));
@@ -2581,23 +3256,32 @@ const __static_xprname_li = new Uint8Array(256); /** C ref: invent.c:2903 — ch
 
 /** C ref: invent.c:2895 — @param {CPtr<struct obj>} obj @param {CPtr<char>} txt @param {CInt} let @param {CInt} dot @param {CLongLong} cost @param {CLongLong} quan @returns {CPtr<char>} */
 export function xprname(obj, txt, let$, dot, cost, quan) {
-    let suffix = new Uint8Array(80);
+    let suffix = new Uint8Array(80);  /* plenty of room for count and hallucinatory currency */
     let sfxlen;
-    let txtlen;
+    let txtlen;  /* signed int for %*s formatting */
     let fmt;
     let use_invlet = schar((cptr.ld1so(flags, $flag_invlet_constant) && !cptr.eq(obj, (null)) && let$ != 62 && let$ != 45 ? 1 : 0));
     let savequan = 0n;
+
     if (quan && obj) {
         savequan = cptr.ldI64o(obj, $obj_quan);
         cptr.stI64o(obj, $obj_quan, quan);
     }
+    /*
+     * If let is:
+     *  -  Then obj == null and 'txt' refers to hands or fingers.
+     *  *  Then obj == null and we are printing a total amount.
+     *  >  Then the object is contained and doesn't have an inventory letter.
+     */
     fmt = __s_c_s_s;
     if (!txt) {
         (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_xprname, __s_invent_c, 2923, __s_obj_null) : void 0);
         txt = doname(obj);
     }
     txtlen = Number(BigInt.asIntN(32, cptr.strlen(txt)));
+
     if (cost != 0n || let$ == 42) {
+        /* if dot is true, we're doing Iu, otherwise Ix */
         if (dot && use_invlet)
             let$ = cptr.ld1so(obj, $obj_invlet);
         void cptr.sprintf(cptr.decay(suffix), __s_c_6ld_50s, cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32, cost, currency(cost));
@@ -2607,6 +3291,7 @@ export function xprname(obj, txt, let$, dot, cost, quan) {
                 txtlen = 45;
         }
     } else {
+        /* ordinary inventory display or pickup message */
         if (use_invlet)
             let$ = cptr.ld1so(obj, $obj_invlet);
         void cptr.strcpy(cptr.decay(suffix), dot ? __s_dot : __s_empty);
@@ -2615,11 +3300,17 @@ export function xprname(obj, txt, let$, dot, cost, quan) {
     if (txtlen > ((255 - ((4 + sfxlen) | 0)) | 0))
         txtlen = (255 - ((4 + sfxlen) | 0)) | 0;
     void cptr.sprintf(cptr.decay(__static_xprname_li), fmt, let$, txtlen, txt, cptr.decay(suffix));
+
     if (savequan)
         cptr.stI64o(obj, $obj_quan, savequan);
+
     return cptr.decay(__static_xprname_li);
 }
 
+/* show some or all of inventory while allowing the picking of an item in
+   order to preform context-sensitive item action on it; always returns 'ok';
+   invent subsets specified by the ')', '[', '(', '=', '"', or '*' commands
+   when they're invoked with the 'm' prefix (or without it for '*') */
 /** C ref: invent.c:2964 — @param {CPtr<char>} lets @param {CInt} use_inuse_ordering @param {CPtr<char>} alt_label @returns {CInt} */
 function dispinv_with_action(lets, use_inuse_ordering, alt_label) {
     let otmp;
@@ -2630,20 +3321,25 @@ function dispinv_with_action(lets, use_inuse_ordering, alt_label) {
     let len = lets ? Number(BigInt.asUintN(32, cptr.strlen(lets))) : 0;
     let menumode = schar(((len != 1 || cptr.ld1so(iflags, $instance_flags_menu_requested)) ? 1 : 0));
     let save_force_invmenu = cptr.ld1so(iflags, $instance_flags_force_invmenu);
+
     if (use_inuse_ordering) {
         save_accessories = cptr.ldPtro(inuse_headers, 4, 8);
         save_sortloot = cptr.ld1so(flags, $flag_sortloot);
-        cptr.st1o(flags, $flag_sortloot, 105);
+
+        cptr.st1o(flags, $flag_sortloot, 105);  /* checked by display_pickinv() */
         if (alt_label)
             cptr.stPtro(inuse_headers, 4, alt_label, 8);
     }
     cptr.st1o(iflags, $instance_flags_force_invmenu, 0);
+
     c = display_inventory(lets, menumode);
+
     if (use_inuse_ordering) {
         cptr.st1o(flags, $flag_sortloot, save_sortloot);
         cptr.stPtro(inuse_headers, 4, save_accessories, 8);
     }
     cptr.st1o(iflags, $instance_flags_force_invmenu, save_force_invmenu);
+
     if (c && c != 27) {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
             nextobj = cptr.ldPtr(otmp);
@@ -2654,17 +3350,29 @@ function dispinv_with_action(lets, use_inuse_ordering, alt_label) {
     return NHM.ECMD_OK;
 }
 
+/* the #inventory command (not much left...) */
 /** C ref: invent.c:3006 @returns {CInt} */
 export function ddoinv() {
     return dispinv_with_action(null, 0, null);
 }
 
+/*
+ * find_unpaid()
+ *
+ * Scan the given list of objects.  If last_found is NULL, return the first
+ * unpaid object found.  If last_found is not NULL, then skip over unpaid
+ * objects until last_found is reached, then set last_found to NULL so the
+ * next unpaid object is returned.  This routine recursively follows
+ * containers.
+ */
 /** C ref: invent.c:3021 — @param {CPtr<struct obj>} list @param {CPtr<struct obj *>} last_found @returns {CPtr<struct obj>} */
 function find_unpaid(list, last_found) {
     let obj;
+
     while (list) {
         if ((cptr.ldI32o(list, $obj_unpaid) & 1)) {
             if (cptr.ldPtr(last_found)) {
+                /* still looking for previous unpaid object */
                 if (cptr.eq(list, cptr.ldPtr(last_found)))
                     cptr.stPtr(last_found, null);
             } else
@@ -2687,6 +3395,10 @@ export function free_pickinv_cache() {
     }
 }
 
+/*
+ * Internal function used by display_inventory and getobj that can display
+ * inventory and return a count as well as a letter.
+ */
 const __static_display_pickinv_not_carrying_anything = cptr.bytes("Not carrying anything"); /** C ref: invent.c:3066 — char[22] (function-static) */
 const __static_display_pickinv_not_using_anything = cptr.bytes("Not using any items"); /** C ref: invent.c:3067 — char[20] (function-static) */
 const __static_display_pickinv_only_carrying_gold = cptr.bytes("Only carrying gold"); /** C ref: invent.c:3068 — char[19] (function-static) */
@@ -2703,7 +3415,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
     let n;
     let classcount;
     let inusecount = 0;
-    let win;
+    let win;  /* windows being used */
     let any = cptr.alloc(8);
     let selected = cptr.box(0);
     let sortflags;
@@ -2721,9 +3433,13 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
     let doing_perm_invent = 0;
     let save_flags_sortpack;
     let usextra = schar((xtra_choice && allowxtra ? 1 : 0));
+
     if (lets && !cptr.ld1s(lets))
-        lets = null;
+        lets = null;  /* simplify tests: (lets) instead of (lets && *lets) */
     if (lets || usextra || wizid || want_reply || WIN_INVEN.v == -1) {
+        /* partial inventory in perm_invent setting; don't operate on
+           full inventory window, use an alternate one instead; create
+           the first time needed and keep it for re-use as needed later */
         if (cptr.ldI32o(gc, $instance_globals_c_cached_pickinv_win) == -1)
             cptr.stI32o(gc, $instance_globals_c_cached_pickinv_win, create_nhwindow()(NHM.NHW_MENU));
         win = cptr.ldI32o(gc, $instance_globals_c_cached_pickinv_win);
@@ -2737,19 +3453,48 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         inuse_only = schar((((cptr.ldI32o(wri_info, $win_request_info_t_fromcore + $from_core_invmode) & NHC.InvInUse) >>> 0) != 0));
         doing_perm_invent = 1;
     }
+    /*
+     * Exit early if no inventory -- but keep going if we are doing
+     * a permanent inventory update.  We need to keep going so the
+     * permanent inventory window updates itself to remove the last
+     * item(s) dropped.  One down side:  the addition of the exception
+     * for permanent inventory window updates _can_ pop the window
+     * up when it's not displayed -- even if it's empty -- because we
+     * don't know at this level if its up or not.  This may not be
+     * an issue if empty checks are done before hand and the call
+     * to here is short circuited away.
+     *
+     * 2: our count here is only to distinguish between 0 or 1 or
+     * more than 1; for the last case, we don't need a precise number.
+     * For perm_invent update we force 'more than 1'.
+     */
     n = (doing_perm_invent && !lets && !want_reply) ? 2 : (lets ? Number(BigInt.asIntN(32, cptr.strlen(lets))) : (!cptr.ldPtro(gi, $instance_globals_i_invent) ? 0 : (!cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent)) ? 1 : 2)));
+    /* for xtra_choice, there's another 'item' not included in initial 'n';
+       for !lets (full invent or inuse_only) and for override_ID (wizard
+       mode identify), skip message_menu handling of single item even if
+       item count was 1 */
     if (usextra || (n == 1 && (!lets || wizid)))
         ++n;
+
     if (n == 0) {
         pline(__s_pct_s_dot, cptr.decay(__static_display_pickinv_not_carrying_anything));
         return 0;
     }
+
+    /* oxymoron? temporarily assign permanent inventory letters */
     if (!cptr.ld1so(flags, $flag_invlet_constant))
         reassign();
+
     if (n == 1 && !cptr.ld1so(iflags, $instance_flags_force_invmenu) && !cptr.ld1so(iflags, $instance_flags_menu_requested)) {
+        /* when only one item of interest, use pline instead of menus;
+           we actually use a fake message-line menu in order to allow
+           the user to perform selection at the --More-- prompt for tty */
         ret = 0;
         if (usextra) {
-            ret = message_menu()(45, NHM.PICK_ONE, xprname(null, xtra_choice, 45, 1, 0n, 0n));
+            /* xtra_choice is "bare hands" (wield), "fingertip" (Engrave),
+               "nothing" (prepare Quiver), "fingers" (apply grease), or
+               "hands" (default) */
+            ret = message_menu()(45, NHM.PICK_ONE, xprname(null, xtra_choice, 45, 1, 0n, 0n));  /* '-' */
         } else {
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (!lets || cptr.ld1so(otmp, $obj_invlet) == cptr.ld1so(lets, 0))
@@ -2758,40 +3503,56 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
                 ret = message_menu()(cptr.ld1so(otmp, $obj_invlet), want_reply ? NHM.PICK_ONE : NHM.PICK_NONE, xprname(otmp, null, cptr.ld1so(lets, 0), 1, 0n, 0n));
         }
         if (out_cnt)
-            cptr.stI64(out_cnt, -1n);
+            cptr.stI64(out_cnt, -1n);  /* select all */
         return ret;
     }
+
     sortflags = ((cptr.ld1so(flags, $flag_sortloot) == 102) ? NHM.SORTLOOT_LOOT : NHM.SORTLOOT_INVLET) >>> 0;
     if (cptr.ld1so(flags, $flag_sortpack))
         sortflags |= NHM.SORTLOOT_PACK;
     save_flags_sortpack = cptr.ld1so(flags, $flag_sortpack);
     if (inuse_only) {
         cptr.st1o(flags, $flag_sortpack, 0);
-        sortflags = NHM.SORTLOOT_INUSE;
+        sortflags = NHM.SORTLOOT_INUSE;  /* override */
         filter = is_inuse;
         if (!uwep.v) {
-            cptr.memcpy(inuse_fakeobj, cg, 216);
-            cptr.st1o(inuse_fakeobj, $obj_invlet, 45);
-            cptr.stI64o(inuse_fakeobj, $obj_owornmask, 256n);
-            cptr.st1o(inuse_fakeobj, $obj_where, NHM.OBJ_INVENT);
+            /*
+             * inuse_only and not wielding anything: insert "bare hands"
+             * into primary weapon slot.  Unlike adding an extra menu
+             * entry for 'xtra_choice' at top of menu, we need an object
+             * in invent for it to be sorted into desired position.
+             * It will need custom formatting below.
+             */
+            cptr.memcpy(inuse_fakeobj, cg, 216);  /* STRANGE_OBJECT, ILLOBJ_CLASS */
+            cptr.st1o(inuse_fakeobj, $obj_invlet, 45);  /* '-' */
+            cptr.stI64o(inuse_fakeobj, $obj_owornmask, 256n);  /* inuse_classify needs this */
+            cptr.st1o(inuse_fakeobj, $obj_where, NHM.OBJ_INVENT);  /* is_inuse filter needs this */
             cptr.stPtr(inuse_fakeobj, cptr.ldPtro(gi, $instance_globals_i_invent));
             cptr.stPtro(gi, $instance_globals_i_invent, inuse_fakeobj);
         }
     }
+
     sortedinvent.v = sortloot(cptr.add(gi, $instance_globals_i_invent), sortflags, 0, filter);
+    /* inuse_only: if we inserted bare hands as a fake weapon, remove them;
+       although the fake object will no longer be in invent, sortedinvent
+       will still contain a pointer to it */
     if (cptr.eq(cptr.ldPtro(gi, $instance_globals_i_invent), inuse_fakeobj)) {
         cptr.stPtro(gi, $instance_globals_i_invent, cptr.ldPtr(inuse_fakeobj));
         cptr.stPtr(inuse_fakeobj, null);
+        /* if inuse_fakeobj is the only thing present in sortedinvent, get
+           rid of it in order to produce "not using any items" */
         if (cptr.eq(cptr.ldPtro(sortedinvent.v, 0, $sizeof_Loot), inuse_fakeobj) && !cptr.ldPtro(sortedinvent.v, 1, $sizeof_Loot))
             cptr.stPtro(sortedinvent.v, 0, null, $sizeof_Loot);
     }
+
     start_menu()(win, BigInt.asUintN(64, BigInt(menu_behavior)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     if (wizid) {
         let unid_cnt;
         let prompt = new Uint8Array(128);
+
         unid_cnt = count_unidentified(cptr.ldPtro(gi, $instance_globals_i_invent));
-        void cptr.sprintf(cptr.decay(prompt), __s_debug_identify);
+        void cptr.sprintf(cptr.decay(prompt), __s_debug_identify);  /* 'title' rather than 'prompt' */
         if (unid_cnt)
             void cptr.sprintf(eos(cptr.decay(prompt)), __s_unidentified_or_partially_identified, (((unid_cnt) == 1) ? __s_empty : __s_s));
         add_menu_str(win, cptr.decay(prompt));
@@ -2801,15 +3562,21 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         } else {
             cptr.stPtr(any, wizid_fakeobj);
             void cptr.sprintf(cptr.decay(prompt), __s_select_s_to_permanently_identify, (unid_cnt == 1) ? __s_it : __s_any_or_all_of_them);
+            /* wiz_identify stuffed the wiz_identify command character (^I)
+               into iflags.override_ID for our use as an accelerator;
+               it could be ambiguous if player has assigned a letter to
+               the #wizidentify command, so include it as a group accelerator
+               but use '_' as the primary selector */
             if (unid_cnt > 1)
                 void cptr.sprintf(eos(cptr.decay(prompt)), __s_s_for_all, visctrl(schar(cptr.ldI32o(iflags, $instance_flags_override_ID))));
             add_menu(win, nul_glyphinfo.v, any, 95, schar(cptr.ldI32o(iflags, $instance_flags_override_ID)), NHM.ATR_NONE, clr, cptr.decay(prompt), NHM.MENU_ITEMFLAGS_SKIPINVERT);
             gotsomething = 1;
         }
     } else if (usextra) {
+        /* wizard override ID and xtra_choice are mutually exclusive */
         if (cptr.ld1so(flags, $flag_sortpack))
             add_menu_heading(win, __s_miscellaneous);
-        cptr.st1(any, 45);
+        cptr.st1(any, 45);  /* '-' */
         add_menu(win, nul_glyphinfo.v, any, 45, 0, NHM.ATR_NONE, clr, xtra_choice, NHM.MENU_ITEMFLAGS_NONE);
         gotsomething = 1;
     }
@@ -2819,44 +3586,59 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         for (srtinv = sortedinvent.v; (otmp = cptr.ldPtr(srtinv)) !== null; srtinv = cptr.add(srtinv, 1, 24)) {
             let tmpglyph;
             let tmpglyphinfo = cptr.alloc(48); cptr.memcpy(tmpglyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
+
+            /* for showing a set of specific letters, skip ones not in the set */
             if (lets && !cptr.strchr(lets, cptr.ld1so(otmp, $obj_invlet)))
                 continue;
             if (!cptr.ld1so(flags, $flag_sortpack) || cptr.ld1so(otmp, $obj_oclass) == cptr.ld1s(invlet)) {
                 if (wizid && !not_fully_identified(otmp))
                     continue;
                 if (inuse_only) {
+                    /* for inuse-only, start with an extra header */
                     if (!inusecount++)
                         add_menu_heading(win, doing_perm_invent ? __s_in_use : __s_inventory_in_use);
                 } else if (doing_perm_invent && !show_gold) {
+                    /* don't skip gold if it is quivered, even for !show_gold */
                     if (cptr.ld1so(otmp, $obj_invlet) == NHC.GOLD_SYM && !cptr.ldI64o(otmp, $obj_owornmask)) {
                         skipped_gold = 1;
                         continue;
                     }
                 }
+                /* maybe insert a class header */
                 if (inuse_only ? (cptr.ld1so(srtinv, $Loot_orderclass) != prevorderclass) : (cptr.ld1so(flags, $flag_sortpack) && !classcount ? 1 : 0)) {
                     let withsym = schar((want_reply && cptr.ld1so(iflags, $instance_flags_menu_head_objsym) ? 1 : 0));
                     let class_header = inuse_only ? cptr.ldPtro(inuse_headers, cptr.ld1so(srtinv, $Loot_orderclass), 8) : let_to_name(cptr.ld1s(invlet), 0, withsym);
+
                     add_menu_heading(win, class_header);
                     classcount++;
                     prevorderclass = cptr.ld1so(srtinv, $Loot_orderclass);
                 }
+
                 ilet = cptr.ld1so(otmp, $obj_invlet);
-                cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+                cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* all bits zero */
                 if (wizid)
                     cptr.stPtr(any, otmp);
                 else
                     cptr.st1(any, ilet);
+
                 if (cptr.eq(otmp, inuse_fakeobj)) {
+                    /* fake item to format as "bare|gloved hands" */
                     let barehands = new Uint8Array(128);
+
+                    /* like doname() below, makeplural() returns an obuf[] */
                     formattedobj = makeplural(body_part(NHC.HAND));
                     void cptr.sprintf(cptr.decay(barehands), __s_s_s_no_weapon, uarmg.v ? __s_gloved : __s_bare, formattedobj);
                     add_menu(win, nul_glyphinfo.v, any, ilet, 0, NHM.ATR_NONE, clr, cptr.decay(barehands), NHM.MENU_ITEMFLAGS_NONE);
                 } else {
+                    /* normal inventory item */
                     tmpglyph = ((cptr.ldI16o((otmp), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), $obj_corpsenm) + (((cptr.ld1so((otmp), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), $obj_corpsenm) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(otmp) ? (((cptr.ld1so((otmp), $obj_oclass) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), $obj_otyp) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
                     map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
                     formattedobj = doname(otmp);
                     add_menu(win, tmpglyphinfo, any, ilet, schar((wizid ? cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), $sizeof_class_sym) : 0)), NHM.ATR_NONE, clr, formattedobj, NHM.MENU_ITEMFLAGS_NONE);
                 }
+                /* doname() uses a static pool of obuf[] output buffers and
+                   we don't want inventory display to overwrite all of them,
+                   so when we've used one we release it for re-use */
                 maybereleaseobuf(formattedobj);
                 gotsomething = 1;
             }
@@ -2871,8 +3653,14 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         }
         if (save_flags_sortpack != cptr.ld1so(flags, $flag_sortpack))
             cptr.st1o(flags, $flag_sortpack, save_flags_sortpack);
+
+        /* default for force_invmenu is a menu listing likely candidates;
+           add '*' for 'list all' as an extra choice unless the menu already
+           includes everything; when reissuing the menu after player has
+           picked '*', add '?' for 'list likely candidates' to reverse that */
         if (cptr.ld1so(iflags, $instance_flags_force_invmenu) && want_reply) {
             let menutext = null;
+
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             if ((allowxtra && !usextra) || (lets && Number(BigInt.asIntN(32, cptr.strlen(lets))) < inv_cnt(1))) {
                 cptr.st1(any, 42);
@@ -2884,31 +3672,41 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
             if (menutext) {
                 add_menu_heading(win, __s_special);
                 add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, menutext, NHM.MENU_ITEMFLAGS_NONE);
-                gotsomething = 1;
+                gotsomething = 1;  /* menu isn't empty */
             }
         }
         unsortloot(sortedinvent);
+        /* for permanent inventory where nothing has been listed (because
+           there isn't anything applicable to list; the n==0 case above
+           gets skipped for perm_invent), put something into the menu */
         if (doing_perm_invent && !lets && !gotsomething) {
             add_menu_str(win, inuse_only ? cptr.decay(__static_display_pickinv_not_using_anything) : ((!show_gold && skipped_gold) ? cptr.decay(__static_display_pickinv_only_carrying_gold) : cptr.decay(__static_display_pickinv_not_carrying_anything)));
             want_reply = 0;
         }
         end_menu()(win, (query && cptr.ld1s(query)) ? query : null);
+
         n = select_menu(win, wizid ? NHM.PICK_ANY : (want_reply ? NHM.PICK_ONE : NHM.PICK_NONE), selected);
         if (n > 0) {
             if (wizid) {
                 let all_id = 0;
                 let i;
+
+                /* identifying items will update perm_invent, calling this
+                   routine recursively, and we don't want the nested call
+                   to filter on unID'd items */
                 cptr.stI32o(iflags, $instance_flags_override_ID, 0);
                 ret = 0;
                 for (i = 0; i < n; ++i) {
                     otmp = cptr.ldPtro(selected.v, i, $sizeof_menu_item);
                     if (cptr.eq(otmp, wizid_fakeobj)) {
                         identify_pack(0, 0);
+                        /* identify_pack() performs update_inventory() */
                         all_id = 1;
                         break;
                     } else {
                         if (not_fully_identified(otmp))
                             void identify(otmp);
+                        /* identify() does not perform update_inventory() */
                     }
                 }
                 if (!all_id)
@@ -2920,23 +3718,35 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
             }
             cptr.free(selected.v);
         } else
-            ret = schar((!n ? 0 : 27));
+            ret = schar((!n ? 0 : 27));  /* cancelled */
+
         return ret;
     }
 }
 
+/*
+ * If lets == NULL or "", list all objects in the inventory.  Otherwise,
+ * list all objects with object classes that match the order in lets.
+ *
+ * Returns the letter identifier of a selected item, or 0 if nothing
+ * was selected.
+ */
 /** C ref: invent.c:3428 — @param {CPtr<char>} lets @param {CInt} want_reply @returns {CInt} */
 export function display_inventory(lets, want_reply) {
     let cmdq = cmdq_pop();
+
     if (cmdq) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             let otmp;
+
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_invlet) == cptr.ld1so(cmdq, $_cmd_queue_key) && (!lets || !cptr.ld1s(lets) || cptr.strchr(lets, cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), $sizeof_class_sym)))) {
                     cptr.free(cmdq);
                     return cptr.ld1so(otmp, $obj_invlet);
                 }
         }
+
+        /* cmdq not a key, or did not find the object, abort */
         cptr.free(cmdq);
         cmdq_clear(NHC.CQ_CANNED);
         return 0;
@@ -2949,6 +3759,10 @@ export function repopulate_perminvent() {
     void display_pickinv(null, null, null, 0, 0, null);
 }
 
+/*
+ * Show what is current using inventory letters.
+ *
+ */
 /** C ref: invent.c:3467 — @param {CInt} avoidlet @returns {CInt} */
 function display_used_invlets(avoidlet) {
     let otmp;
@@ -2964,11 +3778,12 @@ function display_used_invlets(avoidlet) {
     let any = cptr.alloc(8);
     let selected = cptr.box(0);
     let clr = NHM.NO_COLOR;
+
     if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
         win = create_nhwindow()(NHM.NHW_MENU);
         start_menu()(win, 0n);
         while (!invdone) {
-            cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+            cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* set all bits to zero */
             classcount = 0;
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
                 ilet = cptr.ld1so(otmp, $obj_invlet);
@@ -2976,7 +3791,7 @@ function display_used_invlets(avoidlet) {
                     continue;
                 if (!cptr.ld1so(flags, $flag_sortpack) || cptr.ld1so(otmp, $obj_oclass) == cptr.ld1s(invlet)) {
                     if (cptr.ld1so(flags, $flag_sortpack) && !classcount) {
-                        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+                        cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* zero */
                         add_menu_heading(win, let_to_name(cptr.ld1s(invlet), 0, 0));
                         classcount++;
                     }
@@ -2991,20 +3806,26 @@ function display_used_invlets(avoidlet) {
             invdone = 1;
         }
         end_menu()(win, __s_inventory_letters_used);
+
         n = select_menu(win, NHM.PICK_ONE, selected);
         if (n > 0) {
             ret = cptr.ld1so(selected.v, 0, $sizeof_menu_item);
             cptr.free(selected.v);
         } else
-            ret = schar((!n ? 0 : 27));
+            ret = schar((!n ? 0 : 27));  /* cancelled */
         destroy_nhwindow()(win);
     }
     return ret;
 }
 
+/*
+ * Returns the number of unpaid items within the given list.  This includes
+ * contained objects.
+ */
 /** C ref: invent.c:3526 — @param {CPtr<struct obj>} list @returns {CInt} */
 export function count_unpaid(list) {
     let count = 0;
+
     while (list) {
         if ((cptr.ldI32o(list, $obj_unpaid) & 1))
             count++;
@@ -3015,33 +3836,56 @@ export function count_unpaid(list) {
     return count;
 }
 
+/*
+ * Returns the number of items with b/u/c/unknown within the given list.
+ * This does NOT include contained objects.
+ *
+ * Assumes that the hero sees or touches or otherwise senses the objects
+ * at some point:  bknown is forced for priest[ess], like in xname().
+ */
 /** C ref: invent.c:3548 — @param {CPtr<struct obj>} list @param {CInt} type @param {CPtr} filterfunc @returns {CInt} */
 export function count_buc(list, type, filterfunc) {
     let count = 0;
+
     for (; list; list = cptr.ldPtr(list)) {
+        /* priests always know bless/curse state */
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
             cptr.stI32o(list, $obj_bknown, (cptr.ld1so(list, $obj_oclass) != NHC.COIN_CLASS) >>> 0);
+        /* some actions exclude some or most items */
         if (filterfunc && !(filterfunc)(list))
             continue;
+
+        /* coins are either uncursed or unknown based upon option setting */
         if (cptr.ld1so(list, $obj_oclass) == NHC.COIN_CLASS) {
             if (type == (cptr.ld1so(flags, $flag_goldX) ? NHM.BUC_UNKNOWN : NHM.BUC_UNCURSED))
                 ++count;
             continue;
         }
+        /* check whether this object matches the requested type */
         if (!(cptr.ldI32o(list, $obj_bknown) & 1) ? (type == NHM.BUC_UNKNOWN) : ((cptr.ldI32o(list, $obj_blessed) & 1) | 0 ? (type == NHM.BUC_BLESSED) : ((cptr.ldI32o(list, $obj_cursed) & 1) | 0 ? (type == NHM.BUC_CURSED) : (type == NHM.BUC_UNCURSED))))
             ++count;
     }
     return count;
 }
 
+/* similar to count_buc(), but tallies all states at once
+   rather than looking for a specific type */
 /** C ref: invent.c:3580 — @param {CPtr<struct obj>} list @param {CInt} by_nexthere @param {CPtr<int>} bcp @param {CPtr<int>} ucp @param {CPtr<int>} ccp @param {CPtr<int>} xcp @param {CPtr<int>} ocp @param {CPtr<int>} jcp */
 export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
+    /* Future extensions:
+     *  Skip current_container when list is invent, uchain when
+     *  first object of list is located on the floor.  'ocp' will then
+     *  have a function again (it was a counter for having skipped gold,
+     *  but that's not skipped anymore).
+     */
     cptr.stI32(bcp, cptr.stI32(ucp, cptr.stI32(ccp, cptr.stI32(xcp, cptr.stI32(ocp, cptr.stI32(jcp, 0))))));
     for (; list; list = (by_nexthere ? cptr.ldPtro(list, $obj_v) : cptr.ldPtr(list))) {
+        /* priests always know bless/curse state */
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
             cptr.stI32o(list, $obj_bknown, (cptr.ld1so(list, $obj_oclass) != NHC.COIN_CLASS) >>> 0);
         if ((cptr.ldI32o(list, $obj_pickup_prev) & 1))
             cptr.stI32(jcp, cptr.ldI32(jcp) + 1);
+        /* coins are either uncursed or unknown based upon option setting */
         if (cptr.ld1so(list, $obj_oclass) == NHC.COIN_CLASS) {
             if (cptr.ld1so(flags, $flag_goldX))
                 cptr.stI32(xcp, cptr.ldI32(xcp) + 1);
@@ -3049,6 +3893,7 @@ export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
                 cptr.stI32(ucp, cptr.ldI32(ucp) + 1);
             continue;
         }
+        /* ordinary items */
         if (!(cptr.ldI32o(list, $obj_bknown) & 1))
             cptr.stI32(xcp, cptr.ldI32(xcp) + 1);
         else if ((cptr.ldI32o(list, $obj_blessed) & 1))
@@ -3060,15 +3905,18 @@ export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
     }
 }
 
+/* count everything inside a container, or just shop-owned items inside */
 /** C ref: invent.c:3620 — @param {CPtr<struct obj>} container @param {CInt} nested @param {CInt} quantity @param {CInt} everything @param {CInt} newdrop @returns {CLongLong} */
 export function count_contents(container, nested, quantity, everything, newdrop) {
     let otmp;
     let topc;
     let shoppy = 0;
     let count = 0n;
+
     if (!everything && !newdrop) {
         let x = cptr.box(0);
         let y = cptr.box(0);
+
         for (topc = container; cptr.ld1so(topc, $obj_where) == NHM.OBJ_CONTAINED; topc = cptr.ldPtro(topc, $obj_v))
             continue;
         if (cptr.ld1so(topc, $obj_where) == NHM.OBJ_FLOOR && get_obj_location(topc, x, y, 0))
@@ -3096,24 +3944,29 @@ function dounpaid(count, floorcount, buriedcount) {
     let xtracount;
     let cost;
     let totcost;
+
     otmp = (marker.v = (contnr = null));
     xtracount = (floorcount + buriedcount) | 0;
+
     if (count == 1 && !xtracount) {
         otmp = find_unpaid(cptr.ldPtro(gi, $instance_globals_i_invent), marker);
         contnr = unknwn_contnr_contents(otmp);
     }
     if (otmp && !contnr) {
+        /* 1 item; use pline instead of popup menu */
         cost = unpaid_cost(otmp, NHC.COST_NOCONTENTS);
-        (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
+        (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);  /* suppress "(unpaid)" suffix */
         pline(__s_pct_s, xprname(otmp, distant_name(otmp, doname), schar(((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT) ? cptr.ld1so(otmp, $obj_invlet) : 62)), 1, cost, 0n));
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
         return;
     }
+
     win = create_nhwindow()(NHM.NHW_MENU);
     totcost = 0n;
-    num_so_far = 0;
+    num_so_far = 0;  /* count of # printed so far */
     if (!cptr.ld1so(flags, $flag_invlet_constant))
         reassign();
+
     do {
         classcount = 0;
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -3124,8 +3977,9 @@ function dounpaid(count, floorcount, buriedcount) {
                         putstr()(win, 0, let_to_name(cptr.ld1s(invlet), 1, 0));
                         classcount++;
                     }
+
                     totcost += (cost = unpaid_cost(otmp, NHC.COST_NOCONTENTS));
-                    (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
+                    (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);  /* suppress "(unpaid)" suffix */
                     putstr()(win, 0, xprname(otmp, distant_name(otmp, doname), ilet, 1, cost, 0n));
                     (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
                     num_so_far++;
@@ -3133,38 +3987,56 @@ function dounpaid(count, floorcount, buriedcount) {
             }
         }
     } while (cptr.ld1so(flags, $flag_sortpack) && (cptr.ld1s(cptr.preinc(() => invlet, (v) => { invlet = v; }))));
+
     if (count > num_so_far) {
+        /* something unpaid is contained */
         if (cptr.ld1so(flags, $flag_sortpack))
             putstr()(win, 0, let_to_name(62, 1, 0));
+        /*
+         * Search through the container objects in the inventory for
+         * unpaid items.  The top level inventory items have already
+         * been listed.
+         */
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
             if ((cptr.ldPtro((otmp), $obj_cobj) !== null)) {
                 let contcost = 0n;
-                marker.v = null;
+
+                marker.v = null;  /* haven't found any */
                 while (find_unpaid(cptr.ldPtro(otmp, $obj_cobj), marker)) {
                     totcost += (cost = unpaid_cost(marker.v, NHC.COST_NOCONTENTS));
                     contcost += cost;
                     if ((cptr.ldI32o(otmp, $obj_cknown) & 1)) {
-                        (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
+                        (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);  /* suppress "(unpaid)" sfx */
                         putstr()(win, 0, xprname(marker.v, distant_name(marker.v, doname), 62, 1, cost, 0n));
                         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
                     }
                 }
                 if (!(cptr.ldI32o(otmp, $obj_cknown) & 1)) {
                     let contbuf = new Uint8Array(256);
+
+                    /* Shopkeeper knows what to charge for contents */
                     void cptr.sprintf(cptr.decay(contbuf), __s_s_contents, s_suffix(xname(otmp)));
                     putstr()(win, 0, xprname(null, cptr.decay(contbuf), 62, 1, contcost, 0n));
                 }
             }
         }
     }
+
     if (count > 0) {
         putstr()(win, 0, __s_empty);
         putstr()(win, 0, xprname(null, __s_total, 42, 0, totcost, 0n));
     }
+
+    /* an unpaid item can be on the floor if dropped on the shop boundary
+       (then possibly moved all the way into the shop during wall repair);
+       one can be buried if it started that way and a pit was dug at its
+       spot then filled by a boulder (or perhaps a theme room with a pool
+       and an unpaid item moved into that by wall repair, then freezing) */
     if (xtracount > 0) {
         let buf = new Uint8Array(256);
         let floorverb = (xtracount > 1) ? __s_are : __s_is;
         let where = (buriedcount == 0) ? __s_on_the_floor : ((floorcount == 0) ? __s_under_the_floor : __s_on_or_under_the_floor);
+
         if (!count) {
             You(__s_aren_t_carrying_any_unpaid_items_but, floorverb, xtracount, where);
         } else {
@@ -3173,6 +4045,7 @@ function dounpaid(count, floorcount, buriedcount) {
             putstr()(win, 0, cptr.decay(buf));
         }
     }
+
     if (count > 0)
         display_nhwindow()(win, 0);
     destroy_nhwindow()(win);
@@ -3182,9 +4055,12 @@ function dounpaid(count, floorcount, buriedcount) {
 /** C ref: invent.c:3793 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function this_type_only(obj) {
     let res = schar((cptr.ld1so(obj, $obj_oclass) == cptr.ldI32o(gt, $instance_globals_t_this_type)));
+
     if (cptr.ldI32o(gt, $instance_globals_t_this_type) == 80) {
         res = schar((cptr.ldI32o(obj, $obj_pickup_prev) & 1));
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
+        /* if filtering by bless/curse state, gold is classified as
+           either unknown or uncursed based on user option setting */
         if (cptr.ldI32o(gt, $instance_globals_t_this_type) && cptr.strchr(__s_bucx, cptr.ldI32o(gt, $instance_globals_t_this_type)))
             res = schar((cptr.ldI32o(gt, $instance_globals_t_this_type) == (cptr.ld1so(flags, $flag_goldX) ? 88 : 85)));
     } else {
@@ -3202,12 +4078,13 @@ function this_type_only(obj) {
             res = schar((!(cptr.ldI32o(obj, $obj_bknown) & 1)));
             break;
             default:
-            break;
+            break;  /* use 'res' as-is */
         }
     }
     return res;
 }
 
+/* the #inventtype command */
 const __static_dotypeinv_prompt = cptr.bytes("What type of object do you want an inventory of?"); /** C ref: invent.c:3830 — char[49] (function-static) */
 
 /** C ref: invent.c:3827 @returns {CInt} */
@@ -3237,6 +4114,7 @@ export function dotypeinv() {
     let pick_list = cptr.box(0);
     let traditional = 1;
     __lbl_doI_done: {
+
         cptr.stI32o(gt, $instance_globals_t_this_type, 0);
         cptr.stPtro(gt, $instance_globals_t_this_title, null);
         if (!cptr.ldPtro(gi, $instance_globals_i_invent) && !billx) {
@@ -3249,6 +4127,7 @@ export function dotypeinv() {
         u_buried = count_unpaid(cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist));
         any_unpaid = (((u_carried + u_floor) | 0) + u_buried) | 0;
         tally_BUCX(cptr.ldPtro(gi, $instance_globals_i_invent), 0, bcnt, ucnt, ccnt, xcnt, ocnt, jcnt);
+
         if (cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_TRADITIONAL) {
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_FULL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_PARTIAL) {
                 traditional = 0;
@@ -3274,6 +4153,7 @@ export function dotypeinv() {
             }
         }
         if (traditional) {
+            /* collect list of classes of objects carried, for use as a prompt */
             cptr.st1o(cptr.decay(types), 0, 0, 1);
             class_count = collect_obj_classes(cptr.decay(types), cptr.ldPtro(gi, $instance_globals_i_invent), 0, null, itemcount);
             if (any_unpaid || billx || ((((((bcnt.v + ccnt.v) | 0) + ucnt.v) | 0) + xcnt.v) | 0) != 0 || jcnt.v)
@@ -3293,6 +4173,7 @@ export function dotypeinv() {
             if (jcnt.v)
                 cptr.st1o(cptr.decay(types), class_count++, 80, 1);
             cptr.st1o(cptr.decay(types), class_count, 0, 1);
+            /* add everything not already included; user won't see these */
             extra_types = eos(cptr.decay(types));
             cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), 27);
             if (!any_unpaid)
@@ -3309,12 +4190,13 @@ export function dotypeinv() {
                 cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), 88);
             if (!jcnt.v)
                 cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), 80);
-            cptr.st1(extra_types, 0);
+            cptr.st1(extra_types, 0);  /* for strchr() */
             for (i = 0; i < NHC.MAXOCLASSES; i++)
                 if (!cptr.strchr(cptr.decay(types), cptr.ld1so(def_oc_syms, i, $sizeof_class_sym))) {
                     cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), cptr.ld1so(def_oc_syms, i, $sizeof_class_sym));
                     cptr.st1(extra_types, 0);
                 }
+
             if (class_count > 1) {
                 c = yn_function(cptr.decay(__static_dotypeinv_prompt), cptr.decay(types), 0, 1);
                 if (c == 0) {
@@ -3322,6 +4204,7 @@ export function dotypeinv() {
                     break __lbl_doI_done;
                 }
             } else {
+                /* only one thing to itemize */
                 if (any_unpaid)
                     c = 117;
                 else if (billx)
@@ -3344,10 +4227,13 @@ export function dotypeinv() {
                 You(__s_are_not_carrying_any_unpaid_objects);
             break __lbl_doI_done;
         }
+
         if (cptr.strchr(__s_bucxp, c))
-            oclass = c;
+            oclass = c;  /* not a class but understood by this_type_only() */
         else
-            oclass = def_char_to_objclass(c);
+            oclass = def_char_to_objclass(c);  /* change to object class */
+        /* these are used for traditional when not applicable and also for
+           constructing a title to be used by query_objlist() */
         switch (c) {
             case 66:
             before = __s_known_to_be_blessed;
@@ -3360,31 +4246,44 @@ export function dotypeinv() {
             break;
             case 88:
             after = __s_whose_blessed_uncursed_cursed_status_is;
-            break;
+            break;  /* better phrasing is desirable */
             case 80:
             after = __s_that_were_just_picked_up;
             break;
             default:
+            /* 'c' is an object class, because we've already handled
+               all the non-class letters which were put into 'types[]';
+               could/should move object class names[] array from below
+               to somewhere above so that we can access it here (via
+               lcase(strcpy(classnamebuf, names[(int) c]))), but the
+               game-play value of doing so is low... */
             before = __s_such;
             break;
         }
+
         if (traditional) {
             if (cptr.cmp(cptr.strchr(cptr.decay(types), c), cptr.strchr(cptr.decay(types), 27)) > 0) {
                 You(__s_have_no_sobjects_s, before, after);
                 break __lbl_doI_done;
             }
-            cptr.stI32o(gt, $instance_globals_t_this_type, oclass);
+            cptr.stI32o(gt, $instance_globals_t_this_type, oclass);  /* extra input for this_type_only() */
         }
         if (cptr.strchr(__s_bucxp, c)) {
+            /* the before and after phrases for "you have no..." can both be
+               treated as mutually-exclusive suffices when creating a title */
             void cptr.sprintf(cptr.decay(title), __s_items_s, (before && cptr.ld1s(before)) ? before : after);
+            /* get rid of trailing space from 'before' and double-space from
+               'after's leading space */
             void mungspaces(cptr.decay(title));
-            void cptr.strcat(cptr.decay(title), __s_colon);
+            void cptr.strcat(cptr.decay(title), __s_colon);  /* after removing unwanted trailing space */
             cptr.stPtro(gt, $instance_globals_t_this_title, cptr.decay(title));
         }
+
         if (query_objlist(null, cptr.add(gi, $instance_globals_i_invent), ((cptr.ld1so(flags, $flag_invlet_constant) ? NHM.USE_INVLET : 0) | NHM.INVORDER_SORT | NHM.INCLUDE_VENOM), pick_list, NHM.PICK_ONE, this_type_only) > 0) {
             let otmp = cptr.ldPtro(pick_list.v, 0, $sizeof_menu_item);
+
             cptr.free(pick_list.v);
-            void itemactions(otmp);
+            void itemactions(otmp);  /* always returns ECMD_OK */
         }
     }
     cptr.stI32o(gt, $instance_globals_t_this_type, 0);
@@ -3392,6 +4291,8 @@ export function dotypeinv() {
     return NHM.ECMD_OK;
 }
 
+/* return a string describing the dungeon feature at <x,y> if there
+   is one worth mentioning at that location; otherwise null */
 const __static_dfeature_at_altbuf = new Uint8Array(256); /** C ref: invent.c:4042 — char[256] (function-static) */
 
 /** C ref: invent.c:4037 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @returns {CPtr<char>} */
@@ -3401,50 +4302,53 @@ export function dfeature_at(x, y, buf) {
     let cmap = -1;
     let dfeature = null;
     let stway = stairway_at(x, y);
+
     if (((ltyp) == NHC.DOOR)) {
         switch ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
             cmap = NHC.S_ndoor;
-            break;
+            break;  /* "doorway" */
             case NHM.D_ISOPEN:
             cmap = NHC.S_vodoor;
-            break;
+            break;  /* "open door" */
             case NHM.D_BROKEN:
             dfeature = __s_broken_door;
             break;
             default:
             cmap = NHC.S_vcdoor;
-            break;
+            break;  /* "closed door" */
         }
+        /* override door description for open drawbridge */
         if (is_drawbridge_wall(x, y) >= 0)
             dfeature = __s_open_drawbridge_portcullis, cmap = -1;
     } else if (((ltyp) == NHC.FOUNTAIN))
-        cmap = NHC.S_fountain;
+        cmap = NHC.S_fountain;  /* "fountain" */
     else if (((ltyp) == NHC.THRONE))
-        cmap = NHC.S_throne;
+        cmap = NHC.S_throne;  /* "opulent throne" */
     else if (is_lava(x, y))
-        cmap = NHC.S_lava;
+        cmap = NHC.S_lava;  /* "molten lava" */
     else if (is_ice(x, y))
-        dfeature = ice_descr(x, y, cptr.decay(__static_dfeature_at_altbuf)), cmap = -1;
+        dfeature = ice_descr(x, y, cptr.decay(__static_dfeature_at_altbuf)), cmap = -1;  /* "ice" */
     else if (is_pool(x, y))
         dfeature = __s_pool_of_water;
     else if (((ltyp) == NHC.SINK))
-        cmap = NHC.S_sink;
+        cmap = NHC.S_sink;  /* "sink" */
     else if (((ltyp) == NHC.ALTAR)) {
         void cptr.sprintf(cptr.decay(__static_dfeature_at_altbuf), __s_saltar_to_s_s, (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_SANCTUM) ? __s_high : __s_empty, a_gname(), align_str((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0))))));
         dfeature = cptr.decay(__static_dfeature_at_altbuf);
     } else if (stway) {
         dfeature = stairs_description(stway, cptr.decay(__static_dfeature_at_altbuf), 1);
     } else if (ltyp == NHC.DRAWBRIDGE_DOWN)
-        cmap = NHC.S_vodbridge;
+        cmap = NHC.S_vodbridge;  /* "lowered drawbridge" */
     else if (ltyp == NHC.DBWALL)
-        cmap = NHC.S_vcdbridge;
+        cmap = NHC.S_vcdbridge;  /* "raised drawbridge" */
     else if (((ltyp) == NHC.GRAVE))
-        cmap = NHC.S_grave;
+        cmap = NHC.S_grave;  /* "grave" */
     else if (ltyp == NHC.TREE)
-        cmap = NHC.S_tree;
+        cmap = NHC.S_tree;  /* "tree" */
     else if (ltyp == NHC.IRONBARS)
         dfeature = __s_set_of_iron_bars;
+
     if (cmap >= 0)
         dfeature = cptr.ldPtro2(defsyms, cmap, $sizeof_symdef, $symdef_explanation);
     if (dfeature)
@@ -3452,6 +4356,8 @@ export function dfeature_at(x, y, buf) {
     return dfeature;
 }
 
+/* look at what is here; if there are many objects (pile_limit or more),
+   don't show them unless obj_cnt is 0 */
 /** C ref: invent.c:4104 — @param {CInt} obj_cnt @param {CUInt} lookhere_flags @returns {CInt} */
 export function look_here(obj_cnt, lookhere_flags) {
     let otmp;
@@ -3465,14 +4371,36 @@ export function look_here(obj_cnt, lookhere_flags) {
     let felt_cockatrice = 0;
     let picked_some = schar((((lookhere_flags & NHM.LOOKHERE_PICKED_SOME) >>> 0) != 0));
     let skip_dfeature = schar((((lookhere_flags & NHM.LOOKHERE_SKIP_DFEATURE) >>> 0) != 0));
+
+    /* default pile_limit is 5; a value of 0 means "never skip"
+       (and 1 effectively forces "always skip") */
     skip_objects = schar((cptr.ldI32o(flags, $flag_pile_limit) > 0 && obj_cnt >= cptr.ldI32o(flags, $flag_pile_limit) ? 1 : 0));
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         let mtmp = cptr.ldPtro(u, $you_ustuck);
+
+        /*
+         * FIXME?
+         *  Engulfer's inventory can include worn items (specific case is
+         *  Juiblex being created with an amulet as random defensive item)
+         *  which will be flagged as "(being worn)".  This code includes
+         *  such a worn item under the header "Contents of <mon>'s stomach",
+         *  a nifty trick for how/where to wear stuff.  The situation is
+         *  rare enough to turn a blind eye.
+         *
+         *  3.6.3:  Pickup has been changed to decline to pick up a worn
+         *  item from inside an engulfer, but if player tries, it just
+         *  says "you can't" without giving a reason why (which would be
+         *  something along the lines of "because it's worn on the outside
+         *  so is unreachable from in here...").
+         */
         void cptr.sprintf(cptr.decay(fbuf), __s_contents_of_s_s, s_suffix(mon_nam(mtmp)), mbodypart(mtmp, NHC.STOMACH));
+        /* Skip "Contents of " by using fbuf index 12 */
         You(__s_s_to_s_what_is_lying_in_s, Blind() ? __s_try : __s_look_around, verb, cptr.add(cptr.decay(fbuf), 12, 1));
         otmp = cptr.ldPtro(mtmp, $monst_minvent);
         if (otmp) {
             for (; otmp; otmp = cptr.ldPtr(otmp)) {
+                /* If swallower is an animal, it should have become stone
+                 * but... */
                 if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
                     feel_cockatrice(otmp, 0);
             }
@@ -3488,35 +4416,47 @@ export function look_here(obj_cnt, lookhere_flags) {
     if (!skip_objects) {
         let reg;
         let regbuf = new Uint8Array(128);
+
         cptr.st1o(cptr.decay(regbuf), 0, 0, 1);
         if ((reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null)
             void cptr.sprintf(cptr.decay(regbuf), __s_a_s_cloud, reg_damg(reg) ? __s_poison_gas : __s_vapor);
         if ((trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null && !(cptr.ldI32o(trap, $trap_tseen) & 1))
             trap = (null);
+
         if (reg || trap)
             There(__s_is_s_s_s_here, reg ? cptr.decay(regbuf) : __s_empty, (reg && trap) ? __s_and : __s_empty, trap ? an(trapname((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0, 0)) : __s_empty);
     }
+
     otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
     dfeature = dfeature_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(fbuf2));
     if (dfeature && !strcmp(dfeature, __s_pool_of_water) && ((cptr.ldI32o(u, $you_uinwater) & 1)) | 0)
         dfeature = null;
+
     if (Blind()) {
         let drift = schar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
+
         if (dfeature && !cptr.strncmp(dfeature, __s_altar, 6n)) {
+            /* don't say "altar" twice, dfeature has more info */
             You(__s_try_to_feel_what_is_here);
         } else if (SURFACE_AT(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == NHC.ICE) {
+            /* using describe_decor() to handle ice is simpler than
+               replicating it in the conditional message construction */
             if (!cptr.ld1so(flags, $flag_mention_decor) || cptr.ld1so(iflags, $instance_flags_prev_decor) == NHC.ICE)
                 force_decor(0);
+            /* plain "ice" if blind and levitating, otherwise "solid ice" &c;
+              "There is [thin ]ice here.  You try to feel what is on it." */
             You(__s_try_to_feel_what_is_on_it);
-            skip_dfeature = 1;
+            skip_dfeature = 1;  /* ice already described */
         } else {
             let cant_reach = schar((!can_reach_floor(1)));
             let surf = surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             let where = cant_reach ? __s_lying_beneath_you : __s_lying_here_on_the;
             let onwhat = cant_reach ? __s_empty : surf;
+
             You(__s_try_to_feel_what_is_s_s, drift ? __s_floating_here : where, drift ? __s_empty : onwhat);
+
             if (dfeature && !drift && !strcmp(dfeature, surf))
-                skip_dfeature = 1;
+                skip_dfeature = 1;  /* terrain feature already identified */
         }
         trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (!can_reach_floor(schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) ? 1 : 0)))) {
@@ -3524,27 +4464,37 @@ export function look_here(obj_cnt, lookhere_flags) {
             return NHM.ECMD_OK;
         }
     }
+
     if (dfeature && !skip_dfeature) {
         let p;
-        let article = 1;
+        let article = 1;  /* 0 => none, 1 => a/an, 2 => the (not used here) */
+
+        /* "molten lava", "iron bars", and plain "ice" are handled as special
+           cases in an() but probably shouldn't be; don't rely on that */
         if (!strcmp(dfeature, __s_molten_lava) || !strcmp(dfeature, __s_iron_bars) || !strcmp(dfeature, __s_ice) || !cptr.strncmp(dfeature, __s_frozen, 7n) || ((p = cptr.strchr(dfeature, 32)) !== null && !strncmpi((p), (__s_ice__2), -1)))
             article = 0;
         if (article == 1)
             dfeature = an(dfeature);
+
+        /* hardcoded "is" worked here because "iron bars" is actually
+           "set of iron bars"; use vtense() instead of relying on that */
         void cptr.sprintf(cptr.decay(fbuf), __s_there_s_s_here, vtense(dfeature, __s_are), dfeature);
     }
+
     if (!otmp || is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Underwater())) {
         if (dfeature && !skip_dfeature)
             pline(__s_pct_s, cptr.decay(fbuf));
-        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* Eric Backus */
         if (!skip_objects && (Blind() || !dfeature))
             You(__s_s_no_objects_here, verb);
         return (!!Blind() ? NHM.ECMD_TIME : NHM.ECMD_OK);
     }
+    /* we know there is something here */
+
     if (skip_objects) {
         if (dfeature && !skip_dfeature)
             pline(__s_pct_s, cptr.decay(fbuf));
-        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* Eric Backus */
         if (obj_cnt == 1 && cptr.ldI64o(otmp, $obj_quan) == 1n)
             There(__s_is_s_object_here, picked_some ? __s_another : __s_an);
         else
@@ -3556,15 +4506,17 @@ export function look_here(obj_cnt, lookhere_flags) {
                 break;
             }
     } else if (!cptr.ldPtro(otmp, $obj_v)) {
+        /* only one object */
         if (dfeature && !skip_dfeature)
             pline(__s_pct_s, cptr.decay(fbuf));
-        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* Eric Backus */
         You(__s_s_here_s, verb, doname_with_price(otmp));
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_ONE_ITEM_HERE);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
             feel_cockatrice(otmp, 0);
     } else {
         let buf = new Uint8Array(256);
+
         display_nhwindow()(WIN_MESSAGE.v, 0);
         tmpwin = create_nhwindow()(NHM.NHW_MENU);
         if (dfeature && !skip_dfeature) {
@@ -3586,16 +4538,22 @@ export function look_here(obj_cnt, lookhere_flags) {
         destroy_nhwindow()(tmpwin);
         if (felt_cockatrice)
             feel_cockatrice(otmp, 0);
-        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        read_engr_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* Eric Backus */
     }
     return (!!Blind() ? NHM.ECMD_TIME : NHM.ECMD_OK);
 }
 
+/* #look command - explicitly look at what is here, including all objects */
 /** C ref: invent.c:4319 @returns {CInt} */
 export function dolook() {
     let res;
+
+    /* don't let
+       MSGTYPE={norep,noshow} "You see here"
+       interfere with feedback from the look-here command */
     hide_unhide_msgtypes(1, 6);
     res = look_here(0, NHM.LOOKHERE_NOFLAGS);
+    /* restore normal msgtype handling */
     hide_unhide_msgtypes(0, 6);
     return res;
 }
@@ -3610,86 +4568,138 @@ export function will_feel_cockatrice(otmp, force_touch) {
 /** C ref: invent.c:4343 — @param {CPtr<struct obj>} otmp @param {CInt} force_touch */
 export function feel_cockatrice(otmp, force_touch) {
     let kbuf = new Uint8Array(256);
+
     if (will_feel_cockatrice(otmp, force_touch)) {
+        /* "the <cockatrice> corpse" */
         void cptr.strcpy(cptr.decay(kbuf), corpse_xname(otmp, null, NHM.CXN_PFX_THE));
+
         if (poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             You(__s_touched_s_with_your_bare_s, cptr.decay(kbuf), makeplural(body_part(NHC.HAND)));
         else
             pline(__s_touching_s_is_a_fatal_mistake, cptr.decay(kbuf));
+        /* normalize body shape here; hand, not body_part(HAND) */
         void cptr.sprintf(cptr.decay(kbuf), __s_touching_s_bare_handed, killer_xname(otmp));
+        /* will call polymon() for the poly_when_stoned() case */
         instapetrify(cptr.decay(kbuf));
     }
 }
 
+/* 'obj' is being placed on the floor; if it can merge with something that
+   is already there, combine them and discard obj as a separate object */
 /** C ref: invent.c:4366 — @param {CPtr<struct obj>} obj */
 export function stackobj(obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
+
     for (otmp.v = cptr.ldPtro3(svl, cptr.ldI16o(obj.v, $obj_ox), 168, cptr.ldI16o(obj.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp.v; otmp.v = cptr.ldPtro(otmp.v, $obj_v))
         if (!cptr.eq(otmp.v, obj.v) && merged(obj, otmp))
             break;
     return;
 }
 
+/* returns TRUE if obj & otmp can be merged; used in invent.c and mkobj.c */
 /** C ref: invent.c:4379 — @param {CPtr<struct obj>} otmp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function mergable(otmp, obj) {
     let objnamelth = 0n;
     let otmpnamelth = 0n;
+
+    /* fail if already the same object, if different types, if either is
+       explicitly marked to prevent merge, or if not mergable in general */
     if (cptr.eq(obj, otmp) || cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(otmp, $obj_otyp) || (cptr.ldI32o(obj, $obj_nomerge) & 1) | 0 || (cptr.ldI32o(otmp, $obj_nomerge) & 1) | 0 || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1))
         return 0;
+
+    /* coins of the same kind will always merge */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return 1;
+
     if (((cptr.ldI32o(obj, $obj_cursed) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) || ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0))
         return 0;
+
     if (((cptr.ldI32o(obj, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING || ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) == NHM.LOST_EXPLODING)
         return 0;
     if (((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0) != NHM.LOST_NONE && (((cptr.ldI32o(obj, $obj_how_lost) & 7) | 0) != ((cptr.ldI32o(otmp, $obj_how_lost) & 7) | 0)))
         return 0;
+
     if ((cptr.ldI32o(obj, $obj_globby) & 1))
         return 1;
+    /* Checks beyond this point either aren't applicable to globs
+     * or don't inhibit their merger.
+     */
+
     if (((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0) || cptr.ld1so(obj, $obj_spe) != cptr.ld1so(otmp, $obj_spe) || ((cptr.ldI32o(obj, $obj_no_charge) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_no_charge) & 1) | 0) || ((cptr.ldI32o(obj, $obj_obroken) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_obroken) & 1) | 0) || ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) || ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0))
         return 0;
+
     if (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS && (cptr.ldI32o(obj, $obj_oeaten) != cptr.ldI32o(otmp, $obj_oeaten) || ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) != ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0)))
         return 0;
+
     if (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0) || (((cptr.ldI32o(obj, $obj_bknown) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_bknown) & 1) | 0) && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && (Blind() || Hallucination())) || ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0) != ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0) || ((cptr.ldI32o(obj, $obj_oeroded2) & 3) | 0) != ((cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0) || ((cptr.ldI32o(obj, $obj_greased) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_greased) & 1) | 0))
         return 0;
+
     if ((erosion_matters(obj)) && (((cptr.ldI32o(obj, $obj_oerodeproof) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) || (((cptr.ldI32o(obj, $obj_rknown) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_rknown) & 1) | 0) && (Blind() || Hallucination()))))
         return 0;
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG || cptr.ldI16o(obj, $obj_otyp) == NHC.TIN) {
         if (cptr.ldI32o(obj, $obj_corpsenm) != cptr.ldI32o(otmp, $obj_corpsenm))
             return 0;
     }
+
+    /* hatching eggs don't merge; ditto for revivable corpses */
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.EGG && (cptr.ldI16o(obj, $obj_timed) || cptr.ldI16o(otmp, $obj_timed))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.LOW_PM && is_reviver(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))))
         return 0;
+
+    /* allow candle merging only if their ages are close */
+    /* see begin_burn() for a reference for the magic "25" */
     if (Is_candle(obj) && cptr.ldI64o(obj, $obj_age) / 25n != cptr.ldI64o(otmp, $obj_age) / 25n)
         return 0;
+
+    /* burning potions of oil never merge */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0)
         return 0;
+
+    /* don't merge surcharged item with base-cost item */
     if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 && !same_price(obj, otmp))
         return 0;
+
+    /* some additional information is always incompatible */
     if (has_omonst(obj) || has_omid(obj) || has_omonst(otmp) || has_omid(otmp))
         return 0;
+
+    /* if they have names, make sure they're the same */
     objnamelth = cptr.strlen(safe_oname(obj));
     otmpnamelth = cptr.strlen(safe_oname(otmp));
     if ((objnamelth != otmpnamelth && ((objnamelth && otmpnamelth) || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE)) || (objnamelth && otmpnamelth && has_oname(obj) && has_oname(otmp) && cptr.strncmp((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))), (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))), objnamelth)))
         return 0;
+
+    /* if one has an attached mail command, other must have same command */
     if (!has_omailcmd(obj) ? has_omailcmd(otmp) : (!has_omailcmd(otmp) || strcmp((cptr.ldPtro(cptr.ldPtro((obj), $obj_oextra), $oextra_omailcmd)), (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd))) != 0 ? 1 : 0))
         return 0;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_MAIL && cptr.ld1so(obj, $obj_spe) > 0 && (u32mod(cptr.ldI32o(obj, $obj_o_id), 2)) != (u32mod(cptr.ldI32o(otmp, $obj_o_id), 2)))
         return 0;
+
+    /* should be moot since matching artifacts wouldn't be unique */
     if (cptr.ld1so(obj, $obj_oartifact) != cptr.ld1so(otmp, $obj_oartifact))
         return 0;
+
     if (((cptr.ldI32o(obj, $obj_known) & 1) | 0) != ((cptr.ldI32o(otmp, $obj_known) & 1) | 0) && (Blind() || Hallucination()))
         return 0;
+
     return 1;
 }
 
+/* the #showgold command */
 /** C ref: invent.c:4503 @returns {CInt} */
 export function doprgold() {
+    /* Command takes containers into account. */
     let umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
+
+    /* Only list the money you know about.  Guards and shopkeepers
+       can somehow tell if there is any gold anywhere on your
+       person, but you have no such preternatural gold-sense. */
     let hmoney = hidden_gold(0);
+
     if (cptr.ld1so(flags, $flag_verbose)) {
         let buf = new Uint8Array(256);
+
         if (!umoney) {
             void cptr.strcpy(cptr.decay(buf), __s_your_wallet_is_empty);
         } else {
@@ -3707,13 +4717,18 @@ export function doprgold() {
             You(__s_have_no_money);
     }
     shopper_financial_report();
+
     if (umoney && cptr.ld1so(iflags, $instance_flags_menu_requested)) {
         let dollarsign = cptr.bytes("$");
+
+        /* mustn't use TRUE or gold wouldn't show up unless it was quivered */
         void dispinv_with_action(cptr.decay(dollarsign), 0, null);
     }
+
     return NHM.ECMD_OK;
 }
 
+/* the #seeweapon command */
 /** C ref: invent.c:4550 @returns {CInt} */
 export function doprwep() {
     if (!uwep.v) {
@@ -3723,19 +4738,24 @@ export function doprwep() {
         if (cptr.ld1so(u, $you_twoweap))
             prinv(null, uswapwep.v, 0n);
     } else {
-        let lets = new Uint8Array(4);
+        let lets = new Uint8Array(4);  /* 4: uwep, uswapwep, uquiver, terminator */
         let ct = 0;
+
+        /* obj_to_let() will assign letters to all of invent if necessary
+           (for '!fixinv') so doesn't need to be repeated once called here */
         cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uwep.v), 1);
         if (uswapwep.v)
             cptr.st1o(cptr.decay(lets), ct++, cptr.ld1so(uswapwep.v, $obj_invlet), 1);
         if (uquiver.v)
             cptr.st1o(cptr.decay(lets), ct++, cptr.ld1so(uquiver.v, $obj_invlet), 1);
         cptr.st1o(cptr.decay(lets), ct, 0, 1);
+
         void dispinv_with_action(cptr.decay(lets), 1, null);
     }
     return NHM.ECMD_OK;
 }
 
+/* caller is responsible for checking !wearing_armor() */
 /** C ref: invent.c:4578 — @param {CInt} report_uskin */
 function noarmor(report_uskin) {
     if (!uskin.v || !report_uskin) {
@@ -3744,23 +4764,39 @@ function noarmor(report_uskin) {
         let p;
         let uskinname;
         let buf = new Uint8Array(256);
+
         uskinname = cptr.strcpy(cptr.decay(buf), simpleonames(uskin.v));
+        /* shorten "set of <color> dragon scales" to "<color> scales"
+           and "<color> dragon scale mail" to "<color> scale mail" */
         if (!strncmpi(uskinname, __s_set_of, 7))
             uskinname = cptr.add(uskinname, 7);
         if ((p = strstri(uskinname, __s_dragon)) !== null)
             while ((cptr.st1o(p, 1, cptr.ld1so(p, 8))) != 0)
                 p = cptr.add(p, 1);
+
         You(__s_are_not_wearing_armor_but_have_s, uskinname);
     }
 }
 
+/* the #seearmor command */
 /** C ref: invent.c:4601 @returns {CInt} */
 export function doprarm() {
+    /*
+     * Note:  players sometimes get here by pressing a function key which
+     * transmits ''ESC [ <something>'' rather than by pressing '[';
+     * there's nothing we can--or should-do about that here.
+     */
+
     if (!wearing_armor()) {
         noarmor(1);
     } else {
-        let lets = new Uint8Array(8);
+        let lets = new Uint8Array(8);  /* 8: up to 7 pieces of armor plus terminator */
         let ct = 0;
+
+        /* obj_to_let() will assign letters to all of invent if necessary
+           (for '!fixinv') so doesn't need to be repeated once called, but
+           each armor slot doesn't know whether any that precede have made
+           that call so just do it for each one; use SORTPACK_INUSE order */
         if (uarm.v)
             cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uarm.v), 1);
         if (uarmc.v)
@@ -3776,19 +4812,24 @@ export function doprarm() {
         if (uarmu.v)
             cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uarmu.v), 1);
         cptr.st1o(cptr.decay(lets), ct, 0, 1);
+
         void dispinv_with_action(cptr.decay(lets), 1, null);
     }
     return NHM.ECMD_OK;
 }
 
+/* the #seerings command */
 /** C ref: invent.c:4642 @returns {CInt} */
 export function doprring() {
     if (!uleft.v && !uright.v) {
         You(__s_are_not_wearing_any_rings);
     } else {
-        let lets = new Uint8Array(3);
+        let lets = new Uint8Array(3);  /* 3: uright, uleft, terminator */
         let use_inuse_mode = 0;
         let ct = 0;
+
+        /* if either ring is a meat ring, switch to use_inuse_mode in order
+           to label it/them as "Rings" rather than "Comestibles" */
         if (uright.v) {
             cptr.st1o(cptr.decay(lets), ct++, obj_to_let(uright.v), 1);
             if (cptr.ld1so(uright.v, $obj_oclass) != NHC.RING_CLASS)
@@ -3800,41 +4841,60 @@ export function doprring() {
                 use_inuse_mode = 1;
         }
         cptr.st1o(cptr.decay(lets), ct, 0, 1);
+        /* also switch to use_inuse_mode if there are two rings or player
+           used the 'm' prefix */
         if (ct > 1 || cptr.ld1so(iflags, $instance_flags_menu_requested))
             use_inuse_mode = 1;
+
         void dispinv_with_action(cptr.decay(lets), use_inuse_mode, (ct == 1) ? __s_ring : __s_rings);
     }
     return NHM.ECMD_OK;
 }
 
+/* the #seeamulet command */
 /** C ref: invent.c:4679 @returns {CInt} */
 export function dopramulet() {
     if (!uamul.v) {
         You(__s_are_not_wearing_an_amulet);
     } else {
         let lets = new Uint8Array(2);
+
+        /* using display_inventory() instead of prinv() allows player
+           to use 'm "' to force and menu and be able to choose amulet
+           in order to perform a context-sensitive item action */
         cptr.st1o(cptr.decay(lets), 0, obj_to_let(uamul.v), 1), cptr.st1o(cptr.decay(lets), 1, 0, 1);
+
         void dispinv_with_action(cptr.decay(lets), 1, __s_amulet);
     }
     return NHM.ECMD_OK;
 }
 
+/* is 'obj' a tool that's in use?  can't simply check obj->owornmask */
 /** C ref: invent.c:4698 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function tool_being_used(obj) {
+    /*
+     * [Should this also include lit potions of oil?  They're not tools
+     *  but they are "in use" without being noticeable via obj->owornmask.]
+     */
     if ((cptr.ldI64o(obj, $obj_owornmask) & 1572864n) != 0n)
         return 1;
     if (cptr.ld1so(obj, $obj_oclass) != NHC.TOOL_CLASS)
         return 0;
+    /* [don't actually need to check uwep here; caller catches it] */
     return schar((cptr.eq(obj, uwep.v) || (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 || (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm)) ? 1 : 0));
 }
 
+/* the #seetools command */
 /** C ref: invent.c:4715 @returns {CInt} */
 export function doprtool() {
     let otmp;
     let ct = 0;
     let lets = new Uint8Array(53);
+
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (tool_being_used(otmp)) {
+            /* we could be carrying more than 52 items; theoretically they
+               might all be lit candles so avoid potential lets[] overflow */
             if (ct >= 52)
                 break;
             cptr.st1o(cptr.decay(lets), ct++, obj_to_let(otmp), 1);
@@ -3847,10 +4907,15 @@ export function doprtool() {
     return NHM.ECMD_OK;
 }
 
+/* the #seeall command; combines the ')' + '[' + '=' + '"' + '(' commands;
+   show inventory of all currently wielded, worn, or used objects */
 /** C ref: invent.c:4740 @returns {CInt} */
 export function doprinuse() {
     let otmp;
     let ct = 0;
+
+    /* no longer need to collect letters; sortloot() takes care of it, but
+       still want to count far enough to know whether anything is in use */
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (is_inuse(otmp)) {
             ++ct;
@@ -3863,10 +4928,16 @@ export function doprinuse() {
     return NHM.ECMD_OK;
 }
 
+/*
+ * uses up an object that's on the floor, charging for it as necessary
+ */
 /** C ref: invent.c:4763 — @param {CPtr<struct obj>} obj @param {CLongLong} numused */
 export function useupf(obj, numused) {
     let otmp;
     let at_u = schar(((cptr.ldI16o(obj, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, $obj_oy)) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
+
+    /* burn_floor_objects() keeps an object pointer that it tries to
+     * useupf() multiple times, so obj must survive if plural */
     if (cptr.ldI64o(obj, $obj_quan) > numused)
         otmp = splitobj(obj, numused);
     else
@@ -3882,6 +4953,10 @@ export function useupf(obj, numused) {
         void hideunder(cptr.add(gy, $instance_globals_y_youmonst));
 }
 
+/*
+ * Conversion from a class to a string for printing.
+ * This must match the object class order.
+ */
 /** C ref: invent.c:4789 — char *[18] */
 const names = cptr.alloc(18 * 8);
 cptr.stPtro(names, 0, null);
@@ -3913,22 +4988,24 @@ cptr.stPtro(oth_names, 0, __s_bagged_boxed_items);
 /** C ref: invent.c:4800 — @param {CInt} let @param {CInt} unpaid @param {CInt} showsym @returns {CPtr<char>} */
 export function let_to_name(let$, unpaid, showsym) {
     let ocsymfmt = __s_sp2_lparen_apos_pct_c_apos_rparen;
-    let invbuf_sympadding = 8;
+    let invbuf_sympadding = 8;  /* arbitrary */
     let class_name;
     let pos;
     let oclass = (let$ >= 1 && let$ < NHC.MAXOCLASSES) ? let$ : 0;
     let len;
+
     if (oclass)
         class_name = cptr.ldPtro(names, oclass, 8);
     else if ((pos = cptr.strchr(cptr.decay(oth_symbols), let$)) !== null)
         class_name = cptr.ldPtro(oth_names, cptr.diff(pos, cptr.decay(oth_symbols)), 8);
     else
         class_name = cptr.ldPtro(names, NHC.ILLOBJ_CLASS, 8);
+
     len = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(Strlen_(class_name, __s_let_to_name, 4816) >>> 0) + (unpaid ? 8n : 1n)) + BigInt((oclass ? ((Strlen_(ocsymfmt, __s_let_to_name, 4817) + (invbuf_sympadding >>> 0)) >>> 0) : 0) >>> 0))));
     if (len > cptr.ldI32o(gi, $instance_globals_i_invbufsiz)) {
         if (cptr.ldPtro(gi, $instance_globals_i_invbuf))
             cptr.free(cptr.ldPtro(gi, $instance_globals_i_invbuf));
-        cptr.stI32o(gi, $instance_globals_i_invbufsiz, (len + 10) >>> 0);
+        cptr.stI32o(gi, $instance_globals_i_invbufsiz, (len + 10) >>> 0);  /* add slop to reduce incremental realloc */
         cptr.stPtro(gi, $instance_globals_i_invbuf, alloc(cptr.ldI32o(gi, $instance_globals_i_invbufsiz)));
     }
     if (unpaid)
@@ -3948,6 +5025,7 @@ export function let_to_name(let$, unpaid, showsym) {
     return cptr.ldPtro(gi, $instance_globals_i_invbuf);
 }
 
+/* release the static buffer used by let_to_name() */
 /** C ref: invent.c:4845 */
 export function free_invbuf() {
     if (cptr.ldPtro(gi, $instance_globals_i_invbuf))
@@ -3955,12 +5033,16 @@ export function free_invbuf() {
     cptr.stI32o(gi, $instance_globals_i_invbufsiz, 0);
 }
 
+/* give consecutive letters to every item in inventory (for !fixinv mode);
+   gold is always forced to '$' slot at head of list */
 /** C ref: invent.c:4855 */
 export function reassign() {
     let i;
     let obj;
     let prevobj;
     let goldobj;
+
+    /* first, remove [first instance of] gold from invent, if present */
     prevobj = (goldobj = null);
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; prevobj = obj, obj = cptr.ldPtr(obj))
         if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
@@ -3971,8 +5053,10 @@ export function reassign() {
                 cptr.stPtro(gi, $instance_globals_i_invent, cptr.ldPtr(goldobj));
             break;
         }
+    /* second, re-letter the rest of the list */
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent), i = 0; obj; obj = cptr.ldPtr(obj), i++)
         cptr.st1o(obj, $obj_invlet, schar(((i < 26) ? ((97 + i) | 0) : ((i < 52) ? ((((65 + i) | 0) - 26) | 0) : 35))));
+    /* third, assign gold the "letter" '$' and re-insert it at head */
     if (goldobj) {
         cptr.st1o(goldobj, $obj_invlet, NHC.GOLD_SYM);
         cptr.stPtr(goldobj, cptr.ldPtro(gi, $instance_globals_i_invent));
@@ -3983,53 +5067,117 @@ export function reassign() {
     cptr.stI32o(gl, $instance_globals_l_lastinvnr, i);
 }
 
+/* invent gold sanity check; used by doorganize() to control how getobj()
+   deals with gold and also by wizard mode sanity_check() */
 /** C ref: invent.c:4889 — @param {CPtr<char>} why @returns {CInt} */
 export function check_invent_gold(why) {
     let otmp;
     let goldstacks = 0;
     let wrongslot = 0;
+
+    /* there should be at most one stack of gold in invent, in slot '$' */
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
             ++goldstacks;
             if (cptr.ld1so(otmp, $obj_invlet) != NHC.GOLD_SYM)
                 ++wrongslot;
         }
+
     if (goldstacks > 1 || wrongslot > 0) {
         impossible(__s_s_s_s_s__2, why, (wrongslot > 1) ? __s_gold_in_wrong_slots : ((wrongslot > 0) ? __s_gold_in_wrong_slot : __s_empty), (wrongslot > 0 && goldstacks > 1) ? __s_and : __s_empty, (goldstacks > 1) ? __s_multiple_gold_stacks : __s_empty);
-        return 1;
+        return 1;  /* gold can be #adjusted */
     }
-    return 0;
+
+    return 0;  /* gold can't be #adjusted */
 }
 
+/* normal getobj callback for item to #adjust; excludes gold */
 /** C ref: invent.c:4917 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function adjust_ok(obj) {
     if (!obj || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
+
     return NHC.GETOBJ_SUGGEST;
 }
 
+/* getobj callback for item to #adjust if gold is wonky; allows gold */
 /** C ref: invent.c:4927 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function adjust_gold_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
+
     return NHC.GETOBJ_SUGGEST;
 }
 
+/* #adjust command
+ *
+ *      User specifies a 'from' slot for inventory stack to move,
+ *      then a 'to' slot for its destination.  Open slots and those
+ *      filled by compatible stacks are listed as likely candidates
+ *      but user can pick any inventory letter (including 'from').
+ *
+ *  to == from, 'from' has a name
+ *      All compatible items (same name or no name) are gathered
+ *      into the 'from' stack.  No count is allowed.
+ *  to == from, 'from' does not have a name
+ *      All compatible items without a name are gathered into the
+ *      'from' stack.  No count is allowed.  Compatible stacks with
+ *      names are left as-is.
+ *  to != from, no count
+ *      Move 'from' to 'to'.  If 'to' is not empty, merge 'from'
+ *      into it if possible, otherwise swap it with the 'from' slot.
+ *  to != from, count given
+ *      If the user specifies a count when choosing the 'from' slot,
+ *      and that count is less than the full size of the stack,
+ *      then the stack will be split.  The 'count' portion is moved
+ *      to the destination, and the only candidate for merging with
+ *      it is the stack already at the 'to' slot, if any.  When the
+ *      destination is non-empty but won't merge, whatever is there
+ *      will be moved to an open slot; if there isn't any open slot
+ *      available, the adjustment attempt fails.
+ *
+ *      To minimize merging for 'from == to', unnamed stacks will
+ *      merge with named 'from' but named ones won't merge with
+ *      unnamed 'from'.  Otherwise attempting to collect all unnamed
+ *      stacks would lump the first compatible named stack with them
+ *      and give them its name.
+ *
+ *      To maximize merging for 'from != to', compatible stacks will
+ *      merge when either lacks a name (or they already have the same
+ *      name).  When no count is given and one stack has a name and
+ *      the other doesn't, the merged result will have that name.
+ *      However, when splitting results in a merger, the name of the
+ *      destination overrides that of the source, even if destination
+ *      is unnamed and source is named.
+ *
+ *      Gold is only a candidate to adjust if we've somehow managed
+ *      to get multiple stacks and/or it is in a slot other than '$'.
+ *      Specifying a count to split it into two stacks is not allowed.
+ */
 /** C ref: invent.c:4981 @returns {CInt} */
 export function doorganize() {
     let adjust_filter;
     let obj;
+
+    /* when no invent, or just gold in '$' slot, there's nothing to adjust */
     if (!cptr.ldPtro(gi, $instance_globals_i_invent) || (cptr.ld1so(cptr.ldPtro(gi, $instance_globals_i_invent), $obj_oclass) == NHC.COIN_CLASS && cptr.ld1so(cptr.ldPtro(gi, $instance_globals_i_invent), $obj_invlet) == NHC.GOLD_SYM && !cptr.ldPtr(cptr.ldPtro(gi, $instance_globals_i_invent)))) {
         You(__s_aren_t_carrying_anything_s, !cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_to_adjust : __s_adjustable);
         return NHM.ECMD_OK;
     }
+
     if (!cptr.ld1so(flags, $flag_invlet_constant))
         reassign();
+
+    /* filter passed to getobj() depends upon gold sanity */
     adjust_filter = check_invent_gold(__s_adjust) ? adjust_gold_ok : adjust_ok;
+
+    /* get object the user wants to organize (the 'from' slot) */
     obj = getobj(__s_adjust, adjust_filter, 3);
+
     return doorganize_core(obj);
 }
 
+/* alternate version of #adjust used by itemactions() for splitting */
 const __static_adjust_split_Amount = cptr.bytes("Amount to split from current stack must be"); /** C ref: invent.c:5050 — char[43] (function-static) */
 
 /** C ref: invent.c:5008 @returns {CInt} */
@@ -4038,30 +5186,45 @@ export function adjust_split() {
     let splitamount = cptr.box(0n);
     let let$;
     let dig = 0;
+
+    /* invlet should be queued so no getobj prompting is expected */
     obj = getobj(__s_split, adjust_ok, NHM.GETOBJ_NOFLAGS);
     if (!obj || cptr.ldI64o(obj, $obj_quan) < 2n || cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE)
-        return NHM.ECMD_FAIL;
+        return NHM.ECMD_FAIL;  /* caller has set things up to avoid this */
+
     if (cptr.ldI64o(obj, $obj_quan) == 2n) {
         splitamount.v = 1n;
     } else {
+        /* get first digit; doesn't wait for <return> */
         dig = yn_function(__s_split_off_how_many, null, 0, 1);
         if (!digit(dig)) {
             pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
             return NHM.ECMD_CANCEL;
         }
+        /* got first digit, get more until next non-digit (except for
+           backspace/delete which will take away most recent digit and
+           keep going; we expect one of ' ', '\n', or '\r') */
         let$ = get_count(null, dig, 0n, splitamount, 6);
+        /* \033 is in quitchars[] so we need to check for it separately
+           in order to treat it as cancel rather than as accept */
         if (!let$ || let$ == 27 || !cptr.strchr(cptr.decay(quitchars), let$)) {
             pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
             return NHM.ECMD_CANCEL;
         }
     }
     if (splitamount.v < 1n || splitamount.v >= cptr.ldI64o(obj, $obj_quan)) {
+
         if (splitamount.v < 1n)
             pline(__s_s_at_least_1, cptr.decay(__static_adjust_split_Amount));
         else
             pline(__s_s_less_than_ld, cptr.decay(__static_adjust_split_Amount), cptr.ldI64o(obj, $obj_quan));
         return NHM.ECMD_CANCEL;
     }
+
+    /* normally a split would take place in getobj() if player supplies
+       a count there, so doorganize_core() figures out 'splitamount'
+       from the object; it will undo the split if player cancels while
+       selecting the destination slot */
     obj = splitobj(obj, splitamount.v);
     return doorganize_core(obj);
 }
@@ -4076,7 +5239,7 @@ function doorganize_core(obj) {
     let cur;
     let trycnt;
     let let$;
-    let lets = new Uint8Array(55);
+    let lets = new Uint8Array(55);  /* room for '$a-zA-Z#\0' */
     let qbuf = new Uint8Array(128);
     let objname;
     let otmpname;
@@ -4084,9 +5247,17 @@ function doorganize_core(obj) {
     let ever_mind = 0;
     let collect;
     let isgold;
+
     if (!obj.v)
         return NHM.ECMD_CANCEL;
+
+    /* can only be gold if check_invent_gold() found a problem:  multiple '$'
+       stacks and/or gold in some other slot, otherwise (*adjust_filter)()
+       won't allow gold to be picked; if player has picked any stack of gold
+       as #adjust 'from' slot, we'll force the 'to' slot to be '$' below */
     isgold = schar((cptr.ld1so(obj.v, $obj_oclass) == NHC.COIN_CLASS));
+
+    /* figure out whether user gave a split count to getobj() */
     splitting.v = (bumped = null);
     for (otmp.v = cptr.ldPtro(gi, $instance_globals_i_invent); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
         if (cptr.eq(cptr.ldPtr(otmp.v), obj.v)) {
@@ -4094,6 +5265,8 @@ function doorganize_core(obj) {
                 splitting.v = otmp.v;
             break;
         }
+
+    /* initialize the list with all lower and upper case letters */
     cptr.st1o(cptr.decay(lets), 0, schar(((cptr.ld1so(obj.v, $obj_oclass) == NHC.COIN_CLASS) ? NHC.GOLD_SYM : 32)), 1);
     for (ix = 1, let$ = 97; let$ <= 122; )
         cptr.st1o(cptr.decay(lets), ix++, let$++, 1);
@@ -4101,8 +5274,12 @@ function doorganize_core(obj) {
         cptr.st1o(cptr.decay(lets), ix++, let$++, 1);
     cptr.st1o(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 32, 1);
     cptr.st1o(cptr.decay(lets), 54n, 0, 1);
+    /* for floating inv letters, truncate list after the first open slot */
     if (!cptr.ld1so(flags, $flag_invlet_constant) && (ix = inv_cnt(0)) < NHC.invlet_basic)
         cptr.st1o(cptr.decay(lets), (ix + (splitting.v ? 1 : 2)) | 0, 0, 1);
+
+    /* blank out all the letters currently in use in the inventory
+       except those that will be merged with the selected object */
     for (otmp.v = cptr.ldPtro(gi, $instance_globals_i_invent); otmp.v; otmp.v = cptr.ldPtr(otmp.v))
         if (!cptr.eq(otmp.v, obj.v) && !mergable(otmp.v, obj.v)) {
             let$ = cptr.ld1so(otmp.v, $obj_invlet);
@@ -4113,12 +5290,17 @@ function doorganize_core(obj) {
             else if (let$ == 35)
                 cptr.st1o(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 35, 1);
         }
+
+    /* compact the list by removing all the blanks */
     for (ix = (cur = 0); cptr.ld1so(cptr.decay(lets), ix, 1); ix++)
         if (cptr.ld1so(cptr.decay(lets), ix, 1) != 32 && cur++ < ix)
             cptr.st1o(cptr.decay(lets), (cur - 1) | 0, cptr.ld1so(cptr.decay(lets), ix, 1), 1);
     cptr.st1o(cptr.decay(lets), cur, 0, 1);
+    /* and by dashing runs of letters */
     if (cur > 5)
         compactify(cptr.decay(lets));
+
+    /* get 'to' slot to use as destination */
     if (!splitting.v)
         void cptr.strcpy(cptr.decay(qbuf), __s_adjust_letter);
     else
@@ -4156,8 +5338,11 @@ function doorganize_core(obj) {
                 return NHM.ECMD_OK;
             }
         }
+        /* letter() classifies '@' as one; compactify() can put '-' in lets;
+           the only thing of interest that strchr() might find is '$' or '#'
+           since letter() catches everything else that we put into lets[] */
         if ((letter(let$) && let$ != 64) || (cptr.strchr(cptr.decay(lets), let$) && let$ != 45))
-            break;
+            break;  /* got one */
         if (trycnt == 5)
             {
                 if (splitting.v)
@@ -4166,84 +5351,120 @@ function doorganize_core(obj) {
                     pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
                 return NHM.ECMD_OK;
             }
-        pline(__s_select_an_inventory_slot_letter);
+        pline(__s_select_an_inventory_slot_letter);  /* else try again */
     }
+
     collect = schar((let$ == cptr.ld1so(obj.v, $obj_invlet)));
+    /* change the inventory and print the resulting item */
     adj_type = collect ? __s_collecting : (!splitting.v ? __s_moving : __s_splitting);
+
+    /*
+     * don't use freeinv/addinv to avoid double-touching artifacts,
+     * dousing lamps, losing luck, cursing loadstone, etc.
+     */
     extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent));
+
     for (otmp.v = cptr.ldPtro(gi, $instance_globals_i_invent); otmp.v; ) {
         otmpname = has_oname(otmp.v) ? (cptr.ldPtr(cptr.ldPtro((otmp.v), $obj_oextra))) : null;
+        /* it's tempting to pull this outside the loop, but merged() could
+           free ONAME(obj) [via obfree()] and replace it with ONAME(otmp) */
         objname = has_oname(obj.v) ? (cptr.ldPtr(cptr.ldPtro((obj.v), $obj_oextra))) : null;
+
         if (collect) {
+            /* Collecting: #adjust an inventory stack into its same slot;
+               keep it there and merge other compatible stacks into it.
+               Traditional inventory behavior is to merge unnamed stacks
+               with compatible named ones; we only want that if it is
+               the 'from' stack (obj) with a name and candidate (otmp)
+               without one, not unnamed 'from' with named candidate. */
             if ((!otmpname || (objname && !strcmp(objname, otmpname))) && merged(otmp, obj)) {
+                /*adj_type = "Collecting:"; //already set to this*/
                 obj.v = otmp.v;
                 otmp.v = cptr.ldPtr(otmp.v);
                 extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent));
-                continue;
+                continue;  /* otmp has already been updated */
             }
         } else if (cptr.ld1so(otmp.v, $obj_invlet) == let$) {
+            /* Merging: when from and to are compatible */
             if ((!otmpname || (objname && !strcmp(objname, otmpname))) && merged(otmp, obj)) {
                 adj_type = __s_merging;
                 obj.v = otmp.v;
                 otmp.v = cptr.ldPtr(otmp.v);
                 extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent));
-                break;
+                break;  /* otmp has been updated and we're done merging */
             }
+            /* Moving or splitting: don't merge extra compatible stacks.
+               Found 'otmp' in destination slot; merge if compatible,
+               otherwise bump whatever is there to an open slot. */
             if (!splitting.v) {
                 adj_type = __s_swapping;
                 cptr.st1o(otmp.v, $obj_invlet, cptr.ld1so(obj.v, $obj_invlet));
             } else {
+                /* strip 'from' name if it has one */
                 if (objname && !cptr.ld1so(obj.v, $obj_oartifact))
                     cptr.stPtr(cptr.ldPtro((obj.v), $obj_oextra), null);
                 if (!mergable(otmp.v, obj.v)) {
+                    /* won't merge; put 'from' name back */
                     if (objname)
                         cptr.stPtr(cptr.ldPtro((obj.v), $obj_oextra), objname);
                 } else {
+                    /* will merge; discard 'from' name */
                     if (objname)
                         cptr.free(objname), objname = null;
                 }
+
                 if (merged(otmp, obj)) {
                     adj_type = __s_splitting_and_merging;
                     obj.v = otmp.v;
                     extract_nobj(obj.v, cptr.add(gi, $instance_globals_i_invent));
                 } else if (inv_cnt(0) >= NHC.invlet_basic) {
-                    void merged(splitting, obj);
+                    void merged(splitting, obj);  /* undo split */
+                    /* "knapsack cannot accommodate any more items" */
                     Your(__s_pack_is_too_full);
                     return NHM.ECMD_OK;
                 } else {
                     bumped = otmp.v;
                     extract_nobj(bumped, cptr.add(gi, $instance_globals_i_invent));
                 }
-            }
-            break;
-        }
+            }  /* moving vs splitting */
+            break;  /* not collecting and found 'to' slot */
+        }  /* collect */
         otmp.v = cptr.ldPtr(otmp.v);
     }
+
+    /* inline addinv; insert loose object at beginning of inventory */
     cptr.st1o(obj.v, $obj_invlet, let$);
     cptr.stPtr(obj.v, cptr.ldPtro(gi, $instance_globals_i_invent));
     cptr.st1o(obj.v, $obj_where, NHM.OBJ_INVENT);
     cptr.stPtro(gi, $instance_globals_i_invent, obj.v);
     reorder_invent();
     if (bumped) {
+        /* splitting the 'from' stack is causing an incompatible
+           stack in the 'to' slot to be moved into an open one;
+           we need to do another inline insertion to inventory */
         assigninvlet(bumped);
         cptr.stPtr(bumped, cptr.ldPtro(gi, $instance_globals_i_invent));
         cptr.st1o(bumped, $obj_where, NHM.OBJ_INVENT);
         cptr.stPtro(gi, $instance_globals_i_invent, bumped);
         reorder_invent();
     }
+
+    /* messages deferred until inventory has been fully reestablished */
     prinv(adj_type, obj.v, 0n);
     if (bumped)
         prinv(__s_moving, bumped, 0n);
     if (splitting.v)
-        clear_splitobjs();
+        clear_splitobjs();  /* reset splitobj context */
     update_inventory();
     return NHM.ECMD_OK;
 }
 
+/* common to display_minventory and display_cinventory */
 /** C ref: invent.c:5290 — @param {CPtr<char>} hdr @param {CPtr<char>} txt */
 function invdisp_nothing(hdr, txt) {
     let win;
     let selected = cptr.box(0);
+
     win = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(win, 0n);
     add_menu_heading(win, hdr);
@@ -4256,11 +5477,27 @@ function invdisp_nothing(hdr, txt) {
     return;
 }
 
+/* query_objlist callback: return things that are worn or wielded */
 /** C ref: invent.c:5309 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function worn_wield_only(obj) {
+    /* check for things that *are* worn or wielded (only used for monsters,
+       so we don't worry about excluding W_CHAIN, W_ARTI and the like) */
     return schar((cptr.ldI64o(obj, $obj_owornmask) != 0n));
 }
 
+/*
+ * Display a monster's inventory.
+ * Returns a pointer to the object from the monster's inventory selected
+ * or NULL if nothing was selected.
+ *
+ * By default, only worn and wielded items are displayed.  The caller
+ * can pick one.  Modifier flags are:
+ *
+ *      PICK_NONE, PICK_ONE - standard menu control
+ *      PICK_ANY            - allowed, but we only return a single object
+ *      MINV_NOLET          - nothing selectable
+ *      MINV_ALL            - display all inventory
+ */
 /** C ref: invent.c:5341 — @param {CPtr<struct monst>} mon @param {CInt} dflags @param {CPtr<char>} title @returns {CPtr<struct obj>} */
 export function display_minventory(mon, dflags, title) {
     let ret;
@@ -4272,17 +5509,27 @@ export function display_minventory(mon, dflags, title) {
     let have_inv = (cptr.ldPtro(mon, $monst_minvent) !== null);
     let have_any = (have_inv || incl_hero ? 1 : 0);
     let pickings = (dflags & NHM.MINV_PICKMASK);
+
     void cptr.sprintf(cptr.decay(tmp), __s_s_s, s_suffix(noit_Monnam(mon)), do_all ? __s_possessions : __s_armament);
+
     if (do_all ? have_any : (cptr.ldI64o(mon, $monst_misc_worn_check) || (cptr.ldPtro((mon), $monst_mw)) ? 1 : 0)) {
+        /* Fool the 'weapon in hand' routine into
+         * displaying 'weapon in claw', etc. properly.
+         */
         cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.ldPtro(mon, $monst_data));
+        /* in case inside a shop, don't append "for sale" prices */
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
+
         n = query_objlist(title ? title : cptr.decay(tmp), cptr.add(mon, $monst_minvent), (NHM.INVORDER_SORT | (incl_hero ? NHM.INCLUDE_HERO : 0)), selected, pickings, do_all ? allow_all : worn_wield_only);
+
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
-        cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst));
+        /* was 'set_uasmon();' but that potentially has side-effects */
+        cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst));  /* basic part of set_uasmon() */
     } else {
         invdisp_nothing(title ? title : cptr.decay(tmp), __s_none);
         n = 0;
     }
+
     if (n > 0) {
         ret = cptr.ldPtro(selected.v, 0, $sizeof_menu_item);
         cptr.free(selected.v);
@@ -4291,24 +5538,44 @@ export function display_minventory(mon, dflags, title) {
     return ret;
 }
 
+/* format a container name for cinventory_display(), inserting "trapped"
+   if that's appropriate */
 /** C ref: invent.c:5391 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function cinv_doname(obj) {
     let result = doname(obj);
+
+    /*
+     * If obj->tknown ever gets implemented, doname() will handle this.
+     * Assumes that probing reveals the trap prior to calling us.  Since
+     * we lack that flag, hero forgets about it as soon as we're done....
+     */
+
+    /* 'result' is an obuf[] but might point into the middle (&buf[PREFIX])
+       rather than the beginning and we don't have access to that;
+       assume that there is at least QBUFSZ available when reusing it */
     if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && BigInt.asUintN(64, cptr.strlen(result) + 9n) <= 128n) {
+        /* obj->lknown has been set before calling us so either "locked" or
+           "unlocked" should always be present (for a trapped container) */
         let p = strstri(result, __s_locked);
         let q = strstri(result, __s_unlocked);
+
         if (p && (!q || cptr.cmp(p, q) < 0))
             void strsubst(p, __s_locked__2, __s_trapped_locked);
         else if (q)
             void strsubst(q, __s_unlocked__2, __s_trapped_unlocked);
+        /* might need to change "an" to "a"; when no BUC is present,
+           "an unlocked" yielded "an trapped unlocked" above */
         void strsubst(result, __s_an_trapped, __s_a_trapped);
     }
     return result;
 }
 
+/* used by safe_qbuf() if the full doname() result is too long */
 /** C ref: invent.c:5423 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function cinv_ansimpleoname(obj) {
     let result = ansimpleoname(obj);
+
+    /* result is an obuf[] so we know this will always fit */
     if ((cptr.ldI32o(obj, $obj_otrapped) & 1)) {
         if (cptr.strncmp(result, __s_a_sp, 2n))
             void strsubst(result, __s_a_sp, __s_a_trapped);
@@ -4317,18 +5584,22 @@ function cinv_ansimpleoname(obj) {
         else if (cptr.strncmp(result, __s_the, 4n))
             void strsubst(result, __s_the, __s_the_trapped);
         else
-            void strsubst(result, __s_empty, __s_trapped);
+            void strsubst(result, __s_empty, __s_trapped);  /* insert at beginning */
     }
     return result;
 }
 
+/* Display the contents of a container in inventory style.
+   Used for wand of probing of non-empty containers and statues. */
 /** C ref: invent.c:5446 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function display_cinventory(obj) {
     let ret;
     let qbuf = new Uint8Array(128);
     let n;
     let selected = cptr.box(null);
+
     void safe_qbuf(cptr.decay(qbuf), __s_contents_of, __s_colon, obj, cinv_doname, cinv_ansimpleoname, __s_that);
+
     if (cptr.ldPtro(obj, $obj_cobj)) {
         n = query_objlist(cptr.decay(qbuf), cptr.add(obj, $obj_cobj), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, allow_all);
     } else {
@@ -4349,6 +5620,12 @@ function only_here(obj) {
     return schar((cptr.ldI16o(obj, $obj_ox) == cptr.ldI16o(go, $instance_globals_o_only) && cptr.ldI16o(obj, $obj_oy) == cptr.ldI16o(go, $instance_globals_o_only + $nhcoord_y) ? 1 : 0));
 }
 
+/*
+ * Display a list of buried or underwater items in inventory style.
+ * Return a non-zero value if there were items at that spot.
+ *
+ * Currently, this is only used with a wand of probing zapped downwards.
+ */
 /** C ref: invent.c:5489 — @param {CInt} x @param {CInt} y @param {CInt} as_if_seen @returns {CInt} */
 export function display_binventory(x, y, as_if_seen) {
     let obj;
@@ -4357,13 +5634,21 @@ export function display_binventory(x, y, as_if_seen) {
     let selected = cptr.box(null);
     let n;
     let n2 = 0;
+
+    /* if hero is levitating or flying over water or lava, list any items
+       below (the map won't be showing them); if hero is underwater, player
+       should use the normal look_here command instead of probing (caller
+       has already used bhitpile() which will have set dknown on all items) */
     if (is_pool_or_lava(x, y) && !Underwater() && (obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)) !== null) {
         let real_liquid = is_pool(x, y) ? __s_water : __s_lava;
         let seen_liquid = hliquid(real_liquid);
+
         if (!cptr.ldPtro(obj, $obj_v)) {
             let more_than_1 = schar(is_plural(obj));
+
             There(__s_s_s_under_the_s_here, more_than_1 ? __s_are : __s_is, doname(obj), seen_liquid);
             n2 = 1;
+            /* "pair of boots" is singular but "beneath it" sounds strange */
             if (pair_of(obj))
                 more_than_1 = 1;
             underwhat = more_than_1 ? __s_under_them : __s_beneath_it;
@@ -4376,15 +5661,19 @@ export function display_binventory(x, y, as_if_seen) {
             underwhat = __s_beneath_them;
         }
     }
+
+    /* count # of buried objects here */
     for (n = 0, obj = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); obj; obj = cptr.ldPtr(obj))
         if (cptr.ldI16o(obj, $obj_ox) == x && cptr.ldI16o(obj, $obj_oy) == y) {
             if (as_if_seen)
                 observe_object(obj);
             n++;
         }
+
     if (n) {
         cptr.stI16o(go, $instance_globals_o_only, x);
         cptr.stI16o(go, $instance_globals_o_only + $nhcoord_y, y);
+        /* "buried here", but vary if we've already shown underwater items */
         void cptr.sprintf(cptr.decay(qbuf), __s_things_that_are_buried_s, underwhat);
         if (query_objlist(cptr.decay(qbuf), cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist), NHM.INVORDER_SORT, selected, NHM.PICK_NONE, only_here) > 0)
             cptr.free(selected.v);
@@ -4397,9 +5686,11 @@ export function display_binventory(x, y, as_if_seen) {
 export function prepare_perminvent(window) {
     let wri;
     let invmode = cptr.ld1uo(iflags, $instance_flags_perminv_mode);
+
     if (perminv_flags != invmode) {
         cptr.memcpy(wri_info, zerowri, 48);
         cptr.stI32o(wri_info, $win_request_info_t_fromcore + $from_core_invmode, invmode);
+        /*  relay the mode settings to the window port */
         wri = ctrl_nhwindow()(window, NHC.set_mode, wri_info);
         perminv_flags = invmode;
         (void (wri));
@@ -4411,24 +5702,43 @@ let __static_sync_perminvent_wri = null; /** C ref: invent.c:5567 — win_reques
 /** C ref: invent.c:5565 */
 export function sync_perminvent() {
     let wport_id;
+
     if (WIN_INVEN.v == -1) {
         if ((cptr.ldI32o(gc, $instance_globals_c_core_invent_state) || (cptr.ldI64(wri_info) & 4n)) && !(in_perm_invent_toggled && cptr.ldI32o(gp, $instance_globals_p_perm_invent_toggling_direction) == NHC.toggling_on))
             return;
     }
     prepare_perminvent(WIN_INVEN.v);
+
     if ((!cptr.ld1so(iflags, $instance_flags_perm_invent) && cptr.ldI32o(gc, $instance_globals_c_core_invent_state))) {
         docrt();
         return;
     }
+
+    /*
+     * The following conditions can bring us to here:
+     * 1. iflags.perm_invent is on
+     *      AND
+     *    gc.core_invent_state is still zero.
+     * OR
+     * 2. iflags.perm_invent is off, but we're in the
+     *    midst of toggling it on.
+     * OR
+     * 3. iflags.perminv_mode has been changed via 'm O'.
+     */
+
     if ((cptr.ld1so(iflags, $instance_flags_perm_invent) && !cptr.ldI32o(gc, $instance_globals_c_core_invent_state)) || (!cptr.ld1so(iflags, $instance_flags_perm_invent) && (in_perm_invent_toggled && cptr.ldI32o(gp, $instance_globals_p_perm_invent_toggling_direction) == NHC.toggling_on))) {
+        /* Send windowport a request to return the related settings to us */
         if ((cptr.ld1so(iflags, $instance_flags_perm_invent) && !cptr.ldI32o(gc, $instance_globals_c_core_invent_state)) || in_perm_invent_toggled) {
             __static_sync_perminvent_wri = ctrl_nhwindow()(WIN_INVEN.v, NHC.request_settings, wri_info);
             if (__static_sync_perminvent_wri !== null) {
                 if ((cptr.ldI64(__static_sync_perminvent_wri) & 16n) != 0n) {
+                    /* don't be too noisy about this as it's really
+                     * a startup timing issue. Just set a marker. */
                     cptr.st1o(iflags, $instance_flags_perm_invent_pending, 1);
                     return;
                 }
                 if ((cptr.ldI64(__static_sync_perminvent_wri) & 6n) != 0n) {
+                    /* sizes aren't good enough */
                     if ((cptr.ldI64(__static_sync_perminvent_wri) & 4n) != 0n) {
                         set_option_mod_status(__s_perm_invent, NHC.set_gameview);
                         set_option_mod_status(__s_perminv_mode, NHC.set_gameview);
@@ -4446,11 +5756,14 @@ export function sync_perminvent() {
             (cptr.stI32o(gc, $instance_globals_c_core_invent_state, cptr.ldI32o(gc, $instance_globals_c_core_invent_state) + 1)) - (1);
         }
     }
+
     if (!__static_sync_perminvent_wri || cptr.ldI32o(__static_sync_perminvent_wri, $to_core_maxslot) == 0)
         return;
+
     if (in_perm_invent_toggled && cptr.ldI32o(gp, $instance_globals_p_perm_invent_toggling_direction) == NHC.toggling_on) {
         WIN_INVEN.v = create_nhwindow()(NHM.NHW_MENU);
     }
+
     if (WIN_INVEN.v != -1 && cptr.ldI32o(program_state, $sinfo_beyond_savefile_load)) {
         cptr.stI32o(gi, $instance_globals_i_in_sync_perminvent, 1);
         void display_inventory(null, 0);
@@ -4469,7 +5782,7 @@ export function perm_invent_toggled(negated) {
     } else {
         cptr.stI32o(gp, $instance_globals_p_perm_invent_toggling_direction, NHC.toggling_on);
         if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) == NHC.InvOptNone)
-            cptr.st1o(iflags, $instance_flags_perminv_mode, NHC.InvOptOn);
+            cptr.st1o(iflags, $instance_flags_perminv_mode, NHC.InvOptOn);  /* all inventory except gold */
         sync_perminvent();
     }
     cptr.stI32o(gp, $instance_globals_p_perm_invent_toggling_direction, NHC.toggling_not);

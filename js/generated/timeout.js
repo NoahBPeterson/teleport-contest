@@ -450,6 +450,8 @@ const __s_can_t_find_o_id_d = cptr.lit("can't find o_id %d");
 const __s_relink_timers_no_monster_timer = cptr.lit("relink_timers: no monster timer implemented");
 const __s_relink_timers_2 = cptr.lit("relink_timers 2");
 
+/* used by wizard mode #timeout and #wizintrinsic; order by 'interest'
+   for timeout countdown, where most won't occur in normal play */
 /** C ref: timeout.c:27 — struct propname { prop_num, prop_name } (memory model v0.5) */
 
 /** C ref: timeout.c:30 — struct propname[69] */
@@ -597,11 +599,13 @@ cptr.stPtro(propertynames, 1088 + $propname_prop_name, null);
 export function property_by_index(idx, propertynum) {
     if (!((idx) >= 0 && (idx) < ((69 - 1) | 0)))
         idx = (69 - 1) | 0;
+
     if (propertynum)
         cptr.stI32(propertynum, cptr.ldI32o(propertynames, idx, $sizeof_propname));
     return cptr.ldPtro2(propertynames, idx, $sizeof_propname, $propname_prop_name);
 }
 
+/* He is being petrified - dialogue by inmet!tower */
 /** C ref: timeout.c:128 — char *[5] */
 const stoned_texts = cptr.alloc(5 * 8);
 cptr.stPtro(stoned_texts, 0, __s_you_are_slowing_down);
@@ -613,8 +617,10 @@ cptr.stPtro(stoned_texts, 32, __s_you_are_a_statue);
 /** C ref: timeout.c:137 */
 function stoned_dialogue() {
     let i = (Stoned() & 16777215n);
+
     if (i > 0n && i <= BigInt(5)) {
         let buf = new Uint8Array(256);
+
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(stoned_texts, BigInt.asIntN(64, BigInt(5) - i), 8));
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) && strstri(cptr.decay(buf), __s_limbs))
             void strsubst(cptr.decay(buf), __s_limbs, __s_extremities);
@@ -627,6 +633,8 @@ function stoned_dialogue() {
             nomul(0);
         break;
         case 4:
+        /* just one move left to save oneself so quit fiddling around;
+           don't stop attempt to eat tin--might be lizard or acidic */
         if (!Popeye(NHC.STONED))
             stop_occupation();
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
@@ -634,15 +642,17 @@ function stoned_dialogue() {
         break;
         case 3:
         stop_occupation();
-        nomul(-3);
+        nomul(-3);  /* can't move anymore */
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_getting_stoned);
-        cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again));
+        cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again));  /* not unconscious */
+        /* "your limbs have turned to stone" so terminate wounded legs */
         if (Wounded_legs() && !cptr.ldPtro(u, $you_usteed))
             heal_legs(2);
         break;
         case 2:
         if ((HDeaf() & 16777215n) > 0n && (HDeaf() & 16777215n) < 5n)
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), 5n);
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), 5n);  /* avoid Hear_again at tail end */
+        /* if also vomiting or turning into slime, stop those (no messages) */
         if (Vomiting())
             make_vomiting(0n, 0);
         if (Slimed())
@@ -654,6 +664,7 @@ function stoned_dialogue() {
     exercise(NHC.A_DEX, 0);
 }
 
+/* hero is getting sicker and sicker prior to vomiting */
 /** C ref: timeout.c:188 — char *[5] */
 const vomiting_texts = cptr.alloc(5 * 8);
 cptr.stPtro(vomiting_texts, 0, __s_are_feeling_mildly_nauseated);
@@ -667,6 +678,9 @@ function vomiting_dialogue() {
     let txt = null;
     let buf = new Uint8Array(256);
     let v = (Vomiting() & 16777215n);
+
+    /* note: nhtimeout() hasn't decremented timed properties for the
+       current turn yet, so we use Vomiting-1 here */
     switch (Number(BigInt.asIntN(32, (BigInt.asIntN(64, v - 1n))))) {
         case 14:
         txt = cptr.ldPtro(vomiting_texts, 0, 8);
@@ -700,12 +714,22 @@ function vomiting_dialogue() {
         if (cantvomit(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             txt = __s_gag_uncontrollably;
         else if (Hallucination())
+            /* "hurl" is short for "hurl chunks" which is slang for
+               relatively violent vomiting... */
             txt = __s_are_about_to_hurl;
         break;
         case 0:
         stop_occupation();
         if (!cantvomit(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             morehungry(20);
+            /* case 2 used to be "You suddenly vomit!" but it wasn't sudden
+               since you've just been through the earlier messages of the
+               countdown, and it was still possible to move around between
+               that message and "You can move again." (from vomit()'s
+               nomul(-2)) with no intervening message; give one here to
+               have more specific point at which hero became unable to move
+               [vomit() issues its own message for the cantvomit() case
+               and for the FAINTING-or-worse case where stomach is empty] */
             if (cptr.ldI32o(u, $you_uhs) < NHC.FAINTING)
                 You(__s_pct_s_bang, !Hallucination() ? __s_vomit : __s_hurl_chunks);
         }
@@ -722,6 +746,7 @@ function vomiting_dialogue() {
 /** C ref: timeout.c:268 */
 function sleep_dialogue() {
     let i = (HSleepy() & 16777215n);
+
     if (i == 4n)
         You(__s_yawn);
 }
@@ -745,11 +770,13 @@ cptr.stPtro(choke_texts2, 32, __s_you_suffocate);
 /** C ref: timeout.c:295 */
 function choke_dialogue() {
     let i = (Strangled() & 16777215n);
+
     if (i > 0n && i <= BigInt(5)) {
         if (Breathless() || !rn2_at(__s_timeout_c, 300, __s_choke_dialogue, 50)) {
             urgent_pline(cptr.ldPtro(choke_texts2, BigInt.asIntN(64, BigInt(5) - i), 8), body_part(NHC.NECK));
         } else {
             let str = cptr.ldPtro(choke_texts, BigInt.asIntN(64, BigInt(5) - i), 8);
+
             if (cptr.strchr(str, 37))
                 urgent_pline(str, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_blue)));
             else
@@ -770,13 +797,17 @@ cptr.stPtro(sickness_texts, 16, __s_you_are_at_death_s_door);
 function sickness_dialogue() {
     let j = (Sick() & 16777215n);
     let i = j / 2n;
+
     if (i > 0n && i <= BigInt(3) && (j % 2n) != 0n) {
         let buf = new Uint8Array(256);
         let pronounbuf = new Uint8Array(40);
+
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(sickness_texts, BigInt.asIntN(64, BigInt(3) - i), 8));
+        /* change the message slightly for food poisoning */
         if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0)
             void strsubst(cptr.decay(buf), __s_illness, __s_sickness);
         if (Hallucination() && strstri(cptr.decay(buf), __s_death_s_door)) {
+            /* youmonst: for Hallucination, mhe()'s mon argument isn't used */
             void cptr.strcpy(cptr.decay(pronounbuf), (cptr.ldPtro2(genders, pronoun_gender(cptr.add(gy, $instance_globals_y_youmonst), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)));
             void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_inviting_you_in, upstart(cptr.decay(pronounbuf)), vtense(cptr.decay(pronounbuf), __s_are));
         }
@@ -792,15 +823,21 @@ cptr.stPtro(levi_texts, 8, __s_you_wobble_unsteadily_s_the_s);
 
 /** C ref: timeout.c:353 */
 function levitation_dialogue() {
+    /* -1 because the last message comes via float_down() */
     let i = ((BigInt.asIntN(64, (HLevitation() & 16777215n) - 1n)) / 2n);
+
     if (ELevitation())
         return;
+
     if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.DOOR) && !is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         return;
+
     if (((HLevitation() & 16777215n) % 2n) && i > 0n && i <= BigInt(2)) {
         let s = cptr.ldPtro(levi_texts, BigInt.asIntN(64, BigInt(2) - i), 8);
+
         if (cptr.strchr(s, 37)) {
             let danger = schar((is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
+
             urgent_pline(s, danger ? __s_over : __s_in, danger ? surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) : __s_air);
         } else
             pline(__s_pct_s, s);
@@ -820,16 +857,25 @@ cptr.stPtro(slime_texts, 32, __s_you_have_become_s);
 function slime_dialogue() {
     let t = (Slimed() & 16777215n);
     let i = t / 2n;
+
     if (t == 1n) {
+        /* display as green slime during "You have become green slime."
+           but don't worry about not being able to see self; if already
+           mimicking something else at the time, implicitly be revealed */
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_MONSTER);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, NHC.PM_GREEN_SLIME);
+        /* no message given when 't' is odd, so no automatic update of
+           self; force one */
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     }
+
     if ((t % 2n) != 0n && i >= 0n && i < BigInt(5)) {
         let buf = new Uint8Array(256);
+
         void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(slime_texts, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(5) - i) - 1n), 8));
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 24576n) == 24576n) && strstri(cptr.decay(buf), __s_limbs))
             void strsubst(cptr.decay(buf), __s_limbs, __s_extremities);
+
         if (cptr.strchr(cptr.decay(buf), 37)) {
             if (i == 4n) {
                 if (!Blind())
@@ -841,9 +887,10 @@ function slime_dialogue() {
             urgent_pline(__s_pct_s, cptr.decay(buf));
         }
     }
+
     switch (i) {
         case 3n:
-        cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
+        cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);  /* lose intrinsic speed */
         if (!Popeye(NHC.SLIMED))
             stop_occupation();
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
@@ -851,9 +898,10 @@ function slime_dialogue() {
         break;
         case 2n:
         if ((HDeaf() & 16777215n) > 0n && (HDeaf() & 16777215n) < 5n)
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), 5n);
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), 5n);  /* avoid Hear_again at tail end */
         break;
         case 1n:
+        /* if also turning to stone, stop doing that (no message) */
         if (Stoned())
             make_stoned(0n, null, NHM.KILLED_BY_AN, null);
         break;
@@ -868,13 +916,17 @@ export function burn_away_slime() {
     }
 }
 
+/* countdown timer for turning into green slime has run out; kill our hero */
 /** C ref: timeout.c:457 — @param {CPtr<struct kinfo>} kptr */
 function slimed_to_death(kptr) {
     let save_mvflags;
+
+    /* redundant: polymon() cures sliming when polying into green slime */
     if (Upolyd() && cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst))) {
         dealloc_killer(kptr);
         return;
     }
+    /* more sure killer reason is set up */
     if (kptr && cptr.ld1so2(kptr, 0, 1, $kinfo_name)) {
         cptr.stI32o(svk, $kinfo_format, cptr.ldI32o(kptr, $kinfo_format));
         void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
@@ -883,27 +935,59 @@ function slimed_to_death(kptr) {
         void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_turned_into_green_slime);
     }
     dealloc_killer(kptr);
+
+    /*
+     * Polymorph into a green slime, which might destroy some worn armor
+     * (potentially affecting bones) and dismount from steed.
+     * Can't be Unchanging; wouldn't have turned into slime if we were.
+     * Despite lack of Unchanging, neither done() nor savelife() calls
+     * rehumanize() if hero dies while polymorphed.
+     * polymon() undoes the slime countdown's mimick-green-slime hack
+     * but does not perform polyself()'s light source bookkeeping.
+     * No longer need to manually increment uconduct.polyselfs to reflect
+     * [formerly implicit] change of form; polymon() takes care of that.
+     * Temporarily ungenocide if necessary.
+     */
     if (emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
         del_light_source(NHC.LS_MONSTER, monst_to_any(cptr.add(gy, $instance_globals_y_youmonst)));
     save_mvflags = cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags);
     cptr.st1o2(svm, NHC.PM_GREEN_SLIME, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, uchar((save_mvflags & -3)));
+    /* become a green slime; also resets youmonst.m_ap_type+.mappearance */
     void polymon(NHC.PM_GREEN_SLIME);
     cptr.st1o2(svm, NHC.PM_GREEN_SLIME, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, save_mvflags);
     done_timeout(NHC.TURNED_SLIME, NHC.SLIMED);
+
+    /* life-saved; even so, hero still has turned into green slime;
+       player may have genocided green slimes after being infected */
     if ((cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) != 0) {
         let slimebuf = new Uint8Array(256);
+
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
         void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_slimicide);
+        /* vary the message depending upon whether life-save was due to
+           amulet or due to declining to die in explore or wizard mode */
         void cptr.strcpy(cptr.decay(slimebuf), __s_green_slime_has_been_genocided);
         if (cptr.ldI32o(iflags, $instance_flags_last_msg) == NHC.PLNMSG_OK_DONT_DIE)
+            /* follows "OK, so you don't die." and arg is second sentence */
             urgent_pline(__s_yes_you_do_s, upstart(cptr.decay(slimebuf)));
         else
+            /* follows "The medallion crumbles to dust." */
             urgent_pline(__s_unfortunately_s, cptr.decay(slimebuf));
-        done(NHC.GENOCIDED);
+        /* die again; no possibility of amulet this time */
+        done(NHC.GENOCIDED);  /* [should it be done_timeout(GENOCIDED, SLIMED)?] */
+        /* could be life-saved again (only in explore or wizard mode)
+           but green slimes are gone; just stay in current form */
     }
     return;
 }
 
+/* Intrinsic Passes_walls is temporary when your god is trying to fix
+   all troubles and then TROUBLE_STUCK_IN_WALL calls safe_teleds() but
+   it can't find anywhere to place you.  If that happens you get a small
+   value for (HPasses_walls & TIMEOUT) to move somewhere yourself.
+   Message given is "you feel much slimmer" as a joke hint that you can
+   move between things which are closely packed--like the substance of
+   solid rock! */
 /** C ref: timeout.c:528 — char *[2] */
 const phaze_texts = cptr.alloc(2 * 8);
 cptr.stPtro(phaze_texts, 0, __s_you_start_to_feel_bloated);
@@ -912,12 +996,17 @@ cptr.stPtro(phaze_texts, 8, __s_you_are_feeling_rather_flabby);
 /** C ref: timeout.c:534 */
 function phaze_dialogue() {
     let i = ((HPasses_walls() & 16777215n) / 2n);
+
     if (EPasses_walls() || (HPasses_walls() & -16777216n))
         return;
+
     if (((HPasses_walls() & 16777215n) % 2n) && i > 0n && i <= BigInt(2))
         pline(__s_pct_s, cptr.ldPtro(phaze_texts, BigInt.asIntN(64, BigInt(2) - i), 8));
 }
 
+/* Similar to Passes_walls, if prayer tries to save hero from a poison
+   gas region but can't, (HMagical_breathing & TIMEOUT) will be set to
+   a small value.  Unlike Passes_walls, there's no joke message. */
 /** C ref: timeout.c:548 — char *[2] */
 const region_texts = cptr.alloc(2 * 8);
 cptr.stPtro(region_texts, 0, __s_you_seem_to_have_some_trouble_breathing);
@@ -929,21 +1018,30 @@ function region_dialogue() {
     let in_poison_gas_cloud;
     let r = (HMagical_breathing() & 16777215n);
     let i = r / 2n;
+
+    /* might have poly'd into non-breather or moved out of gas cloud */
     cptr.stI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-16777216n));
     no_need_to_breathe = schar((cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) ? 1 : 0));
     in_poison_gas_cloud = region_danger();
     cptr.stI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic) | r);
     if (no_need_to_breathe || !in_poison_gas_cloud)
         return;
+
     if ((r % 2n) && i > 0n && i <= BigInt(2))
         pline(__s_pct_s, cptr.ldPtro(region_texts, BigInt.asIntN(64, BigInt(2) - i), 8));
 }
 
+/* when a status timeout is fatal, keep the status line indicator shown
+   during end of game rundown (and potential dumplog);
+   timeout has already counted down to 0 by the time we get here */
 /** C ref: timeout.c:575 — @param {CInt} how @param {CInt} which */
 function done_timeout(how, which) {
     let intrinsic_p = cptr.add(cptr.add(cptr.add(u, $you_uprops), which, $sizeof_prop), $prop_intrinsic);
-    cptr.stI64(intrinsic_p, cptr.ldI64(intrinsic_p) | 536870912n);
+
+    cptr.stI64(intrinsic_p, cptr.ldI64(intrinsic_p) | 536870912n);  /* affects final disclosure */
     done(how);
+
+    /* life-saved */
     cptr.stI64(intrinsic_p, cptr.ldI64(intrinsic_p) & (-536870913n));
     cptr.st1(disp, 1);
 }
@@ -956,22 +1054,32 @@ export function nh_timeout() {
     let sleeptime;
     let m_idx;
     let baseluck = (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON) ? 1 : 0;
+
     if (cptr.ld1so(flags, $flag_friday13))
         baseluck = (baseluck - 1) | 0;
+
     if ((cptr.ldI32o(svq, $q_score_killed_leader) & 1))
         baseluck = (baseluck - 4) | 0;
+
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.FEDORA)
         baseluck = (baseluck + 1) | 0;
+
     if (cptr.ld1so(u, $you_uluck) != baseluck && cptr.ldI64o(svm, $instance_globals_saved_m_moves) % BigInt((((cptr.ldI32o(u, $you_uhave) & 1) | 0 || cptr.ldI32o(u, $you_ugangr)) ? 300 : 600)) == 0n) {
+        /* Cursed luckstones stop bad luck from timing out; blessed luckstones
+         * stop good luck from timing out; normal luckstones stop both;
+         * neither is stopped if you don't have a luckstone.
+         * Luck is based at 0 usually, +1 if a full moon and -1 on Friday 13th
+         */
         let time_luck = stone_luck(0);
         let nostone = schar((!carrying(NHC.LUCKSTONE) && !stone_luck(1) ? 1 : 0));
+
         if (cptr.ld1so(u, $you_uluck) > baseluck && (nostone || time_luck < 0))
             (cptr.st1o(u, $you_uluck, cptr.ld1so(u, $you_uluck) + -1)) - (-1);
         else if (cptr.ld1so(u, $you_uluck) < baseluck && (nostone || time_luck > 0))
             cptr.postinc1(cptr.add(u, $you_uluck));
     }
     if ((cptr.ldI32o(u, $you_uinvulnerable) & 1))
-        return;
+        return;  /* things past this point could kill you */
     if (Stoned())
         stoned_dialogue();
     if (Slimed())
@@ -994,12 +1102,14 @@ export function nh_timeout() {
         if (Unchanging())
             cptr.stI32o(u, $you_mtimedone, rnd_at(__s_timeout_c, 643, __s_nh_timeout, (Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0));
         else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n))
-            you_unwere(0);
+            you_unwere(0);  /* if polycontrl, asks whether to rehumanize */
         else
             rehumanize();
     }
     if (cptr.ldI32o(u, $you_ucreamed))
         (cptr.stI32o(u, $you_ucreamed, cptr.ldI32o(u, $you_ucreamed) + -1)) - (-1);
+
+    /* Dissipate spell-based protection. */
     if (cptr.ld1uo(u, $you_usptime)) {
         if (cptr.st1o(u, $you_usptime, cptr.ld1uo(u, $you_usptime) + -1) == 0 && cptr.ld1uo(u, $you_uspellprot)) {
             cptr.st1o(u, $you_usptime, cptr.ld1uo(u, $you_uspmtime));
@@ -1009,10 +1119,12 @@ export function nh_timeout() {
                 Norep(__s_the_s_haze_around_you_s, hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_golden)), cptr.ld1uo(u, $you_uspellprot) ? __s_becomes_less_dense : __s_disappears);
         }
     }
+
     if (cptr.ldI64o(u, $you_ugallop)) {
         if (cptr.stI64o(u, $you_ugallop, cptr.ldI64o(u, $you_ugallop) + -1n) == 0n && cptr.ldPtro(u, $you_usteed))
             pline(__s_s_stops_galloping, Monnam(cptr.ldPtro(u, $you_usteed)));
     }
+
     was_flying = schar(((cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) || (cptr.ldPtro(u, $you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0));
     for (upp = cptr.add(u, $you_uprops); cptr.cmp(upp, cptr.add(cptr.add(u, $you_uprops), Number(BigInt.asIntN(32, (1656n / 24n))), 24)) < 0; upp = cptr.add(upp, 1, 24))
         if ((cptr.ldI64o(upp, $prop_intrinsic) & 16777215n) && !(cptr.stI64o(upp, $prop_intrinsic, cptr.ldI64o(upp, $prop_intrinsic) + -1n) & 16777215n)) {
@@ -1027,15 +1139,18 @@ export function nh_timeout() {
                     void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_killed_by_petrification);
                 }
                 dealloc_killer(kptr);
+                /* (unlike sliming, you aren't changing form here) */
                 done_timeout(NHC.STONING, NHC.STONED);
                 break;
                 case 22n:
-                slimed_to_death(kptr);
+                slimed_to_death(kptr);  /* done_timeout(TURNED_SLIME,SLIMED) */
                 break;
                 case 20n:
                 make_vomiting(0n, 1);
                 break;
                 case 17n:
+                /* hero might be able to bounce back from food poisoning,
+                   but not other forms of illness */
                 if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0 && rn2_at(__s_timeout_c, 696, __s_nh_timeout, 100) < (acurr(NHC.A_CON))) {
                     You(__s_have_recovered_from_your_illness);
                     make_sick(0n, null, 0, NHM.SICK_ALL);
@@ -1049,9 +1164,10 @@ export function nh_timeout() {
                     void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
                 } else {
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-                    cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+                    cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* take the default */
                 }
                 dealloc_killer(kptr);
+
                 if ((m_idx = name_to_mon(cptr.add(svk, $kinfo_name), null)) >= NHC.LOW_PM) {
                     if (((cptr.ldU64o((cptr.add(mons, m_idx, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n)) {
                         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -1068,6 +1184,7 @@ export function nh_timeout() {
                     You_feel(__s_yourself_slow_down_s, Fast() ? __s_a_bit : __s_empty);
                 break;
                 case 14n:
+                /* So make_confused works properly */
                 set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CONFUSION, $sizeof_prop), $prop_intrinsic), 1n);
                 make_confused(0n, 1);
                 if (!HConfusion())
@@ -1082,6 +1199,7 @@ export function nh_timeout() {
                 case 15n:
                 {
                     let was_blind = schar((!!Blind()));
+
                     set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), 1n);
                     make_blinded(0n, 1);
                     if (was_blind && !Blind())
@@ -1103,9 +1221,9 @@ export function nh_timeout() {
                 }
                 break;
                 case 29n:
-                set_mimic_blocking();
-                see_monsters();
-                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                set_mimic_blocking();  /* do special mimic handling */
+                see_monsters();  /* make invis mons appear */
+                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* make self appear */
                 stop_occupation();
                 break;
                 case 26n:
@@ -1129,11 +1247,18 @@ export function nh_timeout() {
                 }
                 break;
                 case 48n:
+                /* timed Levitation is ordinary, timed Flying is via
+                   #wizintrinsic only; still, we want to avoid float_down()
+                   reporting "you have stopped levitating and are now flying"
+                   when both are timing out together; if that is about to
+                   happen, end Flying early to skip feedback about it;
+                   assumes Levitation is handled before Flying */
                 if ((HFlying() & 16777215n) == 1n)
-                    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FLYING, $sizeof_prop), $prop_intrinsic), 0n);
+                    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FLYING, $sizeof_prop), $prop_intrinsic), 0n);  /* bypass 'case FLYING' */
                 void float_down(553648127n, 0n);
                 break;
                 case 49n:
+                /* timed Flying is via #wizintrinsic only */
                 if (was_flying && !Flying()) {
                     cptr.st1(disp, 1);
                     You(__s_land);
@@ -1143,6 +1268,9 @@ export function nh_timeout() {
                 case 7n:
                 if (!Acid_resistance()) {
                     if (eating_dangerous_corpse(NHC.ACID_RES)) {
+                        /* extend temporary acid resistance if in midst
+                           of eating an acidic corpse; this will repeat
+                           until eating is finished or interrupted */
                         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop), $prop_intrinsic), 1n);
                         break;
                     }
@@ -1153,20 +1281,32 @@ export function nh_timeout() {
                 case 8n:
                 if (!Stone_resistance()) {
                     if (eating_dangerous_corpse(NHC.STONE_RES)) {
+                        /* extend temporary stoning resistance if in midst
+                           of eating a stoning corpse; this will repeat
+                           until eating is finished or interrupted */
                         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop), $prop_intrinsic), 1n);
                         break;
                     }
                     if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
                         You(__s_no_longer_feel_secure_from_petrification);
+                    /* no-op if not wielding a cockatrice corpse;
+                       uswapwep case is always a no-op because two-weapon
+                       combat is only possible with two one-handed weapons
+                       or weapon tools, not corpses */
                     wielding_corpse(uwep.v, null, 0);
                     wielding_corpse(uswapwep.v, null, 0);
                 }
                 break;
                 case 1n:
+                /* timed fire resistance and timed water walking combine
+                   as a way to survive lava after multiple life-saving
+                   attempts fail to relocate hero; skip timeout message
+                   if hero has acquired fire resistance in the meantime */
                 if (!Fire_resistance())
                     Your(__s_temporary_ability_to_survive_burning);
                 break;
                 case 50n:
+                /* [see fire resistance] */
                 if (!((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))))
                     Your(__s_temporary_ability_to_walk_on_liquid_has);
                 break;
@@ -1175,8 +1315,10 @@ export function nh_timeout() {
                     toggle_displacement(null, 0n, 0);
                 break;
                 case 32n:
+                /* timed Warn_of_mon is via #wizintrinsic only */
                 if (!Warn_of_mon()) {
                     let wptr = cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species);
+
                     cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, null);
                     cptr.stI16o(svc, $context_info_warntype + $warntype_info_speciesidx, NHC.NON_PM);
                     if (wptr)
@@ -1201,27 +1343,40 @@ export function nh_timeout() {
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), ((cptr.ldI32o(u, $you_uburied) & 1)) | 0 ? __s_suffocation : __s_strangulation);
                 done_timeout(NHC.DIED, NHC.STRANGLED);
+                /* must be declining to die in explore|wizard mode;
+                   treat like being cured of strangulation by prayer */
                 if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_STRANGULATION) {
                     Your(__s_amulet_vanishes);
                     useup(uamul.v);
                 }
                 break;
                 case 25n:
+                /* call this only when a move took place.  */
+                /* otherwise handle fumbling msgs locally. */
                 if (cptr.ld1so(u, $you_umoved) && !(Levitation() || Flying())) {
                     slip_or_trip();
                     nomul(-2);
                     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_fumbling);
                     cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
+                    /* The more you are carrying the more likely you
+                     * are to make noise when you fumble.  Adjustments
+                     * to this number must be thoroughly play tested.
+                     */
                     if ((inv_weight() > (Math.imul(NHC.WT_NOISY_INV, -1)))) {
                         if (!Deaf())
                             You(__s_make_a_lot_of_noise);
                         wake_nearby(0);
                     }
                 }
+                /* from outside means slippery ice; don't reset
+                   counter if that's the only fumble reason */
                 cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-67108865n));
                 if (Fumbling())
                     incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_timeout_c, 924, __s_nh_timeout, 20));
+
                 if (cptr.ld1so(iflags, $instance_flags_defer_decor)) {
+                    /* 'mention_decor' was deferred for message sequencing
+                       reasons; catch up now */
                     deferred_decor(0);
                 }
                 break;
@@ -1229,14 +1384,17 @@ export function nh_timeout() {
                 see_monsters();
                 break;
                 case 21n:
-                make_glib(0);
+                make_glib(0);  /* might update persistent inventory */
                 break;
                 case 60n:
+                /* timed Protection_from_shape_changers is via
+                   #wizintrinsic only */
                 if (!Protection_from_shape_changers())
                     restartcham();
                 break;
             }
         }
+
     run_timers();
 }
 
@@ -1245,17 +1403,32 @@ export function fall_asleep(how_long, wakeup_msg) {
     stop_occupation();
     nomul(how_long);
     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_sleeping);
+    /* early wakeup from combat won't be possible until next monster turn */
     cptr.stI64o(u, $you_usleep, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, wakeup_msg ? __s_you_wake_up : cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again));
 }
 
+/* Attach an egg hatch timeout to the given egg.
+ *      when = Time to hatch, usually only passed if re-creating an
+ *             existing hatch timer. Pass 0L for random hatch time.
+ */
 /** C ref: timeout.c:981 — @param {CPtr<struct obj>} egg @param {CLongLong} when */
 export function attach_egg_hatch_timeout(egg, when) {
     let i;
+
+    /* stop previous timer, if any */
     void stop_timer(NHC.HATCH_EGG, obj_to_any(egg));
+
+    /*
+     * Decide if and when to hatch the egg.  The old hatch_it() code tried
+     * once a turn from age 151 to 200 (inclusive), hatching if it rolled
+     * a number x, 1<=x<=age, where x>150.  This yields a chance of
+     * hatching > 99.9993%.  Mimic that here.
+     */
     if (!when) {
         for (i = 151; i <= NHM.MAX_EGG_HATCH_TIME; i++)
             if (rnd_at(__s_timeout_c, 996, __s_attach_egg_hatch_timeout, i) > 150) {
+                /* egg will hatch */
                 when = BigInt(i);
                 break;
             }
@@ -1265,11 +1438,14 @@ export function attach_egg_hatch_timeout(egg, when) {
     }
 }
 
+/* prevent an egg from ever hatching */
 /** C ref: timeout.c:1009 — @param {CPtr<struct obj>} egg */
 export function kill_egg(egg) {
+    /* stop previous timer, if any */
     void stop_timer(NHC.HATCH_EGG, obj_to_any(egg));
 }
 
+/* timer callback routine: hatch the given egg */
 /** C ref: timeout.c:1017 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function hatch_egg(arg, timeout) {
     let egg;
@@ -1285,13 +1461,21 @@ export function hatch_egg(arg, timeout) {
     let i;
     let mnum;
     let hatchcount = 0;
+
     egg = cptr.ldPtr(arg);
+    /* sterilized while waiting */
     if (cptr.ldI32o(egg, $obj_corpsenm) == NHC.NON_PM)
         return;
+
     mon = (mon2 = null);
     mnum = big_to_little(cptr.ldI32o(egg, $obj_corpsenm));
+    /* The identity of one's father is learned, not innate */
     yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && (cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && !rn2_at(__s_timeout_c, 1035, __s_hatch_egg, 2)) ? 1 : 0));
-    silent = schar((timeout != cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
+    silent = schar((timeout != cptr.ldI64o(svm, $instance_globals_saved_m_moves)));  /* hatched while away */
+
+    /* only can hatch when in INVENT, FLOOR, MINVENT;
+       get_obj_location() will fail for MIGRATING, also for CONTAINED
+       and BURIED when the flags for those aren't included in the call */
     if (get_obj_location(egg, x, y, 0)) {
         hatchcount = rnd_at(__s_timeout_c, 1042, __s_hatch_egg, Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan))));
         cansee_hatchspot = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0) && !silent ? 1 : 0));
@@ -1299,6 +1483,9 @@ export function hatch_egg(arg, timeout) {
             for (i = hatchcount; i > 0; i--) {
                 if (!enexto(cc, x.v, y.v, cptr.add(mons, mnum, $sizeof_permonst)) || !(mon = makemon(cptr.add(mons, mnum, $sizeof_permonst), cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 131073)))
                     break;
+                /* tame if your own egg hatches while you're on the
+                   same dungeon level, or any dragon egg which hatches
+                   while it's in your inventory */
                 if ((yours && !silent) || ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_DRAGON)) {
                     if (tamedog(mon, null, 0)) {
                         if ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) != NHC.S_DRAGON)
@@ -1306,8 +1493,8 @@ export function hatch_egg(arg, timeout) {
                     }
                 }
                 if (cptr.ld1uo2(svm, mnum, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_EXTINCT)
-                    break;
-                mon2 = mon;
+                    break;  /* just made last one */
+                mon2 = mon;  /* in case makemon() fails on 2nd egg */
             }
             if (!mon)
                 mon = mon2;
@@ -1315,17 +1502,27 @@ export function hatch_egg(arg, timeout) {
             cptr.stI64o(egg, $obj_quan, cptr.ldI64o(egg, $obj_quan) - BigInt(hatchcount));
         }
     }
+
     if (mon) {
         let monnambuf = new Uint8Array(256);
         let carriedby = new Uint8Array(256);
         let siblings = schar((hatchcount > 1));
         let redraw = 0;
+
         if (cansee_hatchspot) {
+            /* [bug?  m_monnam() yields accurate monster type
+               regardless of hallucination] */
             void cptr.sprintf(cptr.decay(monnambuf), __s_s_s, siblings ? __s_some : __s_empty, siblings ? makeplural(m_monnam(mon)) : an(m_monnam(mon)));
+            /* we don't learn the egg type here because learning
+               an egg type requires either seeing the egg hatch
+               or being familiar with the egg already,
+               as well as being able to see the resulting
+               monster, checked below
+            */
         }
         switch (cptr.ld1so(egg, $obj_where)) {
             case NHM.OBJ_INVENT:
-            knows_egg = 1;
+            knows_egg = 1;  /* true even if you are blind */
             if (!cansee_hatchspot)
                 You_feel(__s_s_s_from_your_pack, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), locomotion(cptr.ldPtro(mon, $monst_data), __s_drop));
             else
@@ -1334,18 +1531,19 @@ export function hatch_egg(arg, timeout) {
                 pline(__s_s_s_s_like_s_s, siblings ? __s_their : __s_its, ing_suffix(cry_sound(mon)), ((cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msound) == NHC.MS_SILENT) || Deaf()) ? __s_seems : __s_sounds, cptr.ld1so(flags, $flag_female) ? __s_mommy : __s_daddy, cptr.ld1so(egg, $obj_spe) ? __s_dot : __s_query);
             } else if (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_DRAGON && !Deaf()) {
                 ;
-                verbalize(__s_gleep);
+                verbalize(__s_gleep);  /* Mything eggs :-) */
             }
             break;
             case NHM.OBJ_FLOOR:
             if (cansee_hatchspot) {
                 knows_egg = 1;
                 You_see(__s_s_hatch, cptr.decay(monnambuf));
-                redraw = 1;
+                redraw = 1;  /* update egg's map location */
             }
             break;
             case NHM.OBJ_MINVENT:
             if (cansee_hatchspot) {
+                /* egg carrying monster might be invisible */
                 mon2 = cptr.ldPtro(egg, $obj_v);
                 if (canseemon(mon2) && (!(cptr.ldI32o(mon2, $monst_wormno) & 31) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon2, $monst_my), 8), cptr.ldI16o(mon2, $monst_mx)) & NHM.IN_SIGHT) != 0))) {
                     void cptr.sprintf(cptr.decay(carriedby), __s_s_pack, s_suffix(a_monnam(mon2)));
@@ -1362,14 +1560,23 @@ export function hatch_egg(arg, timeout) {
             impossible(__s_egg_hatched_where_d, cptr.ld1so(egg, $obj_where));
             break;
         }
+
         if (cansee_hatchspot && knows_egg)
             learn_egg_type(mnum);
+
         if (cptr.ldI64o(egg, $obj_quan) > 0n) {
+            /* still some eggs left; we didn't split the stack, just
+               subtracted from quantity so weight needs to be updated;
+               for remainder of stack, add a new, short hatch timer */
             attach_egg_hatch_timeout(egg, BigInt(rnd_at(__s_timeout_c, 1172, __s_hatch_egg, 12)));
+            /* container_weight(arg) updates arg->owt, and if contained,
+               its enclosing container arg->ocontainer (recursively)
+               [egg won't be contained due to conditions imposed above] */
             container_weight(egg);
         } else if ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT)) {
             useup(egg);
         } else {
+            /* free egg here because we use it above */
             obj_extract_self(egg);
             obfree(egg, null);
             if ((mon = (cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) && !hideunder(mon) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0))
@@ -1380,21 +1587,33 @@ export function hatch_egg(arg, timeout) {
     }
 }
 
+/* Learn to recognize eggs of the given type. */
 /** C ref: timeout.c:1193 — @param {CInt} mnum */
 export function learn_egg_type(mnum) {
+    /* baby monsters hatch from grown-up eggs */
     mnum = little_to_big(mnum);
     cptr.st1o2(svm, mnum, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, cptr.ld1uo2(svm, mnum, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) | NHM.MV_KNOWS_EGG);
+    /* we might have just learned about other eggs being carried */
     update_inventory();
 }
 
+/* Attach a fig_transform timeout to the given figurine. */
 /** C ref: timeout.c:1204 — @param {CPtr<struct obj>} figurine */
 export function attach_fig_transform_timeout(figurine) {
     let i;
+
+    /* stop previous timer, if any */
     void stop_timer(NHC.FIG_TRANSFORM, obj_to_any(figurine));
+
+    /*
+     * Decide when to transform the figurine.
+     */
     i = (rnd_at(__s_timeout_c, 1214, __s_attach_fig_transform_timeout, 9000) + 200) | 0;
+    /* figurine will transform */
     void start_timer(BigInt(i), NHC.TIMER_OBJECT, NHC.FIG_TRANSFORM, obj_to_any(figurine));
 }
 
+/* give a fumble message */
 /** C ref: timeout.c:1222 */
 function slip_or_trip() {
     let otmp = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects));
@@ -1403,9 +1622,18 @@ function slip_or_trip() {
     let what;
     let buf = new Uint8Array(256);
     let on_foot = schar((!cptr.ldPtro(u, $you_usteed)));
+
     if (otmp && on_foot && !(cptr.ldI32o(u, $you_uinwater) & 1) && is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         otmp = null;
+
     if (otmp && on_foot) {
+        /*
+          If there is only one item, it will have just been named
+          during the move, so refer to it by pronoun; otherwise,
+          if the top item has been or can be seen, refer to it by
+          name; if not, look for rocks to trip over; trip over
+          anonymous "something" if there aren't any rocks.
+        */
         what = (cptr.ldI32o(iflags, $instance_flags_last_msg) == NHC.PLNMSG_ONE_ITEM_HERE) ? ((cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : (Hallucination() ? __s_they : __s_them)) : (((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 || !Blind()) ? doname(otmp) : ((otmp2 = sobj_at(NHC.ROCK, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) === null ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : (cptr.ldI64o(otmp2, $obj_quan) == 1n ? __s_a_rock : __s_some_rocks)));
         if (Hallucination()) {
             what = cptr.strcpy(cptr.decay(buf), what);
@@ -1419,14 +1647,27 @@ function slip_or_trip() {
             instapetrify(cptr.add(svk, $kinfo_name));
         }
     } else if ((HFumbling() & 67108864n) || (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !rn2_at(__s_timeout_c, 1262, __s_slip_or_trip, 3))) {
+        /* is fumbling from ice alone? */
         let ice_only = schar((!(EFumbling() || (HFumbling() & -67108865n))));
+
         pline(__s_s_s_s_the_ice, cptr.ldPtro(u, $you_usteed) ? upstart(x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0)) : __s_you, vtense(cptr.ldPtro(u, $you_usteed) ? __s_steed : __s_you__2, rn2_at(__s_timeout_c, 1273, __s_slip_or_trip, 2) ? __s_slip : __s_slide), is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_on : __s_off);
+        /* fumbling outside of ice while mounted always causes the hero to
+           fall from the saddle (unless it is cursed), so to avoid a
+           counterintuitive effect where ice makes riding _less_ hazardous,
+           unconditionally dismount if fumbling is from a non-ice source */
         if (!on_foot && ((saddle = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) && (!ice_only || !rn2_at(__s_timeout_c, 1284, __s_slip_or_trip, 3))) {
             You(__s_lose_your_balance);
             dismount_steed(NHC.DISMOUNT_FELL);
         } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1287, __s_slip_or_trip), rn2((10 + (acurr(NHC.A_DEX))) | 0)) : rn2((10 + (acurr(NHC.A_DEX))) | 0))) {
+            /* Maybe slip in a random direction.  This takes place after
+               the hero has already changed location.  If the hero is
+               in grid bug form, only allow forward hurtle, otherwise a
+               90 degree orthogonal one after the step would make the
+               combined move appear to be a single diagonal step. */
             if (!((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
-                confdir(1);
+                confdir(1);  /* sets u.dx and u.dy */
+            /* Only hurtle if the random direction won't move hero back
+               to same spot where this move started. */
             if (((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0) != cptr.ldI16o(u, $you_ux0) || ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0) != cptr.ldI16o(u, $you_uy0))
                 hurtle(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), 1, 0);
         }
@@ -1446,6 +1687,9 @@ function slip_or_trip() {
                 You(__s_stumble);
                 break;
             }
+
+            /* mounted; saddle should never end up being Null here;
+               don't fall off when it happens to be cursed */
         } else if ((saddle = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) {
             switch (rn2_at(__s_timeout_c, 1323, __s_slip_or_trip, 4)) {
                 case 1:
@@ -1466,6 +1710,7 @@ function slip_or_trip() {
     }
 }
 
+/* Print a lamp flicker message with tailer.  Only called if seen. */
 /** C ref: timeout.c:1345 — @param {CPtr<struct obj>} obj @param {CPtr<char>} tailer */
 function see_lamp_flicker(obj, tailer) {
     switch (cptr.ld1so(obj, $obj_where)) {
@@ -1479,8 +1724,10 @@ function see_lamp_flicker(obj, tailer) {
     }
 }
 
+/* Print a dimming message for brass lanterns.  Only called if seen. */
 /** C ref: timeout.c:1360 — @param {CPtr<struct obj>} obj */
 function lantern_message(obj) {
+    /* from adventure */
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
         Your(__s_lantern_is_getting_dim);
@@ -1496,6 +1743,10 @@ function lantern_message(obj) {
     }
 }
 
+/*
+ * Timeout callback for objects that are burning. E.g. lamps, candles.
+ * See begin_burn() for meanings of obj->age and obj->spe.
+ */
 /** C ref: timeout.c:1383 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function burn_object(arg, timeout) {
     let obj = cptr.ldPtr(arg);
@@ -1508,42 +1759,62 @@ export function burn_object(arg, timeout) {
     let x = cptr.box(0);
     let y = cptr.box(0);
     let whose = new Uint8Array(256);
+
     menorah = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION));
     many = schar((menorah ? cptr.ld1so(obj, $obj_spe) > 1 : cptr.ldI64o(obj, $obj_quan) > 1n));
+
+    /* timeout while away */
     if (timeout != cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         let how_long = BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - timeout);
+
         if (how_long >= cptr.ldI64o(obj, $obj_age)) {
             cptr.stI64o(obj, $obj_age, 0n);
             end_burn(obj, 0);
+
             if (menorah) {
-                cptr.st1o(obj, $obj_spe, 0);
+                cptr.st1o(obj, $obj_spe, 0);  /* no more candles */
                 cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
             } else if (Is_candle(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL) {
                 let mtmp = null;
+
                 if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR)
                     mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(obj, $obj_ox), 168, cptr.ldI16o(obj, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+                /* get rid of candles and burning oil potions;
+                   we know this object isn't carried by hero,
+                   nor is it migrating */
                 obj_extract_self(obj);
                 obfree(obj, null);
                 obj = null;
                 if (mtmp)
                     maybe_unhide_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
             }
+
         } else {
             cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) - how_long);
             begin_burn(obj, 1);
         }
         return;
     }
+
+    /* only interested in INVENT, FLOOR, and MINVENT */
     if (get_obj_location(obj, x, y, 0)) {
         canseeit = schar((!Blind() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0) ? 1 : 0));
+        /* set `whose[]' to be "Your " or "Fred's " or "The goblin's " */
         void Shk_Your(cptr.decay(whose), obj);
     } else {
         canseeit = 0;
     }
+    /* when carrying the light source, you can feel the heat from lit lamp
+       or candle so you'll be notified when it burns out even if blind at
+       the time; brass lantern doesn't radiate sufficient heat for that
+       (however, inventory formatting drops "(lit)" so player can tell) */
     bytouch = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT && cptr.ldI16o(obj, $obj_otyp) != NHC.BRASS_LANTERN ? 1 : 0));
     need_newsym = (need_invupdate = 0);
+
+    /* obj->age is the age remaining at this point.  */
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.POT_OIL:
+        /* this should only be called when we run out */
         if (canseeit) {
             switch (cptr.ld1so(obj, $obj_where)) {
                 case NHM.OBJ_INVENT:
@@ -1559,10 +1830,12 @@ export function burn_object(arg, timeout) {
                 break;
             }
         }
-        end_burn(obj, 0);
+        end_burn(obj, 0);  /* turn off light source */
         if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
             useupall(obj);
         } else {
+            /* clear migrating obj's destination code before obfree
+               to avoid false complaint of deleting worn item */
             if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
                 cptr.stI64o(obj, $obj_owornmask, 0n);
             obj_extract_self(obj);
@@ -1601,6 +1874,7 @@ export function burn_object(arg, timeout) {
             }
             break;
             case 0:
+            /* even if blind you'll know if holding it */
             if (canseeit || bytouch) {
                 switch (cptr.ld1so(obj, $obj_where)) {
                     case NHM.OBJ_INVENT:
@@ -1624,10 +1898,17 @@ export function burn_object(arg, timeout) {
             end_burn(obj, 0);
             break;
             default:
+            /*
+             * Someone added fuel to the lamp while it was
+             * lit. Just fall through and let begin_burn()
+             * handle the new age.
+             */
             break;
         }
+
         if (cptr.ldI64o(obj, $obj_age))
             begin_burn(obj, 1);
+
         break;
         case NHC.CANDELABRUM_OF_INVOCATION:
         case NHC.TALLOW_CANDLE:
@@ -1658,6 +1939,7 @@ export function burn_object(arg, timeout) {
                 }
             break;
             case 0n:
+            /* we know even if blind and in our inventory */
             if (canseeit || bytouch) {
                 if (menorah) {
                     switch (cptr.ld1so(obj, $obj_where)) {
@@ -1676,21 +1958,30 @@ export function burn_object(arg, timeout) {
                     switch (cptr.ld1so(obj, $obj_where)) {
                         case NHM.OBJ_INVENT:
                         // @FallThrough
+                        /* no need_invupdate for update_inventory() necessary;
+                           useupall() -> freeinv() handles it */
                         ;
                         case NHM.OBJ_MINVENT:
                         pline(__s_s_s_consumed, Yname2(obj), many ? __s_are : __s_is__2);
                         break;
                         case NHM.OBJ_FLOOR:
+                        /*
+                          You see some wax candles consumed!
+                          You see a wax candle consumed!
+                         */
                         You_see(__s_s_s_consumed__2, many ? __s_some : __s_empty, many ? xname(obj) : an(xname(obj)));
                         need_newsym = 1;
                         break;
                     }
+
+                    /* post message */
                     pline(Hallucination() ? (many ? __s_they_shriek : __s_it_shrieks) : (Blind() ? __s_empty : (many ? __s_their_flames_die : __s_its_flame_dies)));
                 }
             }
             end_burn(obj, 0);
+
             if (menorah) {
-                cptr.st1o(obj, $obj_spe, 0);
+                cptr.st1o(obj, $obj_spe, 0);  /* no candles */
                 cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
                 if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
                     need_invupdate = 1;
@@ -1699,6 +1990,9 @@ export function burn_object(arg, timeout) {
                     useupall(obj);
                 } else {
                     let onfloor = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR));
+
+                    /* clear migrating obj's destination code
+                       so obfree won't think this item is worn */
                     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
                         cptr.stI64o(obj, $obj_owornmask, 0n);
                     obj_extract_self(obj);
@@ -1708,13 +2002,19 @@ export function burn_object(arg, timeout) {
                 }
                 obj = null;
             }
-            break;
+            break;  /* case [age ==] 0 */
             default:
+            /*
+             * Someone added fuel (candles) to the menorah while
+             * it was lit. Just fall through and let begin_burn()
+             * handle the new age.
+             */
             break;
         }
+
         if (obj && cptr.ldI64o(obj, $obj_age))
             begin_burn(obj, 1);
-        break;
+        break;  /* case [otyp ==] candelabrum|tallow_candle|wax_candle */
         default:
         impossible(__s_burn_object_unexpected_obj_s, xname(obj));
         break;
@@ -1725,13 +2025,44 @@ export function burn_object(arg, timeout) {
         update_inventory();
 }
 
+/*
+ * Start a burn timeout on the given object. If not "already lit" then
+ * create a light source for the vision system.  There had better not
+ * be a burn already running on the object.
+ *
+ * Magic lamps stay lit as long as there's a genie inside, so don't start
+ * a timer.
+ *
+ * Burn rules:
+ *      potions of oil, lamps & candles:
+ *              age = # of turns of fuel left
+ *              spe = <unused>
+ *      magic lamps:
+ *              age = <unused>
+ *              spe = 0 not lightable, 1 lightable forever
+ *      candelabrum:
+ *              age = # of turns of fuel left
+ *              spe = # of candles
+ *
+ * Once the burn begins, the age will be set to the amount of fuel
+ * remaining _once_the_burn_finishes_.  If the burn is terminated
+ * early then fuel is added back.
+ *
+ * This use of age differs from the use of age for corpses and eggs.
+ * For the latter items, age is when the object was created, so we
+ * know when it becomes "bad".
+ *
+ * This is a "silent" routine - it should not print anything out.
+ */
 /** C ref: timeout.c:1712 — @param {CPtr<struct obj>} obj @param {CInt} already_lit */
 export function begin_burn(obj, already_lit) {
     let radius = 3;
     let turns = 0n;
     let do_timer = 1;
+
     if (cptr.ldI64o(obj, $obj_age) == 0n && cptr.ldI16o(obj, $obj_otyp) != NHC.MAGIC_LAMP && !artifact_light(obj))
         return;
+
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.MAGIC_LAMP:
         cptr.stI32o(obj, $obj_lamplit, 1);
@@ -1741,10 +2072,11 @@ export function begin_burn(obj, already_lit) {
         turns = cptr.ldI64o(obj, $obj_age);
         if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
             turns = (BigInt.asIntN(64, BigInt.asIntN(64, 3n * turns) + 2n)) / 4n;
-        radius = 1;
+        radius = 1;  /* very dim light */
         break;
         case NHC.BRASS_LANTERN:
         case NHC.OIL_LAMP:
+        /* magic times are 150, 100, 50, 25, and 0 */
         if (cptr.ldI64o(obj, $obj_age) > 150n)
             turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 150n);
         else if (cptr.ldI64o(obj, $obj_age) > 100n)
@@ -1759,6 +2091,7 @@ export function begin_burn(obj, already_lit) {
         case NHC.CANDELABRUM_OF_INVOCATION:
         case NHC.TALLOW_CANDLE:
         case NHC.WAX_CANDLE:
+        /* magic times are 75, 15, and 0 */
         if (cptr.ldI64o(obj, $obj_age) > 75n)
             turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 75n);
         else if (cptr.ldI64o(obj, $obj_age) > 15n)
@@ -1768,6 +2101,7 @@ export function begin_burn(obj, already_lit) {
         radius = candle_light_range(obj);
         break;
         default:
+        /* [ALI] Support artifact light sources */
         if (artifact_light(obj)) {
             cptr.stI32o(obj, $obj_lamplit, 1);
             do_timer = 0;
@@ -1778,6 +2112,7 @@ export function begin_burn(obj, already_lit) {
         }
         break;
     }
+
     if (do_timer) {
         if (start_timer(turns, NHC.TIMER_OBJECT, NHC.BURN_OBJECT, obj_to_any(obj))) {
             cptr.stI32o(obj, $obj_lamplit, 1);
@@ -1791,9 +2126,11 @@ export function begin_burn(obj, already_lit) {
         if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && !already_lit)
             update_inventory();
     }
+
     if ((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && !already_lit) {
         let x = cptr.box(0);
         let y = cptr.box(0);
+
         if (get_obj_location(obj, x, y, 3))
             new_light_source(x.v, y.v, radius, NHC.LS_OBJECT, obj_to_any(obj));
         else
@@ -1801,15 +2138,22 @@ export function begin_burn(obj, already_lit) {
     }
 }
 
+/*
+ * Stop a burn timeout on the given object if timer attached.  Darken
+ * light source.
+ */
 /** C ref: timeout.c:1804 — @param {CPtr<struct obj>} obj @param {CInt} timer_attached */
 export function end_burn(obj, timer_attached) {
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
         impossible(__s_end_burn_obj_s_not_lit, xname(obj));
         return;
     }
+
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP || artifact_light(obj))
         timer_attached = 0;
+
     if (!timer_attached) {
+        /* [DS] Cleanup explicitly, since timer cleanup won't happen */
         del_light_source(NHC.LS_OBJECT, obj_to_any(obj));
         cptr.stI32o(obj, $obj_lamplit, 0);
         if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT)
@@ -1818,16 +2162,23 @@ export function end_burn(obj, timer_attached) {
         impossible(__s_end_burn_obj_s_not_timed, xname(obj));
 }
 
+/*
+ * Cleanup a burning object if timer stopped.
+ */
 /** C ref: timeout.c:1828 — @param {CPtr<anything>} arg @param {CLongLong} expire_time */
 function cleanup_burn(arg, expire_time) {
     let obj = cptr.ldPtr(arg);
+
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
         impossible(__s_cleanup_burn_obj_s_not_lit, xname(obj));
         return;
     }
+
     del_light_source(NHC.LS_OBJECT, obj_to_any(obj));
+    /* restore unused time */
     cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt.asIntN(64, expire_time - cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
     cptr.stI32o(obj, $obj_lamplit, 0);
+
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_INVENT)
         update_inventory();
 }
@@ -1840,24 +2191,33 @@ export function do_storms() {
     let dirx;
     let diry;
     let count;
+
+    /* no lightning if not stormy level or too often, even then */
     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) & 1) || rn2_at(__s_timeout_c, 1855, __s_do_storms, 8))
         return;
+
+    /* the number of strikes is 8-log2(nstrike) */
     for (nstrike = rnd_at(__s_timeout_c, 1859, __s_do_storms, 64); nstrike <= 64; nstrike = Math.imul(nstrike, 2)) {
         count = 0;
         do {
             x = rnd_at(__s_timeout_c, 1862, __s_do_storms, 79);
             y = rn2_at(__s_timeout_c, 1863, __s_do_storms, NHM.ROWNO);
         } while (++count < 100 && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.CLOUD);
+
         if (count < 100) {
             dirx = (rn2_at(__s_timeout_c, 1867, __s_do_storms, 3) - 1) | 0;
             diry = (rn2_at(__s_timeout_c, 1868, __s_do_storms, 3) - 1) | 0;
             if (dirx != 0 || diry != 0) {
-                cptr.stPtro(gb, $instance_globals_b_buzzer, null);
+                /* BZ_M_SPELL(BZ_OFS_AD(AD_ELEC)): monster LIGHTNING spell */
+                cptr.stPtro(gb, $instance_globals_b_buzzer, null);  /* unspecified attacker */
                 buzz(((-10 - ((Math.abs(5) % 10))) | 0), 8, i16(x), i16(y), dirx, diry);
             }
         }
     }
+
     if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CLOUD) {
+        /* Inside a cloud during a thunderstorm is deafening. */
+        /* Even if already deaf, we sense the thunder's vibrations. */
         ;
         pline(__s_kaboom_boom_boom);
         incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), ((rn2_at(__s_timeout_c, 1882, __s_do_storms, 20) + 30) | 0));
@@ -1876,6 +2236,9 @@ export function do_storms() {
 
 /** C ref: timeout.c:1973 — typedef ttable (type alias only, no runtime output) */
 
+/*
+ * Table of timeout functions, listed in order of enum timeout_types:
+ */
 /** C ref: timeout.c:1978 — ttable[9] */
 const timeout_funcs = cptr.alloc(9 * $sizeof_ttable);
 cptr.stPtro(timeout_funcs, 0, rot_organic);
@@ -1928,6 +2291,7 @@ function kind_name(kind) {
 function print_queue(win, base) {
     let curr;
     let buf = new Uint8Array(256);
+
     if (!base) {
         putstr()(win, 0, __s_empty__2);
     } else {
@@ -1939,6 +2303,7 @@ function print_queue(win, base) {
     }
 }
 
+/* the #timeout command */
 /** C ref: timeout.c:2041 @returns {CInt} */
 export function wiz_timeout_queue() {
     let win;
@@ -1951,15 +2316,22 @@ export function wiz_timeout_queue() {
     let longestlen;
     let ln;
     let specindx = 0;
-    win = create_nhwindow()(NHM.NHW_MENU);
+
+    win = create_nhwindow()(NHM.NHW_MENU);  /* corner text window */
     if (win == -1)
         return NHM.ECMD_OK;
+
     void cptr.sprintf(cptr.decay(buf), __s_current_time_ld, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     putstr()(win, 0, cptr.decay(buf));
     putstr()(win, 0, __s_empty);
     putstr()(win, 0, __s_active_timeout_queue);
     putstr()(win, 0, __s_empty);
     print_queue(win, cptr.ldPtro(gt, $instance_globals_t_timer_base));
+
+    /* Timed properties:
+     * check every one; the majority can't obtain temporary timeouts in
+     * normal play but those can be forced via the #wizintrinsic command.
+     */
     count = (longestlen = 0);
     for (i = 0; (propname = cptr.ldPtro2(propertynames, i, $sizeof_propname, $propname_prop_name)) !== null; ++i) {
         p = cptr.ldI32o(propertynames, i, $sizeof_propname);
@@ -1986,6 +2358,10 @@ export function wiz_timeout_queue() {
                     putstr()(win, 0, __s_settable_via_wizintrinsic_only);
                     specindx = 0;
                 }
+                /* timeout value can be up to 16777215 (0x00ffffff) but
+                   width of 4 digits should result in values lining up
+                   almost all the time (if/when they don't, it won't
+                   look nice but the information will still be accurate) */
                 void cptr.sprintf(cptr.decay(buf), __s_s_4ld, -longestlen, propname, (intrinsic & 16777215n));
                 putstr()(win, 0, cptr.decay(buf));
             }
@@ -1993,6 +2369,8 @@ export function wiz_timeout_queue() {
     }
     if (cptr.ldI32o(u, $you_uswldtim)) {
         putstr()(win, 0, __s_empty);
+        /* decremented when engulfer makes a move, so can last longer than
+           the number of turns reported if engulfer is slow */
         void cptr.sprintf(cptr.decay(buf), __s_swallow_countdown_is_u, cptr.ldI32o(u, $you_uswldtim));
         putstr()(win, 0, cptr.decay(buf));
     }
@@ -2011,6 +2389,7 @@ export function wiz_timeout_queue() {
     }
     display_nhwindow()(win, 0);
     destroy_nhwindow()(win);
+
     return NHM.ECMD_OK;
 }
 
@@ -2020,26 +2399,34 @@ export function timer_sanity_check() {
     let t_id;
     let x = cptr.box(0);
     let y = cptr.box(0);
+
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         t_id = cptr.ldU64o(curr, $timer_element_tid);
         switch (cptr.ldI16o(curr, $timer_element_kind)) {
             case NHC.TIMER_OBJECT:
             {
+                /* TODO? verify that the timer type is attached to applicable
+                   object (egg for hatch, glob for shrink, and so forth) */
                 let obj = cptr.ldPtro(curr, $timer_element_arg);
                 let top;
                 let obj_adr = fmt_ptr(obj);
                 let owhere = cptr.ld1so(obj, $obj_where);
+
                 if (cptr.ldI16o(obj, $obj_timed) == 0) {
                     impossible(__s_timer_sanity_untimed_obj_s_timer_lu, obj_adr, t_id);
                 }
                 x.v = (y.v = 0);
+                /* if obj is in a container, possibly a nested one, figure out
+                   where the outermost container is */
                 for (top = obj; top; top = cptr.ldPtro(top, $obj_v))
                     if ((owhere = cptr.ld1so(top, $obj_where)) != NHM.OBJ_CONTAINED)
                         break;
                 (__builtin_expect(BigInt((!(!cptr.eq(top, (null))))), 0n) ? __assert_rtn(__s_timer_sanity_check, __s_timeout_c, 2156, __s_top_null) : void 0);
                 if (owhere == NHM.OBJ_MIGRATING || (owhere == NHM.OBJ_MINVENT && !mon_is_local(cptr.ldPtro(top, $obj_v)))) {
-                    ;
+                    /* migrating directly or carried by migrating monster */
+                    ;  /* not able to validate location so skip checks */
                 } else if (!get_obj_location(obj, x, y, 3)) {
+                    /* free? or on a shop's used-up bill? */
                     impossible(__s_timer_sanity_can_t_locate_obj_s_where_d, obj_adr, cptr.ld1so(obj, $obj_where), t_id);
                 } else if (!isok(x.v, y.v)) {
                     impossible(__s_timer_sanity_obj_s_where_d_located_at_d, obj_adr, cptr.ld1so(obj, $obj_where), x.v, y.v, t_id);
@@ -2052,10 +2439,17 @@ export function timer_sanity_check() {
             case NHC.TIMER_LEVEL:
             {
                 let lwhere = cptr.ldI64o(curr, $timer_element_arg);
+
                 x.v = Number(BigInt.asIntN(16, ((lwhere >> 16n) & 65535n)));
                 y.v = Number(BigInt.asIntN(16, (lwhere & 65535n)));
                 if (isok(x.v, y.v)) {
+                    /* replicate isok() in order to convince static analysis
+                       that the decoding via '& 0xFFFF' hasn't produced a value
+                       too big for levl[][] and that the cast to a narrower type
+                       hasn't intruded on the sign bit to yield a negative value;
+                       the analyzer isn't aware that isok() filters such things */
                     (__builtin_expect(BigInt((!(x.v > 0 && x.v < NHM.COLNO && y.v >= 0 && y.v < NHM.ROWNO))), 0n) ? __assert_rtn(__s_timer_sanity_check, __s_timeout_c, 2188, __s_x_0_x_colno_y_0_y_rowno) : void 0);
+
                     if (cptr.ldI16o(curr, $timer_element_func_index) == NHC.MELT_ICE_AWAY && !is_ice(x.v, y.v) && !(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN && (((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_ICE))
                         impossible(__s_timer_sanity_melt_timer_lu_on_non_ice_d, t_id, cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ), x.v, y.v);
                 } else {
@@ -2073,12 +2467,23 @@ export function timer_sanity_check() {
     }
 }
 
+/*
+ * Pick off timeout elements from the global queue and call their functions.
+ * Do this until their time is less than or equal to the move count.
+ */
 /** C ref: timeout.c:2222 */
 export function run_timers() {
     let curr;
+
+    /*
+     * Always use the first element.  Elements may be added or deleted at
+     * any time.  The list is ordered; we are done when the first element
+     * is in the future.
+     */
     while (cptr.ldPtro(gt, $instance_globals_t_timer_base) && cptr.ldI64o(cptr.ldPtro(gt, $instance_globals_t_timer_base), $fe_timeout) <= cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         curr = cptr.ldPtro(gt, $instance_globals_t_timer_base);
         cptr.stPtro(gt, $instance_globals_t_timer_base, cptr.ldPtr(curr));
+
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT)
             (cptr.stI16o((cptr.ldPtro(curr, $timer_element_arg)), $obj_timed, cptr.ldI16o((cptr.ldPtro(curr, $timer_element_arg)), $obj_timed) + -1)) - (-1);
         (cptr.ldPtro(timeout_funcs, cptr.ldI16o(curr, $timer_element_func_index), $sizeof_ttable))(cptr.add(curr, $timer_element_arg), cptr.ldI64o(curr, $timer_element_timeout));
@@ -2087,12 +2492,18 @@ export function run_timers() {
     }
 }
 
+/*
+ * Start a timer.  Return TRUE if successful.
+ */
 /** C ref: timeout.c:2247 — @param {CLongLong} when @param {CInt} kind @param {CInt} func_index @param {CPtr<anything>} arg @returns {CInt} */
 export function start_timer(when, kind, func_index, arg) {
     let gnu;
     let dup;
+
     if (kind <= NHC.TIMER_NONE || kind >= NHC.NUM_TIMER_KINDS || func_index < 0 || func_index >= NHC.NUM_TIME_FUNCS)
         panic(__s_start_timer_s_d, kind_name(kind), func_index);
+
+    /* fail if <arg> already has a <func_index> timer running */
     for (dup = cptr.ldPtro(gt, $instance_globals_t_timer_base); dup; dup = cptr.ldPtr(dup))
         if (cptr.ldI16o(dup, $timer_element_kind) == kind && cptr.ldI16o(dup, $timer_element_func_index) == func_index && cptr.eq(cptr.ldPtro(dup, $timer_element_arg), cptr.ldPtr(arg)))
             break;
@@ -2102,6 +2513,7 @@ export function start_timer(when, kind, func_index, arg) {
         impossible(__s_attempted_to_start_duplicate_s_aborted, cptr.decay(idbuf));
         return 0;
     }
+
     gnu = alloc(48);
     void __builtin___memset_chk(gnu, 0, 48n, __builtin_object_size(gnu, 0));
     cptr.stPtr(gnu, null);
@@ -2112,17 +2524,25 @@ export function start_timer(when, kind, func_index, arg) {
     cptr.stI16o(gnu, $timer_element_func_index, func_index);
     cptr.memcpy(cptr.add(gnu, $timer_element_arg), arg, 8);
     insert_timer(gnu);
+
     if (kind == NHC.TIMER_OBJECT)
         (cptr.stI16o((cptr.ldPtr(arg)), $obj_timed, cptr.ldI16o((cptr.ldPtr(arg)), $obj_timed) + 1)) - (1);
+
     return 1;
 }
 
+/*
+ * Remove the timer from the current list and free it up.  Return the time
+ * remaining until it would have gone off, 0 if not found.
+ */
 /** C ref: timeout.c:2299 — @param {CInt} func_index @param {CPtr<anything>} arg @returns {CLongLong} */
 export function stop_timer(func_index, arg) {
     let cleanup_func;
     let doomed;
     let timeout;
+
     doomed = remove_timer(cptr.add(gt, $instance_globals_t_timer_base), func_index, arg);
+
     if (doomed) {
         timeout = cptr.ldI64o(doomed, $timer_element_timeout);
         if (cptr.ldI16o(doomed, $timer_element_kind) == NHC.TIMER_OBJECT)
@@ -2136,9 +2556,13 @@ export function stop_timer(func_index, arg) {
     return 0n;
 }
 
+/*
+ * Find the timeout of specified timer; return 0 if none.
+ */
 /** C ref: timeout.c:2324 — @param {CInt} type @param {CPtr<anything>} arg @returns {CLongLong} */
 export function peek_timer(type, arg) {
     let curr;
+
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.ldI16o(curr, $timer_element_func_index) == type && cptr.eq(cptr.ldPtro(curr, $timer_element_arg), cptr.ldPtr(arg)))
             return cptr.ldI64o(curr, $timer_element_timeout);
@@ -2146,10 +2570,14 @@ export function peek_timer(type, arg) {
     return 0n;
 }
 
+/*
+ * Move all object timers from src to dest, leaving src untimed.
+ */
 /** C ref: timeout.c:2339 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_move_timers(src, dest) {
     let count;
     let curr;
+
     for (count = 0, curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr))
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT && cptr.eq(cptr.ldPtro(curr, $timer_element_arg), src)) {
             cptr.stPtro(curr, $timer_element_arg, dest);
@@ -2161,24 +2589,33 @@ export function obj_move_timers(src, dest) {
     cptr.stI16o(src, $obj_timed, 0);
 }
 
+/*
+ * Find all object timers and duplicate them for the new object "dest".
+ */
 /** C ref: timeout.c:2359 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_split_timers(src, dest) {
     let curr;
     let next_timer = null;
+
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = next_timer) {
-        next_timer = cptr.ldPtr(curr);
+        next_timer = cptr.ldPtr(curr);  /* things may be inserted */
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT && cptr.eq(cptr.ldPtro(curr, $timer_element_arg), src)) {
             void start_timer(BigInt.asIntN(64, cptr.ldI64o(curr, $timer_element_timeout) - cptr.ldI64o(svm, $instance_globals_saved_m_moves)), NHC.TIMER_OBJECT, cptr.ldI16o(curr, $timer_element_func_index), obj_to_any(dest));
         }
     }
 }
 
+/*
+ * Stop all timers attached to this object.  We can get away with this because
+ * all object pointers are unique.
+ */
 /** C ref: timeout.c:2377 — @param {CPtr<struct obj>} obj */
 export function obj_stop_timers(obj) {
     let cleanup_func;
     let curr;
     let prev;
     let next_timer = null;
+
     for (prev = null, curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = next_timer) {
         next_timer = cptr.ldPtr(curr);
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT && cptr.eq(cptr.ldPtro(curr, $timer_element_arg), obj)) {
@@ -2197,12 +2634,20 @@ export function obj_stop_timers(obj) {
     cptr.stI16o(obj, $obj_timed, 0);
 }
 
+/*
+ * Check whether object has a timer of type timer_type.
+ */
 /** C ref: timeout.c:2404 — @param {CPtr<struct obj>} object @param {CInt} timer_type @returns {CInt} */
 export function obj_has_timer(object, timer_type) {
     let timeout = peek_timer(timer_type, obj_to_any(object));
+
     return schar((timeout != 0n));
 }
 
+/*
+ * Stop all timers of index func_index at this spot.
+ *
+ */
 /** C ref: timeout.c:2416 — @param {CInt} x @param {CInt} y @param {CInt} func_index */
 export function spot_stop_timers(x, y, func_index) {
     let cleanup_func;
@@ -2210,6 +2655,7 @@ export function spot_stop_timers(x, y, func_index) {
     let prev;
     let next_timer = null;
     let where = ((BigInt(x) << 16n) | (BigInt(y)));
+
     for (prev = null, curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = next_timer) {
         next_timer = cptr.ldPtr(curr);
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_LEVEL && cptr.ldI16o(curr, $timer_element_func_index) == func_index && cptr.ldI64o(curr, $timer_element_arg) == where) {
@@ -2227,10 +2673,15 @@ export function spot_stop_timers(x, y, func_index) {
     }
 }
 
+/*
+ * When is the spot timer of type func_index going to expire?
+ * Returns 0L if no such timer.
+ */
 /** C ref: timeout.c:2445 — @param {CInt} x @param {CInt} y @param {CInt} func_index @returns {CLongLong} */
 export function spot_time_expires(x, y, func_index) {
     let curr;
     let where = ((BigInt(x) << 16n) | (BigInt(y)));
+
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_LEVEL && cptr.ldI16o(curr, $timer_element_func_index) == func_index && cptr.ldI64o(curr, $timer_element_arg) == where)
             return cptr.ldI64o(curr, $timer_element_timeout);
@@ -2244,13 +2695,16 @@ export function spot_time_left(x, y, func_index) {
     return (expires > 0n) ? BigInt.asIntN(64, expires - cptr.ldI64o(svm, $instance_globals_saved_m_moves)) : 0n;
 }
 
+/* Insert timer into the global queue */
 /** C ref: timeout.c:2467 — @param {CPtr<timer_element>} gnu */
 function insert_timer(gnu) {
     let curr;
     let prev;
+
     for (prev = null, curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; prev = curr, curr = cptr.ldPtr(curr))
         if (cptr.ldI64o(curr, $timer_element_timeout) >= cptr.ldI64o(gnu, $timer_element_timeout))
             break;
+
     cptr.stPtr(gnu, curr);
     if (prev)
         cptr.stPtr(prev, gnu);
@@ -2262,31 +2716,37 @@ function insert_timer(gnu) {
 function remove_timer(base, func_index, arg) {
     let prev;
     let curr;
+
     for (prev = null, curr = cptr.ldPtr(base); curr; prev = curr, curr = cptr.ldPtr(curr))
         if (cptr.ldI16o(curr, $timer_element_func_index) == func_index && cptr.eq(cptr.ldPtro(curr, $timer_element_arg), cptr.ldPtr(arg)))
             break;
+
     if (curr) {
         if (prev)
             cptr.stPtr(prev, cptr.ldPtr(curr));
         else
             cptr.stPtr(base, cptr.ldPtr(curr));
     }
+
     return curr;
 }
 
 /** C ref: timeout.c:2505 — @param {CPtr<NHFILE>} nhfp @param {CPtr<timer_element>} timer */
 function write_timer(nhfp, timer) {
     let arg_save = cptr.alloc(8);
+
     cptr.memcpy(arg_save, cptr.add(cg, $const_globals_zeroany), 8);
     switch (cptr.ldI16o(timer, $timer_element_kind)) {
         case NHC.TIMER_GLOBAL:
         case NHC.TIMER_LEVEL:
+        /* assume no pointers in arg */
         sfo_fe(nhfp, timer, __s_timer);
         break;
         case NHC.TIMER_OBJECT:
         if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
             sfo_fe(nhfp, timer, __s_timer);
         } else {
+            /* replace object pointer with id */
             cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
             cptr.memcpy(cptr.add(timer, $timer_element_arg), cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32o(timer, $timer_element_arg, cptr.ldI32o((cptr.ldPtr(arg_save)), $obj_o_id));
@@ -2300,6 +2760,7 @@ function write_timer(nhfp, timer) {
         if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
             sfo_fe(nhfp, timer, __s_timer);
         } else {
+            /* replace monster pointer with id */
             cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
             cptr.memcpy(cptr.add(timer, $timer_element_arg), cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32o(timer, $timer_element_arg, cptr.ldI32o((cptr.ldPtr(arg_save)), $monst_m_id));
@@ -2315,6 +2776,10 @@ function write_timer(nhfp, timer) {
     }
 }
 
+/*
+ * Return TRUE if the object will stay on the level when the level is
+ * saved.
+ */
 /** C ref: timeout.c:2560 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_local(obj) {
     switch (cptr.ld1so(obj, $obj_where)) {
@@ -2330,21 +2795,32 @@ export function obj_is_local(obj) {
         return mon_is_local(cptr.ldPtro(obj, $obj_v));
     }
     panic(__s_obj_is_local);
+    /*NOTREACHED*/
     return 0;
 }
 
+/*
+ * Return TRUE if the given monster will stay on the level when the
+ * level is saved.
+ */
 /** C ref: timeout.c:2584 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function mon_is_local(mon) {
     let curr;
+
     for (curr = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); curr; curr = cptr.ldPtr(curr))
         if (cptr.eq(curr, mon))
             return 0;
+    /* `gm.mydogs' is used during level changes, never saved and restored */
     for (curr = cptr.ldPtro(gm, $instance_globals_m_mydogs); curr; curr = cptr.ldPtr(curr))
         if (cptr.eq(curr, mon))
             return 0;
     return 1;
 }
 
+/*
+ * Return TRUE if the timer is attached to something that will stay on the
+ * level when the level is saved.
+ */
 /** C ref: timeout.c:2603 — @param {CPtr<timer_element>} timer @returns {CInt} */
 function timer_is_local(timer) {
     switch (cptr.ldI16o(timer, $timer_element_kind)) {
@@ -2358,21 +2834,31 @@ function timer_is_local(timer) {
         return mon_is_local(cptr.ldPtro(timer, $timer_element_arg));
     }
     panic(__s_timer_is_local);
+    /*NOTREACHED*/
     return 0;
 }
 
+/*
+ * Part of the save routine.  Count up the number of timers that would
+ * be written.  If write_it is true, actually write the timer.
+ */
 /** C ref: timeout.c:2627 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
 function maybe_write_timer(nhfp, range, write_it) {
     let count = 0;
     let curr;
+
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         if (range == NHM.RANGE_GLOBAL) {
+            /* global timers */
+
             if (!timer_is_local(curr)) {
                 count++;
                 if (write_it)
                     write_timer(nhfp, curr);
             }
         } else {
+            /* local timers */
+
             if (timer_is_local(curr)) {
                 count++;
                 if (write_it)
@@ -2380,15 +2866,30 @@ function maybe_write_timer(nhfp, range, write_it) {
             }
         }
     }
+
     return count;
 }
 
+/*
+ * Save part of the timer list.  The parameter 'range' specifies either
+ * global or level timers to save.  The timer ID is saved with the global
+ * timers.
+ *
+ * Global range:
+ *      + timeouts that follow the hero (global)
+ *      + timeouts that follow obj & monst that are migrating
+ *
+ * Level range:
+ *      + timeouts that are level-specific (e.g. storms)
+ *      + timeouts that stay with the level (obj & monst)
+ */
 /** C ref: timeout.c:2668 — @param {CPtr<NHFILE>} nhfp @param {CInt} range */
 export function save_timers(nhfp, range) {
     let curr;
     let prev;
     let next_timer = null;
     let count = cptr.box(0);
+
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         if (range == NHM.RANGE_GLOBAL) {
             sfo_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __s_timer_timer_id);
@@ -2398,9 +2899,11 @@ export function save_timers(nhfp, range) {
         sfo_int(nhfp, count, __s_timer_timer_count);
         void maybe_write_timer(nhfp, range, 1);
     }
+
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         for (prev = null, curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = next_timer) {
-            next_timer = cptr.ldPtr(curr);
+            next_timer = cptr.ldPtr(curr);  /* in case curr is removed */
+
             if (!(!!(range == NHM.RANGE_LEVEL) ^ !!timer_is_local(curr))) {
                 if (prev)
                     cptr.stPtr(prev, cptr.ldPtr(curr));
@@ -2408,6 +2911,7 @@ export function save_timers(nhfp, range) {
                     cptr.stPtro(gt, $instance_globals_t_timer_base, cptr.ldPtr(curr));
                 void __builtin___memset_chk(curr, 0, 48n, __builtin_object_size(curr, 0));
                 cptr.free(curr);
+                /* prev stays the same */
             } else {
                 prev = curr;
             }
@@ -2415,15 +2919,22 @@ export function save_timers(nhfp, range) {
     }
 }
 
+/*
+ * Pull in the structures from disk, but don't recalculate the object and
+ * monster pointers.
+ */
 /** C ref: timeout.c:2707 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CLongLong} adjust */
 export function restore_timers(nhfp, range, adjust) {
     let count = cptr.box(0);
     let curr;
-    let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));
+    let ghostly = schar((cptr.ldI32o(nhfp, $NHFILE_ftype) == NHM.NHF_BONESFILE));  /* from a ghost level */
+
     if (range == NHM.RANGE_GLOBAL) {
         sfi_ulong(nhfp, cptr.add(svt, $instance_globals_saved_t_timer_id), __s_timer_timer_id);
         ;
     }
+
+    /* restore elements */
     sfi_int(nhfp, count, __s_timer_timer_count);
     ;
     while (count.v-- > 0) {
@@ -2435,9 +2946,11 @@ export function restore_timers(nhfp, range, adjust) {
     }
 }
 
+/* to support '#stats' wizard-mode command */
 /** C ref: timeout.c:2735 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
 export function timer_stats(hdrfmt, hdrbuf, count, size) {
     let te;
+
     void cptr.sprintf(hdrbuf, hdrfmt, 48n);
     cptr.stI64(count, cptr.stI64(size, 0n));
     for (te = cptr.ldPtro(gt, $instance_globals_t_timer_base); te; te = cptr.ldPtr(te)) {
@@ -2446,10 +2959,12 @@ export function timer_stats(hdrfmt, hdrbuf, count, size) {
     }
 }
 
+/* reset all timers that are marked for resetting */
 /** C ref: timeout.c:2751 — @param {CInt} ghostly */
 export function relink_timers(ghostly) {
     let curr;
     let nid = cptr.box(0);
+
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.ldI32o(curr, $timer_element_needs_fixup)) {
             if (cptr.ldI16o(curr, $timer_element_kind) == NHC.TIMER_OBJECT) {

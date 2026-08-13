@@ -316,12 +316,15 @@ const __s_ld_ld = cptr.lit("%ld%%-%ld%%");
 const __s_spell_s_already_known = cptr.lit("Spell %s already known.");
 const __s_too_many_spells_memorized__2 = cptr.lit("Too many spells memorized");
 
+/* since the spellbook itself doesn't blow up, don't say just "explodes" */
 /** C ref: spell.c:111 — char[26] */
 const explodes = cptr.bytes("radiates explosive energy");
 
+/* convert a letter into a number in the range 0..51, or -1 if not a letter */
 /** C ref: spell.c:115 — @param {CInt} ilet @returns {CInt} */
 function spell_let_to_idx(ilet) {
     let indx;
+
     indx = (ilet - 97) | 0;
     if (indx >= 0 && indx < 26)
         return indx;
@@ -331,15 +334,17 @@ function spell_let_to_idx(ilet) {
     return -1;
 }
 
+/* TRUE: book should be destroyed by caller */
 /** C ref: spell.c:130 — @param {CPtr<struct obj>} bp @returns {CInt} */
 function* cursed_book(bp) {
     let was_in_use;
     let lev = cptr.ld1so2(objects, cptr.ldI16o(bp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2);
     let dmg = 0;
+
     switch (rn2_at(__s_spell_c, 136, __s_cursed_book, lev)) {
         case 0:
         (yield* You_feel(__s_a_wrenching_sensation));
-        (yield* tele());
+        (yield* tele());  /* teleport him */
         break;
         case 1:
         (yield* You_feel(__s_threatened));
@@ -361,6 +366,7 @@ function* cursed_book(bp) {
             (yield* erode_obj(uarmg.v, __s_gloves, NHM.ERODE_CORRODE, 5));
             break;
         }
+        /* temp disable in_use; death should not destroy the book */
         was_in_use = schar((cptr.ldI32o(bp, $obj_in_use) & 1));
         cptr.stI32o(bp, $obj_in_use, 0);
         (yield* poison_strdmg(Poison_resistance() ? ((rn2_at(__s_spell_c, 164, __s_cursed_book, 2) + 1) | 0) : ((rn2_at(__s_spell_c, 164, __s_cursed_book, 4) + 3) | 0), rnd_at(__s_spell_c, 165, __s_cursed_book, Poison_resistance() ? 6 : 10), __s_contact_poisoned_spellbook, NHM.KILLED_BY_AN));
@@ -383,11 +389,13 @@ function* cursed_book(bp) {
     return 0;
 }
 
+/* study while confused: returns TRUE if the book is destroyed */
 /** C ref: spell.c:189 — @param {CPtr<struct obj>} spellbook @returns {CInt} */
 function* confused_book(spellbook) {
     let gone = 0;
+
     if (!rn2_at(__s_spell_c, 193, __s_confused_book, 3) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
-        cptr.stI32o(spellbook, $obj_in_use, 1);
+        cptr.stI32o(spellbook, $obj_in_use, 1);  /* in case called from learn() */
         (yield* pline(__s_being_confused_you_have_difficulties_in));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
         (yield* You(__s_accidentally_tear_the_spellbook_to));
@@ -400,6 +408,7 @@ function* confused_book(spellbook) {
     return gone;
 }
 
+/* pacify or tame an undead monster */
 /** C ref: spell.c:211 — @param {CPtr<struct monst>} mtmp */
 function* deadbook_pacify_undead(mtmp) {
     if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
@@ -415,6 +424,8 @@ function* deadbook_pacify_undead(mtmp) {
     }
 }
 
+/* special effects for the Book of the Dead; reading it while blind is
+   allowed so that needs to be taken into account too */
 /** C ref: spell.c:231 — @param {CPtr<struct obj>} book2 */
 function* deadbook(book2) {
     let mtmp, mm, otmp, arti1_primed, arti2_primed, arti_cursed, soon;
@@ -423,9 +434,11 @@ function* deadbook(book2) {
         switch (__pc) {
         case 0: {
         mm = cptr.alloc(4);
+
         (yield* You(__s_turn_the_pages_of_the_book_of_the_dead));
         (yield* discover_object(NHC.SPE_BOOK_OF_THE_DEAD, 1, 1, 1));
-        (yield* observe_object(book2));
+        (yield* observe_object(book2));  /* in case blind now and hasn't been seen yet */
+        /* KMH -- Need ->known to avoid "_a_ Book of the Dead" */
         cptr.stI32o(book2, $obj_known, 1);
         if (invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) { __pc = 3; continue; }
         __pc = 2; continue;
@@ -434,10 +447,12 @@ function* deadbook(book2) {
         arti1_primed = 0;
         arti2_primed = 0;
         arti_cursed = 0;
+
         if ((cptr.ldI32o(book2, $obj_cursed) & 1)) {
             (yield* pline_The(__s_pct_s_bang, Blind() ? __s_book_seems_to_be_ignoring_you : __s_runes_appear_scrambled_you_can_t_read));
             return;
         }
+
         if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) || !(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
             (yield* pline(__s_a_chill_runs_down_your_s, (yield* body_part(NHC.SPINE))));
             if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1)) {
@@ -448,6 +463,7 @@ function* deadbook(book2) {
                 (yield* pline(__s_vlad_s_doppelganger_is_amused));
             return;
         }
+
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION && cptr.ld1so(otmp, $obj_spe) == 7 && (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0) {
                 if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -467,6 +483,8 @@ function* deadbook(book2) {
         }
         case 5: {
         (yield* pline_The(__s_invocation_fails));
+        /* this used to say "your artifacts" but the invocation tools
+           are not artifacts */
         (yield* pline(__s_at_least_one_of_your_relics_is_cursed));
         __pc = 4;
         continue;
@@ -476,11 +494,15 @@ function* deadbook(book2) {
         __pc = 9; continue;
         }
         case 8: {
-        soon = d_at(__s_spell_c, 287, __s_deadbook, 2, 6) >>> 0;
+        soon = d_at(__s_spell_c, 287, __s_deadbook, 2, 6) >>> 0;  /* time til next intervene() */
+
+        /* successful invocation */
         (yield* mkinvokearea());
         cptr.stI32o(u, $you_uevent + $u_event_invoked, 1);
         (yield* record_achievement(NHC.ACH_INVK));
-        cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
+        /* in case you haven't killed the Wizard yet, behave as if
+           you just did */
+        cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);  /* wizdeadorgone() */
         if (!cptr.ldI32o(u, $you_udg_cnt) || cptr.ldI32o(u, $you_udg_cnt) > soon)
             cptr.stI32o(u, $you_udg_cnt, soon);
         __pc = 7;
@@ -506,12 +528,16 @@ function* deadbook(book2) {
         continue;
         }
         case 1 /* raise_dead: */: {
+
         (yield* You(__s_raised_the_dead));
+        /* first maybe place a dangerous adversary */
         if (!rn2_at(__s_spell_c, 311, __s_deadbook, 3) && ((mtmp = (yield* makemon(cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT))) !== null || (mtmp = (yield* makemon(cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT))) !== null)) {
             cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             set_malign(mtmp);
         }
+        /* next handle the affect on things you're carrying */
         void (yield* unturn_dead(cptr.add(gy, $instance_globals_y_youmonst)));
+        /* last place some monsters around you */
         cptr.stI16(mm, cptr.ldI16(u));
         cptr.stI16o(mm, $nhcoord_y, cptr.ldI16o(u, $you_uy));
         (yield* mkundead(mm, 1, NHM.NO_MINVENT));
@@ -544,6 +570,7 @@ function* deadbook(book2) {
     }
 }
 
+/* 'book' has just become cursed; if we're reading it, interrupt */
 /** C ref: spell.c:343 — @param {CPtr<struct obj>} book */
 export function* book_cursed(book) {
     if ((cptr.ldI32o(book, $obj_cursed) & 1) | 0 && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n && cptr.ldPtro(go, $instance_globals_o_occupation) === learn && cptr.eq(cptr.ldPtro(svc, $context_info_spbook), book)) {
@@ -561,51 +588,63 @@ function* learn() {
     let costly = 1;
     let faded_to_blank = 0;
     let book = cptr.ldPtro(svc, $context_info_spbook);
+
+    /* JDS: lenses give 50% faster reading; 33% smaller read time */
     if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && rn2_at(__s_spell_c, 366, __s_learn, 2))
         cptr.postinc1(cptr.add(svc, $context_info_spbook + $book_info_delay));
     if (HConfusion()) {
         void (yield* confused_book(book));
-        cptr.stPtro(svc, $context_info_spbook, null);
+        cptr.stPtro(svc, $context_info_spbook, null);  /* no longer studying */
         cptr.stI32o(svc, $context_info_spbook + $book_info_o_id, 0);
-        nomul(cptr.ld1so(svc, $context_info_spbook + $book_info_delay));
+        nomul(cptr.ld1so(svc, $context_info_spbook + $book_info_delay));  /* remaining delay is uninterrupted */
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_reading_a_book);
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
         cptr.st1o(svc, $context_info_spbook + $book_info_delay, 0);
         return 0;
     }
     if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay)) {
+        /* not if (svc.context.spbook.delay++), so at end delay == 0 */
         cptr.postinc1(cptr.add(svc, $context_info_spbook + $book_info_delay));
-        return 1;
+        return 1;  /* still busy */
     }
-    (yield* exercise(NHC.A_WIS, 1));
+    (yield* exercise(NHC.A_WIS, 1));  /* you're studying. */
     booktype = cptr.ldI16o(book, $obj_otyp);
     if (booktype == NHC.SPE_BOOK_OF_THE_DEAD) {
         (yield* deadbook(book));
         return 0;
     }
+
     void cptr.sprintf(cptr.decay(splname), (cptr.ldI32o2(objects, booktype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? __s_quot_pct_s_quot : __s_the_s_spell, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, booktype, $sizeof_objclass))), $sizeof_objdescr)));
     for (i = 0; i < NHC.MAXSPELL; i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype || cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
             break;
+
     if (i == NHC.MAXSPELL) {
         (yield* impossible(__s_too_many_spells_memorized));
     } else if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype) {
+        /* normal book can be read and re-read a total of 4 times */
         if (cptr.ldI32o(book, $obj_usecount) > NHM.MAX_SPELL_STUDY) {
             (yield* pline(__s_this_spellbook_is_too_faint_to_be_read));
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
+            /* reset spestudied as if polymorph had taken place */
             cptr.stI32o(book, $obj_usecount, rn2_at(__s_spell_c, 406, __s_learn, cptr.ldI32o(book, $obj_usecount)));
         } else {
             (yield* Your(__s_knowledge_of_s_is_s, cptr.decay(splname), cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) ? __s_keener : __s_restored));
             (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20001));
             (cptr.stI32o(book, $obj_usecount, cptr.ldI32o(book, $obj_usecount) + 1)) - (1);
-            (yield* exercise(NHC.A_WIS, 1));
+            (yield* exercise(NHC.A_WIS, 1));  /* extra study */
         }
     } else {
+        /* for a normal book, spestudied will be zero, but for
+           a polymorphed one, spestudied will be non-zero and
+           one less reading is available than when re-learning */
         if (cptr.ldI32o(book, $obj_usecount) >= NHM.MAX_SPELL_STUDY) {
+            /* pre-used due to being the product of polymorph */
             (yield* pline(__s_this_spellbook_is_too_faint_to_read));
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
+            /* reset spestudied as if polymorph had taken place */
             cptr.stI32o(book, $obj_usecount, rn2_at(__s_spell_c, 424, __s_learn, cptr.ldI32o(book, $obj_usecount)));
         } else {
             cptr.stI16o(svs, i, booktype, $sizeof_spell);
@@ -613,16 +652,24 @@ function* learn() {
             (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20001));
             (cptr.stI32o(book, $obj_usecount, cptr.ldI32o(book, $obj_usecount) + 1)) - (1);
             if (!i)
+                /* first is always 'a', so no need to mention the letter */
                 (yield* You(__s_learn_s, cptr.decay(splname)));
             else
                 (yield* You(__s_add_s_to_your_repertoire_as_c, cptr.decay(splname), (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))))));
         }
     }
     if (i < NHC.MAXSPELL) {
+        /* might be learning a new spellbook type or spellbook of blank paper;
+           if so, persistent inventory will get updated */
         (yield* discover_object((booktype), 1, 1, 1));
+        /* makeknown() calls update_inventory() when discovering something
+           new but is a no-op for something that's already known so wouldn't
+           update persistent inventory to reflect faded book if spellbook of
+           blank paper happens to already be discovered */
         if (faded_to_blank)
             (yield* update_inventory());
     }
+
     if ((cptr.ldI32o(book, $obj_cursed) & 1)) {
         if ((yield* cursed_book(book))) {
             (yield* useup(book));
@@ -644,11 +691,16 @@ export function* study_book(spellbook) {
     let i;
     let confused = schar((HConfusion() != 0n));
     let too_hard = 0;
+
+    /* attempting to read dull book may make hero fall asleep */
     if (!confused && !Sleep_resistance() && (yield* objdescr_is(spellbook, __s_dull))) {
         let eyes;
         let dullbook = (rnd_at(__s_spell_c, 478, __s_study_book, 25) - (acurr(NHC.A_WIS))) | 0;
+
+        /* adjust chance if hero stayed awake, got interrupted, retries */
         if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && cptr.eq(spellbook, cptr.ldPtro(svc, $context_info_spbook)))
             dullbook = (dullbook - rnd_at(__s_spell_c, 482, __s_study_book, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0;
+
         if (dullbook > 0) {
             eyes = (yield* body_part(NHC.EYE));
             if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 1)
@@ -659,30 +711,39 @@ export function* study_book(spellbook) {
             return 1;
         }
     }
+
     if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && !confused && cptr.eq(spellbook, cptr.ldPtro(svc, $context_info_spbook)) && booktype != NHC.SPE_BLANK_PAPER) {
         (yield* You(__s_continue_your_efforts_to_s, (booktype == NHC.SPE_NOVEL) ? __s_read_the_novel : __s_memorize_the_spell));
     } else {
+        /* KMH -- Simplified this code */
         if (booktype == NHC.SPE_BLANK_PAPER) {
             (yield* pline(__s_this_spellbook_is_all_blank));
             (yield* discover_object((booktype), 1, 1, 1));
             return 1;
         }
+
+        /* 3.6 tribute */
         if (booktype == NHC.SPE_NOVEL) {
+            /* Obtain current Terry Pratchett book title */
             let tribtitle = noveltitle(cptr.add(spellbook, $obj_corpsenm));
+
             if ((yield* read_tribute(__s_books, tribtitle, 0, null, 0, cptr.ldI32o(spellbook, $obj_o_id)))) {
                 if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
                     (yield* livelog_printf(32n, __s_became_literate_by_reading_s, tribtitle));
+
                 (yield* check_unpaid(spellbook));
                 (yield* discover_object((booktype), 1, 1, 1));
                 if (!(cptr.ldI32o(u, $you_uevent + $u_event_read_tribute) & 1)) {
                     (yield* record_achievement(NHC.ACH_NOVL));
+                    /* give bonus of 20 xp and 4*20+0 pts */
                     (yield* more_experienced(20, 0));
                     (yield* newexplevel());
-                    cptr.stI32o(u, $you_uevent + $u_event_read_tribute, 1);
+                    cptr.stI32o(u, $you_uevent + $u_event_read_tribute, 1);  /* only once */
                 }
             }
             return 1;
         }
+
         switch (cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)) {
             case 1:
             case 2:
@@ -703,37 +764,50 @@ export function* study_book(spellbook) {
             (yield* impossible(__s_unknown_spellbook_level_d_book_d, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2), booktype));
             return 0;
         }
+
+        /* check to see if we already know it and want to refresh our memory */
         for (i = 0; i < NHC.MAXSPELL; i++)
             if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype || cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
                 break;
         if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype && cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) > 2000) {
             (yield* You(__s_know_s_quite_well_already, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, booktype, $sizeof_objclass))), $sizeof_objdescr))));
+            /* hero has just been told what spell this book is for; it may
+               have been undiscovered if spell was learned via divine gift */
             (yield* discover_object((booktype), 1, 1, 1));
             if ((yield* yn_function(__s_refresh_your_memory_anyway, cptr.decay(ynchars), 110, 1)) == 110)
                 return 0;
         }
+
+        /* Books are often wiser than their readers (Rus.) */
         cptr.stI32o(spellbook, $obj_in_use, 1);
         if (!(cptr.ldI32o(spellbook, $obj_blessed) & 1) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
             if ((cptr.ldI32o(spellbook, $obj_cursed) & 1)) {
                 too_hard = 1;
             } else {
+                /* uncursed - chance to fail */
                 let read_ability = ((((((((acurr(NHC.A_INT)) + 4) | 0) + ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0) - Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0) + ((ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? 2 : 0)) | 0;
+
+                /* only wizards know if a spell is too difficult */
                 if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && read_ability < 20 && !confused) {
                     let qbuf = new Uint8Array(128);
+
                     void cptr.sprintf(cptr.decay(qbuf), __s_this_spellbook_is_sdifficult_to, (read_ability < 12 ? __s_very : __s_empty));
                     if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 121) {
                         cptr.stI32o(spellbook, $obj_in_use, 0);
                         return 1;
                     }
                 }
+                /* its up to random luck now */
                 if (rnd_at(__s_spell_c, 599, __s_study_book, 20) > read_ability) {
                     too_hard = 1;
                 }
             }
         }
+
         if (too_hard) {
             let gone = (yield* cursed_book(spellbook));
-            nomul(cptr.ld1so(svc, $context_info_spbook + $book_info_delay));
+
+            nomul(cptr.ld1so(svc, $context_info_spbook + $book_info_delay));  /* study time */
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_reading_a_book);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
             cptr.st1o(svc, $context_info_spbook + $book_info_delay, 0);
@@ -756,8 +830,10 @@ export function* study_book(spellbook) {
             return 1;
         }
         cptr.stI32o(spellbook, $obj_in_use, 0);
+
         (yield* You(__s_begin_to_s_the_runes, cptr.ldI16o(spellbook, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD ? __s_recite : __s_memorize));
     }
+
     cptr.stPtro(svc, $context_info_spbook, spellbook);
     if (cptr.ldPtro(svc, $context_info_spbook))
         cptr.stI32o(svc, $context_info_spbook + $book_info_o_id, cptr.ldI32o(cptr.ldPtro(svc, $context_info_spbook), $obj_o_id));
@@ -765,6 +841,8 @@ export function* study_book(spellbook) {
     return 1;
 }
 
+/* a spellbook has been destroyed or the character has changed levels;
+   the stored address for the current book is no longer valid */
 /** C ref: spell.c:646 — @param {CPtr<struct obj>} obj */
 export function book_disappears(obj) {
     if (cptr.eq(obj, cptr.ldPtro(svc, $context_info_spbook))) {
@@ -773,6 +851,9 @@ export function book_disappears(obj) {
     }
 }
 
+/* renaming an object usually results in it having a different address;
+   so the sequence start reading, get interrupted, name the book, resume
+   reading would read the "new" book from scratch */
 /** C ref: spell.c:658 — @param {CPtr<struct obj>} old_obj @param {CPtr<struct obj>} new_obj */
 export function book_substitution(old_obj, new_obj) {
     if (cptr.eq(old_obj, cptr.ldPtro(svc, $context_info_spbook))) {
@@ -782,17 +863,27 @@ export function book_substitution(old_obj, new_obj) {
     }
 }
 
+/* called from moveloop() */
 /** C ref: spell.c:669 */
 export function age_spells() {
     let i;
+    /*
+     * The time relative to the hero (a pass through move
+     * loop) causes all spell knowledge to be decremented.
+     * The hero's speed, rest status, conscious status etc.
+     * does not alter the loss of memory.
+     */
     for (i = 0; i < NHC.MAXSPELL && cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL; i++)
         if (cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know))
             (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) + -1)) - (-1);
     return;
 }
 
+/* return True if spellcasting is inhibited;
+   only covers a small subset of reasons why casting won't work */
 /** C ref: spell.c:687 @returns {CInt} */
 function* rejectcasting() {
+    /* rejections which take place before selecting a particular spell */
     if (HStun()) {
         (yield* You(__s_are_too_impaired_to_cast_a_spell));
         return 1;
@@ -800,12 +891,23 @@ function* rejectcasting() {
         (yield* You(__s_are_unable_to_chant_the_incantation));
         return 1;
     } else if (!(yield* freehand()) && !(uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.QUARTERSTAFF)) {
+        /* Note: !freehand() occurs when weapon and shield (or two-handed
+         * weapon) are welded to hands, so "arms" probably doesn't need
+         * to be makeplural(bodypart(ARM)).
+         *
+         * But why isn't lack of free arms (for gesturing) an issue when
+         * poly'd hero has no limbs?
+         */
         (yield* Your(__s_arms_are_not_free_to_cast));
         return 1;
     }
     return 0;
 }
 
+/*
+ * Return TRUE if a spell was picked, with the spell index in the return
+ * parameter.  Otherwise return FALSE.
+ */
 /** C ref: spell.c:715 — @param {CPtr<int>} spell_no @returns {CInt} */
 function* getspell(spell_no) {
     let nspells;
@@ -816,13 +918,15 @@ function* getspell(spell_no) {
     let qbuf = new Uint8Array(128);
     let cq = cptr.alloc(32);
     let cmdq;
+
     nspells = num_spells();
     if (!nspells) {
         (yield* You(__s_don_t_know_any_spells_right_now));
         return 0;
     }
     if ((yield* rejectcasting()))
-        return 0;
+        return 0;  /* no spell chosen */
+
     if ((cmdq = cmdq_pop()) !== null) {
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
@@ -836,7 +940,9 @@ function* getspell(spell_no) {
             return 0;
         }
     }
+
     if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL) {
+        /* if we get here, we know there is at least 1 known spell */
         if (nspells == 1)
             void cptr.strcpy(cptr.decay(lets), __s_a);
         else if (nspells < 27)
@@ -845,23 +951,28 @@ function* getspell(spell_no) {
             void cptr.strcpy(cptr.decay(lets), __s_a_za);
         else
             void cptr.sprintf(cptr.decay(lets), __s_a_za_c, (((65 + nspells) | 0) - 27) | 0);
+
         nh_snprintf(__s_getspell, 755, cptr.decay(qbuf), 128n, __s_cast_which_spell_s, cptr.decay(lets));
         for (retry_limit = 0; ; ++retry_limit) {
             if (retry_limit == 10) {
+                /* limit is mainly to prevent the fuzzer from getting stuck
+                   since hangup should hit the 'quitchars' case; fuzzer
+                   would too, but after an arbitrary number of attempts */
                 (yield* pline(__s_that_s_enough_tries));
                 return 0;
             }
             ilet = (yield* yn_function(cptr.decay(qbuf), null, 0, 1));
             if (ilet == 42 || ilet == 63)
-                break;
+                break;  /* use menu mode */
             if (cptr.strchr(cptr.decay(quitchars), ilet)) {
                 (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
                 return 0;
             }
+
             idx = spell_let_to_idx(ilet);
             if (idx < 0 || idx >= nspells) {
                 (yield* You(__s_don_t_know_that_spell));
-                continue;
+                continue;  /* ask again */
             }
             cptr.stI32(spell_no, idx);
             return 1;
@@ -870,6 +981,7 @@ function* getspell(spell_no) {
     return (yield* dospellmenu(__s_choose_which_spell_to_cast, -2, spell_no));
 }
 
+/* #wizcast - cast any spell even without knowing it */
 /** C ref: spell.c:787 @returns {CInt} */
 export function* dowizcast() {
     let win;
@@ -877,9 +989,11 @@ export function* dowizcast() {
     let any = cptr.alloc(8);
     let i;
     let n;
+
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+
     for (i = 0; i < NHC.MAXSPELL; i++) {
         n = ((NHC.SPE_DIG + i) | 0);
         if (n >= NHC.SPE_BLANK_PAPER)
@@ -898,9 +1012,11 @@ export function* dowizcast() {
     return NHM.ECMD_OK;
 }
 
+/* the #cast command -- cast a spell */
 /** C ref: spell.c:820 @returns {CInt} */
 export function* docast() {
     let spell_no = cptr.box(0);
+
     if ((yield* getspell(spell_no))) {
         (yield* cmdq_add_key(NHC.CQ_REPEAT, (schar(((spell_no.v < 26) ? ((97 + spell_no.v) | 0) : ((((65 + spell_no.v) | 0) - 26) | 0))))));
         return (yield* spelleffects(cptr.ldI16o(svs, spell_no.v, $sizeof_spell), 0, 0));
@@ -936,17 +1052,23 @@ export function spell_skilltype(booktype) {
     return cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_subtyp);
 }
 
+/* Wizards learn what spellbooks look like based on their skill in the
+   spell's school */
 /** C ref: spell.c:864 */
 export function* skill_based_spellbook_id() {
     if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
         return;
+
     let booktype;
     let spbook_class = NHC.SPBOOK_CLASS;
+
     for (booktype = cptr.ldI32o2(svb, spbook_class, 4, $instance_globals_saved_b_bases); booktype < cptr.ldI32o2(svb, (spbook_class + 1) | 0, 4, $instance_globals_saved_b_bases); booktype++) {
         let known_up_to_level;
         let skill = spell_skilltype(booktype);
+
         if (skill == NHC.P_NONE)
             continue;
+
         switch ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills))) {
             case NHC.P_BASIC:
             known_up_to_level = 3;
@@ -961,10 +1083,15 @@ export function* skill_based_spellbook_id() {
             break;
             case NHC.P_UNSKILLED:
             default:
+            /* paupers need more skill than this to ID books, but most wizards
+               know the basics */
             known_up_to_level = cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper) ? 0 : 1;
             break;
         }
+
         if (cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2) <= known_up_to_level)
+            /* makeknown(booktype) but don't exercise Wisdom or mark as
+               encountered */
             (yield* discover_object(booktype, 1, 0, 0));
     }
 }
@@ -973,30 +1100,56 @@ export function* skill_based_spellbook_id() {
 
 /** C ref: spell.c:938 — struct chain_lightning_queue { q, head, tail, displayed_beam } (memory model v0.5) */
 
+/* Given a potential chain lightning zap, moves it one square forward in
+   the given direction, then adds it to the queue unless it would hit an
+   invalid square or is out of power.
+
+   zap is passed by value, so the move-forward doesn't change the passed
+   argument. */
 /** C ref: spell.c:952 — @param {CPtr<struct chain_lightning_queue>} clq @param {*} zap */
 function* propagate_chain_lightning(clq, zap) {
     zap = cptr.dup(zap, $sizeof_chain_lightning_zap); // by-value struct param
     let mon;
+
     cptr.stI16o(zap, $chain_lightning_zap_x, cptr.ldI16o(zap, $chain_lightning_zap_x) + cptr.ld1so(cptr.decay(xdir), cptr.ld1u(zap), 1));
     cptr.stI16o(zap, $chain_lightning_zap_y, cptr.ldI16o(zap, $chain_lightning_zap_y) + cptr.ld1so(cptr.decay(ydir), cptr.ld1u(zap), 1));
+
     if (cptr.ldI32o(clq, $chain_lightning_queue_tail) >= 100)
-        return;
+        return;  /* zap has covered too many squares */
     if (!(isok(cptr.ldI16o(zap, $chain_lightning_zap_x), cptr.ldI16o(zap, $chain_lightning_zap_y)) && ((((cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) > NHC.DOOR) || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.POOL || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.MOAT || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAPOOL) || (((cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && !(((cptr.ldI32o3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))))
-        return;
+        return;  /* zap can't go to this square */
+
     mon = (cptr.ldPtro3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 168, cptr.ldI16o(zap, $chain_lightning_zap_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mon && (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0)
-        return;
+        return;  /* chain lightning avoids peaceful and tame monsters */
+
+    /* When hitting a monster that isn't electricity-resistant, a
+       particular chain lightning zap regains all its power, allowing it to
+       chain to other monsters; upon hitting a shock-resistant monster it
+       can't continue any further, but we let it hit the monster to show
+       the shield effect */
     if (mon && !(yield* Resists_Elem(mon, NHC.SHOCK_RES)) && !(yield* defended(mon, NHM.AD_ELEC)))
         cptr.st1o(zap, $chain_lightning_zap_strength, 3);
     else if (mon)
         cptr.st1o(zap, $chain_lightning_zap_strength, 0);
+
+    /* Unless it hits a monster, the last square of a zap isn't drawn on
+       screen and can't propagate further, so it may as well be discarded
+       now */
     if (!mon && !cptr.ld1so(zap, $chain_lightning_zap_strength))
         return;
+
+    /* The same square can't be chained to twice. */
     for (let i = 0; i < cptr.ldI32o(clq, $chain_lightning_queue_tail); i++) {
         if (cptr.ldI16o2(clq, i, $sizeof_chain_lightning_zap, $chain_lightning_zap_x) == cptr.ldI16o(zap, $chain_lightning_zap_x) && cptr.ldI16o2(clq, i, $sizeof_chain_lightning_zap, $chain_lightning_zap_y) == cptr.ldI16o(zap, $chain_lightning_zap_y))
             return;
     }
+
+    /* This array access must be inbounds due to the CHAIN_LIGHTNING_LIMIT
+       check earlier. */
     cptr.memcpy(cptr.add(clq, (cptr.stI32o(clq, $chain_lightning_queue_tail, cptr.ldI32o(clq, $chain_lightning_queue_tail) + 1)) - (1), $sizeof_chain_lightning_zap), zap, 8);
+
+    /* Draw it. */
     (yield* tmp_at(-6, i16((yield* zapdir_to_glyph(cptr.ld1so(cptr.decay(xdir), cptr.ld1u(zap), 1), cptr.ld1so(cptr.decay(ydir), cptr.ld1u(zap), 1), cptr.ldI32o(clq, $chain_lightning_queue_displayed_beam))))));
     (yield* tmp_at(cptr.ldI16o(zap, $chain_lightning_zap_x), cptr.ldI16o(zap, $chain_lightning_zap_y)));
 }
@@ -1004,52 +1157,88 @@ function* propagate_chain_lightning(clq, zap) {
 /** C ref: spell.c:1003 */
 function* cast_chain_lightning() {
     let clq = cptr.alloc(812); cptr.st1o(clq, 0, 0); cptr.stI32o(clq, $chain_lightning_queue_head, 0); cptr.stI32o(clq, $chain_lightning_queue_tail, 0); cptr.stI32o(clq, $chain_lightning_queue_displayed_beam, Hallucination() ? rn2_on_display_rng(6) : 5);
+
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        // TODO: damage the engulfer
         return;
     }
+
+    /* set the type of beam we're using; the direction here is arbitrary
+       because we change the beam direction just before drawing the beam
+       anyway */
     (yield* tmp_at(-1, i16((yield* zapdir_to_glyph(0, 1, cptr.ldI32o(clq, $chain_lightning_queue_displayed_beam))))));
+
+    /* start by propagating in all directions from the caster */
     for (let dir = 0; dir < ((NHC.N_DIRS_Z - 2) | 0); dir++) {
         let zap = cptr.alloc(8); cptr.st1(zap, uchar(dir)); cptr.stI16o(zap, $chain_lightning_zap_x, cptr.ldI16(u)); cptr.stI16o(zap, $chain_lightning_zap_y, cptr.ldI16o(u, $you_uy)); cptr.st1o(zap, $chain_lightning_zap_strength, 2);
+
         (yield* propagate_chain_lightning(clq, zap));
     }
     (yield* Y.icall(nh_delay_output()()));
+
     while (cptr.ldI32o(clq, $chain_lightning_queue_head) < cptr.ldI32o(clq, $chain_lightning_queue_tail)) {
         let delay_tail = cptr.ldI32o(clq, $chain_lightning_queue_tail);
+
         while (cptr.ldI32o(clq, $chain_lightning_queue_head) < delay_tail) {
             let zap = cptr.alloc(8); cptr.memcpy(zap, cptr.add(clq, (cptr.stI32o(clq, $chain_lightning_queue_head, cptr.ldI32o(clq, $chain_lightning_queue_head) + 1)) - (1), $sizeof_chain_lightning_zap), $sizeof_chain_lightning_zap);
+            /* damage any monster that was hit */
             let mon = (cptr.ldPtro3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 168, cptr.ldI16o(zap, $chain_lightning_zap_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+
             if (mon) {
-                let unused = cptr.box(null);
+                let unused = cptr.box(null);  /* AD_ELEC can't destroy armor */
                 let dmg;
+
                 cptr.st1o(gn, $instance_globals_n_notonhead, schar((cptr.ldI16o(mon, $monst_mx) != cptr.ldI16o(gb, $instance_globals_b_bhitpos) || cptr.ldI16o(mon, $monst_my) != cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) ? 1 : 0)));
                 dmg = (yield* zhitm(mon, 15, 2, unused));
+
                 if (dmg) {
+                    /* mon has been damaged, but we haven't yet printed the
+                       messages or given kill credit; assume the hero can
+                       sense their spell hitting monsters, because they can
+                       steer it away from peacefuls */
                     if ((cptr.ldI32o((mon), $monst_mhp) < 1)) {
                         (yield* xkilled(mon, NHM.XKILL_GIVEMSG));
                     } else {
                         (yield* pline(__s_you_shock_s_s, (yield* mon_nam(mon)), exclam(dmg)));
+                        /* if a long worm, only map 'I' for its head */
                         if (!canseemon(mon) && !cptr.ld1so(gn, $instance_globals_n_notonhead))
+                            /* FIXME: this doesn't work, possibly because
+                               cleaning up tmp_at() restores old glyph? */
                             (yield* map_invisible(cptr.ldI16o(zap, $chain_lightning_zap_x), cptr.ldI16o(zap, $chain_lightning_zap_y)));
                     }
                 } else if (canseemon(mon)) {
                     (yield* pline(__s_s_resists, (yield* Monnam(mon))));
                 }
                 if (!(cptr.ldI32o((mon), $monst_mhp) < 1)) {
+                    /* wakeup is via attack, but since mon is already
+                       hostile we pass via_attack==False rather than True,
+                       otherwise other monsters witnessing this would treat
+                       it as seeing hero attack a peaceful; mimic will be
+                       exposed; forcefight makes hider unhide */
                     cptr.postinc1(cptr.add(svc, $context_info_forcefight));
                     (yield* wakeup(mon, 0));
                     (cptr.st1o(svc, $context_info_forcefight, cptr.ld1so(svc, $context_info_forcefight) + -1)) - (-1);
                 }
             }
+
+            /* each zap propagates forwards with 1 less strength, and
+               diagonally with 0 strength (thus the diagonal zaps aren't
+               drawn and don't spread unless they hit a monster);
+               exception: if the zap just hit a monster, the diagonals have
+               as much strength as the forwards zap */
             if (!cptr.ld1so(zap, $chain_lightning_zap_strength))
-                continue;
+                continue;  /* happens upon hitting a shock-resistant monster */
             (cptr.st1o(zap, $chain_lightning_zap_strength, cptr.ld1so(zap, $chain_lightning_zap_strength) + -1)) - (-1);
+
             (yield* propagate_chain_lightning(clq, zap));
+
             if (cptr.ld1so(zap, $chain_lightning_zap_strength) < 2)
                 cptr.st1o(zap, $chain_lightning_zap_strength, 0);
             else if (cptr.ldI32o(u, $you_uen) > 0)
-                (cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uen) + -1)) - (-1);
+                (cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uen) + -1)) - (-1);  /* propagating past mons increases Pw cost a bit */
             cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 7) | 0) % ((NHC.N_DIRS_Z - 2) | 0))));
             (yield* propagate_chain_lightning(clq, zap));
+
             cptr.st1(zap, uchar(((((cptr.ld1u(zap)) + 2) | 0) % ((NHC.N_DIRS_Z - 2) | 0))));
             (yield* propagate_chain_lightning(clq, zap));
         }
@@ -1057,6 +1246,7 @@ function* cast_chain_lightning() {
     }
     (yield* Y.icall(nh_delay_output()()));
     (yield* Y.icall(nh_delay_output()()));
+
     (yield* tmp_at(-7, 0));
 }
 
@@ -1066,21 +1256,51 @@ function* cast_protection() {
     let loglev = 0;
     let gain;
     let natac = (cptr.ld1so(u, $you_uac) + cptr.ld1uo(u, $you_uspellprot)) | 0;
+    /* note: u.uspellprot is subtracted when find_ac() factors it into u.uac,
+       so adding here factors it back out
+       (versions prior to 3.6 had this backwards) */
+
+    /* loglev=log2(u.ulevel)+1 (1..5) */
     while (l) {
         loglev++;
         l = (l / 2) | 0;
     }
-    natac = (((10 - natac) | 0) / 10) | 0;
+
+    /* The more u.uspellprot you already have, the less you get,
+     * and the better your natural ac, the less you get.
+     *
+     *  LEVEL AC    SPELLPROT from successive SPE_PROTECTION casts
+     *      1     10    0,  1,  2,  3,  4
+     *      1      0    0,  1,  2,  3
+     *      1    -10    0,  1,  2
+     *      2-3   10    0,  2,  4,  5,  6,  7,  8
+     *      2-3    0    0,  2,  4,  5,  6
+     *      2-3  -10    0,  2,  3,  4
+     *      4-7   10    0,  3,  6,  8,  9, 10, 11, 12
+     *      4-7    0    0,  3,  5,  7,  8,  9
+     *      4-7  -10    0,  3,  5,  6
+     *      7-15 -10    0,  3,  5,  6
+     *      8-15  10    0,  4,  7, 10, 12, 13, 14, 15, 16
+     *      8-15   0    0,  4,  7,  9, 10, 11, 12
+     *      8-15 -10    0,  4,  6,  7,  8
+     *     16-30  10    0,  5,  9, 12, 14, 16, 17, 18, 19, 20
+     *     16-30   0    0,  5,  9, 11, 13, 14, 15
+     *     16-30 -10    0,  5,  8,  9, 10
+     */
+    natac = (((10 - natac) | 0) / 10) | 0;  /* convert to positive and scale down */
     gain = (loglev - ((cptr.ld1uo(u, $you_uspellprot) / ((4 - (3 < (natac) ? 3 : (natac))) | 0)) | 0)) | 0;
+
     if (gain > 0) {
         if (!Blind()) {
             let rmtyp;
             let hgolden = hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_golden));
             let atmosphere;
+
             if (cptr.ld1uo(u, $you_uspellprot)) {
                 (yield* pline_The(__s_s_haze_around_you_becomes_more_dense, hgolden));
             } else {
                 let pm = cptr.ldPtro(u, $you_ustuck) ? cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data) : null;
+
                 rmtyp = cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
                 atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst))) ? __s_mist : (is_whirly(pm) ? __s_maelstrom : ((dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_folds : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) ? __s_maw : __s_ooze)))) : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? hliquid(__s_water) : ((rmtyp == NHC.CLOUD) ? __s_cloud : (IS_TREE(rmtyp) ? __s_vegetation : (((rmtyp) <= NHC.DBWALL) ? __s_stone : __s_air))));
                 (yield* pline_The(__s_s_around_you_begins_to_shimmer_with_s, atmosphere, (yield* an(hgolden))));
@@ -1096,31 +1316,41 @@ function* cast_protection() {
     }
 }
 
+/* attempting to cast a forgotten spell will cause disorientation */
 /** C ref: spell.c:1181 — @param {CInt} spell */
 function* spell_backfire(spell) {
     let duration = BigInt((Math.imul(((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) + 1) | 0), 3)));
     let old_stun = (HStun() & 16777215n);
     let old_conf = (HConfusion() & 16777215n);
+
+    /* Prior to 3.4.1, only effect was confusion; it still predominates.
+     *
+     * 3.6.0: this used to override pre-existing confusion duration
+     * (cases 0..8) and pre-existing stun duration (cases 4..9);
+     * increase them instead.   (Hero can no longer cast spells while
+     * Stunned, so the potential increment to stun duration here is
+     * just hypothetical.)
+     */
     switch (rn2_at(__s_spell_c, 1194, __s_spell_backfire, 10)) {
         case 0:
         case 1:
         case 2:
         case 3:
-        (yield* make_confused(BigInt.asIntN(64, old_conf + duration), 0));
+        (yield* make_confused(BigInt.asIntN(64, old_conf + duration), 0));  /* 40% */
         break;
         case 4:
         case 5:
         case 6:
-        (yield* make_confused(BigInt.asIntN(64, old_conf + BigInt.asIntN(64, 2n * duration) / 3n), 0));
+        (yield* make_confused(BigInt.asIntN(64, old_conf + BigInt.asIntN(64, 2n * duration) / 3n), 0));  /* 30% */
         (yield* make_stunned(BigInt.asIntN(64, old_stun + duration / 3n), 0));
         break;
         case 7:
         case 8:
-        (yield* make_stunned(BigInt.asIntN(64, old_stun + BigInt.asIntN(64, 2n * duration) / 3n), 0));
+        (yield* make_stunned(BigInt.asIntN(64, old_stun + BigInt.asIntN(64, 2n * duration) / 3n), 0));  /* 20% */
         (yield* make_confused(BigInt.asIntN(64, old_conf + duration / 3n), 0));
         break;
         case 9:
-        (yield* make_stunned(BigInt.asIntN(64, old_stun + duration), 0));
+        (yield* make_stunned(BigInt.asIntN(64, old_stun + duration), 0));  /* 10% */
         break;
     }
     return;
@@ -1130,12 +1360,33 @@ function* spell_backfire(spell) {
 function* spelleffects_check(spell, res, energy) {
     let chance;
     let confused = schar((HConfusion() != 0n));
+
     cptr.stI32(energy, 0);
+
+    /*
+     * Reject attempting to cast while stunned or with no free hands.
+     * Already done in getspell() to stop casting before choosing
+     * which spell, but duplicated here for cases where spelleffects()
+     * gets called directly for ^T without intrinsic teleport capability
+     * or #turn for non-priest/non-knight.
+     * (There's no duplication of messages; when the rejection takes
+     * place in getspell(), we don't get called.)
+     */
     if ((spell == -1) || (yield* rejectcasting())) {
-        cptr.stI32(res, NHM.ECMD_OK);
+        cptr.stI32(res, NHM.ECMD_OK);  /* no time elapses */
         return 1;
     }
-    cptr.stI32(energy, (Math.imul((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)), 5)));
+
+    /*
+     *  Note: dotele() also calculates energy use and checks nutrition
+     *  and strength requirements; if any of these change, update it too.
+     */
+    cptr.stI32(energy, (Math.imul((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)), 5)));  /* 5 <= energy <= 35 */
+
+    /*
+     * Spell casting no longer affects knowledge of the spell. A
+     * decrement of spell knowledge is done every turn.
+     */
     if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 0) {
         (yield* Your(__s_knowledge_of_this_spell_is_twisted));
         (yield* pline(__s_it_invokes_nightmarish_images_in_your));
@@ -1155,6 +1406,7 @@ function* spelleffects_check(spell, res, energy) {
     } else if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 2000) {
         (yield* Your(__s_recall_of_this_spell_is_gradually_fading));
     }
+
     if (cptr.ldI32o(u, $you_uhunger) <= 10 && cptr.ldI16o(svs, spell, $sizeof_spell) != NHC.SPE_DETECT_FOOD) {
         (yield* You(__s_are_too_hungry_to_cast_that_spell));
         cptr.stI32(res, NHM.ECMD_OK);
@@ -1167,20 +1419,56 @@ function* spelleffects_check(spell, res, energy) {
         cptr.stI32(res, NHM.ECMD_TIME);
         return 1;
     }
+
+    /* if the cast attempt is already going to fail due to insufficient
+       energy (ie, u.uen < energy), the Amulet's drain effect won't kick
+       in and no turn will be consumed; however, when it does kick in,
+       the attempt may fail due to lack of energy after the draining, in
+       which case a turn will be used up in addition to the energy loss */
     if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && cptr.ldI32o(u, $you_uen) >= cptr.ldI32(energy)) {
         (yield* You_feel(__s_the_amulet_draining_your_energy_away));
+        /* this used to be 'energy += rnd(2 * energy)' (without 'res'),
+           so if amulet-induced cost was more than u.uen, nothing
+           (except the "don't have enough energy" message) happened
+           and player could just try again (and again and again...);
+           now we drain some energy immediately, which has a
+           side-effect of not increasing the hunger aspect of casting */
         cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd_at(__s_spell_c, 1298, __s_spelleffects_check, Math.imul(2, cptr.ldI32(energy)))) | 0);
         if (cptr.ldI32o(u, $you_uen) < 0)
             cptr.stI32o(u, $you_uen, 0);
         cptr.st1(disp, 1);
-        cptr.stI32(res, NHM.ECMD_TIME);
+        cptr.stI32(res, NHM.ECMD_TIME);  /* time is used even if spell doesn't get cast */
     }
+
     if (cptr.ldI32(energy) > cptr.ldI32o(u, $you_uen)) {
-        (yield* You(__s_don_t_have_enough_energy_to_cast_that, (cptr.ldI32o(u, $you_uen) < cptr.ldI32o(u, $you_uenmax)) ? __s_empty : ((cptr.ldI32(energy) > cptr.ldI32o(u, $you_uenpeak)) ? __s_yet : __s_anymore)));
+        /*
+         * Hero has insufficient energy/power to cast the spell.
+         * Augment the message when current energy is at maximum.
+         * "yet": mainly for level 1 characters who already know a spell
+         * but don't start with enough energy to cast it.
+         * "anymore": maximum energy was high enough at some point but
+         * isn't now (lost energy when losing levels or polymorphing into
+         * new person or had some stripped away by traps or monsters).
+         */
+        (yield* You(__s_don_t_have_enough_energy_to_cast_that, (cptr.ldI32o(u, $you_uen) < cptr.ldI32o(u, $you_uenmax)) ? __s_empty : ((cptr.ldI32(energy) > cptr.ldI32o(u, $you_uenpeak)) ? __s_yet : __s_anymore)));  /* once had enough but have lost some since */
         return 1;
     } else {
         if (cptr.ldI16o(svs, spell, $sizeof_spell) != NHC.SPE_DETECT_FOOD) {
             let hungr = Math.imul(cptr.ldI32(energy), 2);
+
+            /* If hero is a wizard, their current intelligence
+             * (bonuses + temporary + current)
+             * affects hunger reduction in casting a spell.
+             * 1. int = 17-18 no reduction
+             * 2. int = 16    1/4 hungr
+             * 3. int = 15    1/2 hungr
+             * 4. int = 1-14  normal reduction
+             * The reason for this is:
+             * a) Intelligence affects the amount of exertion
+             * in thinking.
+             * b) Wizards have spent their life at magic and
+             * understand quite well how to cast spells.
+             */
             let intell = acurr(NHC.A_INT);
             if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
                 intell = 10;
@@ -1203,11 +1491,18 @@ function* spelleffects_check(spell, res, energy) {
                 hungr = (hungr / 2) | 0;
                 break;
             }
+            /* don't put player (quite) into fainting from
+             * casting a spell, particularly since they might
+             * not even be hungry at the beginning; however,
+             * this is low enough that they must eat before
+             * casting anything else except detect food
+             */
             if (hungr > ((cptr.ldI32o(u, $you_uhunger) - 3) | 0))
                 hungr = (cptr.ldI32o(u, $you_uhunger) - 3) | 0;
             (yield* morehungry(hungr));
         }
     }
+
     chance = (yield* percent_success(spell));
     if (confused || (rnd_at(__s_spell_c, 1372, __s_spelleffects_check, 100) > chance)) {
         (yield* You(__s_fail_to_cast_the_spell_correctly));
@@ -1219,6 +1514,8 @@ function* spelleffects_check(spell, res, energy) {
     return 0;
 }
 
+/* hero casts a spell of type spell_otyp, eg. SPE_SLEEP.
+   hero must know the spell (unless force is TRUE). */
 /** C ref: spell.c:1385 — @param {CInt} spell_otyp @param {CInt} atme @param {CInt} force @returns {CInt} */
 export function* spelleffects(spell_otyp, atme, force) {
     let spell = force ? spell_otyp : spell_idx(i16(spell_otyp));
@@ -1232,17 +1529,25 @@ export function* spelleffects(spell_otyp, atme, force) {
     let physical_damage = 0;
     let pseudo;
     let cc = cptr.alloc(4);
+
     if (!force && (yield* spelleffects_check(spell, res, energy)))
         return res.v;
+
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - energy.v) | 0);
     cptr.st1(disp, 1);
     (yield* exercise(NHC.A_WIS, 1));
+    /* pseudo is a temporary "false" object containing the spell stats */
     pseudo = (yield* mksobj(force ? spell : cptr.ldI16o(svs, spell, $sizeof_spell), 0, 0));
     cptr.stI32o(pseudo, $obj_blessed, cptr.stI32o(pseudo, $obj_cursed, 0));
-    cptr.stI64o(pseudo, $obj_quan, 20n);
+    cptr.stI64o(pseudo, $obj_quan, 20n);  /* do not let useup get it */
+    /*
+     * Find the skill the hero has in a spell type category.
+     * See spell_skilltype for categories.
+     */
     otyp = cptr.ldI16o(pseudo, $obj_otyp);
     skill = spell_skilltype(otyp);
     role_skill = (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills));
+
     switch (otyp) {
         case NHC.SPE_FIREBALL:
         case NHC.SPE_CONE_OF_COLD:
@@ -1264,13 +1569,14 @@ export function* spelleffects(spell_otyp, atme, force) {
                     cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + rnd_at(__s_spell_c, 1442, __s_spelleffects, 3)) | 0) - 2) | 0);
                     cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + rnd_at(__s_spell_c, 1443, __s_spelleffects, 3)) | 0) - 2) | 0);
                     if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI32o(u, $you_dy), 8), cptr.ldI32o(u, $you_dx)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1so3(svl, cptr.ldI32o(u, $you_dx), $sizeof_rm_x21, cptr.ldI32o(u, $you_dy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                        /* Spell is reflected back to center */
                         cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
                         cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
                     }
                 }
             }
             break;
-        }
+        }  /* else */
         // @FallThrough
         ;
         case NHC.SPE_FORCE_BOLT:
@@ -1296,17 +1602,29 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_STONE_TO_FLESH:
         if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) != NHM.NODIR) {
             if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
+                /* healing and extra healing are actually potion effects,
+                   but they've been extended to take a direction like wands */
                 if (role_skill >= NHC.P_SKILLED)
                     cptr.stI32o(pseudo, $obj_blessed, 1);
             }
             if (atme) {
                 cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
             } else if (!(yield* getdir(null))) {
+                /* getdir cancelled, re-use previous direction */
+                /*
+                 * FIXME:  reusing previous direction only makes sense
+                 * if there is an actual previous direction.  When there
+                 * isn't one, the spell gets cast at self which is rarely
+                 * what the player intended.  Unfortunately, the way
+                 * spelleffects() is organized means that aborting with
+                 * "nevermind" is not an option.
+                 */
                 (yield* pline_The(__s_magical_energy_is_released));
             }
             if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
                 if ((damage = (yield* zapyourself(pseudo, 1))) != 0) {
                     let buf = new Uint8Array(256);
+
                     void cptr.sprintf(cptr.decay(buf), __s_zapped_sself_with_a_spell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
                     if (physical_damage)
                         damage = ((Half_physical_damage()) ? (((((damage) + 1) | 0) / 2) | 0) : (damage));
@@ -1316,7 +1634,7 @@ export function* spelleffects(spell_otyp, atme, force) {
                 (yield* weffects(pseudo));
         } else
             (yield* weffects(pseudo));
-        (yield* update_inventory());
+        (yield* update_inventory());  /* spell may modify inventory */
         break;
         case NHC.SPE_REMOVE_CURSE:
         case NHC.SPE_CONFUSE_MONSTER:
@@ -1324,6 +1642,7 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_CAUSE_FEAR:
         case NHC.SPE_IDENTIFY:
         case NHC.SPE_CHARM_MONSTER:
+        /* high skill yields effect equivalent to blessed scroll */
         if (role_skill >= NHC.P_SKILLED)
             cptr.stI32o(pseudo, $obj_blessed, 1);
         // @FallThrough
@@ -1337,6 +1656,7 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_DETECT_MONSTERS:
         case NHC.SPE_LEVITATION:
         case NHC.SPE_RESTORE_ABILITY:
+        /* high skill yields effect equivalent to blessed potion */
         if (role_skill >= NHC.P_SKILLED)
             cptr.stI32o(pseudo, $obj_blessed, 1);
         // @FallThrough
@@ -1351,7 +1671,15 @@ export function* spelleffects(spell_otyp, atme, force) {
         {
             let was_sick = schar((!!Sick()));
             let was_slimed = schar((!!Slimed()));
+
+            /* cure conditions (which updates status) before feedback */
             (yield* healup(0, 0, 1, 0));
+            /*
+             *  Sick + !Slimed -- You are no longer ill.
+             * !Sick + !Slimed -- You are not ill.
+             * !Sick +  Slimed -- The slime disappears.
+             *  Sick +  Slimed -- You are no longer ill.  The slime disappears.
+             */
             if (was_sick || !was_slimed)
                 (yield* You(__s_are_s_ill, was_sick ? __s_no_longer : __s_not));
             if (was_slimed)
@@ -1364,8 +1692,9 @@ export function* spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_CLAIRVOYANCE:
         if (!BClairvoyant()) {
             if (role_skill >= NHC.P_SKILLED)
-                cptr.stI32o(pseudo, $obj_blessed, 1);
+                cptr.stI32o(pseudo, $obj_blessed, 1);  /* detect monsters as well as map */
             (yield* do_vicinity_map(pseudo));
+            /* at present, only one thing blocks clairvoyance */
         } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.CORNUTHAUM)
             (yield* You(__s_sense_a_pointy_hat_on_top_of_your_s, (yield* body_part(NHC.HEAD))));
         break;
@@ -1384,12 +1713,16 @@ export function* spelleffects(spell_otyp, atme, force) {
         (yield* obfree(pseudo, null));
         return NHM.ECMD_OK;
     }
+
+    /* gain skill for successful cast */
     if (!force)
         (yield* use_skill(skill, cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)));
-    (yield* obfree(pseudo, null));
+
+    (yield* obfree(pseudo, null));  /* now, get rid of it */
     return NHM.ECMD_TIME;
 }
 
+/*ARGSUSED*/
 /** C ref: spell.c:1607 — @param {CPtr} arg @param {CInt} x @param {CInt} y @returns {CInt} */
 function spell_aim_step(arg, x, y) {
     if (!isok(x, y))
@@ -1399,6 +1732,7 @@ function spell_aim_step(arg, x, y) {
     return 1;
 }
 
+/* not quite the same as throwspell limits, but close enough */
 /** C ref: spell.c:1619 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function can_center_spell_location(x, y) {
     if (distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) > 10)
@@ -1413,27 +1747,35 @@ function* display_spell_target_positions(on_off) {
     let dx;
     let dy;
     let dist = 10;
+
     if (on_off) {
+        /* on */
         (yield* tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
                 x = i16(((cptr.ldI16(u) + dx) | 0));
                 y = i16(((cptr.ldI16o(u, $you_uy) + dy) | 0));
+                /* hero's location is allowed but highlighting the hero's
+                   spot makes map harder to read (if using '$' rather than
+                   by changing background color) */
                 if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                     continue;
                 if (can_center_spell_location(x, y))
                     (yield* tmp_at(x, y));
             }
     } else {
+        /* off */
         (yield* tmp_at(-7, 0));
     }
 }
 
+/* Choose location where spell takes effect. */
 /** C ref: spell.c:1655 @returns {CInt} */
 function* throwspell() {
     let cc = cptr.alloc(4);
     let uc = cptr.alloc(4);
     let mtmp;
+
     if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
         (yield* pline(__s_you_re_joking_in_this_weather));
         return 0;
@@ -1441,19 +1783,22 @@ function* throwspell() {
         (yield* You(__s_had_better_wait_for_the_sun_to_come_out));
         return 0;
     }
+
     (yield* pline(__s_where_do_you_want_to_cast_the_spell));
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     (yield* getpos_sethilite(display_spell_target_positions, can_center_spell_location));
     if ((yield* getpos(cc, 1, __s_the_desired_position)) < 0)
-        return 0;
-    (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
+        return 0;  /* user pressed ESC */
+    (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));  /* discard any autodescribe feedback */
+
+    /* The number of moves from hero to where the spell drops.*/
     if (distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) > 10) {
         (yield* pline_The(__s_spell_dissipates_over_the_distance));
         return 0;
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         (yield* pline_The(__s_spell_is_cut_short));
-        (yield* exercise(NHC.A_WIS, 0));
+        (yield* exercise(NHC.A_WIS, 0));  /* What were you THINKING! */
         cptr.stI32o(u, $you_dx, 0);
         cptr.stI32o(u, $you_dy, 0);
         return 1;
@@ -1461,81 +1806,142 @@ function* throwspell() {
         (yield* Your(__s_mind_fails_to_lock_onto_that_location));
         return 0;
     }
+
     cptr.stI16(uc, cptr.ldI16(u));
     cptr.stI16o(uc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+
     (yield* walk_path(uc, cc, spell_aim_step, null));
+
     cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
     cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
     return 1;
 }
 
+/* add/hide/remove/unhide teleport-away on behalf of dotelecmd() to give
+   more control to behavior of ^T when used in wizard mode */
 let __static_tport_spell_save_tport = cptr.alloc($sizeof_tport_hideaway); /** C ref: spell.c:1712 — struct tport_hideaway (function-static) */
 
 /** C ref: spell.c:1707 — @param {CInt} what @returns {CInt} */
 export function* tport_spell(what) {
     let i;
+
     for (i = 0; i < NHC.MAXSPELL; i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == NHC.SPE_TELEPORT_AWAY || cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
             break;
     if (i == NHC.MAXSPELL) {
         (yield* impossible(__s_tport_spell_spellbook_full));
+        /* wizard mode ^T is not able to honor player's menu choice */
     } else if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL) {
         if (what == 1 || what == 4) {
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 3) {
+            /*assert( save_tport.savespell.sp_id == SPE_TELEPORT_AWAY );*/
             cptr.memcpy(cptr.add(svs, cptr.ldI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx), $sizeof_spell), __static_tport_spell_save_tport, 8);
-            cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
+            cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);  /* burn bridge... */
         } else if (what == 2) {
             cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, $sizeof_spell), 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, i);
             cptr.stI16o(svs, i, NHC.SPE_TELEPORT_AWAY, $sizeof_spell);
             cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, NHC.SPE_TELEPORT_AWAY, $sizeof_objclass, $objclass_oc_oc2)));
             cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20000);
-            return 4;
+            return 4;  /* operation needed to reverse */
         }
     } else {
         if (what == 2 || what == 3) {
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 4) {
+            /*assert( i == save_tport.tport_indx );*/
             cptr.memcpy(cptr.add(svs, i, $sizeof_spell), __static_tport_spell_save_tport, 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 1) {
             cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, $sizeof_spell), 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, i);
             cptr.stI16o(svs, i, NHM.NO_SPELL, $sizeof_spell);
-            return 3;
+            return 3;  /* operation needed to reverse */
         }
     }
     return 0;
 }
 
+/* forget a random selection of known spells due to amnesia;
+   they used to be lost entirely, as if never learned, but now we
+   just set the memory retention to zero so that they can't be cast */
 /** C ref: spell.c:1763 */
 export function* losespells() {
     let n;
     let nzap;
     let i;
+
+    /* in case reading has been interrupted earlier, discard context */
     cptr.stPtro(svc, $context_info_spbook, null);
     cptr.stI32o(svc, $context_info_spbook + $book_info_o_id, 0);
+    /* count the number of known spells */
     for (n = 0; n < NHC.MAXSPELL; ++n)
         if (cptr.ldI16o(svs, n, $sizeof_spell) == NHM.NO_SPELL)
             break;
+
+    /* lose anywhere from zero to all known spells;
+       if confused, use the worse of two die rolls */
     nzap = rn2_at(__s_spell_c, 1777, __s_losespells, (n + 1) | 0);
     if (HConfusion()) {
         i = rn2_at(__s_spell_c, 1779, __s_losespells, (n + 1) | 0);
         if (i > nzap)
             nzap = i;
     }
+    /* good Luck might ameliorate spell loss */
     if (nzap > 1 && !rnl_at(__s_spell_c, 1784, __s_losespells, 7))
         nzap = rnd_at(__s_spell_c, 1785, __s_losespells, nzap);
+
+    /*
+     * Forget 'nzap' out of 'n' known spells by setting their memory
+     * retention to zero.  Every spell has the same probability to be
+     * forgotten, even if its retention is already zero.
+     *
+     * Perhaps we should forget the corresponding book too?
+     *
+     * (3.4.3 removed spells entirely from the list, but always did
+     * so from its end, so the 'nzap' most recently learned spells
+     * were the ones lost by default.  Player had sort control over
+     * the list, so could move the most useful spells to front and
+     * only lose them if 'nzap' turned out to be a large value.
+     *
+     * Discarding from the end of the list had the virtue of making
+     * casting letters for lost spells become invalid and retaining
+     * the original letter for the ones which weren't lost, so there
+     * was no risk to the player of accidentally casting the wrong
+     * spell when using a letter that was in use prior to amnesia.
+     * That wouldn't be the case if we implemented spell loss spread
+     * throughout the list of known spells; every spell located past
+     * the first lost spell would end up with new letter assigned.)
+     */
     for (i = 0; nzap > 0; ++i) {
+        /* when nzap is small relative to the number of spells left,
+           the chance to lose spell [i] is small; as the number of
+           remaining candidates shrinks, the chance per candidate
+           gets bigger; overall, exactly nzap entries are affected */
         if (rn2_at(__s_spell_c, 1814, __s_losespells, (n - i) | 0) < nzap) {
+            /* lose access to spell [i] */
             cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 0);
+            /* and abuse wisdom */
             (yield* exercise(NHC.A_WIS, 0));
+            /* there's now one less spell slated to be forgotten */
             --nzap;
         }
     }
 }
 
+/*
+ * Allow player to sort the list of known spells.  Manually swapping
+ * pairs of them becomes very tedious once the list reaches two pages.
+ *
+ * Possible extensions:
+ *      provide means for player to control ordering of skill classes;
+ *      provide means to supply value N such that first N entries stick
+ *      while rest of list is being sorted;
+ *      make chosen sort order be persistent such that when new spells
+ *      are learned, they get inserted into sorted order rather than be
+ *      appended to the end of the list?
+ */
 /** C ref: spell.c:1841 — enum */
 export const SORTBY_LETTER = 0;
 export const SORTBY_ALPHA = 1;
@@ -1560,8 +1966,17 @@ cptr.stPtro(spl_sortchoices, 48, __s_by_skill_group_high_to_low_level_within);
 cptr.stPtro(spl_sortchoices, 56, __s_maintain_current_ordering);
 cptr.stPtro(spl_sortchoices, 64, __s_reassign_casting_letters_to_retain);
 
+/* qsort callback routine */
 /** C ref: spell.c:1870 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function* spell_cmp(vptr1, vptr2) {
+    /*
+     * gather up all of the possible parameters except spell name
+     * in advance, even though some might not be needed:
+     *  indx. = spl_orderindx[] index into svs.spl_book[];
+     *  otyp. = svs.spl_book[] index into objects[];
+     *  levl. = spell level;
+     *  skil. = skill group aka spell class.
+     */
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
     let otyp1 = cptr.ldI16o(svs, indx1, $sizeof_spell);
@@ -1570,6 +1985,7 @@ function* spell_cmp(vptr1, vptr2) {
     let levl2 = cptr.ld1so2(objects, otyp2, $sizeof_objclass, $objclass_oc_oc2);
     let skil1 = cptr.ld1so2(objects, otyp1, $sizeof_objclass, $objclass_oc_subtyp);
     let skil2 = cptr.ld1so2(objects, otyp2, $sizeof_objclass, $objclass_oc_subtyp);
+
     switch (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode)) {
         case NHC.SORTBY_LETTER:
         return (indx1 - indx2) | 0;
@@ -1601,41 +2017,57 @@ function* spell_cmp(vptr1, vptr2) {
         break;
         case NHC.SORTBY_CURRENT:
         default:
-        return (cptr.cmp(vptr1, vptr2) < 0) ? -1 : (cptr.cmp(vptr1, vptr2) > 0);
+        return (cptr.cmp(vptr1, vptr2) < 0) ? -1 : (cptr.cmp(vptr1, vptr2) > 0);  /* keep current order */
     }
+    /* tie-breaker for most sorts--alphabetical by spell name */
     return (yield* strncmpi(((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp1, $sizeof_objclass))), $sizeof_objdescr))), ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp2, $sizeof_objclass))), $sizeof_objdescr))), -1));
 }
 
+/* sort the index used for display order of the "view known spells"
+   list (sortmode == SORTBY_xxx), or sort the spellbook itself to make
+   the current display order stick (sortmode == SORTRETAINORDER) */
 /** C ref: spell.c:1927 */
 function* sortspells() {
     let i;
     let n;
+
     if (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode) == NHC.SORTBY_CURRENT)
         return;
     for (n = 0; n < NHC.MAXSPELL && cptr.ldI16o(svs, n, $sizeof_spell) != NHM.NO_SPELL; ++n)
         continue;
     if (n < 2)
-        return;
+        return;  /* not enough entries to need sorting */
+
     if (!cptr.ldPtro(gs, $instance_globals_s_spl_orderindx)) {
+        /* we haven't done any sorting yet; list is in casting order */
         if (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode) == NHC.SORTBY_LETTER || cptr.ldI32o(gs, $instance_globals_s_spl_sortmode) == NHC.SORTRETAINORDER)
             return;
+        /* allocate enough for full spellbook rather than just N spells */
         cptr.stPtro(gs, $instance_globals_s_spl_orderindx, (yield* alloc(168)));
         for (i = 0; i < NHC.MAXSPELL; i++)
             cptr.stI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, i, 4);
     }
+
     if (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode) == NHC.SORTRETAINORDER) {
         let tmp_book = cptr.alloc(42 * $sizeof_spell);
+
+        /* sort svs.spl_book[] rather than spl_orderindx[];
+           this also updates the index to reflect the new ordering (we
+           could just free it since that ordering becomes the default) */
         for (i = 0; i < NHC.MAXSPELL; i++)
             cptr.memcpy(cptr.add(tmp_book, i, $sizeof_spell), cptr.add(svs, cptr.ldI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, 4), $sizeof_spell), 8);
         for (i = 0; i < NHC.MAXSPELL; i++)
             cptr.memcpy(cptr.add(svs, i, $sizeof_spell), cptr.add(tmp_book, i, $sizeof_spell), 8), cptr.stI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, i, 4);
-        cptr.stI32o(gs, $instance_globals_s_spl_sortmode, NHC.SORTBY_LETTER);
+        cptr.stI32o(gs, $instance_globals_s_spl_sortmode, NHC.SORTBY_LETTER);  /* reset */
         return;
     }
+
+    /* usual case, sort the index rather than the spells themselves */
     (yield* nh_deterministic_qsort((cptr.ldPtro(gs, $instance_globals_s_spl_orderindx)), BigInt((n) >>> 0), 4n, (spell_cmp)));
     return;
 }
 
+/* called if the [sort spells] entry in the view spells menu gets chosen */
 /** C ref: spell.c:1976 @returns {CInt} */
 function* spellsortmenu() {
     let tmpwin;
@@ -1646,12 +2078,15 @@ function* spellsortmenu() {
     let n;
     let choice;
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
-    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* zero out all bits */
+
     for (i = 0; i < 9; i++) {
         if (i == NHC.SORTRETAINORDER) {
-            let$ = 122;
+            let$ = 122;  /* assumes fewer than 26 sort choices... */
+            /* separate final choice from others with a blank line */
             (yield* add_menu_str(tmpwin, __s_empty));
         } else {
             let$ = schar(((97 + i) | 0));
@@ -1660,10 +2095,12 @@ function* spellsortmenu() {
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, let$, 0, NHM.ATR_NONE, clr, cptr.ldPtro(spl_sortchoices, i, 8), (i == cptr.ldI32o(gs, $instance_globals_s_spl_sortmode)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_view_known_spells_list_sorted)));
+
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, selected));
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
         choice = (cptr.ldI32o(selected.v, 0, $sizeof_menu_item) - 1) | 0;
+        /* skip preselected entry if we have more than one item chosen */
         if (n > 1 && choice == cptr.ldI32o(gs, $instance_globals_s_spl_sortmode))
             choice = (cptr.ldI32o(selected.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.free(selected.v);
@@ -1673,12 +2110,14 @@ function* spellsortmenu() {
     return 0;
 }
 
+/* the #showspells command -- view known spells */
 /** C ref: spell.c:2021 @returns {CInt} */
 export function* dovspell() {
     let qbuf = new Uint8Array(128);
     let splnum = cptr.box(0);
     let othnum = cptr.box(0);
     let spl_tmp = cptr.alloc(8);
+
     if (cptr.ldI16o(svs, 0, $sizeof_spell) == NHM.NO_SPELL) {
         (yield* You(__s_don_t_know_any_spells_right_now));
     } else {
@@ -1690,6 +2129,7 @@ export function* dovspell() {
                 void cptr.sprintf(cptr.decay(qbuf), __s_reordering_spells_swap_c_with, (schar(((splnum.v < 26) ? ((97 + splnum.v) | 0) : ((((65 + splnum.v) | 0) - 26) | 0)))));
                 if (!(yield* dospellmenu(cptr.decay(qbuf), splnum.v, othnum)))
                     break;
+
                 cptr.memcpy(spl_tmp, cptr.add(svs, splnum.v, $sizeof_spell), 8);
                 cptr.memcpy(cptr.add(svs, splnum.v, $sizeof_spell), cptr.add(svs, othnum.v, $sizeof_spell), 8);
                 cptr.memcpy(cptr.add(svs, othnum.v, $sizeof_spell), spl_tmp, 8);
@@ -1700,10 +2140,11 @@ export function* dovspell() {
         cptr.free(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx));
         cptr.stPtro(gs, $instance_globals_s_spl_orderindx, null);
     }
-    cptr.stI32o(gs, $instance_globals_s_spl_sortmode, NHC.SORTBY_LETTER);
+    cptr.stI32o(gs, $instance_globals_s_spl_sortmode, NHC.SORTBY_LETTER);  /* 0 */
     return NHM.ECMD_OK;
 }
 
+/* lists spells for endgame dumplog purposes */
 /** C ref: spell.c:2059 */
 export function* show_spells() {
     let unused = cptr.box(-3);
@@ -1716,6 +2157,9 @@ export function* show_spells() {
     }
 }
 
+/* shows menu of known spells, with options to sort them.
+   return FALSE on cancel, TRUE otherwise.
+   spell_no is set to the internal spl_book index, if any selected */
 /** C ref: spell.c:2075 — @param {CPtr<char>} prompt @param {CInt} splaction @param {CPtr<int>} spell_no @returns {CInt} */
 function* dospellmenu(prompt, splaction, spell_no) {
     let tmpwin;
@@ -1730,9 +2174,20 @@ function* dospellmenu(prompt, splaction, spell_no) {
     let selected = cptr.box(0);
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
+
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
-    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* zero out all bits */
+
+    /*
+     * The correct spacing of the columns when not using
+     * tab separation depends on the following:
+     * (1) that the font is monospaced, and
+     * (2) that selection letters are prepended to the
+     *     given string and are of the form "a - ".
+     * For SPELLMENU_DUMP, (2) is untrue, so four spaces
+     * need to be subtracted.
+     */
     if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) {
         void cptr.sprintf(cptr.decay(buf), __s_s_20s_level_12s_fail_retention, splaction == -3 ? __s_empty : __s_sp4, __s_name, __s_category);
         fmt = __s_20s_2d_12s_3d_9s;
@@ -1744,36 +2199,47 @@ function* dospellmenu(prompt, splaction, spell_no) {
     }
     if (wizard())
         void cptr.sprintf(eos(cptr.decay(buf)), __s_c_6s, sep, __s_turns);
+
     (yield* add_menu_heading(tmpwin, cptr.decay(buf)));
     for (i = 0; i < NHC.MAXSPELL && cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL; i++) {
         splnum = !cptr.ldPtro(gs, $instance_globals_s_spl_orderindx) ? i : cptr.ldI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, 4);
         void cptr.sprintf(cptr.decay(buf), fmt, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(svs, splnum, $sizeof_spell), $sizeof_objclass))), $sizeof_objdescr)), cptr.ldI16o2(svs, splnum, $sizeof_spell, $spell_sp_lev), (yield* spelltypemnemonic(spell_skilltype(cptr.ldI16o(svs, splnum, $sizeof_spell)))), (100 - (yield* percent_success(splnum))) | 0, spellretention(splnum, cptr.decay(retentionbuf)));
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_c_6d, sep, cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know));
-        cptr.stI32(any, (splnum + 1) | 0);
+
+        cptr.stI32(any, (splnum + 1) | 0);  /* must be non-zero */
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, (schar(((splnum < 26) ? ((97 + splnum) | 0) : ((((65 + splnum) | 0) - 26) | 0)))), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (splnum == splaction) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
     how = NHM.PICK_ONE;
     if (splaction == -1) {
         if (cptr.ldI16o(svs, 1, $sizeof_spell) == NHM.NO_SPELL) {
+            /* only one spell => nothing to swap with */
             how = NHM.PICK_NONE;
         } else {
+            /* more than 1 spell, add an extra menu entry */
             cptr.stI32(any, (((NHC.MAXSPELL) + 1) | 0));
             (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 43, 0, NHM.ATR_NONE, clr, __s_sort_spells, NHM.MENU_ITEMFLAGS_NONE));
         }
     }
     (yield* Y.icall(end_menu()(tmpwin, prompt)));
+
     n = (yield* select_menu(tmpwin, how, selected));
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
         cptr.stI32(spell_no, (cptr.ldI32o(selected.v, 0, $sizeof_menu_item) - 1) | 0);
+        /* menu selection for `PICK_ONE' does not
+           de-select any preselected entry */
         if (n > 1 && cptr.ldI32(spell_no) == splaction)
             cptr.stI32(spell_no, (cptr.ldI32o(selected.v, 1, $sizeof_menu_item) - 1) | 0);
         cptr.free(selected.v);
+        /* default selection of preselected spell means that
+           user chose not to swap it with anything */
         if (cptr.ldI32(spell_no) == splaction)
             return 0;
         return 1;
     } else if (splaction >= 0) {
+        /* explicit de-selection of preselected spell means that
+           user is still swapping but not for the current spell */
         cptr.stI32(spell_no, splaction);
         return 1;
     }
@@ -1782,6 +2248,9 @@ function* dospellmenu(prompt, splaction, spell_no) {
 
 /** C ref: spell.c:2173 — @param {CInt} spell @returns {CInt} */
 function* percent_success(spell) {
+    /* Intrinsic and learned ability are combined to calculate
+     * the probability of player's success at casting a given spell.
+     */
     let chance;
     let splcaster;
     let special;
@@ -1789,18 +2258,25 @@ function* percent_success(spell) {
     let difficulty;
     let skill;
     let skilltype = spell_skilltype(cptr.ldI16o(svs, spell, $sizeof_spell));
+    /* Knights don't get metal armor penalty for clerical spells */
     let paladin_bonus = schar(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && skilltype == NHC.P_CLERIC_SPELL ? 1 : 0));
+
+    /* Calculate intrinsic ability (splcaster) */
+
     splcaster = cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelbase);
     special = cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelheal);
     statused = (acurr(cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelstat)));
+
     if (uarm.v && is_metallic(uarm.v) && !paladin_bonus)
         splcaster = (splcaster + ((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE) ? (cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr) / 2) | 0 : cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr))) | 0;
     else if (uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE)
         splcaster = (splcaster - cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)) | 0;
     if (uarms.v)
         splcaster = (splcaster + cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelshld)) | 0;
+
     if (uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.QUARTERSTAFF)
-        splcaster = (splcaster - 3) | 0;
+        splcaster = (splcaster - 3) | 0;  /* Small bonus */
+
     if (!paladin_bonus) {
         if (uarmh.v && is_metallic(uarmh.v))
             splcaster = (splcaster + 4) | 0;
@@ -1809,26 +2285,60 @@ function* percent_success(spell) {
         if (uarmf.v && is_metallic(uarmf.v))
             splcaster = (splcaster + 2) | 0;
     }
+
     if (cptr.ldI16o(svs, spell, $sizeof_spell) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec))
         splcaster = (splcaster + cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelsbon)) | 0;
+
+    /* `healing spell' bonus */
     if (cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_HEALING || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_EXTRA_HEALING || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_CURE_BLINDNESS || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_CURE_SICKNESS || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_RESTORE_ABILITY || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_REMOVE_CURSE)
         splcaster = (splcaster + special) | 0;
+
     if (splcaster > 20)
         splcaster = 20;
+
+    /* Calculate learned ability */
+
+    /* The player's basic likelihood of being able to cast any spell
+     * is based of their `magic' statistic. (Int or Wis)
+     */
     chance = (Math.imul(11, statused) / 2) | 0;
+
+    /*
+     * High-level spells are harder.  Easier for higher-level casters.
+     * The difficulty is based on the hero's level and their skill level
+     * in that spell type.
+     */
     skill = (cptr.ldI16o2(u, skilltype, $sizeof_skills, $you_weapon_skills));
-    skill = (((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED) - 1) | 0;
+    skill = (((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED) - 1) | 0;  /* unskilled => 0 */
     difficulty = (Math.imul(((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) - 1) | 0), 4) - (((((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0)) | 0) + 1) | 0)) | 0;
+
     if (difficulty > 0) {
+        /* Player is too low level or unskilled. */
         chance = (chance - isqrt((Math.imul(900, difficulty) + 2000) | 0)) | 0;
     } else {
+        /* Player is above level.  Learning continues, but the
+         * law of diminishing returns sets in quickly for
+         * low-level spells.  That is, a player quickly gains
+         * no advantage for raising level.
+         */
         let learning = (Math.imul(15, -difficulty) / cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)) | 0;
         chance = (chance + (learning > 20 ? 20 : learning)) | 0;
     }
+
+    /* Clamp the chance: >18 stat and advanced learning only help
+     * to a limit, while chances below "hopeless" only raise the
+     * specter of overflowing 16-bit ints (and permit wearing a
+     * shield to raise the chances :-).
+     */
     if (chance < 0)
         chance = 0;
     if (chance > 120)
         chance = 120;
+
+    /* Wearing anything but a light shield makes it very awkward
+     * to cast a spell.  The penalty is not quite so bad for the
+     * player's role-specific spell.
+     */
     if (uarms.v && (yield* weight(uarms.v)) > (cptr.ldI32o2(objects, NHC.SMALL_SHIELD, $sizeof_objclass, $objclass_oc_weight) | 0)) {
         if (cptr.ldI16o(svs, spell, $sizeof_spell) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec)) {
             chance = (chance / 2) | 0;
@@ -1836,11 +2346,21 @@ function* percent_success(spell) {
             chance = (chance / 4) | 0;
         }
     }
+
+    /* Finally, chance (based on player intell/wisdom and level) is
+     * combined with ability (based on player intrinsics and
+     * encumbrances).  No matter how intelligent/wise and advanced
+     * a player is, intrinsics and encumbrance can prevent casting;
+     * and no matter how able, learning is always required.
+     */
     chance = (((Math.imul(chance, ((20 - splcaster) | 0)) / 15) | 0) - splcaster) | 0;
+
+    /* Clamp to percentile */
     if (chance > 100)
         chance = 100;
     if (chance < 0)
         chance = 0;
+
     return chance;
 }
 
@@ -1850,33 +2370,56 @@ function spellretention(idx, outbuf) {
     let percent;
     let accuracy;
     let skill;
+
     skill = (cptr.ldI16o2(u, spell_skilltype(cptr.ldI16o(svs, idx, $sizeof_spell)), $sizeof_skills, $you_weapon_skills));
-    skill = ((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED);
+    skill = ((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED);  /* restricted same as unskilled */
     turnsleft = BigInt(cptr.ldI32o2(svs, idx, $sizeof_spell, $spell_sp_know));
-    cptr.st1(outbuf, 0);
+    cptr.st1(outbuf, 0);  /* lint suppression */
+
     if (turnsleft < 1n) {
+        /* spell has expired; hero can't successfully cast it anymore */
         void cptr.strcpy(outbuf, __s_gone);
     } else if (turnsleft >= 20000n) {
+        /* full retention, first turn or immediately after reading book */
         void cptr.strcpy(outbuf, __s_100);
     } else {
+        /*
+         * Retention is displayed as a range of percentages of
+         * amount of time left until memory of the spell expires;
+         * the precision of the range depends upon hero's skill
+         * in this spell.
+         *    expert:  2% intervals; 1-2,   3-4,  ...,   99-100;
+         *   skilled:  5% intervals; 1-5,   6-10, ...,   95-100;
+         *     basic: 10% intervals; 1-10, 11-20, ...,   91-100;
+         * unskilled: 25% intervals; 1-25, 26-50, 51-75, 76-100.
+         *
+         * At the low end of each range, a value of N% really means
+         * (N-1)%+1 through N%; so 1% is "greater than 0, at most 200".
+         * KEEN is a multiple of 100; KEEN/100 loses no precision.
+         */
         percent = BigInt.asIntN(64, (BigInt.asIntN(64, turnsleft - 1n)) / 200n + 1n);
         accuracy = (skill == NHC.P_EXPERT) ? 2n : ((skill == NHC.P_SKILLED) ? 5n : ((skill == NHC.P_BASIC) ? 10n : 25n));
+        /* round up to the high end of this range */
         percent = BigInt.asIntN(64, accuracy * (BigInt.asIntN(64, (BigInt.asIntN(64, percent - 1n)) / accuracy + 1n)));
         void cptr.sprintf(outbuf, __s_ld_ld, BigInt.asIntN(64, BigInt.asIntN(64, percent - accuracy) + 1n), percent);
     }
     return outbuf;
 }
 
+/* Learn a spell during creation of the initial inventory */
 /** C ref: spell.c:2340 — @param {CPtr<struct obj>} obj */
 export function* initialspell(obj) {
     let i;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
+
     for (i = 0; i < NHC.MAXSPELL; i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL || cptr.ldI16o(svs, i, $sizeof_spell) == otyp)
             break;
+
     if (i == NHC.MAXSPELL) {
         (yield* impossible(__s_too_many_spells_memorized));
     } else if (cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL) {
+        /* initial inventory shouldn't contain duplicate spellbooks */
         (yield* impossible(__s_spell_s_already_known, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr))));
     } else {
         cptr.stI16o(svs, i, i16(otyp), $sizeof_spell);
@@ -1886,10 +2429,12 @@ export function* initialspell(obj) {
     return;
 }
 
+/* returns one of spe_Unknown, spe_Fresh, spe_GoingStale, spe_Forgotten */
 /** C ref: spell.c:2363 — @param {CInt} otyp @returns {CInt} */
 export function known_spell(otyp) {
     let i;
     let k;
+
     for (i = 0; (i < NHC.MAXSPELL) && (cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL); i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == otyp) {
             k = cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know);
@@ -1898,20 +2443,25 @@ export function known_spell(otyp) {
     return NHC.spe_Unknown;
 }
 
+/* return index for spell otyp, or UNKNOWN_SPELL if not found */
 /** C ref: spell.c:2379 — @param {CInt} otyp @returns {CInt} */
 export function spell_idx(otyp) {
     let i;
+
     for (i = 0; (i < NHC.MAXSPELL) && (cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL); i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == otyp)
             return i;
     return -1;
 }
 
+/* learn or refresh spell otyp, if feasible; return casting letter or '\0' */
 /** C ref: spell.c:2391 — @param {CInt} otyp @returns {CInt} */
 export function* force_learn_spell(otyp) {
     let i;
+
     if (otyp == NHC.SPE_BLANK_PAPER || otyp == NHC.SPE_BOOK_OF_THE_DEAD || known_spell(otyp) == NHC.spe_Fresh)
         return 0;
+
     for (i = 0; i < NHC.MAXSPELL; i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL || cptr.ldI16o(svs, i, $sizeof_spell) == otyp)
             break;
@@ -1919,15 +2469,19 @@ export function* force_learn_spell(otyp) {
         (yield* impossible(__s_too_many_spells_memorized__2));
         return 0;
     }
+    /* for a going-stale or forgotten spell the sp_id and sp_lev assignments
+       are redundant but harmless; for an unknown spell, they're essential */
     cptr.stI16o(svs, i, otyp, $sizeof_spell);
     cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2)));
     (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20000));
     return (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))));
 }
 
+/* number of spells hero knows */
 /** C ref: spell.c:2417 @returns {CInt} */
 export function num_spells() {
     let i;
+
     for (i = 0; i < NHC.MAXSPELL; i++)
         if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
             break;

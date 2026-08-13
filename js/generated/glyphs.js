@@ -190,6 +190,8 @@ let to_custom_symbol_find = cptr.alloc($sizeof_find_struct);
 /** C ref: glyphs.c:37 — long */
 let nonzero_black = 16777216n;
 
+/* staticfn void purge_custom_entries(enum graphics_sets which_set); */
+
 let __static_to_custom_symset_entry_callback_glyphnag = 0; /** C ref: glyphs.c:84 — int (function-static) */
 let __static_to_custom_symset_entry_callback_colornag = 0; /** C ref: glyphs.c:97 — int (function-static) */
 
@@ -198,15 +200,27 @@ function to_custom_symset_entry_callback(glyph, findwhat) {
     let idx = cptr.ldI32o(gs, $instance_globals_s_symset_which_set);
     let utf8str = [0, 0, 0, 0, 0, 0];
     let uval = 0;
+
     if (cptr.ldPtro(findwhat, $find_struct_extraval))
         cptr.stI32(cptr.ldPtro(findwhat, $find_struct_extraval), glyph);
+
     (__builtin_expect(BigInt((!(idx >= 0 && idx < NHC.NUM_GRAPHICS))), 0n) ? __assert_rtn(__s_to_custom_symset_entry_callback, __s_glyphs_c, 66, __s_idx_0_idx_num_graphics) : void 0);
     if (cptr.ldPtro(findwhat, $find_struct_unicode_val))
         uval = unicode_val(cptr.ldPtro(findwhat, $find_struct_unicode_val));
     if (uval && unicodeval_to_utf8str(uval, cptr.decay(utf8str), 6n)) {
+        /* presently the customizations are affiliated with a particular
+         * symset but if we don't have any symset context, ignore it for now
+         * in order to avoid a segfault.
+         * FIXME:
+         * One future idea might be to store the U+ entries under "UTF8"
+         * and apply those customizations to any current symset if it has
+         * a UTF8 handler. Similar approach for unaffiliated glyph/symbols
+         * non-UTF color customizations
+         */
         if (cptr.ldPtro2(gs, idx, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
             add_custom_urep_entry(cptr.ldPtro2(gs, idx, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name), glyph, uval >>> 0, cptr.decay(utf8str), cptr.ldI32o(gs, $instance_globals_s_symset_which_set));
         } else {
+
             if (!__static_to_custom_symset_entry_callback_glyphnag++)
                 config_error_add(__s_unimplemented_customization_feature);
         }
@@ -215,12 +229,18 @@ function to_custom_symset_entry_callback(glyph, findwhat) {
         if (cptr.ldPtro2(gs, idx, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
             add_custom_nhcolor_entry(cptr.ldPtro2(gs, idx, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name), glyph, cptr.ldI32o(findwhat, $find_struct_color), cptr.ldI32o(gs, $instance_globals_s_symset_which_set));
         } else {
+
             if (!__static_to_custom_symset_entry_callback_colornag++)
                 config_error_add(__s_unimplemented_customization_feature);
         }
     }
 }
 
+/*
+ * Return value:
+ *               1 = success
+ *               0 = failure
+ */
 /** C ref: glyphs.c:112 — @param {CPtr<char>} op @param {CPtr<int>} glyphptr @returns {CInt} */
 export function glyphrep_to_custom_map_entries(op, glyphptr) {
     cptr.memcpy(to_custom_symbol_find, zero_find, 64);
@@ -233,9 +253,11 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
     let rgb = 0n;
     let slash = 0;
     let colon = 0;
+
     if (!glyphid_cache)
-        reslt = 1;
+        reslt = 1;  /* for debugger use only; no cache available */
     (void (reslt));
+
     nh_snprintf(__s_glyphrep_to_custom_map_entries, 126, cptr.decay(buf), 256n, __s_pct_s, op);
     c_unicode = (c_colorval = null);
     c_glyphid = (cp = cptr.decay(buf));
@@ -260,6 +282,7 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
             slash = 0;
         }
     }
+    /* some sanity checks */
     if (c_glyphid && cptr.ld1s(c_glyphid) == 32)
         c_glyphid = cptr.add(c_glyphid, 1);
     if (c_colorval && cptr.ld1s(c_colorval) == 32)
@@ -271,7 +294,14 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
     }
     if (c_unicode && !cptr.ld1s(c_unicode))
         c_unicode = null;
+
     if ((c_colorval && (rgb = BigInt(rgbstr_to_int32(c_colorval))) != -1n) || !c_colorval) {
+        /* if the color 0 is an actual color, as opposed to just "not set"
+           we set a marker bit outside the 24-bit range to indicate a
+           valid color value 0. That allows valid color 0, but allows a
+           simple checking for 0 to detect "not set". The window port that
+           implements the color switch, needs to either check that bit
+           or appropriately mask colors with 0xFFFFFF. */
         cptr.stI32o(to_custom_symbol_find, $find_struct_color, Number(BigInt.asUintN(32, ((rgb == -1n || !c_colorval) ? 0n : ((rgb == 0n) ? nonzero_black : rgb)))));
     }
     if (c_unicode)
@@ -285,6 +315,7 @@ export function glyphrep_to_custom_map_entries(op, glyphptr) {
 /** C ref: glyphs.c:184 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function fix_glyphname(str) {
     let c;
+
     for (c = str; cptr.ld1s(c); c = cptr.add(c, 1)) {
         if (cptr.ld1s(c) >= 65 && cptr.ld1s(c) <= 90)
             cptr.st1(c, cptr.ld1s(c) + 32);
@@ -333,6 +364,7 @@ function glyph_find_core(id, findwhat) {
     let glyph;
     let do_callback;
     let end_find = 0;
+
     if (parse_id(id, findwhat)) {
         if (cptr.ldI32(findwhat) == NHC.find_glyph) {
             (cptr.ldPtro(findwhat, $find_struct_callback))(cptr.ldI32o(findwhat, $find_struct_val), findwhat);
@@ -374,9 +406,26 @@ function glyph_find_core(id, findwhat) {
     return 0;
 }
 
+/*
+ When we start to process a config file or a symbol file,
+ that might have G_ entries, generating all 9000+ glyphid
+ for comparison repeatedly each time we encounter a G_
+ entry to decipher, then comparing against them, is obviously
+ extremely performance-poor.
+
+ Setting aside the "comparison" part for now (that has to be
+ done in some manner), we can likely do something about the
+ repeated "generation" of the names for parsing prior to the
+ actual comparison part by generating them once, ahead of the
+ bulk of the potential parsings. We can later free up
+ all the memory those names consumed once the bulk parsing is
+ over with.
+*/
+
 /** C ref: glyphs.c:303 */
 export function fill_glyphid_cache() {
     let reslt = 0;
+
     if (!glyphid_cache) {
         init_glyph_cache();
     }
@@ -393,15 +442,28 @@ export function fill_glyphid_cache() {
     }
 }
 
+/*
+ * The glyph ID cache is a simple double-hash table.
+ * The cache size is a power of two, and two hashes are derived from the
+ * cache ID. The first is a location in the table, and the second is an
+ * offset. On any collision, the second hash is added to the first until
+ * a match or an empty bucket is found.
+ * The second hash is an odd number, which is necessary and sufficient
+ * to traverse the entire table.
+ */
+
 /** C ref: glyphs.c:334 */
 function init_glyph_cache() {
     let glyph;
+
+    /* Cache size of power of 2 not less than 2*MAX_GLYPH */
     glyphid_cache_lsize = 0;
     glyphid_cache_size = 1n;
     while (glyphid_cache_size < 19248n) {
         ++glyphid_cache_lsize;
         glyphid_cache_size <<= 1n;
     }
+
     glyphid_cache = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, glyphid_cache_size * 16n))));
     for (glyph = 0n; glyph < glyphid_cache_size; ++glyph) {
         cptr.stI32o(glyphid_cache, glyph, 0, $sizeof_glyphid_cache_t);
@@ -412,6 +474,7 @@ function init_glyph_cache() {
 /** C ref: glyphs.c:355 */
 export function free_glyphid_cache() {
     let idx;
+
     if (!glyphid_cache)
         return;
     for (idx = 0n; idx < glyphid_cache_size; ++idx) {
@@ -430,14 +493,18 @@ function add_glyph_to_cache(glyphnum, id) {
     let hash1 = (BigInt(hash >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n)));
     let hash2 = ((BigInt((hash >>> glyphid_cache_lsize) >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n))) | 1n);
     let i = hash1;
+
     do {
         if (cptr.eq(cptr.ldPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id), (null))) {
+            /* Empty bucket found */
             cptr.stPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id, dupstr(id));
             cptr.stI32o(glyphid_cache, i, glyphnum, $sizeof_glyphid_cache_t);
             return;
         }
+        /* For speed, assume that no ID occurs twice */
         i = (BigInt.asUintN(64, i + hash2)) & (BigInt.asUintN(64, glyphid_cache_size - 1n));
     } while (i != hash1);
+    /* This should never happen */
     panic(__s_glyphid_cache_full);
 }
 
@@ -447,11 +514,14 @@ function find_glyph_in_cache(id) {
     let hash1 = (BigInt(hash >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n)));
     let hash2 = ((BigInt((hash >>> glyphid_cache_lsize) >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n))) | 1n);
     let i = hash1;
+
     do {
         if (cptr.eq(cptr.ldPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id), (null))) {
+            /* Empty bucket found */
             return -1;
         }
         if (strncmpi((id), (cptr.ldPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id)), -1) == 0) {
+            /* Match found */
             return cptr.ldI32o(glyphid_cache, i, $sizeof_glyphid_cache_t);
         }
         i = (BigInt.asUintN(64, i + hash2)) & (BigInt.asUintN(64, glyphid_cache_size - 1n));
@@ -462,10 +532,12 @@ function find_glyph_in_cache(id) {
 /** C ref: glyphs.c:418 — @param {CInt} glyphnum @returns {CPtr<char>} */
 function find_glyphid_in_cache_by_glyphnum(glyphnum) {
     let idx;
+
     if (!glyphid_cache)
         return null;
     for (idx = 0n; idx < glyphid_cache_size; ++idx) {
         if (cptr.ldI32o(glyphid_cache, idx, $sizeof_glyphid_cache_t) == glyphnum && cptr.ldPtro2(glyphid_cache, idx, $sizeof_glyphid_cache_t, $glyphid_cache_t_id) !== null) {
+            /* Match found */
             return cptr.ldPtro2(glyphid_cache, idx, $sizeof_glyphid_cache_t, $glyphid_cache_t_id);
         }
     }
@@ -476,6 +548,7 @@ function find_glyphid_in_cache_by_glyphnum(glyphnum) {
 function glyph_hash(id) {
     let hash = 0;
     let i;
+
     for (i = 0n; cptr.ld1so(id, i) != 0; ++i) {
         let ch = cptr.ld1so(id, i);
         if (65 <= ch && ch <= 90) {
@@ -495,7 +568,11 @@ export function glyphid_cache_status() {
 /** C ref: glyphs.c:458 — @param {CPtr<char>} buf @returns {CInt} */
 export function match_glyph(buf) {
     let workbuf = new Uint8Array(256);
-    nh_snprintf(__s_match_glyph, 465, cptr.decay(workbuf), 256n, __s_pct_s, buf);
+
+    /* buf contains a G_ glyph reference, not an S_ symbol.
+        There could be an R-G-B color attached too.
+        Let's get a copy to work with. */
+    nh_snprintf(__s_match_glyph, 465, cptr.decay(workbuf), 256n, __s_pct_s, buf);  /* get a copy */
     return glyphrep(cptr.decay(workbuf));
 }
 
@@ -503,8 +580,9 @@ export function match_glyph(buf) {
 export function glyphrep(op) {
     let reslt = 0;
     let glyph = cptr.box(NHC.MAX_GLYPH);
+
     if (!glyphid_cache)
-        reslt = 1;
+        reslt = 1;  /* for debugger use only; no cache available */
     (void (reslt));
     reslt = glyphrep_to_custom_map_entries(op, glyph);
     if (reslt)
@@ -517,6 +595,7 @@ export function add_custom_nhcolor_entry(customization_name, glyphidx, nhcolor, 
     let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), NHC.custom_nhcolor, $sizeof_symset_customization);
     let details;
     let newdetails = null;
+
     if (!cptr.ldPtro(gdc, $symset_customization_details)) {
         cptr.stPtr(gdc, dupstr(customization_name));
         cptr.stI32o(gdc, $symset_customization_custtype, NHC.custom_nhcolor);
@@ -533,6 +612,7 @@ export function add_custom_nhcolor_entry(customization_name, glyphidx, nhcolor, 
             details = cptr.ldPtro(details, $customization_detail_next);
         }
     }
+    /* create new details entry */
     newdetails = alloc(32);
     cptr.stI32(newdetails, glyphidx);
     cptr.stI32o(newdetails, $custom_nhcolor_nhcolor, nhcolor);
@@ -556,10 +636,13 @@ export function apply_customizations(which_set, docustomize) {
     let do_colors = schar((((docustomize & NHC.do_custom_colors) >>> 0) != 0));
     let do_symbols = schar((((docustomize & NHC.do_custom_symbols) >>> 0) != 0));
     let custs;
+
     for (custs = 0; custs < NHC.custom_count; ++custs) {
         sc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), custs, $sizeof_symset_customization);
         if (cptr.ldI32o(sc, $symset_customization_count) && cptr.ldPtro(sc, $symset_customization_details)) {
             at_least_one = 1;
+            /* These glyph customizations get applied to the glyphmap array,
+               not to symset entries */
             details = cptr.ldPtro(sc, $symset_customization_details);
             while (details) {
                 if (cptr.ld1so(iflags, $instance_flags_customsymbols) && do_symbols) {
@@ -582,6 +665,10 @@ export function apply_customizations(which_set, docustomize) {
     cptr.st1o(iflags, $instance_flags_pending_customizations, at_least_one);
 }
 
+/* Shuffle the customizations to match shuffled object descriptions,
+ * so a red potion isn't displayed with a blue customization, and so on.
+ */
+
 /** C ref: glyphs.c:581 */
 export function maybe_shuffle_customizations() {
     if (cptr.ld1so(iflags, $instance_flags_pending_customizations)) {
@@ -597,13 +684,16 @@ cptr.stI32o(__static_shuffle_customizations_offsets, 4, NHC.GLYPH_OBJ_PILETOP_OF
 /** C ref: glyphs.c:646 */
 function shuffle_customizations() {
     let j;
+
     for (j = 0; j < 2; j++) {
         let obj_glyphs = cptr.add(glyphmap, cptr.ldI32o(__static_shuffle_customizations_offsets, j, 4), 32);
         let i;
         let tmp_u = cptr.alloc(481 * 8);
         let tmp_customcolor = cptr.alloc(481 * 4);
         let tmp_color256idx = cptr.alloc(481 * 2);
+
         let duplicate = cptr.alloc(481 * 4);
+
         for (i = 0; i < NHC.NUM_OBJECTS; i++) {
             cptr.stI32o(duplicate, i, -1, 4);
             cptr.stPtro(tmp_u, i, null, 8);
@@ -612,10 +702,18 @@ function shuffle_customizations() {
         }
         for (i = 0; i < NHC.NUM_OBJECTS; i++) {
             let idx = cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx);
+
+            /*
+             * Shuffling gem appearances can cause the same oc_descr_idx to
+             * appear more than once. Detect this condition and ensure that
+             * each pointer points to a unique allocation.
+             */
             if (cptr.ldI32o(duplicate, idx, 4) >= 0) {
+                /* Current structure already appears in tmp_u */
                 let other = cptr.ldPtro(tmp_u, cptr.ldI32o(duplicate, idx, 4), 8);
                 let other_customcolor = cptr.ldI32o(tmp_customcolor, cptr.ldI32o(duplicate, idx, 4), 4);
                 let other_color256idx = cptr.ldU16o(tmp_color256idx, cptr.ldI32o(duplicate, idx, 4), 2);
+
                 cptr.stI32o(tmp_customcolor, i, other_customcolor, 4);
                 cptr.stI16o(tmp_color256idx, i, other_color256idx, 2);
                 if (other) {
@@ -652,6 +750,7 @@ function shuffle_customizations() {
 /** C ref: glyphs.c:736 — @param {CPtr<char>} customization_name @param {*} custtype @param {*} which_set @returns {CPtr<struct customization_detail>} */
 export function find_matching_customization(customization_name, custtype, which_set) {
     let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), custtype, $sizeof_symset_customization);
+
     if ((cptr.ldI32o(gdc, $symset_customization_custtype) == custtype) && cptr.ldPtr(gdc) && (strcmp(customization_name, cptr.ldPtr(gdc)) == 0))
         return cptr.ldPtro(gdc, $symset_customization_details);
     return null;
@@ -660,6 +759,7 @@ export function find_matching_customization(customization_name, custtype, which_
 /** C ref: glyphs.c:751 */
 export function purge_all_custom_entries() {
     let i;
+
     for (i = 0; i < ((NHC.NUM_GRAPHICS + 1) | 0); ++i) {
         purge_custom_entries(i);
     }
@@ -671,6 +771,7 @@ export function purge_custom_entries(which_set) {
     let gdc;
     let details;
     let next;
+
     for (custtype = NHC.custom_none; custtype < NHC.custom_count; ++custtype) {
         gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), custtype, $sizeof_symset_customization);
         details = cptr.ldPtro(gdc, $symset_customization_details);
@@ -703,6 +804,7 @@ export function purge_custom_entries(which_set) {
 /** C ref: glyphs.c:797 — @param {CPtr<FILE>} fp */
 export function dump_all_glyphids(fp) {
     let dump_glyphid_find = cptr.alloc(64); cptr.memcpy(dump_glyphid_find, zero_find, $sizeof_find_struct);
+
     cptr.stI32(dump_glyphid_find, NHC.find_nothing);
     cptr.stPtro(dump_glyphid_find, $find_struct_reserved, fp);
     cptr.stI32o(dump_glyphid_find, $find_struct_restype, NHC.res_dump_glyphids);
@@ -713,6 +815,7 @@ export function dump_all_glyphids(fp) {
 export function wizcustom_glyphids(win) {
     let glyphnum;
     let id;
+
     if (!glyphid_cache)
         return;
     for (glyphnum = 0; glyphnum < NHC.MAX_GLYPH; ++glyphnum) {
@@ -786,6 +889,7 @@ function parse_id(id, findwhat) {
     let is_S = 0;
     let is_G = 0;
     let buf = (function () { const flat = new Uint8Array(4 * (128 * 1)); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (128 * 1), (r + 1) * (128 * 1))); a.buf = flat; return a; })();
+
     if (cptr.ldI32(findwhat) == NHC.find_nothing && cptr.ldI32o(findwhat, $find_struct_restype)) {
         if (cptr.ldI32o(findwhat, $find_struct_restype) == NHC.res_dump_glyphids) {
             if (cptr.ldPtro(findwhat, $find_struct_reserved)) {
@@ -803,8 +907,10 @@ function parse_id(id, findwhat) {
             }
         }
     }
+
     is_G = schar((id && cptr.ld1so(id, 0) == 71 && cptr.ld1so(id, 1) == 95 ? 1 : 0));
     is_S = schar((id && cptr.ld1so(id, 0) == 83 && cptr.ld1so(id, 1) == 95 ? 1 : 0));
+
     if ((is_G && !glyphid_cache) || filling_cache || dump_ids || is_S) {
         while (cptr.ldI32o(loadsyms, i, $sizeof_symparse)) {
             if (!pm_offset && cptr.ldI32o(loadsyms, i, $sizeof_symparse) == NHC.SYM_MON)
@@ -837,13 +943,18 @@ function parse_id(id, findwhat) {
             let buf2;
             let buf3;
             let buf4;
+
+            /* individual matching glyph entries */
             for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
                 skip_base = 0;
                 skip_this_one = 0;
                 cptr.st1o(cptr.decay(buf[0]), 0, cptr.st1o(cptr.decay(buf[1]), 0, cptr.st1o(cptr.decay(buf[2]), 0, cptr.st1o(cptr.decay(buf[3]), 0, 0, 1), 1), 1), 1);
                 if (glyph_is_monster(glyph)) {
+                    /* buf2 will hold the distinguishing prefix */
+                    /* buf3 will hold the base name */
                     buf2 = __s_empty;
                     buf3 = cptr.ldPtro2(monsdump, glyph_to_mon(glyph), $sizeof_enum_dump, $enum_dump_nm);
+
                     if (glyph_is_normal_male_monster(glyph)) {
                         buf2 = __s_male;
                     } else if (glyph_is_normal_female_monster(glyph)) {
@@ -865,19 +976,25 @@ function parse_id(id, findwhat) {
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                 } else if (glyph_is_body(glyph)) {
+                    /* buf2 will hold the distinguishing prefix */
+                    /* buf3 will hold the base name */
                     buf2 = glyph_is_body_piletop(glyph) ? __s_piletop_body : __s_body;
                     buf3 = cptr.ldPtro2(monsdump, glyph_to_body_corpsenm(glyph), $sizeof_enum_dump, $enum_dump_nm);
                     void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                 } else if (glyph_is_statue(glyph)) {
-                    buf2 = glyph_is_fem_statue_piletop(glyph) ? __s_piletop_statue_of_female : (glyph_is_fem_statue(glyph) ? __s_statue_of_female : (glyph_is_male_statue_piletop(glyph) ? __s_piletop_statue_of_male : (glyph_is_male_statue(glyph) ? __s_statue_of_male : __s_empty)));
+                    /* buf2 will hold the distinguishing prefix */
+                    /* buf3 will hold the base name */
+                    buf2 = glyph_is_fem_statue_piletop(glyph) ? __s_piletop_statue_of_female : (glyph_is_fem_statue(glyph) ? __s_statue_of_female : (glyph_is_male_statue_piletop(glyph) ? __s_piletop_statue_of_male : (glyph_is_male_statue(glyph) ? __s_statue_of_male : __s_empty)));  /* shouldn't happen */
                     buf3 = cptr.ldPtro2(monsdump, glyph_to_statue_corpsenm(glyph), $sizeof_enum_dump, $enum_dump_nm);
                     void cptr.strcpy(cptr.decay(buf[0]), __s_g_us);
                     void cptr.strcat(cptr.decay(buf[0]), buf2);
                     void cptr.strcat(cptr.decay(buf[0]), buf3);
                 } else if (glyph_is_object(glyph)) {
                     i = glyph_to_obj(glyph);
+                    /* buf2 will hold the distinguishing prefix */
+                    /* buf3 will hold the base name */
                     if (((i > NHC.SCR_STINKING_CLOUD) && (i < NHC.SCR_MAIL)) || ((i > NHC.WAN_LIGHTNING) && (i < NHC.GOLD_PIECE)))
                         skip_this_one = 1;
                     if (!skip_this_one) {
@@ -904,6 +1021,10 @@ function parse_id(id, findwhat) {
                     }
                 } else if (glyph_is_cmap(glyph) || glyph_is_cmap_zap(glyph) || glyph_is_swallow(glyph) || glyph_is_explosion(glyph)) {
                     let cmap = -1;
+
+                    /* buf2 will hold the distinguishing prefix */
+                    /* buf3 will hold the base name */
+                    /* buf4 will hold the distinguishing suffix */
                     buf2 = __s_empty;
                     buf3 = __s_empty;
                     buf4 = __s_empty;
@@ -929,6 +1050,7 @@ function parse_id(id, findwhat) {
                     } else if (glyph_is_cmap_a(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_A_OFF) | 0) + NHC.S_ndoor) | 0;
                     } else if (glyph_is_cmap_altar(glyph)) {
+
                         j = ((glyph - NHC.GLYPH_ALTAR_OFF) | 0);
                         cmap = NHC.S_altar;
                         if (j != NHC.altar_other) {
@@ -941,6 +1063,7 @@ function parse_id(id, findwhat) {
                     } else if (glyph_is_cmap_b(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_B_OFF) | 0) + NHC.S_grave) | 0;
                     } else if (glyph_is_cmap_zap(glyph)) {
+
                         j = ((glyph - NHC.GLYPH_ZAP_OFF) | 0);
                         cmap = ((j % 4) + NHC.S_vbeam) | 0;
                         nh_snprintf(__s_parse_id, 1042, cptr.decay(buf[2]), 128n, __s_pct_s, cptr.add(cptr.ldPtro2(loadsyms, (cmap + cmap_offset) | 0, $sizeof_symparse, $symparse_name), 2));
@@ -951,6 +1074,7 @@ function parse_id(id, findwhat) {
                     } else if (glyph_is_cmap_c(glyph)) {
                         cmap = (((glyph - NHC.GLYPH_CMAP_C_OFF) | 0) + NHC.S_digbeam) | 0;
                     } else if (glyph_is_swallow(glyph)) {
+
                         j = (glyph - NHC.GLYPH_SWALLOW_OFF) | 0;
                         cmap = glyph_to_swallow(glyph);
                         mnum = (j / ((((NHC.S_sw_br - NHC.S_sw_tl) | 0) + 1) | 0)) | 0;
@@ -962,6 +1086,7 @@ function parse_id(id, findwhat) {
                         skip_base = 1;
                     } else if (glyph_is_explosion(glyph)) {
                         let expl;
+
                         j = (glyph - NHC.GLYPH_EXPLODE_OFF) | 0;
                         expl = (j / ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0)) | 0;
                         cmap = (glyph_to_explosion(glyph) + NHC.S_expl_tl) | 0;
@@ -1009,8 +1134,9 @@ function parse_id(id, findwhat) {
                     }
                 }
             }
-        }
+        }  /* not glyphid_cache */
     } else if (is_S) {
+        /* cmap entries */
         for (i = 0; i < cmap_count; ++i) {
             if (!strncmpi((cptr.add(cptr.ldPtro2(loadsyms, (i + cmap_offset) | 0, $sizeof_symparse, $symparse_name), 2)), (cptr.add(id, 2)), -1)) {
                 cptr.stI32(findwhat, NHC.find_cmap);
@@ -1019,6 +1145,7 @@ function parse_id(id, findwhat) {
                 return 1;
             }
         }
+        /* objclass entries */
         for (i = 0; i < oc_count; ++i) {
             if (!strncmpi((cptr.add(cptr.ldPtro2(loadsyms, (i + oc_offset) | 0, $sizeof_symparse, $symparse_name), 2)), (cptr.add(id, 2)), -1)) {
                 cptr.stI32(findwhat, NHC.find_oc);
@@ -1027,10 +1154,11 @@ function parse_id(id, findwhat) {
                 return 1;
             }
         }
+        /* permonst entries */
         for (i = 0; i <= pm_count; ++i) {
             if (!strncmpi((cptr.add(cptr.ldPtro2(loadsyms, (i + pm_offset) | 0, $sizeof_symparse, $symparse_name), 2)), (cptr.add(id, 2)), -1)) {
                 cptr.stI32(findwhat, NHC.find_pm);
-                cptr.stI32o(findwhat, $find_struct_val, (i + 1) | 0);
+                cptr.stI32o(findwhat, $find_struct_val, (i + 1) | 0);  /* starts at 1 */
                 cptr.stI32o(findwhat, $find_struct_loadsyms_offset, (i + pm_offset) | 0);
                 return 1;
             }
@@ -1044,9 +1172,12 @@ function parse_id(id, findwhat) {
     return 0;
 }
 
+/* extern glyph_map glyphmap[MAX_GLYPH]; */
+
 /** C ref: glyphs.c:1167 */
 export function clear_all_glyphmap_colors() {
     let glyph;
+
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         if (cptr.ldI32o2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_customcolor))
             cptr.stI32o2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_customcolor, 0);

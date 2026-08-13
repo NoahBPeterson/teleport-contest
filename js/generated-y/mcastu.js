@@ -267,6 +267,8 @@ cptr.stI32o(mcast_data, 144 + $_mcast_data_flags, 7);
 cptr.stI32o(mcast_data, 152, 20);
 cptr.stI32o(mcast_data, 152 + $_mcast_data_flags, 6);
 
+/* spell lists for specific monster casters */
+/* the spells in the list should be in ascending level order */
 /** C ref: mcastu.c:27 — int[10] */
 const mon_cleric_spells = cptr.alloc(10 * 4);
 cptr.stI32o(mon_cleric_spells, 0, NHC.MCAST_OPEN_WOUNDS);
@@ -295,10 +297,12 @@ cptr.stI32o(mon_wizard_spells, 36, NHC.MCAST_SUMMON_MONS);
 cptr.stI32o(mon_wizard_spells, 40, NHC.MCAST_CLONE_WIZ);
 cptr.stI32o(mon_wizard_spells, 44, NHC.MCAST_DEATH_TOUCH);
 
+/* feedback when frustrated monster couldn't cast a spell */
 /** C ref: mcastu.c:63 — @param {CPtr<struct monst>} mtmp @param {CInt} undirected */
 function* cursetxt(mtmp, undirected) {
     if (canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) {
-        let point_msg;
+        let point_msg;  /* spellcasting monsters are impolite */
+
         if (undirected)
             point_msg = __s_all_around_then_curses;
         else if ((Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) || cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy))) || ((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.STRANGE_OBJECT) || (cptr.ldI32o(u, $you_uundetected) & 1) | 0)
@@ -307,13 +311,15 @@ function* cursetxt(mtmp, undirected) {
             point_msg = __s_and_curses_at_your_displaced_image;
         else
             point_msg = __s_at_you_then_curses;
+
         (yield* pline_mon(mtmp, __s_s_points_s, (yield* Monnam(mtmp)), point_msg));
     } else if ((!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 4n) || !rn2_at(__s_mcastu_c, 81, __s_cursetxt, 4))) {
         if (!Deaf())
-            (yield* Norep(__s_you_hear_a_mumbled_curse));
+            (yield* Norep(__s_you_hear_a_mumbled_curse));  /* Deaf-aware */
     }
 }
 
+/* choose a spell for monster to cast */
 /** C ref: mcastu.c:89 — @param {CPtr<struct monst>} mtmp @param {CInt} adtyp @returns {CInt} */
 function* choose_monster_spell(mtmp, adtyp) {
     let list = null;
@@ -321,6 +327,8 @@ function* choose_monster_spell(mtmp, adtyp) {
     let spellval;
     let len = 0;
     let maxlev;
+
+    /* which spell list to use? */
     if (adtyp == NHM.AD_SPEL) {
         list = mon_wizard_spells;
         len = 12;
@@ -328,28 +336,56 @@ function* choose_monster_spell(mtmp, adtyp) {
         list = mon_cleric_spells;
         len = 10;
     }
+
     if (!list || len < 1)
         return NHC.MCAST_PSI_BOLT;
+
+    /* max spell level in this monster spell list */
     maxlev = cptr.ldI32o(mcast_data, cptr.ldI32o(list, (len - 1) | 0, 4), $sizeof__mcast_data);
+
+    /* which level spell to cast? */
     spellval = rn2_at(__s_mcastu_c, 111, __s_choose_monster_spell, cptr.ld1uo(mtmp, $monst_m_lev));
     if (spellval > maxlev && rn2_at(__s_mcastu_c, 112, __s_choose_monster_spell, maxlev))
         spellval = rn2_at(__s_mcastu_c, 113, __s_choose_monster_spell, maxlev);
+
+    /* find the highest spell in the list we could cast */
     for (i = (len - 1) | 0; i >= 0; i--)
         if (cptr.ldI32o(mcast_data, cptr.ldI32o(list, i, 4), $sizeof__mcast_data) <= spellval && !(yield* spell_would_be_useless(mtmp, cptr.ldI32o(list, i, 4))))
             return cptr.ldI32o(list, i, 4);
+
+    /* or return the first spell in the list */
     return cptr.ldI32o(list, 0, 4);
 }
 
+/* return values:
+ * 1: successful spell
+ * 0: unsuccessful spell
+ */
 /** C ref: mcastu.c:130 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @param {CInt} thinks_it_foundyou @param {CInt} foundyou @returns {CInt} */
 export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     let dmg;
     let ml = cptr.ld1uo(mtmp, $monst_m_lev);
     let ret;
     let spellnum = 0;
+
+    /* Three cases:
+     * -- monster is attacking you.  Search for a useful spell.
+     * -- monster thinks it's attacking you.  Search for a useful spell,
+     *    without checking for undirected.  If the spell found is directed,
+     *    it fails with cursetxt() and loss of mspec_used.
+     * -- monster isn't trying to attack.  Select a spell once.  Don't keep
+     *    searching; if that spell is not useful (or if it's directed),
+     *    return and do something else.
+     * Since most spells are directed, this means that a monster that isn't
+     * attacking casts spells only a small portion of the time that an
+     * attacking monster does.
+     */
     if ((cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SPEL || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_CLRC) && ml) {
         let cnt = 40;
+
         do {
             spellnum = (yield* choose_monster_spell(mtmp, cptr.ld1uo(mattk, $attack_adtyp)));
+            /* not trying to attack?  don't allow directed spells */
             if (!thinks_it_foundyou) {
                 if (!is_undirected_spell(spellnum) || (yield* spell_would_be_useless(mtmp, spellnum))) {
                     if (foundyou)
@@ -362,24 +398,41 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         if (cnt == 0)
             return NHM.M_ATTK_MISS;
     }
+
+    /* monster unable to cast spells? */
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 || cptr.ldI32o(mtmp, $monst_mspec_used) || !ml || (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp))))) {
         (yield* cursetxt(mtmp, is_undirected_spell(spellnum)));
         return NHM.M_ATTK_MISS;
     }
     {
         if ((yield* debugcore(__s_mcastu_c, 1))) {
+
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
             (yield* pline(__s_castmu_s_lvl_i_spell_i, (yield* noit_Monnam(mtmp)), ml, spellnum));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
+
     if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SPEL || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_CLRC) {
+        /* monst->m_lev is unsigned (uchar), monst->mspec_used is int */
         cptr.stI32o(mtmp, $monst_mspec_used, ((cptr.ld1uo(mtmp, $monst_m_lev) < 8) ? ((10 - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) : 2));
     }
+
+    /* Monster can cast spells, but is casting a directed spell at the
+     * wrong place?  If so, give a message, and return.
+     * Do this *after* penalizing mspec_used.
+     *
+     * FIXME?
+     *  Shouldn't wall of lava have a case similar to wall of water?
+     *  And should cold damage hit water or lava instead of missing
+     *  even when the caster has targeted the wrong spot?  Likewise
+     *  for fire mis-aimed at ice.
+     */
     if (!foundyou && thinks_it_foundyou && !is_undirected_spell(spellnum)) {
         (yield* pline_mon(mtmp, __s_s_casts_a_spell_at_s, canseemon(mtmp) ? (yield* Monnam(mtmp)) : __s_something, is_waterwall(cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)) ? __s_empty_water : __s_thin_air));
         return NHM.M_ATTK_MISS;
     }
+
     nomul(0);
     if (rn2_at(__s_mcastu_c, 208, __s_castmu, Math.imul(ml, 10)) < ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ? 100 : 20)) {
         ;
@@ -392,6 +445,11 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     if (canspotmon(mtmp) || !is_undirected_spell(spellnum)) {
         (yield* pline_mon(mtmp, __s_s_casts_a_spell_s, canspotmon(mtmp) ? (yield* Monnam(mtmp)) : __s_something, is_undirected_spell(spellnum) ? __s_empty : ((Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __s_at_a_spot_near_you : ((Displaced() && !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) && (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy))) ? __s_at_your_displaced_image : __s_at_you))));
     }
+
+    /*
+     * As these are spells, the damage is related to the level
+     * of the monster casting the spell.
+     */
     if (!foundyou) {
         dmg = 0;
         if (cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_SPEL && cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_CLRC) {
@@ -404,7 +462,12 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         dmg = d_at(__s_mcastu_c, 243, __s_castmu, (((((ml / 2) | 0) + 1) | 0)), 6);
     if (Half_spell_damage())
         dmg = (((dmg + 1) | 0) / 2) | 0;
+
     ret = NHM.M_ATTK_HIT;
+    /*
+     * FIXME: none of these hit the steed when hero is riding, nor do
+     *  they inflict damage on carried items.
+     */
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_FIRE:
         (yield* pline(__s_you_re_enveloped_in_flames));
@@ -417,6 +480,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
             monstunseesu(2n);
         }
         (yield* burn_away_slime());
+        /* burn up flammable items on the floor, melt ice terrain */
         (yield* mon_spell_hits_spot(mtmp, NHM.AD_FIRE, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         break;
         case NHM.AD_COLD:
@@ -429,6 +493,9 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         } else {
             monstunseesu(4n);
         }
+        /* freeze water or lava terrain */
+        /* FIXME: mon_spell_hits_spot() uses zap_over_floor(); unlike with
+         * fire, it does not target susceptible floor items with cold */
         (yield* mon_spell_hits_spot(mtmp, NHM.AD_COLD, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         break;
         case NHM.AD_MAGM:
@@ -442,14 +509,15 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
             dmg = d_at(__s_mcastu_c, 290, __s_castmu, ((((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0) + 1) | 0), 6);
             monstunseesu(1n);
         }
+        /* shower of magic missiles scuffs an engraving */
         (yield* mon_spell_hits_spot(mtmp, NHM.AD_MAGM, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         break;
         case NHM.AD_SPEL:
         case NHM.AD_CLRC:
         (yield* mcast_spell(mtmp, dmg, spellnum));
-        dmg = 0;
+        dmg = 0;  /* done by the spell casting functions */
         break;
-    }
+    }  /* switch */
     if (dmg)
         (yield* mdamageu(mtmp, dmg));
     return ret;
@@ -460,37 +528,47 @@ function* m_cure_self(mtmp, dmg) {
     if (cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax)) {
         if (canseemon(mtmp))
             (yield* pline_mon(mtmp, __s_s_looks_better, (yield* Monnam(mtmp))));
+        /* note: player healing does 6d4; this used to do 1d8 */
         (yield* healmon(mtmp, d_at(__s_mcastu_c, 314, __s_m_cure_self, 3, 6), 0));
         dmg = 0;
     }
     return dmg;
 }
 
+/* unlike the finger of death spell which behaves like a wand of death,
+   this monster spell only attacks the hero */
 /** C ref: mcastu.c:323 — @param {CPtr<struct monst>} mtmp */
 export function* touch_of_death(mtmp) {
     let kbuf = new Uint8Array(256);
     let dmg = (50 + d_at(__s_mcastu_c, 326, __s_touch_of_death, 8, 6)) | 0;
     let drain = (dmg / 2) | 0;
+
+    /* if we get here, we know that hero isn't magic resistant and isn't
+       poly'd into an undead or demon */
     (yield* You_feel(__s_drained));
     void (yield* death_inflicted_by(cptr.decay(kbuf), __s_the_touch_of_death, mtmp));
+
     if (Upolyd()) {
         cptr.stI32o(u, $you_mh, 0);
-        (yield* rehumanize());
+        (yield* rehumanize());  /* fatal iff Unchanging */
     } else if (drain >= cptr.ldI32o(u, $you_uhpmax)) {
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
         void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(kbuf));
         (yield* done(NHC.DIED));
     } else {
+        /* HP manipulation similar to poisoned(attrib.c) */
         let olduhp = cptr.ldI32o(u, $you_uhp);
         let uhpmin = minuhpmax(3);
         let newuhpmax = (cptr.ldI32o(u, $you_uhpmax) - drain) | 0;
+
         setuhpmax(max(newuhpmax, uhpmin), 0);
         dmg = adjuhploss(dmg, olduhp);
         (yield* losehp(dmg, cptr.decay(kbuf), NHM.KILLED_BY));
     }
-    cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+    cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* not killed if we get here... */
 }
 
+/* give a reason for death by some monster spells */
 /** C ref: mcastu.c:358 — @param {CPtr<char>} outbuf @param {CPtr<char>} deathreason @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* death_inflicted_by(outbuf, deathreason, mtmp) {
     void cptr.strcpy(outbuf, deathreason);
@@ -499,6 +577,11 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
         let champtr = (ismnum(cptr.ldI16o(mtmp, $monst_cham))) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst) : mptr;
         let realnm = pmname(champtr, Mgender(mtmp));
         let fakenm = pmname(mptr, Mgender(mtmp));
+
+        /* greatly simplified extract from done_in_by(), primarily for
+           reason for death due to 'touch of death' spell; if mtmp is
+           shape changed, it won't be a vampshifter or mimic since they
+           can't cast spells */
         if (!((cptr.ldU64o((champtr), $permonst_mflags2) & 524288n) != 0n) && !the_unique_pm(mptr))
             realnm = (yield* an(realnm));
         void cptr.sprintf(eos(outbuf), __s_inflicted_by_s_s, the_unique_pm(mptr) ? __s_the : __s_empty, realnm);
@@ -507,6 +590,10 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
     }
     return outbuf;
 }
+
+/*
+ * Monster wizard and cleric spellcasting functions.
+ */
 
 /** C ref: mcastu.c:389 — @param {CPtr<struct monst>} mtmp */
 function* mcast_death_touch(mtmp) {
@@ -541,14 +628,18 @@ function* mcast_clone_wiz(mtmp) {
 /** C ref: mcastu.c:421 — @param {CPtr<struct monst>} mtmp */
 function* mcast_summon_mons(mtmp) {
     let count = (yield* nasty(mtmp));
+
     if (!count) {
-        ;
+        ;  /* nothing was created? */
     } else if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1)) {
         ;
         (yield* verbalize(__s_destroy_the_thief_my_pet_s, (((count) == 1) ? __s_empty : __s_s)));
     } else {
         let one = schar((count == 1));
         let mappear = one ? __s_a_monster_appears : __s_monsters_appear;
+
+        /* messages not quite right if plural monsters created but
+           only a single monster is seen */
         if (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) || cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy)))
             (yield* pline(__s_s_s_a_spot_near_you, mappear, one ? __s_at : __s_around));
         else if (Displaced() && (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) || cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy)))
@@ -567,6 +658,8 @@ function* mcast_destroy_armor() {
     } else if (!(yield* destroy_arm())) {
         (yield* Your(__s_skin_itches));
     } else {
+        /* monsters only realize you aren't magic-protected if armor is
+           actually destroyed */
         monstunseesu(1n);
     }
 }
@@ -579,6 +672,7 @@ function* mcast_weaken_you(mtmp, dmg) {
         (yield* You_feel(__s_momentarily_weakened));
     } else {
         let kbuf = new Uint8Array(256);
+
         (yield* You(__s_suddenly_feel_weaker));
         dmg = (cptr.ld1uo(mtmp, $monst_m_lev) - 6) | 0;
         if (dmg < 1)
@@ -586,7 +680,7 @@ function* mcast_weaken_you(mtmp, dmg) {
         if (Half_spell_damage())
             dmg = (((dmg + 1) | 0) / 2) | 0;
         (yield* losestr(rnd_at(__s_mcastu_c, 481, __s_mcast_weaken_you, dmg), (yield* death_inflicted_by(cptr.decay(kbuf), __s_strength_loss, mtmp)), NHM.KILLED_BY));
-        cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
+        cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* not killed if we get here... */
         monstunseesu(1n);
     }
 }
@@ -623,6 +717,9 @@ function* mcast_stun_you(dmg) {
 
 /** C ref: mcastu.c:523 — @param {CInt} dmg @returns {CInt} */
 function* mcast_geyser(dmg) {
+    /* this is physical damage (force not heat),
+     * not magical damage or fire damage
+     */
     (yield* pline(__s_a_sudden_geyser_slams_into_you_from));
     dmg = d_at(__s_mcastu_c, 529, __s_mcast_geyser, 8, 6);
     if (Half_physical_damage())
@@ -633,6 +730,7 @@ function* mcast_geyser(dmg) {
 /** C ref: mcastu.c:540 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg @returns {CInt} */
 function* mcast_fire_pillar(mtmp, dmg) {
     let orig_dmg;
+
     (yield* pline(__s_a_pillar_of_fire_strikes_all_around_you));
     orig_dmg = (dmg = d_at(__s_mcastu_c, 545, __s_mcast_fire_pillar, 8, 6));
     if (Fire_resistance()) {
@@ -646,8 +744,10 @@ function* mcast_fire_pillar(mtmp, dmg) {
         dmg = (((dmg + 1) | 0) / 2) | 0;
     (yield* burn_away_slime());
     void (yield* burnarmor(cptr.add(gy, $instance_globals_y_youmonst)));
+    /* item destruction dmg */
     void (yield* destroy_items(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_FIRE, orig_dmg));
     (yield* ignite_items(cptr.ldPtro(gi, $instance_globals_i_invent)));
+    /* burn up flammable items on the floor, melt ice terrain */
     (yield* mon_spell_hits_spot(mtmp, NHM.AD_FIRE, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     return dmg;
 }
@@ -656,6 +756,7 @@ function* mcast_fire_pillar(mtmp, dmg) {
 function* mcast_lightning(mtmp, dmg) {
     let orig_dmg;
     let reflects;
+
     ;
     (yield* pline(__s_a_bolt_of_lightning_strikes_down_at_you));
     reflects = (yield* ureflects(__s_it_bounces_off_your_s_s, __s_empty));
@@ -675,13 +776,20 @@ function* mcast_lightning(mtmp, dmg) {
     if (Half_spell_damage())
         dmg = (((dmg + 1) | 0) / 2) | 0;
     void (yield* destroy_items(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_ELEC, orig_dmg));
+    /* lightning might destroy iron bars if hero is on such a spot;
+       reflection protects terrain here [execution won't get here due
+       to 'if (reflects) break' above] but hero resistance doesn't;
+       do this before maybe blinding the hero via flashburn() */
     (yield* mon_spell_hits_spot(mtmp, NHM.AD_ELEC, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+    /* blind hero; no effect if already blind */
     void (yield* flashburn(BigInt(rnd_at(__s_mcastu_c, 596, __s_mcast_lightning, 100)), 1));
     return dmg;
 }
 
 /** C ref: mcastu.c:601 — @param {CInt} dmg @returns {CInt} */
 function* mcast_psi_bolt(dmg) {
+    /* prior to 3.4.0 Antimagic was setting the damage to 1--this
+       made the spell virtually harmless to players with magic res. */
     if (Antimagic()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         monstseesu(1n);
@@ -722,6 +830,8 @@ function* mcast_open_wounds(dmg) {
 
 /** C ref: mcastu.c:645 — @param {CPtr<struct monst>} mtmp */
 function* mcast_insects(mtmp) {
+    /* Try for insects, and if there are none
+       left, go for (sticks to) snakes.  -3. */
     let pm = (yield* mkclass(NHC.S_ANT, 0));
     let mtmp2 = null;
     let whatbuf = new Uint8Array(128);
@@ -735,6 +845,7 @@ function* mcast_insects(mtmp) {
     let bypos = cptr.alloc(4);
     let fmt;
     let what;
+
     oldseen = monster_census(1);
     quan = (cptr.ld1uo(mtmp, $monst_m_lev) < 2) ? 1 : rnd_at(__s_mcastu_c, 658, __s_mcast_insects, (cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0);
     if (quan < 3)
@@ -749,18 +860,25 @@ function* mcast_insects(mtmp) {
         }
     }
     newseen = monster_census(1);
+
+    /* not canspotmon() which includes unseen things sensed via warning */
     seecaster = schar((canseemon(mtmp) || tp_sensemon(mtmp) || Detect_monsters() ? 1 : 0));
     what = (let$ == NHC.S_SNAKE) ? __s_snakes : __s_insects;
     if (Hallucination())
         what = (yield* makeplural((yield* bogusmon(cptr.decay(whatbuf), null))));
+
     fmt = null;
     if (!seecaster) {
         if (newseen <= oldseen || (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))) {
+            /* unseen caster fails or summons unseen critters,
+               or unconscious hero ("You dream that you hear...") */
             (yield* You_hear(__s_someone_summoning_s, what));
         } else {
             let arg;
+
             if (!cptr.eq(what, cptr.decay(whatbuf)))
                 what = cptr.strcpy(cptr.decay(whatbuf), what);
+            /* unseen caster summoned seen critter(s) */
             arg = (newseen == ((oldseen + 1) | 0)) ? (yield* an((yield* makesingular(what)))) : cptr.decay(whatbuf);
             if (!Deaf()) {
                 ;
@@ -769,6 +887,12 @@ function* mcast_insects(mtmp) {
                 (yield* pline(__s_s_s, upstart(arg), (yield* vtense(arg, __s_appear))));
             }
         }
+
+        /* seen caster, possibly producing unseen--or just one--critters;
+           hero is told what the caster is doing and doesn't necessarily
+           observe complete accuracy of that caster's results (in other
+           words, no need to fuss with visibility or singularization;
+           player is told what's happening even if hero is unconscious) */
     } else if (!success) {
         fmt = __s_s_casts_at_a_clump_of_sticks_but;
         what = __s_empty;
@@ -790,8 +914,10 @@ function* mcast_insects(mtmp) {
 
 /** C ref: mcastu.c:729 */
 function* mcast_blind_you() {
+    /* note: resists_blnd() doesn't apply here */
     if (!Blinded()) {
         let num_eyes = eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
+
         (yield* pline(__s_scales_cover_your_s, (num_eyes == 1) ? (yield* body_part(NHC.EYE)) : (yield* makeplural((yield* body_part(NHC.EYE))))));
         (yield* make_blinded(Half_spell_damage() ? 100n : 200n, 0));
         if (!Blind())
@@ -803,12 +929,13 @@ function* mcast_blind_you() {
 /** C ref: mcastu.c:746 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* mcast_paralyze(mtmp) {
     let dmg = 0;
+
     if (Antimagic() || Free_action()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         monstseesu(1n);
         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
             (yield* You(__s_stiffen_briefly));
-        dmg = 1;
+        dmg = 1;  /* to produce nomul(-1), not actual damage */
     } else {
         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
             (yield* You(__s_are_frozen_in_place));
@@ -832,6 +959,7 @@ function* mcast_confuse_you(mtmp) {
     } else {
         let oldprop = schar((!!HConfusion()));
         let dmg = cptr.ld1uo(mtmp, $monst_m_lev);
+
         if (Half_spell_damage())
             dmg = (((dmg + 1) | 0) / 2) | 0;
         (yield* make_confused(BigInt.asIntN(64, HConfusion() + BigInt(dmg)), 1));
@@ -843,6 +971,14 @@ function* mcast_confuse_you(mtmp) {
     }
 }
 
+/*
+   If dmg is zero, then the monster is not casting at you.
+   If the monster is intentionally not casting at you, we have previously
+   called spell_would_be_useless() and spellnum should always be a valid
+   undirected spell.
+   If you modify either of these, be sure to change is_undirected_spell()
+   and spell_would_be_useless().
+ */
 /** C ref: mcastu.c:801 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg @param {CInt} spellnum */
 function* mcast_spell(mtmp, dmg, spellnum) {
     if (dmg < 0) {
@@ -853,6 +989,7 @@ function* mcast_spell(mtmp, dmg, spellnum) {
         (yield* impossible(__s_cast_directed_wizard_spell_d_with_dmg_0, spellnum));
         return;
     }
+
     switch (spellnum) {
         case NHC.MCAST_DEATH_TOUCH:
         (yield* mcast_death_touch(mtmp));
@@ -934,6 +1071,7 @@ function* mcast_spell(mtmp, dmg, spellnum) {
         dmg = 0;
         break;
     }
+
     if (dmg)
         (yield* mdamageu(mtmp, dmg));
 }
@@ -945,17 +1083,30 @@ function is_undirected_spell(spellnum) {
     return 0;
 }
 
+/* Some spells are useless under some circumstances. */
 /** C ref: mcastu.c:909 — @param {CPtr<struct monst>} mtmp @param {CInt} spellnum @returns {CInt} */
 function* spell_would_be_useless(mtmp, spellnum) {
+    /* Some spells don't require the player to really be there and can be cast
+     * by the monster when you're invisible, yet still shouldn't be cast when
+     * the monster doesn't even think you're there.
+     * This check isn't quite right because it always uses your real position.
+     * We really want something like "if the monster could see mux, muy".
+     */
+
+    /* spell is only cast by hostile monsters */
     if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) & NHM.MCF_HOSTILE) != 0) {
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             return 1;
     }
+
+    /* spell needs the monster to see hero */
     if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) & NHM.MCF_SIGHT) != 0) {
         let mcouldseeu = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0));
+
         if (!mcouldseeu)
             return 1;
     }
+
     switch (spellnum) {
         case NHC.MCAST_DEATH_TOUCH:
         if ((Antimagic() || Hallucination()) && !rn2_at(__s_mcastu_c, 934, __s_spell_would_be_useless, 2))
@@ -966,24 +1117,38 @@ function* spell_would_be_useless(mtmp, spellnum) {
             return 1;
         break;
         case NHC.MCAST_CLONE_WIZ:
+        /* only the Wizard is allowed to clone himself */
         if (!(cptr.ldI32o(mtmp, $monst_iswiz) & 1) || cptr.ldI32o(svc, $context_info_no_of_wizards) > 1)
             return 1;
         break;
         case NHC.MCAST_AGGRAVATION:
+        /* aggravation (global wakeup) when everyone is already active */
+        /* if nothing needs to be awakened then this spell is useless
+           but caster might not realize that [chance to pick it then
+           must be very small otherwise caller's many retry attempts
+           will eventually end up picking it too often] */
         if (!(yield* has_aggravatables(mtmp)))
             return schar((rn2_at(__s_mcastu_c, 953, __s_spell_would_be_useless, 100) ? 1 : 0));
         break;
         case NHC.MCAST_HASTE_SELF:
+        /* haste self when already fast */
         if (((cptr.ldI32o(mtmp, $monst_permspeed) & 3) | 0) == NHM.MFAST)
             return 1;
         break;
         case NHC.MCAST_DISAPPEAR:
+        /* invisibility when already invisible */
         if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0)
             return 1;
+        /* peaceful monster won't cast invisibility if you can't see
+           invisible,
+           same as when monsters drink potions of invisibility.  This doesn't
+           really make a lot of sense, but lets the player avoid hitting
+           peaceful monsters by mistake */
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !See_invisible())
             return 1;
         break;
         case NHC.MCAST_CURE_SELF:
+        /* healing when already healed */
         if (cptr.ldI32o(mtmp, $monst_mhp) == cptr.ldI32o(mtmp, $monst_mhpmax))
             return 1;
         break;
@@ -997,10 +1162,14 @@ function* spell_would_be_useless(mtmp, spellnum) {
     return 0;
 }
 
+/* monster uses spell (ranged) */
 /** C ref: mcastu.c:989 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function* buzzmu(mtmp, mattk) {
+    /* don't print constant stream of curse messages for 'normal'
+       spellcasting monsters at range */
     if (!BZ_VALID_ADTYP(cptr.ld1uo(mattk, $attack_adtyp)))
         return NHM.M_ATTK_MISS;
+
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 || (cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(cptr.ld1uo(mattk, $attack_adtyp))))) {
         (yield* cursetxt(mtmp, 0));
         return NHM.M_ATTK_MISS;

@@ -779,6 +779,134 @@ export const FIELD_PREFIX = '$';
 const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
 const FIELD_STATS = { named: 0, unnamed: 0 };
 
+// ------------------------------------------- the C's comments and blanks ----
+//
+// `detect.c` has 377 comments and `detect.js` had 11, all eleven of them ours.
+// The C author's running commentary — what a function is for, why a branch
+// exists, which case is the hard one — is the single largest body of recovered
+// meaning still sitting in the source, and clang throws all of it away: a
+// comment is not a node, and the AST carries no trace of one.
+//
+// So it is read out of the C text, positioned by the source lines the IR
+// already tracks (`lineOf`, the same offsets `/** C ref: */` is built from).
+//
+// THE UNIT IS THE LINE, not the byte offset. A byte-offset gap between two
+// statements contains the `;` that ended the first one, so an offset rule
+// would have to model token ends; a line rule does not, and it is also the
+// rule TASK 6 needs — a blank line is a line.
+//
+//   * every comment in the file is classified once (scanTrivia): a comment
+//     with nothing but whitespace before it on its first line and nothing
+//     after it on its last is MOVABLE, and its lines are trivia. Any other
+//     comment — one after code, one before code on the same line — is not,
+//     and its lines count as code so nothing can harvest them. A `//` comment
+//     continued with a backslash is refused outright: it is one comment in C
+//     and would be a comment plus a statement in JS.
+//   * a statement takes the RUN of blank and comment lines immediately above
+//     its first line, stopping at the first line with code on it. That bound
+//     is what makes the attachment right rather than merely nearby: a comment
+//     cannot cross a line of code, so it can only ever belong to the statement
+//     it sits on top of.
+//   * a comment on the same line as a statement's LAST line, after the code,
+//     is appended to that statement's last emitted line.
+//   * a function's own run goes above `/** C ref: */`, so the C author's
+//     comment reads as theirs and ours reads as ours.
+//
+// DEDUP. The goto lowerings and the setjmp split emit some regions more than
+// once, and a comment repeated in two copies of one region claims something
+// about both that the C only said about one. Every trivia line is emitted at
+// most once per function: the first copy of a spliced region carries the
+// comment, later copies carry none. (The state-machine fallback re-emits a
+// whole function after a discarded attempt, so it clears the set first.)
+//
+// WHAT IS DROPPED, and it is stated rather than hidden: a comment inside a
+// statement's own line span (inside a multi-line condition, between the arms
+// of a `for` header) has no statement to attach to and is not carried; nor is
+// a comment in a region the emitter never emits; nor one in the file header,
+// above the first declaration, because `#include` lines sit between and the
+// run stops at the first line of code.
+//
+// C2JS_COMMENTS=0 drops the comments, C2JS_BLANKLINES=0 the blank lines; with
+// both off the trees are the pre-1.13 ones.
+const CARRY_COMMENTS = process.env.C2JS_COMMENTS !== '0';
+const CARRY_BLANKS = process.env.C2JS_BLANKLINES !== '0';
+const TRIVIA_STATS = { comments: 0, blanks: 0, trailing: 0, refusedUnmovable: 0, refusedContinued: 0, deduped: 0 };
+
+/**
+ * Per-line classification of a C source file.
+ *
+ * Returns { kind[], text[], movable: Map(startLine -> comment),
+ *           trailing: Map(line -> comment) } with 1-based line indices.
+ * `kind` is 'code' | 'blank' | 'comment'; only 'blank' and 'comment' lines are
+ * trivia, and a line belonging to an unmovable comment is deliberately 'code'.
+ */
+function scanTrivia(src) {
+  const text = ['']; // 1-based
+  for (const l of src.split('\n')) text.push(l.replace(/\r$/, ''));
+  const nLines = text.length - 1;
+  const hasCode = new Uint8Array(nLines + 2);
+  const comments = [];
+  const N = src.length;
+  let i = 0, line = 1, col = 0;
+  const advance = (to) => {
+    for (; i < to && i < N; i++) { if (src[i] === '\n') { line++; col = 0; } else col++; }
+  };
+  while (i < N) {
+    const c = src[i];
+    if (c === '\n') { line++; col = 0; i++; continue; }
+    if (c === ' ' || c === '\t' || c === '\r') { i++; col++; continue; }
+    if (c === '/' && src[i + 1] === '*') {
+      const startLine = line, startCol = col, start = i;
+      let j = src.indexOf('*/', i + 2);
+      j = j < 0 ? N : j + 2;
+      advance(j);
+      comments.push({ start, end: j, startLine, startCol, endLine: line, block: true });
+      continue;
+    }
+    if (c === '/' && src[i + 1] === '/') {
+      const startLine = line, startCol = col, start = i;
+      let j = i + 2;
+      // C splices a backslash-newline before the comment is even recognized,
+      // so a `//` comment really does continue onto the next line
+      while (j < N && src[j] !== '\n') j++;
+      while (j < N && (src[j - 1] === '\\' || (src[j - 1] === '\r' && src[j - 2] === '\\'))) {
+        j++;
+        while (j < N && src[j] !== '\n') j++;
+      }
+      advance(j);
+      comments.push({ start, end: j, startLine, startCol, endLine: line, block: false });
+      continue;
+    }
+    if (c === '"' || c === "'") {
+      hasCode[line] = 1;
+      let j = i + 1;
+      while (j < N && src[j] !== c) j += src[j] === '\\' ? 2 : 1;
+      advance(Math.min(j + 1, N));
+      continue;
+    }
+    hasCode[line] = 1;
+    i++; col++;
+  }
+  const kind = new Array(nLines + 2).fill('blank');
+  for (let L = 1; L <= nLines; L++) if (hasCode[L]) kind[L] = 'code';
+  const movable = new Map(), trailing = new Map();
+  for (const cm of comments) {
+    const before = /\S/.test(text[cm.startLine].slice(0, cm.startCol));
+    const after = /\S/.test(src.slice(cm.end, cm.end + (text[cm.endLine] || '').length + 1).split('\n')[0]);
+    const oneLineOk = cm.block || cm.startLine === cm.endLine;
+    if (!oneLineOk) TRIVIA_STATS.refusedContinued++;
+    if (!before && !after && oneLineOk) {
+      for (let L = cm.startLine; L <= cm.endLine; L++) kind[L] = 'comment';
+      movable.set(cm.startLine, cm);
+      continue;
+    }
+    for (let L = cm.startLine; L <= cm.endLine; L++) kind[L] = 'code';
+    if (before && !after && cm.startLine === cm.endLine) trailing.set(cm.startLine, cm);
+    else TRIVIA_STATS.refusedUnmovable++;
+  }
+  return { kind, text, movable, trailing, nLines };
+}
+
 // ------------------------------------------- the rng-log instrumentation ----
 //
 // The recorder's `hack.h` redefines every PRNG entry point to log its caller:
@@ -1093,6 +1221,9 @@ if (process.env.C2JS_READ_STATS) {
     + `${SIZE_STATS.refused} record sizes refused by the equality audit\n`
     + `rng-log fold:  ${RNG_STATS.folded} of ${RNG_STATS.seen} instrumented draws folded into ${RNG_HELPERS.size} helpers; refused `
     + `${RNG_STATS.refusedArg} on an argument that writes or draws, ${RNG_STATS.refusedArms} because the two arms emitted differently, ${RNG_STATS.refusedArity} on arity\n`
+    + `C trivia:      ${TRIVIA_STATS.comments} comments carried (${TRIVIA_STATS.trailing} of them trailing a statement) and ${TRIVIA_STATS.blanks} blank lines; `
+    + `${TRIVIA_STATS.deduped} lines already spent by an earlier copy of a spliced region, `
+    + `${TRIVIA_STATS.refusedUnmovable} comments share a line with code, ${TRIVIA_STATS.refusedContinued} are backslash-continued \`//\`\n`
     + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
     + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
@@ -1177,6 +1308,7 @@ export class Emitter {
     this.decls = decls;
     this.lineOf = lineOf;
     this.fileName = fileName; // "rnd.c"
+    this.source = source || ''; // the C text, for the comments and blank lines
     this.records = new Map(); // struct name -> [{name, q (desugared qualType)}]
     this.layouts = new Map(); // struct name -> { size, align, offsets: {field: off} }
     this.cmachine = new Set(); // cmachine.js helpers used
@@ -1344,6 +1476,115 @@ export class Emitter {
   cref(n) {
     const off = n.loc?.offset ?? n.range?.begin?.offset;
     return off !== undefined ? `${this.fileName}:${this.lineOf(off)}` : this.fileName;
+  }
+
+  // ----- the C's own comments and blank lines (see the note above scanTrivia) -----
+
+  /** the per-line classification of this file's C source, built once */
+  trivia() {
+    if (this._triv === undefined) {
+      this._triv = (CARRY_COMMENTS || CARRY_BLANKS) && this.source ? scanTrivia(this.source) : null;
+      this._trivDone = new Set();
+    }
+    return this._triv;
+  }
+
+  /**
+   * The main-file line a clang location denotes, or null.
+   *
+   * `expansionLoc` is where the code LANDS in the translation unit, which for
+   * a macro used in the .c file is the .c file; a bare `offset` with no
+   * spellingLoc is an ordinary location. Anything else — a spelling inside a
+   * macro body — has no line here to speak of.
+   */
+  trivLine(loc) {
+    if (!loc) return null;
+    const off = loc.expansionLoc ? loc.expansionLoc.offset : (loc.spellingLoc ? undefined : loc.offset);
+    if (off === undefined || off === null || off < 0 || off > this.source.length) return null;
+    return this.lineOf(off);
+  }
+
+  /** the line a node begins on, when that line is one this file's text has code on */
+  trivAnchor(n) {
+    const T = this.trivia();
+    if (!T) return null;
+    const L = this.trivLine(n.range?.begin) ?? this.trivLine(n.loc);
+    if (!L || L < 1 || L > T.nLines || T.kind[L] !== 'code') return null;
+    if (this.trivFnLines && (L < this.trivFnLines[0] || L > this.trivFnLines[1])) return null;
+    return L;
+  }
+
+  /** the run of blank/comment lines immediately above `anchor`, as emitted lines */
+  trivLead(anchor, indent) {
+    const T = this.trivia();
+    if (!T || !anchor) return [];
+    let k = anchor - 1;
+    while (k >= 1 && (T.kind[k] === 'blank' || T.kind[k] === 'comment')) k--;
+    // the run, in source order, minus whatever an earlier copy of a spliced
+    // region already spent
+    const items = [];
+    for (let L = k + 1; L < anchor; L++) {
+      const cm = T.kind[L] === 'blank' ? null : T.movable.get(L);
+      if (T.kind[L] !== 'blank' && !cm) continue; // a comment's continuation line
+      if (this._trivDone.has(L)) { TRIVIA_STATS.deduped++; if (cm) L = cm.endLine; continue; }
+      items.push({ cm, line: L });
+      if (cm) L = cm.endLine;
+    }
+    const out = [];
+    let blank = false;
+    for (const it of items) {
+      for (let L = it.line; L <= (it.cm ? it.cm.endLine : it.line); L++) this._trivDone.add(L);
+      if (!it.cm) { blank = true; continue; } // runs of blanks collapse to one
+      if (!CARRY_COMMENTS) continue;
+      if (blank && CARRY_BLANKS) { out.push(''); TRIVIA_STATS.blanks++; }
+      blank = false;
+      out.push(...this.commentLines(it.cm, indent));
+      TRIVIA_STATS.comments++;
+    }
+    if (blank && CARRY_BLANKS) { out.push(''); TRIVIA_STATS.blanks++; }
+    return out;
+  }
+
+  /**
+   * A movable comment as emitted lines, re-indented to `indent`.
+   *
+   * The first line loses its original leading whitespace and takes the JS
+   * indent; every continuation line is shifted by the same delta, so a block
+   * comment whose continuation lines were aligned under the `/*` stays aligned.
+   */
+  commentLines(cm, indent) {
+    const T = this._triv;
+    const delta = indent.length - cm.startCol;
+    const out = [(indent + T.text[cm.startLine].slice(cm.startCol)).replace(/\s+$/, '')];
+    for (let L = cm.startLine + 1; L <= cm.endLine; L++) {
+      const t = T.text[L];
+      const shifted = delta >= 0 ? ' '.repeat(delta) + t : t.replace(new RegExp(`^ {0,${-delta}}`), '');
+      out.push(shifted.replace(/\s+$/, ''));
+    }
+    return out;
+  }
+
+  /** a same-line trailing comment for a node's last line, or null */
+  trivTrail(n) {
+    const T = this.trivia();
+    if (!T || !CARRY_COMMENTS) return null;
+    const L = this.trivLine(n.range?.end);
+    if (!L || L < 1 || L > T.nLines) return null;
+    if (this.trivFnLines && (L < this.trivFnLines[0] || L > this.trivFnLines[1])) return null;
+    const cm = T.trailing.get(L);
+    if (!cm || this._trivDone.has(L)) return null;
+    this._trivDone.add(L);
+    TRIVIA_STATS.trailing++;
+    return T.text[L].slice(cm.startCol).replace(/\s+$/, '');
+  }
+
+  /** wrap a statement's emitted lines with the C's own trivia around it */
+  withTrivia(n, indent, lines) {
+    if (!this.trivia() || !lines.length) return lines;
+    const lead = this.trivLead(this.trivAnchor(n), indent);
+    const trail = this.trivTrail(n);
+    if (trail) lines = [...lines.slice(0, -1), `${lines[lines.length - 1]}  ${trail}`];
+    return lead.length ? [...lead, ...lines] : lines;
   }
 
   /** a type spelling as it goes into a comment — machine paths relativized */
@@ -4771,6 +5012,10 @@ export class Emitter {
   emitStmt(n, indent) {
     if (!n || !n.kind) return [];
     if (n.kind.endsWith('Attr') || n.kind === 'FormatAttr' || n.kind.endsWith('Comment')) return []; // attributes/comments are no-ops
+    return this.withTrivia(n, indent, this.emitStmtBare(n, indent));
+  }
+
+  emitStmtBare(n, indent) {
     const fn = this['stmt_' + n.kind];
     if (!fn) {
       if (n.kind.endsWith('Expr') || n.kind.endsWith('Literal') || n.kind.endsWith('Operator')) {
@@ -4784,8 +5029,23 @@ export class Emitter {
   stmt_CompoundStmt(n, indent) {
     const lines = [`${indent}{`];
     lines.push(...this.emitBlockItems((n.inner || []).filter((x) => x && x.kind), indent + '    ', n));
+    lines.push(...this.trailingBlockTrivia(n, indent + '    '));
     lines.push(`${indent}}`);
     return lines;
+  }
+
+  /**
+   * The run of comments sitting between a block's last statement and its
+   * closing brace — the only trivia no statement can claim, and where C puts
+   * a `/* fall through *\/` or a closing note.
+   */
+  trailingBlockTrivia(n, indent) {
+    const T = this.trivia();
+    if (!T) return [];
+    const end = this.trivLine(n.range?.end);
+    if (!end || end < 1 || end > T.nLines) return [];
+    if (this.trivFnLines && (end < this.trivFnLines[0] || end > this.trivFnLines[1])) return [];
+    return this.trivLead(end, indent);
   }
 
   /**
@@ -5369,6 +5629,12 @@ export class Emitter {
 
   emitFunction(d) {
     const body = (d.inner || []).find((c) => c && c.kind === 'CompoundStmt');
+    // trivia is bounded by this function's own line span and starts fresh:
+    // the state-machine fallback below re-emits a whole body after a discarded
+    // attempt, and the discarded one must not have spent the comments
+    const trivBegin = this.trivLine(d.range?.begin), trivEnd = this.trivLine(d.range?.end);
+    this.trivFnLines = trivBegin && trivEnd && trivEnd >= trivBegin ? [trivBegin, trivEnd] : null;
+    const resetTrivia = () => { if (this._trivDone) for (const L of [...this._trivDone]) if (this.trivFnLines && L >= this.trivFnLines[0] && L <= this.trivFnLines[1]) this._trivDone.delete(L); };
     const params = (d.inner || []).filter((c) => c && c.kind === 'ParmVarDecl');
     const retQ = d.type.qualType.replace(/\s*\(.*$/, '');
     // static locals hoist to module scope (C lifetime), renamed to stay unique
@@ -5465,6 +5731,7 @@ export class Emitter {
     if (smFallback) {
       this.smMode = true;
       try {
+        resetTrivia();
         lines.push(...this.emitStateMachine(d, body));
       } finally {
         this.smMode = false;
@@ -5479,14 +5746,17 @@ export class Emitter {
         // to the per-function state machine (labels as dispatch states)
         this.smMode = true;
         try {
+          resetTrivia();
           lines.push(...this.emitStateMachine(d, body));
         } finally {
           this.smMode = false;
         }
       }
     }
+    lines.push(...this.trailingBlockTrivia(body, '    '));
     lines.push('}');
     if (statics.length) lines.unshift(...statics.map((s) => this.hoistStaticLocal(s)), '');
+    this.trivFnLines = null;
     return lines;
   }
 
@@ -5635,26 +5905,38 @@ export class Emitter {
       }
     }
     const chunks = [];
+    // A declaration's own comment goes above the whole chunk — above the
+    // hoisted statics and above our `/** C ref: */` — so the C author's line
+    // reads as theirs. Computed here rather than inside each emitter because
+    // emitFunction unshifts its statics after the fact.
+    const push = (d, chunk) => {
+      if (!chunk || !chunk.length) return;
+      const lead = this.trivLead(this.trivAnchor(d), '');
+      // assemble() already puts one blank line between chunks, so the C's own
+      // blank above a declaration would double it
+      while (lead.length && lead[0] === '') lead.shift();
+      chunks.push(lead.length ? [...lead, ...chunk] : chunk);
+    };
     for (const d of this.decls) {
       switch (d.kind) {
         case 'FunctionDecl': {
           const hasBody = (d.inner || []).some((c) => c && c.kind === 'CompoundStmt');
           if (!hasBody) break;
-          chunks.push(this.emitFunction(d));
+          push(d, this.emitFunction(d));
           break;
         }
         case 'VarDecl':
           if (d.storageClass === 'extern') break; // declaration only; defined elsewhere
-          chunks.push(this.emitTopVar(d));
+          push(d, this.emitTopVar(d));
           break;
         case 'EnumDecl':
-          chunks.push(this.emitEnum(d));
+          push(d, this.emitEnum(d));
           break;
         case 'RecordDecl':
-          if (d.completeDefinition) chunks.push(this.emitRecord(d));
+          if (d.completeDefinition) push(d, this.emitRecord(d));
           break;
         case 'TypedefDecl':
-          chunks.push([`/** C ref: ${this.cref(d)} — typedef ${d.name} (type alias only, no runtime output) */`]);
+          push(d, [`/** C ref: ${this.cref(d)} — typedef ${d.name} (type alias only, no runtime output) */`]);
           break;
         default:
           if (d.kind.endsWith('Attr') || d.kind.endsWith('Comment')) break; // no-ops
