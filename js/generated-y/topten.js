@@ -57,7 +57,9 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $instance_globals_u_urole = FLD.instance_globals_u_urole, $kinfo_format = FLD.kinfo_format,
     $kinfo_name = FLD.kinfo_name, $monst_female = FLD.monst_female, $obj_spe = FLD.obj_spe,
     $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_panicking = FLD.sinfo_panicking,
-    $sinfo_stopprint = FLD.sinfo_stopprint, $sysopt_s_entrymax = FLD.sysopt_s_entrymax,
+    $sinfo_stopprint = FLD.sinfo_stopprint, $sizeof_Align = FLD.sizeof_Align,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Role = FLD.sizeof_Role, $sizeof_dungeon = FLD.sizeof_dungeon,
+    $sizeof_toptenentry = FLD.sizeof_toptenentry, $sysopt_s_entrymax = FLD.sysopt_s_entrymax,
     $sysopt_s_pers_is_uid = FLD.sysopt_s_pers_is_uid, $sysopt_s_persmax = FLD.sysopt_s_persmax,
     $sysopt_s_pointsmin = FLD.sysopt_s_pointsmin, $sysopt_s_tt_oname_maxrank = FLD.sysopt_s_tt_oname_maxrank,
     $toptenentry_birthdate = FLD.toptenentry_birthdate, $toptenentry_death = FLD.toptenentry_death,
@@ -267,7 +269,7 @@ const __s_tt_doppel = cptr.lit("tt_doppel");
 let tt_head = null;
 
 /** C ref: topten.c:61 — struct toptenentry */
-let zerott = cptr.alloc(208);
+let zerott = cptr.alloc($sizeof_toptenentry);
 
 const __static_formatkiller_killed_by_prefix = cptr.alloc(16 * 8);
 cptr.stPtro(__static_formatkiller_killed_by_prefix, 0, __s_killed_by);
@@ -393,7 +395,7 @@ function* readentry(rfile, tt) {
                 cptr.stI64o(tt, $toptenentry_points, 0n);
             cptr.st1o2(tt, 1, 1, $toptenentry_plrole, 0);
             if ((i = (yield* str2role(cptr.add(tt, $toptenentry_plrole)))) >= 0)
-                void cptr.strcpy(cptr.add(tt, $toptenentry_plrole), cptr.ldPtro2(roles, i, 312, $Role_filecode));
+                void cptr.strcpy(cptr.add(tt, $toptenentry_plrole), cptr.ldPtro2(roles, i, $sizeof_Role, $Role_filecode));
             void cptr.strcpy(cptr.add(tt, $toptenentry_plrace), __s_query);
             void cptr.strcpy(cptr.add(tt, $toptenentry_plgend), (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77) ? __s_mal : __s_fem);
             void cptr.strcpy(cptr.add(tt, $toptenentry_plalign), __s_query);
@@ -449,7 +451,7 @@ function* writexlentry(rfile, tt, how) {
     void fprintf(rfile, __s_cachievex_s, 9, (yield* encode_extended_achievements(cptr.decay(achbuf))));
     void fprintf(rfile, __s_cconductx_s, 9, (yield* encode_extended_conducts(cptr.decay(buf))));
     void fprintf(rfile, __s_crealtime_ld_cstarttime_ld_cendtime_ld, 9, cptr.ldI64(urealtime), 9, timet_to_seconds(ubirthday.v), 9, timet_to_seconds(cptr.ldI64o(urealtime, $u_realtime_finish_time)));
-    void fprintf(rfile, __s_cgender0_s_calign0_s, 9, cptr.ldPtro2(genders, cptr.ldI32o(flags, $flag_initgend), 48, $Gender_filecode), 9, cptr.ldPtro2(aligns, (1 - cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) | 0, 32, $Align_filecode));
+    void fprintf(rfile, __s_cgender0_s_calign0_s, 9, cptr.ldPtro2(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender, $Gender_filecode), 9, cptr.ldPtro2(aligns, (1 - cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) | 0, $sizeof_Align, $Align_filecode));
     void fprintf(rfile, __s_cflags_0x_lx, 9, encodexlogflags());
     void fprintf(rfile, __s_cgold_ld, 9, BigInt.asIntN(64, money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) + hidden_gold(1)));
     void fprintf(rfile, __s_cwish_cnt_ld, 9, cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes));
@@ -704,8 +706,8 @@ export function* topten(how, when) {
         cptr.stI32o(t0, $toptenentry_uid, uid);
         (yield* copynchars(cptr.add(t0, $toptenentry_plrole), cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), 3));
         (yield* copynchars(cptr.add(t0, $toptenentry_plrace), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), 3));
-        (yield* copynchars(cptr.add(t0, $toptenentry_plgend), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), 48, $Gender_filecode), 3));
-        (yield* copynchars(cptr.add(t0, $toptenentry_plalign), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, 32, $Align_filecode), 3));
+        (yield* copynchars(cptr.add(t0, $toptenentry_plgend), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender, $Gender_filecode), 3));
+        (yield* copynchars(cptr.add(t0, $toptenentry_plalign), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, $sizeof_Align, $Align_filecode), 3));
         (yield* copynchars(cptr.add(t0, $toptenentry_name), svp, 10));
         (yield* formatkiller(cptr.add(t0, $toptenentry_death), 101, how, 1));
         cptr.stI64o(t0, $toptenentry_birthdate, (yield* yyyymmdd(ubirthday.v)));
@@ -955,7 +957,7 @@ function* outentry(rank, t1, so) {
             }
             void cptr.sprintf(eos(cptr.decay(linebuf)), fmt, arg);
         } else {
-            void cptr.sprintf(eos(cptr.decay(linebuf)), __s_in_s, cptr.add(svd, cptr.ldI32o(t1, $toptenentry_deathdnum), 112));
+            void cptr.sprintf(eos(cptr.decay(linebuf)), __s_in_s, cptr.add(svd, cptr.ldI32o(t1, $toptenentry_deathdnum), $sizeof_dungeon));
             if (cptr.ldI32o(t1, $toptenentry_deathdnum) != cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))
                 void cptr.sprintf(eos(cptr.decay(linebuf)), __s_on_level_d, cptr.ldI32o(t1, $toptenentry_deathlev));
             if (cptr.ldI32o(t1, $toptenentry_deathlev) != cptr.ldI32o(t1, $toptenentry_maxlvl))
@@ -1162,10 +1164,10 @@ export function* prscore(argc, argv) {
 /** C ref: topten.c:1356 — @param {CPtr<char>} plch @returns {CInt} */
 function* classmon(plch) {
     let i;
-    for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
-        if (!cptr.strncmp(plch, cptr.ldPtro2(roles, i, 312, $Role_filecode), 3n)) {
-            if (cptr.ldI16o2(roles, i, 312, $Role_mnum) != NHC.NON_PM)
-                return cptr.ldI16o2(roles, i, 312, $Role_mnum);
+    for (i = 0; cptr.ldPtro(roles, i, $sizeof_Role); i++) {
+        if (!cptr.strncmp(plch, cptr.ldPtro2(roles, i, $sizeof_Role, $Role_filecode), 3n)) {
+            if (cptr.ldI16o2(roles, i, $sizeof_Role, $Role_mnum) != NHC.NON_PM)
+                return cptr.ldI16o2(roles, i, $sizeof_Role, $Role_mnum);
             else
                 return NHC.PM_HUMAN;
         }
@@ -1176,7 +1178,7 @@ function* classmon(plch) {
     return NHC.PM_HUMAN_MUMMY;
 }
 
-let __static_get_rnd_toptenentry_tt_buf = cptr.alloc(208); /** C ref: topten.c:1386 — struct toptenentry (function-static) */
+let __static_get_rnd_toptenentry_tt_buf = cptr.alloc($sizeof_toptenentry); /** C ref: topten.c:1386 — struct toptenentry (function-static) */
 
 /** C ref: topten.c:1381 @returns {CPtr<struct toptenentry>} */
 export function* get_rnd_toptenentry() {

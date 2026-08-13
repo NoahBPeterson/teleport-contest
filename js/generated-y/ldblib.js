@@ -23,7 +23,8 @@ const $luaL_Reg_func = FLD.luaL_Reg_func, $lua_Debug_currentline = FLD.lua_Debug
     $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_nparams = FLD.lua_Debug_nparams,
     $lua_Debug_ntransfer = FLD.lua_Debug_ntransfer, $lua_Debug_nups = FLD.lua_Debug_nups,
     $lua_Debug_short_src = FLD.lua_Debug_short_src, $lua_Debug_source = FLD.lua_Debug_source,
-    $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what;
+    $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what,
+    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_hookkey = cptr.lit("_HOOKKEY");
@@ -483,7 +484,7 @@ function* db_setcstacklimit(L) {
 }
 
 /** C ref: ldblib.c:457 — luaL_Reg[18] */
-const dblib = cptr.alloc(18 * 16);
+const dblib = cptr.alloc(18 * $sizeof_luaL_Reg);
 cptr.stPtro(dblib, 0, __s_debug);
 cptr.stPtro(dblib, 0 + $luaL_Reg_func, db_debug);
 cptr.stPtro(dblib, 16, __s_getuservalue);

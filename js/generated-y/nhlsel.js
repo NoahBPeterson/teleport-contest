@@ -33,6 +33,8 @@ const $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
     $mkroom_ly = FLD.mkroom_ly, $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy,
     $nhrect_ly = FLD.nhrect_ly, $rm_typ = FLD.rm_typ, $selectionvar_bounds = FLD.selectionvar_bounds,
     $selectionvar_hei = FLD.selectionvar_hei, $selectionvar_map = FLD.selectionvar_map,
+    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $sizeof_mkroom = FLD.sizeof_mkroom,
+    $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -203,7 +205,7 @@ function* l_selection_numpoints(L) {
     let x;
     let y;
     let ret = 0;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     selection_getbounds(sel, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
@@ -267,7 +269,7 @@ function* l_selection_and(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
@@ -286,7 +288,7 @@ function* l_selection_or(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
@@ -306,7 +308,7 @@ function* l_selection_xor(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
@@ -326,7 +328,7 @@ function* l_selection_sub(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
@@ -385,7 +387,7 @@ function* l_selection_room(L) {
     let croom = null;
     if (argc == 1) {
         let i = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, -1))));
-        croom = (i >= 0 && i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) ? cptr.add(svr, i, 224) : null;
+        croom = (i >= 0 && i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) ? cptr.add(svr, i, $sizeof_mkroom) : null;
     }
     sel = (yield* selection_from_mkroom(croom));
     (yield* l_selection_push_copy(L, sel));
@@ -396,7 +398,7 @@ function* l_selection_room(L) {
 /** C ref: nhlsel.c:454 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_getbounds(L) {
     let sel = (yield* l_selection_check(L, 1));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     selection_getbounds(sel, rect);
     (yield* lua_settop(L, 0));
     (yield* lua_createtable(L, 0, 0));
@@ -633,7 +635,7 @@ function* l_selection_flood(L) {
     }
     (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
     if (isok(x.v, y.v)) {
-        set_floodfillchk_match_under(i16(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)));
+        set_floodfillchk_match_under(i16(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)));
         (yield* selection_floodfill(sel, x.v, y.v, diagonals));
     }
     return 1;
@@ -773,7 +775,7 @@ function* l_selection_iterate(L) {
     let sel = null;
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     __lbl_out: {
         if (argc == 2 && lua_type(L, 2) == 6) {
             sel = (yield* l_selection_check(L, 1));
@@ -815,7 +817,7 @@ function* l_selection_size_description(L) {
 }
 
 /** C ref: nhlsel.c:981 — struct luaL_Reg[25] */
-const l_selection_methods = cptr.alloc(25 * 16);
+const l_selection_methods = cptr.alloc(25 * $sizeof_luaL_Reg);
 cptr.stPtro(l_selection_methods, 0, __s_new);
 cptr.stPtro(l_selection_methods, 0 + $luaL_Reg_func, l_selection_new);
 cptr.stPtro(l_selection_methods, 16, __s_clone);
@@ -868,7 +870,7 @@ cptr.stPtro(l_selection_methods, 384, null);
 cptr.stPtro(l_selection_methods, 384 + $luaL_Reg_func, null);
 
 /** C ref: nhlsel.c:1009 — luaL_Reg[9] */
-const l_selection_meta = cptr.alloc(9 * 16);
+const l_selection_meta = cptr.alloc(9 * $sizeof_luaL_Reg);
 cptr.stPtro(l_selection_meta, 0, __s_gc);
 cptr.stPtro(l_selection_meta, 0 + $luaL_Reg_func, l_selection_gc);
 cptr.stPtro(l_selection_meta, 16, __s_unm);

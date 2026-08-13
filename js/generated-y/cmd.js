@@ -177,6 +177,9 @@ const $Cmd_bind_cmd = FLD.Cmd_bind_cmd, $Cmd_bind_next = FLD.Cmd_bind_next,
     $rm_typ = FLD.rm_typ, $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_exiting = FLD.sinfo_exiting,
     $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sinfo_input_state = FLD.sinfo_input_state,
     $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $sizeof_ext_func_tab = FLD.sizeof_ext_func_tab, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_symdef = FLD.sizeof_symdef,
     $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
     $stairway_isladder = FLD.stairway_isladder, $stairway_up = FLD.stairway_up,
     $symdef_explanation = FLD.symdef_explanation, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
@@ -1123,14 +1126,14 @@ export function* doextcmd() {
         idx = (yield* Y.icall(get_ext_cmd()()));
         if (idx < 0)
             return NHM.ECMD_OK;
-        func = cptr.ldPtro2(extcmdlist, idx, 48, $ext_func_tab_ef_funct);
-        if (!(yield* can_do_extcmd(cptr.add(extcmdlist, idx, 48))))
+        func = cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_funct);
+        if (!(yield* can_do_extcmd(cptr.add(extcmdlist, idx, $sizeof_ext_func_tab))))
             return NHM.ECMD_OK;
-        if (cptr.ld1so(iflags, $instance_flags_menu_requested) && !accept_menu_prefix(cptr.add(extcmdlist, idx, 48))) {
-            (yield* pline(__s_s_prefix_has_no_effect_for_the_s_command, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtro2(extcmdlist, idx, 48, $ext_func_tab_ef_txt)));
+        if (cptr.ld1so(iflags, $instance_flags_menu_requested) && !accept_menu_prefix(cptr.add(extcmdlist, idx, $sizeof_ext_func_tab))) {
+            (yield* pline(__s_s_prefix_has_no_effect_for_the_s_command, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)));
             cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         }
-        cptr.stPtro(ge, $instance_globals_e_ext_tlist, cptr.add(extcmdlist, idx, 48));
+        cptr.stPtro(ge, $instance_globals_e_ext_tlist, cptr.add(extcmdlist, idx, $sizeof_ext_func_tab));
         retval = (yield* Y.icall((func)()));
     } while (func === doextlist);
     return retval;
@@ -1252,7 +1255,7 @@ export function* doextlist() {
         (yield* Y.icall(end_menu()(menuwin, null)));
         n = (yield* select_menu(menuwin, NHM.PICK_ONE, selected));
         if (n > 0) {
-            switch (cptr.ldI32o(selected.v, 0, 24)) {
+            switch (cptr.ldI32o(selected.v, 0, $sizeof_menu_item)) {
                 case 1:
                 menumode = (1 - menumode) | 0;
                 redisplay = 1;
@@ -1389,7 +1392,7 @@ export function* extcmd_via_menu() {
                 cptr.free(pick_list.v);
                 ret = -1;
             } else {
-                cptr.st1o(cptr.decay(cbuf), matchlevel++, cptr.ld1so(pick_list.v, 0, 24), 1);
+                cptr.st1o(cptr.decay(cbuf), matchlevel++, cptr.ld1so(pick_list.v, 0, $sizeof_menu_item), 1);
                 cptr.st1o(cptr.decay(cbuf), matchlevel, 0, 1);
                 cptr.free(pick_list.v);
             }
@@ -1431,7 +1434,7 @@ export function* domonability() {
     else if (is_mind_flayer(uptr))
         return (yield* domindblast());
     else if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
             if ((yield* split_mon(cptr.add(gy, $instance_globals_y_youmonst), null)))
                 (yield* dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1));
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -1633,9 +1636,9 @@ function* doterrain() {
     (yield* Y.icall(end_menu()(men, __s_view_which)));
     n = (yield* select_menu(men, NHM.PICK_ONE, sel));
     (yield* Y.icall(destroy_nhwindow()(men)));
-    which = (n < 0) ? -1 : ((n == 0) ? 1 : cptr.ldI32o(sel.v, 0, 24));
+    which = (n < 0) ? -1 : ((n == 0) ? 1 : cptr.ldI32o(sel.v, 0, $sizeof_menu_item));
     if (n > 1 && which == 1)
-        which = cptr.ldI32o(sel.v, 1, 24);
+        which = cptr.ldI32o(sel.v, 1, $sizeof_menu_item);
     if (n > 0)
         cptr.free(sel.v);
     switch (which) {
@@ -1667,7 +1670,7 @@ function* doterrain() {
 function u_have_seen_whole_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     selection_getbounds(sel, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
@@ -1680,7 +1683,7 @@ function u_have_seen_whole_selection(sel) {
 function u_have_seen_bounds_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     selection_getbounds(sel, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++) {
         y = cptr.ldI16o(rect, $nhrect_ly);
@@ -1705,7 +1708,7 @@ function u_have_seen_bounds_selection(sel) {
 function u_can_see_whole_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     selection_getbounds(sel, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
@@ -1716,7 +1719,7 @@ function u_can_see_whole_selection(sel) {
 
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
-    let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || IS_TREE(typ) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
         return 0;
     return 1;
@@ -1750,14 +1753,14 @@ export function* dolookaround() {
     let tmp_accessiblemsg = cptr.ld1s(a11y);
     let corr_next2u = 0;
     cptr.st1(a11y, 1);
-    if (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
+    if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
         corr_next2u = 1;
-    } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+    } else if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
         let i;
         for (i = NHC.DIR_W; i < ((NHC.N_DIRS_Z - 2) | 0); i = (i + 2) | 0) {
             x = i16(((cptr.ldI16(u) + cptr.ld1so(cptr.decay(xdir), i, 1)) | 0));
             y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ld1so(cptr.decay(ydir), i, 1)) | 0));
-            if (isok(x, y) && ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM))
+            if (isok(x, y) && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM))
                 (yield* lookaround_known_room(x, y));
         }
         corr_next2u = 1;
@@ -2026,7 +2029,7 @@ export function* do_repeat() {
 }
 
 /** C ref: cmd.c:1667 — struct ext_func_tab[171] */
-export const extcmdlist = cptr.alloc(171 * 48);
+export const extcmdlist = cptr.alloc(171 * $sizeof_ext_func_tab);
 cptr.st1o(extcmdlist, 0, 35);
 cptr.stPtro(extcmdlist, 0 + $ext_func_tab_ef_txt, __s_hash);
 cptr.stPtro(extcmdlist, 0 + $ext_func_tab_ef_desc, __s_enter_and_perform_an_extended_command);
@@ -3108,7 +3111,7 @@ let extcmdlist_length = (171 - 1) | 0;
 export function extcmds_getentry(i) {
     if (i < 0 || i > extcmdlist_length)
         return null;
-    return cptr.add(extcmdlist, i, 48);
+    return cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
 }
 
 /** C ref: cmd.c:2110 — @param {CUInt} key @returns {CPtr<struct Cmd_bind>} */
@@ -3209,7 +3212,7 @@ export function count_bind_keys() {
         bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
     for (i = 0; i < extcmdlist_length; i++)
-        if (cptr.ld1uo(extcmdlist, i, 48) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, 48), 1))
+        if (cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab), 1))
             nbinds++;
     return nbinds;
 }
@@ -3240,7 +3243,7 @@ export function* get_changed_key_binds(sbuf) {
         bind = cptr.ldPtro(bind, $Cmd_bind_next);
     }
     for (i = 0; i < extcmdlist_length; i++) {
-        let ec = cptr.add(extcmdlist, i, 48);
+        let ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
         if (cptr.ld1u(ec) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1u(ec), 1)) {
             void cptr.sprintf(cptr.decay(buf), __s_bind_s_nothing_s, key2txt(cptr.ld1u(ec), cptr.decay(buf2)), sbuf ? __s_nl : __s_empty);
             if (sbuf)
@@ -3290,7 +3293,7 @@ function* handler_rebind_keys_add(keyfirst) {
     (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_nothing_unbind_the_key, NHM.MENU_ITEMFLAGS_NONE));
     (yield* add_menu_str(win, __s_empty));
     for (i = 0; i < extcmdlist_length; i++) {
-        ec = cptr.add(extcmdlist, i, 48);
+        ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
         if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 1104) >>> 0) != 0)
             continue;
         cptr.stI32(any, ((i + 1) | 0));
@@ -3315,7 +3318,7 @@ function* handler_rebind_keys_add(keyfirst) {
                 void cptr.strcat(cptr.decay(cmdstr), __s_nothing);
                 break __lbl_bindit;
             } else {
-                ec = cptr.add(extcmdlist, (i - 1) | 0, 48);
+                ec = cptr.add(extcmdlist, (i - 1) | 0, $sizeof_ext_func_tab);
                 if (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0) {
                     let parambuf = new Uint8Array(256);
                     let querybuf = new Uint8Array(256);
@@ -3400,7 +3403,7 @@ export function* handler_change_autocompletions() {
     (yield* Y.icall(start_menu()(win, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < extcmdlist_length; i++) {
-        ec = cptr.add(extcmdlist, i, 48);
+        ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
         if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 80) >>> 0) != 0)
             continue;
         if (cptr.strlen(cptr.ldPtro(ec, $ext_func_tab_ef_txt)) < 2n)
@@ -3415,14 +3418,14 @@ export function* handler_change_autocompletions() {
         let j;
         for (i = 0; i < extcmdlist_length; i++) {
             let setit = 0;
-            ec = cptr.add(extcmdlist, i, 48);
+            ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
             if (((cptr.ldI32o(ec, $ext_func_tab_flags) & 80) >>> 0) != 0)
                 continue;
             if (cptr.strlen(cptr.ldPtro(ec, $ext_func_tab_ef_txt)) < 2n)
                 continue;
             void cptr.sprintf(cptr.decay(buf), __s_pct_s, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
             for (j = 0; j < n; ++j) {
-                if (cptr.eq(ec, cptr.add(extcmdlist, ((cptr.ldI32o(picks.v, j, 24) - 1) | 0), 48))) {
+                if (cptr.eq(ec, cptr.add(extcmdlist, ((cptr.ldI32o(picks.v, j, $sizeof_menu_item) - 1) | 0), $sizeof_ext_func_tab))) {
                     (yield* parseautocomplete(cptr.decay(buf), 1));
                     setit = 1;
                     break;
@@ -3449,23 +3452,23 @@ export function* extcmds_match(findstr, ecmflags, matchlist) {
     let ignoreac = schar(((ecmflags & NHM.ECM_IGNOREAC) != 0));
     let exactmatch = schar(((ecmflags & NHM.ECM_EXACTMATCH) != 0));
     let no1charcmd = schar(((ecmflags & NHM.ECM_NO1CHARCMD) != 0));
-    for (i = 0; cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt); i++) {
-        if ((cptr.ldI32o2(extcmdlist, i, 48, $ext_func_tab_flags) & 80) >>> 0)
+    for (i = 0; cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt); i++) {
+        if ((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & 80) >>> 0)
             continue;
-        if (!wizard() && ((cptr.ldI32o2(extcmdlist, i, 48, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0))
+        if (!wizard() && ((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0))
             continue;
-        if (!ignoreac && !((cptr.ldI32o2(extcmdlist, i, 48, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0))
+        if (!ignoreac && !((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0))
             continue;
-        if (no1charcmd && (cptr.strlen(cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt)) == 1n))
+        if (no1charcmd && (cptr.strlen(cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)) == 1n))
             continue;
         if (!findstr) {
             cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
         } else if (exactmatch) {
-            if (!(yield* strncmpi((findstr), (cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt)), -1))) {
+            if (!(yield* strncmpi((findstr), (cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)), -1))) {
                 cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
             }
         } else {
-            if (!(yield* strncmpi(findstr, cptr.ldPtro2(extcmdlist, i, 48, $ext_func_tab_ef_txt), fslen))) {
+            if (!(yield* strncmpi(findstr, cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt), fslen))) {
                 cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
             }
         }
@@ -4230,7 +4233,7 @@ export function* reset_commands(initial) {
     cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_extcmd_char, cmd_from_func(doextcmd));
 }
 
-let __static_update_rest_on_space_restonspace = cptr.alloc(48); /** C ref: cmd.c:3489 — struct ext_func_tab (function-static) */
+let __static_update_rest_on_space_restonspace = cptr.alloc($sizeof_ext_func_tab); /** C ref: cmd.c:3489 — struct ext_func_tab (function-static) */
 cptr.st1(__static_update_rest_on_space_restonspace, 32);
 cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_txt, __s_wait);
 cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_desc, __s_rest_one_move_via_rest_on_space_option);
@@ -4283,7 +4286,7 @@ export function randomkey() {
         c = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3548, __s_randomkey), rn2(26)) : rn2(26)) + 65) | 0));
         break;
         case 8:
-        c = schar(cptr.ld1uo(extcmdlist, u32mod(__static_randomkey_i++, 171 >>> 0), 48));
+        c = schar(cptr.ld1uo(extcmdlist, u32mod(__static_randomkey_i++, 171 >>> 0), $sizeof_ext_func_tab));
         break;
         case 9:
         c = 35;
@@ -5033,13 +5036,13 @@ function* mcmd_addmenu(win, act, txt) {
 function* there_cmd_menu_self(win, x, y, act) {
     let K = 0;
     let buf = new Uint8Array(256);
-    let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     let stway = stairway_at(x, y);
     let ttmp;
     if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         return K;
     if ((((typ) == NHC.FOUNTAIN) || ((typ) == NHC.SINK)) && can_reach_floor(0)) {
-        void cptr.sprintf(cptr.decay(buf), __s_drink_from_the_s, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, 24, $symdef_explanation));
+        void cptr.sprintf(cptr.decay(buf), __s_drink_from_the_s, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, $sizeof_symdef, $symdef_explanation));
         (yield* mcmd_addmenu(win, NHC.MCMD_QUAFF, cptr.decay(buf))), ++K;
     }
     if (((typ) == NHC.FOUNTAIN) && can_reach_floor(0))
@@ -5095,7 +5098,7 @@ function* there_cmd_menu_self(win, x, y, act) {
 function* there_cmd_menu_next2u(win, x, y, mod, act) {
     let K = 0;
     let buf = new Uint8Array(256);
-    let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     let ttmp;
     let mtmp;
     if (!(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
@@ -5103,7 +5106,7 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
     if (((typ) == NHC.DOOR)) {
         let key_or_pick;
         let card;
-        let dm = (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
+        let dm = (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
         if ((dm & 12)) {
             (yield* mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __s_open_the_door)), ++K;
             key_or_pick = schar((carrying(NHC.SKELETON_KEY) || carrying(NHC.LOCK_PICK) ? 1 : 0));
@@ -5126,7 +5129,7 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
             (yield* mcmd_addmenu(win, NHC.MCMD_UNTRAP_TRAP, __s_attempt_to_disarm_trap)), ++K;
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_move_on_the_trap)), ++K;
     }
-    if (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
+    if (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_push_the_boulder)), ++K;
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mtmp && !canspotmon(mtmp))
@@ -5433,10 +5436,10 @@ function* domouseaction() {
             return NHM.ECMD_OK;
         }
         if (x == 0 && y == 0) {
-            if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) || ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
+            if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrink));
                 return NHM.ECMD_OK;
-            } else if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
+            } else if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dosit));
                 return NHM.ECMD_OK;
             } else if (On_stairs_up(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -5455,17 +5458,17 @@ function* domouseaction() {
         }
         dir = xytodir(x, y);
         if (!(cptr.ldPtro3(svl, (cptr.ldI16(u) + x) | 0, 168, (cptr.ldI16o(u, $you_uy) + y) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) && !(yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, NHM.TEST_MOVE))) {
-            if (((cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
-                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
+            if (((cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, dokick));
                     return NHM.ECMD_OK;
                 }
-                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED) {
+                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, doopen));
                     return NHM.ECMD_OK;
                 }
             }
-            if (cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, 756, (cptr.ldI16o(u, $you_uy) + y) | 0, 36, $instance_globals_saved_l_level + $rm_typ) <= NHC.SCORR) {
+            if (cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) <= NHC.SCORR) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dosearch));
                 return NHM.ECMD_OK;
             }
@@ -5774,9 +5777,9 @@ function* yn_function_menu(query, resp, def, res) {
         n = (yield* select_menu(win, NHM.PICK_ONE, sel));
         (yield* Y.icall(destroy_nhwindow()(win)));
         if (n > 0) {
-            cptr.st1(res, cptr.ld1so(sel.v, 0, 24));
+            cptr.st1(res, cptr.ld1so(sel.v, 0, $sizeof_menu_item));
             if (n > 1 && cptr.ld1s(res) == def)
-                cptr.st1(res, cptr.ld1so(sel.v, 1, 24));
+                cptr.st1(res, cptr.ld1so(sel.v, 1, $sizeof_menu_item));
             cptr.free(sel.v);
         } else {
             cptr.st1(res, def);

@@ -72,6 +72,8 @@ const $Gender_he = FLD.Gender_he, $_mcast_data_flags = FLD._mcast_data_flags,
     $nhcoord_y = FLD.nhcoord_y, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof__mcast_data = FLD.sizeof__mcast_data,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
     $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_mh = FLD.you_mh, $you_uhp = FLD.you_uhp,
     $you_uhpmax = FLD.you_uhpmax, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
     $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_uundetected = FLD.you_uundetected,
@@ -218,7 +220,7 @@ export const MCAST_DEATH_TOUCH = 19;
 /** C ref: mcastu.c:14 — struct _mcast_data { level, flags } (memory model v0.5) */
 
 /** C ref: mcastu.c:20 — struct _mcast_data[20] */
-const mcast_data = cptr.alloc(20 * 8);
+const mcast_data = cptr.alloc(20 * $sizeof__mcast_data);
 cptr.stI32o(mcast_data, 0, 0);
 cptr.stI32o(mcast_data, 0 + $_mcast_data_flags, 6);
 cptr.stI32o(mcast_data, 8, 0);
@@ -323,12 +325,12 @@ function choose_monster_spell(mtmp, adtyp) {
     }
     if (!list || len < 1)
         return NHC.MCAST_PSI_BOLT;
-    maxlev = cptr.ldI32o(mcast_data, cptr.ldI32o(list, (len - 1) | 0, 4), 8);
+    maxlev = cptr.ldI32o(mcast_data, cptr.ldI32o(list, (len - 1) | 0, 4), $sizeof__mcast_data);
     spellval = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 111, __s_choose_monster_spell), rn2(cptr.ld1uo(mtmp, $monst_m_lev))) : rn2(cptr.ld1uo(mtmp, $monst_m_lev)));
     if (spellval > maxlev && (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 112, __s_choose_monster_spell), rn2(maxlev)) : rn2(maxlev)))
         spellval = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 113, __s_choose_monster_spell), rn2(maxlev)) : rn2(maxlev));
     for (i = (len - 1) | 0; i >= 0; i--)
-        if (cptr.ldI32o(mcast_data, cptr.ldI32o(list, i, 4), 8) <= spellval && !spell_would_be_useless(mtmp, cptr.ldI32o(list, i, 4)))
+        if (cptr.ldI32o(mcast_data, cptr.ldI32o(list, i, 4), $sizeof__mcast_data) <= spellval && !spell_would_be_useless(mtmp, cptr.ldI32o(list, i, 4)))
             return cptr.ldI32o(list, i, 4);
     return cptr.ldI32o(list, 0, 4);
 }
@@ -489,7 +491,7 @@ export function death_inflicted_by(outbuf, deathreason, mtmp) {
     void cptr.strcpy(outbuf, deathreason);
     if (mtmp) {
         let mptr = cptr.ldPtro(mtmp, $monst_data);
-        let champtr = (ismnum(cptr.ldI16o(mtmp, $monst_cham))) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
+        let champtr = (ismnum(cptr.ldI16o(mtmp, $monst_cham))) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst) : mptr;
         let realnm = pmname(champtr, Mgender(mtmp));
         let fakenm = pmname(mptr, Mgender(mtmp));
         if (!((cptr.ldU64o((champtr), $permonst_mflags2) & 524288n) != 0n) && !the_unique_pm(mptr))
@@ -503,7 +505,7 @@ export function death_inflicted_by(outbuf, deathreason, mtmp) {
 
 /** C ref: mcastu.c:389 — @param {CPtr<struct monst>} mtmp */
 function mcast_death_touch(mtmp) {
-    pline(__s_oh_no_s_s_using_the_touch_of_death, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)));
+    pline(__s_oh_no_s_s_using_the_touch_of_death, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)));
     if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
         You(__s_seem_no_deader_than_before);
     } else if (!Antimagic() && (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 394, __s_mcast_death_touch), rn2(cptr.ld1uo(mtmp, $monst_m_lev))) : rn2(cptr.ld1uo(mtmp, $monst_m_lev))) > 12) {
@@ -933,18 +935,18 @@ function mcast_spell(mtmp, dmg, spellnum) {
 
 /** C ref: mcastu.c:900 — @param {CInt} spellnum @returns {CInt} */
 function is_undirected_spell(spellnum) {
-    if ((cptr.ldI32o2(mcast_data, spellnum, 8, $_mcast_data_flags) & NHM.MCF_INDIRECT) != 0)
+    if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) & NHM.MCF_INDIRECT) != 0)
         return 1;
     return 0;
 }
 
 /** C ref: mcastu.c:909 — @param {CPtr<struct monst>} mtmp @param {CInt} spellnum @returns {CInt} */
 function spell_would_be_useless(mtmp, spellnum) {
-    if ((cptr.ldI32o2(mcast_data, spellnum, 8, $_mcast_data_flags) & NHM.MCF_HOSTILE) != 0) {
+    if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) & NHM.MCF_HOSTILE) != 0) {
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             return 1;
     }
-    if ((cptr.ldI32o2(mcast_data, spellnum, 8, $_mcast_data_flags) & NHM.MCF_SIGHT) != 0) {
+    if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) & NHM.MCF_SIGHT) != 0) {
         let mcouldseeu = schar(((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0));
         if (!mcouldseeu)
             return 1;

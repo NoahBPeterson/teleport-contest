@@ -41,7 +41,8 @@ const $NHFILE_mode = FLD.NHFILE_mode, $context_info_mon_moving = FLD.context_inf
     $monst_m_lev = FLD.monst_m_lev, $monst_mcloned = FLD.monst_mcloned, $monst_mextra = FLD.monst_mextra,
     $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mtame = FLD.monst_mtame,
     $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $monst_wormno = FLD.monst_wormno,
-    $prop_intrinsic = FLD.prop_intrinsic, $wseg_wx = FLD.wseg_wx, $wseg_wy = FLD.wseg_wy,
+    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $wseg_wx = FLD.wseg_wx, $wseg_wy = FLD.wseg_wy,
     $you_uprops = FLD.you_uprops, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -213,7 +214,7 @@ export function* wormgone(worm) {
     (yield* toss_wsegs(cptr.ldPtro(wtails, wnum, 8), 1));
     cptr.stPtro(wheads, wnum, cptr.stPtro(wtails, wnum, null, 8), 8);
     cptr.stI64o(wgrowtime, wnum, 0n, 8);
-    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && has_mcorpsenm(worm))
+    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)) && has_mcorpsenm(worm))
         cptr.stI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
 }
 

@@ -779,6 +779,36 @@ export const FIELD_PREFIX = '$';
 const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
 const FIELD_STATS = { named: 0, unnamed: 0 };
 
+// ------------------------------------- named element sizes and strides ----
+//
+// The 1.11 tier named field displacements and left the other integer in an
+// address alone: `cptr.ld1so3(svl, x, 756, y, 36, $..._level + $rm_typ)` still
+// says `levl[x][y].typ` with the *displacement* named and both *strides* raw,
+// and `cptr.add(mons, NHC.PM_LONG_WORM, 96)` indexes `mons[]` by a magic 96.
+//
+// Those integers are real C quantities and the emitter computed them from the
+// layout it already has: 36 is `sizeof(struct rm)`, 96 is
+// `sizeof(struct permonst)`, 756 is `sizeof(struct rm [21])` — the stride of
+// one `levl` column, which decomposes exactly as `21 * sizeof_rm`.
+//
+// They join `nhfield.js` rather than getting a module of their own, because
+// they come from the same table (`layoutOf`), obey the same conflict rules,
+// and want the same `$name` binding for the same V8 folding reason. A name is
+// `sizeof_<record>`, and an array of them is `sizeof_<record>_x<count>`, whose
+// value the table writes as the product it is.
+//
+// WHAT IS NOT NAMED, and why the boundary is there: a pointer (8), a scalar
+// (1/2/4/8) and an enum (4) get nothing. Those sizes are the machine's, not
+// NetHack's — `sizeof_int` would be a name for a fact no 5.1 merge can move,
+// and 150k sites do not need one. Nor is the *count* in a stride named: `21`
+// is `ROWNO` in the C, but the preprocessor consumed that name before clang
+// saw the array bound, and 21 is the value of many macros. Recovering it would
+// be a guess, and this tier does not guess.
+//
+// C2JS_SIZENAMES=0 restores bare integers (the A/B baseline).
+const SIZE_NAMES = process.env.C2JS_SIZENAMES !== '0';
+const SIZE_STATS = { named: 0, stride: 0, machine: 0, refused: 0 };
+
 // ------------------------------------------------ named string literals ----
 //
 // `rng_log_set_caller(__sl0, 146, __sl1)` names nothing.  24,129 interned
@@ -1018,6 +1048,8 @@ if (process.env.C2JS_READ_STATS) {
     + `field offsets: ${FIELD_STATS.named} named, ${FIELD_STATS.unnamed} left numeric (anon record, shadowed, or ambiguous name)\n`
     + `pointer jsdoc: ${DOC_STATS.ptrNamed} pointers carry their C pointee, ${DOC_STATS.ptrBare} stayed bare CPtr (fn pointer, anon record, decayed array, or over ${DOC_PTR_MAX} chars)\n`
     + `string names:  ${STRING_STATS.named} literals named by their content, ${STRING_STATS.collided} needed a collision suffix\n`
+    + `element sizes: ${SIZE_STATS.named} named, ${SIZE_STATS.stride} composed strides; ${SIZE_STATS.machine} are a pointer/scalar/enum width and get no name by design, `
+    + `${SIZE_STATS.refused} record sizes refused by the equality audit\n`
     + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
     + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
@@ -2364,7 +2396,7 @@ export class Emitter {
       const elemT = parseType(arr.elem);
       if (base.rep === 'cptr') {
         // byte-packed array member of a struct/union: scaled location
-        return { code: this.cptrCall('add', base.code, idx.code, String(this.sizeofType(arr.elem))), elemQ: arr.elem, rep: 'cptr' };
+        return { code: this.cptrCall('add', base.code, idx.code, this.sizeofCode(arr.elem, this.sizeofType(arr.elem))), elemQ: arr.elem, rep: 'cptr' };
       }
       if (arrayParts(arr.elem)) {
         return { code: `${this.group(base, PREC.atom)}[${this.jsIndex(idx)}]`, elemQ: arr.elem, rep: 'buf' };
@@ -2372,7 +2404,7 @@ export class Emitter {
       if (elemT.cls === 'record') {
         const rn = this.recordNameForType(arr.elem);
         if (rn) { // real record element: byte-row storage, scaled location
-          const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code, String(this.layoutOf(rn).size));
+          const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code, this.sizeofRecCode(rn, this.layoutOf(rn).size));
           return { code: loc, elemQ: arr.elem, rep: 'cptr' };
         }
         return { code: `${this.group(base, PREC.atom)}[${this.jsIndex(idx)}]`, elemQ: arr.elem, rep: 'obj' }; // fn-ptr typedef etc: plain JS array
@@ -2391,7 +2423,7 @@ export class Emitter {
       }
       // 1-byte element buffer: location through cptr (scale by element size)
       let esz = '1';
-      try { const s = this.sizeofType(arr.elem); if (s !== 1) esz = String(s); } catch { /* fn-ptr typedefs etc: stay 1 */ }
+      try { const s = this.sizeofType(arr.elem); if (s !== 1) esz = this.sizeofCode(arr.elem, s); } catch { /* fn-ptr typedefs etc: stay 1 */ }
       const loc = this.cptrCall('add', this.cptrCall('decay', base.code), idx.code, esz);
       return { code: loc, elemQ: arr.elem, rep: 'cptr' };
     }
@@ -2400,17 +2432,18 @@ export class Emitter {
     if (!pointee) throw new Error('subscript on non-pointer/non-array');
     if (arrayParts(pointee)) {
       // pointer-to-array: scale by the row size; the row stays a location
-      return { code: this.cptrCall('add', base.code, idx.code, String(this.sizeofType(pointee))), elemQ: pointee, rep: 'cptr' };
+      return { code: this.cptrCall('add', base.code, idx.code, this.sizeofCode(pointee, this.sizeofType(pointee))), elemQ: pointee, rep: 'cptr' };
     }
     const elemT = parseType(pointee);
     if (elemT.cls === 'record') {
-      const sz = this.layoutOf(this.recordNameForType(pointee)).size;
-      return { code: this.cptrCall('add', base.code, idx.code, String(sz)), elemQ: pointee, rep: 'cptr' };
+      const rn = this.recordNameForType(pointee);
+      const sz = this.layoutOf(rn).size;
+      return { code: this.cptrCall('add', base.code, idx.code, this.sizeofRecCode(rn, sz)), elemQ: pointee, rep: 'cptr' };
     }
     // scalar pointee: scale by its width (int*/T** subscripts are not bytes)
     let esz = 1;
     try { esz = this.sizeofType(pointee); } catch { /* unknown scalar: stay 1 */ }
-    return { code: esz === 1 ? this.cptrCall('add', base.code, idx.code) : this.cptrCall('add', base.code, idx.code, String(esz)), elemQ: pointee, rep: 'cptr' };
+    return { code: esz === 1 ? this.cptrCall('add', base.code, idx.code) : this.cptrCall('add', base.code, idx.code, this.sizeofCode(pointee, esz)), elemQ: pointee, rep: 'cptr' };
   }
 
   expr_ArraySubscriptExpr(n) {
@@ -2473,6 +2506,71 @@ export class Emitter {
    * the bare integer otherwise (anonymous records, file-local shadowing, a
    * name two different fields could produce — all refused by the table).
    */
+  /**
+   * The name a type's size would have in nhfield.js, or null when it would not
+   * have one.
+   *
+   * `struct rm` is `sizeof_rm`; `struct rm [21]` is `sizeof_rm_x21`, which is
+   * `21 * sizeof_rm` and is written that way in the table.  A pointer (8), a
+   * scalar (1/2/4/8) and an enum (4) get no name: those integers are the
+   * machine's, not NetHack's, and a reader loses nothing by seeing them.
+   */
+  sizeName(q) {
+    const arr = arrayParts(q);
+    if (arr) {
+      if (arr.count == null || !Number.isInteger(arr.count)) return null;
+      const inner = this.sizeName(arr.elem);
+      return inner ? `${inner}_x${arr.count}` : null;
+    }
+    if (!q || q.includes('*') || q.includes('(') || q.includes('[')) return null;
+    if (this.isEnumType(q)) return null;
+    const rn = this.recordNameForType(q);
+    return rn ? this.sizeNameForRecord(rn) : null;
+  }
+
+  /** `sizeof_<record>`, or null for a record whose name cannot spell one */
+  sizeNameForRecord(rn) {
+    if (!rn || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(rn)) return null; // anon#N / byloc#L:C
+    if (this.records.get(rn)?.tag === 'enum') return null;
+    // a record whose own name ends `_x<digits>` would spell the same name an
+    // array of some other record spells; see collectFieldOffsets, which
+    // refuses it from the other side too
+    if (/_x\d+$/.test(rn)) return null;
+    return `sizeof_${rn}`;
+  }
+
+  /**
+   * An element size or array stride, spelled `$sizeof_rm` / `$sizeof_rm_x21`
+   * when the corpus-wide table agrees with the size computed here, and as the
+   * bare integer otherwise.
+   *
+   * Same equality audit as fieldOffCode, and it has to reach through the
+   * composition: a composed name is only used when `base × ∏counts` is exactly
+   * the size this emitter just computed, so an array bound the table never saw
+   * cannot borrow a name that means something else.
+   */
+  sizeofCode(q, sz) {
+    return this.sizeCodeFor(this.sizeName(q), sz);
+  }
+
+  /** the same, for a size the emitter reached through a record name */
+  sizeofRecCode(recName, sz) {
+    return this.sizeCodeFor(this.sizeNameForRecord(recName), sz);
+  }
+
+  sizeCodeFor(nm, sz) {
+    if (!SIZE_NAMES || !nm) { SIZE_STATS.machine++; return String(sz); }
+    const parts = nm.split('_x');
+    const base = this.fieldOffsets.get(parts[0]);
+    if (base === undefined) { SIZE_STATS.refused++; return String(sz); }
+    let v = base;
+    for (let i = 1; i < parts.length; i++) v *= Number(parts[i]);
+    if (v !== sz) { SIZE_STATS.refused++; return String(sz); }
+    SIZE_STATS[parts.length > 1 ? 'stride' : 'named']++;
+    this.fieldRefs.add(nm);
+    return namedInt(FIELD_PREFIX + nm, sz);
+  }
+
   fieldOffCode(recName, fieldName, off) {
     if (!FIELD_NAMES) return String(off);
     const name = `${recName}_${fieldName}`;
@@ -5097,7 +5195,7 @@ export class Emitter {
     if (!rec || !rec.fields) throw new Error(`recordInitStores: unknown record ${recName}`);
     if (initNode.kind !== 'InitListExpr') {
       // whole-record copy initializer: struct x a = b;
-      return [`${this.cptrCall('memcpy', name, this.emitExpr(initNode).code, String(this.layoutOf(recName).size))};`];
+      return [`${this.cptrCall('memcpy', name, this.emitExpr(initNode).code, this.sizeofRecCode(recName, this.layoutOf(recName).size))};`];
     }
     const inits = this.initListElems(initNode);
     const lines = [];
@@ -5111,7 +5209,7 @@ export class Emitter {
         // nested record field: recursive stores (InitListExpr) or whole copy
         const fRecName = this.recordNameForType(f.q);
         if (init.kind === 'InitListExpr') lines.push(...this.recordInitStores(loc, fRecName, init));
-        else lines.push(`${this.cptrCall('memcpy', loc, this.emitExpr(init).code, String(this.layoutOf(fRecName).size))};`);
+        else lines.push(`${this.cptrCall('memcpy', loc, this.emitExpr(init).code, this.sizeofRecCode(fRecName, this.layoutOf(fRecName).size))};`);
       } else if (arrayParts(f.q)) {
         // array field: string literal or per-element stores
         const a = arrayParts(f.q);
@@ -5141,7 +5239,7 @@ export class Emitter {
     if (parseType(q).cls === 'record' && !q.includes('*') && !this.isEnumType(q)) {
       const recName = this.recordNameForType(q);
       const size = this.layoutOf(recName).size;
-      let out = `let ${name} = ${this.cptrCall('alloc', String(size))}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
+      let out = `let ${name} = ${this.cptrCall('alloc', this.sizeofRecCode(recName, size))}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
       if (init) out += "\n" + this.recordInitStores(name, recName, init).join("\n");
       return out;
     }
@@ -5247,7 +5345,7 @@ export class Emitter {
       if (size == null) continue;
       this.recordLocals.add(p.name);
       this.recordLocals.add(jsName(p.name));
-      lines.push(`    ${jsName(p.name)} = ${this.cptrCall('dup', jsName(p.name), String(size))}; // by-value struct param`);
+      lines.push(`    ${jsName(p.name)} = ${this.cptrCall('dup', jsName(p.name), this.sizeofRecCode(recName, size))}; // by-value struct param`);
     }
     // regionHoisted decls belong to the pattern lowerings only — the state
     // machine hoists every local itself, so emitting both duplicates `let`s
@@ -5342,7 +5440,7 @@ export class Emitter {
     this.cptrArrays.add(name);
     const inits = init && init.kind === 'InitListExpr' ? this.initListElems(init) : null;
     const count = arr.count ?? (inits ? inits.length : 0);
-    const lines = [`${prefix}${this.cptrCall('alloc', `${count} * ${sz}`)};`];
+    const lines = [`${prefix}${this.cptrCall('alloc', `${count} * ${this.sizeofCode(el, sz)}`)};`];
     if (inits) {
       for (let i = 0; i < inits.length; i++) {
         if (inits[i].kind === 'ImplicitValueInitExpr') continue;
@@ -5371,7 +5469,8 @@ export class Emitter {
       // refs then use name.v, so the definition must BE a box
       const boxed = this.topBoxed?.has(d.name) || this.externBoxed.has(d.name);
       if (boxed) this.usesCptr = true;
-      lines.push(`${exp}let ${d.name} = ${boxed ? this.cptrCall('box', this.cptrCall('alloc', String(size))) : this.cptrCall('alloc', String(size))};`);
+      const szCode = this.sizeofRecCode(recName, size);
+      lines.push(`${exp}let ${d.name} = ${boxed ? this.cptrCall('box', this.cptrCall('alloc', szCode)) : this.cptrCall('alloc', szCode)};`);
       if (init) lines.push(...this.recordInitStores(boxed ? `${d.name}.v` : d.name, recName, init));
       return lines;
     }

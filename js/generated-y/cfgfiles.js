@@ -69,7 +69,8 @@ const $_cnf_parser_state_buf = FLD._cnf_parser_state_buf,
     $match_config_line_stmt_len = FLD.match_config_line_stmt_len,
     $match_config_line_stmt_origbuf = FLD.match_config_line_stmt_origbuf,
     $match_config_line_stmt_syscnf_only = FLD.match_config_line_stmt_syscnf_only,
-    $sinfo_config_error_ready = FLD.sinfo_config_error_ready, $strbuf_str = FLD.strbuf_str,
+    $sinfo_config_error_ready = FLD.sinfo_config_error_ready,
+    $sizeof_match_config_line_stmt = FLD.sizeof_match_config_line_stmt, $strbuf_str = FLD.strbuf_str,
     $sysopt_s_accessibility = FLD.sysopt_s_accessibility, $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools,
     $sysopt_s_check_plname = FLD.sysopt_s_check_plname,
     $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid,
@@ -969,7 +970,7 @@ function cnf_line_QT_COMPACT(bufp) {
 /** C ref: cfgfiles.c:1303 — struct match_config_line_stmt { name, len, syscnf_only, origbuf, fn } (memory model v0.5) */
 
 /** C ref: cfgfiles.c:1309 — struct match_config_line_stmt[59] */
-const config_line_stmt = cptr.alloc(59 * 24);
+const config_line_stmt = cptr.alloc(59 * $sizeof_match_config_line_stmt);
 cptr.stPtro(config_line_stmt, 0, __s_options);
 cptr.stI32o(config_line_stmt, 0 + $match_config_line_stmt_len, 4);
 cptr.st1o(config_line_stmt, 0 + $match_config_line_stmt_syscnf_only, 0);
@@ -1291,12 +1292,12 @@ export function* parse_config_line(origbuf) {
     if (cptr.ld1s(bufp) == 32)
         bufp = cptr.add(bufp, 1);
     for (i = 0; i < 59; i++) {
-        if (cptr.ld1so2(config_line_stmt, i, 24, $match_config_line_stmt_syscnf_only) && !in_sysconf)
+        if (cptr.ld1so2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_syscnf_only) && !in_sysconf)
             continue;
-        if ((yield* match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, 24), cptr.ldI32o2(config_line_stmt, i, 24, $match_config_line_stmt_len), 1))) {
-            let parm = cptr.ld1so2(config_line_stmt, i, 24, $match_config_line_stmt_origbuf) ? origbuf : bufp;
+        if ((yield* match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, $sizeof_match_config_line_stmt), cptr.ldI32o2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_len), 1))) {
+            let parm = cptr.ld1so2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_origbuf) ? origbuf : bufp;
             if (!cptr.ld1so(cptr.decay(disregarded_config_lines), i, 1))
-                return (yield* Y.icall(cptr.ldPtro2(config_line_stmt, i, 24, $match_config_line_stmt_fn)(parm)));
+                return (yield* Y.icall(cptr.ldPtro2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_fn)(parm)));
         }
     }
     if (!ignore_errors_on_unmatched)

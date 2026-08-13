@@ -48,7 +48,9 @@ const $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind, $coord
     $mail_info_display_txt = FLD.mail_info_display_txt, $mail_info_object_nam = FLD.mail_info_object_nam,
     $mail_info_response_cmd = FLD.mail_info_response_cmd, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
     $nhcoord_y = FLD.nhcoord_y, $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $rm_typ = FLD.rm_typ, $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
+    $rm_typ = FLD.rm_typ, $sizeof_mail_info = FLD.sizeof_mail_info, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_stat = FLD.sizeof_stat, $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
     $stairway_tolev = FLD.stairway_tolev, $stat_st_mtimespec = FLD.stat_st_mtimespec,
     $stat_st_size = FLD.stat_st_size, $u_roleplay_deaf = FLD.u_roleplay_deaf,
     $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
@@ -81,10 +83,10 @@ const __s_mailreader = cptr.lit("MAILREADER");
 const __s_usr_bin_mailx = cptr.lit("/usr/bin/mailx");
 
 /** C ref: mail.c:69 — struct stat */
-let omstat = cptr.alloc(144);
+let omstat = cptr.alloc($sizeof_stat);
 
 /** C ref: mail.c:69 — struct stat */
-let nmstat = cptr.alloc(144);
+let nmstat = cptr.alloc($sizeof_stat);
 
 /** C ref: mail.c:70 — char * */
 let mailbox = null;
@@ -202,7 +204,7 @@ function md_stop(stopp, startp) {
                 }
             }
         }
-    if (min_distance < 0 && !enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
+    if (min_distance < 0 && !enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)))
         return 0;
     return 1;
 }
@@ -232,7 +234,7 @@ function md_rush(md, tx, ty) {
         d1 = dist2(i16(fx), i16(fy), i16(tx), i16(ty));
         for (dx = -1; dx <= 1; dx++)
             for (dy = -1; dy <= 1; dy++)
-                if ((dx || dy) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) && !((cptr.ld1so3(svl, (fx + dx) | 0, 756, (fy + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
+                if ((dx || dy) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) && !((cptr.ld1so3(svl, (fx + dx) | 0, $sizeof_rm_x21, (fy + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
                     d2 = dist2(i16(((fx + dx) | 0)), i16(((fy + dy) | 0)), i16(tx), i16(ty));
                     if (d2 < d1) {
                         d1 = d2;
@@ -304,7 +306,7 @@ function newmail(info) {
     __lbl_go_back: {
         if (!md_start(start) || !md_stop(stop, start))
             break __lbl_give_up;
-        if (!(md = makemon(cptr.add(mons, NHC.PM_MAIL_DAEMON, 96), cptr.ldI16(start), cptr.ldI16o(start, $nhcoord_y), NHM.NO_MM_FLAGS)))
+        if (!(md = makemon(cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst), cptr.ldI16(start), cptr.ldI16o(start, $nhcoord_y), NHM.NO_MM_FLAGS)))
             break __lbl_give_up;
         if (!md_rush(md, cptr.ldI16(stop), cptr.ldI16o(stop, $nhcoord_y)))
             break __lbl_go_back;
@@ -342,7 +344,7 @@ function newmail(info) {
         pline(__s_hark_s, cptr.ldPtro(info, $mail_info_display_txt));
 }
 
-let __static_ckmailstatus_deliver = cptr.alloc(32); /** C ref: mail.c:571 — struct mail_info (function-static) */
+let __static_ckmailstatus_deliver = cptr.alloc($sizeof_mail_info); /** C ref: mail.c:571 — struct mail_info (function-static) */
 cptr.stI32(__static_ckmailstatus_deliver, NHM.MSG_MAIL);
 cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_display_txt, __s_i_have_some_mail_for_you);
 cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_object_nam, null);

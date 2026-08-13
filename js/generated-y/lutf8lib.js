@@ -15,7 +15,7 @@ import { lua_createtable, lua_gettop, lua_pushcclosure, lua_pushfstring, lua_pus
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $luaL_Reg_func = FLD.luaL_Reg_func;
+const $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_initial_position_out_of_bounds = cptr.lit("initial position out of bounds");
@@ -244,7 +244,7 @@ function* iter_codes(L) {
 }
 
 /** C ref: lutf8lib.c:273 — luaL_Reg[7] */
-const funcs = cptr.alloc(7 * 16);
+const funcs = cptr.alloc(7 * $sizeof_luaL_Reg);
 cptr.stPtro(funcs, 0, __s_offset);
 cptr.stPtro(funcs, 0 + $luaL_Reg_func, byteoffset);
 cptr.stPtro(funcs, 16, __s_codepoint);

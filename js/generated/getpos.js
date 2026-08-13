@@ -52,7 +52,8 @@ const $_cmd_queue_dirx = FLD._cmd_queue_dirx, $_cmd_queue_diry = FLD._cmd_queue_
     $instance_globals_w_wsettings = FLD.instance_globals_w_wsettings,
     $levelflags_hero_memory = FLD.levelflags_hero_memory, $nhcoord_y = FLD.nhcoord_y,
     $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $selectionvar_hei = FLD.selectionvar_hei,
-    $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+    $sizeof_coord = FLD.sizeof_coord, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_symdef = FLD.sizeof_symdef, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
     $win_settings_map_frame_color = FLD.win_settings_map_frame_color,
     $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
     $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
@@ -436,7 +437,7 @@ function gloc_filter_classify_glyph(glyph) {
 /** C ref: getpos.c:364 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function gloc_filter_floodfill_matcharea(x, y) {
     let glyph = back_to_glyph(x, y);
-    if (!cptr.ld1uo3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv))
+    if (!cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv))
         return 0;
     if (glyph == cptr.ldI32o(gg, $instance_globals_g_gloc_filter_floodfill_match_glyph))
         return 1;
@@ -458,7 +459,7 @@ function gloc_filter_init() {
         if (!cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)) {
             cptr.stPtro(gg, $instance_globals_g_gloc_filter_map, selection_new());
         }
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
             if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)))) {
                 gloc_filter_floodfill(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)));
             } else {
@@ -505,7 +506,7 @@ export function gather_locs_interesting(x, y, gloc) {
         case NHC.GLOC_DOOR:
         return schar((glyph_is_cmap(glyph) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor) ? 1 : 0));
         case NHC.GLOC_EXPLORE:
-        return schar((glyph_is_cmap(glyph) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), 756, (y), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y + 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), 756, ((y - 1) | 0), 36, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
+        return schar((glyph_is_cmap(glyph) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), $sizeof_rm_x21, ((y + 1) | 0), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), $sizeof_rm_x21, ((y + 1) | 0), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), $sizeof_rm_x21, ((y - 1) | 0), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), $sizeof_rm_x21, ((y - 1) | 0), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
         case NHC.GLOC_VALID:
         if (getpos_getvalid)
             return (getpos_getvalid)(x, y);
@@ -532,8 +533,8 @@ function gather_locs(arr_p, cnt_p, gloc) {
                     if (!pass) {
                         cptr.stI32(cnt_p, cptr.ldI32(cnt_p) + 1);
                     } else {
-                        cptr.stI16o((cptr.ldPtr(arr_p)), idx, x, 4);
-                        cptr.stI16o2((cptr.ldPtr(arr_p)), idx, 4, $nhcoord_y, y);
+                        cptr.stI16o((cptr.ldPtr(arr_p)), idx, x, $sizeof_coord);
+                        cptr.stI16o2((cptr.ldPtr(arr_p)), idx, $sizeof_coord, $nhcoord_y, y);
                         ++idx;
                     }
                 }
@@ -650,10 +651,10 @@ export function getpos_menu(ccp, gloc) {
         let firstmatch = cptr.box(__s_unknown);
         let sym = 0;
         cptr.stI32(any, (i + 1) | 0);
-        cptr.stI16(tmpcc, cptr.ldI16o(garr.v, i, 4));
-        cptr.stI16o(tmpcc, $nhcoord_y, cptr.ldI16o2(garr.v, i, 4, $nhcoord_y));
+        cptr.stI16(tmpcc, cptr.ldI16o(garr.v, i, $sizeof_coord));
+        cptr.stI16o(tmpcc, $nhcoord_y, cptr.ldI16o2(garr.v, i, $sizeof_coord, $nhcoord_y));
         if (do_screen_description(tmpcc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
-            void coord_desc(cptr.ldI16o(garr.v, i, 4), cptr.ldI16o2(garr.v, i, 4, $nhcoord_y), cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords)));
+            void coord_desc(cptr.ldI16o(garr.v, i, $sizeof_coord), cptr.ldI16o2(garr.v, i, $sizeof_coord, $nhcoord_y), cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords)));
             nh_snprintf(__s_getpos_menu, 705, cptr.decay(fullbuf), 256n, __s_s_s_s, firstmatch.v, (cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty), cptr.decay(tmpbuf));
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(fullbuf), NHM.MENU_ITEMFLAGS_NONE);
         }
@@ -663,8 +664,8 @@ export function getpos_menu(ccp, gloc) {
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     destroy_nhwindow()(tmpwin);
     if (pick_cnt > 0) {
-        cptr.stI16(ccp, cptr.ldI16o(garr.v, (cptr.ldI32(picks.v) - 1) | 0, 4));
-        cptr.stI16o(ccp, $coord_y, cptr.ldI16o2(garr.v, (cptr.ldI32(picks.v) - 1) | 0, 4, $nhcoord_y));
+        cptr.stI16(ccp, cptr.ldI16o(garr.v, (cptr.ldI32(picks.v) - 1) | 0, $sizeof_coord));
+        cptr.stI16o(ccp, $coord_y, cptr.ldI16o2(garr.v, (cptr.ldI32(picks.v) - 1) | 0, $sizeof_coord, $nhcoord_y));
         cptr.free(picks.v);
     }
     cptr.free(garr.v);
@@ -1033,8 +1034,8 @@ export function getpos(ccp, force, goal) {
             if (cptr.stI32o(gidx, gloc, cptr.ldI32o(gidx, gloc, 4) + -1, 4) < 0)
                 cptr.stI32o(gidx, gloc, (cptr.ldI32o(gcount, gloc, 4) - 1) | 0, 4);
         }
-        cx.v = cptr.ldI16o(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), 4);
-        cy.v = cptr.ldI16o2(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), 4, $nhcoord_y);
+        cx.v = cptr.ldI16o(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), $sizeof_coord);
+        cy.v = cptr.ldI16o2(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), $sizeof_coord, $nhcoord_y);
         { __pc = 3; continue; }
         }
         case 54: {
@@ -1048,7 +1049,7 @@ export function getpos(ccp, force, goal) {
         for (sidx.v = 0; sidx.v < NHC.MAXPCHARS; sidx.v++) {
             if (is_cmap_wall(sidx.v) || is_cmap_room(sidx.v) || is_cmap_corr(sidx.v) || is_cmap_door(sidx.v) || sidx.v == NHC.S_ndoor)
                 continue;
-            if (c == cptr.ld1uo(defsyms, sidx.v, 24) || c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) || (c == 94 && is_cmap_trap(sidx.v)) || (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) && is_cmap_engraving(sidx.v)))
+            if (c == cptr.ld1uo(defsyms, sidx.v, $sizeof_symdef) || c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) || (c == 94 && is_cmap_trap(sidx.v)) || (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) && is_cmap_engraving(sidx.v)))
                 cptr.st1o(cptr.decay(matching), sidx.v, schar((++k)), 1);
         }
         if (k) { __pc = 60; continue; }
@@ -1095,7 +1096,7 @@ export function getpos(ccp, force, goal) {
         __pc = 76; continue;
         }
         case 77: {
-        k = cptr.ldI32o3(svl, tx.v, 756, ty.v, 36, $instance_globals_saved_l_level);
+        k = cptr.ldI32o3(svl, tx.v, $sizeof_rm_x21, ty.v, $sizeof_rm, $instance_globals_saved_l_level);
         if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 79; continue; }
         __pc = 78; continue;
         }
@@ -1114,7 +1115,7 @@ export function getpos(ccp, force, goal) {
         { __pc = 2; continue; }
         }
         case 80: {
-        if (cptr.ld1uo3(svl, tx.v, 756, ty.v, 36, $instance_globals_saved_l_level + $rm_seenv)) { __pc = 83; continue; }
+        if (cptr.ld1uo3(svl, tx.v, $sizeof_rm_x21, ty.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) { __pc = 83; continue; }
         __pc = 82; continue;
         }
         case 83: {

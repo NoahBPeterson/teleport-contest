@@ -113,11 +113,17 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum, $Role_spelarmr =
     $permonst_maligntyp = FLD.permonst_maligntyp, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $spell_sp_know = FLD.spell_sp_know, $spell_sp_lev = FLD.spell_sp_lev,
-    $tport_hideaway_tport_indx = FLD.tport_hideaway_tport_indx, $u_conduct_literate = FLD.u_conduct_literate,
-    $u_event_invoked = FLD.u_event_invoked, $u_event_read_tribute = FLD.u_event_read_tribute,
-    $u_event_udemigod = FLD.u_event_udemigod, $u_have_bell = FLD.u_have_bell,
-    $u_have_menorah = FLD.u_have_menorah, $u_roleplay_pauper = FLD.u_roleplay_pauper,
+    $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_chain_lightning_zap = FLD.sizeof_chain_lightning_zap, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_skills = FLD.sizeof_skills, $sizeof_spell = FLD.sizeof_spell,
+    $sizeof_tport_hideaway = FLD.sizeof_tport_hideaway, $spell_sp_know = FLD.spell_sp_know,
+    $spell_sp_lev = FLD.spell_sp_lev, $tport_hideaway_tport_indx = FLD.tport_hideaway_tport_indx,
+    $u_conduct_literate = FLD.u_conduct_literate, $u_event_invoked = FLD.u_event_invoked,
+    $u_event_read_tribute = FLD.u_event_read_tribute, $u_event_udemigod = FLD.u_event_udemigod,
+    $u_have_bell = FLD.u_have_bell, $u_have_menorah = FLD.u_have_menorah,
+    $u_roleplay_pauper = FLD.u_roleplay_pauper,
     $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
@@ -322,7 +328,7 @@ function spell_let_to_idx(ilet) {
 /** C ref: spell.c:130 — @param {CPtr<struct obj>} bp @returns {CInt} */
 function cursed_book(bp) {
     let was_in_use;
-    let lev = cptr.ld1so2(objects, cptr.ldI16o(bp, $obj_otyp), 120, $objclass_oc_oc2);
+    let lev = cptr.ld1so2(objects, cptr.ldI16o(bp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2);
     let dmg = 0;
     switch ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 136, __s_cursed_book), rn2(lev)) : rn2(lev))) {
         case 0:
@@ -495,7 +501,7 @@ function deadbook(book2) {
         }
         case 1 /* raise_dead: */: {
         You(__s_raised_the_dead);
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 311, __s_deadbook), rn2(3)) : rn2(3)) && ((mtmp = makemon(cptr.add(mons, NHC.PM_MASTER_LICH, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null || (mtmp = makemon(cptr.add(mons, NHC.PM_NALFESHNEE, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null)) {
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 311, __s_deadbook), rn2(3)) : rn2(3)) && ((mtmp = makemon(cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null || (mtmp = makemon(cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null)) {
             cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             set_malign(mtmp);
         }
@@ -571,21 +577,21 @@ function learn() {
         deadbook(book);
         return 0;
     }
-    void cptr.sprintf(cptr.decay(splname), (cptr.ldI32o2(objects, booktype, 120, $objclass_oc_name_known) & 1) | 0 ? __s_quot_pct_s_quot : __s_the_s_spell, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, booktype, 120))), 16)));
+    void cptr.sprintf(cptr.decay(splname), (cptr.ldI32o2(objects, booktype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? __s_quot_pct_s_quot : __s_the_s_spell, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, booktype, $sizeof_objclass))), $sizeof_objdescr)));
     for (i = 0; i < NHC.MAXSPELL; i++)
-        if (cptr.ldI16o(svs, i, 8) == booktype || cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype || cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
             break;
     if (i == NHC.MAXSPELL) {
         impossible(__s_too_many_spells_memorized);
-    } else if (cptr.ldI16o(svs, i, 8) == booktype) {
+    } else if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype) {
         if (cptr.ldI32o(book, $obj_usecount) > NHM.MAX_SPELL_STUDY) {
             pline(__s_this_spellbook_is_too_faint_to_be_read);
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
             cptr.stI32o(book, $obj_usecount, (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 406, __s_learn), rn2(cptr.ldI32o(book, $obj_usecount))) : rn2(cptr.ldI32o(book, $obj_usecount))));
         } else {
-            Your(__s_knowledge_of_s_is_s, cptr.decay(splname), cptr.ldI32o2(svs, i, 8, $spell_sp_know) ? __s_keener : __s_restored);
-            (cptr.stI32o2(svs, i, 8, $spell_sp_know, 20001));
+            Your(__s_knowledge_of_s_is_s, cptr.decay(splname), cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) ? __s_keener : __s_restored);
+            (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20001));
             (cptr.stI32o(book, $obj_usecount, cptr.ldI32o(book, $obj_usecount) + 1)) - (1);
             exercise(NHC.A_WIS, 1);
         }
@@ -596,9 +602,9 @@ function learn() {
             faded_to_blank = 1;
             cptr.stI32o(book, $obj_usecount, (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 424, __s_learn), rn2(cptr.ldI32o(book, $obj_usecount))) : rn2(cptr.ldI32o(book, $obj_usecount))));
         } else {
-            cptr.stI16o(svs, i, booktype, 8);
-            cptr.stI16o2(svs, i, 8, $spell_sp_lev, i16(cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2)));
-            (cptr.stI32o2(svs, i, 8, $spell_sp_know, 20001));
+            cptr.stI16o(svs, i, booktype, $sizeof_spell);
+            cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)));
+            (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20001));
             (cptr.stI32o(book, $obj_usecount, cptr.ldI32o(book, $obj_usecount) + 1)) - (1);
             if (!i)
                 You(__s_learn_s, cptr.decay(splname));
@@ -636,13 +642,13 @@ export function study_book(spellbook) {
         let eyes;
         let dullbook = ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 478, __s_study_book), rnd(25)) : rnd(25)) - (acurr(NHC.A_WIS))) | 0;
         if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && cptr.eq(spellbook, cptr.ldPtro(svc, $context_info_spbook)))
-            dullbook = (dullbook - (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 482, __s_study_book), rnd(cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2))) : rnd(cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2)))) | 0;
+            dullbook = (dullbook - (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 482, __s_study_book), rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) : rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) | 0;
         if (dullbook > 0) {
             eyes = body_part(NHC.EYE);
             if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 1)
                 eyes = makeplural(eyes);
             pline(__s_this_book_is_so_dull_that_you_can_t, eyes);
-            dullbook = (dullbook + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 490, __s_study_book), rnd(Math.imul(2, cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2)))) : rnd(Math.imul(2, cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2))))) | 0;
+            dullbook = (dullbook + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 490, __s_study_book), rnd(Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) : rnd(Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))))) | 0;
             fall_asleep(-dullbook, 1);
             return 1;
         }
@@ -671,31 +677,31 @@ export function study_book(spellbook) {
             }
             return 1;
         }
-        switch (cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2)) {
+        switch (cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)) {
             case 1:
             case 2:
-            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar((-cptr.ld1so2(objects, booktype, 120, $objclass_oc_delay))));
+            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar((-cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay))));
             break;
             case 3:
             case 4:
-            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar(Math.imul(-((cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2) - 1) | 0), cptr.ld1so2(objects, booktype, 120, $objclass_oc_delay))));
+            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar(Math.imul(-((cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2) - 1) | 0), cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay))));
             break;
             case 5:
             case 6:
-            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar(Math.imul(-cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2), cptr.ld1so2(objects, booktype, 120, $objclass_oc_delay))));
+            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar(Math.imul(-cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2), cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay))));
             break;
             case 7:
-            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar(Math.imul(-8, cptr.ld1so2(objects, booktype, 120, $objclass_oc_delay))));
+            cptr.st1o(svc, $context_info_spbook + $book_info_delay, schar(Math.imul(-8, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay))));
             break;
             default:
-            impossible(__s_unknown_spellbook_level_d_book_d, cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2), booktype);
+            impossible(__s_unknown_spellbook_level_d_book_d, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2), booktype);
             return 0;
         }
         for (i = 0; i < NHC.MAXSPELL; i++)
-            if (cptr.ldI16o(svs, i, 8) == booktype || cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL)
+            if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype || cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
                 break;
-        if (cptr.ldI16o(svs, i, 8) == booktype && cptr.ldI32o2(svs, i, 8, $spell_sp_know) > 2000) {
-            You(__s_know_s_quite_well_already, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, booktype, 120))), 16)));
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == booktype && cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) > 2000) {
+            You(__s_know_s_quite_well_already, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, booktype, $sizeof_objclass))), $sizeof_objdescr)));
             discover_object((booktype), 1, 1, 1);
             if (yn_function(__s_refresh_your_memory_anyway, cptr.decay(ynchars), 110, 1) == 110)
                 return 0;
@@ -705,7 +711,7 @@ export function study_book(spellbook) {
             if ((cptr.ldI32o(spellbook, $obj_cursed) & 1)) {
                 too_hard = 1;
             } else {
-                let read_ability = ((((((((acurr(NHC.A_INT)) + 4) | 0) + ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0) - Math.imul(2, cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2))) | 0) + ((ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? 2 : 0)) | 0;
+                let read_ability = ((((((((acurr(NHC.A_INT)) + 4) | 0) + ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0) - Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0) + ((ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? 2 : 0)) | 0;
                 if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && read_ability < 20 && !confused) {
                     let qbuf = new Uint8Array(128);
                     void cptr.sprintf(cptr.decay(qbuf), __s_this_spellbook_is_sdifficult_to, (read_ability < 12 ? __s_very : __s_empty));
@@ -773,9 +779,9 @@ export function book_substitution(old_obj, new_obj) {
 /** C ref: spell.c:669 */
 export function age_spells() {
     let i;
-    for (i = 0; i < NHC.MAXSPELL && cptr.ldI16o(svs, i, 8) != NHM.NO_SPELL; i++)
-        if (cptr.ldI32o2(svs, i, 8, $spell_sp_know))
-            (cptr.stI32o2(svs, i, 8, $spell_sp_know, cptr.ldI32o2(svs, i, 8, $spell_sp_know) + -1)) - (-1);
+    for (i = 0; i < NHC.MAXSPELL && cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL; i++)
+        if (cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know))
+            (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) + -1)) - (-1);
     return;
 }
 
@@ -873,13 +879,13 @@ export function dowizcast() {
         if (n >= NHC.SPE_BLANK_PAPER)
             break;
         cptr.stI32(any, n);
-        add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, n, 120))), 16)), NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, n, $sizeof_objclass))), $sizeof_objdescr)), NHM.MENU_ITEMFLAGS_NONE);
     }
     end_menu()(win, __s_cast_which_spell);
     n = select_menu(win, NHM.PICK_ONE, selected);
     destroy_nhwindow()(win);
     if (n > 0) {
-        i = cptr.ldI32o(selected.v, 0, 24);
+        i = cptr.ldI32o(selected.v, 0, $sizeof_menu_item);
         cptr.free(selected.v);
         return spelleffects(i, 0, 1);
     }
@@ -891,7 +897,7 @@ export function docast() {
     let spell_no = cptr.box(0);
     if (getspell(spell_no)) {
         cmdq_add_key(NHC.CQ_REPEAT, (schar(((spell_no.v < 26) ? ((97 + spell_no.v) | 0) : ((((65 + spell_no.v) | 0) - 26) | 0)))));
-        return spelleffects(cptr.ldI16o(svs, spell_no.v, 8), 0, 0);
+        return spelleffects(cptr.ldI16o(svs, spell_no.v, $sizeof_spell), 0, 0);
     }
     return NHM.ECMD_FAIL;
 }
@@ -921,7 +927,7 @@ function spelltypemnemonic(skill) {
 
 /** C ref: spell.c:856 — @param {CInt} booktype @returns {CInt} */
 export function spell_skilltype(booktype) {
-    return cptr.ld1so2(objects, booktype, 120, $objclass_oc_subtyp);
+    return cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_subtyp);
 }
 
 /** C ref: spell.c:864 */
@@ -935,7 +941,7 @@ export function skill_based_spellbook_id() {
         let skill = spell_skilltype(booktype);
         if (skill == NHC.P_NONE)
             continue;
-        switch ((cptr.ldI16o2(u, skill, 6, $you_weapon_skills))) {
+        switch ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills))) {
             case NHC.P_BASIC:
             known_up_to_level = 3;
             break;
@@ -952,7 +958,7 @@ export function skill_based_spellbook_id() {
             known_up_to_level = cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper) ? 0 : 1;
             break;
         }
-        if (cptr.ld1so2(objects, booktype, 120, $objclass_oc_oc2) <= known_up_to_level)
+        if (cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2) <= known_up_to_level)
             discover_object(booktype, 1, 0, 0);
     }
 }
@@ -963,13 +969,13 @@ export function skill_based_spellbook_id() {
 
 /** C ref: spell.c:952 — @param {CPtr<struct chain_lightning_queue>} clq @param {*} zap */
 function propagate_chain_lightning(clq, zap) {
-    zap = cptr.dup(zap, 8); // by-value struct param
+    zap = cptr.dup(zap, $sizeof_chain_lightning_zap); // by-value struct param
     let mon;
     cptr.stI16o(zap, $chain_lightning_zap_x, cptr.ldI16o(zap, $chain_lightning_zap_x) + cptr.ld1so(cptr.decay(xdir), cptr.ld1u(zap), 1));
     cptr.stI16o(zap, $chain_lightning_zap_y, cptr.ldI16o(zap, $chain_lightning_zap_y) + cptr.ld1so(cptr.decay(ydir), cptr.ld1u(zap), 1));
     if (cptr.ldI32o(clq, $chain_lightning_queue_tail) >= 100)
         return;
-    if (!(isok(cptr.ldI16o(zap, $chain_lightning_zap_x), cptr.ldI16o(zap, $chain_lightning_zap_y)) && ((((cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_typ)) > NHC.DOOR) || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.POOL || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.MOAT || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAPOOL) || (((cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && !(((cptr.ldI32o3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 756, cptr.ldI16o(zap, $chain_lightning_zap_y), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))))
+    if (!(isok(cptr.ldI16o(zap, $chain_lightning_zap_x), cptr.ldI16o(zap, $chain_lightning_zap_y)) && ((((cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) > NHC.DOOR) || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.POOL || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.MOAT || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAPOOL) || (((cptr.ld1so3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && !(((cptr.ldI32o3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), $sizeof_rm_x21, cptr.ldI16o(zap, $chain_lightning_zap_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))))
         return;
     mon = (cptr.ldPtro3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 168, cptr.ldI16o(zap, $chain_lightning_zap_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mon && (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0)
@@ -981,10 +987,10 @@ function propagate_chain_lightning(clq, zap) {
     if (!mon && !cptr.ld1so(zap, $chain_lightning_zap_strength))
         return;
     for (let i = 0; i < cptr.ldI32o(clq, $chain_lightning_queue_tail); i++) {
-        if (cptr.ldI16o2(clq, i, 8, $chain_lightning_zap_x) == cptr.ldI16o(zap, $chain_lightning_zap_x) && cptr.ldI16o2(clq, i, 8, $chain_lightning_zap_y) == cptr.ldI16o(zap, $chain_lightning_zap_y))
+        if (cptr.ldI16o2(clq, i, $sizeof_chain_lightning_zap, $chain_lightning_zap_x) == cptr.ldI16o(zap, $chain_lightning_zap_x) && cptr.ldI16o2(clq, i, $sizeof_chain_lightning_zap, $chain_lightning_zap_y) == cptr.ldI16o(zap, $chain_lightning_zap_y))
             return;
     }
-    cptr.memcpy(cptr.add(clq, (cptr.stI32o(clq, $chain_lightning_queue_tail, cptr.ldI32o(clq, $chain_lightning_queue_tail) + 1)) - (1), 8), zap, 8);
+    cptr.memcpy(cptr.add(clq, (cptr.stI32o(clq, $chain_lightning_queue_tail, cptr.ldI32o(clq, $chain_lightning_queue_tail) + 1)) - (1), $sizeof_chain_lightning_zap), zap, 8);
     tmp_at(-6, i16(zapdir_to_glyph(cptr.ld1so(cptr.decay(xdir), cptr.ld1u(zap), 1), cptr.ld1so(cptr.decay(ydir), cptr.ld1u(zap), 1), cptr.ldI32o(clq, $chain_lightning_queue_displayed_beam))));
     tmp_at(cptr.ldI16o(zap, $chain_lightning_zap_x), cptr.ldI16o(zap, $chain_lightning_zap_y));
 }
@@ -1004,7 +1010,7 @@ function cast_chain_lightning() {
     while (cptr.ldI32o(clq, $chain_lightning_queue_head) < cptr.ldI32o(clq, $chain_lightning_queue_tail)) {
         let delay_tail = cptr.ldI32o(clq, $chain_lightning_queue_tail);
         while (cptr.ldI32o(clq, $chain_lightning_queue_head) < delay_tail) {
-            let zap = cptr.alloc(8); cptr.memcpy(zap, cptr.add(clq, (cptr.stI32o(clq, $chain_lightning_queue_head, cptr.ldI32o(clq, $chain_lightning_queue_head) + 1)) - (1), 8), 8);
+            let zap = cptr.alloc(8); cptr.memcpy(zap, cptr.add(clq, (cptr.stI32o(clq, $chain_lightning_queue_head, cptr.ldI32o(clq, $chain_lightning_queue_head) + 1)) - (1), $sizeof_chain_lightning_zap), $sizeof_chain_lightning_zap);
             let mon = (cptr.ldPtro3(svl, cptr.ldI16o(zap, $chain_lightning_zap_x), 168, cptr.ldI16o(zap, $chain_lightning_zap_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
             if (mon) {
                 let unused = cptr.box(null);
@@ -1069,13 +1075,13 @@ function cast_protection() {
                 pline_The(__s_s_haze_around_you_becomes_more_dense, hgolden);
             } else {
                 let pm = cptr.ldPtro(u, $you_ustuck) ? cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data) : null;
-                rmtyp = cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ);
-                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, 96))) ? __s_mist : (is_whirly(pm) ? __s_maelstrom : ((dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_folds : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) ? __s_maw : __s_ooze)))) : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? hliquid(__s_water) : ((rmtyp == NHC.CLOUD) ? __s_cloud : (IS_TREE(rmtyp) ? __s_vegetation : (((rmtyp) <= NHC.DBWALL) ? __s_stone : __s_air))));
+                rmtyp = cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+                atmosphere = (pm && (cptr.ldI32o(u, $you_uswallow) & 1) | 0) ? ((cptr.eq(pm, cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst))) ? __s_mist : (is_whirly(pm) ? __s_maelstrom : ((dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_folds : (((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) ? __s_maw : __s_ooze)))) : ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? hliquid(__s_water) : ((rmtyp == NHC.CLOUD) ? __s_cloud : (IS_TREE(rmtyp) ? __s_vegetation : (((rmtyp) <= NHC.DBWALL) ? __s_stone : __s_air))));
                 pline_The(__s_s_around_you_begins_to_shimmer_with_s, atmosphere, an(hgolden));
             }
         }
         cptr.st1o(u, $you_uspellprot, cptr.ld1uo(u, $you_uspellprot) + gain);
-        cptr.st1o(u, $you_uspmtime, uchar((((cptr.ldI16o2(u, spell_skilltype(NHC.SPE_PROTECTION), 6, $you_weapon_skills)) == NHC.P_EXPERT) ? 20 : 10)));
+        cptr.st1o(u, $you_uspmtime, uchar((((cptr.ldI16o2(u, spell_skilltype(NHC.SPE_PROTECTION), $sizeof_skills, $you_weapon_skills)) == NHC.P_EXPERT) ? 20 : 10)));
         if (!cptr.ld1uo(u, $you_usptime))
             cptr.st1o(u, $you_usptime, cptr.ld1uo(u, $you_uspmtime));
         find_ac();
@@ -1086,7 +1092,7 @@ function cast_protection() {
 
 /** C ref: spell.c:1181 — @param {CInt} spell */
 function spell_backfire(spell) {
-    let duration = BigInt((Math.imul(((cptr.ldI16o2(svs, spell, 8, $spell_sp_lev) + 1) | 0), 3)));
+    let duration = BigInt((Math.imul(((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) + 1) | 0), 3)));
     let old_stun = (HStun() & 16777215n);
     let old_conf = (HConfusion() & 16777215n);
     switch ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1194, __s_spell_backfire), rn2(10)) : rn2(10))) {
@@ -1123,8 +1129,8 @@ function spelleffects_check(spell, res, energy) {
         cptr.stI32(res, NHM.ECMD_OK);
         return 1;
     }
-    cptr.stI32(energy, (Math.imul((cptr.ldI16o2(svs, spell, 8, $spell_sp_lev)), 5)));
-    if (cptr.ldI32o2(svs, spell, 8, $spell_sp_know) <= 0) {
+    cptr.stI32(energy, (Math.imul((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)), 5)));
+    if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 0) {
         Your(__s_knowledge_of_this_spell_is_twisted);
         pline(__s_it_invokes_nightmarish_images_in_your);
         spell_backfire(spell);
@@ -1134,20 +1140,20 @@ function spelleffects_check(spell, res, energy) {
         cptr.st1(disp, 1);
         cptr.stI32(res, NHM.ECMD_TIME);
         return 1;
-    } else if (cptr.ldI32o2(svs, spell, 8, $spell_sp_know) <= 100) {
+    } else if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 100) {
         You(__s_strain_to_recall_the_spell);
-    } else if (cptr.ldI32o2(svs, spell, 8, $spell_sp_know) <= 500) {
+    } else if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 500) {
         You(__s_have_difficulty_remembering_the_spell);
-    } else if (cptr.ldI32o2(svs, spell, 8, $spell_sp_know) <= 1000) {
+    } else if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 1000) {
         Your(__s_knowledge_of_this_spell_is_growing_faint);
-    } else if (cptr.ldI32o2(svs, spell, 8, $spell_sp_know) <= 2000) {
+    } else if (cptr.ldI32o2(svs, spell, $sizeof_spell, $spell_sp_know) <= 2000) {
         Your(__s_recall_of_this_spell_is_gradually_fading);
     }
-    if (cptr.ldI32o(u, $you_uhunger) <= 10 && cptr.ldI16o(svs, spell, 8) != NHC.SPE_DETECT_FOOD) {
+    if (cptr.ldI32o(u, $you_uhunger) <= 10 && cptr.ldI16o(svs, spell, $sizeof_spell) != NHC.SPE_DETECT_FOOD) {
         You(__s_are_too_hungry_to_cast_that_spell);
         cptr.stI32(res, NHM.ECMD_OK);
         return 1;
-    } else if ((acurr(NHC.A_STR)) < 4 && cptr.ldI16o(svs, spell, 8) != NHC.SPE_RESTORE_ABILITY) {
+    } else if ((acurr(NHC.A_STR)) < 4 && cptr.ldI16o(svs, spell, $sizeof_spell) != NHC.SPE_RESTORE_ABILITY) {
         You(__s_lack_the_strength_to_cast_spells);
         cptr.stI32(res, NHM.ECMD_OK);
         return 1;
@@ -1167,7 +1173,7 @@ function spelleffects_check(spell, res, energy) {
         You(__s_don_t_have_enough_energy_to_cast_that, (cptr.ldI32o(u, $you_uen) < cptr.ldI32o(u, $you_uenmax)) ? __s_empty : ((cptr.ldI32(energy) > cptr.ldI32o(u, $you_uenpeak)) ? __s_yet : __s_anymore));
         return 1;
     } else {
-        if (cptr.ldI16o(svs, spell, 8) != NHC.SPE_DETECT_FOOD) {
+        if (cptr.ldI16o(svs, spell, $sizeof_spell) != NHC.SPE_DETECT_FOOD) {
             let hungr = Math.imul(cptr.ldI32(energy), 2);
             let intell = acurr(NHC.A_INT);
             if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
@@ -1225,12 +1231,12 @@ export function spelleffects(spell_otyp, atme, force) {
     cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - energy.v) | 0);
     cptr.st1(disp, 1);
     exercise(NHC.A_WIS, 1);
-    pseudo = mksobj(force ? spell : cptr.ldI16o(svs, spell, 8), 0, 0);
+    pseudo = mksobj(force ? spell : cptr.ldI16o(svs, spell, $sizeof_spell), 0, 0);
     cptr.stI32o(pseudo, $obj_blessed, cptr.stI32o(pseudo, $obj_cursed, 0));
     cptr.stI64o(pseudo, $obj_quan, 20n);
     otyp = cptr.ldI16o(pseudo, $obj_otyp);
     skill = spell_skilltype(otyp);
-    role_skill = (cptr.ldI16o2(u, skill, 6, $you_weapon_skills));
+    role_skill = (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills));
     switch (otyp) {
         case NHC.SPE_FIREBALL:
         case NHC.SPE_CONE_OF_COLD:
@@ -1243,7 +1249,7 @@ export function spelleffects(spell_otyp, atme, force) {
                     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
                         if ((damage = zapyourself(pseudo, 1)) != 0) {
                             let buf = new Uint8Array(256);
-                            void cptr.sprintf(cptr.decay(buf), __s_zapped_sself_with_a_spell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_him)));
+                            void cptr.sprintf(cptr.decay(buf), __s_zapped_sself_with_a_spell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
                             losehp(damage, cptr.decay(buf), NHM.NO_KILLER_PREFIX);
                         }
                     } else {
@@ -1251,7 +1257,7 @@ export function spelleffects(spell_otyp, atme, force) {
                     }
                     cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1442, __s_spelleffects), rnd(3)) : rnd(3))) | 0) - 2) | 0);
                     cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1443, __s_spelleffects), rnd(3)) : rnd(3))) | 0) - 2) | 0);
-                    if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI32o(u, $you_dy), 8), cptr.ldI32o(u, $you_dx)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1so3(svl, cptr.ldI32o(u, $you_dx), 756, cptr.ldI32o(u, $you_dy), 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                    if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI32o(u, $you_dy), 8), cptr.ldI32o(u, $you_dx)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1so3(svl, cptr.ldI32o(u, $you_dx), $sizeof_rm_x21, cptr.ldI32o(u, $you_dy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                         cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
                         cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
                     }
@@ -1282,7 +1288,7 @@ export function spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_EXTRA_HEALING:
         case NHC.SPE_DRAIN_LIFE:
         case NHC.SPE_STONE_TO_FLESH:
-        if (((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_dir) & 7) | 0) != NHM.NODIR) {
+        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) != NHM.NODIR) {
             if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
                 if (role_skill >= NHC.P_SKILLED)
                     cptr.stI32o(pseudo, $obj_blessed, 1);
@@ -1295,7 +1301,7 @@ export function spelleffects(spell_otyp, atme, force) {
             if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
                 if ((damage = zapyourself(pseudo, 1)) != 0) {
                     let buf = new Uint8Array(256);
-                    void cptr.sprintf(cptr.decay(buf), __s_zapped_sself_with_a_spell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_him)));
+                    void cptr.sprintf(cptr.decay(buf), __s_zapped_sself_with_a_spell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
                     if (physical_damage)
                         damage = ((Half_physical_damage()) ? (((((damage) + 1) | 0) / 2) | 0) : (damage));
                     losehp(damage, cptr.decay(buf), NHM.NO_KILLER_PREFIX);
@@ -1373,7 +1379,7 @@ export function spelleffects(spell_otyp, atme, force) {
         return NHM.ECMD_OK;
     }
     if (!force)
-        use_skill(skill, cptr.ldI16o2(svs, spell, 8, $spell_sp_lev));
+        use_skill(skill, cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev));
     obfree(pseudo, null);
     return NHM.ECMD_TIME;
 }
@@ -1382,7 +1388,7 @@ export function spelleffects(spell_otyp, atme, force) {
 function spell_aim_step(arg, x, y) {
     if (!isok(x, y))
         return 0;
-    if (!((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL) && !(((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_ISOPEN)))
+    if (!((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL) && !(((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_ISOPEN)))
         return 0;
     return 1;
 }
@@ -1391,7 +1397,7 @@ function spell_aim_step(arg, x, y) {
 function can_center_spell_location(x, y) {
     if (distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) > 10)
         return 0;
-    return schar((isok(x, y) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && !(((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) ? 1 : 0));
+    return schar((isok(x, y) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && !(((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) ? 1 : 0));
 }
 
 /** C ref: spell.c:1627 — @param {CInt} on_off */
@@ -1445,7 +1451,7 @@ function throwspell() {
         cptr.stI32o(u, $you_dx, 0);
         cptr.stI32o(u, $you_dy, 0);
         return 1;
-    } else if (((cptr.ldI16(cc) != cptr.ldI16(u) || cptr.ldI16o(cc, $nhcoord_y) != cptr.ldI16o(u, $you_uy)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.IN_SIGHT) != 0) && (!(mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !canspotmon(mtmp))) || ((cptr.ld1so3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
+    } else if (((cptr.ldI16(cc) != cptr.ldI16(u) || cptr.ldI16o(cc, $nhcoord_y) != cptr.ldI16o(u, $you_uy)) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8), cptr.ldI16(cc)) & NHM.IN_SIGHT) != 0) && (!(mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || !canspotmon(mtmp))) || ((cptr.ld1so3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
         Your(__s_mind_fails_to_lock_onto_that_location);
         return 0;
     }
@@ -1457,40 +1463,40 @@ function throwspell() {
     return 1;
 }
 
-let __static_tport_spell_save_tport = cptr.alloc(12); /** C ref: spell.c:1712 — struct tport_hideaway (function-static) */
+let __static_tport_spell_save_tport = cptr.alloc($sizeof_tport_hideaway); /** C ref: spell.c:1712 — struct tport_hideaway (function-static) */
 
 /** C ref: spell.c:1707 — @param {CInt} what @returns {CInt} */
 export function tport_spell(what) {
     let i;
     for (i = 0; i < NHC.MAXSPELL; i++)
-        if (cptr.ldI16o(svs, i, 8) == NHC.SPE_TELEPORT_AWAY || cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == NHC.SPE_TELEPORT_AWAY || cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
             break;
     if (i == NHC.MAXSPELL) {
         impossible(__s_tport_spell_spellbook_full);
-    } else if (cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL) {
+    } else if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL) {
         if (what == 1 || what == 4) {
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 3) {
-            cptr.memcpy(cptr.add(svs, cptr.ldI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx), 8), __static_tport_spell_save_tport, 8);
+            cptr.memcpy(cptr.add(svs, cptr.ldI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx), $sizeof_spell), __static_tport_spell_save_tport, 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 2) {
-            cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, 8), 8);
+            cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, $sizeof_spell), 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, i);
-            cptr.stI16o(svs, i, NHC.SPE_TELEPORT_AWAY, 8);
-            cptr.stI16o2(svs, i, 8, $spell_sp_lev, i16(cptr.ld1so2(objects, NHC.SPE_TELEPORT_AWAY, 120, $objclass_oc_oc2)));
-            cptr.stI32o2(svs, i, 8, $spell_sp_know, 20000);
+            cptr.stI16o(svs, i, NHC.SPE_TELEPORT_AWAY, $sizeof_spell);
+            cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, NHC.SPE_TELEPORT_AWAY, $sizeof_objclass, $objclass_oc_oc2)));
+            cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20000);
             return 4;
         }
     } else {
         if (what == 2 || what == 3) {
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 4) {
-            cptr.memcpy(cptr.add(svs, i, 8), __static_tport_spell_save_tport, 8);
+            cptr.memcpy(cptr.add(svs, i, $sizeof_spell), __static_tport_spell_save_tport, 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, NHC.MAXSPELL);
         } else if (what == 1) {
-            cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, 8), 8);
+            cptr.memcpy(__static_tport_spell_save_tport, cptr.add(svs, i, $sizeof_spell), 8);
             cptr.stI32o(__static_tport_spell_save_tport, $tport_hideaway_tport_indx, i);
-            cptr.stI16o(svs, i, NHM.NO_SPELL, 8);
+            cptr.stI16o(svs, i, NHM.NO_SPELL, $sizeof_spell);
             return 3;
         }
     }
@@ -1505,7 +1511,7 @@ export function losespells() {
     cptr.stPtro(svc, $context_info_spbook, null);
     cptr.stI32o(svc, $context_info_spbook + $book_info_o_id, 0);
     for (n = 0; n < NHC.MAXSPELL; ++n)
-        if (cptr.ldI16o(svs, n, 8) == NHM.NO_SPELL)
+        if (cptr.ldI16o(svs, n, $sizeof_spell) == NHM.NO_SPELL)
             break;
     nzap = (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1777, __s_losespells), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
     if (HConfusion()) {
@@ -1517,7 +1523,7 @@ export function losespells() {
         nzap = (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1785, __s_losespells), rnd(nzap)) : rnd(nzap));
     for (i = 0; nzap > 0; ++i) {
         if ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1814, __s_losespells), rn2((n - i) | 0)) : rn2((n - i) | 0)) < nzap) {
-            cptr.stI32o2(svs, i, 8, $spell_sp_know, 0);
+            cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 0);
             exercise(NHC.A_WIS, 0);
             --nzap;
         }
@@ -1552,12 +1558,12 @@ cptr.stPtro(spl_sortchoices, 64, __s_reassign_casting_letters_to_retain);
 function spell_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
-    let otyp1 = cptr.ldI16o(svs, indx1, 8);
-    let otyp2 = cptr.ldI16o(svs, indx2, 8);
-    let levl1 = cptr.ld1so2(objects, otyp1, 120, $objclass_oc_oc2);
-    let levl2 = cptr.ld1so2(objects, otyp2, 120, $objclass_oc_oc2);
-    let skil1 = cptr.ld1so2(objects, otyp1, 120, $objclass_oc_subtyp);
-    let skil2 = cptr.ld1so2(objects, otyp2, 120, $objclass_oc_subtyp);
+    let otyp1 = cptr.ldI16o(svs, indx1, $sizeof_spell);
+    let otyp2 = cptr.ldI16o(svs, indx2, $sizeof_spell);
+    let levl1 = cptr.ld1so2(objects, otyp1, $sizeof_objclass, $objclass_oc_oc2);
+    let levl2 = cptr.ld1so2(objects, otyp2, $sizeof_objclass, $objclass_oc_oc2);
+    let skil1 = cptr.ld1so2(objects, otyp1, $sizeof_objclass, $objclass_oc_subtyp);
+    let skil2 = cptr.ld1so2(objects, otyp2, $sizeof_objclass, $objclass_oc_subtyp);
     switch (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode)) {
         case NHC.SORTBY_LETTER:
         return (indx1 - indx2) | 0;
@@ -1591,7 +1597,7 @@ function spell_cmp(vptr1, vptr2) {
         default:
         return (cptr.cmp(vptr1, vptr2) < 0) ? -1 : (cptr.cmp(vptr1, vptr2) > 0);
     }
-    return strncmpi(((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp1, 120))), 16))), ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp2, 120))), 16))), -1);
+    return strncmpi(((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp1, $sizeof_objclass))), $sizeof_objdescr))), ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp2, $sizeof_objclass))), $sizeof_objdescr))), -1);
 }
 
 /** C ref: spell.c:1927 */
@@ -1600,7 +1606,7 @@ function sortspells() {
     let n;
     if (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode) == NHC.SORTBY_CURRENT)
         return;
-    for (n = 0; n < NHC.MAXSPELL && cptr.ldI16o(svs, n, 8) != NHM.NO_SPELL; ++n)
+    for (n = 0; n < NHC.MAXSPELL && cptr.ldI16o(svs, n, $sizeof_spell) != NHM.NO_SPELL; ++n)
         continue;
     if (n < 2)
         return;
@@ -1612,11 +1618,11 @@ function sortspells() {
             cptr.stI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, i, 4);
     }
     if (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode) == NHC.SORTRETAINORDER) {
-        let tmp_book = cptr.alloc(42 * 8);
+        let tmp_book = cptr.alloc(42 * $sizeof_spell);
         for (i = 0; i < NHC.MAXSPELL; i++)
-            cptr.memcpy(cptr.add(tmp_book, i, 8), cptr.add(svs, cptr.ldI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, 4), 8), 8);
+            cptr.memcpy(cptr.add(tmp_book, i, $sizeof_spell), cptr.add(svs, cptr.ldI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, 4), $sizeof_spell), 8);
         for (i = 0; i < NHC.MAXSPELL; i++)
-            cptr.memcpy(cptr.add(svs, i, 8), cptr.add(tmp_book, i, 8), 8), cptr.stI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, i, 4);
+            cptr.memcpy(cptr.add(svs, i, $sizeof_spell), cptr.add(tmp_book, i, $sizeof_spell), 8), cptr.stI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, i, 4);
         cptr.stI32o(gs, $instance_globals_s_spl_sortmode, NHC.SORTBY_LETTER);
         return;
     }
@@ -1651,9 +1657,9 @@ function spellsortmenu() {
     n = select_menu(tmpwin, NHM.PICK_ONE, selected);
     destroy_nhwindow()(tmpwin);
     if (n > 0) {
-        choice = (cptr.ldI32o(selected.v, 0, 24) - 1) | 0;
+        choice = (cptr.ldI32o(selected.v, 0, $sizeof_menu_item) - 1) | 0;
         if (n > 1 && choice == cptr.ldI32o(gs, $instance_globals_s_spl_sortmode))
-            choice = (cptr.ldI32o(selected.v, 1, 24) - 1) | 0;
+            choice = (cptr.ldI32o(selected.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.free(selected.v);
         cptr.stI32o(gs, $instance_globals_s_spl_sortmode, choice);
         return 1;
@@ -1667,7 +1673,7 @@ export function dovspell() {
     let splnum = cptr.box(0);
     let othnum = cptr.box(0);
     let spl_tmp = cptr.alloc(8);
-    if (cptr.ldI16o(svs, 0, 8) == NHM.NO_SPELL) {
+    if (cptr.ldI16o(svs, 0, $sizeof_spell) == NHM.NO_SPELL) {
         You(__s_don_t_know_any_spells_right_now);
     } else {
         while (dospellmenu(__s_currently_known_spells, -1, splnum)) {
@@ -1678,9 +1684,9 @@ export function dovspell() {
                 void cptr.sprintf(cptr.decay(qbuf), __s_reordering_spells_swap_c_with, (schar(((splnum.v < 26) ? ((97 + splnum.v) | 0) : ((((65 + splnum.v) | 0) - 26) | 0)))));
                 if (!dospellmenu(cptr.decay(qbuf), splnum.v, othnum))
                     break;
-                cptr.memcpy(spl_tmp, cptr.add(svs, splnum.v, 8), 8);
-                cptr.memcpy(cptr.add(svs, splnum.v, 8), cptr.add(svs, othnum.v, 8), 8);
-                cptr.memcpy(cptr.add(svs, othnum.v, 8), spl_tmp, 8);
+                cptr.memcpy(spl_tmp, cptr.add(svs, splnum.v, $sizeof_spell), 8);
+                cptr.memcpy(cptr.add(svs, splnum.v, $sizeof_spell), cptr.add(svs, othnum.v, $sizeof_spell), 8);
+                cptr.memcpy(cptr.add(svs, othnum.v, $sizeof_spell), spl_tmp, 8);
             }
         }
     }
@@ -1695,7 +1701,7 @@ export function dovspell() {
 /** C ref: spell.c:2059 */
 export function show_spells() {
     let unused = cptr.box(-3);
-    if (cptr.ldI16o(svs, 0, 8) == NHM.NO_SPELL) {
+    if (cptr.ldI16o(svs, 0, $sizeof_spell) == NHM.NO_SPELL) {
         pline(__s_you_didn_t_know_any_spells);
         pline(__s_pct_s, __s_empty);
     } else {
@@ -1733,17 +1739,17 @@ function dospellmenu(prompt, splaction, spell_no) {
     if (wizard())
         void cptr.sprintf(eos(cptr.decay(buf)), __s_c_6s, sep, __s_turns);
     add_menu_heading(tmpwin, cptr.decay(buf));
-    for (i = 0; i < NHC.MAXSPELL && cptr.ldI16o(svs, i, 8) != NHM.NO_SPELL; i++) {
+    for (i = 0; i < NHC.MAXSPELL && cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL; i++) {
         splnum = !cptr.ldPtro(gs, $instance_globals_s_spl_orderindx) ? i : cptr.ldI32o(cptr.ldPtro(gs, $instance_globals_s_spl_orderindx), i, 4);
-        void cptr.sprintf(cptr.decay(buf), fmt, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(svs, splnum, 8), 120))), 16)), cptr.ldI16o2(svs, splnum, 8, $spell_sp_lev), spelltypemnemonic(spell_skilltype(cptr.ldI16o(svs, splnum, 8))), (100 - percent_success(splnum)) | 0, spellretention(splnum, cptr.decay(retentionbuf)));
+        void cptr.sprintf(cptr.decay(buf), fmt, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(svs, splnum, $sizeof_spell), $sizeof_objclass))), $sizeof_objdescr)), cptr.ldI16o2(svs, splnum, $sizeof_spell, $spell_sp_lev), spelltypemnemonic(spell_skilltype(cptr.ldI16o(svs, splnum, $sizeof_spell))), (100 - percent_success(splnum)) | 0, spellretention(splnum, cptr.decay(retentionbuf)));
         if (wizard())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_c_6d, sep, cptr.ldI32o2(svs, i, 8, $spell_sp_know));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_c_6d, sep, cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know));
         cptr.stI32(any, (splnum + 1) | 0);
         add_menu(tmpwin, nul_glyphinfo.v, any, (schar(((splnum < 26) ? ((97 + splnum) | 0) : ((((65 + splnum) | 0) - 26) | 0)))), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (splnum == splaction) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
     how = NHM.PICK_ONE;
     if (splaction == -1) {
-        if (cptr.ldI16o(svs, 1, 8) == NHM.NO_SPELL) {
+        if (cptr.ldI16o(svs, 1, $sizeof_spell) == NHM.NO_SPELL) {
             how = NHM.PICK_NONE;
         } else {
             cptr.stI32(any, (((NHC.MAXSPELL) + 1) | 0));
@@ -1754,9 +1760,9 @@ function dospellmenu(prompt, splaction, spell_no) {
     n = select_menu(tmpwin, how, selected);
     destroy_nhwindow()(tmpwin);
     if (n > 0) {
-        cptr.stI32(spell_no, (cptr.ldI32o(selected.v, 0, 24) - 1) | 0);
+        cptr.stI32(spell_no, (cptr.ldI32o(selected.v, 0, $sizeof_menu_item) - 1) | 0);
         if (n > 1 && cptr.ldI32(spell_no) == splaction)
-            cptr.stI32(spell_no, (cptr.ldI32o(selected.v, 1, 24) - 1) | 0);
+            cptr.stI32(spell_no, (cptr.ldI32o(selected.v, 1, $sizeof_menu_item) - 1) | 0);
         cptr.free(selected.v);
         if (cptr.ldI32(spell_no) == splaction)
             return 0;
@@ -1776,7 +1782,7 @@ function percent_success(spell) {
     let statused;
     let difficulty;
     let skill;
-    let skilltype = spell_skilltype(cptr.ldI16o(svs, spell, 8));
+    let skilltype = spell_skilltype(cptr.ldI16o(svs, spell, $sizeof_spell));
     let paladin_bonus = schar(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && skilltype == NHC.P_CLERIC_SPELL ? 1 : 0));
     splcaster = cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelbase);
     special = cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelheal);
@@ -1797,28 +1803,28 @@ function percent_success(spell) {
         if (uarmf.v && is_metallic(uarmf.v))
             splcaster = (splcaster + 2) | 0;
     }
-    if (cptr.ldI16o(svs, spell, 8) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec))
+    if (cptr.ldI16o(svs, spell, $sizeof_spell) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec))
         splcaster = (splcaster + cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelsbon)) | 0;
-    if (cptr.ldI16o(svs, spell, 8) == NHC.SPE_HEALING || cptr.ldI16o(svs, spell, 8) == NHC.SPE_EXTRA_HEALING || cptr.ldI16o(svs, spell, 8) == NHC.SPE_CURE_BLINDNESS || cptr.ldI16o(svs, spell, 8) == NHC.SPE_CURE_SICKNESS || cptr.ldI16o(svs, spell, 8) == NHC.SPE_RESTORE_ABILITY || cptr.ldI16o(svs, spell, 8) == NHC.SPE_REMOVE_CURSE)
+    if (cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_HEALING || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_EXTRA_HEALING || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_CURE_BLINDNESS || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_CURE_SICKNESS || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_RESTORE_ABILITY || cptr.ldI16o(svs, spell, $sizeof_spell) == NHC.SPE_REMOVE_CURSE)
         splcaster = (splcaster + special) | 0;
     if (splcaster > 20)
         splcaster = 20;
     chance = (Math.imul(11, statused) / 2) | 0;
-    skill = (cptr.ldI16o2(u, skilltype, 6, $you_weapon_skills));
+    skill = (cptr.ldI16o2(u, skilltype, $sizeof_skills, $you_weapon_skills));
     skill = (((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED) - 1) | 0;
-    difficulty = (Math.imul(((cptr.ldI16o2(svs, spell, 8, $spell_sp_lev) - 1) | 0), 4) - (((((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0)) | 0) + 1) | 0)) | 0;
+    difficulty = (Math.imul(((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) - 1) | 0), 4) - (((((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0)) | 0) + 1) | 0)) | 0;
     if (difficulty > 0) {
         chance = (chance - isqrt((Math.imul(900, difficulty) + 2000) | 0)) | 0;
     } else {
-        let learning = (Math.imul(15, -difficulty) / cptr.ldI16o2(svs, spell, 8, $spell_sp_lev)) | 0;
+        let learning = (Math.imul(15, -difficulty) / cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)) | 0;
         chance = (chance + (learning > 20 ? 20 : learning)) | 0;
     }
     if (chance < 0)
         chance = 0;
     if (chance > 120)
         chance = 120;
-    if (uarms.v && weight(uarms.v) > (cptr.ldI32o2(objects, NHC.SMALL_SHIELD, 120, $objclass_oc_weight) | 0)) {
-        if (cptr.ldI16o(svs, spell, 8) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec)) {
+    if (uarms.v && weight(uarms.v) > (cptr.ldI32o2(objects, NHC.SMALL_SHIELD, $sizeof_objclass, $objclass_oc_weight) | 0)) {
+        if (cptr.ldI16o(svs, spell, $sizeof_spell) == cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec)) {
             chance = (chance / 2) | 0;
         } else {
             chance = (chance / 4) | 0;
@@ -1838,9 +1844,9 @@ function spellretention(idx, outbuf) {
     let percent;
     let accuracy;
     let skill;
-    skill = (cptr.ldI16o2(u, spell_skilltype(cptr.ldI16o(svs, idx, 8)), 6, $you_weapon_skills));
+    skill = (cptr.ldI16o2(u, spell_skilltype(cptr.ldI16o(svs, idx, $sizeof_spell)), $sizeof_skills, $you_weapon_skills));
     skill = ((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED);
-    turnsleft = BigInt(cptr.ldI32o2(svs, idx, 8, $spell_sp_know));
+    turnsleft = BigInt(cptr.ldI32o2(svs, idx, $sizeof_spell, $spell_sp_know));
     cptr.st1(outbuf, 0);
     if (turnsleft < 1n) {
         void cptr.strcpy(outbuf, __s_gone);
@@ -1860,16 +1866,16 @@ export function initialspell(obj) {
     let i;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     for (i = 0; i < NHC.MAXSPELL; i++)
-        if (cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL || cptr.ldI16o(svs, i, 8) == otyp)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL || cptr.ldI16o(svs, i, $sizeof_spell) == otyp)
             break;
     if (i == NHC.MAXSPELL) {
         impossible(__s_too_many_spells_memorized);
-    } else if (cptr.ldI16o(svs, i, 8) != NHM.NO_SPELL) {
-        impossible(__s_spell_s_already_known, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, 120))), 16)));
+    } else if (cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL) {
+        impossible(__s_spell_s_already_known, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr)));
     } else {
-        cptr.stI16o(svs, i, i16(otyp), 8);
-        cptr.stI16o2(svs, i, 8, $spell_sp_lev, i16(cptr.ld1so2(objects, otyp, 120, $objclass_oc_oc2)));
-        (cptr.stI32o2(svs, i, 8, $spell_sp_know, 20000));
+        cptr.stI16o(svs, i, i16(otyp), $sizeof_spell);
+        cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2)));
+        (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20000));
     }
     return;
 }
@@ -1878,9 +1884,9 @@ export function initialspell(obj) {
 export function known_spell(otyp) {
     let i;
     let k;
-    for (i = 0; (i < NHC.MAXSPELL) && (cptr.ldI16o(svs, i, 8) != NHM.NO_SPELL); i++)
-        if (cptr.ldI16o(svs, i, 8) == otyp) {
-            k = cptr.ldI32o2(svs, i, 8, $spell_sp_know);
+    for (i = 0; (i < NHC.MAXSPELL) && (cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL); i++)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == otyp) {
+            k = cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know);
             return (k > 2000) ? NHC.spe_Fresh : ((k > 0) ? NHC.spe_GoingStale : NHC.spe_Forgotten);
         }
     return NHC.spe_Unknown;
@@ -1889,8 +1895,8 @@ export function known_spell(otyp) {
 /** C ref: spell.c:2379 — @param {CInt} otyp @returns {CInt} */
 export function spell_idx(otyp) {
     let i;
-    for (i = 0; (i < NHC.MAXSPELL) && (cptr.ldI16o(svs, i, 8) != NHM.NO_SPELL); i++)
-        if (cptr.ldI16o(svs, i, 8) == otyp)
+    for (i = 0; (i < NHC.MAXSPELL) && (cptr.ldI16o(svs, i, $sizeof_spell) != NHM.NO_SPELL); i++)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == otyp)
             return i;
     return -1;
 }
@@ -1901,15 +1907,15 @@ export function force_learn_spell(otyp) {
     if (otyp == NHC.SPE_BLANK_PAPER || otyp == NHC.SPE_BOOK_OF_THE_DEAD || known_spell(otyp) == NHC.spe_Fresh)
         return 0;
     for (i = 0; i < NHC.MAXSPELL; i++)
-        if (cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL || cptr.ldI16o(svs, i, 8) == otyp)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL || cptr.ldI16o(svs, i, $sizeof_spell) == otyp)
             break;
     if (i == NHC.MAXSPELL) {
         impossible(__s_too_many_spells_memorized__2);
         return 0;
     }
-    cptr.stI16o(svs, i, otyp, 8);
-    cptr.stI16o2(svs, i, 8, $spell_sp_lev, i16(cptr.ld1so2(objects, otyp, 120, $objclass_oc_oc2)));
-    (cptr.stI32o2(svs, i, 8, $spell_sp_know, 20000));
+    cptr.stI16o(svs, i, otyp, $sizeof_spell);
+    cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2)));
+    (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20000));
     return (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))));
 }
 
@@ -1917,7 +1923,7 @@ export function force_learn_spell(otyp) {
 export function num_spells() {
     let i;
     for (i = 0; i < NHC.MAXSPELL; i++)
-        if (cptr.ldI16o(svs, i, 8) == NHM.NO_SPELL)
+        if (cptr.ldI16o(svs, i, $sizeof_spell) == NHM.NO_SPELL)
             break;
     return i;
 }

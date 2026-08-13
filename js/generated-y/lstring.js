@@ -24,8 +24,8 @@ const $TString_contents = FLD.TString_contents, $TString_extra = FLD.TString_ext
     $Udata_uv = FLD.Udata_uv, $global_State_currentwhite = FLD.global_State_currentwhite,
     $global_State_memerrmsg = FLD.global_State_memerrmsg, $global_State_seed = FLD.global_State_seed,
     $global_State_strcache = FLD.global_State_strcache, $global_State_strt = FLD.global_State_strt,
-    $lua_State_l_G = FLD.lua_State_l_G, $stringtable_nuse = FLD.stringtable_nuse,
-    $stringtable_size = FLD.stringtable_size;
+    $lua_State_l_G = FLD.lua_State_l_G, $sizeof_UValue = FLD.sizeof_UValue,
+    $stringtable_nuse = FLD.stringtable_nuse, $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_not_enough_memory = cptr.lit("not enough memory");
@@ -233,6 +233,6 @@ export function* luaS_newudata(L, s, nuvalue) {
     cptr.stI16o(u, $Udata_nuvalue, u16(nuvalue));
     cptr.stPtro(u, $Udata_metatable, null);
     for (i = 0; i < nuvalue; i++)
-        (cptr.st1o((cptr.add(cptr.add(u, $Udata_uv), i, 16)), $TValue_tt_, 0));
+        (cptr.st1o((cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue)), $TValue_tt_, 0));
     return u;
 }

@@ -41,12 +41,12 @@ const $Race_mnum = FLD.Race_mnum, $Role_mnum = FLD.Role_mnum,
     $levelflags_sokoban_rules = FLD.levelflags_sokoban_rules, $monst_data = FLD.monst_data,
     $monst_m_ap_type = FLD.monst_m_ap_type, $obj_otyp = FLD.obj_otyp, $obj_spe = FLD.obj_spe,
     $obj_where = FLD.obj_where, $permonst_mflags1 = FLD.permonst_mflags1, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $sysopt_s_seduce = FLD.sysopt_s_seduce,
-    $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO, $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
-    $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE, $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI,
-    $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE, $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US,
-    $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $window_procs_win_askname = FLD.window_procs_win_askname,
+    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_prop = FLD.sizeof_prop,
+    $sysopt_s_seduce = FLD.sysopt_s_seduce, $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO,
+    $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI, $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE,
+    $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI, $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE,
+    $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US, $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf, $window_procs_win_askname = FLD.window_procs_win_askname,
     $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
     $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
@@ -90,61 +90,61 @@ const $Race_mnum = FLD.Race_mnum, $Role_mnum = FLD.Role_mnum,
     $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow;
 
 /** C: include/youprop.h — the `Acid_resistance` macro body */
-export function Acid_resistance() { return (cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops) ? 1 : 0); }
+export function Acid_resistance() { return (cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Adornment` macro body */
-export function Adornment() { return cptr.ldI64o2(u, NHC.ADORNED, 24, $you_uprops); }
+export function Adornment() { return cptr.ldI64o2(u, NHC.ADORNED, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `Aggravate_monster` macro body */
-export function Aggravate_monster() { return (cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, $you_uprops) ? 1 : 0); }
+export function Aggravate_monster() { return (cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Amphibious` macro body */
-export function Amphibious() { return (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 512n) != 0n) ? 1 : 0); }
+export function Amphibious() { return (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 512n) != 0n) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Antimagic` macro body */
-export function Antimagic() { return (cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, $you_uprops) ? 1 : 0); }
+export function Antimagic() { return (cptr.ldI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/hack.h — the `BALL_IN_MON` macro body */
 export function BALL_IN_MON() { return ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && uball.v && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE ? 1 : 0); }
 
 /** C: include/youprop.h — the `BBlinded` macro body */
-export function BBlinded() { return cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked); }
+export function BBlinded() { return cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked); }
 
 /** C: include/youprop.h — the `BClairvoyant` macro body */
-export function BClairvoyant() { return cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops + $prop_blocked); }
+export function BClairvoyant() { return cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops + $prop_blocked); }
 
 /** C: include/youprop.h — the `BFlying` macro body */
-export function BFlying() { return cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked); }
+export function BFlying() { return cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked); }
 
 /** C: include/youprop.h — the `BInvis` macro body */
-export function BInvis() { return cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_blocked); }
+export function BInvis() { return cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_blocked); }
 
 /** C: include/youprop.h — the `BLevitation` macro body */
-export function BLevitation() { return cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_blocked); }
+export function BLevitation() { return cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked); }
 
 /** C: include/youprop.h — the `BStealth` macro body */
-export function BStealth() { return cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_blocked); }
+export function BStealth() { return cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked); }
 
 /** C: include/youprop.h — the `Blind` macro body */
-export function Blind() { return ((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Blind() { return ((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Blind_telepat` macro body */
-export function Blind_telepat() { return (cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops) ? 1 : 0); }
+export function Blind_telepat() { return (cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Blinded` macro body */
-export function Blinded() { return (cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Blinded() { return (cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `BlindedTimeout` macro body */
-export function BlindedTimeout() { return (cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) & 16777215n); }
+export function BlindedTimeout() { return (cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) & 16777215n); }
 
 /** C: include/youprop.h — the `Blindfolded_only` macro body */
-export function Blindfolded_only() { return (cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops) && !(cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked)) ? 1 : 0); }
+export function Blindfolded_only() { return (cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops) && !(cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked)) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Blnd_resist` macro body */
-export function Blnd_resist() { return (cptr.ldI64o2(u, NHC.BLND_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLND_RES, 24, $you_uprops) ? 1 : 0); }
+export function Blnd_resist() { return (cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Breathless` macro body */
-export function Breathless() { return (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) ? 1 : 0); }
+export function Breathless() { return (cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) ? 1 : 0); }
 
 /** C: include/hack.h — the `CHAIN_IN_MON` macro body */
 export function CHAIN_IN_MON() { return ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && uchain.v && cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE ? 1 : 0); }
@@ -153,109 +153,109 @@ export function CHAIN_IN_MON() { return ((cptr.ldI32o(u, $you_uswallow) & 1) | 0
 export function CO() { return cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO); }
 
 /** C: include/youprop.h — the `Clairvoyant` macro body */
-export function Clairvoyant() { return ((cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Clairvoyant() { return ((cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Cold_resistance` macro body */
-export function Cold_resistance() { return (cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops) ? 1 : 0); }
+export function Cold_resistance() { return (cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Conflict` macro body */
-export function Conflict() { return (cptr.ldI64o2(u, NHC.CONFLICT, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, 24, $you_uprops) ? 1 : 0); }
+export function Conflict() { return (cptr.ldI64o2(u, NHC.CONFLICT, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.CONFLICT, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Deaf` macro body */
-export function Deaf() { return (cptr.ldI64o2(u, NHC.DEAF, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, 24, $you_uprops) || cptr.ld1so(u, $you_uroleplay + $u_roleplay_deaf) ? 1 : 0); }
+export function Deaf() { return (cptr.ldI64o2(u, NHC.DEAF, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DEAF, $sizeof_prop, $you_uprops) || cptr.ld1so(u, $you_uroleplay + $u_roleplay_deaf) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Detect_monsters` macro body */
-export function Detect_monsters() { return (cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops) ? 1 : 0); }
+export function Detect_monsters() { return (cptr.ldI64o2(u, NHC.DETECT_MONSTERS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DETECT_MONSTERS, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Disint_resistance` macro body */
-export function Disint_resistance() { return (cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops) ? 1 : 0); }
+export function Disint_resistance() { return (cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Displaced` macro body */
-export function Displaced() { return (cptr.ldI64o2(u, NHC.DISPLACED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DISPLACED, 24, $you_uprops) ? 1 : 0); }
+export function Displaced() { return (cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Drain_resistance` macro body */
-export function Drain_resistance() { return (cptr.ldI64o2(u, NHC.DRAIN_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DRAIN_RES, 24, $you_uprops) ? 1 : 0); }
+export function Drain_resistance() { return (cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `EAggravate_monster` macro body */
-export function EAggravate_monster() { return cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, $you_uprops); }
+export function EAggravate_monster() { return cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EBlinded` macro body */
-export function EBlinded() { return cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops); }
+export function EBlinded() { return cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EClairvoyant` macro body */
-export function EClairvoyant() { return cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops); }
+export function EClairvoyant() { return cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EConflict` macro body */
-export function EConflict() { return cptr.ldI64o2(u, NHC.CONFLICT, 24, $you_uprops); }
+export function EConflict() { return cptr.ldI64o2(u, NHC.CONFLICT, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EDetect_monsters` macro body */
-export function EDetect_monsters() { return cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops); }
+export function EDetect_monsters() { return cptr.ldI64o2(u, NHC.DETECT_MONSTERS, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EDisint_resistance` macro body */
-export function EDisint_resistance() { return cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops); }
+export function EDisint_resistance() { return cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EFast` macro body */
-export function EFast() { return cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops); }
+export function EFast() { return cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EFlying` macro body */
-export function EFlying() { return cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops); }
+export function EFlying() { return cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EFumbling` macro body */
-export function EFumbling() { return cptr.ldI64o2(u, NHC.FUMBLING, 24, $you_uprops); }
+export function EFumbling() { return cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EHalluc_resistance` macro body */
-export function EHalluc_resistance() { return cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops); }
+export function EHalluc_resistance() { return cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EInvis` macro body */
-export function EInvis() { return cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops); }
+export function EInvis() { return cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EJumping` macro body */
-export function EJumping() { return cptr.ldI64o2(u, NHC.JUMPING, 24, $you_uprops); }
+export function EJumping() { return cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `ELevitation` macro body */
-export function ELevitation() { return cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops); }
+export function ELevitation() { return cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EMagical_breathing` macro body */
-export function EMagical_breathing() { return cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops); }
+export function EMagical_breathing() { return cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EPasses_walls` macro body */
-export function EPasses_walls() { return cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops); }
+export function EPasses_walls() { return cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EProtection` macro body */
-export function EProtection() { return cptr.ldI64o2(u, NHC.PROTECTION, 24, $you_uprops); }
+export function EProtection() { return cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EReflecting` macro body */
-export function EReflecting() { return cptr.ldI64o2(u, NHC.REFLECTING, 24, $you_uprops); }
+export function EReflecting() { return cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `ERegeneration` macro body */
-export function ERegeneration() { return cptr.ldI64o2(u, NHC.REGENERATION, 24, $you_uprops); }
+export function ERegeneration() { return cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `ESee_invisible` macro body */
-export function ESee_invisible() { return cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops); }
+export function ESee_invisible() { return cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `ESleepy` macro body */
-export function ESleepy() { return cptr.ldI64o2(u, NHC.SLEEPY, 24, $you_uprops); }
+export function ESleepy() { return cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EStealth` macro body */
-export function EStealth() { return cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops); }
+export function EStealth() { return cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `ETelepat` macro body */
-export function ETelepat() { return cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops); }
+export function ETelepat() { return cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `ETeleportation` macro body */
-export function ETeleportation() { return cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops); }
+export function ETeleportation() { return cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EWarn_of_mon` macro body */
-export function EWarn_of_mon() { return cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops); }
+export function EWarn_of_mon() { return cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EWounded_legs` macro body */
-export function EWounded_legs() { return cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, $you_uprops); }
+export function EWounded_legs() { return cptr.ldI64o2(u, NHC.WOUNDED_LEGS, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `EWwalking` macro body */
-export function EWwalking() { return cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops); }
+export function EWwalking() { return cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `Energy_regeneration` macro body */
-export function Energy_regeneration() { return (cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, 24, $you_uprops) ? 1 : 0); }
+export function Energy_regeneration() { return (cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/hack.h — the `FEATURE_NOTICE_VER_MAJ` macro body */
 export function FEATURE_NOTICE_VER_MAJ() { return (cptr.ldU64o(flags, $flag_suppress_alert) >> 24n); }
@@ -267,169 +267,169 @@ export function FEATURE_NOTICE_VER_MIN() { return (((16711680n & cptr.ldU64o(fla
 export function FEATURE_NOTICE_VER_PATCH() { return (((65280n & cptr.ldU64o(flags, $flag_suppress_alert))) >> 8n); }
 
 /** C: include/youprop.h — the `Fast` macro body */
-export function Fast() { return (cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops) ? 1 : 0); }
+export function Fast() { return (cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Fire_resistance` macro body */
-export function Fire_resistance() { return (cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops) ? 1 : 0); }
+export function Fire_resistance() { return (cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Fixed_abil` macro body */
-export function Fixed_abil() { return cptr.ldI64o2(u, NHC.FIXED_ABIL, 24, $you_uprops); }
+export function Fixed_abil() { return cptr.ldI64o2(u, NHC.FIXED_ABIL, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `Flying` macro body */
-export function Flying() { return ((cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops) || (cptr.ldPtro(u, $you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Flying() { return ((cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) || (cptr.ldPtro(u, $you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 1n) != 0n))) && !cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Free_action` macro body */
-export function Free_action() { return cptr.ldI64o2(u, NHC.FREE_ACTION, 24, $you_uprops); }
+export function Free_action() { return cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops); }
 
 /** C: include/youprop.h — the `Fumbling` macro body */
-export function Fumbling() { return (cptr.ldI64o2(u, NHC.FUMBLING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FUMBLING, 24, $you_uprops) ? 1 : 0); }
+export function Fumbling() { return (cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Glib` macro body */
-export function Glib() { return cptr.ldI64o2(u, NHC.GLIB, 24, $you_uprops + $prop_intrinsic); }
+export function Glib() { return cptr.ldI64o2(u, NHC.GLIB, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HAggravate_monster` macro body */
-export function HAggravate_monster() { return cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, $you_uprops + $prop_intrinsic); }
+export function HAggravate_monster() { return cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HBlinded` macro body */
-export function HBlinded() { return cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic); }
+export function HBlinded() { return cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HBlnd_resist` macro body */
-export function HBlnd_resist() { return cptr.ldI64o2(u, NHC.BLND_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HBlnd_resist() { return cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HClairvoyant` macro body */
-export function HClairvoyant() { return cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops + $prop_intrinsic); }
+export function HClairvoyant() { return cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HCold_resistance` macro body */
-export function HCold_resistance() { return cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HCold_resistance() { return cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HConflict` macro body */
-export function HConflict() { return cptr.ldI64o2(u, NHC.CONFLICT, 24, $you_uprops + $prop_intrinsic); }
+export function HConflict() { return cptr.ldI64o2(u, NHC.CONFLICT, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HConfusion` macro body */
-export function HConfusion() { return cptr.ldI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic); }
+export function HConfusion() { return cptr.ldI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HDeaf` macro body */
-export function HDeaf() { return cptr.ldI64o2(u, NHC.DEAF, 24, $you_uprops + $prop_intrinsic); }
+export function HDeaf() { return cptr.ldI64o2(u, NHC.DEAF, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HDetect_monsters` macro body */
-export function HDetect_monsters() { return cptr.ldI64o2(u, NHC.DETECT_MONSTERS, 24, $you_uprops + $prop_intrinsic); }
+export function HDetect_monsters() { return cptr.ldI64o2(u, NHC.DETECT_MONSTERS, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HDisint_resistance` macro body */
-export function HDisint_resistance() { return cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HDisint_resistance() { return cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HFast` macro body */
-export function HFast() { return cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic); }
+export function HFast() { return cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HFire_resistance` macro body */
-export function HFire_resistance() { return cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HFire_resistance() { return cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HFlying` macro body */
-export function HFlying() { return cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_intrinsic); }
+export function HFlying() { return cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HFumbling` macro body */
-export function HFumbling() { return cptr.ldI64o2(u, NHC.FUMBLING, 24, $you_uprops + $prop_intrinsic); }
+export function HFumbling() { return cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HHallucination` macro body */
-export function HHallucination() { return cptr.ldI64o2(u, NHC.HALLUC, 24, $you_uprops + $prop_intrinsic); }
+export function HHallucination() { return cptr.ldI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HInvis` macro body */
-export function HInvis() { return cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic); }
+export function HInvis() { return cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HJumping` macro body */
-export function HJumping() { return cptr.ldI64o2(u, NHC.JUMPING, 24, $you_uprops + $prop_intrinsic); }
+export function HJumping() { return cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HLevitation` macro body */
-export function HLevitation() { return cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic); }
+export function HLevitation() { return cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HMagical_breathing` macro body */
-export function HMagical_breathing() { return cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops + $prop_intrinsic); }
+export function HMagical_breathing() { return cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HPasses_walls` macro body */
-export function HPasses_walls() { return cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops + $prop_intrinsic); }
+export function HPasses_walls() { return cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HPoison_resistance` macro body */
-export function HPoison_resistance() { return cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HPoison_resistance() { return cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HProtection` macro body */
-export function HProtection() { return cptr.ldI64o2(u, NHC.PROTECTION, 24, $you_uprops + $prop_intrinsic); }
+export function HProtection() { return cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HRegeneration` macro body */
-export function HRegeneration() { return cptr.ldI64o2(u, NHC.REGENERATION, 24, $you_uprops + $prop_intrinsic); }
+export function HRegeneration() { return cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HSee_invisible` macro body */
-export function HSee_invisible() { return cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic); }
+export function HSee_invisible() { return cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HShock_resistance` macro body */
-export function HShock_resistance() { return cptr.ldI64o2(u, NHC.SHOCK_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HShock_resistance() { return cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HSleep_resistance` macro body */
-export function HSleep_resistance() { return cptr.ldI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic); }
+export function HSleep_resistance() { return cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HSleepy` macro body */
-export function HSleepy() { return cptr.ldI64o2(u, NHC.SLEEPY, 24, $you_uprops + $prop_intrinsic); }
+export function HSleepy() { return cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HStealth` macro body */
-export function HStealth() { return cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_intrinsic); }
+export function HStealth() { return cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HStun` macro body */
-export function HStun() { return cptr.ldI64o2(u, NHC.STUNNED, 24, $you_uprops + $prop_intrinsic); }
+export function HStun() { return cptr.ldI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HTelepat` macro body */
-export function HTelepat() { return cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic); }
+export function HTelepat() { return cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HTeleport_control` macro body */
-export function HTeleport_control() { return cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic); }
+export function HTeleport_control() { return cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HTeleportation` macro body */
-export function HTeleportation() { return cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic); }
+export function HTeleportation() { return cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `HWounded_legs` macro body */
-export function HWounded_legs() { return cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, $you_uprops + $prop_intrinsic); }
+export function HWounded_legs() { return cptr.ldI64o2(u, NHC.WOUNDED_LEGS, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Half_gas_damage` macro body */
 export function Half_gas_damage() { return (ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.TOWEL && cptr.ld1so(ublindf.v, $obj_spe) > 0 ? 1 : 0); }
 
 /** C: include/youprop.h — the `Half_physical_damage` macro body */
-export function Half_physical_damage() { return (cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, 24, $you_uprops) ? 1 : 0); }
+export function Half_physical_damage() { return (cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Half_spell_damage` macro body */
-export function Half_spell_damage() { return (cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_SPDAM, 24, $you_uprops) ? 1 : 0); }
+export function Half_spell_damage() { return (cptr.ldI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Halluc_resistance` macro body */
-export function Halluc_resistance() { return (cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops) ? 1 : 0); }
+export function Halluc_resistance() { return (cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Hallucination` macro body */
-export function Hallucination() { return (cptr.ldI64o2(u, NHC.HALLUC, 24, $you_uprops + $prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops)) ? 1 : 0); }
+export function Hallucination() { return (cptr.ldI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops)) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Hunger` macro body */
-export function Hunger() { return (cptr.ldI64o2(u, NHC.HUNGER, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HUNGER, 24, $you_uprops) ? 1 : 0); }
+export function Hunger() { return (cptr.ldI64o2(u, NHC.HUNGER, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HUNGER, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Infravision` macro body */
-export function Infravision() { return (cptr.ldI64o2(u, NHC.INFRAVISION, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.INFRAVISION, 24, $you_uprops) ? 1 : 0); }
+export function Infravision() { return (cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Invis` macro body */
-export function Invis() { return ((cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Invis() { return ((cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Invisible` macro body */
-export function Invisible() { return (((cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_blocked)) && !(cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops)) ? 1 : 0); }
+export function Invisible() { return (((cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_blocked)) && !(cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops)) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Invulnerable` macro body */
-export function Invulnerable() { return cptr.ldI64o2(u, NHC.INVULNERABLE, 24, $you_uprops + $prop_intrinsic); }
+export function Invulnerable() { return cptr.ldI64o2(u, NHC.INVULNERABLE, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Jumping` macro body */
-export function Jumping() { return (cptr.ldI64o2(u, NHC.JUMPING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.JUMPING, 24, $you_uprops) ? 1 : 0); }
+export function Jumping() { return (cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/decl.h — the `LI` macro body */
 export function LI() { return cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI); }
 
 /** C: include/youprop.h — the `Lev_at_will` macro body */
-export function Lev_at_will() { return (((cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) & 536870912n) != 0n || (cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops) & 8192n) != 0n) && (cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) & -553648128n) == 0n && (cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops) & -8193n) == 0n ? 1 : 0); }
+export function Lev_at_will() { return (((cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & 536870912n) != 0n || (cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & 8192n) != 0n) && (cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & -553648128n) == 0n && (cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & -8193n) == 0n ? 1 : 0); }
 
 /** C: include/youprop.h — the `Levitation` macro body */
-export function Levitation() { return ((cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Levitation() { return ((cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Lifesaved` macro body */
-export function Lifesaved() { return cptr.ldI64o2(u, NHC.LIFESAVED, 24, $you_uprops); }
+export function Lifesaved() { return cptr.ldI64o2(u, NHC.LIFESAVED, $sizeof_prop, $you_uprops); }
 
 /** C: include/you.h — the `Luck` macro body */
 export function Luck() { return ((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0); }
@@ -453,25 +453,25 @@ export function ParanoidSwim() { return (((cptr.ldI32o(flags, $flag_paranoia_bit
 export function ParanoidTrap() { return (((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_TRAP) >>> 0) != 0); }
 
 /** C: include/youprop.h — the `Passes_walls` macro body */
-export function Passes_walls() { return (cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops) ? 1 : 0); }
+export function Passes_walls() { return (cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `PermaBlind` macro body */
-export function PermaBlind() { return ((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) & 67108864n) != 0n); }
+export function PermaBlind() { return ((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) & 67108864n) != 0n); }
 
 /** C: include/youprop.h — the `Poison_resistance` macro body */
-export function Poison_resistance() { return (cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops) ? 1 : 0); }
+export function Poison_resistance() { return (cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Polymorph` macro body */
-export function Polymorph() { return (cptr.ldI64o2(u, NHC.POLYMORPH, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.POLYMORPH, 24, $you_uprops) ? 1 : 0); }
+export function Polymorph() { return (cptr.ldI64o2(u, NHC.POLYMORPH, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.POLYMORPH, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Polymorph_control` macro body */
-export function Polymorph_control() { return (cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, 24, $you_uprops) ? 1 : 0); }
+export function Polymorph_control() { return (cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.POLYMORPH_CONTROL, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Protection` macro body */
-export function Protection() { return (cptr.ldI64o2(u, NHC.PROTECTION, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.PROTECTION, 24, $you_uprops) ? 1 : 0); }
+export function Protection() { return (cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Protection_from_shape_changers` macro body */
-export function Protection_from_shape_changers() { return (cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, 24, $you_uprops) ? 1 : 0); }
+export function Protection_from_shape_changers() { return (cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.PROT_FROM_SHAPE_CHANGERS, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Punished` macro body */
 export function Punished() { return (uball.v !== null); }
@@ -480,10 +480,10 @@ export function Punished() { return (uball.v !== null); }
 export function Race_switch() { return (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)); }
 
 /** C: include/youprop.h — the `Reflecting` macro body */
-export function Reflecting() { return (cptr.ldI64o2(u, NHC.REFLECTING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.REFLECTING, 24, $you_uprops) ? 1 : 0); }
+export function Reflecting() { return (cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Regeneration` macro body */
-export function Regeneration() { return (cptr.ldI64o2(u, NHC.REGENERATION, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.REGENERATION, 24, $you_uprops) ? 1 : 0); }
+export function Regeneration() { return (cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/you.h — the `Role_switch` macro body */
 export function Role_switch() { return (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)); }
@@ -492,52 +492,52 @@ export function Role_switch() { return (cptr.ldI16o(gu, $instance_globals_u_urol
 export function SYSOPT_SEDUCE() { return cptr.ldI32o(sysopt, $sysopt_s_seduce); }
 
 /** C: include/youprop.h — the `Searching` macro body */
-export function Searching() { return (cptr.ldI64o2(u, NHC.SEARCHING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SEARCHING, 24, $you_uprops) ? 1 : 0); }
+export function Searching() { return (cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `See_invisible` macro body */
-export function See_invisible() { return (cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops) ? 1 : 0); }
+export function See_invisible() { return (cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Shock_resistance` macro body */
-export function Shock_resistance() { return (cptr.ldI64o2(u, NHC.SHOCK_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SHOCK_RES, 24, $you_uprops) ? 1 : 0); }
+export function Shock_resistance() { return (cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Sick` macro body */
-export function Sick() { return cptr.ldI64o2(u, NHC.SICK, 24, $you_uprops + $prop_intrinsic); }
+export function Sick() { return cptr.ldI64o2(u, NHC.SICK, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Sleep_resistance` macro body */
-export function Sleep_resistance() { return (cptr.ldI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SLEEP_RES, 24, $you_uprops) ? 1 : 0); }
+export function Sleep_resistance() { return (cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Sleepy` macro body */
-export function Sleepy() { return (cptr.ldI64o2(u, NHC.SLEEPY, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SLEEPY, 24, $you_uprops) ? 1 : 0); }
+export function Sleepy() { return (cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Slimed` macro body */
-export function Slimed() { return cptr.ldI64o2(u, NHC.SLIMED, 24, $you_uprops + $prop_intrinsic); }
+export function Slimed() { return cptr.ldI64o2(u, NHC.SLIMED, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Slow_digestion` macro body */
-export function Slow_digestion() { return (cptr.ldI64o2(u, NHC.SLOW_DIGESTION, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SLOW_DIGESTION, 24, $you_uprops) ? 1 : 0); }
+export function Slow_digestion() { return (cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/rm.h — the `Sokoban` macro body */
 export function Sokoban() { return (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1); }
 
 /** C: include/youprop.h — the `Stealth` macro body */
-export function Stealth() { return ((cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_blocked) ? 1 : 0); }
+export function Stealth() { return ((cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Stone_resistance` macro body */
-export function Stone_resistance() { return (cptr.ldI64o2(u, NHC.STONE_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.STONE_RES, 24, $you_uprops) ? 1 : 0); }
+export function Stone_resistance() { return (cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Stoned` macro body */
-export function Stoned() { return cptr.ldI64o2(u, NHC.STONED, 24, $you_uprops + $prop_intrinsic); }
+export function Stoned() { return cptr.ldI64o2(u, NHC.STONED, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Strangled` macro body */
-export function Strangled() { return cptr.ldI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic); }
+export function Strangled() { return cptr.ldI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Swimming` macro body */
-export function Swimming() { return (cptr.ldI64o2(u, NHC.SWIMMING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SWIMMING, 24, $you_uprops) || (cptr.ldPtro(u, $you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 2n) != 0n)) ? 1 : 0); }
+export function Swimming() { return (cptr.ldI64o2(u, NHC.SWIMMING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SWIMMING, $sizeof_prop, $you_uprops) || (cptr.ldPtro(u, $you_usteed) && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 2n) != 0n)) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Teleport_control` macro body */
-export function Teleport_control() { return (cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops) ? 1 : 0); }
+export function Teleport_control() { return (cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Teleportation` macro body */
-export function Teleportation() { return (cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops) ? 1 : 0); }
+export function Teleportation() { return (cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/you.h — the `ULEFTY` macro body */
 export function ULEFTY() { return (((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED); }
@@ -552,13 +552,13 @@ export function U_AP_TYPE() { return (cptr.ld1uo(gy, $instance_globals_y_youmons
 export function Ugender() { return (((cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)) ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Unblind_telepat` macro body */
-export function Unblind_telepat() { return (cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops)); }
+export function Unblind_telepat() { return (cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops)); }
 
 /** C: include/youprop.h — the `Unchanging` macro body */
-export function Unchanging() { return (cptr.ldI64o2(u, NHC.UNCHANGING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, 24, $you_uprops) ? 1 : 0); }
+export function Unchanging() { return (cptr.ldI64o2(u, NHC.UNCHANGING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.UNCHANGING, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Undead_warning` macro body */
-export function Undead_warning() { return (cptr.ldI64o2(u, NHC.WARN_UNDEAD, 24, $you_uprops + $prop_intrinsic)); }
+export function Undead_warning() { return (cptr.ldI64o2(u, NHC.WARN_UNDEAD, $sizeof_prop, $you_uprops + $prop_intrinsic)); }
 
 /** C: include/youprop.h — the `Underwater` macro body */
 export function Underwater() { return ((cptr.ldI32o(u, $you_uinwater) & 1)); }
@@ -567,19 +567,19 @@ export function Underwater() { return ((cptr.ldI32o(u, $you_uinwater) & 1)); }
 export function Upolyd() { return (cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_umonster)); }
 
 /** C: include/youprop.h — the `Very_fast` macro body */
-export function Very_fast() { return ((cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic) & -117440513n) || cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops) ? 1 : 0); }
+export function Very_fast() { return ((cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) & -117440513n) || cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Vomiting` macro body */
-export function Vomiting() { return cptr.ldI64o2(u, NHC.VOMITING, 24, $you_uprops + $prop_intrinsic); }
+export function Vomiting() { return cptr.ldI64o2(u, NHC.VOMITING, $sizeof_prop, $you_uprops + $prop_intrinsic); }
 
 /** C: include/youprop.h — the `Warn_of_mon` macro body */
-export function Warn_of_mon() { return (cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops) ? 1 : 0); }
+export function Warn_of_mon() { return (cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Warning` macro body */
-export function Warning() { return (cptr.ldI64o2(u, NHC.WARNING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WARNING, 24, $you_uprops) ? 1 : 0); }
+export function Warning() { return (cptr.ldI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/youprop.h — the `Wounded_legs` macro body */
-export function Wounded_legs() { return (cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, $you_uprops) ? 1 : 0); }
+export function Wounded_legs() { return (cptr.ldI64o2(u, NHC.WOUNDED_LEGS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, $sizeof_prop, $you_uprops) ? 1 : 0); }
 
 /** C: include/winprocs.h — the `askname` macro body */
 export function askname() { return (cptr.ldPtro(windowprocs, $window_procs_win_askname)); }

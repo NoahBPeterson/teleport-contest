@@ -45,7 +45,8 @@ const $NHFILE_fieldlevel = FLD.NHFILE_fieldlevel, $NHFILE_fnidx = FLD.NHFILE_fni
     $nomakedefs_s_version_number = FLD.nomakedefs_s_version_number,
     $nomakedefs_s_version_sanity1 = FLD.nomakedefs_s_version_sanity1,
     $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string, $rt_opt_value = FLD.rt_opt_value,
-    $version_info_entity_count = FLD.version_info_entity_count,
+    $sizeof_critical_sizes_with_names = FLD.sizeof_critical_sizes_with_names,
+    $sizeof_rt_opt = FLD.sizeof_rt_opt, $version_info_entity_count = FLD.version_info_entity_count,
     $version_info_feature_set = FLD.version_info_feature_set,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
@@ -342,7 +343,7 @@ export function* early_version_info(pastebuf) {
 /** C ref: version.c:324 — struct rt_opt { token, value } (memory model v0.5) */
 
 /** C ref: version.c:326 — struct rt_opt[3] */
-const rt_opts = cptr.alloc(3 * 16);
+const rt_opts = cptr.alloc(3 * $sizeof_rt_opt);
 cptr.stPtro(rt_opts, 0, __s_patmatch);
 cptr.stPtro(rt_opts, 0 + $rt_opt_value, cptr.decay(regex_id));
 cptr.stPtro(rt_opts, 16, __s_luaversion);
@@ -356,8 +357,8 @@ function* insert_rtoption(buf) {
     if (!cptr.ld1so2(gl, 0, 1, $instance_globals_l_lua_ver))
         (yield* get_lua_version());
     for (i = 0; i < 3; ++i) {
-        if ((yield* strstri(buf, cptr.ldPtro(rt_opts, i, 16))) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, 16, $rt_opt_value))) {
-            void strsubst(buf, cptr.ldPtro(rt_opts, i, 16), cptr.ldPtro2(rt_opts, i, 16, $rt_opt_value));
+        if ((yield* strstri(buf, cptr.ldPtro(rt_opts, i, $sizeof_rt_opt))) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, $sizeof_rt_opt, $rt_opt_value))) {
+            void strsubst(buf, cptr.ldPtro(rt_opts, i, $sizeof_rt_opt), cptr.ldPtro2(rt_opts, i, $sizeof_rt_opt, $rt_opt_value));
         }
     }
 }
@@ -469,7 +470,7 @@ export function* store_version(nhfp) {
 /** C ref: version.c:541 — struct critical_sizes_with_names { ucsize, nm } (memory model v0.5) */
 
 /** C ref: version.c:546 — struct critical_sizes_with_names[80] */
-export const critical_sizes = cptr.alloc(80 * 16);
+export const critical_sizes = cptr.alloc(80 * $sizeof_critical_sizes_with_names);
 cptr.st1o(critical_sizes, 0, 0);
 cptr.stPtro(critical_sizes, 0 + $critical_sizes_with_names_nm, __s_unused);
 cptr.st1o(critical_sizes, 16, 2);
@@ -651,7 +652,7 @@ export function* store_critical_bytes(nhfp) {
         (yield* sfo_char(nhfp, csc_count, __s_count_critical_sizes, 1));
         cnt = csc_count.v;
         for (i = 0; i < cnt; ++i) {
-            (yield* sfo_uchar(nhfp, cptr.add(critical_sizes, i, 16), __s_critical_sizes));
+            (yield* sfo_uchar(nhfp, cptr.add(critical_sizes, i, $sizeof_critical_sizes_with_names), __s_critical_sizes));
         }
     }
 }
@@ -668,7 +669,7 @@ export function* uptodate(nhfp, name, utdflags) {
     if ((sfstatus = (yield* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags))) != NHM.SF_UPTODATE) {
         if (sfstatus > 0 && idx_1st_mismatch.v) {
             if (!quietly)
-                (yield* raw_printf(__s_comparison_of_critical_bytes_mismatched, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, 16), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, 16, $critical_sizes_with_names_nm)));
+                (yield* raw_printf(__s_comparison_of_critical_bytes_mismatched, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, $sizeof_critical_sizes_with_names), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, $sizeof_critical_sizes_with_names, $critical_sizes_with_names_nm)));
         }
     }
     (yield* sfi_version_info(nhfp, vers_info, __s_version_info));
@@ -701,7 +702,7 @@ export function* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
         (yield* sfi_uchar(nhfp, cptr.add(cptr.decay(cscbuf), i, 1), __s_critical_sizes));
     }
     for (i = 1; i < cnt; ++i) {
-        if (cptr.ld1uo(cptr.decay(cscbuf), i, 1) != cptr.ld1uo(critical_sizes, i, 16)) {
+        if (cptr.ld1uo(cptr.decay(cscbuf), i, 1) != cptr.ld1uo(critical_sizes, i, $sizeof_critical_sizes_with_names)) {
             let dm = datamodel(0);
             let dmfile;
             dmfile = what_datamodel_is_this(0, cptr.ld1uo(cptr.decay(cscbuf), 1, 1), cptr.ld1uo(cptr.decay(cscbuf), 2, 1), cptr.ld1uo(cptr.decay(cscbuf), 3, 1), cptr.ld1uo(cptr.decay(cscbuf), 4, 1), cptr.ld1uo(cptr.decay(cscbuf), 5, 1));

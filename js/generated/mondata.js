@@ -59,12 +59,16 @@ const $Race_mnum = FLD.Race_mnum, $alt_spl_genderhint = FLD.alt_spl_genderhint,
     $permonst_mmove = FLD.permonst_mmove, $permonst_mresists = FLD.permonst_mresists,
     $permonst_msize = FLD.permonst_msize, $permonst_msound = FLD.permonst_msound,
     $permonst_pmidx = FLD.permonst_pmidx, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $rm_lit = FLD.rm_lit, $trap_ttyp = FLD.trap_ttyp,
-    $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty, $you_twoweap = FLD.you_twoweap,
-    $you_ucreamed = FLD.you_ucreamed, $you_uhave = FLD.you_uhave, $you_uinwater = FLD.you_uinwater,
-    $you_ulevel = FLD.you_ulevel, $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum,
-    $you_umonster = FLD.you_umonster, $you_umovement = FLD.you_umovement, $you_uprops = FLD.you_uprops,
-    $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow;
+    $prop_intrinsic = FLD.prop_intrinsic, $rm_lit = FLD.rm_lit, $sizeof_alt_spl = FLD.sizeof_alt_spl,
+    $sizeof_attack = FLD.sizeof_attack, $sizeof_class_sym = FLD.sizeof_class_sym,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx,
+    $trap_ty = FLD.trap_ty, $you_twoweap = FLD.you_twoweap, $you_ucreamed = FLD.you_ucreamed,
+    $you_uhave = FLD.you_uhave, $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel,
+    $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+    $you_umovement = FLD.you_umovement, $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed,
+    $you_uswallow = FLD.you_uswallow;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_resists_elem_d_unexpected_property_type = cptr.lit("Resists_Elem(%d), unexpected property type");
@@ -225,7 +229,7 @@ export function set_mon_data(mon, ptr) {
 /** C ref: mondata.c:42 — @param {CPtr<struct permonst>} ptr @param {CInt} atyp @param {CInt} dtyp @returns {CPtr<struct attack>} */
 export function attacktype_fordmg(ptr, atyp, dtyp) {
     let a;
-    for (a = cptr.add(cptr.add(ptr, $permonst_mattk), 0, 4); cptr.cmp(a, cptr.add(cptr.add(ptr, $permonst_mattk), NHM.NATTK, 4)) < 0; a = cptr.add(a, 1, 4))
+    for (a = cptr.add(cptr.add(ptr, $permonst_mattk), 0, $sizeof_attack); cptr.cmp(a, cptr.add(cptr.add(ptr, $permonst_mattk), NHM.NATTK, $sizeof_attack)) < 0; a = cptr.add(a, 1, 4))
         if (cptr.ld1u(a) == atyp && (dtyp == -1 || cptr.ld1uo(a, $attack_adtyp) == dtyp))
             return a;
     return null;
@@ -241,9 +245,9 @@ export function noattacks(ptr) {
     let i;
     let mattk = cptr.add(ptr, $permonst_mattk);
     for (i = 0; i < NHM.NATTK; i++) {
-        if (cptr.ld1uo(mattk, i, 4) == NHM.AT_BOOM)
+        if (cptr.ld1uo(mattk, i, $sizeof_attack) == NHM.AT_BOOM)
             continue;
-        if (cptr.ld1uo(mattk, i, 4))
+        if (cptr.ld1uo(mattk, i, $sizeof_attack))
             return 0;
     }
     return 1;
@@ -251,7 +255,7 @@ export function noattacks(ptr) {
 
 /** C ref: mondata.c:80 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function poly_when_stoned(ptr) {
-    return schar(((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_STONE_GOLEM, 96)) && !(cptr.ld1uo2(svm, NHC.PM_STONE_GOLEM, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
+    return schar(((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_STONE_GOLEM, $sizeof_permonst)) && !(cptr.ld1uo2(svm, NHC.PM_STONE_GOLEM, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
 }
 
 /** C ref: mondata.c:91 — @param {CPtr<struct monst>} mon @param {CInt} adtyp @returns {CInt} */
@@ -296,7 +300,7 @@ export function Resists_Elem(mon, propindx) {
         case NHC.STONE_RES:
         damgtype = (propindx + 1) | 0;
         rsstmask = 1 << ((propindx - 1) | 0);
-        u_resist = cptr.ldI64o2(u, propindx, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, propindx, 24, $you_uprops) ? 1 : 0;
+        u_resist = cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops) ? 1 : 0;
         break;
         case NHC.ANTIMAGIC:
         return resists_magm(mon);
@@ -320,7 +324,7 @@ export function Resists_Elem(mon, propindx) {
     if (is_you && cptr.ld1so(u, $you_twoweap))
         slotmask |= 1024n;
     for (; o; o = cptr.ldPtr(o))
-        if (((cptr.ldI64o(o, $obj_owornmask) & slotmask) != 0n && cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_oprop) == propindx) || ((cptr.ldI64o(o, $obj_owornmask) & 2n) == 2n && cptr.ldI16o(o, $obj_otyp) == NHC.ALCHEMY_SMOCK && (propindx == NHC.POISON_RES || propindx == NHC.ACID_RES)) || (cptr.ld1so(o, $obj_oartifact) && defends_when_carried(damgtype, o)))
+        if (((cptr.ldI64o(o, $obj_owornmask) & slotmask) != 0n && cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == propindx) || ((cptr.ldI64o(o, $obj_owornmask) & 2n) == 2n && cptr.ldI16o(o, $obj_otyp) == NHC.ALCHEMY_SMOCK && (propindx == NHC.POISON_RES || propindx == NHC.ACID_RES)) || (cptr.ld1so(o, $obj_oartifact) && defends_when_carried(damgtype, o)))
             return 1;
     return 0;
 }
@@ -328,7 +332,7 @@ export function Resists_Elem(mon, propindx) {
 /** C ref: mondata.c:201 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function resists_drli(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
-    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 4n) != 0n) || (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)) && cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM) || cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, 96)) || is_vampshifter(mon))
+    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 4n) != 0n) || (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)) && cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM) || cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, $sizeof_permonst)) || is_vampshifter(mon))
         return 1;
     return defended(mon, NHM.AD_DRLI);
 }
@@ -339,7 +343,7 @@ export function resists_magm(mon) {
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
     let slotmask;
     let o;
-    if (dmgtype(ptr, NHM.AD_MAGM) || cptr.eq(ptr, cptr.add(mons, NHC.PM_BABY_GRAY_DRAGON, 96)) || dmgtype(ptr, NHM.AD_RBRE))
+    if (dmgtype(ptr, NHM.AD_MAGM) || cptr.eq(ptr, cptr.add(mons, NHC.PM_BABY_GRAY_DRAGON, $sizeof_permonst)) || dmgtype(ptr, NHM.AD_RBRE))
         return 1;
     o = is_you ? uwep.v : (cptr.ldPtro((mon), $monst_mw));
     if (o && cptr.ld1so(o, $obj_oartifact) && defends(NHM.AD_MAGM, o))
@@ -351,7 +355,7 @@ export function resists_magm(mon) {
     if (is_you && cptr.ld1so(u, $you_twoweap))
         slotmask |= 1024n;
     for (; o; o = cptr.ldPtr(o))
-        if (((cptr.ldI64o(o, $obj_owornmask) & slotmask) != 0n && cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_oprop) == NHC.ANTIMAGIC) || (cptr.ld1so(o, $obj_oartifact) && defends_when_carried(NHM.AD_MAGM, o)))
+        if (((cptr.ldI64o(o, $obj_owornmask) & slotmask) != 0n && cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == NHC.ANTIMAGIC) || (cptr.ld1so(o, $obj_oartifact) && defends_when_carried(NHM.AD_MAGM, o)))
             return 1;
     return 0;
 }
@@ -396,7 +400,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
         return 0;
     if (!is_you && mon_perma_blind(mdef))
         return 0;
-    if (magr && cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_RAVEN, 96)) && cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_RAVEN, 96)))
+    if (magr && cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_RAVEN, $sizeof_permonst)) && cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_RAVEN, $sizeof_permonst)))
         return 0;
     switch (aatyp) {
         case NHM.AT_EXPL:
@@ -458,7 +462,7 @@ export function can_blnd(magr, mdef, aatyp, obj) {
 export function ranged_attk(ptr) {
     let i;
     for (i = 0; i < NHM.NATTK; i++)
-        if (DISTANCE_ATTK_TYPE(cptr.ld1uo2(ptr, i, 4, $permonst_mattk)))
+        if (DISTANCE_ATTK_TYPE(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk)))
             return 1;
     return 0;
 }
@@ -479,22 +483,22 @@ export function mstrength(ptr) {
     n = (n + (cptr.ld1so(ptr, $permonst_ac) < 0)) | 0;
     n = (n + (cptr.ld1so(ptr, $permonst_mmove) >= 18)) | 0;
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk);
+        tmp2 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk);
         n = (n + (tmp2 > 0)) | 0;
         n = (n + (tmp2 == NHM.AT_MAGC)) | 0;
         n = (n + (tmp2 == NHM.AT_WEAP && (cptr.ldU64o(ptr, $permonst_mflags2) & 67108864n) ? 1 : 0)) | 0;
         if (tmp2 == NHM.AT_EXPL) {
-            let tmp3 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp);
+            let tmp3 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
             n = (n + ((tmp3 == NHM.AD_COLD || tmp3 == NHM.AD_FIRE) ? 3 : ((tmp3 == NHM.AD_ELEC) ? 5 : 0))) | 0;
         }
     }
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp);
+        tmp2 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
         if ((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) || (tmp2 == NHM.AD_DRST) || (tmp2 == NHM.AD_DRDX) || (tmp2 == NHM.AD_DRCO) || (tmp2 == NHM.AD_WERE))
             n = (n + 2) | 0;
         else if (strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_grid_bug))
             n = (n + (tmp2 != NHM.AD_PHYS)) | 0;
-        n = (n + ((Math.imul(cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damn))) > 23)) | 0;
+        n = (n + ((Math.imul(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn))) > 23)) | 0;
     }
     if (!strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_leprechaun))
         n = (n - 2) | 0;
@@ -515,7 +519,7 @@ function mstrength_ranged_attk(ptr) {
     let j;
     let atk_mask = 37888;
     for (i = 0; i < NHM.NATTK; i++) {
-        if ((j = cptr.ld1uo2(ptr, i, 4, $permonst_mattk)) >= NHM.AT_WEAP || (j < 32 && (atk_mask & (1 << j)) != 0))
+        if ((j = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk)) >= NHM.AT_WEAP || (j < 32 && (atk_mask & (1 << j)) != 0))
             return 1;
     }
     return 0;
@@ -528,7 +532,7 @@ export function mon_hates_silver(mon) {
 
 /** C ref: mondata.c:524 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function hates_silver(ptr) {
-    return schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 4n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_VAMPIRE || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SHADE, 96)) || (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_IMP && !cptr.eq(ptr, cptr.add(mons, NHC.PM_TENGU, 96))) ? 1 : 0));
+    return schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 4n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_VAMPIRE || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)) || (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_IMP && !cptr.eq(ptr, cptr.add(mons, NHC.PM_TENGU, $sizeof_permonst))) ? 1 : 0));
 }
 
 /** C ref: mondata.c:533 — @param {CPtr<struct monst>} mon @returns {CInt} */
@@ -543,7 +547,7 @@ export function hates_blessings(ptr) {
 
 /** C ref: mondata.c:547 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_hates_light(mon) {
-    return schar((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_GREMLIN, 96))));
+    return schar((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst))));
 }
 
 /** C ref: mondata.c:554 — @param {CPtr<struct permonst>} mptr @returns {CInt} */
@@ -576,7 +580,7 @@ export function can_be_strangled(mon) {
         return 0;
     if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) {
         nobrainer = schar(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 65536n) != 0n));
-        nonbreathing = schar((cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) ? 1 : 0));
+        nonbreathing = schar((cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) ? 1 : 0));
     } else {
         nobrainer = schar(((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n));
         nonbreathing = schar((((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((mamul = which_armor(mon, 65536n)) !== null && (cptr.ldI16o(mamul, $obj_otyp) == NHC.AMULET_OF_MAGICAL_BREATHING)) ? 1 : 0));
@@ -600,7 +604,7 @@ export function sliparm(ptr) {
 export function breakarm(ptr) {
     if (sliparm(ptr))
         return 0;
-    return schar(((cptr.ld1uo((ptr), $permonst_msize) >= NHM.MZ_LARGE) || (cptr.ld1uo(ptr, $permonst_msize) > NHM.MZ_SMALL && !((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_MARILITH, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, 96)) ? 1 : 0));
+    return schar(((cptr.ld1uo((ptr), $permonst_msize) >= NHM.MZ_LARGE) || (cptr.ld1uo(ptr, $permonst_msize) > NHM.MZ_SMALL && !((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_MARILITH, $sizeof_permonst)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, $sizeof_permonst)) ? 1 : 0));
 }
 
 /** C ref: mondata.c:654 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
@@ -610,9 +614,9 @@ export function sticks(ptr) {
 
 /** C ref: mondata.c:663 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function cantvomit(ptr) {
-    if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_RODENT && !cptr.eq(ptr, cptr.add(mons, NHC.PM_ROCK_MOLE, 96)) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_WOODCHUCK, 96)))
+    if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_RODENT && !cptr.eq(ptr, cptr.add(mons, NHC.PM_ROCK_MOLE, $sizeof_permonst)) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_WOODCHUCK, $sizeof_permonst)))
         return 1;
-    if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WARHORSE, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_HORSE, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_PONY, 96)))
+    if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WARHORSE, $sizeof_permonst)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_HORSE, $sizeof_permonst)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_PONY, $sizeof_permonst)))
         return 1;
     return 0;
 }
@@ -639,7 +643,7 @@ export function num_horns(ptr) {
 /** C ref: mondata.c:700 — @param {CPtr<struct permonst>} ptr @param {CInt} dtyp @param {CInt} atyp @returns {CPtr<struct attack>} */
 export function dmgtype_fromattack(ptr, dtyp, atyp) {
     let a;
-    for (a = cptr.add(cptr.add(ptr, $permonst_mattk), 0, 4); cptr.cmp(a, cptr.add(cptr.add(ptr, $permonst_mattk), NHM.NATTK, 4)) < 0; a = cptr.add(a, 1, 4))
+    for (a = cptr.add(cptr.add(ptr, $permonst_mattk), 0, $sizeof_attack); cptr.cmp(a, cptr.add(cptr.add(ptr, $permonst_mattk), NHM.NATTK, $sizeof_attack)) < 0; a = cptr.add(a, 1, 4))
         if (cptr.ld1uo(a, $attack_adtyp) == dtyp && (atyp == -1 || cptr.ld1u(a) == atyp))
             return a;
     return null;
@@ -657,7 +661,7 @@ export function max_passive_dmg(mdef, magr) {
     let multi2 = 0;
     let adtyp;
     for (i = 0; i < NHM.NATTK; i++)
-        switch (cptr.ld1uo2(cptr.ldPtro(magr, $monst_data), i, 4, $permonst_mattk)) {
+        switch (cptr.ld1uo2(cptr.ldPtro(magr, $monst_data), i, $sizeof_attack, $permonst_mattk)) {
             case NHM.AT_CLAW:
             case NHM.AT_BITE:
             case NHM.AT_KICK:
@@ -675,15 +679,15 @@ export function max_passive_dmg(mdef, magr) {
         }
     dmg = 0;
     for (i = 0; i < NHM.NATTK; i++)
-        if (cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, 4, $permonst_mattk) == NHM.AT_NONE || cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, 4, $permonst_mattk) == NHM.AT_BOOM) {
-            adtyp = cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, 4, $permonst_mattk + $attack_adtyp);
-            if ((adtyp == NHM.AD_FIRE && completelyburns(cptr.ldPtro(magr, $monst_data))) || (adtyp == NHM.AD_DCAY && completelyrots(cptr.ldPtro(magr, $monst_data))) || (adtyp == NHM.AD_RUST && (cptr.eq((cptr.ldPtro(magr, $monst_data)), cptr.add(mons, NHC.PM_IRON_GOLEM, 96))))) {
+        if (cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, $sizeof_attack, $permonst_mattk) == NHM.AT_NONE || cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, $sizeof_attack, $permonst_mattk) == NHM.AT_BOOM) {
+            adtyp = cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
+            if ((adtyp == NHM.AD_FIRE && completelyburns(cptr.ldPtro(magr, $monst_data))) || (adtyp == NHM.AD_DCAY && completelyrots(cptr.ldPtro(magr, $monst_data))) || (adtyp == NHM.AD_RUST && (cptr.eq((cptr.ldPtro(magr, $monst_data)), cptr.add(mons, NHC.PM_IRON_GOLEM, $sizeof_permonst))))) {
                 dmg = cptr.ldI32o(magr, $monst_mhp);
             } else if ((adtyp == NHM.AD_ACID && !Resists_Elem(magr, NHC.ACID_RES)) || (adtyp == NHM.AD_COLD && !Resists_Elem(magr, NHC.COLD_RES)) || (adtyp == NHM.AD_FIRE && !Resists_Elem(magr, NHC.FIRE_RES)) || (adtyp == NHM.AD_ELEC && !Resists_Elem(magr, NHC.SHOCK_RES)) || adtyp == NHM.AD_PHYS) {
-                dmg = cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, 4, $permonst_mattk + $attack_damn);
+                dmg = cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_damn);
                 if (!dmg)
                     dmg = (cptr.ld1so(cptr.ldPtro(mdef, $monst_data), $permonst_mlevel) + 1) | 0;
-                dmg = Math.imul(dmg, cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, 4, $permonst_mattk + $attack_damd));
+                dmg = Math.imul(dmg, cptr.ld1uo2(cptr.ldPtro(mdef, $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_damd));
             }
             dmg = Math.imul(dmg, multi2);
             break;
@@ -713,8 +717,8 @@ export function same_race(pm1, pm2) {
         return schar((cptr.ld1so((pm2), $permonst_mlet) == NHC.S_GOLEM));
     if (is_mind_flayer(pm1))
         return schar(is_mind_flayer(pm2));
-    if (let1 == NHC.S_KOBOLD || cptr.eq(pm1, cptr.add(mons, NHC.PM_KOBOLD_ZOMBIE, 96)) || cptr.eq(pm1, cptr.add(mons, NHC.PM_KOBOLD_MUMMY, 96)))
-        return schar((let2 == NHC.S_KOBOLD || cptr.eq(pm2, cptr.add(mons, NHC.PM_KOBOLD_ZOMBIE, 96)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_KOBOLD_MUMMY, 96)) ? 1 : 0));
+    if (let1 == NHC.S_KOBOLD || cptr.eq(pm1, cptr.add(mons, NHC.PM_KOBOLD_ZOMBIE, $sizeof_permonst)) || cptr.eq(pm1, cptr.add(mons, NHC.PM_KOBOLD_MUMMY, $sizeof_permonst)))
+        return schar((let2 == NHC.S_KOBOLD || cptr.eq(pm2, cptr.add(mons, NHC.PM_KOBOLD_ZOMBIE, $sizeof_permonst)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_KOBOLD_MUMMY, $sizeof_permonst)) ? 1 : 0));
     if (let1 == NHC.S_OGRE)
         return schar((let2 == NHC.S_OGRE));
     if (let1 == NHC.S_NYMPH)
@@ -731,7 +735,7 @@ export function same_race(pm1, pm2) {
         return schar(is_rider(pm2));
     if (((cptr.ldU64o((pm1), $permonst_mflags2) & 4096n) != 0n))
         return schar(((cptr.ldU64o((pm2), $permonst_mflags2) & 4096n) != 0n));
-    if (cptr.eq(pm1, cptr.add(mons, NHC.PM_TENGU, 96)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_TENGU, 96)))
+    if (cptr.eq(pm1, cptr.add(mons, NHC.PM_TENGU, $sizeof_permonst)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_TENGU, $sizeof_permonst)))
         return 0;
     if (let1 == NHC.S_IMP)
         return schar((let2 == NHC.S_IMP));
@@ -766,10 +770,10 @@ export function same_race(pm1, pm2) {
             if (nxt == m2)
                 return 1;
     }
-    if (cptr.eq(pm1, cptr.add(mons, NHC.PM_GARGOYLE, 96)) || cptr.eq(pm1, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, 96)))
-        return schar((cptr.eq(pm2, cptr.add(mons, NHC.PM_GARGOYLE, 96)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, 96)) ? 1 : 0));
-    if (cptr.eq(pm1, cptr.add(mons, NHC.PM_KILLER_BEE, 96)) || cptr.eq(pm1, cptr.add(mons, NHC.PM_QUEEN_BEE, 96)))
-        return schar((cptr.eq(pm2, cptr.add(mons, NHC.PM_KILLER_BEE, 96)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_QUEEN_BEE, 96)) ? 1 : 0));
+    if (cptr.eq(pm1, cptr.add(mons, NHC.PM_GARGOYLE, $sizeof_permonst)) || cptr.eq(pm1, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, $sizeof_permonst)))
+        return schar((cptr.eq(pm2, cptr.add(mons, NHC.PM_GARGOYLE, $sizeof_permonst)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, $sizeof_permonst)) ? 1 : 0));
+    if (cptr.eq(pm1, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) || cptr.eq(pm1, cptr.add(mons, NHC.PM_QUEEN_BEE, $sizeof_permonst)))
+        return schar((cptr.eq(pm2, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) || cptr.eq(pm2, cptr.add(mons, NHC.PM_QUEEN_BEE, $sizeof_permonst)) ? 1 : 0));
     if (is_longworm(pm1))
         return schar(is_longworm(pm2));
     return 0;
@@ -782,7 +786,7 @@ export function name_to_mon(in_str, gender_name_var) {
     return name_to_monplus(in_str, null, gender_name_var);
 }
 
-const __static_name_to_monplus_names = cptr.alloc(56 * 16);
+const __static_name_to_monplus_names = cptr.alloc(56 * $sizeof_alt_spl);
 cptr.stPtro(__static_name_to_monplus_names, 0, __s_grey_dragon);
 cptr.stI16o(__static_name_to_monplus_names, 0 + $alt_spl_pm_val, NHC.PM_GRAY_DRAGON);
 cptr.stI32o(__static_name_to_monplus_names, 0 + $alt_spl_genderhint, NHC.NEUTRAL);
@@ -999,10 +1003,10 @@ export function name_to_monplus(in_str, remainder_p, gender_name_var) {
     for (len.v = 0, i = NHC.LOW_PM; i < NHC.NUMMONS; i++) {
         for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; mgend++) {
             let m_i_len;
-            if (!cptr.ldPtro3(mons, i, 96, mgend, 8, 0))
+            if (!cptr.ldPtro3(mons, i, $sizeof_permonst, mgend, 8, 0))
                 continue;
-            m_i_len = cptr.strlen(cptr.ldPtro3(mons, i, 96, mgend, 8, 0));
-            if (m_i_len > BigInt.asUintN(64, BigInt(len.v)) && !strncmpi(cptr.ldPtro3(mons, i, 96, mgend, 8, 0), str, Number(BigInt.asIntN(32, m_i_len)))) {
+            m_i_len = cptr.strlen(cptr.ldPtro3(mons, i, $sizeof_permonst, mgend, 8, 0));
+            if (m_i_len > BigInt.asUintN(64, BigInt(len.v)) && !strncmpi(cptr.ldPtro3(mons, i, $sizeof_permonst, mgend, 8, 0), str, Number(BigInt.asIntN(32, m_i_len)))) {
                 if (m_i_len == slen) {
                     mntmp = i;
                     len.v = Number(BigInt.asIntN(32, m_i_len));
@@ -1037,7 +1041,7 @@ cptr.stPtro(__static_name_to_monclass_falsematch, 16, __s_or);
 cptr.stPtro(__static_name_to_monclass_falsematch, 24, __s_other);
 cptr.stPtro(__static_name_to_monclass_falsematch, 32, __s_or_other);
 cptr.stPtro(__static_name_to_monclass_falsematch, 40, null); /** C ref: mondata.c:1100 — char *[6] (function-static) */
-const __static_name_to_monclass_truematch = cptr.alloc(6 * 16);
+const __static_name_to_monclass_truematch = cptr.alloc(6 * $sizeof_alt_spl);
 cptr.stPtro(__static_name_to_monclass_truematch, 0, __s_long_worm);
 cptr.stI16o(__static_name_to_monclass_truematch, 0 + $alt_spl_pm_val, NHC.PM_LONG_WORM);
 cptr.stI32o(__static_name_to_monclass_truematch, 0 + $alt_spl_genderhint, NHC.NEUTRAL);
@@ -1085,18 +1089,18 @@ export function name_to_monclass(in_str, mndx_p) {
         for (i = 0; cptr.ldPtro(__static_name_to_monclass_falsematch, i, 8); i++)
             if (!strncmpi((in_str), (cptr.ldPtro(__static_name_to_monclass_falsematch, i, 8)), -1))
                 return 0;
-        for (i = 0; cptr.ldPtro(__static_name_to_monclass_truematch, i, 16); i++)
-            if (!strncmpi((in_str), (cptr.ldPtro(__static_name_to_monclass_truematch, i, 16)), -1)) {
-                i = cptr.ldI16o2(__static_name_to_monclass_truematch, i, 16, $alt_spl_pm_val);
+        for (i = 0; cptr.ldPtro(__static_name_to_monclass_truematch, i, $sizeof_alt_spl); i++)
+            if (!strncmpi((in_str), (cptr.ldPtro(__static_name_to_monclass_truematch, i, $sizeof_alt_spl)), -1)) {
+                i = cptr.ldI16o2(__static_name_to_monclass_truematch, i, $sizeof_alt_spl, $alt_spl_pm_val);
                 if (i < 0)
                     return -i;
                 if (mndx_p)
                     cptr.stI32(mndx_p, i);
-                return cptr.ld1so2(mons, i, 96, $permonst_mlet);
+                return cptr.ld1so2(mons, i, $sizeof_permonst, $permonst_mlet);
             }
         len = Number(BigInt.asIntN(32, cptr.strlen(in_str)));
         for (i = 1; i < NHC.MAXMCLASSES; i++) {
-            x = cptr.ldPtro2(def_monsyms, i, 24, $class_sym_explain);
+            x = cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain);
             if ((p = strstri(x, in_str)) !== null && (cptr.eq(p, x) || cptr.ld1s((cptr.add(p, -(1)))) == 32) && (Number(BigInt.asIntN(32, cptr.strlen(p))) >= len && (cptr.ld1so(p, len) == 0 || cptr.ld1so(p, len) == 32)))
                 return i;
         }
@@ -1104,7 +1108,7 @@ export function name_to_monclass(in_str, mndx_p) {
         if (i != NHC.NON_PM) {
             if (mndx_p)
                 cptr.stI32(mndx_p, i);
-            return cptr.ld1so2(mons, i, 96, $permonst_mlet);
+            return cptr.ld1so2(mons, i, $sizeof_permonst, $permonst_mlet);
         }
     }
     return 0;
@@ -1308,7 +1312,7 @@ export function big_little_match(montyp1, montyp2) {
     let b;
     if (montyp1 == montyp2)
         return 1;
-    if (cptr.ld1so2(mons, montyp1, 96, $permonst_mlet) != cptr.ld1so2(mons, montyp2, 96, $permonst_mlet))
+    if (cptr.ld1so2(mons, montyp1, $sizeof_permonst, $permonst_mlet) != cptr.ld1so2(mons, montyp2, $sizeof_permonst, $permonst_mlet))
         return 0;
     for (l = montyp1; (b = little_to_big(l)) != l; l = b)
         if (b == montyp2)
@@ -1322,7 +1326,7 @@ export function big_little_match(montyp1, montyp2) {
 /** C ref: mondata.c:1359 — @param {CPtr<struct monst>} mtmp @returns {CPtr<struct permonst>} */
 export function raceptr(mtmp) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) && !Upolyd())
-        return cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), 96);
+        return cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), $sizeof_permonst);
     return cptr.ldPtro(mtmp, $monst_data);
 }
 
@@ -1549,7 +1553,7 @@ export function monstunseesu(seenres) {
 export function give_u_to_m_resistances(mtmp) {
     let intr;
     for (intr = NHC.FIRE_RES; intr <= NHC.STONE_RES; intr++) {
-        if ((cptr.ldI64o2(u, intr, 24, $you_uprops + $prop_intrinsic) & 117440512n) != 0n) {
+        if ((cptr.ldI64o2(u, intr, $sizeof_prop, $you_uprops + $prop_intrinsic) & 117440512n) != 0n) {
             cptr.stI16o(mtmp, $monst_mintrinsics, cptr.ldU16o(mtmp, $monst_mintrinsics) | u16(((NHC.FIRE_RES <= (intr) && (intr) <= NHC.STONE_RES) ? uchar((1 << (((intr) - 1) | 0))) : 0)));
         }
     }
@@ -1586,7 +1590,7 @@ export function mons_see_trap(ttmp) {
     let mtmp;
     let tx = cptr.ldI16o(ttmp, $trap_tx);
     let ty = cptr.ldI16o(ttmp, $trap_ty);
-    let maxdist = (cptr.ldI32o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 ? 49 : 2;
+    let maxdist = (cptr.ldI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 ? 49 : 2;
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) || !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
             continue;

@@ -16,7 +16,9 @@ import * as FLD from './nhfield.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $datamodel_information_datamodel = FLD.datamodel_information_datamodel,
-    $datamodel_information_dmplatform = FLD.datamodel_information_dmplatform;
+    $datamodel_information_dmplatform = FLD.datamodel_information_dmplatform,
+    $sizeof_datamodel_information = FLD.sizeof_datamodel_information,
+    $sizeof_nh_qsort_index = FLD.sizeof_nh_qsort_index;
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/hacklib-prelude.js) ----
 // hacklib.c needs no extern stubs beyond libc: every external call it makes
@@ -97,13 +99,13 @@ export function* nh_deterministic_qsort(base, nmemb, size, compar) {
         return;
     }
     for (i = 0n; i < nmemb; ++i)
-        cptr.stU64o(order, i, i, 8);
+        cptr.stU64o(order, i, i, $sizeof_nh_qsort_index);
     nh_qsort_base = bytes;
     nh_qsort_size = size;
     nh_qsort_cmp_fn = compar;
     cptr.qsort(order, nmemb, 8n, Y.drive(nh_qsort_idx_cmp));
     for (i = 0n; i < nmemb; ++i)
-        void cptr.memcpy((cptr.add(tmp, (BigInt.asUintN(64, i * size)))), (cptr.add(bytes, (BigInt.asUintN(64, cptr.ldU64o(order, i, 8) * size)))), size);
+        void cptr.memcpy((cptr.add(tmp, (BigInt.asUintN(64, i * size)))), (cptr.add(bytes, (BigInt.asUintN(64, cptr.ldU64o(order, i, $sizeof_nh_qsort_index) * size)))), size);
     void cptr.memcpy(bytes, tmp, BigInt.asUintN(64, nmemb * size));
     cptr.free(tmp);
     cptr.free(order);
@@ -736,7 +738,7 @@ export function copy_bytes(ifd, ofd) {
 /** C ref: hacklib.c:1029 — struct datamodel_information { sz, datamodel, dmplatform } (memory model v0.5) */
 
 /** C ref: hacklib.c:1035 — struct datamodel_information[5] */
-const dm = cptr.alloc(5 * 40);
+const dm = cptr.alloc(5 * $sizeof_datamodel_information);
 cptr.stI32o(dm, 0, 2);
 cptr.stI32o(dm, 4, 4);
 cptr.stI32o(dm, 8, 8);
@@ -783,11 +785,11 @@ export function datamodel(retidx) {
     for (i = 1; i < 5; ++i) {
         matchcount = 0;
         for (j = 0; j < 5; ++j) {
-            if (cptr.ldI32o3(dm, 0, 40, j, 4, 0) == cptr.ldI32o3(dm, i, 40, j, 4, 0))
+            if (cptr.ldI32o3(dm, 0, $sizeof_datamodel_information, j, 4, 0) == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, j, 4, 0))
                 ++matchcount;
         }
         if (matchcount == 5)
-            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, $datamodel_information_datamodel) : cptr.ldPtro2(dm, i, 40, $datamodel_information_dmplatform);
+            return (retidx == 0) ? cptr.ldPtro2(dm, i, $sizeof_datamodel_information, $datamodel_information_datamodel) : cptr.ldPtro2(dm, i, $sizeof_datamodel_information, $datamodel_information_dmplatform);
     }
     return __static_datamodel_unknown;
 }
@@ -798,8 +800,8 @@ let __static_what_datamodel_is_this_unknown = __s_unknown; /** C ref: hacklib.c:
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {
     let i;
     for (i = 1; i < 5; ++i) {
-        if (szshort == cptr.ldI32o3(dm, i, 40, 0, 4, 0) && szint == cptr.ldI32o3(dm, i, 40, 1, 4, 0) && szlong == cptr.ldI32o3(dm, i, 40, 2, 4, 0) && szll == cptr.ldI32o3(dm, i, 40, 3, 4, 0) && szptr == cptr.ldI32o3(dm, i, 40, 4, 4, 0))
-            return (retidx == 0) ? cptr.ldPtro2(dm, i, 40, $datamodel_information_datamodel) : cptr.ldPtro2(dm, i, 40, $datamodel_information_dmplatform);
+        if (szshort == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 0, 4, 0) && szint == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 1, 4, 0) && szlong == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 2, 4, 0) && szll == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 3, 4, 0) && szptr == cptr.ldI32o3(dm, i, $sizeof_datamodel_information, 4, 4, 0))
+            return (retidx == 0) ? cptr.ldPtro2(dm, i, $sizeof_datamodel_information, $datamodel_information_datamodel) : cptr.ldPtro2(dm, i, $sizeof_datamodel_information, $datamodel_information_dmplatform);
     }
     return __static_what_datamodel_is_this_unknown;
 }

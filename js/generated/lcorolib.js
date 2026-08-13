@@ -13,7 +13,7 @@ import { lua_getstack } from './ldebug.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $luaL_Reg_func = FLD.luaL_Reg_func;
+const $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_thread = cptr.lit("thread");
@@ -198,7 +198,7 @@ function luaB_close(L) {
 }
 
 /** C ref: lcorolib.c:192 — luaL_Reg[9] */
-const co_funcs = cptr.alloc(9 * 16);
+const co_funcs = cptr.alloc(9 * $sizeof_luaL_Reg);
 cptr.stPtro(co_funcs, 0, __s_create);
 cptr.stPtro(co_funcs, 0 + $luaL_Reg_func, luaB_cocreate);
 cptr.stPtro(co_funcs, 16, __s_resume);

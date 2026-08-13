@@ -19,7 +19,8 @@ import { impossible } from './pline.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.NhRect_ly,
-    $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly;
+    $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly,
+    $sizeof_NhRect = FLD.sizeof_NhRect, $sizeof_nhrect = FLD.sizeof_nhrect;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_could_not_alloc_rect = cptr.lit("Could not alloc rect");
@@ -45,9 +46,9 @@ export function* init_rect() {
             (yield* panic(__s_could_not_alloc_rect));
     }
     rect_cnt = 1;
-    cptr.stI16o(rect, 0, cptr.stI16o2(rect, 0, 8, $nhrect_ly, 0), 8);
-    cptr.stI16o2(rect, 0, 8, $nhrect_hx, 79);
-    cptr.stI16o2(rect, 0, 8, $nhrect_hy, 20);
+    cptr.stI16o(rect, 0, cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_ly, 0), $sizeof_NhRect);
+    cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_hx, 79);
+    cptr.stI16o2(rect, 0, $sizeof_NhRect, $nhrect_hy, 20);
 }
 
 /** C ref: rect.c:45 */
@@ -70,7 +71,7 @@ export function get_rect_ind(r) {
     ly = cptr.ldI16o(r, $NhRect_ly);
     hx = cptr.ldI16o(r, $NhRect_hx);
     hy = cptr.ldI16o(r, $NhRect_hy);
-    for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
+    for (i = 0, rectp = cptr.add(rect, 0, $sizeof_NhRect); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
         if (lx == cptr.ldI16(rectp) && ly == cptr.ldI16o(rectp, $NhRect_ly) && hx == cptr.ldI16o(rectp, $NhRect_hx) && hy == cptr.ldI16o(rectp, $NhRect_hy))
             return i;
     return -1;
@@ -88,7 +89,7 @@ export function get_rect(r) {
     ly = cptr.ldI16o(r, $NhRect_ly);
     hx = cptr.ldI16o(r, $NhRect_hx);
     hy = cptr.ldI16o(r, $NhRect_hy);
-    for (i = 0, rectp = cptr.add(rect, 0, 8); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
+    for (i = 0, rectp = cptr.add(rect, 0, $sizeof_NhRect); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
         if (lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16o(rectp, $NhRect_ly) && hx <= cptr.ldI16o(rectp, $NhRect_hx) && hy <= cptr.ldI16o(rectp, $NhRect_hy))
             return rectp;
     return null;
@@ -96,7 +97,7 @@ export function get_rect(r) {
 
 /** C ref: rect.c:104 @returns {CPtr<NhRect>} */
 export function rnd_rect() {
-    return rect_cnt > 0 ? cptr.add(rect, (rng_log_enabled() ? (rng_log_set_caller(__s_rect_c, 106, __s_rnd_rect), rn2(rect_cnt)) : rn2(rect_cnt)), 8) : null;
+    return rect_cnt > 0 ? cptr.add(rect, (rng_log_enabled() ? (rng_log_set_caller(__s_rect_c, 106, __s_rnd_rect), rn2(rect_cnt)) : rn2(rect_cnt)), $sizeof_NhRect) : null;
 }
 
 /** C ref: rect.c:116 — @param {CPtr<NhRect>} r1 @param {CPtr<NhRect>} r2 @param {CPtr<NhRect>} r3 @returns {CInt} */
@@ -114,8 +115,8 @@ function intersect(r1, r2, r3) {
 
 /** C ref: rect.c:134 — @param {*} r1 @param {*} r2 @param {CPtr<NhRect>} r3 */
 export function rect_bounds(r1, r2, r3) {
-    r1 = cptr.dup(r1, 8); // by-value struct param
-    r2 = cptr.dup(r2, 8); // by-value struct param
+    r1 = cptr.dup(r1, $sizeof_nhrect); // by-value struct param
+    r2 = cptr.dup(r2, $sizeof_nhrect); // by-value struct param
     cptr.stI16(r3, i16(min(cptr.ldI16(r1), cptr.ldI16(r2))));
     cptr.stI16o(r3, $NhRect_ly, i16(min(cptr.ldI16o(r1, $nhrect_ly), cptr.ldI16o(r2, $nhrect_ly))));
     cptr.stI16o(r3, $NhRect_hx, i16(max(cptr.ldI16o(r1, $nhrect_hx), cptr.ldI16o(r2, $nhrect_hx))));
@@ -127,7 +128,7 @@ export function remove_rect(r) {
     let ind;
     ind = get_rect_ind(r);
     if (ind >= 0)
-        cptr.memcpy(cptr.add(rect, ind, 8), cptr.add(rect, --rect_cnt, 8), 8);
+        cptr.memcpy(cptr.add(rect, ind, $sizeof_NhRect), cptr.add(rect, --rect_cnt, $sizeof_NhRect), 8);
 }
 
 /** C ref: rect.c:161 — @param {CPtr<NhRect>} r */
@@ -138,7 +139,7 @@ export function* add_rect(r) {
     }
     if (get_rect(r))
         return;
-    cptr.memcpy(cptr.add(rect, rect_cnt, 8), r, 8);
+    cptr.memcpy(cptr.add(rect, rect_cnt, $sizeof_NhRect), r, 8);
     rect_cnt++;
 }
 
@@ -150,8 +151,8 @@ export function* split_rects(r1, r2) {
     cptr.memcpy(old_r, r1, 8);
     remove_rect(r1);
     for (i = (rect_cnt - 1) | 0; i >= 0; i--)
-        if (intersect(cptr.add(rect, i, 8), r2, r))
-            (yield* split_rects(cptr.add(rect, i, 8), r));
+        if (intersect(cptr.add(rect, i, $sizeof_NhRect), r2, r))
+            (yield* split_rects(cptr.add(rect, i, $sizeof_NhRect), r));
     if (((((cptr.ldI16o(r2, $NhRect_ly) - cptr.ldI16o(old_r, $nhrect_ly)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, $nhrect_hy) < 20 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_hy, i16(((cptr.ldI16o(r2, $NhRect_ly) - 2) | 0)));

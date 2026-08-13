@@ -62,7 +62,9 @@ const $RoleName_f = FLD.RoleName_f, $c_color_names_c_amber = FLD.c_color_names_c
     $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
     $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $you_twoweap = FLD.you_twoweap,
+    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_attack = FLD.sizeof_attack,
+    $sizeof_condtests_t = FLD.sizeof_condtests_t, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $you_twoweap = FLD.you_twoweap,
     $you_uhandedness = FLD.you_uhandedness, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
     $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed, $you_uy = FLD.you_uy;
 
@@ -222,7 +224,7 @@ export function* setuwep(obj) {
 /** C ref: wield.c:138 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* cant_wield_corpse(obj) {
     let kbuf = new Uint8Array(256);
-    if (uarmg.v || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)) || Stone_resistance())
+    if (uarmg.v || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)) || Stone_resistance())
         return 0;
     (yield* You(__s_wield_s_in_your_bare_s, (yield* corpse_xname(obj, null, NHM.CXN_PFX_THE)), (yield* makeplural((yield* body_part(NHC.HAND))))));
     void cptr.sprintf(cptr.decay(kbuf), __s_wielding_s_bare_handed, (yield* killer_xname(obj)));
@@ -294,7 +296,7 @@ function* ready_weapon(wep) {
             }
         }
     }
-    if ((had_wep != (uwep.v !== null)) && cptr.ld1so2(condtests, NHC.bl_bareh, 24, $condtests_t_enabled))
+    if ((had_wep != (uwep.v !== null)) && cptr.ld1so2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_enabled))
         cptr.st1(disp, 1);
     return res;
 }

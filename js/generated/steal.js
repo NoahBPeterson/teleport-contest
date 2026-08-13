@@ -74,6 +74,8 @@ const $dlevel_t_monlist = FLD.dlevel_t_monlist, $flag_female = FLD.flag_female,
     $objclass_oc_delay = FLD.objclass_oc_delay, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_roomno = FLD.rm_roomno,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $u_have_bell = FLD.u_have_bell, $u_have_book = FLD.u_have_book, $u_have_menorah = FLD.u_have_menorah,
     $you_twoweap = FLD.you_twoweap, $you_uhandedness = FLD.you_uhandedness, $you_uhave = FLD.you_uhave,
     $you_uprops = FLD.you_uprops, $you_ushops = FLD.you_ushops, $you_usteed = FLD.you_usteed,
@@ -222,7 +224,7 @@ export function stealgold(mtmp) {
             monflee(mtmp, 0, 0, 0);
         }
     } else if (ygold) {
-        let gold_price = cptr.ldI16o2(objects, NHC.GOLD_PIECE, 120, $objclass_oc_cost);
+        let gold_price = cptr.ldI16o2(objects, NHC.GOLD_PIECE, $sizeof_objclass, $objclass_oc_cost);
         tmp = (BigInt.asIntN(64, BigInt.asIntN(64, somegold(money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) + BigInt(gold_price)) - 1n)) / BigInt(gold_price);
         tmp = min(tmp, cptr.ldI64o(ygold, $obj_quan));
         if (tmp < cptr.ldI64o(ygold, $obj_quan))
@@ -604,7 +606,7 @@ export function steal(mtmp, objnambuf) {
         { __pc = 32; continue; }
         }
         case 38: {
-        armordelay = cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_delay);
+        armordelay = cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_delay);
         if (olddelay > 0 && olddelay < armordelay)
             armordelay = olddelay;
         if (monkey_business || unresponsive()) { __pc = 41; continue; }
@@ -682,7 +684,7 @@ export function steal(mtmp, objnambuf) {
             ++named;
         urgent_pline(__s_s_stole_s, named ? __s_she : cptr.decay(Monnambuf), doname(otmp));
         encumber_msg();
-        could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) ? 1 : 0);
+        could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)) ? 1 : 0);
         cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
         void mpickobj(mtmp, otmp);
         if (could_petrify && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n)) {
@@ -834,7 +836,7 @@ export function mdrop_obj(mon, obj, verbosely) {
     let unwornmask = cptr.ldI64o(obj, $obj_owornmask);
     let obj_name = distant_name(obj, doname);
     extract_from_minvent(mon, obj, 0, 1);
-    if (unwornmask && cptr.ld1so(mon, $monst_mtame) && (unwornmask & 1048576n) != 0n && !(cptr.ldI32o(obj, $obj_unpaid) & 1) && costly_spot(omx, omy) && cptr.strchr(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE), (cptr.ldI32o3(svl, omx, 756, omy, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0)) {
+    if (unwornmask && cptr.ld1so(mon, $monst_mtame) && (unwornmask & 1048576n) != 0n && !(cptr.ldI32o(obj, $obj_unpaid) & 1) && costly_spot(omx, omy) && cptr.strchr(in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE), (cptr.ldI32o3(svl, omx, $sizeof_rm_x21, omy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0)) {
         cptr.stI32o(obj, $obj_no_charge, 1);
     }
     if (verbosely && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8), omx) & NHM.IN_SIGHT) != 0))

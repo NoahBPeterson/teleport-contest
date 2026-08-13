@@ -46,7 +46,9 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $CClosure_nupvalues = FLD.CClosu
     $lua_State_hook = FLD.lua_State_hook, $lua_State_hookcount = FLD.lua_State_hookcount,
     $lua_State_hookmask = FLD.lua_State_hookmask, $lua_State_l_G = FLD.lua_State_l_G,
     $lua_State_oldpc = FLD.lua_State_oldpc, $lua_State_stack = FLD.lua_State_stack,
-    $lua_State_status = FLD.lua_State_status, $lua_State_top = FLD.lua_State_top;
+    $lua_State_status = FLD.lua_State_status, $lua_State_top = FLD.lua_State_top,
+    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_TValue = FLD.sizeof_TValue,
+    $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_query = cptr.lit("?");
@@ -93,16 +95,16 @@ function currentpc(ci) {
 
 /** C ref: ldebug.c:63 — @param {CPtr<Proto>} f @param {CInt} pc @param {CPtr<int>} basepc @returns {CInt} */
 function getbaseline(f, pc, basepc) {
-    if (cptr.ldI32o(f, $Proto_sizeabslineinfo) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), 0, 8)) {
+    if (cptr.ldI32o(f, $Proto_sizeabslineinfo) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), 0, $sizeof_AbsLineInfo)) {
         cptr.stI32(basepc, -1);
         return cptr.ldI32o(f, $Proto_linedefined);
     } else {
         let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;
         (void 0);
-        while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) && pc >= cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), (i + 1) | 0, 8))
+        while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) && pc >= cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), (i + 1) | 0, $sizeof_AbsLineInfo))
             i++;
-        cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, 8));
-        return cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, 8, $AbsLineInfo_line);
+        cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo));
+        return cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line);
     }
 }
 
@@ -182,7 +184,7 @@ export function lua_getstack(L, level, ar) {
 
 /** C ref: ldebug.c:180 — @param {CPtr<Proto>} p @param {CInt} uv @returns {CPtr<char>} */
 function upvalname(p, uv) {
-    let s = (cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), uv, 16));
+    let s = (cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), uv, $sizeof_Upvaldesc));
     if (cptr.eq(s, (null)))
         return __s_query;
     else
@@ -525,7 +527,7 @@ function findsetreg(p, lastpc, reg) {
 
 /** C ref: ldebug.c:485 — @param {CPtr<Proto>} p @param {CInt} index @param {CPtr<char *>} name @returns {CPtr<char>} */
 function kname(p, index, name) {
-    let kvalue = cptr.add(cptr.ldPtro(p, $Proto_k), index, 16);
+    let kvalue = cptr.add(cptr.ldPtro(p, $Proto_k), index, $sizeof_TValue);
     if ((((((cptr.ld1uo(((kvalue)), $TValue_tt_))) & 15)) == 4)) {
         cptr.stPtr(name, (cptr.add((((((((cptr.ldPtr(((kvalue)))))))))), $TString_contents)));
         return __s_constant;

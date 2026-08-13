@@ -19,7 +19,7 @@ import { panic } from './end.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_mode = FLD.NHFILE_mode, $coord_y = FLD.coord_y, $nhcoord_y = FLD.nhcoord_y,
-    $obj_otyp = FLD.obj_otyp, $you_uy = FLD.you_uy;
+    $obj_otyp = FLD.obj_otyp, $sizeof_coord = FLD.sizeof_coord, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_track_utcnt = cptr.lit("track-utcnt");
@@ -34,7 +34,7 @@ let utcnt = cptr.box(0);
 let utpnt = cptr.box(0);
 
 /** C ref: track.c:12 — coord[100] */
-const utrack = cptr.alloc(100 * 4);
+const utrack = cptr.alloc(100 * $sizeof_coord);
 
 /** C ref: track.c:15 */
 export function initrack() {
@@ -50,8 +50,8 @@ export function settrack() {
         utcnt.v++;
     if (utpnt.v == 100)
         utpnt.v = 0;
-    cptr.stI16o(utrack, utpnt.v, cptr.ldI16(u), 4);
-    cptr.stI16o2(utrack, utpnt.v, 4, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+    cptr.stI16o(utrack, utpnt.v, cptr.ldI16(u), $sizeof_coord);
+    cptr.stI16o2(utrack, utpnt.v, $sizeof_coord, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     utpnt.v++;
 }
 
@@ -61,9 +61,9 @@ export function gettrack(x, y) {
     let ndist;
     let tc;
     cnt = utcnt.v;
-    for (tc = cptr.add(utrack, utpnt.v, 4); cnt--; ) {
+    for (tc = cptr.add(utrack, utpnt.v, $sizeof_coord); cnt--; ) {
         if (cptr.eq(tc, utrack))
-            tc = cptr.add(utrack, 99, 4);
+            tc = cptr.add(utrack, 99, $sizeof_coord);
         else
             tc = cptr.add(tc, -1, 4);
         ndist = distmin(x, y, cptr.ldI16(tc), cptr.ldI16o(tc, $coord_y));
@@ -77,7 +77,7 @@ export function gettrack(x, y) {
 export function hastrack(x, y) {
     let i;
     for (i = 0; i < utcnt.v; i++)
-        if (cptr.ldI16o(utrack, i, 4) == x && cptr.ldI16o2(utrack, i, 4, $nhcoord_y) == y)
+        if (cptr.ldI16o(utrack, i, $sizeof_coord) == x && cptr.ldI16o2(utrack, i, $sizeof_coord, $nhcoord_y) == y)
             return 1;
     return 0;
 }
@@ -89,7 +89,7 @@ export function* save_track(nhfp) {
         (yield* sfo_int(nhfp, utcnt, __s_track_utcnt));
         (yield* sfo_int(nhfp, utpnt, __s_track_utpnt));
         for (i = 0; i < utcnt.v; i++) {
-            (yield* sfo_nhcoord(nhfp, cptr.add(utrack, i, 4), __s_utrack));
+            (yield* sfo_nhcoord(nhfp, cptr.add(utrack, i, $sizeof_coord), __s_utrack));
         }
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
@@ -106,7 +106,7 @@ export function* rest_track(nhfp) {
     if (utcnt.v > 100 || utpnt.v > 100)
         (yield* panic(__s_rest_track_impossible_pt_counts));
     for (i = 0; i < utcnt.v; i++) {
-        (yield* sfi_nhcoord(nhfp, cptr.add(utrack, i, 4), __s_utrack));
+        (yield* sfi_nhcoord(nhfp, cptr.add(utrack, i, $sizeof_coord), __s_utrack));
     }
 }
 

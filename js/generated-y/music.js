@@ -78,13 +78,15 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $permonst_mlevel = FLD.permonst_mlevel, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
-    $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $u_event_uheard_tune = FLD.u_event_uheard_tune,
-    $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx, $you_dy = FLD.you_dy, $you_dz = FLD.you_dz,
-    $you_uevent = FLD.you_uevent, $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel,
-    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow,
-    $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz;
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+    $u_event_uheard_tune = FLD.u_event_uheard_tune, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+    $you_dx = FLD.you_dx, $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent,
+    $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum,
+    $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+    $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+    $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_music_c = cptr.lit("music.c");
@@ -288,7 +290,7 @@ export function* awaken_soldiers(bugler) {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n) && !cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GUARD, 96))) {
+        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n) && !cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst))) {
             if (!cptr.ld1so(mtmp, $monst_mtame))
                 cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             cptr.stI32o(mtmp, $monst_msleeping, cptr.stI32o(mtmp, $monst_mfrozen, 0));
@@ -451,7 +453,7 @@ function* do_earthquake(force) {
             }
             if ((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 387, __s_do_earthquake), rn2((14 - force) | 0)) : rn2((14 - force) | 0)))
                 continue;
-            switch (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) {
+            switch (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) {
                 case NHC.FOUNTAIN:
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     (yield* pline_The(__s_fountain_falls_s, cptr.decay(__static_do_earthquake_into_a_chasm)));
@@ -483,7 +485,7 @@ function* do_earthquake(force) {
                 (yield* do_pit(x, y, tu_pit));
                 break;
                 case NHC.SCORR:
-                cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.CORR);
+                cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.CORR);
                 unblock_point(x, y);
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     (yield* pline(__s_a_secret_corridor_is_revealed));
@@ -494,17 +496,17 @@ function* do_earthquake(force) {
                 (yield* do_pit(x, y, tu_pit));
                 break;
                 case NHC.SDOOR:
-                cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36));
+                cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
                     (yield* pline(__s_a_secret_door_is_revealed));
                 // @FallThrough
                 ;
                 case NHC.DOOR:
-                if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
+                if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
                     (yield* do_pit(x, y, tu_pit));
                     break;
                 }
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
                 (yield* recalc_block_point(x, y));
                 (yield* newsym(x, y));
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
@@ -557,7 +559,7 @@ function* do_improvisation(instr) {
     cptr.memcpy(itmp, instr, 216);
     cptr.stPtro(itmp, $obj_oextra, null);
     if (!do_spec || cptr.ld1so(instr, $obj_spe) <= 0)
-        while ((cptr.ldI32o2(objects, cptr.ldI16o(itmp, $obj_otyp), 120, $objclass_oc_magic) & 1)) {
+        while ((cptr.ldI32o2(objects, cptr.ldI16o(itmp, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) & 1)) {
             cptr.stI16o(itmp, $obj_otyp, cptr.ldI16o(itmp, $obj_otyp) - 1);
             mundane = 1;
         }
@@ -630,7 +632,7 @@ function* do_improvisation(instr) {
         } else if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
             if ((damage = (yield* zapyourself(instr, 1))) != 0) {
                 let buf = new Uint8Array(256);
-                void cptr.sprintf(cptr.decay(buf), __s_using_a_magical_horn_on_sself, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_him)));
+                void cptr.sprintf(cptr.decay(buf), __s_using_a_magical_horn_on_sself, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
                 ;
                 (yield* losehp(damage, cptr.decay(buf), NHM.KILLED_BY));
             }
@@ -698,7 +700,7 @@ function* do_improvisation(instr) {
             if (!Deaf()) {
                 (yield* You(__s_beat_a_sdeafening_row, same_old_song.v ? __s_familiar__2 : __s_empty));
                 ;
-                incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, 24), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 709, __s_do_improvisation), rn2(20)) : rn2(20)) + 30) | 0));
+                incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 709, __s_do_improvisation), rn2(20)) : rn2(20)) + 30) | 0));
             } else {
                 (yield* You(__s_pound_on_the_drum));
             }
@@ -788,7 +790,7 @@ export function* do_play_instrument(instr) {
                         if (find_drawbridge(x, y)) {
                             cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));
-                            if (cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN)
+                            if (cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_DOWN)
                                 (yield* close_drawbridge(x.v, y.v));
                             else
                                 (yield* open_drawbridge(x.v, y.v));
@@ -802,7 +804,7 @@ export function* do_play_instrument(instr) {
                 for (y.v = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y.v <= ((cptr.ldI16o(u, $you_uy) + 1) | 0) && !ok; y.v++)
                     for (x.v = i16(((cptr.ldI16(u) - 1) | 0)); x.v <= ((cptr.ldI16(u) + 1) | 0) && !ok; x.v++)
                         if (isok(x.v, y.v))
-                            if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) || is_drawbridge_wall(x.v, y.v) >= 0)
+                            if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) || is_drawbridge_wall(x.v, y.v) >= 0)
                                 ok = 1;
                 if (ok) {
                     let tumblers;

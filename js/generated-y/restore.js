@@ -147,7 +147,9 @@ const $NHFILE_eof = FLD.NHFILE_eof, $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mo
     $polearm_info_m_id = FLD.polearm_info_m_id, $restore_info_mread_flags = FLD.restore_info_mread_flags,
     $rm_typ = FLD.rm_typ, $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load,
     $sinfo_in_getlev = FLD.sinfo_in_getlev, $sinfo_restoring = FLD.sinfo_restoring,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_mkroom = FLD.sizeof_mkroom,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_spell = FLD.sizeof_spell,
     $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
     $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
     $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
@@ -534,7 +536,7 @@ function* restmonchn(nhfp) {
             cptr.stI32o(mtmp, $monst_m_id, nid);
         }
         offset = cptr.ldI16o(mtmp, $monst_mnum);
-        cptr.stPtro(mtmp, $monst_data, cptr.add(mons, offset, 96));
+        cptr.stPtro(mtmp, $monst_data, cptr.add(mons, offset, $sizeof_permonst));
         if (ghostly) {
             let mndx = (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM) ? (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) : cptr.ldI16o(mtmp, $monst_cham);
             if ((yield* propagate(mndx, 1, ghostly)) == 0) {
@@ -646,7 +648,7 @@ function* restgamestate(nhfp) {
     (yield* sfi_context_info(nhfp, svc, __s_gamestate_context));
     relative_time_to_moves(cptr.add(svc, $context_info_seer_turn));
     relative_time_to_moves(cptr.add(svc, $context_info_digging + $dig_info_lastdigtime));
-    cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, (ismnum(cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx))) ? cptr.add(mons, cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx), 96) : null);
+    cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, (ismnum(cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx))) ? cptr.add(mons, cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx), $sizeof_permonst) : null);
     cptr.memcpy(newgameflags, flags, 208);
     (yield* sfi_flag(nhfp, flags, __s_gamestate_flags));
     defer_perm_invent = cptr.ld1so(iflags, $instance_flags_perm_invent);
@@ -707,7 +709,7 @@ function* restgamestate(nhfp) {
     cptr.stPtro(gm, $instance_globals_m_migrating_objs, (yield* restobjchn(nhfp, 0)));
     cptr.stPtro(gm, $instance_globals_m_migrating_mons, (yield* restmonchn(nhfp)));
     for (i = 0; i < NHC.NUMMONS; ++i) {
-        (yield* sfi_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, 12), __s_gamestate_mvitals));
+        (yield* sfi_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, $sizeof_mvitals), __s_gamestate_mvitals));
     }
     cptr.st1o(gd, $instance_globals_d_defer_see_monsters, 1);
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -723,7 +725,7 @@ function* restgamestate(nhfp) {
     cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n);
     (yield* sfi_q_score(nhfp, svq, __s_gamestate_quest_status));
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
-        (yield* sfi_spell(nhfp, cptr.add(svs, i, 8), __s_gamestate_spl_book));
+        (yield* sfi_spell(nhfp, cptr.add(svs, i, $sizeof_spell), __s_gamestate_spl_book));
     }
     (yield* restore_artifacts(nhfp));
     (yield* restore_oracles(nhfp));
@@ -898,7 +900,7 @@ function* rest_levl(nhfp) {
     let r;
     for (c = 0; c < NHM.COLNO; ++c) {
         for (r = 0; r < NHM.ROWNO; ++r) {
-            (yield* sfi_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), c, 756), r, 36), __s_location_rm));
+            (yield* sfi_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), c, $sizeof_rm_x21), r, $sizeof_rm), __s_location_rm));
         }
     }
 }
@@ -977,7 +979,7 @@ export function* getlev(nhfp, pid, lev) {
     }
     (yield* rest_rooms(nhfp));
     if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) {
-        cptr.stI32(gd, (cptr.ldI32o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, 224, $mkroom_fdoor) + cptr.ld1so2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, 224, $mkroom_doorct)) | 0);
+        cptr.stI32(gd, (cptr.ldI32o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_fdoor) + cptr.ld1so2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_doorct)) | 0);
     } else {
         cptr.stI32(gd, 0);
     }
@@ -1057,7 +1059,7 @@ export function* getlev(nhfp, pid, lev) {
             cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0)));
             (yield* mazexy(cc));
             (yield* stairway_add(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0, 0, dest));
-            cptr.st1o3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ, NHC.STAIRS);
+            cptr.st1o3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.STAIRS);
         }
         br = Is_branchlev(cptr.add(u, $you_uz));
         if (br && cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1) {

@@ -59,6 +59,8 @@ const $const_globals_zeroany = FLD.const_globals_zeroany,
     $objclass_oc_tough = FLD.objclass_oc_tough, $objclass_oc_uname = FLD.objclass_oc_uname,
     $objclass_oc_unique = FLD.objclass_oc_unique, $permonst_mattk = FLD.permonst_mattk,
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_msize = FLD.permonst_msize, $rm_typ = FLD.rm_typ,
+    $sizeof_attack = FLD.sizeof_attack, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
     $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
@@ -249,7 +251,7 @@ function* item_naming_classification(obj, onamebuf, ocallbuf) {
             callname = (yield* the(callname));
         else if (!is_plural(obj))
             callname = (yield* makeplural(callname));
-        void cptr.sprintf(ocallbuf, __s_s_the_type_for_s, (!cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname) || !cptr.ld1s(cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname))) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
+        void cptr.sprintf(ocallbuf, __s_s_the_type_for_s, (!cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uname) || !cptr.ld1s(cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uname))) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
     }
     return schar(((cptr.ld1s(onamebuf) || cptr.ld1s(ocallbuf)) ? 1 : 0));
 }
@@ -268,12 +270,12 @@ function* item_reading_classification(obj, outbuf) {
     } else if (otyp == NHC.HAWAIIAN_SHIRT) {
         void cptr.strcpy(outbuf, __s_look_at_the_pattern_on_the_shirt);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS) {
-        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && otyp != NHC.SCR_MAIL && (otyp != NHC.SCR_BLANK_PAPER || !(cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1))) ? __s_to_activate_its_magic : __s_empty);
+        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && otyp != NHC.SCR_MAIL && (otyp != NHC.SCR_BLANK_PAPER || !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1))) ? __s_to_activate_its_magic : __s_empty);
         void cptr.sprintf(outbuf, __s_read_this_scroll_s, magic);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS) {
         let novel = schar((otyp == NHC.SPE_NOVEL));
-        let blank = schar((otyp == NHC.SPE_BLANK_PAPER && (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
-        let tome = schar((otyp == NHC.SPE_BOOK_OF_THE_DEAD && (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+        let blank = schar((otyp == NHC.SPE_BLANK_PAPER && (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+        let tome = schar((otyp == NHC.SPE_BOOK_OF_THE_DEAD && (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
         void cptr.sprintf(outbuf, __s_s_this_s, (novel || blank) ? __s_read : (tome ? __s_examine : __s_study), novel ? (yield* simpleonames(obj)) : (tome ? __s_tome : __s_spellbook));
     } else {
         res = NHC.IA_NONE;
@@ -437,7 +439,7 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_lash_out_with_this_whip));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.GRAPPLING_HOOK)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_grapple_something_with_this_hook));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_reach_into_this_bag));
     else if (Is_container(otmp))
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_open_this_container));
@@ -476,7 +478,7 @@ export function* itemactions(otmp) {
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
         void cptr.sprintf(cptr.decay(buf), __s_s_this_light_source, light);
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf)));
-    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0) {
+    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
         void cptr.sprintf(cptr.decay(buf), __s_s_this_oil, light);
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf)));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
@@ -494,7 +496,7 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_make_this_figurine_transform));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.UNICORN_HORN)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_unicorn_horn));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_blow_into_the_horn_of_plenty));
     else if (cptr.ldI16o(otmp, $obj_otyp) >= NHC.WOODEN_FLUTE && cptr.ldI16o(otmp, $obj_otyp) <= NHC.DRUM_OF_EARTHQUAKE)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_play_this_musical_instrument));
@@ -526,7 +528,7 @@ export function* itemactions(otmp) {
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_MARKER) {
         (yield* ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __s_scribble_graffiti_on_the_floor));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __s_s_on_the_s_with_s, (is_blade(otmp) || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_tough) & 1) | 0)) ? __s_engrave : __s_write, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_items : __s_this_item);
+        void cptr.sprintf(cptr.decay(buf), __s_s_on_the_s_with_s, (is_blade(otmp) || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_tough) & 1) | 0)) ? __s_engrave : __s_write, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_items : __s_this_item);
         (yield* ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, cptr.decay(buf)));
     }
     if (cptr.eq(otmp, uquiver.v)) {
@@ -542,7 +544,7 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_ADJUST_OBJ, 105, __s_adjust_inventory_by_assigning_new_letter));
     if (cptr.ldI64o(otmp, $obj_quan) > 1n && cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
         (yield* ia_addmenu(win, NHC.IA_ADJUST_STACK, 73, __s_adjust_inventory_by_splitting_this_stack));
-    if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
             (yield* ia_addmenu(win, NHC.IA_SACRIFICE, 79, __s_offer_this_corpse_as_a_sacrifice_at));
         else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR)
@@ -600,7 +602,7 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 84, __s_take_off_this_armor));
     if ((Is_container(otmp) && ((cptr.ldPtro((otmp), $obj_cobj) !== null) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) || (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
         (yield* ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __s_tip_all_the_contents_out_of_this));
-    if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1)) || cptr.ld1so(otmp, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_unique) & 1) | 0 || cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
+    if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1)) || cptr.ld1so(otmp, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1) | 0 || cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
         (yield* ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __s_try_to_invoke_a_unique_power_of_this));
     if (cptr.eq(otmp, uwep.v) || cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         ;
@@ -615,7 +617,7 @@ export function* itemactions(otmp) {
     }
     if (!already_worn) {
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.ARMOR_CLASS) {
-            let Wmask = armcat_to_wornmask(cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp));
+            let Wmask = armcat_to_wornmask(cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp));
             let o = wearmask_to_obj(Wmask);
             if (!o)
                 void cptr.strcpy(cptr.decay(buf), __s_wear_this_armor);
@@ -644,7 +646,7 @@ export function* itemactions(otmp) {
     (yield* Y.icall(end_menu()(win, cptr.decay(buf))));
     n = (yield* select_menu(win, NHM.PICK_ONE, selected));
     if (n > 0) {
-        act = cptr.ldI32o(selected.v, 0, 24);
+        act = cptr.ldI32o(selected.v, 0, $sizeof_menu_item);
         cptr.free(selected.v);
         (yield* itemactions_pushkeys(otmp, act));
     }

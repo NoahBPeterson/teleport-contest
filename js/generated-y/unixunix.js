@@ -29,8 +29,8 @@ import { check_user_string } from './unixmain.js';
 const $flag_debug = FLD.flag_debug, $instance_flags_window_inited = FLD.instance_flags_window_inited,
     $instance_globals_l_lock = FLD.instance_globals_l_lock,
     $instance_globals_l_locknum = FLD.instance_globals_l_locknum,
-    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $stat_st_mtimespec = FLD.stat_st_mtimespec,
-    $sysopt_s_shellers = FLD.sysopt_s_shellers,
+    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $sizeof_stat = FLD.sizeof_stat,
+    $stat_st_mtimespec = FLD.stat_st_mtimespec, $sysopt_s_shellers = FLD.sysopt_s_shellers,
     $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
     $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
     $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
@@ -66,7 +66,7 @@ const __s_home = cptr.lit("HOME");
 const __s_fork_failed_try_again = cptr.lit("Fork failed.  Try again.");
 
 /** C ref: unixunix.c:33 — struct stat */
-let buf = cptr.alloc(144);
+let buf = cptr.alloc($sizeof_stat);
 
 /** C ref: unixunix.c:38 — @param {CInt} fd @returns {CInt} */
 function veryold(fd) {

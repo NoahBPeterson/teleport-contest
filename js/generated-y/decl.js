@@ -471,7 +471,59 @@ const $Race_adj = FLD.Race_adj, $Race_allow = FLD.Race_allow, $Race_attrmax = FL
     $lev_region_padding = FLD.lev_region_padding, $lev_region_rname = FLD.lev_region_rname,
     $lev_region_rtype = FLD.lev_region_rtype, $multishot_i = FLD.multishot_i, $multishot_o = FLD.multishot_o,
     $multishot_s = FLD.multishot_s, $nhcoord_y = FLD.nhcoord_y, $role_filter_mask = FLD.role_filter_mask,
-    $val_list_size = FLD.val_list_size, $win_settings_map_frame_color = FLD.win_settings_map_frame_color;
+    $sizeof_Race = FLD.sizeof_Race, $sizeof_Role = FLD.sizeof_Role,
+    $sizeof_accessibility_data = FLD.sizeof_accessibility_data,
+    $sizeof_c_color_names = FLD.sizeof_c_color_names, $sizeof_c_common_strings = FLD.sizeof_c_common_strings,
+    $sizeof_const_globals = FLD.sizeof_const_globals, $sizeof_display_hints = FLD.sizeof_display_hints,
+    $sizeof_flag = FLD.sizeof_flag, $sizeof_instance_flags = FLD.sizeof_instance_flags,
+    $sizeof_instance_globals_a = FLD.sizeof_instance_globals_a,
+    $sizeof_instance_globals_b = FLD.sizeof_instance_globals_b,
+    $sizeof_instance_globals_c = FLD.sizeof_instance_globals_c,
+    $sizeof_instance_globals_d = FLD.sizeof_instance_globals_d,
+    $sizeof_instance_globals_e = FLD.sizeof_instance_globals_e,
+    $sizeof_instance_globals_f = FLD.sizeof_instance_globals_f,
+    $sizeof_instance_globals_g = FLD.sizeof_instance_globals_g,
+    $sizeof_instance_globals_h = FLD.sizeof_instance_globals_h,
+    $sizeof_instance_globals_i = FLD.sizeof_instance_globals_i,
+    $sizeof_instance_globals_j = FLD.sizeof_instance_globals_j,
+    $sizeof_instance_globals_k = FLD.sizeof_instance_globals_k,
+    $sizeof_instance_globals_l = FLD.sizeof_instance_globals_l,
+    $sizeof_instance_globals_m = FLD.sizeof_instance_globals_m,
+    $sizeof_instance_globals_n = FLD.sizeof_instance_globals_n,
+    $sizeof_instance_globals_o = FLD.sizeof_instance_globals_o,
+    $sizeof_instance_globals_p = FLD.sizeof_instance_globals_p,
+    $sizeof_instance_globals_q = FLD.sizeof_instance_globals_q,
+    $sizeof_instance_globals_r = FLD.sizeof_instance_globals_r,
+    $sizeof_instance_globals_s = FLD.sizeof_instance_globals_s,
+    $sizeof_instance_globals_saved_b = FLD.sizeof_instance_globals_saved_b,
+    $sizeof_instance_globals_saved_c = FLD.sizeof_instance_globals_saved_c,
+    $sizeof_instance_globals_saved_d = FLD.sizeof_instance_globals_saved_d,
+    $sizeof_instance_globals_saved_e = FLD.sizeof_instance_globals_saved_e,
+    $sizeof_instance_globals_saved_h = FLD.sizeof_instance_globals_saved_h,
+    $sizeof_instance_globals_saved_i = FLD.sizeof_instance_globals_saved_i,
+    $sizeof_instance_globals_saved_k = FLD.sizeof_instance_globals_saved_k,
+    $sizeof_instance_globals_saved_l = FLD.sizeof_instance_globals_saved_l,
+    $sizeof_instance_globals_saved_m = FLD.sizeof_instance_globals_saved_m,
+    $sizeof_instance_globals_saved_n = FLD.sizeof_instance_globals_saved_n,
+    $sizeof_instance_globals_saved_o = FLD.sizeof_instance_globals_saved_o,
+    $sizeof_instance_globals_saved_p = FLD.sizeof_instance_globals_saved_p,
+    $sizeof_instance_globals_saved_q = FLD.sizeof_instance_globals_saved_q,
+    $sizeof_instance_globals_saved_r = FLD.sizeof_instance_globals_saved_r,
+    $sizeof_instance_globals_saved_s = FLD.sizeof_instance_globals_saved_s,
+    $sizeof_instance_globals_saved_t = FLD.sizeof_instance_globals_saved_t,
+    $sizeof_instance_globals_saved_u = FLD.sizeof_instance_globals_saved_u,
+    $sizeof_instance_globals_saved_w = FLD.sizeof_instance_globals_saved_w,
+    $sizeof_instance_globals_saved_y = FLD.sizeof_instance_globals_saved_y,
+    $sizeof_instance_globals_t = FLD.sizeof_instance_globals_t,
+    $sizeof_instance_globals_u = FLD.sizeof_instance_globals_u,
+    $sizeof_instance_globals_v = FLD.sizeof_instance_globals_v,
+    $sizeof_instance_globals_w = FLD.sizeof_instance_globals_w,
+    $sizeof_instance_globals_y = FLD.sizeof_instance_globals_y,
+    $sizeof_instance_globals_z = FLD.sizeof_instance_globals_z, $sizeof_mkroom = FLD.sizeof_mkroom,
+    $sizeof_obj = FLD.sizeof_obj, $sizeof_sinfo = FLD.sizeof_sinfo,
+    $sizeof_u_realtime = FLD.sizeof_u_realtime, $sizeof_val_list = FLD.sizeof_val_list,
+    $sizeof_you = FLD.sizeof_you, $val_list_size = FLD.val_list_size,
+    $win_settings_map_frame_color = FLD.win_settings_map_frame_color;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_cmd_before = cptr.lit("cmd_before");
@@ -584,7 +636,7 @@ export const nhcb_counts = cptr.alloc(4 * 4);
 cptr.stI32o(nhcb_counts, 0, 0);
 
 /** C ref: decl.c:16 — struct c_color_names */
-export let c_color_names = cptr.alloc(88);
+export let c_color_names = cptr.alloc($sizeof_c_color_names);
 cptr.stPtr(c_color_names, __s_black);
 cptr.stPtro(c_color_names, $c_color_names_c_amber, __s_amber);
 cptr.stPtro(c_color_names, $c_color_names_c_golden, __s_golden);
@@ -617,7 +669,7 @@ cptr.stPtro(c_obj_colors, 112, __s_bright_cyan);
 cptr.stPtro(c_obj_colors, 120, __s_white);
 
 /** C ref: decl.c:39 — struct c_common_strings */
-export let c_common_strings = cptr.alloc(112);
+export let c_common_strings = cptr.alloc($sizeof_c_common_strings);
 cptr.stPtr(c_common_strings, __s_nothing_happens);
 cptr.stPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen, __s_nothing_seems_to_happen);
 cptr.stPtro(c_common_strings, $c_common_strings_c_thats_enough_tries, __s_that_s_enough_tries);
@@ -640,7 +692,7 @@ export const disclosure_options = cptr.bytes("iavgco");
 export const emptystr = [0];
 
 /** C ref: decl.c:57 — struct flag */
-export let flags = cptr.alloc(208);
+export let flags = cptr.alloc($sizeof_flag);
 
 /** C ref: decl.c:74 — char[33] */
 export const hexdd = cptr.bytes("00112233445566778899aAbBcCdDeEfF");
@@ -664,10 +716,10 @@ export let has_strong_rngseed = cptr.box(0);
 export let head_engr = cptr.box(null);
 
 /** C ref: decl.c:86 — struct instance_flags */
-export let iflags = cptr.alloc(432);
+export let iflags = cptr.alloc($sizeof_instance_flags);
 
 /** C ref: decl.c:87 — struct accessibility_data */
-export let a11y = cptr.alloc(16);
+export let a11y = cptr.alloc($sizeof_accessibility_data);
 
 /** C ref: decl.c:90 — char *[22] */
 export const materialnm = cptr.alloc(22 * 8);
@@ -722,13 +774,13 @@ cptr.stI32o(shield_static, 76, NHC.S_ss2);
 cptr.stI32o(shield_static, 80, NHC.S_ss4);
 
 /** C ref: decl.c:102 — struct you */
-export let u = cptr.alloc(2864);
+export let u = cptr.alloc($sizeof_you);
 
 /** C ref: decl.c:103 — long */
 export let ubirthday = cptr.box(0n);
 
 /** C ref: decl.c:104 — struct u_realtime */
-export let urealtime = cptr.alloc(24);
+export let urealtime = cptr.alloc($sizeof_u_realtime);
 
 /** C ref: decl.c:105 — struct obj * */
 export let uwep = cptr.box(null);
@@ -821,7 +873,7 @@ export let yn_number = cptr.box(0n);
 export let ARGV0 = cptr.box(null);
 
 /** C ref: decl.c:124 — struct Role */
-let urole_init_data = cptr.alloc(312);
+let urole_init_data = cptr.alloc($sizeof_Role);
 cptr.stPtr(urole_init_data, __s_undefined);
 cptr.stPtro(urole_init_data, $RoleName_f, null);
 cptr.stPtro(urole_init_data, $Role_rank + 0, null);
@@ -894,7 +946,7 @@ cptr.stI32o(urole_init_data, $Role_spelspec, 0);
 cptr.stI32o(urole_init_data, $Role_spelsbon, -3);
 
 /** C ref: decl.c:149 — struct Race */
-let urace_init_data = cptr.alloc(112);
+let urace_init_data = cptr.alloc($sizeof_Race);
 cptr.stPtr(urace_init_data, __s_something);
 cptr.stPtro(urace_init_data, $Race_adj, __s_undefined__2);
 cptr.stPtro(urace_init_data, $Race_coll, __s_something);
@@ -934,11 +986,11 @@ cptr.stI16o(urace_init_data, $Race_enadv + $RoleAdvance_hifix, 2);
 cptr.stI16o(urace_init_data, $Race_enadv + $RoleAdvance_hirnd, 0);
 
 /** C ref: decl.c:170 — struct display_hints */
-export let disp = cptr.alloc(3);
+export let disp = cptr.alloc($sizeof_display_hints);
 cptr.st1(disp, 0);
 
 /** C ref: decl.c:172 — struct instance_globals_a */
-let g_init_a = cptr.alloc(280);
+let g_init_a = cptr.alloc($sizeof_instance_globals_a);
 cptr.stPtr(g_init_a, null);
 cptr.stI32o(g_init_a, $instance_globals_a_already_found_flag, 0);
 cptr.st1o(g_init_a, $instance_globals_a_at_ladder, 0);
@@ -957,7 +1009,7 @@ cptr.st1o(g_init_a, $instance_globals_a_acid_ctx + $h2o_ctx_ctx_valid, 0);
 cptr.st1o(g_init_a, $instance_globals_a_havestate, 1);
 
 /** C ref: decl.c:206 — struct instance_globals_b */
-let g_init_b = cptr.alloc(4872);
+let g_init_b = cptr.alloc($sizeof_instance_globals_b);
 cptr.stPtro(g_init_b, 0, [
     { fldname: null, fldfmt: null, time: 0n, chg: 0, percent_matters: 0, percent_value: 0, anytype: NHC.ANY_INVALID, a: { a_void: null }, rawval: { a_void: null }, val: null, valwidth: 0, idxmax: 0, fld: 0, hilite_rule: null, thresholds: null }
 ]);
@@ -988,7 +1040,7 @@ cptr.st1o(g_init_b, $instance_globals_b_bot_disabled, 0);
 cptr.st1o(g_init_b, $instance_globals_b_havestate, 1);
 
 /** C ref: decl.c:238 — struct instance_globals_c */
-let g_init_c = cptr.alloc(584);
+let g_init_c = cptr.alloc($sizeof_instance_globals_c);
 cptr.stPtro(g_init_c, 0, null);
 cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites + 0, 0n);
 cptr.stU64o(g_init_c, $instance_globals_c_cond_hilites + 8, 0n);
@@ -1044,7 +1096,7 @@ cptr.st1o(g_init_c, $instance_globals_c_converted_savefile_loaded, 0);
 cptr.st1o(g_init_c, $instance_globals_c_havestate, 1);
 
 /** C ref: decl.c:290 — struct instance_globals_d */
-let g_init_d = cptr.alloc(168);
+let g_init_d = cptr.alloc($sizeof_instance_globals_d);
 cptr.stI32(g_init_d, 0);
 cptr.stI64o(g_init_d, $instance_globals_d_done_money, 0n);
 cptr.stI64o(g_init_d, $instance_globals_d_domove_attempting, 0n);
@@ -1065,7 +1117,7 @@ cptr.stPtro(g_init_d, $instance_globals_d_deferred_showpaths_dir, null);
 cptr.st1o(g_init_d, $instance_globals_d_havestate, 1);
 
 /** C ref: decl.c:319 — struct instance_globals_e */
-let g_init_e = cptr.alloc(40);
+let g_init_e = cptr.alloc($sizeof_instance_globals_e);
 cptr.stI32(g_init_e, -1);
 cptr.st1o(g_init_e, $instance_globals_e_en_via_menu, 0);
 cptr.stPtro(g_init_e, $instance_globals_e_ext_tlist, null);
@@ -1075,7 +1127,7 @@ cptr.stI32o(g_init_e, $instance_globals_e_early_raw_messages, 0);
 cptr.st1o(g_init_e, $instance_globals_e_havestate, 1);
 
 /** C ref: decl.c:333 — struct instance_globals_f */
-let g_init_f = cptr.alloc(144);
+let g_init_f = cptr.alloc($sizeof_instance_globals_f);
 cptr.stPtr(g_init_f, null);
 cptr.stPtro(g_init_f, $instance_globals_f_fqn_prefix + 0, null);
 cptr.stPtro(g_init_f, $instance_globals_f_ffruit, null);
@@ -1088,7 +1140,7 @@ cptr.stI64o(g_init_f, $instance_globals_f_followmsg, 0n);
 cptr.st1o(g_init_f, $instance_globals_f_havestate, 1);
 
 /** C ref: decl.c:351 — struct instance_globals_g */
-let g_init_g = cptr.alloc(95000);
+let g_init_g = cptr.alloc($sizeof_instance_globals_g);
 cptr.stPtro(g_init_g, 0, [
     { gnew: 0 }
 ]);
@@ -1118,7 +1170,7 @@ cptr.stI64o(g_init_g, $instance_globals_g_glyphmap_perlevel_flags, 0n);
 cptr.st1o(g_init_g, $instance_globals_g_havestate, 1);
 
 /** C ref: decl.c:388 — struct instance_globals_h */
-let g_init_h = cptr.alloc(104);
+let g_init_h = cptr.alloc($sizeof_instance_globals_h);
 cptr.stPtr(g_init_h, null);
 cptr.stI64o(g_init_h, $instance_globals_h_hero_seq, 8n);
 cptr.st1o(g_init_h, $instance_globals_h_horsename + 0, 0);
@@ -1127,7 +1179,7 @@ cptr.stPtro(g_init_h, $instance_globals_h_hitmsg_prev, null);
 cptr.st1o(g_init_h, $instance_globals_h_havestate, 1);
 
 /** C ref: decl.c:406 — struct instance_globals_i */
-let g_init_i = cptr.alloc(72);
+let g_init_i = cptr.alloc($sizeof_instance_globals_i);
 cptr.stI32(g_init_i, 0);
 cptr.st1o(g_init_i, $instance_globals_i_in_mklev, 0);
 cptr.st1o(g_init_i, $instance_globals_i_in_steed_dismounting, 0);
@@ -1143,12 +1195,12 @@ cptr.st1o(g_init_i, $instance_globals_i_in_mk_themerooms, 0);
 cptr.st1o(g_init_i, $instance_globals_i_havestate, 1);
 
 /** C ref: decl.c:429 — struct instance_globals_j */
-let g_init_j = cptr.alloc(8);
+let g_init_j = cptr.alloc($sizeof_instance_globals_j);
 cptr.stI32(g_init_j, 0);
 cptr.st1o(g_init_j, $instance_globals_j_havestate, 1);
 
 /** C ref: decl.c:435 — struct instance_globals_k */
-let g_init_k = cptr.alloc(24);
+let g_init_k = cptr.alloc($sizeof_instance_globals_k);
 cptr.stI16(g_init_k, 0);
 cptr.stI16o(g_init_k, $nhcoord_y, 0);
 cptr.stPtro(g_init_k, $instance_globals_k_kickedobj, null);
@@ -1156,7 +1208,7 @@ cptr.st1o(g_init_k, $instance_globals_k_known, NHM.UNDEFINED_VALUE);
 cptr.st1o(g_init_k, $instance_globals_k_havestate, 1);
 
 /** C ref: decl.c:444 — struct instance_globals_l */
-let g_init_l = cptr.alloc(696);
+let g_init_l = cptr.alloc($sizeof_instance_globals_l);
 cptr.stI64(g_init_l, 0n);
 cptr.stI32o(g_init_l, $instance_globals_l_locknum, 0);
 cptr.stI32o(g_init_l, $instance_globals_l_lockptr, NHM.UNDEFINED_VALUE);
@@ -1183,7 +1235,7 @@ cptr.st1o(g_init_l, $instance_globals_l_lua_copyright + 0, 0);
 cptr.st1o(g_init_l, $instance_globals_l_havestate, 1);
 
 /** C ref: decl.c:493 — struct instance_globals_m */
-let g_init_m = cptr.alloc(384);
+let g_init_m = cptr.alloc($sizeof_instance_globals_m);
 cptr.stI32(g_init_m, 0);
 cptr.stI32o(g_init_m, $instance_globals_m_mrank_sz, 0);
 cptr.stI64o(g_init_m, $instance_globals_m_multi, 0n);
@@ -1219,7 +1271,7 @@ cptr.st1o(g_init_m, $instance_globals_m_mentioned_water, 0);
 cptr.st1o(g_init_m, $instance_globals_m_havestate, 1);
 
 /** C ref: decl.c:543 — struct instance_globals_n */
-let g_init_n = cptr.alloc(176);
+let g_init_n = cptr.alloc($sizeof_instance_globals_n);
 cptr.stI32(g_init_n, 0);
 cptr.stPtro(g_init_n, $instance_globals_n_nomovemsg, null);
 cptr.stI32o(g_init_n, $instance_globals_n_nsubroom, 0);
@@ -1241,7 +1293,7 @@ cptr.stI16o(g_init_n, $instance_globals_n_nocreate4, NHC.STRANGE_OBJECT);
 cptr.st1o(g_init_n, $instance_globals_n_havestate, 1);
 
 /** C ref: decl.c:577 — struct instance_globals_o */
-let g_init_o = cptr.alloc(560);
+let g_init_o = cptr.alloc($sizeof_instance_globals_o);
 cptr.stPtr(g_init_o, null);
 cptr.stPtro(g_init_o, $instance_globals_o_occupants + 0, null);
 cptr.stPtro(g_init_o, $instance_globals_o_occupation, null);
@@ -1271,7 +1323,7 @@ cptr.st1o(g_init_o, $instance_globals_o_obj_zapped, 0);
 cptr.st1o(g_init_o, $instance_globals_o_havestate, 1);
 
 /** C ref: decl.c:618 — struct instance_globals_p */
-let g_init_p = cptr.alloc(536);
+let g_init_p = cptr.alloc($sizeof_instance_globals_p);
 cptr.stI32(g_init_p, -1);
 cptr.stI32o(g_init_p, $instance_globals_p_polearm_range_max, -1);
 cptr.stI32o(g_init_p, $instance_globals_p_plnamelen, 0);
@@ -1295,11 +1347,11 @@ cptr.stI32o(g_init_p, $instance_globals_p_poly_zapped, NHM.UNDEFINED_VALUE);
 cptr.st1o(g_init_p, $instance_globals_p_havestate, 1);
 
 /** C ref: decl.c:653 — struct instance_globals_q */
-let g_init_q = cptr.alloc(1);
+let g_init_q = cptr.alloc($sizeof_instance_globals_q);
 cptr.st1(g_init_q, 1);
 
 /** C ref: decl.c:657 — struct instance_globals_r */
-let g_init_r = cptr.alloc(408);
+let g_init_r = cptr.alloc($sizeof_instance_globals_r);
 cptr.st1o(g_init_r, 0, 0);
 cptr.stPtro(g_init_r, $instance_globals_r_r + 0, [
     { rlx: 0 }
@@ -1315,7 +1367,7 @@ cptr.stPtro(g_init_r, $instance_globals_r_repo, null);
 cptr.st1o(g_init_r, $instance_globals_r_havestate, 1);
 
 /** C ref: decl.c:677 — struct instance_globals_s */
-let g_init_s = cptr.alloc(1424);
+let g_init_s = cptr.alloc($sizeof_instance_globals_s);
 cptr.stI32(g_init_s, 0);
 cptr.stPtro(g_init_s, $instance_globals_s_stairs, null);
 cptr.stI32o(g_init_s, $instance_globals_s_smeq + 0, 0);
@@ -1356,7 +1408,7 @@ cptr.stI32o(g_init_s, $instance_globals_s_seethru, 0);
 cptr.st1o(g_init_s, $instance_globals_s_havestate, 1);
 
 /** C ref: decl.c:733 — struct instance_globals_t */
-let g_init_t = cptr.alloc(456);
+let g_init_t = cptr.alloc($sizeof_instance_globals_t);
 cptr.stPtr(g_init_t, null);
 cptr.st1o(g_init_t, $instance_globals_t_tbx, 0);
 cptr.st1o(g_init_t, $instance_globals_t_tby, 0);
@@ -1379,7 +1431,7 @@ cptr.stI32o(g_init_t, $instance_globals_t_twohits, 0);
 cptr.st1o(g_init_t, $instance_globals_t_havestate, 1);
 
 /** C ref: decl.c:767 — struct instance_globals_u */
-let g_init_u = cptr.alloc(440);
+let g_init_u = cptr.alloc($sizeof_instance_globals_u);
 cptr.st1(g_init_u, 0);
 cptr.st1o(g_init_u, $instance_globals_u_unweapon, 0);
 cptr.stPtro(g_init_u, $instance_globals_u_urole, null);
@@ -1438,7 +1490,7 @@ cptr.stI16o(g_init_u, $instance_globals_u_uz_save + $d_level_dlevel, 0);
 cptr.st1o(g_init_u, $instance_globals_u_havestate, 1);
 
 /** C ref: decl.c:780 — struct instance_globals_v */
-let g_init_v = cptr.alloc(200);
+let g_init_v = cptr.alloc($sizeof_instance_globals_v);
 cptr.st1o(g_init_v, 0, 0);
 cptr.st1o(g_init_v, 1, 0);
 cptr.st1o(g_init_v, 2, 0);
@@ -1476,7 +1528,7 @@ cptr.stI32o(g_init_v, $instance_globals_v_voice, 0);
 cptr.st1o(g_init_v, $instance_globals_v_havestate, 1);
 
 /** C ref: decl.c:805 — struct instance_globals_w */
-let g_init_w = cptr.alloc(192);
+let g_init_w = cptr.alloc($sizeof_instance_globals_w);
 cptr.stI32(g_init_w, 0);
 cptr.stI64o(g_init_w, $instance_globals_w_wailmsg, 0n);
 cptr.st1o(g_init_w, $instance_globals_w_wasinwater, 0);
@@ -1499,7 +1551,7 @@ cptr.stI16o(g_init_x, $instance_globals_x_xsize, NHM.UNDEFINED_VALUE);
 cptr.st1o(g_init_x, $instance_globals_x_havestate, 1);
 
 /** C ref: decl.c:838 — struct instance_globals_y */
-let g_init_y = cptr.alloc(352);
+let g_init_y = cptr.alloc($sizeof_instance_globals_y);
 cptr.stI32(g_init_y, 20);
 cptr.stPtro(g_init_y, $instance_globals_y_youmonst, null);
 cptr.stPtro(g_init_y, $instance_globals_y_you_buf, null);
@@ -1509,23 +1561,23 @@ cptr.stI16o(g_init_y, $instance_globals_y_ysize, NHM.UNDEFINED_VALUE);
 cptr.st1o(g_init_y, $instance_globals_y_havestate, 1);
 
 /** C ref: decl.c:851 — struct instance_globals_z */
-let g_init_z = cptr.alloc(3);
+let g_init_z = cptr.alloc($sizeof_instance_globals_z);
 cptr.st1(g_init_z, 0);
 cptr.st1o(g_init_z, $instance_globals_z_zap_oseen, 0);
 cptr.st1o(g_init_z, $instance_globals_z_havestate, 1);
 
 /** C ref: decl.c:859 — struct instance_globals_saved_b */
-let init_svb = cptr.alloc(96);
+let init_svb = cptr.alloc($sizeof_instance_globals_saved_b);
 cptr.stPtr(init_svb, null);
 cptr.stPtro(init_svb, $instance_globals_saved_b_bbubbles, null);
 cptr.stI32o(init_svb, $instance_globals_saved_b_bases + 0, 0);
 
 /** C ref: decl.c:867 — struct instance_globals_saved_c */
-let init_svc = cptr.alloc(720);
+let init_svc = cptr.alloc($sizeof_instance_globals_saved_c);
 cptr.stI32(init_svc, 0);
 
 /** C ref: decl.c:872 — struct instance_globals_saved_d */
-let init_svd = cptr.alloc(2904);
+let init_svd = cptr.alloc($sizeof_instance_globals_saved_d);
 cptr.st1o(init_svd, 0, 0);
 cptr.st1o(init_svd, 0 + $dungeon_proto + 0, 0);
 cptr.st1o(init_svd, 0 + $dungeon_fill_lvl + 0, 0);
@@ -1581,24 +1633,24 @@ cptr.stI32o(init_svd, $instance_globals_saved_d_doors_alloc, 0);
 cptr.stI16o(init_svd, $instance_globals_saved_d_disco + 0, 0);
 
 /** C ref: decl.c:888 — struct instance_globals_saved_e */
-let init_sve = cptr.alloc(8);
+let init_sve = cptr.alloc($sizeof_instance_globals_saved_e);
 cptr.stPtr(init_sve, null);
 
 /** C ref: decl.c:893 — struct instance_globals_saved_h */
-let init_svh = cptr.alloc(4);
+let init_svh = cptr.alloc($sizeof_instance_globals_saved_h);
 cptr.stI32(init_svh, 0);
 
 /** C ref: decl.c:898 — struct instance_globals_saved_i */
-let init_svi = cptr.alloc(4);
+let init_svi = cptr.alloc($sizeof_instance_globals_saved_i);
 cptr.stI16(init_svi, 0);
 cptr.stI16o(init_svi, $nhcoord_y, 0);
 
 /** C ref: decl.c:903 — struct instance_globals_saved_k */
-let init_svk = cptr.alloc(272);
+let init_svk = cptr.alloc($sizeof_instance_globals_saved_k);
 cptr.stPtr(init_svk, null);
 
 /** C ref: decl.c:908 — struct instance_globals_saved_l */
-let init_svl = cptr.alloc(89720);
+let init_svl = cptr.alloc($sizeof_instance_globals_saved_l);
 cptr.stPtro(init_svl, 0, [0]);
 cptr.stPtro(init_svl, $instance_globals_saved_l_level + 0, [
     { glyph: 0 }
@@ -1618,13 +1670,13 @@ cptr.st1o(init_svl, $instance_globals_saved_l_level + $dlevel_t_flags, 0);
 cptr.st1o(init_svl, $instance_globals_saved_l_level_info + 0, 0);
 
 /** C ref: decl.c:918 — struct instance_globals_saved_m */
-let init_svm = cptr.alloc(4616);
+let init_svm = cptr.alloc($sizeof_instance_globals_saved_m);
 cptr.stPtr(init_svm, null);
 cptr.stI64o(init_svm, $instance_globals_saved_m_moves, 0n);
 cptr.st1o(init_svm, $instance_globals_saved_m_mvitals + 0, 0);
 
 /** C ref: decl.c:926 — struct instance_globals_saved_n */
-let init_svn = cptr.alloc(52);
+let init_svn = cptr.alloc($sizeof_instance_globals_saved_n);
 cptr.stI32(init_svn, 0);
 cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid + 0, 0);
 cptr.st1o(init_svn, $instance_globals_saved_n_nhuuid + 1, 0);
@@ -1667,37 +1719,37 @@ cptr.stI32o(init_svn, $instance_globals_saved_n_nroom, 0);
 cptr.stI32o(init_svn, $instance_globals_saved_n_n_regions, 0);
 
 /** C ref: decl.c:940 — struct instance_globals_saved_o */
-let init_svo = cptr.alloc(24);
+let init_svo = cptr.alloc($sizeof_instance_globals_saved_o);
 cptr.stI32(init_svo, 0);
 cptr.stPtro(init_svo, $instance_globals_saved_o_oracle_loc, null);
 cptr.stI64o(init_svo, $instance_globals_saved_o_omoves, 0n);
 
 /** C ref: decl.c:949 — struct instance_globals_saved_p */
-let init_svp = cptr.alloc(96);
+let init_svp = cptr.alloc($sizeof_instance_globals_saved_p);
 cptr.st1o(init_svp, 0, 0);
 cptr.st1o(init_svp, $instance_globals_saved_p_pl_character + 0, 0);
 cptr.st1o(init_svp, $instance_globals_saved_p_pl_fruit + 0, 0);
 
 /** C ref: decl.c:956 — struct instance_globals_saved_q */
-let init_svq = cptr.alloc(88);
+let init_svq = cptr.alloc($sizeof_instance_globals_saved_q);
 cptr.stI32(init_svq, 0);
 
 /** C ref: decl.c:961 — struct instance_globals_saved_r */
-let init_svr = cptr.alloc(18368);
+let init_svr = cptr.alloc($sizeof_instance_globals_saved_r);
 cptr.stI16o(init_svr, 0, 0);
 
 /** C ref: decl.c:966 — struct instance_globals_saved_s */
-let init_svs = cptr.alloc(352);
+let init_svs = cptr.alloc($sizeof_instance_globals_saved_s);
 cptr.stI16o(init_svs, 0, 0);
 cptr.stPtro(init_svs, $instance_globals_saved_s_sp_levchn, null);
 
 /** C ref: decl.c:972 — struct instance_globals_saved_t */
-let init_svt = cptr.alloc(16);
+let init_svt = cptr.alloc($sizeof_instance_globals_saved_t);
 cptr.st1o(init_svt, 0, 0);
 cptr.stU64o(init_svt, $instance_globals_saved_t_timer_id, 1n);
 
 /** C ref: decl.c:979 — struct instance_globals_saved_u */
-let init_svu = cptr.alloc(16);
+let init_svu = cptr.alloc($sizeof_instance_globals_saved_u);
 cptr.stI16(init_svu, 0);
 cptr.stI16o(init_svu, $dest_area_ly, 0);
 cptr.stI16o(init_svu, $dest_area_hx, 0);
@@ -1713,162 +1765,162 @@ cptr.stI32(init_svx, NHM.UNDEFINED_VALUE);
 cptr.stI32o(init_svx, $instance_globals_saved_x_xmax, NHM.UNDEFINED_VALUE);
 
 /** C ref: decl.c:990 — struct instance_globals_saved_w */
-let init_svw = cptr.alloc(16);
+let init_svw = cptr.alloc($sizeof_instance_globals_saved_w);
 cptr.stI64(init_svw, 0n);
 cptr.stI32o(init_svw, $instance_globals_saved_w_wtreserved, 100);
 
 /** C ref: decl.c:995 — struct instance_globals_saved_y */
-let init_svy = cptr.alloc(8);
+let init_svy = cptr.alloc($sizeof_instance_globals_saved_y);
 cptr.stI32(init_svy, NHM.UNDEFINED_VALUE);
 cptr.stI32o(init_svy, $instance_globals_saved_y_ymax, NHM.UNDEFINED_VALUE);
 
 /** C ref: decl.c:1001 — struct sinfo */
-let init_program_state = cptr.alloc(120);
+let init_program_state = cptr.alloc($sizeof_sinfo);
 cptr.stI32(init_program_state, 0);
 
 /** C ref: decl.c:1007 — struct instance_globals_a */
-export let ga = cptr.alloc(280);
+export let ga = cptr.alloc($sizeof_instance_globals_a);
 
 /** C ref: decl.c:1008 — struct instance_globals_b */
-export let gb = cptr.alloc(4872);
+export let gb = cptr.alloc($sizeof_instance_globals_b);
 
 /** C ref: decl.c:1009 — struct instance_globals_c */
-export let gc = cptr.alloc(584);
+export let gc = cptr.alloc($sizeof_instance_globals_c);
 
 /** C ref: decl.c:1010 — struct instance_globals_d */
-export let gd = cptr.alloc(168);
+export let gd = cptr.alloc($sizeof_instance_globals_d);
 
 /** C ref: decl.c:1011 — struct instance_globals_e */
-export let ge = cptr.alloc(40);
+export let ge = cptr.alloc($sizeof_instance_globals_e);
 
 /** C ref: decl.c:1012 — struct instance_globals_f */
-export let gf = cptr.alloc(144);
+export let gf = cptr.alloc($sizeof_instance_globals_f);
 
 /** C ref: decl.c:1013 — struct instance_globals_g */
-export let gg = cptr.alloc(95000);
+export let gg = cptr.alloc($sizeof_instance_globals_g);
 
 /** C ref: decl.c:1014 — struct instance_globals_h */
-export let gh = cptr.alloc(104);
+export let gh = cptr.alloc($sizeof_instance_globals_h);
 
 /** C ref: decl.c:1015 — struct instance_globals_i */
-export let gi = cptr.alloc(72);
+export let gi = cptr.alloc($sizeof_instance_globals_i);
 
 /** C ref: decl.c:1016 — struct instance_globals_j */
-export let gj = cptr.alloc(8);
+export let gj = cptr.alloc($sizeof_instance_globals_j);
 
 /** C ref: decl.c:1017 — struct instance_globals_k */
-export let gk = cptr.alloc(24);
+export let gk = cptr.alloc($sizeof_instance_globals_k);
 
 /** C ref: decl.c:1018 — struct instance_globals_l */
-export let gl = cptr.alloc(696);
+export let gl = cptr.alloc($sizeof_instance_globals_l);
 
 /** C ref: decl.c:1019 — struct instance_globals_m */
-export let gm = cptr.alloc(384);
+export let gm = cptr.alloc($sizeof_instance_globals_m);
 
 /** C ref: decl.c:1020 — struct instance_globals_n */
-export let gn = cptr.alloc(176);
+export let gn = cptr.alloc($sizeof_instance_globals_n);
 
 /** C ref: decl.c:1021 — struct instance_globals_o */
-export let go = cptr.alloc(560);
+export let go = cptr.alloc($sizeof_instance_globals_o);
 
 /** C ref: decl.c:1022 — struct instance_globals_p */
-export let gp = cptr.alloc(536);
+export let gp = cptr.alloc($sizeof_instance_globals_p);
 
 /** C ref: decl.c:1023 — struct instance_globals_q */
-export let gq = cptr.alloc(1);
+export let gq = cptr.alloc($sizeof_instance_globals_q);
 
 /** C ref: decl.c:1024 — struct instance_globals_r */
-export let gr = cptr.alloc(408);
+export let gr = cptr.alloc($sizeof_instance_globals_r);
 
 /** C ref: decl.c:1025 — struct instance_globals_s */
-export let gs = cptr.alloc(1424);
+export let gs = cptr.alloc($sizeof_instance_globals_s);
 
 /** C ref: decl.c:1026 — struct instance_globals_t */
-export let gt = cptr.alloc(456);
+export let gt = cptr.alloc($sizeof_instance_globals_t);
 
 /** C ref: decl.c:1027 — struct instance_globals_u */
-export let gu = cptr.alloc(440);
+export let gu = cptr.alloc($sizeof_instance_globals_u);
 
 /** C ref: decl.c:1028 — struct instance_globals_v */
-export let gv = cptr.alloc(200);
+export let gv = cptr.alloc($sizeof_instance_globals_v);
 
 /** C ref: decl.c:1029 — struct instance_globals_w */
-export let gw = cptr.alloc(192);
+export let gw = cptr.alloc($sizeof_instance_globals_w);
 
 /** C ref: decl.c:1030 — struct instance_globals_x */
 export let gx = cptr.alloc(56);
 
 /** C ref: decl.c:1031 — struct instance_globals_y */
-export let gy = cptr.alloc(352);
+export let gy = cptr.alloc($sizeof_instance_globals_y);
 
 /** C ref: decl.c:1032 — struct instance_globals_z */
-export let gz = cptr.alloc(3);
+export let gz = cptr.alloc($sizeof_instance_globals_z);
 
 /** C ref: decl.c:1033 — struct instance_globals_saved_b */
-export let svb = cptr.alloc(96);
+export let svb = cptr.alloc($sizeof_instance_globals_saved_b);
 
 /** C ref: decl.c:1034 — struct instance_globals_saved_c */
-export let svc = cptr.alloc(720);
+export let svc = cptr.alloc($sizeof_instance_globals_saved_c);
 
 /** C ref: decl.c:1035 — struct instance_globals_saved_d */
-export let svd = cptr.alloc(2904);
+export let svd = cptr.alloc($sizeof_instance_globals_saved_d);
 
 /** C ref: decl.c:1036 — struct instance_globals_saved_e */
-export let sve = cptr.alloc(8);
+export let sve = cptr.alloc($sizeof_instance_globals_saved_e);
 
 /** C ref: decl.c:1037 — struct instance_globals_saved_h */
-export let svh = cptr.alloc(4);
+export let svh = cptr.alloc($sizeof_instance_globals_saved_h);
 
 /** C ref: decl.c:1038 — struct instance_globals_saved_i */
-export let svi = cptr.alloc(4);
+export let svi = cptr.alloc($sizeof_instance_globals_saved_i);
 
 /** C ref: decl.c:1039 — struct instance_globals_saved_k */
-export let svk = cptr.alloc(272);
+export let svk = cptr.alloc($sizeof_instance_globals_saved_k);
 
 /** C ref: decl.c:1040 — struct instance_globals_saved_l */
-export let svl = cptr.alloc(89720);
+export let svl = cptr.alloc($sizeof_instance_globals_saved_l);
 
 /** C ref: decl.c:1041 — struct instance_globals_saved_m */
-export let svm = cptr.alloc(4616);
+export let svm = cptr.alloc($sizeof_instance_globals_saved_m);
 
 /** C ref: decl.c:1042 — struct instance_globals_saved_n */
-export let svn = cptr.alloc(52);
+export let svn = cptr.alloc($sizeof_instance_globals_saved_n);
 
 /** C ref: decl.c:1043 — struct instance_globals_saved_o */
-export let svo = cptr.alloc(24);
+export let svo = cptr.alloc($sizeof_instance_globals_saved_o);
 
 /** C ref: decl.c:1044 — struct instance_globals_saved_p */
-export let svp = cptr.alloc(96);
+export let svp = cptr.alloc($sizeof_instance_globals_saved_p);
 
 /** C ref: decl.c:1045 — struct instance_globals_saved_q */
-export let svq = cptr.alloc(88);
+export let svq = cptr.alloc($sizeof_instance_globals_saved_q);
 
 /** C ref: decl.c:1046 — struct instance_globals_saved_r */
-export let svr = cptr.alloc(18368);
+export let svr = cptr.alloc($sizeof_instance_globals_saved_r);
 
 /** C ref: decl.c:1047 — struct instance_globals_saved_s */
-export let svs = cptr.alloc(352);
+export let svs = cptr.alloc($sizeof_instance_globals_saved_s);
 
 /** C ref: decl.c:1048 — struct instance_globals_saved_t */
-export let svt = cptr.alloc(16);
+export let svt = cptr.alloc($sizeof_instance_globals_saved_t);
 
 /** C ref: decl.c:1049 — struct instance_globals_saved_u */
-export let svu = cptr.alloc(16);
+export let svu = cptr.alloc($sizeof_instance_globals_saved_u);
 
 /** C ref: decl.c:1050 — struct instance_globals_saved_w */
-export let svw = cptr.alloc(16);
+export let svw = cptr.alloc($sizeof_instance_globals_saved_w);
 
 /** C ref: decl.c:1051 — struct instance_globals_saved_x */
 export let svx = cptr.alloc(8);
 
 /** C ref: decl.c:1052 — struct instance_globals_saved_y */
-export let svy = cptr.alloc(8);
+export let svy = cptr.alloc($sizeof_instance_globals_saved_y);
 
 /** C ref: decl.c:1053 — struct sinfo */
-export let program_state = cptr.alloc(120);
+export let program_state = cptr.alloc($sizeof_sinfo);
 
 /** C ref: decl.c:1055 — struct const_globals */
-export let cg = cptr.alloc(552);
+export let cg = cptr.alloc($sizeof_const_globals);
 cptr.stPtr(cg, null);
 cptr.stPtro(cg, $const_globals_zeromonst, null);
 cptr.stPtro(cg, $const_globals_zeroany, null);
@@ -1927,12 +1979,12 @@ export function decl_globals_init() {
     cptr.memcpy(svw, init_svw, 16);
     cptr.memcpy(svx, init_svx, 8);
     cptr.memcpy(svy, init_svy, 8);
-    cptr.stPtro2(gv, 0, 16, $instance_globals_v_valuables, cptr.add(gg, $instance_globals_g_gems));
-    cptr.stI32o2(gv, 0, 16, $instance_globals_v_valuables + $val_list_size, Number(BigInt.asIntN(32, (368n / 16n))));
-    cptr.stPtro2(gv, 1, 16, $instance_globals_v_valuables, cptr.add(ga, $instance_globals_a_amulets));
-    cptr.stI32o2(gv, 1, 16, $instance_globals_v_valuables + $val_list_size, Number(BigInt.asIntN(32, (208n / 16n))));
-    cptr.stPtro2(gv, 2, 16, $instance_globals_v_valuables, null);
-    cptr.stI32o2(gv, 2, 16, $instance_globals_v_valuables + $val_list_size, 0);
+    cptr.stPtro2(gv, 0, $sizeof_val_list, $instance_globals_v_valuables, cptr.add(gg, $instance_globals_g_gems));
+    cptr.stI32o2(gv, 0, $sizeof_val_list, $instance_globals_v_valuables + $val_list_size, Number(BigInt.asIntN(32, (368n / 16n))));
+    cptr.stPtro2(gv, 1, $sizeof_val_list, $instance_globals_v_valuables, cptr.add(ga, $instance_globals_a_amulets));
+    cptr.stI32o2(gv, 1, $sizeof_val_list, $instance_globals_v_valuables + $val_list_size, Number(BigInt.asIntN(32, (208n / 16n))));
+    cptr.stPtro2(gv, 2, $sizeof_val_list, $instance_globals_v_valuables, null);
+    cptr.stI32o2(gv, 2, $sizeof_val_list, $instance_globals_v_valuables + $val_list_size, 0);
     {
         if (cptr.ld1so((g_init_a), $instance_globals_a_havestate) != 1) {
             raw_printf(__s_decl_globals_init_s_havestate_not_true, __s_g_init_a);
@@ -2115,7 +2167,7 @@ export function decl_globals_init() {
         }
     }
     ;
-    cptr.stPtro(gs, $instance_globals_s_subrooms, cptr.add(svr, 41, 224));
+    cptr.stPtro(gs, $instance_globals_s_subrooms, cptr.add(svr, 41, $sizeof_mkroom));
     __builtin___memset_chk(flags, 0, 208n, __builtin_object_size(flags, 0));
     __builtin___memset_chk(iflags, 0, 432n, __builtin_object_size(iflags, 0));
     __builtin___memset_chk(a11y, 0, 16n, __builtin_object_size(a11y, 0));
@@ -2132,7 +2184,7 @@ export function decl_globals_init() {
 }
 
 /** C ref: decl.c:1190 — struct obj */
-export let hands_obj = cptr.alloc(216);
+export let hands_obj = cptr.alloc($sizeof_obj);
 cptr.stPtr(hands_obj, null);
 
 /** C ref: decl.c:1199 — @param {CPtr<struct victual_info>} context_victual */

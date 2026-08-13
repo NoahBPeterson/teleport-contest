@@ -29,7 +29,9 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $DumpState_data = FLD.DumpState_
     $Proto_source = FLD.Proto_source, $Proto_upvalues = FLD.Proto_upvalues,
     $TString_contents = FLD.TString_contents, $TString_shrlen = FLD.TString_shrlen,
     $TString_u = FLD.TString_u, $TValue_tt_ = FLD.TValue_tt_, $Upvaldesc_idx = FLD.Upvaldesc_idx,
-    $Upvaldesc_instack = FLD.Upvaldesc_instack, $Upvaldesc_kind = FLD.Upvaldesc_kind;
+    $Upvaldesc_instack = FLD.Upvaldesc_instack, $Upvaldesc_kind = FLD.Upvaldesc_kind,
+    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_LocVar = FLD.sizeof_LocVar,
+    $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_lua = cptr.lit("\x1bLua");
@@ -107,7 +109,7 @@ function* dumpConstants(D, f) {
     let n = cptr.ldI32o(f, $Proto_sizek);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
-        let o = cptr.add(cptr.ldPtro(f, $Proto_k), i, 16);
+        let o = cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue);
         let tt = (((cptr.ld1uo((o), $TValue_tt_))) & 63);
         (yield* dumpByte(D, tt));
         switch (tt) {
@@ -142,9 +144,9 @@ function* dumpUpvalues(D, f) {
     let n = cptr.ldI32o(f, $Proto_sizeupvalues);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
-        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, 16, $Upvaldesc_instack)));
-        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, 16, $Upvaldesc_idx)));
-        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, 16, $Upvaldesc_kind)));
+        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_instack)));
+        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_idx)));
+        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_kind)));
     }
 }
 
@@ -158,20 +160,20 @@ function* dumpDebug(D, f) {
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizeabslineinfo);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
-        (yield* dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, 8)));
-        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, 8, $AbsLineInfo_line)));
+        (yield* dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo)));
+        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line)));
     }
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizelocvars);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
-        (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16)));
-        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_startpc)));
-        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_endpc)));
+        (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar)));
+        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc)));
+        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc)));
     }
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizeupvalues);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++)
-        (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16)));
+        (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc)));
 }
 
 /** C ref: ldump.c:183 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f @param {CPtr<TString>} psource */

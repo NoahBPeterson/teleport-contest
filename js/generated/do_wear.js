@@ -85,7 +85,9 @@ const $Role_mnum = FLD.Role_mnum, $_cmd_queue_key = FLD._cmd_queue_key,
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mlet = FLD.permonst_mlet,
     $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $sinfo_restoring = FLD.sinfo_restoring,
-    $takeoff_info_cancelled_don = FLD.takeoff_info_cancelled_don,
+    $sizeof_condtests_t = FLD.sizeof_condtests_t, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $takeoff_info_cancelled_don = FLD.takeoff_info_cancelled_don,
     $takeoff_info_delay = FLD.takeoff_info_delay, $takeoff_info_disrobing = FLD.takeoff_info_disrobing,
     $takeoff_info_what = FLD.takeoff_info_what, $you_abon = FLD.you_abon, $you_acurr = FLD.you_acurr,
     $you_atemp = FLD.you_atemp, $you_twoweap = FLD.you_twoweap, $you_uac = FLD.you_uac,
@@ -424,7 +426,7 @@ function toggle_stealth(obj, oldprop, on) {
 export function toggle_displacement(obj, oldprop, on) {
     if (on ? cptr.ld1so(gi, $instance_globals_i_initial_don) : cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
         return;
-    if (!oldprop && !(cptr.ldI64o2(u, NHC.DISPLACED, 24, $you_uprops + $prop_intrinsic)) && !(cptr.ldI64o2(u, NHC.DISPLACED, 24, $you_uprops + $prop_blocked)) && ((!Blind() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !Invisible()) || (Unblind_telepat() || (Blind_telepat() && Blind()) || Detect_monsters()))) {
+    if (!oldprop && !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_intrinsic)) && !(cptr.ldI64o2(u, NHC.DISPLACED, $sizeof_prop, $you_uprops + $prop_blocked)) && ((!Blind() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !Invisible()) || (Unblind_telepat() || (Blind_telepat() && Blind()) || Detect_monsters()))) {
         if (obj)
             discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
         You_feel(__s_that_monsters_s_have_difficulty, on ? __s_empty : __s_no_longer);
@@ -433,7 +435,7 @@ export function toggle_displacement(obj, oldprop, on) {
 
 /** C ref: do_wear.c:187 @returns {CInt} */
 export function Boots_on() {
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops) & -33n;
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -33n;
     switch (cptr.ldI16o(uarmf.v, $obj_otyp)) {
         case NHC.LOW_BOOTS:
         case NHC.IRON_SHOES:
@@ -461,7 +463,7 @@ export function Boots_on() {
         break;
         case NHC.FUMBLE_BOOTS:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 233, __s_boots_on), rnd(20)) : rnd(20)));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 233, __s_boots_on), rnd(20)) : rnd(20)));
         break;
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
@@ -489,7 +491,7 @@ export function Boots_on() {
 export function Boots_off() {
     let otmp = uarmf.v;
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, otyp, 120, $objclass_oc_oprop), 24, $you_uprops) & -33n;
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -33n;
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-33n));
     setworn(null, 32n);
     switch (otyp) {
@@ -510,7 +512,7 @@ export function Boots_off() {
         break;
         case NHC.FUMBLE_BOOTS:
         if (!oldprop && !(HFumbling() & -16777216n))
-            cptr.stI64o2(u, NHC.FUMBLING, 24, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.FUMBLING, 24, $you_uprops, 0n));
+            cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops, 0n));
         break;
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n) && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
@@ -536,7 +538,7 @@ export function Boots_off() {
 
 /** C ref: do_wear.c:326 @returns {CInt} */
 function Cloak_on() {
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops) & -3n;
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -3n;
     switch (cptr.ldI16o(uarmc.v, $obj_otyp)) {
         case NHC.ORCISH_CLOAK:
         case NHC.DWARVISH_CLOAK:
@@ -570,7 +572,7 @@ function Cloak_on() {
         pline(__s_s_very_tightly, Tobjnam(uarmc.v, __s_fit));
         break;
         case NHC.ALCHEMY_SMOCK:
-        cptr.stI64o2(u, NHC.ACID_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops) | 2n);
+        cptr.stI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) | 2n);
         break;
         default:
         impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), cptr.ldI16o(uarmc.v, $obj_otyp));
@@ -586,7 +588,7 @@ function Cloak_on() {
 export function Cloak_off() {
     let otmp = uarmc.v;
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, otyp, 120, $objclass_oc_oprop), 24, $you_uprops) & -3n;
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -3n;
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-3n));
     setworn(null, 2n);
     switch (otyp) {
@@ -618,7 +620,7 @@ export function Cloak_off() {
         }
         break;
         case NHC.ALCHEMY_SMOCK:
-        cptr.stI64o2(u, NHC.ACID_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops) & (-3n));
+        cptr.stI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) & (-3n));
         break;
         default:
         impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), otyp);
@@ -741,13 +743,13 @@ export function hard_helmet(obj) {
 
 /** C ref: do_wear.c:576 @returns {CInt} */
 function Gloves_on() {
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops) & -17n;
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -17n;
     switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
         case NHC.LEATHER_GLOVES:
         break;
         case NHC.GAUNTLETS_OF_FUMBLING:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 586, __s_gloves_on), rnd(20)) : rnd(20)));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 586, __s_gloves_on), rnd(20)) : rnd(20)));
         break;
         case NHC.GAUNTLETS_OF_POWER:
         discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1);
@@ -772,7 +774,7 @@ export function wielding_corpse(obj, how, voluntary) {
         return;
     if (!cptr.eq(obj, uwep.v) && (!cptr.eq(obj, uswapwep.v) || !cptr.ld1so(u, $you_twoweap)))
         return;
-    if (touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)) && !Stone_resistance()) {
+    if (touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)) && !Stone_resistance()) {
         let kbuf = new Uint8Array(256);
         let hbuf = new Uint8Array(256);
         You(__s_s_s_in_your_bare_s, (how && is_gloves(how)) ? __s_now_wield : __s_are_wielding, corpse_xname(obj, null, NHM.CXN_ARTICLE), makeplural(body_part(NHC.HAND)));
@@ -790,7 +792,7 @@ export function wielding_corpse(obj, how, voluntary) {
 /** C ref: do_wear.c:646 @returns {CInt} */
 export function Gloves_off() {
     let gloves = uarmg.v;
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops) & -17n;
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & -17n;
     let on_purpose = schar((!cptr.ld1so(svc, $context_info_mon_moving) && !(cptr.ldI32o(uarmg.v, $obj_in_use) & 1) ? 1 : 0));
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-17n));
     switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
@@ -798,7 +800,7 @@ export function Gloves_off() {
         break;
         case NHC.GAUNTLETS_OF_FUMBLING:
         if (!oldprop && !(HFumbling() & -16777216n))
-            cptr.stI64o2(u, NHC.FUMBLING, 24, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.FUMBLING, 24, $you_uprops, 0n));
+            cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops, 0n));
         break;
         case NHC.GAUNTLETS_OF_POWER:
         discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1);
@@ -820,7 +822,7 @@ export function Gloves_off() {
         wielding_corpse(uwep.v, gloves, on_purpose);
     if (cptr.ld1so(u, $you_twoweap) && uswapwep.v && cptr.ldI16o(uswapwep.v, $obj_otyp) == NHC.CORPSE)
         wielding_corpse(uswapwep.v, gloves, on_purpose);
-    if (cptr.ld1so2(condtests, NHC.bl_bareh, 24, $condtests_t_enabled))
+    if (cptr.ld1so2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_enabled))
         cptr.st1(disp, 1);
     return 0;
 }
@@ -907,9 +909,9 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
         case NHC.BLACK_DRAGON_SCALES:
         case NHC.BLACK_DRAGON_SCALE_MAIL:
         if (puton) {
-            cptr.stI64o2(u, NHC.DRAIN_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.DRAIN_RES, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.DRAIN_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.DRAIN_RES, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) & (-2n));
         }
         break;
         case NHC.BLUE_DRAGON_SCALES:
@@ -917,9 +919,9 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
         if (puton) {
             if (!Very_fast())
                 You(__s_speed_up_s, Fast() ? __s_a_bit_more : __s_empty);
-            cptr.stI64o2(u, NHC.FAST, 24, $you_uprops, cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.FAST, 24, $you_uprops, cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) & (-2n));
             if (!Very_fast() && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
                 You(__s_slow_down);
         }
@@ -927,17 +929,17 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
         case NHC.GREEN_DRAGON_SCALES:
         case NHC.GREEN_DRAGON_SCALE_MAIL:
         if (puton) {
-            cptr.stI64o2(u, NHC.SICK_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.SICK_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) & (-2n));
         }
         break;
         case NHC.RED_DRAGON_SCALES:
         case NHC.RED_DRAGON_SCALE_MAIL:
         if (puton) {
-            cptr.stI64o2(u, NHC.INFRAVISION, 24, $you_uprops, cptr.ldI64o2(u, NHC.INFRAVISION, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.INFRAVISION, 24, $you_uprops, cptr.ldI64o2(u, NHC.INFRAVISION, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) & (-2n));
         }
         see_monsters();
         break;
@@ -948,17 +950,17 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
         case NHC.ORANGE_DRAGON_SCALES:
         case NHC.ORANGE_DRAGON_SCALE_MAIL:
         if (puton) {
-            cptr.stI64o2(u, NHC.FREE_ACTION, 24, $you_uprops, cptr.ldI64o2(u, NHC.FREE_ACTION, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.FREE_ACTION, 24, $you_uprops, cptr.ldI64o2(u, NHC.FREE_ACTION, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops) & (-2n));
         }
         break;
         case NHC.YELLOW_DRAGON_SCALES:
         case NHC.YELLOW_DRAGON_SCALE_MAIL:
         if (puton) {
-            cptr.stI64o2(u, NHC.STONE_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.STONE_RES, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.STONE_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.STONE_RES, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) & (-2n));
             wielding_corpse(uwep.v, otmp, on_purpose);
             wielding_corpse(uswapwep.v, otmp, on_purpose);
         }
@@ -966,9 +968,9 @@ function dragon_armor_handling(otmp, puton, on_purpose) {
         case NHC.WHITE_DRAGON_SCALES:
         case NHC.WHITE_DRAGON_SCALE_MAIL:
         if (puton) {
-            cptr.stI64o2(u, NHC.SLOW_DIGESTION, 24, $you_uprops, cptr.ldI64o2(u, NHC.SLOW_DIGESTION, 24, $you_uprops) | 1n);
+            cptr.stI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) | 1n);
         } else {
-            cptr.stI64o2(u, NHC.SLOW_DIGESTION, 24, $you_uprops, cptr.ldI64o2(u, NHC.SLOW_DIGESTION, 24, $you_uprops) & (-2n));
+            cptr.stI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) & (-2n));
         }
         break;
         default:
@@ -1040,9 +1042,9 @@ function Amulet_on(amul) {
         case NHC.AMULET_OF_MAGICAL_BREATHING:
         {
             let was_in_poison_gas;
-            cptr.stI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops) & (-65537n));
+            cptr.stI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) & (-65537n));
             was_in_poison_gas = region_danger();
-            cptr.stI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, 24, $you_uprops) | 65536n);
+            cptr.stI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) | 65536n);
             if (was_in_poison_gas) {
                 discover_object(NHC.AMULET_OF_MAGICAL_BREATHING, 1, 1, 1);
                 on_msg(uamul.v);
@@ -1085,7 +1087,7 @@ function Amulet_on(amul) {
         case NHC.AMULET_OF_STRANGULATION:
         if (can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst)) && !Strangled()) {
             discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1);
-            cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 6n);
+            cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 6n);
             cptr.st1(disp, 1);
             on_msg(uamul.v);
             on_msg_done = 1;
@@ -1097,16 +1099,16 @@ function Amulet_on(amul) {
             let newnap = BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 1048, __s_amulet_on), rnd(98)) : rnd(98))) + 2n);
             let oldnap = (HSleepy() & 16777215n);
             if (newnap < oldnap || oldnap == 0n)
-                cptr.stI64o2(u, NHC.SLEEPY, 24, $you_uprops + $prop_intrinsic, (HSleepy() & -16777216n) | newnap);
+                cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, (HSleepy() & -16777216n) | newnap);
             break;
         }
         case NHC.AMULET_OF_FLYING:
         float_vs_flight();
         if (Flying()) {
             let already_flying;
-            cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops, cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops) & (-65537n));
+            cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) & (-65537n));
             already_flying = schar((!!Flying()));
-            cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops, cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops) | 65536n);
+            cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) | 65536n);
             if (!already_flying) {
                 discover_object(NHC.AMULET_OF_FLYING, 1, 1, 1);
                 on_msg(uamul.v);
@@ -1168,7 +1170,7 @@ export function Amulet_off() {
         off_msg(amul);
         early_off_msg = 1;
         if (Strangled()) {
-            cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 0n);
+            cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
             cptr.st1(disp, 1);
             if (Breathless())
                 Your(__s_s_is_no_longer_constricted, body_part(NHC.NECK));
@@ -1180,7 +1182,7 @@ export function Amulet_off() {
         case NHC.AMULET_OF_RESTFUL_SLEEP:
         setworn(null, 65536n);
         if (!ESleepy() && !(HSleepy() & -16777216n))
-            cptr.stI64o2(u, NHC.SLEEPY, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEPY, 24, $you_uprops + $prop_intrinsic) & (-16777216n));
+            cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-16777216n));
         break;
         case NHC.AMULET_OF_FLYING:
         {
@@ -1215,13 +1217,13 @@ export function Amulet_off() {
 function learnring(ring, observed) {
     let ringtype = cptr.ldI16o(ring, $obj_otyp);
     if (observed) {
-        if ((cptr.ldI32o2(objects, ringtype, 120, $objclass_oc_name_known) & 1))
+        if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1))
             observe_object(ring);
         else if ((cptr.ldI32o(ring, $obj_dknown) & 1))
             discover_object((ringtype), 1, 1, 1);
     }
-    if ((cptr.ldI32o(ring, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, ringtype, 120, $objclass_oc_name_known) & 1) | 0) {
-        if ((cptr.ldI32o2(objects, ringtype, 120, $objclass_oc_charged) & 1))
+    if ((cptr.ldI32o(ring, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
+        if ((cptr.ldI32o2(objects, ringtype, $sizeof_objclass, $objclass_oc_charged) & 1))
             cptr.stI32o(ring, $obj_known, 1);
         update_inventory();
     }
@@ -1241,7 +1243,7 @@ function adjust_attrib(obj, which, val) {
 
 /** C ref: do_wear.c:1242 — @param {CPtr<struct obj>} obj */
 export function Ring_on(obj) {
-    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops);
+    let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops);
     let observable;
     if (cptr.eq(obj, uwep.v))
         setuwep(null);
@@ -1335,7 +1337,7 @@ function Ring_off_or_gone(obj, gone) {
     let mask = (cptr.ldI64o(obj, $obj_owornmask) & 393216n);
     let observable;
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & BigInt.asIntN(64, ~mask));
-    if (!(cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops) & mask))
+    if (!(cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops) & mask))
         impossible(__s_strange_i_didn_t_know_you_had_that_ring);
     if (gone)
         setnotworn(obj);
@@ -1433,7 +1435,7 @@ export function Ring_gone(obj) {
 
 /** C ref: do_wear.c:1461 — @param {CPtr<struct obj>} otmp */
 export function Blindf_on(otmp) {
-    let already_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0));
+    let already_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0));
     let changed = 0;
     remove_worn_item(otmp, 0);
     setworn(otmp, 524288n);
@@ -1459,7 +1461,7 @@ export function Blindf_on(otmp) {
 
 /** C ref: do_wear.c:1495 — @param {CPtr<struct obj>} otmp */
 export function Blindf_off(otmp) {
-    let was_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0));
+    let was_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0));
     let changed = 0;
     let nooffmsg = schar((!otmp));
     if (!otmp)
@@ -1819,14 +1821,14 @@ const __static_armoroff_offdelaybuf = new Uint8Array(60); /** C ref: do_wear.c:1
 
 /** C ref: do_wear.c:1920 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function armoroff(otmp) {
-    let delay = -cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_delay);
+    let delay = -cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_delay);
     let what = null;
     if (cursed(otmp))
         return 0;
     if (delay) {
         nomul(delay);
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_disrobing);
-        switch (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp)) {
+        switch (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp)) {
             case NHC.ARM_SUIT:
             what = suit_simple_name(otmp);
             cptr.stPtr(ga, Armor_off);
@@ -1856,7 +1858,7 @@ export function armoroff(otmp) {
             cptr.stPtr(ga, Shirt_off);
             break;
             default:
-            impossible(__s_taking_off_unknown_armor_d_d_delay_d, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp), delay);
+            impossible(__s_taking_off_unknown_armor_d_d_delay_d, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp), delay);
             break;
         }
         if (what) {
@@ -1864,7 +1866,7 @@ export function armoroff(otmp) {
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.decay(__static_armoroff_offdelaybuf));
         }
     } else {
-        switch (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp)) {
+        switch (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp)) {
             case NHC.ARM_SUIT:
             void Armor_off();
             break;
@@ -1887,7 +1889,7 @@ export function armoroff(otmp) {
             void Shirt_off();
             break;
             default:
-            impossible(__s_taking_off_unknown_armor_d_d_no_delay, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_subtyp));
+            impossible(__s_taking_off_unknown_armor_d_d_no_delay, cptr.ldI16o(otmp, $obj_otyp), cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp));
             break;
         }
         off_msg(otmp);
@@ -2178,7 +2180,7 @@ function accessory_or_armor_on(obj) {
             cptr.stPtr(ga, Shirt_on);
         else
             panic(__s_wearing_armor_not_worn_as_armor_08lx, cptr.ldI64o(obj.v, $obj_owornmask));
-        delay = -cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), 120, $objclass_oc_delay);
+        delay = -cptr.ld1so2(objects, cptr.ldI16o(obj.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay);
         if (delay) {
             nomul(delay);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_dressing_up);
@@ -2233,7 +2235,7 @@ export function doputon() {
 
 /** C ref: do_wear.c:2473 */
 export function find_ac() {
-    let uac = cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), 96, $permonst_ac);
+    let uac = cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_ac);
     if (uarm.v)
         uac = (uac - ARM_BONUS(uarm.v)) | 0;
     if (uarmc.v)
@@ -2599,7 +2601,7 @@ function take_off() {
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 1n) {
         otmp = uarm.v;
         if (uarmc.v)
-            cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + ((Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), 120, $objclass_oc_delay)) + 1) | 0)) | 0);
+            cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + ((Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) + 1) | 0)) | 0);
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 2n) {
         otmp = uarmc.v;
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 32n) {
@@ -2613,9 +2615,9 @@ function take_off() {
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 64n) {
         otmp = uarmu.v;
         if (uarm.v)
-            cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarm.v, $obj_otyp), 120, $objclass_oc_delay))) | 0);
+            cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarm.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay))) | 0);
         if (uarmc.v)
-            cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + ((Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), 120, $objclass_oc_delay)) + 1) | 0)) | 0);
+            cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + ((Math.imul(2, cptr.ld1so2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) + 1) | 0)) | 0);
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 65536n) {
         cptr.stI32o(doff, $takeoff_info_delay, 1);
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 131072n) {
@@ -2629,7 +2631,7 @@ function take_off() {
         return 0;
     }
     if (otmp)
-        cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_delay)) | 0);
+        cptr.stI32o(doff, $takeoff_info_delay, (cptr.ldI32o(doff, $takeoff_info_delay) + cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)) | 0);
     if (cptr.ldI32o(doff, $takeoff_info_delay) > 0)
         (cptr.stI32o(doff, $takeoff_info_delay, cptr.ldI32o(doff, $takeoff_info_delay) + -1)) - (-1);
     set_occupation(take_off, cptr.add(doff, $takeoff_info_disrobing), 0n);
@@ -2709,10 +2711,10 @@ function menu_remarm(retry) {
         if (!n)
             return 0;
         for (i = 0; i < n; i++) {
-            if (cptr.ldI32o(pick_list.v, i, 24) == -2)
+            if (cptr.ldI32o(pick_list.v, i, $sizeof_menu_item) == -2)
                 all_worn_categories = 1;
             else
-                add_valid_menu_class(cptr.ldI32o(pick_list.v, i, 24));
+                add_valid_menu_class(cptr.ldI32o(pick_list.v, i, $sizeof_menu_item));
         }
         cptr.free(pick_list.v);
     } else if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
@@ -2727,7 +2729,7 @@ function menu_remarm(retry) {
     n = query_objlist(__s_what_do_you_want_to_take_off, cptr.add(gi, $instance_globals_i_invent), 56, pick_list, NHM.PICK_ANY, all_worn_categories ? is_worn : is_worn_by_type);
     if (n > 0) {
         for (i = 0; i < n; i++)
-            void select_off(cptr.ldPtro(pick_list.v, i, 24));
+            void select_off(cptr.ldPtro(pick_list.v, i, $sizeof_menu_item));
         cptr.free(pick_list.v);
     } else if (n < 0 && cptr.ld1so(flags, $flag_menu_style) != NHM.MENU_COMBINATION) {
         There(__s_is_nothing_else_you_can_remove_or);
@@ -2813,7 +2815,7 @@ export function disintegrate_arm(atmp) {
 function obj_erode_type(otmp) {
     if (is_flammable(otmp))
         return NHM.ERODE_BURN;
-    else if ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON))
+    else if ((((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.IRON))
         return NHM.ERODE_RUST;
     else if (is_crackable(otmp))
         return NHM.ERODE_CRACK;

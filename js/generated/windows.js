@@ -47,9 +47,13 @@ const $_cmd_queue_key = FLD._cmd_queue_key, $class_sym_explain = FLD.class_sym_e
     $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
     $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
     $menucoloring_next = FLD.menucoloring_next, $sinfo_in_getlin = FLD.sinfo_in_getlin,
-    $to_core_active = FLD.to_core_active, $to_core_havecols = FLD.to_core_havecols,
-    $to_core_haverows = FLD.to_core_haverows, $to_core_maxslot = FLD.to_core_maxslot,
-    $to_core_needcols = FLD.to_core_needcols, $to_core_needrows = FLD.to_core_needrows,
+    $sizeof_any = FLD.sizeof_any, $sizeof_class_sym = FLD.sizeof_class_sym,
+    $sizeof_glyphinfo = FLD.sizeof_glyphinfo, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_win_choices = FLD.sizeof_win_choices, $sizeof_win_request_info_t = FLD.sizeof_win_request_info_t,
+    $sizeof_window_procs = FLD.sizeof_window_procs, $to_core_active = FLD.to_core_active,
+    $to_core_havecols = FLD.to_core_havecols, $to_core_haverows = FLD.to_core_haverows,
+    $to_core_maxslot = FLD.to_core_maxslot, $to_core_needcols = FLD.to_core_needcols,
+    $to_core_needrows = FLD.to_core_needrows,
     $to_core_use_update_inventory = FLD.to_core_use_update_inventory,
     $win_choices_ini_routine = FLD.win_choices_ini_routine,
     $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
@@ -150,12 +154,12 @@ const __s_add_menu_null = cptr.lit("add_menu(Null)");
 const __s_s_s__2 = cptr.lit("%s %s");
 
 /** C ref: windows.c:84 — struct window_procs */
-export let windowprocs = cptr.alloc(416);
+export let windowprocs = cptr.alloc($sizeof_window_procs);
 
 /** C ref: windows.c:92 — struct win_choices { procs, ini_routine } (memory model v0.5) */
 
 /** C ref: windows.c:98 — struct win_choices[2] */
-const winchoices = cptr.alloc(2 * 16);
+const winchoices = cptr.alloc(2 * $sizeof_win_choices);
 cptr.stPtro(winchoices, 0, tty_procs);
 cptr.stPtro(winchoices, 0 + $win_choices_ini_routine, win_tty_init);
 cptr.stPtro(winchoices, 16, null);
@@ -202,9 +206,9 @@ export function check_tty_wincap2(wincap2) {
 /** C ref: windows.c:253 — @param {CPtr<char>} s @returns {CPtr<struct win_choices>} */
 function win_choices_find(s) {
     let i;
-    for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
-        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, 16))), -1)) {
-            return cptr.add(winchoices, i, 16);
+    for (i = 0; cptr.ldPtro(winchoices, i, $sizeof_win_choices); i++) {
+        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices))), -1)) {
+            return cptr.add(winchoices, i, $sizeof_win_choices);
         }
     }
     return null;
@@ -214,18 +218,18 @@ function win_choices_find(s) {
 export function choose_windows(s) {
     let i;
     let tmps = null;
-    for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
-        if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
+    for (i = 0; cptr.ldPtro(winchoices, i, $sizeof_win_choices); i++) {
+        if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
             continue;
-        if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
+        if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
             continue;
-        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, 16))), -1)) {
-            cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, 16), 416);
+        if (!strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices))), -1)) {
+            cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, $sizeof_win_choices), 416);
             if (cptr.ldPtro(gl, $instance_globals_l_last_winchoice) && cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))
                 (cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))(NHM.WININIT_UNDO);
-            if (cptr.ldPtro2(winchoices, i, 16, $win_choices_ini_routine))
-                (cptr.ldPtro2(winchoices, i, 16, $win_choices_ini_routine))(NHM.WININIT);
-            cptr.stPtro(gl, $instance_globals_l_last_winchoice, cptr.add(winchoices, i, 16));
+            if (cptr.ldPtro2(winchoices, i, $sizeof_win_choices, $win_choices_ini_routine))
+                (cptr.ldPtro2(winchoices, i, $sizeof_win_choices, $win_choices_ini_routine))(NHM.WININIT);
+            cptr.stPtro(gl, $instance_globals_l_last_winchoice, cptr.add(winchoices, i, $sizeof_win_choices));
             return;
         }
     }
@@ -233,7 +237,7 @@ export function choose_windows(s) {
         cptr.stPtro(windowprocs, $window_procs_win_raw_print, def_raw_print);
     if (!cptr.ldPtro(windowprocs, $window_procs_win_wait_synch))
         cptr.stPtro(windowprocs, $window_procs_win_wait_synch, def_wait_synch);
-    if (!cptr.ldPtro(winchoices, 0, 16)) {
+    if (!cptr.ldPtro(winchoices, 0, $sizeof_win_choices)) {
         raw_printf(__s_no_window_types_supported);
         nh_terminate(1);
     }
@@ -243,18 +247,18 @@ export function choose_windows(s) {
         cptr.st1o(tmps, 49, 0);
         s = tmps;
     }
-    if (!cptr.ldPtro(winchoices, 1, 16)) {
-        config_error_add(__s_window_type_s_not_recognized_the_only, s, cptr.ldPtr(cptr.ldPtro(winchoices, 0, 16)));
+    if (!cptr.ldPtro(winchoices, 1, $sizeof_win_choices)) {
+        config_error_add(__s_window_type_s_not_recognized_the_only, s, cptr.ldPtr(cptr.ldPtro(winchoices, 0, $sizeof_win_choices)));
     } else {
         let buf = new Uint8Array(256);
         let first = 1;
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
-        for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
-            if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
+        for (i = 0; cptr.ldPtro(winchoices, i, $sizeof_win_choices); i++) {
+            if (43 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
                 continue;
-            if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)), 0))
+            if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
                 continue;
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, first ? __s_empty : __s_comma_sp, cptr.ldPtr(cptr.ldPtro(winchoices, i, 16)));
+            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, first ? __s_empty : __s_comma_sp, cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)));
             first = 0;
         }
         config_error_add(__s_window_type_s_not_recognized_choices, s, cptr.decay(buf));
@@ -289,7 +293,7 @@ export function genl_putmsghistory(msg, is_restoring) {
 }
 
 /** C ref: windows.c:562 — struct window_procs */
-let hup_procs = cptr.alloc(416);
+let hup_procs = cptr.alloc($sizeof_window_procs);
 cptr.stPtr(hup_procs, __s_hup);
 cptr.stI32o(hup_procs, $window_procs_wp_id, NHC.wp_hup);
 cptr.stU64o(hup_procs, $window_procs_wincap, 0n);
@@ -735,7 +739,7 @@ export function genl_status_update(idx, ptr, chg, percent, color, colormasks) {
 }
 
 /** C ref: windows.c:1119 — struct window_procs */
-let dumplog_windowprocs_backup = cptr.alloc(416);
+let dumplog_windowprocs_backup = cptr.alloc($sizeof_window_procs);
 
 /** C ref: windows.c:1120 — FILE * */
 let dumplog_file = null;
@@ -897,7 +901,7 @@ export function decode_glyph(str, glyph_ptr) {
 /** C ref: windows.c:1466 — @param {CPtr<char>} buf @param {CPtr<char>} str @returns {CPtr<char>} */
 export function decode_mixed(buf, str) {
     let put = buf;
-    let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
+    let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
     if (!str)
         return cptr.strcpy(buf, __s_empty);
     while (cptr.ld1s(str)) {
@@ -1012,7 +1016,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 61)) {
                 panic(__s_choose_classes_menu_invalid_monclass_c, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtro2(def_monsyms, idx, 24, $class_sym_explain);
+            text = cptr.ldPtro2(def_monsyms, idx, $sizeof_class_sym, $class_sym_explain);
             accelerator = cptr.ld1s(class_list);
             void cptr.sprintf(cptr.decay(buf), __s_pct_s, text);
             break;
@@ -1021,7 +1025,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
             if (!((idx) >= 0 && (idx) < 18)) {
                 panic(__s_choose_classes_menu_invalid_objclass_c, cptr.ld1s(class_list));
             }
-            text = cptr.ldPtro2(def_oc_syms, idx, 24, $class_sym_explain);
+            text = cptr.ldPtro2(def_oc_syms, idx, $sizeof_class_sym, $class_sym_explain);
             accelerator = next_accelerator;
             void cptr.sprintf(cptr.decay(buf), __s_c_s__2, cptr.ld1s(class_list), text);
             break;
@@ -1062,13 +1066,13 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
     if (n > 0) {
         if (category == 1) {
             for (i = 0; i < n; ++i)
-                if (cptr.ldI32o(pick_list.v, i, 24) == 32) {
-                    cptr.stI32o(pick_list.v, 0, 32, 24);
+                if (cptr.ldI32o(pick_list.v, i, $sizeof_menu_item) == 32) {
+                    cptr.stI32o(pick_list.v, 0, 32, $sizeof_menu_item);
                     n = 1;
                 }
         }
         for (i = 0; i < n; ++i)
-            cptr.st1(cptr.postinc(() => class_select, (v) => { class_select = v; }), schar(cptr.ldI32o(pick_list.v, i, 24)));
+            cptr.st1(cptr.postinc(() => class_select, (v) => { class_select = v; }), schar(cptr.ldI32o(pick_list.v, i, $sizeof_menu_item)));
         cptr.free(pick_list.v);
         ret = n;
     } else if (n == -1) {
@@ -1082,7 +1086,7 @@ export function choose_classes_menu(prompt, category, way, class_list, class_sel
 }
 
 /** C ref: windows.c:1765 — struct win_request_info_t */
-export let zerowri = cptr.alloc(48);
+export let zerowri = cptr.alloc($sizeof_win_request_info_t);
 cptr.stI64(zerowri, 0n);
 cptr.st1o(zerowri, $to_core_active, 0);
 cptr.st1o(zerowri, $to_core_use_update_inventory, 0);
@@ -1098,7 +1102,7 @@ cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle 
 
 /** C ref: windows.c:1769 — @param {CInt} window @param {CPtr<color_attr>} style */
 export function adjust_menu_promptstyle(window, style) {
-    let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
+    let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, $sizeof_win_request_info_t);
     cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, cptr.ldI32(style));
     cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, cptr.ldI32o(style, $color_attr_attr));
     void ctrl_nhwindow()(window, NHC.set_menu_promptstyle, wri);
@@ -1129,7 +1133,7 @@ export function add_menu(window, glyphinfo, identifier, ch, gch, attr, color, st
 
 /** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr<char>} buf */
 export function add_menu_heading(tmpwin, buf) {
-    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
     let attr = cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr);
     let color = cptr.ldI32o(iflags, $instance_flags_menu_headings);
     if (cptr.ldI32(program_state))
@@ -1139,7 +1143,7 @@ export function add_menu_heading(tmpwin, buf) {
 
 /** C ref: windows.c:1832 — @param {CInt} tmpwin @param {CPtr<char>} buf */
 export function add_menu_str(tmpwin, buf) {
-    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
     add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, buf, NHM.MENU_ITEMFLAGS_NONE);
 }
 

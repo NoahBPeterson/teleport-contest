@@ -58,7 +58,9 @@ const $BlockCnt_firstgoto = FLD.BlockCnt_firstgoto, $BlockCnt_firstlabel = FLD.B
     $Upvaldesc_kind = FLD.Upvaldesc_kind, $expdesc_f = FLD.expdesc_f, $expdesc_t = FLD.expdesc_t,
     $expdesc_u = FLD.expdesc_u, $global_State_GCdebt = FLD.global_State_GCdebt,
     $lua_State_l_G = FLD.lua_State_l_G, $lua_State_nCcalls = FLD.lua_State_nCcalls,
-    $lua_State_top = FLD.lua_State_top;
+    $lua_State_top = FLD.lua_State_top, $sizeof_Labeldesc = FLD.sizeof_Labeldesc,
+    $sizeof_LocVar = FLD.sizeof_LocVar, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc,
+    $sizeof_Vardesc = FLD.sizeof_Vardesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_expected = cptr.lit("%s expected");
@@ -182,9 +184,9 @@ function registerlocalvar(ls, fs, varname) {
     let oldsize = cptr.ldI32o(f, $Proto_sizelocvars);
     (cptr.stPtro(f, $Proto_locvars, ((luaM_growaux_(cptr.ldPtro(ls, $LexState_L), cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), cptr.add(f, $Proto_sizelocvars), 16, 32767, __s_local_variables)))));
     while (oldsize < cptr.ldI32o(f, $Proto_sizelocvars))
-        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), oldsize++, null, 16);
-    cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), varname, 16);
-    cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), 16, $LocVar_startpc, cptr.ldI32o(fs, $FuncState_pc));
+        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), oldsize++, null, $sizeof_LocVar);
+    cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), varname, $sizeof_LocVar);
+    cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), $sizeof_LocVar, $LocVar_startpc, cptr.ldI32o(fs, $FuncState_pc));
     ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((varname), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((f)))), ((((varname))))) : (void 0));
     return (cptr.stI16o(fs, $FuncState_ndebugvars, cptr.ldI16o(fs, $FuncState_ndebugvars) + 1)) - (1);
 }
@@ -197,7 +199,7 @@ function new_localvar(ls, name) {
     let var$;
     checklimit(fs, (((cptr.ldI32o(dyd, 8) + 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0, 200, __s_local_variables);
     (cptr.stPtr(dyd, ((luaM_growaux_(L, cptr.ldPtr(dyd), (cptr.ldI32o(dyd, 8) + 1) | 0, cptr.add(dyd, 12), 24, 32767, __s_local_variables)))));
-    var$ = cptr.add(cptr.ldPtr(dyd), (cptr.stI32o(dyd, 8, cptr.ldI32o(dyd, 8) + 1)) - (1), 24);
+    var$ = cptr.add(cptr.ldPtr(dyd), (cptr.stI32o(dyd, 8, cptr.ldI32o(dyd, 8) + 1)) - (1), $sizeof_Vardesc);
     cptr.st1o(var$, 9, 0);
     cptr.stPtro(var$, 16, name);
     return (((cptr.ldI32o(dyd, 8) - 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0;
@@ -205,7 +207,7 @@ function new_localvar(ls, name) {
 
 /** C ref: lparser.c:219 — @param {CPtr<FuncState>} fs @param {CInt} vidx @returns {CPtr<Vardesc>} */
 function getlocalvardesc(fs, vidx) {
-    return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), (cptr.ldI32o(fs, $FuncState_firstlocal) + vidx) | 0, 24);
+    return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), (cptr.ldI32o(fs, $FuncState_firstlocal) + vidx) | 0, $sizeof_Vardesc);
 }
 
 /** C ref: lparser.c:229 — @param {CPtr<FuncState>} fs @param {CInt} nvar @returns {CInt} */
@@ -231,7 +233,7 @@ function localdebuginfo(fs, vidx) {
     else {
         let idx = cptr.ldI16o(vd, 12);
         (void 0);
-        return cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_locvars), idx, 16);
+        return cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_locvars), idx, $sizeof_LocVar);
     }
 }
 
@@ -250,7 +252,7 @@ function check_readonly(ls, e) {
     switch (cptr.ldI32(e)) {
         case NHC.VCONST:
         {
-            varname = cptr.ldPtro2(cptr.ldPtr(cptr.ldPtro(ls, $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), 24, 16);
+            varname = cptr.ldPtro2(cptr.ldPtr(cptr.ldPtro(ls, $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), $sizeof_Vardesc, 16);
             break;
         }
         case NHC.VLOCAL:
@@ -262,7 +264,7 @@ function check_readonly(ls, e) {
         }
         case NHC.VUPVAL:
         {
-            let up = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues), cptr.ldI32o(e, $expdesc_u), 16);
+            let up = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues), cptr.ldI32o(e, $expdesc_u), $sizeof_Upvaldesc);
             if (cptr.ld1uo(up, $Upvaldesc_kind) != 0)
                 varname = cptr.ldPtr(up);
             break;
@@ -304,7 +306,7 @@ function searchupvalue(fs, name) {
     let i;
     let up = cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues);
     for (i = 0; i < cptr.ld1uo(fs, $FuncState_nups); i++) {
-        if ((cptr.eq((cptr.ldPtro(up, i, 16)), (name))))
+        if ((cptr.eq((cptr.ldPtro(up, i, $sizeof_Upvaldesc)), (name))))
             return i;
     }
     return -1;
@@ -317,8 +319,8 @@ function allocupvalue(fs) {
     checklimit(fs, (cptr.ld1uo(fs, $FuncState_nups) + 1) | 0, 255, __s_upvalues);
     (cptr.stPtro(f, $Proto_upvalues, ((luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_upvalues), cptr.ld1uo(fs, $FuncState_nups), cptr.add(f, $Proto_sizeupvalues), 16, 255, __s_upvalues)))));
     while (oldsize < cptr.ldI32o(f, $Proto_sizeupvalues))
-        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), oldsize++, null, 16);
-    return cptr.add(cptr.ldPtro(f, $Proto_upvalues), cptr.postinc1(cptr.add(fs, $FuncState_nups)), 16);
+        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), oldsize++, null, $sizeof_Upvaldesc);
+    return cptr.add(cptr.ldPtro(f, $Proto_upvalues), cptr.postinc1(cptr.add(fs, $FuncState_nups)), $sizeof_Upvaldesc);
 }
 
 /** C ref: lparser.c:364 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} name @param {CPtr<expdesc>} v @returns {CInt} */
@@ -333,7 +335,7 @@ function newupvalue(fs, name, v) {
     } else {
         cptr.st1o(up, $Upvaldesc_instack, 0);
         cptr.st1o(up, $Upvaldesc_idx, (uchar(((cptr.ldI32o(v, $expdesc_u))))));
-        cptr.st1o(up, $Upvaldesc_kind, cptr.ld1uo2(cptr.ldPtro(cptr.ldPtr(prev), $Proto_upvalues), cptr.ldI32o(v, $expdesc_u), 16, $Upvaldesc_kind));
+        cptr.st1o(up, $Upvaldesc_kind, cptr.ld1uo2(cptr.ldPtro(cptr.ldPtr(prev), $Proto_upvalues), cptr.ldI32o(v, $expdesc_u), $sizeof_Upvaldesc, $Upvaldesc_kind));
         (void 0);
     }
     cptr.stPtr(up, name);
@@ -445,13 +447,13 @@ function jumpscopeerror(ls, gt) {
 function solvegoto(ls, g, label) {
     let i;
     let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);
-    let gt = cptr.add(cptr.ldPtr(gl), g, 24);
+    let gt = cptr.add(cptr.ldPtr(gl), g, $sizeof_Labeldesc);
     (void 0);
     if ((__builtin_expect(BigInt(((cptr.ld1uo(gt, $Labeldesc_nactvar) < cptr.ld1uo(label, $Labeldesc_nactvar)) != 0)), 0n)))
         jumpscopeerror(ls, gt);
     luaK_patchlist(cptr.ldPtro(ls, $LexState_fs), cptr.ldI32o(gt, $Labeldesc_pc), cptr.ldI32o(label, $Labeldesc_pc));
     for (i = g; i < ((cptr.ldI32o(gl, $Labellist_n) - 1) | 0); i++)
-        cptr.memcpy(cptr.add(cptr.ldPtr(gl), i, 24), cptr.add(cptr.ldPtr(gl), (i + 1) | 0, 24), 24);
+        cptr.memcpy(cptr.add(cptr.ldPtr(gl), i, $sizeof_Labeldesc), cptr.add(cptr.ldPtr(gl), (i + 1) | 0, $sizeof_Labeldesc), 24);
     (cptr.stI32o(gl, $Labellist_n, cptr.ldI32o(gl, $Labellist_n) + -1)) - (-1);
 }
 
@@ -460,7 +462,7 @@ function findlabel(ls, name) {
     let i;
     let dyd = cptr.ldPtro(ls, $LexState_dyd);
     for (i = cptr.ldI32o(cptr.ldPtro(ls, $LexState_fs), $FuncState_firstlabel); i < cptr.ldI32o(dyd, $Dyndata_label + $Labellist_n); i++) {
-        let lb = cptr.add(cptr.ldPtro(dyd, $Dyndata_label), i, 24);
+        let lb = cptr.add(cptr.ldPtro(dyd, $Dyndata_label), i, $sizeof_Labeldesc);
         if ((cptr.eq((cptr.ldPtr(lb)), (name))))
             return lb;
     }
@@ -471,11 +473,11 @@ function findlabel(ls, name) {
 function newlabelentry(ls, l, name, line, pc) {
     let n = cptr.ldI32o(l, $Labellist_n);
     (cptr.stPtr(l, ((luaM_growaux_(cptr.ldPtro(ls, $LexState_L), cptr.ldPtr(l), n, cptr.add(l, $Labellist_size), 24, 32767, __s_labels_gotos)))));
-    cptr.stPtro(cptr.ldPtr(l), n, name, 24);
-    cptr.stI32o2(cptr.ldPtr(l), n, 24, $Labeldesc_line, line);
-    cptr.st1o2(cptr.ldPtr(l), n, 24, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_nactvar));
-    cptr.st1o2(cptr.ldPtr(l), n, 24, $Labeldesc_close, 0);
-    cptr.stI32o2(cptr.ldPtr(l), n, 24, $Labeldesc_pc, pc);
+    cptr.stPtro(cptr.ldPtr(l), n, name, $sizeof_Labeldesc);
+    cptr.stI32o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_line, line);
+    cptr.st1o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_nactvar));
+    cptr.st1o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_close, 0);
+    cptr.stI32o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_pc, pc);
     cptr.stI32o(l, $Labellist_n, (n + 1) | 0);
     return n;
 }
@@ -491,8 +493,8 @@ function solvegotos(ls, lb) {
     let i = cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_bl), $BlockCnt_firstgoto);
     let needsclose = 0;
     while (i < cptr.ldI32o(gl, $Labellist_n)) {
-        if ((cptr.eq((cptr.ldPtro(cptr.ldPtr(gl), i, 24)), (cptr.ldPtr(lb))))) {
-            needsclose |= cptr.ld1uo2(cptr.ldPtr(gl), i, 24, $Labeldesc_close);
+        if ((cptr.eq((cptr.ldPtro(cptr.ldPtr(gl), i, $sizeof_Labeldesc)), (cptr.ldPtr(lb))))) {
+            needsclose |= cptr.ld1uo2(cptr.ldPtr(gl), i, $sizeof_Labeldesc, $Labeldesc_close);
             solvegoto(ls, i, lb);
         } else
             i++;
@@ -506,9 +508,9 @@ function createlabel(ls, name, line, last) {
     let ll = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label);
     let l = newlabelentry(ls, ll, name, line, luaK_getlabel(fs));
     if (last) {
-        cptr.st1o2(cptr.ldPtr(ll), l, 24, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_nactvar));
+        cptr.st1o2(cptr.ldPtr(ll), l, $sizeof_Labeldesc, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_nactvar));
     }
-    if (solvegotos(ls, cptr.add(cptr.ldPtr(ll), l, 24))) {
+    if (solvegotos(ls, cptr.add(cptr.ldPtr(ll), l, $sizeof_Labeldesc))) {
         luaK_codeABCk(fs, NHC.OP_CLOSE, luaY_nvarstack(fs), 0, 0, 0);
         return 1;
     }
@@ -520,7 +522,7 @@ function movegotosout(fs, bl) {
     let i;
     let gl = cptr.add(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), $Dyndata_gt);
     for (i = cptr.ldI32o(bl, $BlockCnt_firstgoto); i < cptr.ldI32o(gl, $Labellist_n); i++) {
-        let gt = cptr.add(cptr.ldPtr(gl), i, 24);
+        let gt = cptr.add(cptr.ldPtr(gl), i, $sizeof_Labeldesc);
         if (reglevel(fs, cptr.ld1uo(gt, $Labeldesc_nactvar)) > reglevel(fs, cptr.ld1uo(bl, $BlockCnt_nactvar)))
             cptr.st1o(gt, $Labeldesc_close, cptr.ld1uo(gt, $Labeldesc_close) | cptr.ld1uo(bl, $BlockCnt_upval));
         cptr.st1o(gt, $Labeldesc_nactvar, cptr.ld1uo(bl, $BlockCnt_nactvar));
@@ -572,7 +574,7 @@ function leaveblock(fs) {
         movegotosout(fs, bl);
     else {
         if (cptr.ldI32o(bl, $BlockCnt_firstgoto) < cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt + $Labellist_n))
-            undefgoto(ls, cptr.add(cptr.ldPtro(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), cptr.ldI32o(bl, $BlockCnt_firstgoto), 24));
+            undefgoto(ls, cptr.add(cptr.ldPtro(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), cptr.ldI32o(bl, $BlockCnt_firstgoto), $sizeof_Labeldesc));
     }
 }
 

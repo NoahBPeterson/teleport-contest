@@ -73,17 +73,20 @@ const $Gender_his = FLD.Gender_his, $c_common_strings_c_Never_mind = FLD.c_commo
     $objclass_oc_nutrition = FLD.objclass_oc_nutrition, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $symdef_explanation = FLD.symdef_explanation, $trap_ttyp = FLD.trap_ttyp,
-    $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax, $you_moreluck = FLD.you_moreluck,
-    $you_ucreamed = FLD.you_ucreamed, $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave,
-    $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhppeak = FLD.you_uhppeak,
-    $you_uhunger = FLD.you_uhunger, $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel,
-    $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck, $you_umonnum = FLD.you_umonnum,
-    $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
-    $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
-    $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uundetected = FLD.you_uundetected,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
+    $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender, $sizeof_dungeon = FLD.sizeof_dungeon,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_symdef = FLD.sizeof_symdef, $symdef_explanation = FLD.symdef_explanation,
+    $trap_ttyp = FLD.trap_ttyp, $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
+    $you_moreluck = FLD.you_moreluck, $you_ucreamed = FLD.you_ucreamed, $you_uevent = FLD.you_uevent,
+    $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
+    $you_uhppeak = FLD.you_uhppeak, $you_uhunger = FLD.you_uhunger, $you_uinwater = FLD.you_uinwater,
+    $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck,
+    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
+    $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck,
+    $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype,
+    $you_uundetected = FLD.you_uundetected, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_a_strange_sensation = cptr.lit("a strange sensation.");
@@ -354,7 +357,7 @@ function throne_sit_effect() {
                         break;
                     }
                 }
-                cptr.stI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+                cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
                 newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             }
             break;
@@ -388,7 +391,7 @@ function throne_sit_effect() {
             You_feel(__s_somehow_out_of_place);
     }
     if (!special_throne && !(rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 225, __s_throne_sit_effect), rn2(3)) : rn2(3)) && (!wizard() || yn_function(__s_analyze_throne, cptr.decay(ynchars), 110, 1) == 121)) {
-        cptr.st1o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_flags, 0);
+        cptr.st1o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         map_background(tx, ty, 0);
         newsym_force(tx, ty);
         pline_The(__s_throne_s_in_a_puff_of_logic, ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ty, 8), tx) & NHM.IN_SIGHT) != 0) ? __s_vanishes : __s_has_vanished);
@@ -405,7 +408,7 @@ function special_throne_effect(effect) {
         case 3:
         case 4:
         makewish();
-        cptr.st1o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_flags, 0);
+        cptr.st1o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         map_background(tx, ty, 0);
         newsym_force(tx, ty);
         pline_The(__s_throne_disintegrates_having_spent_its);
@@ -437,7 +440,7 @@ function special_throne_effect(effect) {
         {
             let vs_level = cptr.alloc(4);
             find_hell(vs_level);
-            cptr.stI16o(vs_level, $d_level_dlevel, i16(((cptr.ldI16o2(svd, cptr.ldI16(vs_level), 112, $dungeon_num_dunlevs) - 1) | 0)));
+            cptr.stI16o(vs_level, $d_level_dlevel, i16(((cptr.ldI16o2(svd, cptr.ldI16(vs_level), $sizeof_dungeon, $dungeon_num_dunlevs) - 1) | 0)));
             if ((cptr.ldI32o(u, $you_uhave) & 1))
                 You_feel(__s_extremely_disoriented_for_a_moment);
             else
@@ -460,9 +463,9 @@ function special_throne_effect(effect) {
             cptr.stI16o(fake_spellbook, $obj_otyp, NHC.SPE_REMOVE_CURSE);
             cptr.st1o(fake_spellbook, $obj_oclass, NHC.SPBOOK_CLASS);
             cptr.stI32o(fake_spellbook, $obj_blessed, 1);
-            cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, 1n);
+            cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);
             void seffects(fake_spellbook);
-            cptr.stI64o2(u, NHC.CONFUSION, 24, $you_uprops + $prop_intrinsic, save_confusion);
+            cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, save_confusion);
             break;
         }
         case 11:
@@ -497,7 +500,7 @@ function lay_an_egg() {
     if (!cptr.ld1so(flags, $flag_female)) {
         pline(__s_s_can_t_lay_eggs, Hallucination() ? __s_you_may_think_you_are_a_platypus_but_a : __s_males);
         return NHM.ECMD_OK;
-    } else if (cptr.ldI32o(u, $you_uhunger) < cptr.ldU16o2(objects, NHC.EGG, 120, $objclass_oc_nutrition)) {
+    } else if (cptr.ldI32o(u, $you_uhunger) < cptr.ldU16o2(objects, NHC.EGG, $sizeof_objclass, $objclass_oc_nutrition)) {
         You(__s_don_t_have_enough_energy_to_lay_an_egg);
         return NHM.ECMD_OK;
     } else if (eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
@@ -505,7 +508,7 @@ function lay_an_egg() {
             pline(__s_a_splash_tetra_you_are_not);
             return NHM.ECMD_OK;
         }
-        if (Upolyd() && (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_GIANT_EEL, 96)) || cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96)))) {
+        if (Upolyd() && (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_GIANT_EEL, $sizeof_permonst)) || cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_ELECTRIC_EEL, $sizeof_permonst)))) {
             You(__s_yearn_for_the_sargasso_sea);
             return NHM.ECMD_OK;
         }
@@ -520,7 +523,7 @@ function lay_an_egg() {
     You(__s_s_an_egg, eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_spawn : __s_lay);
     dropy(uegg);
     stackobj(uegg);
-    morehungry(cptr.ldU16o2(objects, NHC.EGG, 120, $objclass_oc_nutrition));
+    morehungry(cptr.ldU16o2(objects, NHC.EGG, $sizeof_objclass, $objclass_oc_nutrition));
     return NHM.ECMD_TIME;
 }
 
@@ -531,7 +534,7 @@ export function dosit() {
     let __go_in_water = false;
     __skip_in_water: {
         let trap = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        let typ = cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ);
+        let typ = cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
         if (cptr.ldPtro(u, $you_usteed)) {
             You(__s_are_already_sitting_on_s, mon_nam(cptr.ldPtro(u, $you_usteed)));
             return NHM.ECMD_OK;
@@ -548,13 +551,13 @@ export function dosit() {
             return NHM.ECMD_OK;
         } else if (cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             if (((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 131072n) != 0n))
-                pline(__s_s_won_t_offer_s_lap, Monnam(cptr.ldPtro(u, $you_ustuck)), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_ustuck), NHM.PRONOUN_HALLU), 48, $Gender_his)));
+                pline(__s_s_won_t_offer_s_lap, Monnam(cptr.ldPtro(u, $you_ustuck)), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_ustuck), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)));
             else
                 pline(__s_s_has_no_lap, Monnam(cptr.ldPtro(u, $you_ustuck)));
             return NHM.ECMD_OK;
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Underwater()) {
             { __go_in_water = true; break __skip_in_water; }
-        } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN && (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN || is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
+        } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN && (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN || is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
             { __go_in_water = true; break __skip_in_water; }
         }
         if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !(uteetering_at_seen_pit(trap) || uescaped_shaft(trap))) {
@@ -569,7 +572,7 @@ export function dosit() {
                     You(__s_coil_up_around_s, the(xname(obj)));
                 else
                     You(__s_sit_on_s, the(xname(obj)));
-                if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mflags1) & 4n) != 0n))
+                if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)), $permonst_mflags1) & 4n) != 0n))
                     pline(__s_it_s_squishy);
                 else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE) {
                     if (!Deaf()) {
@@ -577,7 +580,7 @@ export function dosit() {
                         pline(__s_squelch);
                     }
                     useupf(obj, cptr.ldI64o(obj, $obj_quan));
-                } else if (!(Is_box(obj) || ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.CLOTH))
+                } else if (!(Is_box(obj) || ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.CLOTH))
                     pline(__s_it_s_not_very_comfortable);
             }
         } else if (trap !== null || (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) >= NHC.TT_LAVA))) {
@@ -619,13 +622,13 @@ export function dosit() {
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !eggs_in_water(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             __go_in_water = true; break __skip_in_water;
         } else if (((typ) == NHC.SINK)) {
-            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_sink, 24, $symdef_explanation));
+            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_sink, $sizeof_symdef, $symdef_explanation));
             Your(__s_s_gets_wet, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_rump : __s_underside);
         } else if (((typ) == NHC.ALTAR)) {
-            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_altar, 24, $symdef_explanation));
+            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_altar, $sizeof_symdef, $symdef_explanation));
             altar_wrath(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         } else if (((typ) == NHC.GRAVE)) {
-            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_grave, 24, $symdef_explanation));
+            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_grave, $sizeof_symdef, $symdef_explanation));
         } else if (typ == NHC.STAIRS) {
             You(cptr.decay(__static_dosit_sit_message), __s_stairs);
         } else if (typ == NHC.LADDER) {
@@ -640,13 +643,13 @@ export function dosit() {
             pline_The(__s_s_burns_you, hliquid(__s_lava));
             losehp((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 548, __s_dosit), d(((Fire_resistance() ? 2 : 10)), 10)) : d(((Fire_resistance() ? 2 : 10)), 10)), __s_sitting_on_lava, NHM.KILLED_BY);
         } else if (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_ice, 24, $symdef_explanation));
+            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_ice, $sizeof_symdef, $symdef_explanation));
             if (!Cold_resistance())
                 pline_The(__s_ice_feels_cold);
         } else if (typ == NHC.DRAWBRIDGE_DOWN) {
             You(cptr.decay(__static_dosit_sit_message), __s_drawbridge);
         } else if (((typ) == NHC.THRONE)) {
-            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_throne, 24, $symdef_explanation));
+            You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_throne, $sizeof_symdef, $symdef_explanation));
             throne_sit_effect();
         } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4194304n) != 0n)) {
             return lay_an_egg();
@@ -658,7 +661,7 @@ export function dosit() {
         You(__s_sit_in_the_s__2, hliquid(__s_water));
         if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
             if (split_mon(cptr.add(gy, $instance_globals_y_youmonst), null)) {
-                if (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN)
+                if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.FOUNTAIN)
                     dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1);
             }
         } else {
@@ -735,7 +738,7 @@ export function attrcurse() {
     switch ((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 648, __s_attrcurse), rnd(11)) : rnd(11))) {
         case 1:
         if (HFire_resistance() & 117440512n) {
-            cptr.stI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_warmer);
             ret = NHC.FIRE_RES;
             break;
@@ -744,7 +747,7 @@ export function attrcurse() {
         ;
         case 2:
         if (HTeleportation() & 117440512n) {
-            cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_less_jumpy);
             ret = NHC.TELEPORT;
             break;
@@ -753,7 +756,7 @@ export function attrcurse() {
         ;
         case 3:
         if (HPoison_resistance() & 117440512n) {
-            cptr.stI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_a_little_sick);
             ret = NHC.POISON_RES;
             break;
@@ -762,7 +765,7 @@ export function attrcurse() {
         ;
         case 4:
         if (HTelepat() & 117440512n) {
-            cptr.stI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             if (Blind() && !Blind_telepat())
                 see_monsters();
             Your(__s_senses_fail);
@@ -773,7 +776,7 @@ export function attrcurse() {
         ;
         case 5:
         if (HCold_resistance() & 117440512n) {
-            cptr.stI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_cooler);
             ret = NHC.COLD_RES;
             break;
@@ -782,7 +785,7 @@ export function attrcurse() {
         ;
         case 6:
         if (HInvis() & 117440512n) {
-            cptr.stI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_paranoid);
             ret = NHC.INVIS;
             break;
@@ -791,7 +794,7 @@ export function attrcurse() {
         ;
         case 7:
         if (HSee_invisible() & 117440512n) {
-            cptr.stI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             if (!See_invisible()) {
                 set_mimic_blocking();
                 see_monsters();
@@ -805,7 +808,7 @@ export function attrcurse() {
         ;
         case 8:
         if (HFast() & 117440512n) {
-            cptr.stI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_slower);
             ret = NHC.FAST;
             break;
@@ -814,7 +817,7 @@ export function attrcurse() {
         ;
         case 9:
         if (HStealth() & 117440512n) {
-            cptr.stI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_clumsy);
             ret = NHC.STEALTH;
             break;
@@ -823,7 +826,7 @@ export function attrcurse() {
         ;
         case 10:
         if (HProtection() & 117440512n) {
-            cptr.stI64o2(u, NHC.PROTECTION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_vulnerable);
             ret = NHC.PROTECTION;
             break;
@@ -832,7 +835,7 @@ export function attrcurse() {
         ;
         case 11:
         if (HAggravate_monster() & 117440512n) {
-            cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, 24, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
             You_feel(__s_less_attractive);
             ret = NHC.AGGRAVATE_MONSTER;
             break;

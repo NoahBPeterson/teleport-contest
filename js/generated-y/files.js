@@ -88,6 +88,9 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $sfstatus_to_msg_msg = FLD.sfstatus_to_msg_msg, $sinfo_done_hup = FLD.sinfo_done_hup,
     $sinfo_in_paniclog = FLD.sinfo_in_paniclog, $sinfo_in_self_recover = FLD.sinfo_in_self_recover,
     $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing,
+    $sizeof_Align = FLD.sizeof_Align, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_flock = FLD.sizeof_flock, $sizeof_linfo = FLD.sizeof_linfo,
+    $sizeof_sfstatus_to_msg = FLD.sizeof_sfstatus_to_msg, $sizeof_symsetentry = FLD.sizeof_symsetentry,
     $symsetentry_explicitly = FLD.symsetentry_explicitly, $symsetentry_name = FLD.symsetentry_name,
     $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools, $sysopt_s_bonesformat = FLD.sysopt_s_bonesformat,
     $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles, $sysopt_s_livelog = FLD.sysopt_s_livelog,
@@ -467,7 +470,7 @@ export function* create_levelfile(lev, errbuf) {
         cptr.stPtro(nhfp, $NHFILE_fpdef, null);
         cptr.stI32(nhfp, creat(fq_lock, NHM.FCMASK));
         if (cptr.ldI32(nhfp) >= 0)
-            cptr.st1o2(svl, lev, 1, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) | NHM.LFILE_EXISTS);
+            cptr.st1o2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) | NHM.LFILE_EXISTS);
         else if (errbuf)
             void cptr.sprintf(errbuf, __s_cannot_create_file_s_for_level_d_errno_d, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
     }
@@ -507,10 +510,10 @@ export function* open_levelfile(lev, errbuf) {
 
 /** C ref: files.c:719 — @param {CInt} lev */
 export function delete_levelfile(lev) {
-    if (lev == 0 || (cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS)) {
+    if (lev == 0 || (cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS)) {
         set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
         void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
-        cptr.st1o2(svl, lev, 1, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, 1, $instance_globals_saved_l_level_info) & -5);
+        cptr.st1o2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) & -5);
     }
 }
 
@@ -541,7 +544,7 @@ function set_bonesfile_name(file, lev) {
         void cptr.sprintf(eos(file), __s_pct_u, poolnum);
     }
     dptr = eos(file);
-    void cptr.sprintf(dptr, __s_c_s, cptr.ld1so2(svd, cptr.ldI16(lev), 112, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __s_0);
+    void cptr.sprintf(dptr, __s_c_s, cptr.ld1so2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __s_0);
     if ((sptr = Is_special(lev)) !== null)
         void cptr.sprintf(eos(dptr), __s_dot_pct_c, cptr.ld1so(sptr, $s_level_boneid));
     else
@@ -1019,7 +1022,7 @@ export function* nh_uncompress(filename) {
 /** C ref: files.c:1997 — struct sfstatus_to_msg { sfstatus, msg } (memory model v0.5) */
 
 /** C ref: files.c:2000 — struct sfstatus_to_msg[10] */
-const sf2msg = cptr.alloc(10 * 16);
+const sf2msg = cptr.alloc(10 * $sizeof_sfstatus_to_msg);
 cptr.stI32o(sf2msg, 0, NHM.SF_UPTODATE);
 cptr.stPtro(sf2msg, 0 + $sfstatus_to_msg_msg, __s_everything_matches);
 cptr.stI32o(sf2msg, 16, NHM.SF_OUTDATED);
@@ -1061,8 +1064,8 @@ function* problematic_savefile(sfstatus, savefilenm) {
         case NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH:
         default:
         for (i = 0; i < 10; ++i) {
-            if (cptr.ldI32o(sf2msg, i, 16) == sfstatus) {
-                (yield* raw_printf(__s_s_is_s_s, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a, cptr.ldPtro2(sf2msg, i, 16, $sfstatus_to_msg_msg)));
+            if (cptr.ldI32o(sf2msg, i, $sizeof_sfstatus_to_msg) == sfstatus) {
+                (yield* raw_printf(__s_s_is_s_s, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a, cptr.ldPtro2(sf2msg, i, $sizeof_sfstatus_to_msg, $sfstatus_to_msg_msg)));
                 break;
             }
         }
@@ -1173,7 +1176,7 @@ export function contains_directory(s) {
 let lockfd = -1;
 
 /** C ref: files.c:2204 — struct flock */
-let sflock = cptr.alloc(24);
+let sflock = cptr.alloc($sizeof_flock);
 
 /** C ref: files.c:2255 — @param {CPtr<char>} filename @param {CInt} whichprefix @param {CInt} retryct @returns {CInt} */
 export function* lock_file(filename, whichprefix, retryct) {
@@ -1317,10 +1320,10 @@ function fopen_sym_file() {
 /** C ref: files.c:2631 — @param {CInt} which_set @returns {CInt} */
 export function* read_sym_file(which_set) {
     let fp;
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_explicitly, 0);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 0);
     if (!(fp = fopen_sym_file()))
         return 0;
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_explicitly, 1);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 1);
     cptr.st1o(gc, $instance_globals_c_chosen_symset_start, cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 0));
     cptr.stI32o(gs, $instance_globals_s_symset_which_set, which_set);
     cptr.stI32o(gs, $instance_globals_s_symset_count, 0);
@@ -1328,17 +1331,17 @@ export function* read_sym_file(which_set) {
     (yield* parse_conf_file(fp, proc_symset_line));
     void fclose(fp);
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_start) && !cptr.ld1so(gc, $instance_globals_c_chosen_symset_end)) {
-        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name), __s_default_symbols, __s_sp_dash_us, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)), (__s_default), -1))))
+        if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) && ((yield* fuzzymatch(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name), __s_default_symbols, __s_sp_dash_us, 1)) || !(yield* strncmpi((cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), (__s_default), -1))))
             clear_symsetentry(which_set, 1);
         (yield* config_error_done());
-        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)) {
-            cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_explicitly, 0);
+        if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
+            cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 0);
             return 0;
         }
         return 1;
     }
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_end))
-        (yield* config_error_add(__s_missing_finish_for_symset_s, cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name) : __s_unknown));
+        (yield* config_error_add(__s_missing_finish_for_symset_s, cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_unknown));
     (yield* config_error_done());
     return 1;
 }
@@ -1681,7 +1684,7 @@ export function* livelog_add(ll_type, str) {
         now = (yield* getnow());
         gindx = cptr.ld1so(flags, $flag_female) ? 1 : 0;
         aindx = (1 - cptr.ld1so(u, $you_ualign)) | 0;
-        void fprintf(livelogfile, __s_lltype_ld_name_s_role_s_race_s_gender_s, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, 48, $Gender_filecode), cptr.ldPtro2(aligns, aindx, 32, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
+        void fprintf(livelogfile, __s_lltype_ld_name_s_role_s_race_s_gender_s, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, aindx, $sizeof_Align, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
         void fclose(livelogfile);
         (yield* unlock_file(__s_livelog));
     }

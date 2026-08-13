@@ -50,12 +50,13 @@ const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1, $branch_
     $q_score_leader_m_id = FLD.q_score_leader_m_id, $q_score_made_goal = FLD.q_score_made_goal,
     $q_score_met_leader = FLD.q_score_met_leader, $q_score_met_nemesis = FLD.q_score_met_nemesis,
     $q_score_not_ready = FLD.q_score_not_ready, $q_score_pissed_off = FLD.q_score_pissed_off,
-    $q_score_touched_artifact = FLD.q_score_touched_artifact, $trap_ttyp = FLD.trap_ttyp,
-    $u_event_qcompleted = FLD.u_event_qcompleted, $u_event_qexpelled = FLD.u_event_qexpelled,
-    $u_have_questart = FLD.u_have_questart, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent,
-    $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
+    $q_score_touched_artifact = FLD.q_score_touched_artifact, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $trap_ttyp = FLD.trap_ttyp, $u_event_qcompleted = FLD.u_event_qcompleted,
+    $u_event_qexpelled = FLD.u_event_qexpelled, $u_have_questart = FLD.u_have_questart,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ualign = FLD.you_ualign,
+    $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave,
+    $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_firsttime = cptr.lit("firsttime");
@@ -392,7 +393,7 @@ function chat_with_guardian() {
 
 /** C ref: quest.c:451 — @param {CPtr<struct monst>} mtmp */
 function prisoner_speaks(mtmp) {
-    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
+    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
         if (canseemon(mtmp))
             pline(__s_s_speaks, Monnam(mtmp));
         ;

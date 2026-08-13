@@ -17,9 +17,9 @@ import { iflags } from './decl.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $instance_flags_cbreak = FLD.instance_flags_cbreak, $instance_flags_echo = FLD.instance_flags_echo,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited, $termios_c_cc = FLD.termios_c_cc,
-    $termios_c_cflag = FLD.termios_c_cflag, $termios_c_lflag = FLD.termios_c_lflag,
-    $termios_c_oflag = FLD.termios_c_oflag,
+    $instance_flags_window_inited = FLD.instance_flags_window_inited, $sizeof_termios = FLD.sizeof_termios,
+    $termios_c_cc = FLD.termios_c_cc, $termios_c_cflag = FLD.termios_c_cflag,
+    $termios_c_lflag = FLD.termios_c_lflag, $termios_c_oflag = FLD.termios_c_oflag,
     $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
     $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
     $window_procs_wp_id = FLD.window_procs_wp_id;
@@ -43,10 +43,10 @@ export let kill_char = 0;
 let settty_needed = 0;
 
 /** C ref: unixtty.c:153 — struct termios */
-export let inittyb = cptr.alloc(72);
+export let inittyb = cptr.alloc($sizeof_termios);
 
 /** C ref: unixtty.c:153 — struct termios */
-export let curttyb = cptr.alloc(72);
+export let curttyb = cptr.alloc($sizeof_termios);
 
 /** C ref: unixtty.c:157 — @param {CLongLong} speed @returns {CInt} */
 function speednum(speed) {

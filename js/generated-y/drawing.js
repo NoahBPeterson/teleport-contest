@@ -16,6 +16,7 @@ import * as FLD from './nhfield.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $class_sym_explain = FLD.class_sym_explain, $class_sym_name = FLD.class_sym_name,
+    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_symdef = FLD.sizeof_symdef,
     $symdef_color = FLD.symdef_color, $symdef_explanation = FLD.symdef_explanation;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -181,7 +182,7 @@ const __s_poison_cloud = cptr.lit("poison cloud");
 const __s_valid_position = cptr.lit("valid position");
 
 /** C ref: drawing.c:24 — struct class_sym[18] */
-export const def_oc_syms = cptr.alloc(18 * 24);
+export const def_oc_syms = cptr.alloc(18 * $sizeof_class_sym);
 cptr.st1o(def_oc_syms, 0, 0);
 cptr.stPtro(def_oc_syms, 0 + $class_sym_name, __s_empty);
 cptr.stPtro(def_oc_syms, 0 + $class_sym_explain, __s_empty);
@@ -238,7 +239,7 @@ cptr.stPtro(def_oc_syms, 408 + $class_sym_name, __s_venoms);
 cptr.stPtro(def_oc_syms, 408 + $class_sym_explain, __s_splash_of_venom);
 
 /** C ref: drawing.c:32 — struct class_sym[61] */
-export const def_monsyms = cptr.alloc(61 * 24);
+export const def_monsyms = cptr.alloc(61 * $sizeof_class_sym);
 cptr.st1o(def_monsyms, 0, 0);
 cptr.stPtro(def_monsyms, 0 + $class_sym_name, __s_empty);
 cptr.stPtro(def_monsyms, 0 + $class_sym_explain, __s_empty);
@@ -424,7 +425,7 @@ cptr.stPtro(def_monsyms, 1440 + $class_sym_name, __s_empty);
 cptr.stPtro(def_monsyms, 1440 + $class_sym_explain, __s_mimic);
 
 /** C ref: drawing.c:39 — struct symdef[6] */
-export const def_warnsyms = cptr.alloc(6 * 24);
+export const def_warnsyms = cptr.alloc(6 * $sizeof_symdef);
 cptr.st1o(def_warnsyms, 0, 48);
 cptr.stPtro(def_warnsyms, 0 + $symdef_explanation, __s_unknown_creature_causing_you_worry);
 cptr.st1o(def_warnsyms, 0 + $symdef_color, NHM.CLR_WHITE);
@@ -445,7 +446,7 @@ cptr.stPtro(def_warnsyms, 120 + $symdef_explanation, __s_unknown_creature_causin
 cptr.st1o(def_warnsyms, 120 + $symdef_color, NHM.CLR_BRIGHT_MAGENTA);
 
 /** C ref: drawing.c:64 — struct symdef[106] */
-export const defsyms = cptr.alloc(106 * 24);
+export const defsyms = cptr.alloc(106 * $sizeof_symdef);
 cptr.st1o(defsyms, 0, 32);
 cptr.stPtro(defsyms, 0 + $symdef_explanation, __s_stone);
 cptr.st1o(defsyms, 0 + $symdef_color, NHM.NO_COLOR);
@@ -772,7 +773,7 @@ export const def_r_oc_syms = [0, NHC.ILLOBJ_SYM, NHC.WEAPON_SYM, 93, NHC.RING_SY
 export function def_char_to_objclass(ch) {
     let i;
     for (i = 1; i < NHC.MAXOCLASSES; i++)
-        if (ch == cptr.ld1so(def_oc_syms, i, 24))
+        if (ch == cptr.ld1so(def_oc_syms, i, $sizeof_class_sym))
             break;
     return i;
 }
@@ -781,7 +782,7 @@ export function def_char_to_objclass(ch) {
 export function def_char_to_monclass(ch) {
     let i;
     for (i = 1; i < NHC.MAXMCLASSES; i++)
-        if (ch == cptr.ld1so(def_monsyms, i, 24))
+        if (ch == cptr.ld1so(def_monsyms, i, $sizeof_class_sym))
             break;
     return i;
 }
@@ -795,13 +796,13 @@ export function def_char_is_furniture(ch) {
     let furniture = 0;
     for (i = 0; i < NHC.MAXPCHARS; ++i) {
         if (!furniture) {
-            if (!cptr.strncmp(cptr.ldPtro2(defsyms, i, 24, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
+            if (!cptr.strncmp(cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
                 furniture = 1;
         }
         if (furniture) {
-            if (cptr.ld1uo(defsyms, i, 24) == uchar(ch))
+            if (cptr.ld1uo(defsyms, i, $sizeof_symdef) == uchar(ch))
                 return i;
-            if (!strcmp(cptr.ldPtro2(defsyms, i, 24, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_last_furniture)))
+            if (!strcmp(cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_last_furniture)))
                 break;
         }
     }

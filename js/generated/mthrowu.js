@@ -102,7 +102,9 @@ const $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his, $Role_mnum = F
     $permonst_mlet = FLD.permonst_mlet, $permonst_msize = FLD.permonst_msize,
     $permonst_pmidx = FLD.permonst_pmidx, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
-    $throw_and_return_weapon_range = FLD.throw_and_return_weapon_range,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $throw_and_return_weapon_range = FLD.throw_and_return_weapon_range,
     $throw_and_return_weapon_tethered = FLD.throw_and_return_weapon_tethered,
     $u_roleplay_deaf = FLD.u_roleplay_deaf,
     $window_procs_win_delay_output = FLD.window_procs_win_delay_output, $you_uac = FLD.you_uac,
@@ -509,7 +511,7 @@ export function thitu(tlev, dam, objp, name) {
             potionhit(cptr.add(gy, $instance_globals_y_youmonst), obj, NHM.POTHIT_OTHER_THROW);
             cptr.stPtr(objp, obj = null);
         } else {
-            if (obj && ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+            if (obj && ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                 pline_The(__s_silver_sears_your_flesh);
                 exercise(NHC.A_CON, 0);
             }
@@ -654,7 +656,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
         potionhit(mtmp, otmp, NHM.POTHIT_OTHER_THROW);
         return 1;
     } else {
-        let material = (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0;
+        let material = (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0;
         let harmless = schar((stone_missile(otmp) && passes_rocks(cptr.ldPtro(mtmp, $monst_data)) ? 1 : 0));
         damage = dmgval(otmp, mtmp);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ACID_VENOM && Resists_Elem(mtmp, NHC.ACID_RES))
@@ -665,13 +667,13 @@ export function ohitmon(mtmp, otmp, range, verbose) {
         ;
         if (vis) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG) {
-                pline(__s_splat_s_is_hit_with_s_egg, Monnam(mtmp), (cptr.ldI32o(otmp, $obj_known) & 1) | 0 ? an(cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, NHC.NEUTRAL, 8, 0)) : __s_an__2);
+                pline(__s_splat_s_is_hit_with_s_egg, Monnam(mtmp), (cptr.ldI32o(otmp, $obj_known) & 1) | 0 ? an(cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, NHC.NEUTRAL, 8, 0)) : __s_an__2);
             } else {
                 let how = new Uint8Array(256);
                 if (!harmless)
                     void cptr.strcpy(cptr.decay(how), exclam(damage));
                 else
-                    void cptr.sprintf(cptr.decay(how), __s_but_passes_harmlessly_through_9s, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_him)));
+                    void cptr.sprintf(cptr.decay(how), __s_but_passes_harmlessly_through_9s, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_him)));
                 hit(distant_name(otmp, mshot_xname), mtmp, cptr.decay(how));
             }
         } else if (verbose && !cptr.ldPtro(gm, $instance_globals_m_mtarget))
@@ -712,7 +714,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
                     pline(__s_it_is_burned);
             }
         }
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96))) {
+        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))) {
             if (!munstone(mtmp, 0))
                 minstapetrify(mtmp, 0);
             if (Resists_Elem(mtmp, NHC.STONE_RES))
@@ -824,7 +826,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
             return;
         }
     }
-    if ((!isok(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || ((cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, 756, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || (cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, 756, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS && hits_bars(singleobj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0)), 0, 0)) || 0)) {
+    if ((!isok(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || ((cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, $sizeof_rm_x21, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || (cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, $sizeof_rm_x21, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS && hits_bars(singleobj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0)), 0, 0)) || 0)) {
         void drop_throw(singleobj.v, 0, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
         return;
     }
@@ -861,7 +863,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
             oldumort = cptr.ldI32o(u, $you_umortality);
             switch (cptr.ldI16o(singleobj.v, $obj_otyp)) {
                 case NHC.EGG:
-                if (!touch_petrifies(cptr.add(mons, cptr.ldI32o(singleobj.v, $obj_corpsenm), 96))) {
+                if (!touch_petrifies(cptr.add(mons, cptr.ldI32o(singleobj.v, $obj_corpsenm), $sizeof_permonst))) {
                     impossible(__s_monster_throwing_egg_type_d, cptr.ldI32o(singleobj.v, $obj_corpsenm));
                     hitu = 0;
                     break;
@@ -880,7 +882,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
                     hitv = (3 - distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) | 0;
                     if (hitv < -4)
                         hitv = -4;
-                    if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 16n) != 0n) && cptr.ld1so2(objects, cptr.ldI16o(singleobj.v, $obj_otyp), 120, $objclass_oc_subtyp) == -20) {
+                    if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 16n) != 0n) && cptr.ld1so2(objects, cptr.ldI16o(singleobj.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == -20) {
                         hitv++;
                         if ((cptr.ldPtro((mon), $monst_mw)) && cptr.ldI16o((cptr.ldPtro((mon), $monst_mw)), $obj_otyp) == NHC.ELVEN_BOW)
                             hitv++;
@@ -937,9 +939,9 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
             }
         }
         forcehit = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_mthrowu_c, 798, __s_m_throw), rn2(5)) : rn2(5))));
-        if (!range || (!isok(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || ((cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, 756, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || (cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, 756, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS && hits_bars(singleobj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0)), (forcehit), 0)) || (((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 756, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)))) {
+        if (!range || (!isok(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || ((cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, $sizeof_rm_x21, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || (cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, $sizeof_rm_x21, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS && hits_bars(singleobj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0)), (forcehit), 0)) || (((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)))) {
             if (singleobj.v) {
-                if (range && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 756, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK))
+                if (range && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK))
                     pline(__s_s_s_onto_the_sink, The(mshot_xname(singleobj.v)), otense(singleobj.v, Hallucination() ? __s_plop : __s_drop));
                 else if (cptr.ldI32o(gm, $instance_globals_m_m_shot) > 1 && (!cptr.ldI32o(gm, $instance_globals_m_mesg_given) || cptr.ldI16o(gb, $instance_globals_b_bhitpos) != cptr.ldI16(u) || cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) != cptr.ldI16o(u, $you_uy)) && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) || (cptr.ldPtro(gm, $instance_globals_m_marcher) && canseemon(cptr.ldPtro(gm, $instance_globals_m_marcher)))))
                     pline(__s_s_misses, The(mshot_xname(singleobj.v)));
@@ -1020,14 +1022,14 @@ function return_from_mtoss(magr, otmp, tethered_weapon) {
             dmg.v = (rng_log_enabled() ? (rng_log_set_caller(__s_mthrowu_c, 902, __s_return_from_mtoss), rn2(2)) : rn2(2));
             if (!dmg.v) {
                 if (canseemon(magr)) {
-                    pline(__s_s_back_to_s_landing_s_s_s, Tobjnam(otmp, __s_return), mon_nam(magr), mlevitating ? __s_beneath : __s_at__2, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, $Gender_his)), makeplural(mbodypart(magr, NHC.FOOT)));
+                    pline(__s_s_back_to_s_landing_s_s_s, Tobjnam(otmp, __s_return), mon_nam(magr), mlevitating ? __s_beneath : __s_at__2, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), makeplural(mbodypart(magr, NHC.FOOT)));
                 } else if (!Deaf()) {
                     You_hear(__s_s_land_near_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), mon_nam(magr));
                 }
             } else {
                 dmg.v = (dmg.v + (rng_log_enabled() ? (rng_log_set_caller(__s_mthrowu_c, 913, __s_return_from_mtoss), rnd(3)) : rnd(3))) | 0;
                 if (canseemon(magr)) {
-                    pline(__s_s_back_toward_s_hitting_s_s, Tobjnam(otmp, __s_fly), mon_nam(magr), (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, $Gender_his)), body_part(NHC.ARM));
+                    pline(__s_s_back_toward_s_hitting_s_s, Tobjnam(otmp, __s_fly), mon_nam(magr), (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), body_part(NHC.ARM));
                 } else if (!Deaf()) {
                     You_hear(__s_s_hit_s_with_a_thud, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), mon_nam(magr));
                 }
@@ -1297,7 +1299,7 @@ export function breamu(mtmp, mattk) {
 
 /** C ref: mthrowu.c:1282 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function blocking_terrain(x, y) {
-    if (!isok(x, y) || ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(x, y) || is_waterwall(x, y) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL)
+    if (!isok(x, y) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(x, y) || is_waterwall(x, y) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAWALL)
         return 1;
     return 0;
 }
@@ -1396,7 +1398,7 @@ cptr.stPtro(__static_hit_bars_barsounds, 40, __s_clonk); /** C ref: mthrowu.c:14
 export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
     let otmp = cptr.ldPtr(objp);
     let obj_type = cptr.ldI16o(otmp, $obj_otyp);
-    let nodissolve = schar(((((cptr.ldI32o3(svl, barsx, 756, barsy, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0));
+    let nodissolve = schar(((((cptr.ldI32o3(svl, barsx, $sizeof_rm_x21, barsy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0));
     let your_fault = schar((((breakflags & NHM.BRK_BY_HERO) >>> 0) != 0));
     let melee_attk = schar((((breakflags & NHM.BRK_MELEE) >>> 0) != 0));
     let noise = 0;
@@ -1414,7 +1416,7 @@ export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
         }
     } else {
         if (!Deaf()) {
-            let bsindx = (obj_type == NHC.BOULDER || obj_type == NHC.HEAVY_IRON_BALL) ? 1 : (harmless_missile(otmp) ? 2 : (is_flimsy(otmp) ? 3 : ((cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS || ((cptr.ldI32o2(objects, obj_type, 120, $objclass_oc_material) & 31) | 0) == NHC.GOLD || ((cptr.ldI32o2(objects, obj_type, 120, $objclass_oc_material) & 31) | 0) == NHC.SILVER) ? 4 : (6 - 1) | 0)));
+            let bsindx = (obj_type == NHC.BOULDER || obj_type == NHC.HEAVY_IRON_BALL) ? 1 : (harmless_missile(otmp) ? 2 : (is_flimsy(otmp) ? 3 : ((cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS || ((cptr.ldI32o2(objects, obj_type, $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GOLD || ((cptr.ldI32o2(objects, obj_type, $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER) ? 4 : (6 - 1) | 0)));
             ;
             pline(__s_pct_s_bang, cptr.ldPtro(__static_hit_bars_barsounds, bsindx, 8));
             (void (cptr.ldI32o(__static_hit_bars_se, bsindx, 4)));
@@ -1444,22 +1446,22 @@ export function hits_bars(obj_p, x, y, barsx, barsy, always_hit, whodidit) {
         switch (cptr.ld1so(otmp, $obj_oclass)) {
             case NHC.WEAPON_CLASS:
             {
-                let oskill = cptr.ld1so2(objects, obj_type, 120, $objclass_oc_subtyp);
+                let oskill = cptr.ld1so2(objects, obj_type, $sizeof_objclass, $objclass_oc_subtyp);
                 hits = schar((oskill != -20 && oskill != -22 && oskill != -23 && oskill != -24 && oskill != NHC.P_SPEAR && oskill != NHC.P_KNIFE ? 1 : 0));
                 break;
             }
             case NHC.ARMOR_CLASS:
-            hits = schar((cptr.ld1so2(objects, obj_type, 120, $objclass_oc_subtyp) != NHC.ARM_GLOVES));
+            hits = schar((cptr.ld1so2(objects, obj_type, $sizeof_objclass, $objclass_oc_subtyp) != NHC.ARM_GLOVES));
             break;
             case NHC.TOOL_CLASS:
             hits = schar((obj_type != NHC.SKELETON_KEY && obj_type != NHC.LOCK_PICK && obj_type != NHC.CREDIT_CARD && obj_type != NHC.TALLOW_CANDLE && obj_type != NHC.WAX_CANDLE && obj_type != NHC.LENSES && obj_type != NHC.TIN_WHISTLE && obj_type != NHC.MAGIC_WHISTLE ? 1 : 0));
             break;
             case NHC.ROCK_CLASS:
-            if (obj_type != NHC.STATUE || cptr.ld1uo2(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, $permonst_msize) > NHM.MZ_TINY)
+            if (obj_type != NHC.STATUE || cptr.ld1uo2(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, $permonst_msize) > NHM.MZ_TINY)
                 hits = 1;
             break;
             case NHC.FOOD_CLASS:
-            if (obj_type == NHC.CORPSE && cptr.ld1uo2(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, $permonst_msize) > NHM.MZ_TINY)
+            if (obj_type == NHC.CORPSE && cptr.ld1uo2(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, $permonst_msize) > NHM.MZ_TINY)
                 hits = 1;
             else
                 hits = schar((obj_type == NHC.MEAT_STICK || obj_type == NHC.ENORMOUS_MEATBALL ? 1 : 0));

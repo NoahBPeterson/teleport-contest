@@ -40,7 +40,8 @@ const $Role_mnum = FLD.Role_mnum, $const_globals_zeromonst = FLD.const_globals_z
     $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
     $obj_otyp = FLD.obj_otyp, $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
     $objclass_oc_merge = FLD.objclass_oc_merge, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_pmidx = FLD.permonst_pmidx, $you_uz = FLD.you_uz;
+    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_pmidx = FLD.permonst_pmidx,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_alex = cptr.lit("Alex");
@@ -361,7 +362,7 @@ export function mk_mplayer(ptr, x, y, special) {
                 cptr.stI32o(otmp, $obj_greased, 1);
             if (special && (rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 265, __s_mk_mplayer), rn2(2)) : rn2(2)))
                 otmp = mk_artifact(otmp, -128, 99, 0);
-            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, $obj_oartifact) && monmightthrowwep(otmp))
+            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, $obj_oartifact) && monmightthrowwep(otmp))
                 cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 270, __s_mk_mplayer), rn2(is_spear(otmp) ? 4 : 8)) : rn2(is_spear(otmp) ? 4 : 8))));
             cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
             if (is_art(otmp, NHC.ART_MAGICBANE))
@@ -413,14 +414,14 @@ export function create_mplayers(num, special) {
     while (num) {
         let tryct = 0;
         pm = (((rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 337, __s_create_mplayers), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
-        set_mon_data(fakemon, cptr.add(mons, pm, 96));
+        set_mon_data(fakemon, cptr.add(mons, pm, $sizeof_permonst));
         do {
             x = (((rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 342, __s_create_mplayers), rn2(76)) : rn2(76)) + 2) | 0);
             y = (rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 343, __s_create_mplayers), rnd(19)) : rnd(19));
         } while (!goodpos(i16(x), i16(y), fakemon, 0) && tryct++ <= 50);
         if (tryct > 50)
             return;
-        void mk_mplayer(cptr.add(mons, pm, 96), i16(x), i16(y), special);
+        void mk_mplayer(cptr.add(mons, pm, $sizeof_permonst), i16(x), i16(y), special);
         num--;
     }
 }
@@ -439,7 +440,7 @@ export function mplayer_talk(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         return;
     ;
-    verbalize(__s_talk_s, cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), 96)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 375, __s_mplayer_talk), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 376, __s_mplayer_talk), rn2(3)) : rn2(3)), 8));
+    verbalize(__s_talk_s, cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), $sizeof_permonst)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 375, __s_mplayer_talk), rn2(3)) : rn2(3)), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_mplayer_c, 376, __s_mplayer_talk), rn2(3)) : rn2(3)), 8));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

@@ -30,7 +30,8 @@ const $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_buy_maxseen = FLD.obj
     $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
     $objclass_oc_uses_known = FLD.objclass_oc_uses_known, $objclass_oc_weight = FLD.objclass_oc_weight,
     $objclass_oc_wldam = FLD.objclass_oc_wldam, $objclass_oc_wsdam = FLD.objclass_oc_wsdam,
-    $objdescr_oc_descr = FLD.objdescr_oc_descr;
+    $objdescr_oc_descr = FLD.objdescr_oc_descr, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_strange_object = cptr.lit("strange object");
@@ -723,7 +724,7 @@ const __s_splash_of_venom = cptr.lit("splash of venom");
 const __s_splash_of_acid_venom = cptr.lit("splash of acid venom");
 
 /** C ref: objects.c:14 — struct objdescr[482] */
-const obj_descr_init = cptr.alloc(482 * 16);
+const obj_descr_init = cptr.alloc(482 * $sizeof_objdescr);
 cptr.stPtro(obj_descr_init, 0, __s_strange_object);
 cptr.stPtro(obj_descr_init, 0 + $objdescr_oc_descr, null);
 cptr.stPtro(obj_descr_init, 16, __s_generic_strange);
@@ -1690,7 +1691,7 @@ cptr.stPtro(obj_descr_init, 7696, null);
 cptr.stPtro(obj_descr_init, 7696 + $objdescr_oc_descr, null);
 
 /** C ref: objects.c:20 — struct objclass[482] */
-const obj_init = cptr.alloc(482 * 120);
+const obj_init = cptr.alloc(482 * $sizeof_objclass);
 cptr.stI16o(obj_init, 0, 0);
 cptr.stI16o(obj_init, 0 + $objclass_oc_descr_idx, 0);
 cptr.stPtro(obj_init, 0 + $objclass_oc_uname, null);
@@ -17599,10 +17600,10 @@ cptr.stU64o(obj_init, 57720 + $objclass_oc_buy_minseen, 18446744073709551615n);
 cptr.stU64o(obj_init, 57720 + $objclass_oc_buy_maxseen, 0n);
 
 /** C ref: objects.c:28 — struct objdescr[482] */
-export const obj_descr = cptr.alloc(482 * 16);
+export const obj_descr = cptr.alloc(482 * $sizeof_objdescr);
 
 /** C ref: objects.c:29 — struct objclass[482] */
-export const objects = cptr.alloc(482 * 120);
+export const objects = cptr.alloc(482 * $sizeof_objclass);
 
 /** C ref: objects.c:32 */
 export function objects_globals_init() {

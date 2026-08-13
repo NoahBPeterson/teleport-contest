@@ -32,7 +32,9 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $LClosure_marked = FLD.LClosure_
     $Proto_upvalues = FLD.Proto_upvalues, $TString_contents = FLD.TString_contents,
     $TString_marked = FLD.TString_marked, $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
     $Upvaldesc_idx = FLD.Upvaldesc_idx, $Upvaldesc_instack = FLD.Upvaldesc_instack,
-    $Upvaldesc_kind = FLD.Upvaldesc_kind, $ZIO_p = FLD.ZIO_p, $lua_State_top = FLD.lua_State_top;
+    $Upvaldesc_kind = FLD.Upvaldesc_kind, $ZIO_p = FLD.ZIO_p, $lua_State_top = FLD.lua_State_top,
+    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_LocVar = FLD.sizeof_LocVar,
+    $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_bad_binary_format_s = cptr.lit("%s: bad binary format (%s)");
@@ -167,9 +169,9 @@ function loadConstants(S, f) {
     cptr.stPtro(f, $Proto_k, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
     cptr.stI32o(f, $Proto_sizek, n);
     for (i = 0; i < n; i++)
-        (cptr.st1o((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16)), $TValue_tt_, 0));
+        (cptr.st1o((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)), $TValue_tt_, 0));
     for (i = 0; i < n; i++) {
-        let o = cptr.add(cptr.ldPtro(f, $Proto_k), i, 16);
+        let o = cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue);
         let t = loadByte(S);
         switch (t) {
             case 0:
@@ -237,11 +239,11 @@ function loadUpvalues(S, f) {
     cptr.stPtro(f, $Proto_upvalues, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
     cptr.stI32o(f, $Proto_sizeupvalues, n);
     for (i = 0; i < n; i++)
-        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, null, 16);
+        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, null, $sizeof_Upvaldesc);
     for (i = 0; i < n; i++) {
-        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, 16, $Upvaldesc_instack, loadByte(S));
-        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, 16, $Upvaldesc_idx, loadByte(S));
-        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, 16, $Upvaldesc_kind, loadByte(S));
+        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_instack, loadByte(S));
+        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_idx, loadByte(S));
+        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_kind, loadByte(S));
     }
 }
 
@@ -257,24 +259,24 @@ function loadDebug(S, f) {
     cptr.stPtro(f, $Proto_abslineinfo, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0)))));
     cptr.stI32o(f, $Proto_sizeabslineinfo, n);
     for (i = 0; i < n; i++) {
-        cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, loadInt(S), 8);
-        cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, 8, $AbsLineInfo_line, loadInt(S));
+        cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, loadInt(S), $sizeof_AbsLineInfo);
+        cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line, loadInt(S));
     }
     n = loadInt(S);
     cptr.stPtro(f, $Proto_locvars, (((void 0)), ((luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0)))));
     cptr.stI32o(f, $Proto_sizelocvars, n);
     for (i = 0; i < n; i++)
-        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, null, 16);
+        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, null, $sizeof_LocVar);
     for (i = 0; i < n; i++) {
-        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, loadStringN(S, f), 16);
-        cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_startpc, loadInt(S));
-        cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_endpc, loadInt(S));
+        cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, loadStringN(S, f), $sizeof_LocVar);
+        cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc, loadInt(S));
+        cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc, loadInt(S));
     }
     n = loadInt(S);
     if (n != 0)
         n = cptr.ldI32o(f, $Proto_sizeupvalues);
     for (i = 0; i < n; i++)
-        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, loadStringN(S, f), 16);
+        cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, loadStringN(S, f), $sizeof_Upvaldesc);
 }
 
 /** C ref: lundump.c:258 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f @param {CPtr<TString>} psource */

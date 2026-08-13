@@ -59,7 +59,9 @@ const $Gender_he = FLD.Gender_he, $context_info_mon_moving = FLD.context_info_mo
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mlet = FLD.permonst_mlet,
     $permonst_mmove = FLD.permonst_mmove, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal,
-    $rm_typ = FLD.rm_typ, $u_event_uheard_tune = FLD.u_event_uheard_tune,
+    $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender, $sizeof_entity = FLD.sizeof_entity,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $u_event_uheard_tune = FLD.u_event_uheard_tune,
     $u_event_uopened_dbridge = FLD.u_event_uopened_dbridge, $u_roleplay_deaf = FLD.u_roleplay_deaf,
     $you_uevent = FLD.you_uevent, $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops,
     $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed, $you_uy = FLD.you_uy,
@@ -155,7 +157,7 @@ const __s_collapsing_drawbridge = cptr.lit("collapsing drawbridge");
 
 /** C ref: dbridge.c:38 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_waterwall(x, y) {
-    if (isok(x, y) && ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.WATER))
+    if (isok(x, y) && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.WATER))
         return 1;
     return 0;
 }
@@ -165,7 +167,7 @@ export function is_pool(x, y) {
     let ltyp;
     if (!isok(x, y))
         return 0;
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     if (ltyp == NHC.POOL || ltyp == NHC.MOAT || ltyp == NHC.WATER || is_moat(x, y))
         return 1;
     return 0;
@@ -176,8 +178,8 @@ export function is_lava(x, y) {
     let ltyp;
     if (!isok(x, y))
         return 0;
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (ltyp == NHC.LAVAPOOL || ltyp == NHC.LAVAWALL || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA))
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    if (ltyp == NHC.LAVAPOOL || ltyp == NHC.LAVAWALL || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA))
         return 1;
     return 0;
 }
@@ -195,8 +197,8 @@ export function is_ice(x, y) {
     let ltyp;
     if (!isok(x, y))
         return 0;
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (ltyp == NHC.ICE || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_ICE))
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    if (ltyp == NHC.ICE || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_ICE))
         return 1;
     return 0;
 }
@@ -206,8 +208,8 @@ export function is_moat(x, y) {
     let ltyp;
     if (!isok(x, y))
         return 0;
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
-    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT)))
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && (ltyp == NHC.MOAT || (ltyp == NHC.DRAWBRIDGE_UP && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT)))
         return 1;
     return 0;
 }
@@ -231,29 +233,29 @@ export function is_drawbridge_wall(x, y) {
     let lev;
     if (!isok(x, y))
         return -1;
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (cptr.ld1so(lev, $rm_typ) != NHC.DOOR && cptr.ld1so(lev, $rm_typ) != NHC.DBWALL)
         return -1;
-    if (isok(i16(((x + 1) | 0)), y) && ((cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_WEST)
+    if (isok(i16(((x + 1) | 0)), y) && ((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_WEST)
         return NHM.DB_WEST;
-    if (isok(i16(((x - 1) | 0)), y) && ((cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_EAST)
+    if (isok(i16(((x - 1) | 0)), y) && ((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_EAST)
         return NHM.DB_EAST;
-    if (isok(x, i16(((y - 1) | 0))) && ((cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_SOUTH)
+    if (isok(x, i16(((y - 1) | 0))) && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_SOUTH)
         return NHM.DB_SOUTH;
-    if (isok(x, i16(((y + 1) | 0))) && ((cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_NORTH)
+    if (isok(x, i16(((y + 1) | 0))) && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN) && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_NORTH)
         return NHM.DB_NORTH;
     return -1;
 }
 
 /** C ref: dbridge.c:170 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function is_db_wall(x, y) {
-    return schar((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DBWALL));
+    return schar((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DBWALL));
 }
 
 /** C ref: dbridge.c:180 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @returns {CInt} */
 export function find_drawbridge(x, y) {
     let dir;
-    if (((cptr.ld1so3(svl, cptr.ldI16(x), 756, cptr.ldI16(y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16(x), 756, cptr.ldI16(y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN))
+    if (((cptr.ld1so3(svl, cptr.ldI16(x), $sizeof_rm_x21, cptr.ldI16(y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16(x), $sizeof_rm_x21, cptr.ldI16(y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN))
         return 1;
     dir = is_drawbridge_wall(cptr.ldI16(x), cptr.ldI16(y));
     if (dir >= 0) {
@@ -278,7 +280,7 @@ export function find_drawbridge(x, y) {
 
 /** C ref: dbridge.c:211 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 function get_wall_for_db(x, y) {
-    switch (((cptr.ldI32o3(svl, cptr.ldI16(x), 756, cptr.ldI16(y), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) {
+    switch (((cptr.ldI32o3(svl, cptr.ldI16(x), $sizeof_rm_x21, cptr.ldI16(y), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) {
         case NHM.DB_NORTH:
         (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
         break;
@@ -299,7 +301,7 @@ export function create_drawbridge(x, y, dir, flag) {
     let x2;
     let y2;
     let horiz;
-    let lava = schar((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL));
+    let lava = schar((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL));
     x2 = x;
     y2 = y;
     switch (dir) {
@@ -324,22 +326,22 @@ export function create_drawbridge(x, y, dir, flag) {
         x2--;
         break;
     }
-    if (!((cptr.ld1so3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
+    if (!((cptr.ld1so3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
         return 0;
     if (flag) {
-        cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.DRAWBRIDGE_DOWN);
-        cptr.st1o3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_typ, NHC.DOOR);
-        cptr.stI32o3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
+        cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DRAWBRIDGE_DOWN);
+        cptr.st1o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DOOR);
+        cptr.stI32o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
     } else {
-        cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.DRAWBRIDGE_UP);
-        cptr.st1o3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_typ, NHC.DBWALL);
-        cptr.stI32o3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_flags, NHM.W_NONDIGGABLE);
+        cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DRAWBRIDGE_UP);
+        cptr.st1o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.DBWALL);
+        cptr.stI32o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.W_NONDIGGABLE);
     }
-    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_horizontal, (!horiz) >>> 0);
-    cptr.stI32o3(svl, x2, 756, y2, 36, $instance_globals_saved_l_level + $rm_horizontal, horiz);
-    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, dir >>> 0);
+    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, (!horiz) >>> 0);
+    cptr.stI32o3(svl, x2, $sizeof_rm_x21, y2, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, horiz);
+    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, dir >>> 0);
     if (lava)
-        cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) | NHM.DB_LAVA);
+        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.DB_LAVA);
     return 1;
 }
 
@@ -347,7 +349,7 @@ export function create_drawbridge(x, y, dir, flag) {
 function e_at(x, y) {
     let entitycnt;
     for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++)
-        if (cptr.ldPtro2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_edata) && cptr.ldI32o2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_ex) == x && cptr.ldI32o2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_ey) == y)
+        if (cptr.ldPtro2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_edata) && cptr.ldI32o2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_ex) == x && cptr.ldI32o2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_ey) == y)
             break;
     {
         if (debugcore(__s_dbridge_c, 1)) {
@@ -356,7 +358,7 @@ function e_at(x, y) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    return (entitycnt == NHM.ENTITIES) ? null : cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, 24);
+    return (entitycnt == NHM.ENTITIES) ? null : cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, $sizeof_entity);
 }
 
 /** C ref: dbridge.c:304 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CPtr<struct entity>} etmp */
@@ -366,7 +368,7 @@ function m_to_e(mtmp, x, y, etmp) {
         cptr.stI32o(etmp, $entity_ex, x);
         cptr.stI32o(etmp, $entity_ey, y);
         if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my)))
-            cptr.stPtro(etmp, $entity_edata, cptr.add(mons, NHC.PM_LONG_WORM_TAIL, 96));
+            cptr.stPtro(etmp, $entity_edata, cptr.add(mons, NHC.PM_LONG_WORM_TAIL, $sizeof_permonst));
         else
             cptr.stPtro(etmp, $entity_edata, cptr.ldPtro(mtmp, $monst_data));
     } else {
@@ -416,7 +418,7 @@ function e_survives_at(etmp, x, y) {
     if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST))
         return 1;
     if (is_pool(x, y))
-        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) || is_floater(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
+        return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || Amphibious() || Breathless() || Swimming() || Flying() || Levitation())) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 2n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) || is_floater(cptr.ldPtro(etmp, $entity_edata)) ? 1 : 0));
     if (is_lava(x, y))
         return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) && (Levitation() || Flying())) || likes_lava(cptr.ldPtro(etmp, $entity_edata)) || ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) != 0n) ? 1 : 0));
     if (is_db_wall(x, y))
@@ -464,15 +466,15 @@ function e_died(etmp, xkill_flags, how) {
                 xkilled(cptr.ldPtr(etmp), xkill_flags);
             if ((cptr.ldI32o((cptr.ldPtr(etmp)), $monst_mhp) < 1)) {
                 if (seeit)
-                    pline(__s_unfortunately_for_s_s_is_still_crushed, mon_nam(cptr.ldPtr(etmp)), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), 48, $Gender_he)));
+                    pline(__s_unfortunately_for_s_s_is_still_crushed, mon_nam(cptr.ldPtr(etmp)), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtr(etmp), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)));
             } else {
                 ;
             }
         }
         cptr.stPtro(etmp, $entity_edata, null);
         for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++) {
-            if (!cptr.eq(etmp, cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, 24)) && cptr.eq(cptr.ldPtr(etmp), cptr.ldPtro2(go, entitycnt, 24, $instance_globals_o_occupants)))
-                cptr.stPtro2(go, entitycnt, 24, $instance_globals_o_occupants + $entity_edata, null);
+            if (!cptr.eq(etmp, cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, $sizeof_entity)) && cptr.eq(cptr.ldPtr(etmp), cptr.ldPtro2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants)))
+                cptr.stPtro2(go, entitycnt, $sizeof_entity, $instance_globals_o_occupants + $entity_edata, null);
         }
     }
 }
@@ -554,7 +556,7 @@ function do_entity(etmp) {
     oldx = i16(cptr.ldI32o(etmp, $entity_ex));
     oldy = i16(cptr.ldI32o(etmp, $entity_ey));
     at_portcullis = is_db_wall(oldx, oldy);
-    crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), oldx, 756), oldy, 36);
+    crm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), oldx, $sizeof_rm_x21), oldy, $sizeof_rm);
     if (automiss(etmp) && e_survives_at(etmp, oldx, oldy)) {
         if (e_inview && (at_portcullis || IS_DRAWBRIDGE(cptr.ld1so(crm, $rm_typ))))
             pline_The(__s_s_passes_through_s, at_portcullis ? __s_portcullis : __s_drawbridge, e_nam(etmp));
@@ -802,8 +804,8 @@ function do_entity(etmp) {
 function nokiller() {
     cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
     cptr.stI32o(svk, $kinfo_format, 0);
-    m_to_e(null, 0, 0, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24));
-    m_to_e(null, 0, 0, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
+    m_to_e(null, 0, 0, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
+    m_to_e(null, 0, 0, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
 }
 
 /** C ref: dbridge.c:775 — @param {CInt} x @param {CInt} y */
@@ -813,7 +815,7 @@ export function close_drawbridge(x, y) {
     let t;
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
-    lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (cptr.ld1so(lev1, $rm_typ) != NHC.DRAWBRIDGE_DOWN)
         return;
     x2.v = x;
@@ -826,7 +828,7 @@ export function close_drawbridge(x, y) {
         You_hear(__s_chains_rattling_and_gears_turning);
     }
     cptr.st1o(lev1, $rm_typ, NHC.DRAWBRIDGE_UP);
-    lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, 756), y2.v, 36);
+    lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, $sizeof_rm_x21), y2.v, $sizeof_rm);
     cptr.st1o(lev2, $rm_typ, NHC.DBWALL);
     switch (((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_DIR) {
         case NHM.DB_NORTH:
@@ -839,11 +841,11 @@ export function close_drawbridge(x, y) {
         break;
     }
     cptr.stI32o(lev2, $rm_flags, NHM.W_NONDIGGABLE);
-    set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24));
-    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
-    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24));
-    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
-    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
+    set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
+    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
+    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
+    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
+    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
     if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null) && !Deaf()) {
         ;
         You_hear(__s_smashing_and_crushing);
@@ -871,7 +873,7 @@ export function open_drawbridge(x, y) {
     let t;
     let x2 = cptr.box(0);
     let y2 = cptr.box(0);
-    lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (cptr.ld1so(lev1, $rm_typ) != NHC.DRAWBRIDGE_UP)
         return;
     x2.v = x;
@@ -884,14 +886,14 @@ export function open_drawbridge(x, y) {
         You_hear(__s_gears_turning_and_chains_rattling);
     }
     cptr.st1o(lev1, $rm_typ, NHC.DRAWBRIDGE_DOWN);
-    lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, 756), y2.v, 36);
+    lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, $sizeof_rm_x21), y2.v, $sizeof_rm);
     cptr.st1o(lev2, $rm_typ, NHC.DOOR);
     cptr.stI32o(lev2, $rm_flags, NHM.D_NODOOR);
-    set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24));
-    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
-    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24));
-    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
-    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24));
+    set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
+    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
+    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
+    set_entity(x2.v, y2.v, cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
+    do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
     void revive_nasty(x, y, null);
     delallobj(x, y);
     if ((t = t_at(x, y)) !== null)
@@ -918,15 +920,15 @@ export function destroy_drawbridge(x, y) {
     let y2 = cptr.box(0);
     let i;
     let e_inview;
-    let etmp1 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, 24);
-    let etmp2 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, 24);
-    lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let etmp1 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity);
+    let etmp2 = cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity);
+    lev1 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (!IS_DRAWBRIDGE(cptr.ld1so(lev1, $rm_typ)))
         return;
     x2.v = x;
     y2.v = y;
     get_wall_for_db(x2, y2);
-    lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, 756), y2.v, 36);
+    lev2 = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x2.v, $sizeof_rm_x21), y2.v, $sizeof_rm);
     if ((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_MOAT || (((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA) {
         let otmp2;
         let lava = schar(((((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_UNDER) == NHM.DB_LAVA));
@@ -1026,7 +1028,7 @@ export function destroy_drawbridge(x, y) {
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
             void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_collapsing_drawbridge);
             e_died(etmp1, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING);
-            if (cptr.ld1so3(svl, cptr.ldI32o(etmp1, $entity_ex), 756, cptr.ldI32o(etmp1, $entity_ey), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT)
+            if (cptr.ld1so3(svl, cptr.ldI32o(etmp1, $entity_ex), $sizeof_rm_x21, cptr.ldI32o(etmp1, $entity_ey), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT)
                 do_entity(etmp1);
         }
     }

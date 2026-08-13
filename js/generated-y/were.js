@@ -46,6 +46,7 @@ const $context_info_mon_moving = FLD.context_info_mon_moving, $flag_moonphase = 
     $monst_msleeping = FLD.monst_msleeping, $monst_mux = FLD.monst_mux, $monst_muy = FLD.monst_muy,
     $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $permonst_mflags2 = FLD.permonst_mflags2,
     $permonst_pmidx = FLD.permonst_pmidx, $prop_intrinsic = FLD.prop_intrinsic,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
     $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_mtimedone = FLD.you_mtimedone, $you_ulycn = FLD.you_ulycn,
     $you_umonnum = FLD.you_umonnum, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
     $you_uy = FLD.you_uy;
@@ -157,8 +158,8 @@ export function* new_were(mon) {
         return;
     }
     if (canseemon(mon) && !Hallucination())
-        (yield* pline(__s_s_changes_into_a_s, (yield* Monnam(mon)), ((cptr.ldU64o((cptr.add(mons, pm, 96)), $permonst_mflags2) & 8n) != 0n) ? __s_human : cptr.add(pmname(cptr.add(mons, pm, 96), Mgender(mon)), 4)));
-    set_mon_data(mon, cptr.add(mons, pm, 96));
+        (yield* pline(__s_s_changes_into_a_s, (yield* Monnam(mon)), ((cptr.ldU64o((cptr.add(mons, pm, $sizeof_permonst)), $permonst_mflags2) & 8n) != 0n) ? __s_human : cptr.add(pmname(cptr.add(mons, pm, $sizeof_permonst), Mgender(mon)), 4)));
+    set_mon_data(mon, cptr.add(mons, pm, $sizeof_permonst));
     if (helpless(mon)) {
         cptr.stI32o(mon, $monst_msleeping, 0);
         cptr.stI32o(mon, $monst_mfrozen, 0);
@@ -205,7 +206,7 @@ export function* were_summon(ptr, yours, visible, genbuf) {
             default:
             continue;
         }
-        mtmp = (yield* makemon(cptr.add(mons, typ, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MM_FLAGS));
+        mtmp = (yield* makemon(cptr.add(mons, typ, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MM_FLAGS));
         if (mtmp) {
             total++;
             if (canseemon(mtmp))
@@ -224,7 +225,7 @@ export function* you_were() {
     if (Unchanging() || cptr.ldI32o(u, $you_umonnum) == cptr.ldI32o(u, $you_ulycn))
         return;
     if (controllable_poly) {
-        void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_change_into_s, (yield* an(cptr.add(cptr.ldPtro3(mons, cptr.ldI32o(u, $you_ulycn), 96, NHC.NEUTRAL, 8, 0), 4))));
+        void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_change_into_s, (yield* an(cptr.add(cptr.ldPtro3(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst, NHC.NEUTRAL, 8, 0), 4))));
         if (!(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), cptr.decay(qbuf))))
             return;
     } else if ((yield* monster_nearby())) {

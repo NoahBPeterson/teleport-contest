@@ -33,7 +33,8 @@ const $CClosure_nupvalues = FLD.CClosure_nupvalues, $GCObject_marked = FLD.GCObj
     $global_State_twups = FLD.global_State_twups, $lua_State_ci = FLD.lua_State_ci,
     $lua_State_l_G = FLD.lua_State_l_G, $lua_State_openupval = FLD.lua_State_openupval,
     $lua_State_stack = FLD.lua_State_stack, $lua_State_tbclist = FLD.lua_State_tbclist,
-    $lua_State_top = FLD.lua_State_top, $lua_State_twups = FLD.lua_State_twups;
+    $lua_State_top = FLD.lua_State_top, $lua_State_twups = FLD.lua_State_twups,
+    $sizeof_LocVar = FLD.sizeof_LocVar;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_query = cptr.lit("?");
@@ -278,11 +279,11 @@ export function luaF_freeproto(L, f) {
 /** C ref: lfunc.c:283 — @param {CPtr<Proto>} f @param {CInt} local_number @param {CInt} pc @returns {CPtr<char>} */
 export function luaF_getlocalname(f, local_number, pc) {
     let i;
-    for (i = 0; i < cptr.ldI32o(f, $Proto_sizelocvars) && cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_startpc) <= pc; i++) {
-        if (pc < cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_endpc)) {
+    for (i = 0; i < cptr.ldI32o(f, $Proto_sizelocvars) && cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc) <= pc; i++) {
+        if (pc < cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc)) {
             local_number--;
             if (local_number == 0)
-                return (cptr.add((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16)), $TString_contents));
+                return (cptr.add((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar)), $TString_contents));
         }
     }
     return null;

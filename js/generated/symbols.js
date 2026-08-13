@@ -42,6 +42,9 @@ const $_savedsym_next = FLD._savedsym_next, $_savedsym_val = FLD._savedsym_val,
     $instance_globals_s_symset_list = FLD.instance_globals_s_symset_list,
     $instance_globals_s_symset_which_set = FLD.instance_globals_s_symset_which_set,
     $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+    $sizeof_alternate_parse = FLD.sizeof_alternate_parse, $sizeof_class_sym = FLD.sizeof_class_sym,
+    $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_symdef = FLD.sizeof_symdef,
+    $sizeof_symparse = FLD.sizeof_symparse, $sizeof_symsetentry = FLD.sizeof_symsetentry,
     $symparse_idx = FLD.symparse_idx, $symparse_name = FLD.symparse_name,
     $symsetentry_desc = FLD.symsetentry_desc, $symsetentry_handling = FLD.symsetentry_handling,
     $symsetentry_idx = FLD.symsetentry_idx, $symsetentry_name = FLD.symsetentry_name,
@@ -310,13 +313,13 @@ export function init_symbols() {
 export function init_showsyms() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o2(gs, (i + NHM.SYM_OFF_P) | 0, 1, $instance_globals_s_showsyms, cptr.ld1uo(defsyms, i, 24));
+        cptr.st1o2(gs, (i + NHM.SYM_OFF_P) | 0, 1, $instance_globals_s_showsyms, cptr.ld1uo(defsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1o2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms, uchar(cptr.ld1so(def_oc_syms, i, 24)));
+        cptr.st1o2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms, uchar(cptr.ld1so(def_oc_syms, i, $sizeof_class_sym)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o2(gs, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, $instance_globals_s_showsyms, uchar(cptr.ld1so(def_monsyms, i, 24)));
+        cptr.st1o2(gs, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, $instance_globals_s_showsyms, uchar(cptr.ld1so(def_monsyms, i, $sizeof_class_sym)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gs, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, $instance_globals_s_showsyms, cptr.ld1uo(def_warnsyms, i, 24));
+        cptr.st1o2(gs, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, $instance_globals_s_showsyms, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o2(gs, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, $instance_globals_s_showsyms, get_othersym(i, NHC.PRIMARYSET));
 }
@@ -350,7 +353,7 @@ export function get_othersym(idx, which_set) {
             sym = 32;
             break;
             case NHC.SYM_BOULDER:
-            sym = uchar(cptr.ld1so(def_oc_syms, NHC.ROCK_CLASS, 24));
+            sym = uchar(cptr.ld1so(def_oc_syms, NHC.ROCK_CLASS, $sizeof_class_sym));
             break;
             case NHC.SYM_INVISIBLE:
             sym = NHC.DEF_INVISIBLE;
@@ -364,13 +367,13 @@ export function get_othersym(idx, which_set) {
 export function init_primary_symbols() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o2(gp, (i + NHM.SYM_OFF_P) | 0, 1, $instance_globals_p_primary_syms, cptr.ld1uo(defsyms, i, 24));
+        cptr.st1o2(gp, (i + NHM.SYM_OFF_P) | 0, 1, $instance_globals_p_primary_syms, cptr.ld1uo(defsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOCLASSES; i++)
-        cptr.st1o2(gp, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_p_primary_syms, uchar(cptr.ld1so(def_oc_syms, i, 24)));
+        cptr.st1o2(gp, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_p_primary_syms, uchar(cptr.ld1so(def_oc_syms, i, $sizeof_class_sym)));
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o2(gp, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, $instance_globals_p_primary_syms, uchar(cptr.ld1so(def_monsyms, i, 24)));
+        cptr.st1o2(gp, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, $instance_globals_p_primary_syms, uchar(cptr.ld1so(def_monsyms, i, $sizeof_class_sym)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gp, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, $instance_globals_p_primary_syms, cptr.ld1uo(def_warnsyms, i, 24));
+        cptr.st1o2(gp, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, 1, $instance_globals_p_primary_syms, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef));
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o2(gp, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, 1, $instance_globals_p_primary_syms, get_othersym(i, NHC.PRIMARYSET));
     clear_symsetentry(NHC.PRIMARYSET, 0);
@@ -380,19 +383,19 @@ export function init_primary_symbols() {
 export function init_rogue_symbols() {
     let i;
     for (i = 0; i < NHC.MAXPCHARS; i++)
-        cptr.st1o(gr, (i + NHM.SYM_OFF_P) | 0, cptr.ld1uo(defsyms, i, 24), 1);
+        cptr.st1o(gr, (i + NHM.SYM_OFF_P) | 0, cptr.ld1uo(defsyms, i, $sizeof_symdef), 1);
     cptr.st1o(gr, NHC.S_vodoor, cptr.st1o(gr, NHC.S_hodoor, cptr.st1o(gr, NHC.S_ndoor, 43, 1), 1), 1);
     cptr.st1o(gr, NHC.S_upstair, cptr.st1o(gr, NHC.S_dnstair, 37, 1), 1);
     for (i = 0; i < NHC.MAXOCLASSES; i++)
         cptr.st1o(gr, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, cptr.ld1uo(cptr.decay(def_r_oc_syms), i, 1), 1);
     for (i = 0; i < NHC.MAXMCLASSES; i++)
-        cptr.st1o(gr, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, uchar(cptr.ld1so(def_monsyms, i, 24)), 1);
+        cptr.st1o(gr, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, uchar(cptr.ld1so(def_monsyms, i, $sizeof_class_sym)), 1);
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o(gr, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, cptr.ld1uo(def_warnsyms, i, 24), 1);
+        cptr.st1o(gr, (i + (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0)) | 0, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef), 1);
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o(gr, (i + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0, get_othersym(i, NHC.ROGUESET), 1);
     clear_symsetentry(NHC.ROGUESET, 0);
-    cptr.stI32o2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_nocolor, 1);
+    cptr.stI32o2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor, 1);
 }
 
 /** C ref: symbols.c:217 — @param {CInt} whichset */
@@ -420,9 +423,9 @@ export function switch_symbols(nondefault) {
     if (nondefault) {
         for (i = 0; i < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); i++)
             cptr.st1o2(gs, i, 1, $instance_globals_s_showsyms, uchar((cptr.ld1uo2(go, i, 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, i, 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gp, i, 1, $instance_globals_p_primary_syms))));
-        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC) && decgraphics_mode_callback.v)
+        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC) && decgraphics_mode_callback.v)
             (decgraphics_mode_callback.v)();
-        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8) && utf8graphics_mode_callback.v)
+        if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8) && utf8graphics_mode_callback.v)
             (utf8graphics_mode_callback.v)();
     } else {
         init_primary_symbols();
@@ -453,20 +456,20 @@ export function update_rogue_symset(symp, val) {
 /** C ref: symbols.c:319 — @param {CInt} which_set @param {CInt} name_too */
 export function clear_symsetentry(which_set, name_too) {
     let other_set = (which_set == NHC.PRIMARYSET) ? NHC.ROGUESET : NHC.PRIMARYSET;
-    let old_handling = cptr.ldI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling);
-    if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_desc))
-        cptr.free(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_desc));
-    cptr.stPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_desc, null);
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_nocolor, 0);
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_primary, 0);
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_rogue, 0);
+    let old_handling = cptr.ldI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling);
+    if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_desc))
+        cptr.free(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_desc));
+    cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_desc, null);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor, 0);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_primary, 0);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_rogue, 0);
     if (name_too) {
-        if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name))
-            cptr.free(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name));
-        cptr.stPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name, null);
+        if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
+            cptr.free(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name));
+        cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
     }
-    if (old_handling == NHC.H_UTF8 && cptr.ldI32o2(gs, other_set, 48, $instance_globals_s_symset + $symsetentry_handling) != NHC.H_UTF8)
+    if (old_handling == NHC.H_UTF8 && cptr.ldI32o2(gs, other_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) != NHC.H_UTF8)
         free_all_glyphmap_u();
     purge_custom_entries(which_set);
     clear_all_glyphmap_colors();
@@ -496,7 +499,7 @@ cptr.stPtro(known_restrictions, 8, __s_rogue);
 cptr.stPtro(known_restrictions, 16, null);
 
 /** C ref: symbols.c:403 — struct symparse[197] */
-export const loadsyms = cptr.alloc(197 * 16);
+export const loadsyms = cptr.alloc(197 * $sizeof_symparse);
 cptr.stI32o(loadsyms, 0, NHC.SYM_CONTROL);
 cptr.stI32o(loadsyms, 0 + $symparse_idx, 0);
 cptr.stPtro(loadsyms, 0 + $symparse_name, __s_start);
@@ -1141,7 +1144,7 @@ export function parse_sym_line(buf, which_set) {
         return 0;
     }
     if (symp) {
-        if (!cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)) {
+        if (!cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
             if (cptr.ldI32(symp) == NHC.SYM_CONTROL) {
                 let tmpsp;
                 let lastsp;
@@ -1203,7 +1206,7 @@ export function parse_sym_line(buf, which_set) {
         if (cptr.ldI32(symp) && cptr.ldI32(symp) == NHC.SYM_CONTROL) {
             switch (cptr.ldI32o(symp, $symparse_idx)) {
                 case 0:
-                if (!strncmpi((bufp), (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)), -1)) {
+                if (!strncmpi((bufp), (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), -1)) {
                     cptr.st1o(gc, $instance_globals_c_chosen_symset_start, 1);
                     if (which_set == NHC.ROGUESET)
                         init_rogue_symbols();
@@ -1224,9 +1227,9 @@ export function parse_sym_line(buf, which_set) {
                 if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start)) {
                     if (bufp) {
                         if (!strncmpi((bufp), (__s_true), -1) || !strncmpi((bufp), (__s_yes), -1) || !strncmpi((bufp), (__s_on), -1))
-                            cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_nocolor, 0);
+                            cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor, 0);
                         else if (!strncmpi((bufp), (__s_false), -1) || !strncmpi((bufp), (__s_no), -1) || !strncmpi((bufp), (__s_off), -1))
-                            cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_nocolor, 1);
+                            cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_nocolor, 1);
                     }
                 }
                 break;
@@ -1237,10 +1240,10 @@ export function parse_sym_line(buf, which_set) {
                         if (!strncmpi((cptr.ldPtro(known_restrictions, n, 8)), (bufp), -1)) {
                             switch (n) {
                                 case 0:
-                                cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_primary, 1);
+                                cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_primary, 1);
                                 break;
                                 case 1:
-                                cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_rogue, 1);
+                                cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_rogue, 1);
                                 break;
                             }
                             break;
@@ -1251,7 +1254,7 @@ export function parse_sym_line(buf, which_set) {
                 break;
             }
         } else {
-            if (cptr.ldI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling) != NHC.H_UTF8) {
+            if (cptr.ldI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) != NHC.H_UTF8) {
                 if (cptr.ld1so(gc, $instance_globals_c_chosen_symset_start)) {
                     val = sym_val(bufp);
                     if (which_set == NHC.PRIMARYSET) {
@@ -1275,10 +1278,10 @@ export function parse_sym_line(buf, which_set) {
 /** C ref: symbols.c:657 — @param {CPtr<char>} handling @param {CInt} which_set */
 export function set_symhandling(handling, which_set) {
     let i = 0;
-    cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
+    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
     while (cptr.ldPtro(known_handling, i, 8)) {
         if (!strncmpi((cptr.ldPtro(known_handling, i, 8)), (handling), -1)) {
-            cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling, i);
+            cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling, i);
             return;
         }
         i++;
@@ -1288,9 +1291,9 @@ export function set_symhandling(handling, which_set) {
 /** C ref: symbols.c:673 — @param {CPtr<char>} s @param {CInt} which_set @returns {CInt} */
 export function load_symset(s, which_set) {
     clear_symsetentry(which_set, 1);
-    if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name))
-        cptr.free(cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name));
-    cptr.stPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name, dupstr(s));
+    if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
+        cptr.free(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name));
+    cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, dupstr(s));
     if (read_sym_file(which_set)) {
         switch_symbols(1);
         apply_customizations(cptr.ldI32o(gc, $instance_globals_c_currentgraphics), (NHC.do_custom_symbols | NHC.do_custom_colors));
@@ -1417,7 +1420,7 @@ export function parsesymbols(opts, which_set) {
         return 0;
     if (symp) {
         if (cptr.ldI32(symp) && cptr.ldI32(symp) != NHC.SYM_CONTROL) {
-            if (cptr.ldI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43)) {
+            if (cptr.ldI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8 || (lowc(cptr.ld1so(strval, 0)) == 117 && cptr.ld1so(strval, 1) == 43)) {
                 let buf = new Uint8Array(256);
                 let glyph = cptr.box(0);
                 nh_snprintf(__s_parsesymbols, 836, cptr.decay(buf), 256n, __s_s_s, opts, strval);
@@ -1435,7 +1438,7 @@ export function parsesymbols(opts, which_set) {
     return 1;
 }
 
-const __static_match_sym_alternates = cptr.alloc(10 * 16);
+const __static_match_sym_alternates = cptr.alloc(10 * $sizeof_alternate_parse);
 cptr.stPtro(__static_match_sym_alternates, 0, __s_s_armour);
 cptr.stPtro(__static_match_sym_alternates, 0 + $alternate_parse_nm, __s_s_armor);
 cptr.stPtro(__static_match_sym_alternates, 16, __s_s_explode1);
@@ -1479,10 +1482,10 @@ export function match_sym(buf) {
         sp = cptr.add(sp, 1, 16);
     }
     for (i = 0; i < 10; ++i) {
-        if ((len >= cptr.strlen(cptr.ldPtro(__static_match_sym_alternates, i, 16))) && !strncmpi(buf, cptr.ldPtro(__static_match_sym_alternates, i, 16), Number(BigInt.asIntN(32, len)))) {
+        if ((len >= cptr.strlen(cptr.ldPtro(__static_match_sym_alternates, i, $sizeof_alternate_parse))) && !strncmpi(buf, cptr.ldPtro(__static_match_sym_alternates, i, $sizeof_alternate_parse), Number(BigInt.asIntN(32, len)))) {
             sp = loadsyms;
             while (cptr.ldI32(sp)) {
-                if (!strcmp(cptr.ldPtro2(__static_match_sym_alternates, i, 16, $alternate_parse_nm), cptr.ldPtro(sp, $symparse_name)))
+                if (!strcmp(cptr.ldPtro2(__static_match_sym_alternates, i, $sizeof_alternate_parse, $alternate_parse_nm), cptr.ldPtro(sp, $symparse_name)))
                     return sp;
                 sp = cptr.add(sp, 1, 16);
             }
@@ -1511,10 +1514,10 @@ export function do_symset(rogueflag) {
     let clr = NHM.NO_COLOR;
     which_set = rogueflag ? NHC.ROGUESET : NHC.PRIMARYSET;
     cptr.stPtro(gs, $instance_globals_s_symset_list, null);
-    symset_name = cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name);
-    cptr.stPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name, null);
+    symset_name = cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name);
+    cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
     res = read_sym_file(which_set);
-    cptr.stPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name, symset_name);
+    cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, symset_name);
     if (res && cptr.ldPtro(gs, $instance_globals_s_symset_list)) {
         let thissize;
         let biggest = 15;
@@ -1561,9 +1564,9 @@ export function do_symset(rogueflag) {
         end_menu()(tmpwin, cptr.decay(buf));
         n = select_menu(tmpwin, NHM.PICK_ONE, symset_pick);
         if (n > 0) {
-            chosen = cptr.ldI32o(symset_pick.v, 0, 24);
+            chosen = cptr.ldI32o(symset_pick.v, 0, $sizeof_menu_item);
             if (n == 2 && chosen == defindx)
-                chosen = cptr.ldI32o(symset_pick.v, 1, 24);
+                chosen = cptr.ldI32o(symset_pick.v, 1, $sizeof_menu_item);
             chosen = (chosen - 2) | 0;
             cptr.free(symset_pick.v);
         } else if (n == 0 && defindx > 0) {
@@ -1576,7 +1579,7 @@ export function do_symset(rogueflag) {
                     break;
             if (sl) {
                 clear_symsetentry(which_set, 1);
-                cptr.stPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name, dupstr(cptr.ldPtro(sl, $symsetentry_name)));
+                cptr.stPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, dupstr(cptr.ldPtro(sl, $symsetentry_name)));
                 ready_to_switch = 1;
             }
         } else if (chosen == -1) {
@@ -1604,7 +1607,7 @@ export function do_symset(rogueflag) {
         init_rogue_symbols();
     else
         init_primary_symbols();
-    if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name)) {
+    if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
         let ok;
         if (!glyphid_cache_status()) {
             fill_glyphid_cache();

@@ -136,6 +136,10 @@ const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum, $Race_mummynum
     $rm_typ = FLD.rm_typ, $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_exiting = FLD.sinfo_exiting,
     $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sinfo_panicking = FLD.sinfo_panicking,
     $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sinfo_stopprint = FLD.sinfo_stopprint,
+    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_mvitals = FLD.sizeof_mvitals,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_valuable_data = FLD.sizeof_valuable_data,
     $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
     $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
     $sysopt_s_panictrace_gdb = FLD.sysopt_s_panictrace_gdb,
@@ -418,7 +422,7 @@ function done_hangup(sig) {
 export function* done_in_by(mtmp, how) {
     let buf = new Uint8Array(256);
     let mptr = cptr.ldPtro(mtmp, $monst_data);
-    let champtr = ismnum(cptr.ldI16o(mtmp, $monst_cham)) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), 96) : mptr;
+    let champtr = ismnum(cptr.ldI16o(mtmp, $monst_cham)) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst) : mptr;
     let distorted = schar((Hallucination() && canspotmon(mtmp) ? 1 : 0));
     let mimicker = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
     let imitator = schar((!cptr.eq(mptr, champtr) || mimicker ? 1 : 0));
@@ -426,12 +430,12 @@ export function* done_in_by(mtmp, how) {
     (yield* Y.icall(mark_synch()()));
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-    if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !(imitator && !mimicker) && !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
+    if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !(imitator && !mimicker) && !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
         if (!((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96)) && has_mgivenname(mtmp)) {
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst)) && has_mgivenname(mtmp)) {
         void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
@@ -446,7 +450,7 @@ export function* done_in_by(mtmp, how) {
         let fakenm = pmname(mptr, Mgender(mtmp));
         let alt = schar(is_vampshifter(mtmp));
         if (mimicker) {
-            mptr = cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), 96);
+            mptr = cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_permonst);
             fakenm = pmname(mptr, Mgender(mtmp));
         } else if (alt && (yield* strstri(realnm, __s_vampire)) && !strcmp(fakenm, __s_vampire_bat)) {
             fakenm = __s_bat;
@@ -459,7 +463,7 @@ export function* done_in_by(mtmp, how) {
             void cptr.strcpy(cptr.decay(shape), (yield* an(fakenm)));
         void cptr.sprintf(eos(cptr.decay(buf)), alt ? __s_s_in_s_form : (mimicker ? __s_s_disguised_as_s : __s_s_imitating_s), realnm, cptr.decay(shape));
         mptr = cptr.ldPtro(mtmp, $monst_data);
-    } else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, 96))) {
+    } else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst))) {
         void cptr.strcat(cptr.decay(buf), __s_ghost);
         if (has_mgivenname(mtmp))
             void cptr.sprintf(eos(cptr.decay(buf)), __s_of_s, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
@@ -494,9 +498,9 @@ export function* done_in_by(mtmp, how) {
         cptr.stI32o(u, $you_ugrave_arise, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_zombienum));
     else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE && (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_HUMAN))
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_VAMPIRE);
-    else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOUL, 96)))
+    else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOUL, $sizeof_permonst)))
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_GHOUL);
-    if (cptr.ldI32o(u, $you_ugrave_arise) >= NHC.LOW_PM && (cptr.ld1uo2(svm, cptr.ldI32o(u, $you_ugrave_arise), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    if (cptr.ldI32o(u, $you_ugrave_arise) >= NHC.LOW_PM && (cptr.ld1uo2(svm, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
         cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);
     (yield* done(how));
     return;
@@ -708,7 +712,7 @@ function* savelife(how) {
         (yield* reset_utrap(0));
     cptr.st1(disp, 1);
     cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);
-    cptr.stI64o2(u, NHC.UNCHANGING, 24, $you_uprops + $prop_intrinsic, 0n);
+    cptr.stI64o2(u, NHC.UNCHANGING, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
     (yield* curs_on_u());
     if (!cptr.ld1so(svc, $context_info_mon_moving))
         (yield* endmultishot(0));
@@ -734,18 +738,18 @@ function get_valuables(list) {
             continue;
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS) {
             i = (cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_AMULET) | 0;
-            if (!cptr.ldI64o2(ga, i, 16, $instance_globals_a_amulets)) {
-                cptr.stI64o2(ga, i, 16, $instance_globals_a_amulets, cptr.ldI64o(obj, $obj_quan));
-                cptr.stI32o2(ga, i, 16, $instance_globals_a_amulets + $valuable_data_typ, cptr.ldI16o(obj, $obj_otyp));
+            if (!cptr.ldI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets)) {
+                cptr.stI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets, cptr.ldI64o(obj, $obj_quan));
+                cptr.stI32o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets + $valuable_data_typ, cptr.ldI16o(obj, $obj_otyp));
             } else
-                cptr.stI64o2(ga, i, 16, $instance_globals_a_amulets, cptr.ldI64o2(ga, i, 16, $instance_globals_a_amulets) + cptr.ldI64o(obj, $obj_quan));
+                cptr.stI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets, cptr.ldI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets) + cptr.ldI64o(obj, $obj_quan));
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && cptr.ldI16o(obj, $obj_otyp) <= NHC.LAST_GLASS_GEM) {
             i = (((cptr.ldI16o(obj, $obj_otyp)) < ((NHC.LAST_REAL_GEM + 1) | 0) ? (cptr.ldI16o(obj, $obj_otyp)) : ((NHC.LAST_REAL_GEM + 1) | 0)) - NHC.FIRST_REAL_GEM) | 0;
-            if (!cptr.ldI64o2(gg, i, 16, $instance_globals_g_gems)) {
-                cptr.stI64o2(gg, i, 16, $instance_globals_g_gems, cptr.ldI64o(obj, $obj_quan));
-                cptr.stI32o2(gg, i, 16, $instance_globals_g_gems + $valuable_data_typ, cptr.ldI16o(obj, $obj_otyp));
+            if (!cptr.ldI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems)) {
+                cptr.stI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems, cptr.ldI64o(obj, $obj_quan));
+                cptr.stI32o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems + $valuable_data_typ, cptr.ldI16o(obj, $obj_otyp));
             } else
-                cptr.stI64o2(gg, i, 16, $instance_globals_g_gems, cptr.ldI64o2(gg, i, 16, $instance_globals_g_gems) + cptr.ldI64o(obj, $obj_quan));
+                cptr.stI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems, cptr.ldI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems) + cptr.ldI64o(obj, $obj_quan));
         }
     return;
 }
@@ -756,15 +760,15 @@ function sort_valuables(list, size) {
     let j;
     let ltmp = cptr.alloc(16);
     for (i = 1; i < size; i++) {
-        if (cptr.ldI64o(list, i, 16) == 0n)
+        if (cptr.ldI64o(list, i, $sizeof_valuable_data) == 0n)
             continue;
-        cptr.memcpy(ltmp, cptr.add(list, i, 16), 16);
+        cptr.memcpy(ltmp, cptr.add(list, i, $sizeof_valuable_data), 16);
         for (j = i; j > 0; --j) {
-            if (cptr.ldI64o(list, (j - 1) | 0, 16) >= cptr.ldI64(ltmp))
+            if (cptr.ldI64o(list, (j - 1) | 0, $sizeof_valuable_data) >= cptr.ldI64(ltmp))
                 break;
-            cptr.memcpy(cptr.add(list, j, 16), cptr.add(list, (j - 1) | 0, 16), 16);
+            cptr.memcpy(cptr.add(list, j, $sizeof_valuable_data), cptr.add(list, (j - 1) | 0, $sizeof_valuable_data), 16);
         }
-        cptr.memcpy(cptr.add(list, j, 16), ltmp, 16);
+        cptr.memcpy(cptr.add(list, j, $sizeof_valuable_data), ltmp, 16);
     }
     return;
 }
@@ -810,7 +814,7 @@ function* artifact_score(list, counting, endwin) {
             } else {
                 (yield* discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0));
                 cptr.stI32o(otmp, $obj_known, cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))));
-                void cptr.sprintf(cptr.decay(pbuf), __s_s_s_worth_ld_s_and_ld_points, the_unique_obj(otmp) ? __s_the__2 : __s_empty, cptr.ld1so(otmp, $obj_oartifact) ? artiname(cptr.ld1so(otmp, $obj_oartifact)) : (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), 120))), 16)), value, (yield* currency(value)), points);
+                void cptr.sprintf(cptr.decay(pbuf), __s_s_s_worth_ld_s_and_ld_points, the_unique_obj(otmp) ? __s_the__2 : __s_empty, cptr.ld1so(otmp, $obj_oartifact) ? artiname(cptr.ld1so(otmp, $obj_oartifact)) : (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr)), value, (yield* currency(value)), points);
                 (yield* Y.icall(putstr()(endwin, 0, cptr.decay(pbuf))));
             }
         }
@@ -844,8 +848,8 @@ function* fuzzer_savelife(how) {
             }
             if (!(rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 979, __s_fuzzer_savelife), rn2((3 + Math.imul(3, remedies)) | 0)) : rn2((3 + Math.imul(3, remedies)) | 0))) {
                 for (propidx = 1; propidx <= 8; ++propidx) {
-                    if (!cptr.ldI64o2(u, propidx, 24, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, 24, $you_uprops) && (proptim = (rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 985, __s_fuzzer_savelife), rn2(3)) : rn2(3))) > 0)
-                        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, 24), $prop_intrinsic), BigInt(((Math.imul(2, proptim) + 1) | 0)));
+                    if (!cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops) && (proptim = (rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 985, __s_fuzzer_savelife), rn2(3)) : rn2(3))) > 0)
+                        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop), $prop_intrinsic), BigInt(((Math.imul(2, proptim) + 1) | 0)));
                 }
                 ++remedies;
             }
@@ -986,7 +990,7 @@ function* really_done(how) {
         cptr.stI32o(u, $you_ugrave_arise, ((NHC.NON_PM - 2) | 0));
     else if (how == NHC.STONING)
         cptr.stI32o(u, $you_ugrave_arise, NHC.LEAVESTATUE);
-    else if (how == NHC.TURNED_SLIME && !(cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    else if (how == NHC.TURNED_SLIME && !(cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_GREEN_SLIME);
     if (how == NHC.QUIT) {
         cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
@@ -1038,15 +1042,15 @@ function* really_done(how) {
         (yield* keepdogs(1));
     if (bones_ok && taken)
         (yield* finish_paybill());
-    if (bones_ok && cptr.ldI32o(u, $you_ugrave_arise) == NHC.NON_PM && !(cptr.ld1uo2(svm, cptr.ldI32o(u, $you_umonnum), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_NOCORPSE)) {
+    if (bones_ok && cptr.ldI32o(u, $you_ugrave_arise) == NHC.NON_PM && !(cptr.ld1uo2(svm, cptr.ldI32o(u, $you_umonnum), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_NOCORPSE)) {
         let mnum = !Upolyd() ? cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) : cptr.ldI32o(u, $you_umonnum);
-        let was_already_grave = ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE);
-        corpse = (yield* mk_named_object(NHC.CORPSE, cptr.add(mons, mnum, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp));
+        let was_already_grave = ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE);
+        corpse = (yield* mk_named_object(NHC.CORPSE, cptr.add(mons, mnum, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp));
         void cptr.sprintf(cptr.decay(pbuf), __s_pct_s_comma_sp, svp);
         (yield* formatkiller(eos(cptr.decay(pbuf)), Number(BigInt.asUintN(32, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(pbuf), __s_really_done, 1317)) >>> 0)))), how, 1));
         (yield* make_grave(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(pbuf)));
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE) && !was_already_grave)
-            cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags, 1);
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE) && !was_already_grave)
+            cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 1);
     }
     cptr.st1o(cptr.decay(pbuf), 0, 0, 1);
     {
@@ -1069,7 +1073,7 @@ function* really_done(how) {
         }
     }
     if (ismnum(cptr.ldI32o(u, $you_ugrave_arise)) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
-        (yield* Your(__s_s_as_s, (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME) ? __s_body_rises_from_the_dead : __s_revenant_persists, (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), 96), Ugender())))));
+        (yield* Your(__s_s_as_s, (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME) ? __s_body_rises_from_the_dead : __s_revenant_persists, (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_permonst), Ugender())))));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
     }
     if (bones_ok) {
@@ -1114,13 +1118,13 @@ function* really_done(how) {
         let i;
         for (val = cptr.add(gv, $instance_globals_v_valuables); cptr.ldPtr(val); val = cptr.add(val, 1, 16))
             for (i = 0; i < cptr.ldI32o(val, $val_list_size); i++) {
-                cptr.stI64o(cptr.ldPtr(val), i, 0n, 16);
+                cptr.stI64o(cptr.ldPtr(val), i, 0n, $sizeof_valuable_data);
             }
         get_valuables(cptr.ldPtro(gi, $instance_globals_i_invent));
         for (val = cptr.add(gv, $instance_globals_v_valuables); cptr.ldPtr(val); val = cptr.add(val, 1, 16))
             for (i = 0; i < cptr.ldI32o(val, $val_list_size); i++)
-                if (cptr.ldI64o(cptr.ldPtr(val), i, 16) != 0n) {
-                    tmp = BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtr(val), i, 16) * BigInt(cptr.ldI16o2(objects, cptr.ldI32o2(cptr.ldPtr(val), i, 16, $valuable_data_typ), 120, $objclass_oc_cost)));
+                if (cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data) != 0n) {
+                    tmp = BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data) * BigInt(cptr.ldI16o2(objects, cptr.ldI32o2(cptr.ldPtr(val), i, $sizeof_valuable_data, $valuable_data_typ), $sizeof_objclass, $objclass_oc_cost)));
                     cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp))) : 9223372036854775807n));
                 }
         (yield* artifact_score(cptr.ldPtro(gi, $instance_globals_i_invent), 1, endwin));
@@ -1136,7 +1140,7 @@ function* really_done(how) {
             }
             if (Schroedingers_cat) {
                 let mhp;
-                let m_lev = (yield* adj_lev(cptr.add(mons, NHC.PM_HOUSECAT, 96)));
+                let m_lev = (yield* adj_lev(cptr.add(mons, NHC.PM_HOUSECAT, $sizeof_permonst)));
                 mhp = (rng_log_enabled() ? (rng_log_set_caller(__s_end_c, 1468, __s_really_done), d((m_lev), 8)) : d((m_lev), 8));
                 cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((mhp)))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((mhp)))) : 9223372036854775807n));
                 void cptr.strcat(eos(cptr.decay(pbuf)), __s_and_schroedinger_s_cat);
@@ -1153,11 +1157,11 @@ function* really_done(how) {
         for (val = cptr.add(gv, $instance_globals_v_valuables); cptr.ldPtr(val); val = cptr.add(val, 1, 16)) {
             sort_valuables(cptr.ldPtr(val), cptr.ldI32o(val, $val_list_size));
             for (i = 0; i < cptr.ldI32o(val, $val_list_size) && !cptr.ldI32o(program_state, $sinfo_stopprint); i++) {
-                let typ = cptr.ldI32o2(cptr.ldPtr(val), i, 16, $valuable_data_typ);
-                let count = cptr.ldI64o(cptr.ldPtr(val), i, 16);
+                let typ = cptr.ldI32o2(cptr.ldPtr(val), i, $sizeof_valuable_data, $valuable_data_typ);
+                let count = cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data);
                 if (count == 0n)
                     continue;
-                if (cptr.ld1so2(objects, typ, 120, $objclass_oc_class) != NHC.GEM_CLASS || typ <= NHC.LAST_REAL_GEM) {
+                if (cptr.ld1so2(objects, typ, $sizeof_objclass, $objclass_oc_class) != NHC.GEM_CLASS || typ <= NHC.LAST_REAL_GEM) {
                     otmp = (yield* mksobj(typ, 0, 0));
                     (yield* discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0));
                     cptr.stI32o(otmp, $obj_dknown, 1);
@@ -1165,7 +1169,7 @@ function* really_done(how) {
                     if (has_oname(otmp))
                         free_oname(otmp);
                     cptr.stI64o(otmp, $obj_quan, count);
-                    void cptr.sprintf(cptr.decay(pbuf), __s_8ld_s_worth_ld_s, count, (yield* xname(otmp)), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, 120, $objclass_oc_cost))), (yield* currency(2n)));
+                    void cptr.sprintf(cptr.decay(pbuf), __s_8ld_s_worth_ld_s, count, (yield* xname(otmp)), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, $sizeof_objclass, $objclass_oc_cost))), (yield* currency(2n)));
                     (yield* obfree(otmp, null));
                 } else {
                     void cptr.sprintf(cptr.decay(pbuf), __s_8ld_worthless_piece_s_of_colored_glass, count, (((count) == 1n) ? __s_empty : __s_s));
@@ -1177,7 +1181,7 @@ function* really_done(how) {
         if (cptr.ldI16o(u, $you_uz) == 0 && cptr.ldI16o(u, $you_uz + $d_level_dlevel) <= 0) {
             void cptr.sprintf(cptr.decay(pbuf), __s_you_s_beyond_the_confines_of_the_dungeon, (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < 0) ? __s_passed_away : cptr.ldPtro(ends, how, 8));
         } else {
-            let where = cptr.add(svd, cptr.ldI16o(u, $you_uz), 112);
+            let where = cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon);
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
                 where = __s_the_astral_plane;
             void cptr.sprintf(cptr.decay(pbuf), __s_you_s_in_s, cptr.ldPtro(ends, how, 8), where);

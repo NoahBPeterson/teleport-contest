@@ -24,7 +24,7 @@ import { lua_settop } from './lapi.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $luaL_Reg_func = FLD.luaL_Reg_func;
+const $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_us_g = cptr.lit("_G");
@@ -39,7 +39,7 @@ const __s_utf8 = cptr.lit("utf8");
 const __s_debug = cptr.lit("debug");
 
 /** C ref: linit.c:42 — luaL_Reg[11] */
-const loadedlibs = cptr.alloc(11 * 16);
+const loadedlibs = cptr.alloc(11 * $sizeof_luaL_Reg);
 cptr.stPtro(loadedlibs, 0, __s_us_g);
 cptr.stPtro(loadedlibs, 0 + $luaL_Reg_func, luaopen_base);
 cptr.stPtro(loadedlibs, 16, __s_package);

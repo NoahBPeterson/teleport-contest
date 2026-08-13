@@ -138,7 +138,13 @@ const $Loot_disco = FLD.Loot_disco, $Loot_inuse = FLD.Loot_inuse, $Loot_ordercla
     $permonst_mlet = FLD.permonst_mlet, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
     $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load, $sinfo_in_moveloop = FLD.sinfo_in_moveloop,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_Loot = FLD.sizeof_Loot,
+    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_glyphinfo = FLD.sizeof_glyphinfo,
+    $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_sortloot_item = FLD.sizeof_sortloot_item, $sizeof_symdef = FLD.sizeof_symdef,
+    $sizeof_win_request_info_t = FLD.sizeof_win_request_info_t,
     $sortloot_item_disco = FLD.sortloot_item_disco, $sortloot_item_indx = FLD.sortloot_item_indx,
     $sortloot_item_inuse = FLD.sortloot_item_inuse, $sortloot_item_orderclass = FLD.sortloot_item_orderclass,
     $sortloot_item_str = FLD.sortloot_item_str, $sortloot_item_subclass = FLD.sortloot_item_subclass,
@@ -500,7 +506,7 @@ const __s_s_could_not_be_enabled = cptr.lit("%s could not be enabled.");
 const __s_s_needs_a_terminal_that_is_at_least_dx = cptr.lit("%s needs a terminal that is at least %dx%d, yours is %dx%d.");
 
 /** C ref: invent.c:44 — struct win_request_info_t */
-let wri_info = cptr.alloc(48);
+let wri_info = cptr.alloc($sizeof_win_request_info_t);
 
 /** C ref: invent.c:45 — int */
 let perminv_flags = NHC.InvOptNone;
@@ -629,7 +635,7 @@ export function loot_classify(sort_item, obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let oclass = cptr.ld1so(obj, $obj_oclass);
     let seen;
-    let discovered = schar(((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+    let discovered = schar(((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
     if (!Blind())
         observe_object(obj);
     seen = schar(((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 ? 1 : 0)), classorder = cptr.ld1so(flags, $flag_sortpack) ? cptr.add(flags, $flag_inv_order) : cptr.decay(__static_loot_classify_def_srt_order);
@@ -651,13 +657,13 @@ export function loot_classify(sort_item, obj) {
             cptr.st1o(cptr.decay(__static_loot_classify_armcat), NHC.ARM_SUIT, 7, 1);
             cptr.st1o(cptr.decay(__static_loot_classify_armcat), 7, 8, 1);
         }
-        k = cptr.ld1so2(objects, otyp, 120, $objclass_oc_subtyp);
+        k = cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp);
         if (k < 0 || k >= 7)
             k = 7;
         k = cptr.ld1so(cptr.decay(__static_loot_classify_armcat), k, 1);
         break;
         case NHC.WEAPON_CLASS:
-        k = cptr.ld1so2(objects, otyp, 120, $objclass_oc_subtyp);
+        k = cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp);
         k = (k < 0) ? ((k >= -22 && k <= -20) ? 1 : 3) : ((k >= NHC.P_BOW && k <= NHC.P_CROSSBOW) ? 2 : ((k == NHC.P_SPEAR || k == NHC.P_DAGGER || k == NHC.P_KNIFE) ? 4 : (!is_pole(obj) ? 5 : 6)));
         break;
         case NHC.TOOL_CLASS:
@@ -705,7 +711,7 @@ export function loot_classify(sort_item, obj) {
         }
         break;
         case NHC.GEM_CLASS:
-        switch ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) {
+        switch ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) {
             case NHC.GEMSTONE:
             k = !seen ? 1 : (!discovered ? 2 : 3);
             break;
@@ -722,7 +728,7 @@ export function loot_classify(sort_item, obj) {
         break;
     }
     cptr.st1o(sort_item, $Loot_subclass, schar(k));
-    k = !seen ? 1 : ((discovered || !(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))) ? 4 : ((cptr.ldPtro2(objects, otyp, 120, $objclass_oc_uname)) ? 3 : 2));
+    k = !seen ? 1 : ((discovered || !(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) ? 4 : ((cptr.ldPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname)) ? 3 : 2));
     cptr.st1o(sort_item, $Loot_disco, schar(k));
     cptr.st1o(sort_item, $Loot_inuse, 0);
 }
@@ -864,7 +870,7 @@ function sortloot_cmp(vptr1, vptr2) {
         val2 = (cptr.ldI32o(obj2, $obj_rknown) & 1) | 0 && (cptr.ldI32o(obj2, $obj_oerodeproof) & 1) | 0 ? 1 : 0;
         if (val1 != val2)
             return (val2 - val1) | 0;
-        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj1, $obj_otyp), 120, $objclass_oc_uses_known) & 1) | 0 && cptr.ld1so(obj1, $obj_oclass) != NHC.FOOD_CLASS) {
+        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj1, $obj_otyp), $sizeof_objclass, $objclass_oc_uses_known) & 1) | 0 && cptr.ld1so(obj1, $obj_oclass) != NHC.FOOD_CLASS) {
             val1 = (cptr.ldI32o(obj1, $obj_known) & 1) | 0 ? cptr.ld1so(obj1, $obj_spe) : -1000;
             val2 = (cptr.ldI32o(obj2, $obj_known) & 1) | 0 ? cptr.ld1so(obj2, $obj_spe) : -1000;
             if (val1 != val2)
@@ -874,7 +880,7 @@ function sortloot_cmp(vptr1, vptr2) {
     return ((cptr.ldI32o(sli1, $sortloot_item_indx) - cptr.ldI32o(sli2, $sortloot_item_indx)) | 0);
 }
 
-let __static_sortloot_zerosli = cptr.alloc(24); /** C ref: invent.c:599 — struct sortloot_item (function-static) */
+let __static_sortloot_zerosli = cptr.alloc($sizeof_sortloot_item); /** C ref: invent.c:599 — struct sortloot_item (function-static) */
 
 /** C ref: invent.c:593 — @param {CPtr<struct obj *>} olist @param {CUInt} mode @param {CInt} by_nexthere @param {CPtr} filterfunc @returns {CPtr<Loot>} */
 export function sortloot(olist, mode, by_nexthere, filterfunc) {
@@ -889,22 +895,22 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
     augment_filter = schar((((mode & NHM.SORTLOOT_PETRIFY) >>> 0) ? 1 : 0));
     mode &= 4294967263;
     for (i = 0, o = cptr.ldPtr(olist); o; o = by_nexthere ? cptr.ldPtro(o, $obj_v) : cptr.ldPtr(o)) {
-        if (filterfunc && !(filterfunc)(o) && (!augment_filter || cptr.ldI16o(o, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(o, $obj_corpsenm), 96))))
+        if (filterfunc && !(filterfunc)(o) && (!augment_filter || cptr.ldI16o(o, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(o, $obj_corpsenm), $sizeof_permonst))))
             continue;
-        cptr.memcpy(cptr.add(sliarray, i, 24), __static_sortloot_zerosli, 24);
-        cptr.stPtro(sliarray, i, o, 24), cptr.stI32o2(sliarray, i, 24, $sortloot_item_indx, i | 0);
+        cptr.memcpy(cptr.add(sliarray, i, $sizeof_Loot), __static_sortloot_zerosli, 24);
+        cptr.stPtro(sliarray, i, o, $sizeof_Loot), cptr.stI32o2(sliarray, i, $sizeof_Loot, $sortloot_item_indx, i | 0);
         ++i;
     }
     n = i;
-    cptr.memcpy(cptr.add(sliarray, n, 24), __static_sortloot_zerosli, 24);
-    cptr.stI32o2(sliarray, n, 24, $sortloot_item_indx, -1);
+    cptr.memcpy(cptr.add(sliarray, n, $sizeof_Loot), __static_sortloot_zerosli, 24);
+    cptr.stI32o2(sliarray, n, $sizeof_Loot, $sortloot_item_indx, -1);
     if (mode && n > 1) {
         cptr.stI32o(gs, $instance_globals_s_sortlootmode, mode);
         nh_deterministic_qsort((sliarray), BigInt((n) >>> 0), 24n, (sortloot_cmp));
         cptr.stI32o(gs, $instance_globals_s_sortlootmode, 0);
         for (i = 0; i < n; ++i)
-            if (cptr.ldPtro2(sliarray, i, 24, $sortloot_item_str))
-                cptr.free(cptr.ldPtro2(sliarray, i, 24, $sortloot_item_str)), cptr.stPtro2(sliarray, i, 24, $sortloot_item_str, null);
+            if (cptr.ldPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str))
+                cptr.free(cptr.ldPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str)), cptr.stPtro2(sliarray, i, $sizeof_Loot, $sortloot_item_str, null);
     }
     return sliarray;
 }
@@ -1120,7 +1126,7 @@ export function addinv_core2(obj) {
     if (confers_luck(obj)) {
         set_moreluck();
     }
-    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS && cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER && !Blind() && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known) & 1)) {
+    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) && cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS && cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_BLANK_PAPER && !Blind() && !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1)) {
         observe_object(obj);
         pline(__s_you_decipher_the_label_on_s, yname(obj));
         discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
@@ -1444,7 +1450,7 @@ export function carrying(type) {
 export function carrying_stoning_corpse() {
     let otmp;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)))
+        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)))
             break;
     return otmp;
 }
@@ -2391,7 +2397,7 @@ export function reroll_menu() {
     add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     end_menu()(win, __s_reroll_this_character);
     if (select_menu(win, NHM.PICK_ONE, pick_list) > 0) {
-        option = cptr.ld1so(pick_list.v, 0, 24);
+        option = cptr.ld1so(pick_list.v, 0, $sizeof_menu_item);
         cptr.free(pick_list.v);
     } else {
         option = yn_function(__s_reroll_this_character, cptr.decay(ynchars), 110, 1);
@@ -2447,7 +2453,7 @@ function menu_identify(id_limit) {
             if (n > id_limit)
                 n = id_limit;
             for (i = 0; i < n; i++, id_limit--)
-                void identify(cptr.ldPtro(pick_list.v, i, 24));
+                void identify(cptr.ldPtro(pick_list.v, i, $sizeof_menu_item));
             cptr.free(pick_list.v);
             if (id_limit)
                 wait_synch()();
@@ -2775,8 +2781,8 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
     if (cptr.eq(cptr.ldPtro(gi, $instance_globals_i_invent), inuse_fakeobj)) {
         cptr.stPtro(gi, $instance_globals_i_invent, cptr.ldPtr(inuse_fakeobj));
         cptr.stPtr(inuse_fakeobj, null);
-        if (cptr.eq(cptr.ldPtro(sortedinvent.v, 0, 24), inuse_fakeobj) && !cptr.ldPtro(sortedinvent.v, 1, 24))
-            cptr.stPtro(sortedinvent.v, 0, null, 24);
+        if (cptr.eq(cptr.ldPtro(sortedinvent.v, 0, $sizeof_Loot), inuse_fakeobj) && !cptr.ldPtro(sortedinvent.v, 1, $sizeof_Loot))
+            cptr.stPtro(sortedinvent.v, 0, null, $sizeof_Loot);
     }
     start_menu()(win, BigInt.asUintN(64, BigInt(menu_behavior)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -2811,7 +2817,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
         prevorderclass = 0;
         for (srtinv = sortedinvent.v; (otmp = cptr.ldPtr(srtinv)) !== null; srtinv = cptr.add(srtinv, 1, 24)) {
             let tmpglyph;
-            let tmpglyphinfo = cptr.alloc(48); cptr.memcpy(tmpglyphinfo, nul_glyphinfo.v, 48);
+            let tmpglyphinfo = cptr.alloc(48); cptr.memcpy(tmpglyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
             if (lets && !cptr.strchr(lets, cptr.ld1so(otmp, $obj_invlet)))
                 continue;
             if (!cptr.ld1so(flags, $flag_sortpack) || cptr.ld1so(otmp, $obj_oclass) == cptr.ld1s(invlet)) {
@@ -2848,7 +2854,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
                     tmpglyph = ((cptr.ldI16o((otmp), $obj_otyp) == NHC.STATUE) ? ((Hallucination()) ? (((((rn2_on_display_rng)(NHC.NUMMONS))) + ((!(rn2_on_display_rng)(2)) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0) : ((cptr.ldI32o((otmp), $obj_corpsenm) + (((cptr.ld1so((otmp), $obj_spe) & NHM.CORPSTAT_GENDER) == NHM.CORPSTAT_FEMALE) ? ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_FEM_PILETOP_OFF : NHC.GLYPH_STATUE_FEM_OFF) : ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_STATUE_MALE_PILETOP_OFF : NHC.GLYPH_STATUE_MALE_OFF))) | 0)) : ((Hallucination()) ? (((cptr.stI32o(go, $instance_globals_o_otg_temp, (((rn2_on_display_rng)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))) == NHC.CORPSE) ? ((((rn2_on_display_rng)(NHC.NUMMONS)) + NHC.GLYPH_BODY_OFF) | 0) : ((cptr.ldI32o(go, $instance_globals_o_otg_temp) + NHC.GLYPH_OBJ_OFF) | 0)) : ((cptr.ldI16o((otmp), $obj_otyp) == NHC.CORPSE) ? (((cptr.ldI32o((otmp), $obj_corpsenm) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_BODY_PILETOP_OFF : NHC.GLYPH_BODY_OFF)) | 0)) : (obj_is_generic(otmp) ? (((cptr.ld1so((otmp), $obj_oclass) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0)) : (((cptr.ldI16o((otmp), $obj_otyp) + ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_FLOOR && ((cptr.stPtro(go, $instance_globals_o_otg_otmp, cptr.ldPtro(cptr.ldPtro3(svl, cptr.ldI16o((otmp), $obj_ox), 168, cptr.ldI16o((otmp), $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects), $obj_v))) !== null) && (cptr.ldI16o((otmp), $obj_otyp) != NHC.BOULDER || cptr.ldI16o(cptr.ldPtro(go, $instance_globals_o_otg_otmp), $obj_otyp) == NHC.BOULDER)) ? NHC.GLYPH_OBJ_PILETOP_OFF : NHC.GLYPH_OBJ_OFF)) | 0))))));
                     map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
                     formattedobj = doname(otmp);
-                    add_menu(win, tmpglyphinfo, any, ilet, schar((wizid ? cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), 24) : 0)), NHM.ATR_NONE, clr, formattedobj, NHM.MENU_ITEMFLAGS_NONE);
+                    add_menu(win, tmpglyphinfo, any, ilet, schar((wizid ? cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), $sizeof_class_sym) : 0)), NHM.ATR_NONE, clr, formattedobj, NHM.MENU_ITEMFLAGS_NONE);
                 }
                 maybereleaseobuf(formattedobj);
                 gotsomething = 1;
@@ -2894,7 +2900,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
                 cptr.stI32o(iflags, $instance_flags_override_ID, 0);
                 ret = 0;
                 for (i = 0; i < n; ++i) {
-                    otmp = cptr.ldPtro(selected.v, i, 24);
+                    otmp = cptr.ldPtro(selected.v, i, $sizeof_menu_item);
                     if (cptr.eq(otmp, wizid_fakeobj)) {
                         identify_pack(0, 0);
                         all_id = 1;
@@ -2907,9 +2913,9 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
                 if (!all_id)
                     update_inventory();
             } else {
-                ret = cptr.ld1so(selected.v, 0, 24);
+                ret = cptr.ld1so(selected.v, 0, $sizeof_menu_item);
                 if (out_cnt)
-                    cptr.stI64(out_cnt, cptr.ldI64o2(selected.v, 0, 24, $mi_count));
+                    cptr.stI64(out_cnt, cptr.ldI64o2(selected.v, 0, $sizeof_menu_item, $mi_count));
             }
             cptr.free(selected.v);
         } else
@@ -2925,7 +2931,7 @@ export function display_inventory(lets, want_reply) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             let otmp;
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
-                if (cptr.ld1so(otmp, $obj_invlet) == cptr.ld1so(cmdq, $_cmd_queue_key) && (!lets || !cptr.ld1s(lets) || cptr.strchr(lets, cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), 24)))) {
+                if (cptr.ld1so(otmp, $obj_invlet) == cptr.ld1so(cmdq, $_cmd_queue_key) && (!lets || !cptr.ld1s(lets) || cptr.strchr(lets, cptr.ld1so(def_oc_syms, cptr.ld1so(otmp, $obj_oclass), $sizeof_class_sym)))) {
                     cptr.free(cmdq);
                     return cptr.ld1so(otmp, $obj_invlet);
                 }
@@ -2952,7 +2958,7 @@ function display_used_invlets(avoidlet) {
     let classcount;
     let invdone = 0;
     let tmpglyph;
-    let tmpglyphinfo = cptr.alloc(48); cptr.memcpy(tmpglyphinfo, nul_glyphinfo.v, 48);
+    let tmpglyphinfo = cptr.alloc(48); cptr.memcpy(tmpglyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
     let win;
     let any = cptr.alloc(8);
     let selected = cptr.box(0);
@@ -2986,7 +2992,7 @@ function display_used_invlets(avoidlet) {
         end_menu()(win, __s_inventory_letters_used);
         n = select_menu(win, NHM.PICK_ONE, selected);
         if (n > 0) {
-            ret = cptr.ld1so(selected.v, 0, 24);
+            ret = cptr.ld1so(selected.v, 0, $sizeof_menu_item);
             cptr.free(selected.v);
         } else
             ret = schar((!n ? 0 : 27));
@@ -3262,7 +3268,7 @@ export function dotypeinv() {
                 n = query_category(cptr.decay(__static_dotypeinv_prompt), cptr.ldPtro(gi, $instance_globals_i_invent), i, pick_list, NHM.PICK_ONE);
                 if (!n)
                     break __lbl_doI_done;
-                cptr.stI32o(gt, $instance_globals_t_this_type, c = schar(cptr.ldI32o(pick_list.v, 0, 24)));
+                cptr.stI32o(gt, $instance_globals_t_this_type, c = schar(cptr.ldI32o(pick_list.v, 0, $sizeof_menu_item)));
                 cptr.free(pick_list.v);
             }
         }
@@ -3304,8 +3310,8 @@ export function dotypeinv() {
                 cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), 80);
             cptr.st1(extra_types, 0);
             for (i = 0; i < NHC.MAXOCLASSES; i++)
-                if (!cptr.strchr(cptr.decay(types), cptr.ld1so(def_oc_syms, i, 24))) {
-                    cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), cptr.ld1so(def_oc_syms, i, 24));
+                if (!cptr.strchr(cptr.decay(types), cptr.ld1so(def_oc_syms, i, $sizeof_class_sym))) {
+                    cptr.st1(cptr.postinc(() => extra_types, (v) => { extra_types = v; }), cptr.ld1so(def_oc_syms, i, $sizeof_class_sym));
                     cptr.st1(extra_types, 0);
                 }
             if (class_count > 1) {
@@ -3375,7 +3381,7 @@ export function dotypeinv() {
             cptr.stPtro(gt, $instance_globals_t_this_title, cptr.decay(title));
         }
         if (query_objlist(null, cptr.add(gi, $instance_globals_i_invent), ((cptr.ld1so(flags, $flag_invlet_constant) ? NHM.USE_INVLET : 0) | NHM.INVORDER_SORT | NHM.INCLUDE_VENOM), pick_list, NHM.PICK_ONE, this_type_only) > 0) {
-            let otmp = cptr.ldPtro(pick_list.v, 0, 24);
+            let otmp = cptr.ldPtro(pick_list.v, 0, $sizeof_menu_item);
             cptr.free(pick_list.v);
             void itemactions(otmp);
         }
@@ -3389,7 +3395,7 @@ const __static_dfeature_at_altbuf = new Uint8Array(256); /** C ref: invent.c:404
 
 /** C ref: invent.c:4037 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function dfeature_at(x, y, buf) {
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     let ltyp = cptr.ld1so(lev, $rm_typ);
     let cmap = -1;
     let dfeature = null;
@@ -3439,7 +3445,7 @@ export function dfeature_at(x, y, buf) {
     else if (ltyp == NHC.IRONBARS)
         dfeature = __s_set_of_iron_bars;
     if (cmap >= 0)
-        dfeature = cptr.ldPtro2(defsyms, cmap, 24, $symdef_explanation);
+        dfeature = cptr.ldPtro2(defsyms, cmap, $sizeof_symdef, $symdef_explanation);
     if (dfeature)
         void cptr.strcpy(buf, dfeature);
     return dfeature;
@@ -3595,7 +3601,7 @@ export function dolook() {
 
 /** C ref: invent.c:4334 — @param {CPtr<struct obj>} otmp @param {CInt} force_touch @returns {CInt} */
 export function will_feel_cockatrice(otmp, force_touch) {
-    if ((Blind() || force_touch) && !uarmg.v && !Stone_resistance() && (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96))))
+    if ((Blind() || force_touch) && !uarmg.v && !Stone_resistance() && (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))))
         return 1;
     return 0;
 }
@@ -3628,7 +3634,7 @@ export function stackobj(obj) {
 export function mergable(otmp, obj) {
     let objnamelth = 0n;
     let otmpnamelth = 0n;
-    if (cptr.eq(obj, otmp) || cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(otmp, $obj_otyp) || (cptr.ldI32o(obj, $obj_nomerge) & 1) | 0 || (cptr.ldI32o(otmp, $obj_nomerge) & 1) | 0 || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_merge) & 1))
+    if (cptr.eq(obj, otmp) || cptr.ldI16o(obj, $obj_otyp) != cptr.ldI16o(otmp, $obj_otyp) || (cptr.ldI32o(obj, $obj_nomerge) & 1) | 0 || (cptr.ldI32o(otmp, $obj_nomerge) & 1) | 0 || !(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1))
         return 0;
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return 1;
@@ -3652,7 +3658,7 @@ export function mergable(otmp, obj) {
         if (cptr.ldI32o(obj, $obj_corpsenm) != cptr.ldI32o(otmp, $obj_corpsenm))
             return 0;
     }
-    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.EGG && (cptr.ldI16o(obj, $obj_timed) || cptr.ldI16o(otmp, $obj_timed))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.LOW_PM && is_reviver(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96))))
+    if ((cptr.ldI16o(obj, $obj_otyp) == NHC.EGG && (cptr.ldI16o(obj, $obj_timed) || cptr.ldI16o(otmp, $obj_timed))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && cptr.ldI32o(otmp, $obj_corpsenm) >= NHC.LOW_PM && is_reviver(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))))
         return 0;
     if (Is_candle(obj) && cptr.ldI64o(obj, $obj_age) / 25n != cptr.ldI64o(otmp, $obj_age) / 25n)
         return 0;
@@ -3936,7 +3942,7 @@ export function let_to_name(let$, unpaid, showsym) {
             bp = cptr.add(bp, 1);
         }
         cptr.st1(bp, 0);
-        void cptr.sprintf(eos(cptr.ldPtro(gi, $instance_globals_i_invbuf)), ocsymfmt, cptr.ld1so(def_oc_syms, oclass, 24));
+        void cptr.sprintf(eos(cptr.ldPtro(gi, $instance_globals_i_invbuf)), ocsymfmt, cptr.ld1so(def_oc_syms, oclass, $sizeof_class_sym));
     }
     return cptr.ldPtro(gi, $instance_globals_i_invbuf);
 }
@@ -4271,13 +4277,13 @@ export function display_minventory(mon, dflags, title) {
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1)) - (1);
         n = query_objlist(title ? title : cptr.decay(tmp), cptr.add(mon, $monst_minvent), (NHM.INVORDER_SORT | (incl_hero ? NHM.INCLUDE_HERO : 0)), selected, pickings, do_all ? allow_all : worn_wield_only);
         (cptr.stI32o(iflags, $instance_flags_suppress_price, cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1)) - (-1);
-        cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96));
+        cptr.stPtro(gy, $instance_globals_y_youmonst + $monst_data, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst));
     } else {
         invdisp_nothing(title ? title : cptr.decay(tmp), __s_none);
         n = 0;
     }
     if (n > 0) {
-        ret = cptr.ldPtro(selected.v, 0, 24);
+        ret = cptr.ldPtro(selected.v, 0, $sizeof_menu_item);
         cptr.free(selected.v);
     } else
         ret = null;
@@ -4329,7 +4335,7 @@ export function display_cinventory(obj) {
         n = 0;
     }
     if (n > 0) {
-        ret = cptr.ldPtro(selected.v, 0, 24);
+        ret = cptr.ldPtro(selected.v, 0, $sizeof_menu_item);
         cptr.free(selected.v);
     } else
         ret = null;

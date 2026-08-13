@@ -15,7 +15,7 @@ import { luaL_addgsub, luaL_addlstring, luaL_addstring, luaL_addvalue, luaL_buff
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $luaL_Buffer_n = FLD.luaL_Buffer_n, $luaL_Buffer_size = FLD.luaL_Buffer_size,
-    $luaL_Reg_func = FLD.luaL_Reg_func;
+    $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_clibs = cptr.lit("_CLIBS");
@@ -417,7 +417,7 @@ function* ll_require(L) {
 }
 
 /** C ref: loadlib.c:682 — luaL_Reg[8] */
-const pk_funcs = cptr.alloc(8 * 16);
+const pk_funcs = cptr.alloc(8 * $sizeof_luaL_Reg);
 cptr.stPtro(pk_funcs, 0, __s_loadlib);
 cptr.stPtro(pk_funcs, 0 + $luaL_Reg_func, ll_loadlib);
 cptr.stPtro(pk_funcs, 16, __s_searchpath);
@@ -436,7 +436,7 @@ cptr.stPtro(pk_funcs, 112, null);
 cptr.stPtro(pk_funcs, 112 + $luaL_Reg_func, null);
 
 /** C ref: loadlib.c:695 — luaL_Reg[2] */
-const ll_funcs = cptr.alloc(2 * 16);
+const ll_funcs = cptr.alloc(2 * $sizeof_luaL_Reg);
 cptr.stPtro(ll_funcs, 0, __s_require);
 cptr.stPtro(ll_funcs, 0 + $luaL_Reg_func, ll_require);
 cptr.stPtro(ll_funcs, 16, null);

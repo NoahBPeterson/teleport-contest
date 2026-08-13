@@ -16,7 +16,7 @@ import { rnd } from './rnd.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $luaL_Reg_func = FLD.luaL_Reg_func;
+const $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_index = cptr.lit("__index");
@@ -325,7 +325,7 @@ function* sort(L) {
 }
 
 /** C ref: ltablib.c:414 — luaL_Reg[8] */
-const tab_funcs = cptr.alloc(8 * 16);
+const tab_funcs = cptr.alloc(8 * $sizeof_luaL_Reg);
 cptr.stPtro(tab_funcs, 0, __s_concat);
 cptr.stPtro(tab_funcs, 0 + $luaL_Reg_func, tconcat);
 cptr.stPtro(tab_funcs, 16, __s_insert);

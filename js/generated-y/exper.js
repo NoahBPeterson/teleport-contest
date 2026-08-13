@@ -42,13 +42,14 @@ const $Race_enadv = FLD.Race_enadv, $RoleAdvance_hifix = FLD.RoleAdvance_hifix,
     $monst_mcloned = FLD.monst_mcloned, $monst_mrevived = FLD.monst_mrevived,
     $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
-    $permonst_mmove = FLD.permonst_mmove, $prop_intrinsic = FLD.prop_intrinsic, $you_mh = FLD.you_mh,
-    $you_mhmax = FLD.you_mhmax, $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc,
-    $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak, $you_uexp = FLD.you_uexp,
-    $you_uhp = FLD.you_uhp, $you_uhpinc = FLD.you_uhpinc, $you_uhpmax = FLD.you_uhpmax,
-    $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax, $you_ulevelpeak = FLD.you_ulevelpeak,
-    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
-    $you_urexp = FLD.you_urexp;
+    $permonst_mmove = FLD.permonst_mmove, $prop_intrinsic = FLD.prop_intrinsic,
+    $sizeof_attack = FLD.sizeof_attack, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax, $you_uen = FLD.you_uen,
+    $you_ueninc = FLD.you_ueninc, $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak,
+    $you_uexp = FLD.you_uexp, $you_uhp = FLD.you_uhp, $you_uhpinc = FLD.you_uhpinc,
+    $you_uhpmax = FLD.you_uhpmax, $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax,
+    $you_ulevelpeak = FLD.you_ulevelpeak, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+    $you_uprops = FLD.you_uprops, $you_urexp = FLD.you_urexp;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_exper_c = cptr.lit("exper.c");
@@ -142,7 +143,7 @@ export function experience(mtmp, nk) {
     if (cptr.ld1so(ptr, $permonst_mmove) > NHM.NORMAL_SPEED)
         tmp = (tmp + ((cptr.ld1so(ptr, $permonst_mmove) > 18) ? 5 : 3)) | 0;
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk);
+        tmp2 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk);
         if (tmp2 > NHM.AT_BUTT) {
             if (tmp2 == NHM.AT_WEAP)
                 tmp = (tmp + 5) | 0;
@@ -153,14 +154,14 @@ export function experience(mtmp, nk) {
         }
     }
     for (i = 0; i < NHM.NATTK; i++) {
-        tmp2 = cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_adtyp);
+        tmp2 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
         if (tmp2 > NHM.AD_PHYS && tmp2 < NHM.AD_BLND)
             tmp = (tmp + Math.imul(2, cptr.ld1uo(mtmp, $monst_m_lev))) | 0;
         else if ((tmp2 == NHM.AD_DRLI) || (tmp2 == NHM.AD_STON) || (tmp2 == NHM.AD_SLIM))
             tmp = (tmp + 50) | 0;
         else if (tmp2 != NHM.AD_PHYS)
             tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
-        if ((Math.imul(cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, 4, $permonst_mattk + $attack_damn))) > 23)
+        if ((Math.imul(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn))) > 23)
             tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
         if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL && !Amphibious())
             tmp = (tmp + 1000) | 0;
@@ -169,7 +170,7 @@ export function experience(mtmp, nk) {
         tmp = (tmp + (Math.imul(7, cptr.ld1uo(mtmp, $monst_m_lev)))) | 0;
     if (cptr.ld1uo(mtmp, $monst_m_lev) > 8)
         tmp = (tmp + 50) | 0;
-    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, 96)))
+    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)))
         tmp = 1;
     if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
         for (i = 0, tmp2 = 20; nk > tmp2 && tmp > 1; ++i) {

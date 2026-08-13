@@ -101,6 +101,10 @@ const $Gender_his = FLD.Gender_his, $Race_individual = FLD.Race_individual, $Rac
     $permonst_msound = FLD.permonst_msound, $permonst_pmidx = FLD.permonst_pmidx,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
     $q_score_leader_m_id = FLD.q_score_leader_m_id, $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_mkroom = FLD.sizeof_mkroom,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_sound_choices = FLD.sizeof_sound_choices, $sizeof_sound_procs = FLD.sizeof_sound_procs,
     $sound_procs_sound_achievement = FLD.sound_procs_sound_achievement,
     $sound_procs_sound_ambience = FLD.sound_procs_sound_ambience,
     $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
@@ -430,9 +434,9 @@ const __s_base_soundname_to_filename = cptr.lit("base_soundname_to_filename");
 
 /** C ref: sounds.c:20 — @param {CPtr<struct monst>} mon @param {CInt} rmtyp @returns {CInt} */
 function mon_in_room(mon, rmtyp) {
-    let rno = (cptr.ldI32o3(svl, cptr.ldI16o(mon, $monst_mx), 756, cptr.ldI16o(mon, $monst_my), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0;
+    let rno = (cptr.ldI32o3(svl, cptr.ldI16o(mon, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mon, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0;
     if (rno >= NHM.ROOMOFFSET)
-        return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, 224, $mkroom_rtype) == rmtyp;
+        return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == rmtyp;
     return 0;
 }
 
@@ -454,7 +458,7 @@ function* throne_mon_sound(mtmp) {
             }
             (yield* You_hear(__s_pct_s, cptr.ldPtro(__static_throne_mon_sound_throne_msg, which, 8)));
         } else {
-            (yield* pline(cptr.ldPtro(__static_throne_mon_sound_throne_msg, 2, 8), (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his))));
+            (yield* pline(cptr.ldPtro(__static_throne_mon_sound_throne_msg, 2, 8), (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his))));
         }
         return 1;
     }
@@ -565,7 +569,7 @@ cptr.stPtro(__static_oracle_sound_ora_msg, 32, __s_a_loud_zot); /** C ref: sound
 
 /** C ref: sounds.c:181 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* oracle_sound(mtmp) {
-    if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, 96)))
+    if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, $sizeof_permonst)))
         return 0;
     if (Hallucination() || !canseemon(mtmp)) {
         let hallu = Hallucination() ? 1 : 0;
@@ -915,7 +919,7 @@ export function maybe_gasp(mon) {
     let mptr = cptr.ldPtro(mon, $monst_data);
     let msound = cptr.ld1uo(mptr, $permonst_msound);
     let dogasp = 0;
-    if ((msound == NHC.MS_GUARDIAN && !cptr.eq(mptr, cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum), 96))) || (msound == NHC.MS_PRIEST && !p_coaligned(mon)))
+    if ((msound == NHC.MS_GUARDIAN && !cptr.eq(mptr, cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum), $sizeof_permonst))) || (msound == NHC.MS_PRIEST && !p_coaligned(mon)))
         msound = NHC.MS_SILENT;
     else if (msound == NHC.MS_CUSS && has_emin(mon) && (p_coaligned(mon) ? !cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_renegade) : cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_renegade)))
         msound = NHC.MS_HUMANOID;
@@ -998,9 +1002,9 @@ export function cry_sound(mtmp) {
 /** C ref: sounds.c:659 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function mon_is_gecko(mon) {
     let glyph;
-    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_GECKO, 96)))
+    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_GECKO, $sizeof_permonst)))
         return 1;
-    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)))
+    if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)))
         return 0;
     glyph = glyph_at(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
     return schar((glyph_to_mon(glyph) == NHC.PM_GECKO));
@@ -1042,11 +1046,11 @@ export function* domonnoise(mtmp) {
         return NHM.ECMD_OK;
     if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id) && msound > NHC.MS_ANIMAL)
         msound = NHC.MS_LEADER;
-    else if (msound == NHC.MS_GUARDIAN && !cptr.eq(ptr, cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum), 96)))
-        msound = cptr.ld1uo2(mons, genus((cptr.ldI32o((ptr), $permonst_pmidx)), 1), 96, $permonst_msound);
+    else if (msound == NHC.MS_GUARDIAN && !cptr.eq(ptr, cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum), $sizeof_permonst)))
+        msound = cptr.ld1uo2(mons, genus((cptr.ldI32o((ptr), $permonst_pmidx)), 1), $sizeof_permonst, $permonst_msound);
     else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
         msound = NHC.MS_SELL;
-    else if (msound == NHC.MS_ORC && ((same_race(ptr, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || same_race(ptr, cptr.add(mons, Race_switch(), 96))) || Hallucination()))
+    else if (msound == NHC.MS_ORC && ((same_race(ptr, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || same_race(ptr, cptr.add(mons, Race_switch(), $sizeof_permonst))) || Hallucination()))
         msound = NHC.MS_HUMANOID;
     else if (msound == NHC.MS_MOO && !cptr.ld1so(mtmp, $monst_mtame))
         msound = NHC.MS_BELLOW;
@@ -1100,8 +1104,8 @@ export function* domonnoise(mtmp) {
                 let vampindex;
                 if (kindred) {
                     verbl_msg = __s_this_is_my_hunting_ground_that_you_dare;
-                } else if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, 96)) || cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_BABY_SILVER_DRAGON, 96))) {
-                    void cptr.sprintf(cptr.decay(verbuf), __s_s_your_silver_sheen_does_not_frighten_me, (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, 96))) ? __s_fool : __s_young_fool);
+                } else if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst)) || cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_BABY_SILVER_DRAGON, $sizeof_permonst))) {
+                    void cptr.sprintf(cptr.decay(verbuf), __s_s_your_silver_sheen_does_not_frighten_me, (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst))) ? __s_fool : __s_young_fool);
                     verbl_msg = cptr.decay(verbuf);
                 } else {
                     vampindex = (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 807, __s_domonnoise), rn2(2)) : rn2(2));
@@ -1109,7 +1113,7 @@ export function* domonnoise(mtmp) {
                         void cptr.sprintf(cptr.decay(verbuf), cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8), (yield* body_part(NHC.BLOOD)));
                         verbl_msg = cptr.decay(verbuf);
                     } else if (vampindex == 1) {
-                        void cptr.sprintf(cptr.decay(verbuf), cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8), Upolyd() ? (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))) : (yield* an(racenoun)));
+                        void cptr.sprintf(cptr.decay(verbuf), cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8), Upolyd() ? (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))) : (yield* an(racenoun)));
                         verbl_msg = cptr.decay(verbuf);
                     } else
                         verbl_msg = cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8);
@@ -1119,7 +1123,7 @@ export function* domonnoise(mtmp) {
         }
         case NHC.MS_WERE:
         if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && ((yield* night()) ^ !(rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 824, __s_domonnoise), rn2(13)) : rn2(13)))) {
-            (yield* pline(__s_s_throws_back_s_head_and_lets_out_a, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), (cptr.eq(ptr, cptr.add(mons, NHC.PM_HUMAN_WERERAT, 96))) ? __s_shriek : __s_howl));
+            (yield* pline(__s_s_throws_back_s_head_and_lets_out_a, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), (cptr.eq(ptr, cptr.add(mons, NHC.PM_HUMAN_WERERAT, $sizeof_permonst))) ? __s_shriek : __s_howl));
             ;
             (yield* wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121));
         } else {
@@ -1135,7 +1139,7 @@ export function* domonnoise(mtmp) {
             else if (cptr.ld1so(mtmp, $monst_mtame) && cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime) > BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n))
                 pline_msg = __s_yips;
             else {
-                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_DINGO, 96)))
+                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_DINGO, $sizeof_permonst)))
                     pline_msg = __s_barks;
             }
         } else {
@@ -1174,7 +1178,7 @@ export function* domonnoise(mtmp) {
         pline_msg = __s_squeaks;
         break;
         case NHC.MS_SQAWK:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_RAVEN, 96)) && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_RAVEN, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
             verbl_msg = __s_nevermore;
         } else {
             ;
@@ -1277,12 +1281,12 @@ export function* domonnoise(mtmp) {
         if (cptr.ld1so(mtmp, $monst_mtame)) {
             verbl_msg = __s_sorry_i_m_all_out_of_wishes;
         } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATER_DEMON, 96)))
+            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATER_DEMON, $sizeof_permonst)))
                 pline_msg = __s_gurgles;
             else
                 verbl_msg = __s_i_m_free;
         } else {
-            if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_PRISONER, 96)))
+            if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)))
                 verbl_msg = __s_this_will_teach_you_not_to_disturb_me;
             else
                 verbl_msg = __s_get_me_out_of_here;
@@ -1292,7 +1296,7 @@ export function* domonnoise(mtmp) {
         if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
             switch ((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1008, __s_domonnoise), rn2(4)) : rn2(4))) {
                 case 0:
-                (yield* pline(__s_s_boasts_about_s_gem_collection, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his))));
+                (yield* pline(__s_s_boasts_about_s_gem_collection, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his))));
                 break;
                 case 1:
                 pline_msg = __s_complains_about_a_diet_of_mutton;
@@ -1436,7 +1440,7 @@ export function* domonnoise(mtmp) {
         {
             let tribtitle;
             let book = null;
-            let ms_Death = schar((cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, 96))));
+            let ms_Death = schar((cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, $sizeof_permonst))));
             if (ms_Death && !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_Deathnotice) & 1) && (book = u_have_novel()) !== null) {
                 if ((tribtitle = noveltitle(cptr.add(book, $obj_corpsenm))) !== null) {
                     void cptr.sprintf(cptr.decay(verbuf), __s_ah_so_you_have_a_copy_of_s, tribtitle);
@@ -1460,7 +1464,7 @@ export function* domonnoise(mtmp) {
         ;
         (yield* verbalize(__s_pct_s, verbl_msg_mcan));
     } else if (verbl_msg) {
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, 96))) {
+        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, $sizeof_permonst))) {
             let tmpbuf = new Uint8Array(256);
             (yield* pline(__s_pct_s, ucase(cptr.strcpy(cptr.decay(tmpbuf), verbl_msg))));
             ;
@@ -1545,7 +1549,7 @@ function* dochat() {
                 (yield* pline_The(__s_s_seems_not_to_notice_you, Hallucination() ? (yield* rndmonnam(null)) : __s_statue));
             return NHM.ECMD_OK;
         }
-        if (!Deaf() && (((cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)) {
+        if (!Deaf() && (((cptr.ld1so3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || cptr.ld1so3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)) {
             if (Blind() && !IS_WALL(cptr.ld1so3(svl, tx, 21, ty, 1, 0))) {
                 ;
             } else if (!Hallucination()) {
@@ -1644,7 +1648,7 @@ export function* tiphat() {
         statue = (glyph_is_statue(glyph) || (!vismon && !unseen && (otmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null && cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) ? 1 : 0);
         if (vismon && ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))
             vismon = 0, mtmp = null;
-        if (vismon || unseen || (statue && Hallucination()) || (range == 1 && mtmp && responsive_mon_at(x, y) && !(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT)) || !(accessible(i16(x), i16(y)) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS))
+        if (vismon || unseen || (statue && Hallucination()) || (range == 1 && mtmp && responsive_mon_at(x, y) && !(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT)) || !(accessible(i16(x), i16(y)) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS))
             break;
     }
     if (unseen || (statue && Hallucination())) {
@@ -1663,10 +1667,10 @@ export function* tiphat() {
             if ((otmp = (yield* which_armor(mtmp, 4n))) === null) {
                 (yield* pline(__s_s_waves, (yield* Monnam(mtmp))));
             } else if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
-                (yield* pline(__s_s_grasps_s_s_but_can_t_remove_it, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp)));
+                (yield* pline(__s_s_grasps_s_s_but_can_t_remove_it, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), helm_simple_name(otmp)));
                 cptr.stI32o(otmp, $obj_bknown, 1);
             } else {
-                (yield* pline(__s_s_tips_s_s_in_response, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), helm_simple_name(otmp)));
+                (yield* pline(__s_s_tips_s_s_in_response, (yield* Monnam(mtmp)), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), helm_simple_name(otmp)));
             }
         } else if (vismon && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n)) {
             let which = !Deaf() ? (rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1521, __s_tiphat), rn2(3)) : rn2(3)) : (((rng_log_enabled() ? (rng_log_set_caller(__s_sounds_c, 1521, __s_tiphat), rn2(2)) : rn2(2)) + 1) | 0);
@@ -1685,10 +1689,10 @@ export function* tiphat() {
 }
 
 /** C ref: sounds.c:1693 — struct sound_procs */
-export let soundprocs = cptr.alloc(88);
+export let soundprocs = cptr.alloc($sizeof_sound_procs);
 
 /** C ref: sounds.c:1726 — struct sound_procs */
-let nosound_procs = cptr.alloc(88);
+let nosound_procs = cptr.alloc($sizeof_sound_procs);
 cptr.stPtr(nosound_procs, __s_nosound);
 cptr.stI32o(nosound_procs, $sound_procs_soundlib_id, (NHC.soundlib_nosound));
 cptr.stU64o(nosound_procs, $sound_procs_sound_triggers, 0n);
@@ -1704,7 +1708,7 @@ cptr.stPtro(nosound_procs, $sound_procs_sound_verbal, null);
 /** C ref: sounds.c:1742 — struct sound_choices { sndprocs } (memory model v0.5) */
 
 /** C ref: sounds.c:1744 — struct sound_choices[1] */
-const soundlib_choices = cptr.alloc(1 * 8);
+const soundlib_choices = cptr.alloc(1 * $sizeof_sound_choices);
 cptr.stPtro(soundlib_choices, 0, nosound_procs);
 
 /** C ref: sounds.c:1779 */
@@ -1716,7 +1720,7 @@ export function* activate_chosen_soundlib() {
         if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
             (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_assigning_a_new_sound_library)));
     }
-    cptr.memcpy(soundprocs, cptr.ldPtro(soundlib_choices, idx, 8), 88);
+    cptr.memcpy(soundprocs, cptr.ldPtro(soundlib_choices, idx, $sizeof_sound_choices), 88);
     if (cptr.ldPtro(soundprocs, $sound_procs_sound_init_nhsound))
         (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_init_nhsound))()));
     cptr.stI32o(ga, $instance_globals_a_active_soundlib, cptr.ldI32o(soundprocs, $sound_procs_soundlib_id));
@@ -1727,7 +1731,7 @@ export function* activate_chosen_soundlib() {
 export function* assign_soundlib(idx) {
     if (!((idx) >= 0 && (idx) < 1))
         (yield* panic(__s_assign_soundlib_invalid_soundlib_d, idx));
-    cptr.stI32o(gc, $instance_globals_c_chosen_soundlib, cptr.ldI32o(cptr.ldPtro(soundlib_choices, idx, 8), $sound_procs_soundlib_id));
+    cptr.stI32o(gc, $instance_globals_c_chosen_soundlib, cptr.ldI32o(cptr.ldPtro(soundlib_choices, idx, $sizeof_sound_choices), $sound_procs_soundlib_id));
 }
 
 /** C ref: sounds.c:1864 — @param {CPtr<char>} dest @param {CInt} maxlen */
@@ -1738,7 +1742,7 @@ export function* get_soundlib_name(dest, maxlen) {
     idx = cptr.ldI32o(ga, $instance_globals_a_active_soundlib);
     if (!((idx) >= 0 && (idx) < 1))
         (yield* panic(__s_get_soundlib_name_invalid_active, idx));
-    src = cptr.ldPtr(cptr.ldPtro(soundlib_choices, idx, 8));
+    src = cptr.ldPtr(cptr.ldPtro(soundlib_choices, idx, $sizeof_sound_choices));
     for (count = 1; count < maxlen; count++) {
         if (cptr.ld1s(src) == 44 || cptr.ld1s(src) == 0)
             break;
@@ -1753,7 +1757,7 @@ export function soundlib_id_from_opt(op) {
     let defproc = nosound_procs;
     let sp = null;
     for (idx = 0; idx < 1; ++idx) {
-        sp = cptr.ldPtro(soundlib_choices, idx, 8);
+        sp = cptr.ldPtro(soundlib_choices, idx, $sizeof_sound_choices);
         if (!strcmp(cptr.ldPtr(sp), op))
             return cptr.ldI32o(sp, $sound_procs_soundlib_id);
     }

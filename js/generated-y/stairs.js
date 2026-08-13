@@ -25,8 +25,8 @@ const $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_air_level = FLD.dgn_
     $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
     $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
     $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
-    $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
+    $sizeof_dungeon = FLD.sizeof_dungeon, $stairway_isladder = FLD.stairway_isladder,
+    $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
     $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
     $you_uhave = FLD.you_uhave, $you_uz = FLD.you_uz;
 
@@ -203,7 +203,7 @@ export function stairs_description(sway, outbuf, stcase) {
     } else if (cptr.ldI16o(u, $you_uz) == 0 && cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1 && cptr.ld1so(sway, $stairway_up)) {
         void cptr.sprintf(outbuf, __s_s_s_s_s, !(cptr.ldI32o(u, $you_uhave) & 1) ? __s_empty : __s_branch, stairs, updown, !(cptr.ldI32o(u, $you_uhave) & 1) ? __s_out_of_the_dungeon : ((on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)) || on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)) || on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)) || on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))) ? __s_to_the_elemental_planes : __s_to_the_end_game));
     } else {
-        void cptr.sprintf(outbuf, __s_branch_s_s_to_s, stairs, updown, cptr.add(svd, cptr.ldI16(tolev), 112));
+        void cptr.sprintf(outbuf, __s_branch_s_s_to_s, stairs, updown, cptr.add(svd, cptr.ldI16(tolev), $sizeof_dungeon));
         void strsubst(outbuf, __s_the, __s_the__2);
     }
     return outbuf;

@@ -115,6 +115,9 @@ const $Gender_his = FLD.Gender_his, $Race_mnum = FLD.Race_mnum, $Role_mnum = FLD
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_candig = FLD.rm_candig,
     $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit,
     $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $stairway_isladder = FLD.stairway_isladder, $trap_madeby_u = FLD.trap_madeby_u,
     $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
     $trap_vl = FLD.trap_vl, $u_roleplay_deaf = FLD.u_roleplay_deaf,
@@ -336,11 +339,11 @@ export const DIGTYP_TREE = 5;
 function rm_waslit() {
     let x;
     let y;
-    if (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM && (cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_waslit) & 1) | 0)
+    if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM && (cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit) & 1) | 0)
         return 1;
     for (x = i16(((cptr.ldI16(u) - 2) | 0)); x < ((cptr.ldI16(u) + 3) | 0); x++)
         for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y < ((cptr.ldI16o(u, $you_uy) + 2) | 0); y++)
-            if (isok(x, y) && (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_waslit) & 1) | 0)
+            if (isok(x, y) && (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit) & 1) | 0)
                 return 1;
     return 0;
 }
@@ -350,7 +353,7 @@ function mkcavepos(x, y, dist, waslit, rockit) {
     let lev;
     if (!isok(x, y))
         return;
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (rockit) {
         let mtmp;
         if (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL))
@@ -390,7 +393,7 @@ function mkcavearea(rockit) {
         ;
         pline(__s_crash_the_ceiling_collapses_around_you);
     } else {
-        pline(__s_a_mysterious_force_s_cave_around_you, (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? __s_creates_a : __s_extends_the);
+        pline(__s_a_mysterious_force_s_cave_around_you, (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) ? __s_creates_a : __s_extends_the);
     }
     display_nhwindow()(WIN_MESSAGE.v, 1);
     for (dist = 1; dist <= 2; dist++) {
@@ -411,10 +414,10 @@ function mkcavearea(rockit) {
         flush_screen(1);
         nh_delay_output()();
     }
-    if (!rockit && cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
-        cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
+    if (!rockit && cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
+        cptr.st1o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
         if (waslit)
-            cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_waslit, 1);
+            cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit, 1);
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     }
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
@@ -441,7 +444,7 @@ export function dig_typ(otmp, x, y) {
     let ltyp;
     if (!isok(x, y) || !otmp || (!is_pick(otmp) && !is_axe(otmp)))
         return NHC.DIGTYP_UNDIGGABLE;
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     if (is_axe(otmp))
         return closed_door(x, y) ? NHC.DIGTYP_DOOR : (IS_TREE(ltyp) ? NHC.DIGTYP_TREE : NHC.DIGTYP_UNDIGGABLE);
     return (sobj_at(NHC.STATUE, x, y) && pick_can_reach(otmp, x, y)) ? NHC.DIGTYP_STATUE : ((sobj_at(NHC.BOULDER, x, y) && pick_can_reach(otmp, x, y)) ? NHC.DIGTYP_BOULDER : (closed_door(x, y) ? NHC.DIGTYP_DOOR : (IS_TREE(ltyp) ? NHC.DIGTYP_UNDIGGABLE : ((((ltyp) < NHC.POOL) && (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) || IS_WALL(ltyp))) ? NHC.DIGTYP_ROCK : NHC.DIGTYP_UNDIGGABLE))));
@@ -465,19 +468,19 @@ export function dig_check(madeby, x, y) {
         } else {
             return NHC.DIGCHECK_FAIL_ONSTAIRS;
         }
-    } else if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE) && !cptr.eq(madeby, (null))) {
+    } else if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE) && !cptr.eq(madeby, (null))) {
         return NHC.DIGCHECK_FAIL_THRONE;
-    } else if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && (!cptr.eq(madeby, (null)) || (altarmask_at(x, y) & NHM.AM_SANCTUM) != 0)) {
+    } else if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && (!cptr.eq(madeby, (null)) || (altarmask_at(x, y) & NHM.AM_SANCTUM) != 0)) {
         return NHC.DIGCHECK_FAIL_ALTAR;
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) {
         return NHC.DIGCHECK_FAIL_AIRLEVEL;
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
         return NHC.DIGCHECK_FAIL_WATERLEVEL;
-    } else if ((((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.SDOOR && (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0)) {
+    } else if ((((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.SDOOR && (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0)) {
         return NHC.DIGCHECK_FAIL_TOOHARD;
     } else if (ttmp && undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
         return NHC.DIGCHECK_FAIL_UNDESTROYABLETRAP;
-    } else if (!Can_dig_down(cptr.add(u, $you_uz)) && !(cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_candig) & 1)) {
+    } else if (!Can_dig_down(cptr.add(u, $you_uz)) && !(cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_candig) & 1)) {
         if (ttmp) {
             if (!is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && !is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)))
                 return NHC.DIGCHECK_PASSED_DESTROY_TRAP;
@@ -550,7 +553,7 @@ function dig() {
     let ispick = schar((uwep.v && is_pick(uwep.v) ? 1 : 0));
     let verb = (!uwep.v || is_pick(uwep.v)) ? __s_dig_into : __s_chop_through;
     let dcresult = NHC.DIGCHECK_PASSED;
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dpx, 756), dpy, 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dpx, $sizeof_rm_x21), dpy, $sizeof_rm);
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || !uwep.v || (!ispick && !is_axe(uwep.v)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz)) || ((cptr.ld1so(svc, $context_info_digging + $dig_info_down) ? (dpx != cptr.ldI16(u) || dpy != cptr.ldI16o(u, $you_uy) ? 1 : 0) : !(dist2(((dpx)), ((dpy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))))
         return 0;
     if (cptr.ld1so(svc, $context_info_digging + $dig_info_down)) {
@@ -619,7 +622,7 @@ function dig() {
                 else if (uarmf.v)
                     dmg = (((dmg + 1) | 0) / 2) | 0;
                 You(__s_hit_yourself_in_the_s, body_part(NHC.FOOT));
-                void cptr.sprintf(cptr.decay(kbuf), __s_chopping_off_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), body_part(NHC.FOOT));
+                void cptr.sprintf(cptr.decay(kbuf), __s_chopping_off_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)), body_part(NHC.FOOT));
                 losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), cptr.decay(kbuf), NHM.KILLED_BY);
             } else {
                 You(__s_destroy_the_bear_trap_with_s, yobjnam(uwep.v, null));
@@ -717,7 +720,7 @@ function dig() {
                     cptr.stI32o(lev, $rm_flags, NHM.D_BROKEN);
             } else
                 return 0;
-            if (!does_block(dpx, dpy, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dpx, 756), dpy, 36)))
+            if (!does_block(dpx, dpy, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dpx, $sizeof_rm_x21), dpy, $sizeof_rm)))
                 unblock_point(dpx, dpy);
             feel_newsym(dpx, dpy);
             if (digtxt && !cptr.ld1so(svc, $context_info_digging + $dig_info_quiet))
@@ -726,7 +729,7 @@ function dig() {
                 pay_for_damage(dmgtxt, 0);
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && !(rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 528, __s_dig), rn2(3)) : rn2(3))) {
                 let mndx = (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 529, __s_dig), rn2(2)) : rn2(2)) ? NHC.PM_EARTH_ELEMENTAL : NHC.PM_XORN;
-                if (makemon(cptr.add(mons, mndx, 96), dpx, dpy, NHM.MM_NOMSG))
+                if (makemon(cptr.add(mons, mndx, $sizeof_permonst), dpx, dpy, NHM.MM_NOMSG))
                     pline_The(__s_debris_from_your_digging_comes_to_life);
             }
             if (((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) {
@@ -761,10 +764,10 @@ function dig() {
 
 /** C ref: dig.c:571 — @param {CInt} x @param {CInt} y @param {CInt} madeby_u @returns {CInt} */
 function furniture_handled(x, y, madeby_u) {
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (((cptr.ld1so(lev, $rm_typ)) == NHC.FOUNTAIN)) {
         dogushforth(0);
-        cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) | NHM.F_WARNED);
+        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.F_WARNED);
         ;
         dryup(x, y, madeby_u);
     } else if (((cptr.ld1so(lev, $rm_typ)) == NHC.SINK)) {
@@ -827,7 +830,7 @@ export function digactualhole(x, y, madeby, ttyp) {
     let tname;
     let in_thru;
     let furniture = new Uint8Array(256);
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     let madeby_u = schar((cptr.eq(madeby, (cptr.add(gy, $instance_globals_y_youmonst)))));
     let madeby_obj = schar((cptr.eq(madeby, (null))));
@@ -854,7 +857,7 @@ export function digactualhole(x, y, madeby, ttyp) {
     if (IS_FURNITURE(cptr.ld1so(lev, $rm_typ))) {
         surface_type = (((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) ? __s_floor : __s_ground);
         if (((cptr.ld1so(lev, $rm_typ)) == NHC.ALTAR)) {
-            old_aligntyp = (schar(((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))));
+            old_aligntyp = (schar(((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))));
             void cptr.strcpy(cptr.decay(furniture), align_str(schar(old_aligntyp)));
             void cptr.strcat(cptr.decay(furniture), __s_sp);
         }
@@ -1028,7 +1031,7 @@ export function dighole(pit_only, by_magic, cc) {
             return 0;
     }
     ttmp = t_at(dig_x, dig_y);
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dig_x, 756), dig_y, 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dig_x, $sizeof_rm_x21), dig_y, $sizeof_rm);
     dig_check_result = dig_check((cptr.add(gy, $instance_globals_y_youmonst)), dig_x, dig_y);
     nohole = schar((dig_check_result == NHC.DIGCHECK_FAIL_CANTDIG || dig_check_result == NHC.DIGCHECK_FAIL_TOOHARD ? 1 : 0));
     old_typ = cptr.ld1so(lev, $rm_typ);
@@ -1132,7 +1135,7 @@ function dig_up_grave(cc) {
             adjalign(-1);
         You(__s_have_violated_the_sanctity_of_this_grave);
     }
-    what_happens = (cptr.ldI32o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0 ? -1 : (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1058, __s_dig_up_grave), rn2(5)) : rn2(5));
+    what_happens = (cptr.ldI32o3(svl, dig_x, $sizeof_rm_x21, dig_y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0 ? -1 : (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1058, __s_dig_up_grave), rn2(5)) : rn2(5));
     switch (what_happens) {
         case 0:
         case 1:
@@ -1154,9 +1157,9 @@ function dig_up_grave(cc) {
         pline_The(__s_grave_is_unoccupied_strange);
         break;
     }
-    cptr.st1o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
-    cptr.stI32o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_flags, 0);
-    cptr.stI32o3(svl, dig_x, 756, dig_y, 36, $instance_globals_saved_l_level + $rm_horizontal, 0);
+    cptr.st1o3(svl, dig_x, $sizeof_rm_x21, dig_y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
+    cptr.stI32o3(svl, dig_x, $sizeof_rm_x21, dig_y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
+    cptr.stI32o3(svl, dig_x, $sizeof_rm_x21, dig_y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
     del_engr_at(dig_x, dig_y);
     newsym(dig_x, dig_y);
     return;
@@ -1248,7 +1251,7 @@ export function use_pick_axe2(obj) {
         if (dam <= 0)
             dam = 1;
         You(__s_hit_yourself_with_s, yname(uwep.v));
-        void cptr.sprintf(cptr.decay(buf), __s_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120))), 16)));
+        void cptr.sprintf(cptr.decay(buf), __s_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr)));
         losehp(((Half_physical_damage()) ? (((((dam) + 1) | 0) / 2) | 0) : (dam)), cptr.decay(buf), NHM.KILLED_BY);
         cptr.st1(disp, 1);
         return NHM.ECMD_TIME;
@@ -1261,7 +1264,7 @@ export function use_pick_axe2(obj) {
             pline(__s_clash);
             return NHM.ECMD_TIME;
         }
-        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), rx, 756), ry, 36);
+        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), rx, $sizeof_rm_x21), ry, $sizeof_rm);
         if ((cptr.ldPtro3(svl, rx, 168, ry, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && do_attack((cptr.ldPtro3(svl, rx, 168, ry, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))))
             return NHM.ECMD_TIME;
         dig_target = dig_typ(obj, rx, ry);
@@ -1379,7 +1382,7 @@ function watchman_canseeu(mtmp) {
 
 /** C ref: dig.c:1377 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CInt} zap */
 export function watch_dig(mtmp, x, y, zap) {
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (in_town(x, y) && (closed_door(x, y) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ)) || ((cptr.ld1so(lev, $rm_typ)) == NHC.FOUNTAIN) || IS_TREE(cptr.ld1so(lev, $rm_typ)))) {
         if (!mtmp)
             mtmp = get_iter_mons(watchman_canseeu);
@@ -1414,7 +1417,7 @@ export function mdig_tunnel(mtmp) {
     let seeit;
     let trapped;
     let pile = (rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 1418, __s_mdig_tunnel), rnd(12)) : rnd(12));
-    here = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(mtmp, $monst_mx), 756), cptr.ldI16o(mtmp, $monst_my), 36);
+    here = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21), cptr.ldI16o(mtmp, $monst_my), $sizeof_rm);
     if (cptr.ld1so(here, $rm_typ) == NHC.SDOOR)
         cvt_sdoor_to_door(here);
     if (closed_door(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
@@ -1574,7 +1577,7 @@ export function zap_dig() {
     while (--digdepth >= 0) {
         if (!isok(zx, zy))
             break;
-        room = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), zx, 756), zy, 36);
+        room = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), zx, $sizeof_rm_x21), zy, $sizeof_rm);
         tmp_at(zx, zy);
         nh_delay_output()();
         if (pitdig) {
@@ -1703,7 +1706,7 @@ function adj_pit_checks(cc, msg) {
     if (!isok(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y)))
         return 0;
     cptr.st1(msg, 0);
-    room = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), 756), cptr.ldI16o(cc, $coord_y), 36);
+    room = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), $sizeof_rm_x21), cptr.ldI16o(cc, $coord_y), $sizeof_rm);
     ltyp = cptr.ld1so(room, $rm_typ), cptr.stI32o(room, $rm_flags, 0);
     if (is_pool(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y)) || is_lava(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y))) {
         return 0;
@@ -1756,7 +1759,7 @@ function pit_flow(trap, filltyp) {
         let t = cptr.alloc(40);
         let idx;
         cptr.memcpy(t, trap, 40);
-        cptr.st1o3(svl, cptr.ldI16o(t, $trap_tx), 756, cptr.ldI16o(t, $trap_ty), 36, $instance_globals_saved_l_level + $rm_typ, filltyp), cptr.stI32o3(svl, cptr.ldI16o(t, $trap_tx), 756, cptr.ldI16o(t, $trap_ty), 36, $instance_globals_saved_l_level + $rm_flags, 0);
+        cptr.st1o3(svl, cptr.ldI16o(t, $trap_tx), $sizeof_rm_x21, cptr.ldI16o(t, $trap_ty), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, filltyp), cptr.stI32o3(svl, cptr.ldI16o(t, $trap_tx), $sizeof_rm_x21, cptr.ldI16o(t, $trap_ty), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         liquid_flow(cptr.ldI16o(t, $trap_tx), cptr.ldI16o(t, $trap_ty), filltyp, trap, ((cptr.ldI16o(t, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(t, $trap_ty)) == cptr.ldI16o(u, $you_uy)) ? __s_suddenly_s_flows_in_from_the_adjacent : null);
         for (idx = 0; idx < ((NHC.N_DIRS_Z - 2) | 0); ++idx) {
             if (cptr.ld1uo(t, $trap_vl) & (1 << idx)) {
@@ -1866,7 +1869,7 @@ export function bury_an_obj(otmp, dealloced) {
     }
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE) {
         ;
-    } else if ((under_ice ? (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) : (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) <= NHC.WOOD)) && !obj_resists(otmp, 5, 95)) {
+    } else if ((under_ice ? (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) : (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) <= NHC.WOOD)) && !obj_resists(otmp, 5, 95)) {
         void start_timer(BigInt.asIntN(64, (under_ice ? 0n : 250n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_dig_c, 2034, __s_bury_an_obj), rnd(250)) : rnd(250)))), NHC.TIMER_OBJECT, NHC.ROT_ORGANIC, obj_to_any(otmp));
     }
     add_to_buried(otmp);

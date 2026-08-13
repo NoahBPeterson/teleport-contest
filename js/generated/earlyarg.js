@@ -38,7 +38,8 @@ const $de_params_dumpflgs = FLD.de_params_dumpflgs, $de_params_pfx = FLD.de_para
     $instance_globals_c_cmdline_windowsys = FLD.instance_globals_c_cmdline_windowsys,
     $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
     $instance_globals_d_deferred_showpaths_dir = FLD.instance_globals_d_deferred_showpaths_dir,
-    $sinfo_early_options = FLD.sinfo_early_options,
+    $sinfo_early_options = FLD.sinfo_early_options, $sizeof_de_params = FLD.sizeof_de_params,
+    $sizeof_early_opt = FLD.sizeof_early_opt, $sizeof_enum_dump = FLD.sizeof_enum_dump,
     $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -1316,7 +1317,7 @@ const __s_mcast_spells = cptr.lit("mcast_spells");
 const __s_mcast = cptr.lit("MCAST_");
 
 /** C ref: earlyarg.c:36 — struct early_opt[8] */
-const earlyopts = cptr.alloc(8 * 24);
+const earlyopts = cptr.alloc(8 * $sizeof_early_opt);
 cptr.stI32o(earlyopts, 0, NHC.ARG_DEBUG);
 cptr.stPtro(earlyopts, 0 + $early_opt_name, __s_debug);
 cptr.stI32o(earlyopts, 0 + $early_opt_minlength, 5);
@@ -1598,7 +1599,7 @@ export function argcheck(argc, argv, e_arg) {
     let userea = null;
     let dashdash = __s_empty;
     for (idx = 0; idx < 8; idx++) {
-        if (cptr.ldI32o(earlyopts, idx, 24) == e_arg) {
+        if (cptr.ldI32o(earlyopts, idx, $sizeof_early_opt) == e_arg) {
             break;
         }
     }
@@ -1613,7 +1614,7 @@ export function argcheck(argc, argv, e_arg) {
         } else {
             userea = cptr.add(cptr.ldPtro(argv, i, 8), 1);
         }
-        match = match_optname(userea, cptr.ldPtro2(earlyopts, idx, 24, $early_opt_name), cptr.ldI32o2(earlyopts, idx, 24, $early_opt_minlength), cptr.ld1so2(earlyopts, idx, 24, $early_opt_valallowed));
+        match = match_optname(userea, cptr.ldPtro2(earlyopts, idx, $sizeof_early_opt, $early_opt_name), cptr.ldI32o2(earlyopts, idx, $sizeof_early_opt, $early_opt_minlength), cptr.ld1so2(earlyopts, idx, $sizeof_early_opt, $early_opt_valallowed));
         if (match)
             break;
     }
@@ -1710,7 +1711,7 @@ function debug_fields(opts) {
 }
 
 /** C ref: earlyarg.c:628 — struct enum_dump[388] */
-export const monsdump = cptr.alloc(388 * 16);
+export const monsdump = cptr.alloc(388 * $sizeof_enum_dump);
 cptr.stI32o(monsdump, 0, NHC.PM_GIANT_ANT);
 cptr.stPtro(monsdump, 0 + $enum_dump_nm, __s_giant_ant);
 cptr.stI32o(monsdump, 16, NHC.PM_KILLER_BEE);
@@ -2489,7 +2490,7 @@ cptr.stI32o(monsdump, 6192, NHC.SPECIAL_PM);
 cptr.stPtro(monsdump, 6192 + $enum_dump_nm, __s_special_pm);
 
 /** C ref: earlyarg.c:636 — struct enum_dump[482] */
-export const objdump = cptr.alloc(482 * 16);
+export const objdump = cptr.alloc(482 * $sizeof_enum_dump);
 cptr.stI32o(objdump, 0, NHC.STRANGE_OBJECT);
 cptr.stPtro(objdump, 0 + $enum_dump_nm, __s_strange_object);
 cptr.stI32o(objdump, 16, NHC.GENERIC_ILLOBJ);
@@ -3456,7 +3457,7 @@ cptr.stI32o(objdump, 7696, NHC.NUM_OBJECTS);
 cptr.stPtro(objdump, 7696 + $enum_dump_nm, __s_num_objects);
 
 /** C ref: earlyarg.c:642 — struct enum_dump[106] */
-const defsym_cmap_dump = cptr.alloc(106 * 16);
+const defsym_cmap_dump = cptr.alloc(106 * $sizeof_enum_dump);
 cptr.stI32o(defsym_cmap_dump, 0, NHC.S_stone);
 cptr.stPtro(defsym_cmap_dump, 0 + $enum_dump_nm, __s_s_stone);
 cptr.stI32o(defsym_cmap_dump, 16, NHC.S_vwall);
@@ -3671,7 +3672,7 @@ cptr.stI32o(defsym_cmap_dump, 1680, NHC.MAXPCHARS);
 cptr.stPtro(defsym_cmap_dump, 1680 + $enum_dump_nm, __s_maxpchars);
 
 /** C ref: earlyarg.c:649 — struct enum_dump[61] */
-const defsym_mon_syms_dump = cptr.alloc(61 * 16);
+const defsym_mon_syms_dump = cptr.alloc(61 * $sizeof_enum_dump);
 cptr.stI32o(defsym_mon_syms_dump, 0, NHC.S_ANT);
 cptr.stPtro(defsym_mon_syms_dump, 0 + $enum_dump_nm, __s_s_ant);
 cptr.stI32o(defsym_mon_syms_dump, 16, NHC.S_BLOB);
@@ -3796,7 +3797,7 @@ cptr.stI32o(defsym_mon_syms_dump, 960, NHC.MAXMCLASSES);
 cptr.stPtro(defsym_mon_syms_dump, 960 + $enum_dump_nm, __s_maxmclasses);
 
 /** C ref: earlyarg.c:656 — struct enum_dump[60] */
-const defsym_mon_defchars_dump = cptr.alloc(60 * 16);
+const defsym_mon_defchars_dump = cptr.alloc(60 * $sizeof_enum_dump);
 cptr.stI32o(defsym_mon_defchars_dump, 0, NHC.DEF_ANT);
 cptr.stPtro(defsym_mon_defchars_dump, 0 + $enum_dump_nm, __s_def_ant);
 cptr.stI32o(defsym_mon_defchars_dump, 16, NHC.DEF_BLOB);
@@ -3919,7 +3920,7 @@ cptr.stI32o(defsym_mon_defchars_dump, 944, NHC.DEF_MIMIC_DEF);
 cptr.stPtro(defsym_mon_defchars_dump, 944 + $enum_dump_nm, __s_def_mimic_def);
 
 /** C ref: earlyarg.c:662 — struct enum_dump[17] */
-const objclass_defchars_dump = cptr.alloc(17 * 16);
+const objclass_defchars_dump = cptr.alloc(17 * $sizeof_enum_dump);
 cptr.stI32o(objclass_defchars_dump, 0, NHC.ILLOBJ_SYM);
 cptr.stPtro(objclass_defchars_dump, 0 + $enum_dump_nm, __s_illobj_sym);
 cptr.stI32o(objclass_defchars_dump, 16, NHC.WEAPON_SYM);
@@ -3956,7 +3957,7 @@ cptr.stI32o(objclass_defchars_dump, 256, NHC.VENOM_SYM);
 cptr.stPtro(objclass_defchars_dump, 256 + $enum_dump_nm, __s_venom_sym);
 
 /** C ref: earlyarg.c:668 — struct enum_dump[18] */
-const objclass_classes_dump = cptr.alloc(18 * 16);
+const objclass_classes_dump = cptr.alloc(18 * $sizeof_enum_dump);
 cptr.stI32o(objclass_classes_dump, 0, NHC.ILLOBJ_CLASS);
 cptr.stPtro(objclass_classes_dump, 0 + $enum_dump_nm, __s_illobj_class);
 cptr.stI32o(objclass_classes_dump, 16, NHC.WEAPON_CLASS);
@@ -3995,7 +3996,7 @@ cptr.stI32o(objclass_classes_dump, 272, NHC.MAXOCLASSES);
 cptr.stPtro(objclass_classes_dump, 272 + $enum_dump_nm, __s_maxoclasses);
 
 /** C ref: earlyarg.c:675 — struct enum_dump[17] */
-const objclass_syms_dump = cptr.alloc(17 * 16);
+const objclass_syms_dump = cptr.alloc(17 * $sizeof_enum_dump);
 cptr.stI32o(objclass_syms_dump, 0, NHC.S_strange_obj);
 cptr.stPtro(objclass_syms_dump, 0 + $enum_dump_nm, __s_s_strange_obj);
 cptr.stI32o(objclass_syms_dump, 16, NHC.S_weapon);
@@ -4032,7 +4033,7 @@ cptr.stI32o(objclass_syms_dump, 256, NHC.S_venom);
 cptr.stPtro(objclass_syms_dump, 256 + $enum_dump_nm, __s_s_venom);
 
 /** C ref: earlyarg.c:681 — struct enum_dump[35] */
-const arti_enum_dump = cptr.alloc(35 * 16);
+const arti_enum_dump = cptr.alloc(35 * $sizeof_enum_dump);
 cptr.stI32o(arti_enum_dump, 0, NHC.ART_NONARTIFACT);
 cptr.stPtro(arti_enum_dump, 0 + $enum_dump_nm, __s_art_nonartifact);
 cptr.stI32o(arti_enum_dump, 16, NHC.ART_EXCALIBUR);
@@ -4127,7 +4128,7 @@ export const MCAST_DUMPENUM_CLONE_WIZ = 18;
 export const MCAST_DUMPENUM_DEATH_TOUCH = 19;
 
 /** C ref: earlyarg.c:695 — struct enum_dump[20] */
-const mcastu_enum_dump = cptr.alloc(20 * 16);
+const mcastu_enum_dump = cptr.alloc(20 * $sizeof_enum_dump);
 cptr.stI32o(mcastu_enum_dump, 0, NHC.MCAST_DUMPENUM_PSI_BOLT);
 cptr.stPtro(mcastu_enum_dump, 0 + $enum_dump_nm, __s_psi_bolt);
 cptr.stI32o(mcastu_enum_dump, 16, NHC.MCAST_DUMPENUM_OPEN_WOUNDS);
@@ -4169,7 +4170,7 @@ cptr.stPtro(mcastu_enum_dump, 288 + $enum_dump_nm, __s_clone_wiz);
 cptr.stI32o(mcastu_enum_dump, 304, NHC.MCAST_DUMPENUM_DEATH_TOUCH);
 cptr.stPtro(mcastu_enum_dump, 304 + $enum_dump_nm, __s_death_touch);
 
-const __static_dump_enums_omdump = cptr.alloc(15 * 16);
+const __static_dump_enums_omdump = cptr.alloc(15 * $sizeof_enum_dump);
 cptr.stI32o(__static_dump_enums_omdump, 0, NHC.LAST_GENERIC);
 cptr.stPtro(__static_dump_enums_omdump, 0 + $enum_dump_nm, __s_last_generic);
 cptr.stI32o(__static_dump_enums_omdump, 16, NHC.OBJCLASS_HACK);
@@ -4212,7 +4213,7 @@ cptr.stPtro(__static_dump_enums_ed, 56, objclass_classes_dump);
 cptr.stPtro(__static_dump_enums_ed, 64, objclass_syms_dump);
 cptr.stPtro(__static_dump_enums_ed, 72, arti_enum_dump);
 cptr.stPtro(__static_dump_enums_ed, 80, mcastu_enum_dump); /** C ref: earlyarg.c:743 — struct enum_dump *[11] (function-static) */
-const __static_dump_enums_edmp = cptr.alloc(11 * 32);
+const __static_dump_enums_edmp = cptr.alloc(11 * $sizeof_de_params);
 cptr.stPtro(__static_dump_enums_edmp, 0, __s_monnums);
 cptr.stPtro(__static_dump_enums_edmp, 0 + $de_params_pfx, __s_pm);
 cptr.stI32o(__static_dump_enums_edmp, 0 + $de_params_unprefixed_count, 5);
@@ -4277,16 +4278,16 @@ function dump_enums() {
     let nmwidth;
     let comment = new Uint8Array(256);
     for (i = 0; i < NHC.NUM_ENUM_DUMPS; ++i) {
-        raw_printf(__s_enum_s, cptr.ldPtro(__static_dump_enums_edmp, i, 32));
-        for (j = 0; j < cptr.ldI32o2(__static_dump_enums_edmp, i, 32, $de_params_szd); ++j) {
-            nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, 32, $de_params_szd) - cptr.ldI32o2(__static_dump_enums_edmp, i, 32, $de_params_unprefixed_count)) | 0)) ? __s_empty : cptr.ldPtro2(__static_dump_enums_edmp, i, 32, $de_params_pfx);
+        raw_printf(__s_enum_s, cptr.ldPtro(__static_dump_enums_edmp, i, $sizeof_de_params));
+        for (j = 0; j < cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd); ++j) {
+            nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd) - cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_unprefixed_count)) | 0)) ? __s_empty : cptr.ldPtro2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_pfx);
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;
-            if (cptr.ldI32o2(__static_dump_enums_edmp, i, 32, $de_params_dumpflgs) > 0) {
-                nh_snprintf(__s_dump_enums, 788, cptr.decay(comment), 256n, __s_sp4_slash_star_sp_apos_pct_c_apos_sp, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) <= 126) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16) : 32);
+            if (cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_dumpflgs) > 0) {
+                nh_snprintf(__s_dump_enums, 788, cptr.decay(comment), 256n, __s_sp4_slash_star_sp_apos_pct_c_apos_sp, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) <= 126) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) : 32);
             } else {
                 cptr.st1o(cptr.decay(comment), 0, 0, 1);
             }
-            raw_printf(__s_s_s_3d_s, nmprefix, -nmwidth, cptr.ldPtro2(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16, $enum_dump_nm), cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, 16), cptr.decay(comment));
+            raw_printf(__s_s_s_3d_s, nmprefix, -nmwidth, cptr.ldPtro2(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump, $enum_dump_nm), cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump), cptr.decay(comment));
         }
         raw_print()(__s_rbrace_semi);
         raw_print()(__s_empty);

@@ -23,7 +23,8 @@ const $GCObject_marked = FLD.GCObject_marked, $NodeKey_key_tt = FLD.NodeKey_key_
     $TString_hash = FLD.TString_hash, $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
     $Table_alimit = FLD.Table_alimit, $Table_array = FLD.Table_array, $Table_flags = FLD.Table_flags,
     $Table_lastfree = FLD.Table_lastfree, $Table_lsizenode = FLD.Table_lsizenode,
-    $Table_metatable = FLD.Table_metatable, $Table_node = FLD.Table_node;
+    $Table_metatable = FLD.Table_metatable, $Table_node = FLD.Table_node, $sizeof_Node = FLD.sizeof_Node,
+    $sizeof_TValue = FLD.sizeof_TValue;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_invalid_key_to_next = cptr.lit("invalid key to 'next'");
@@ -32,7 +33,7 @@ const __s_table_index_is_nil = cptr.lit("table index is nil");
 const __s_table_index_is_nan = cptr.lit("table index is NaN");
 
 /** C ref: ltable.c:93 — union Node */
-let dummynode_ = cptr.box(cptr.alloc(24));
+let dummynode_ = cptr.box(cptr.alloc($sizeof_Node));
 cptr.stPtr(dummynode_.v, null);
 cptr.st1o(dummynode_.v, $NodeKey_tt_, 16);
 cptr.st1o(dummynode_.v, $NodeKey_key_tt, 0);
@@ -40,7 +41,7 @@ cptr.stI32o(dummynode_.v, $NodeKey_next, 0);
 cptr.stPtro(dummynode_.v, $NodeKey_key_val, null);
 
 /** C ref: ltable.c:99 — struct TValue */
-let absentkey = cptr.box(cptr.alloc(16));
+let absentkey = cptr.box(cptr.alloc($sizeof_TValue));
 cptr.stPtr(absentkey.v, null);
 cptr.st1o(absentkey.v, $TValue_tt_, 32);
 
@@ -48,9 +49,9 @@ cptr.st1o(absentkey.v, $TValue_tt_, 32);
 function hashint(t, i) {
     let ui = (BigInt.asUintN(64, (i)));
     if (ui <= 2147483647n)
-        return ((cptr.add(cptr.ldPtro((t), $Table_node), (((Number(BigInt.asIntN(32, ((ui)))))) % (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1)), 24)));
+        return ((cptr.add(cptr.ldPtro((t), $Table_node), (((Number(BigInt.asIntN(32, ((ui)))))) % (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1)), $sizeof_Node)));
     else
-        return ((cptr.add(cptr.ldPtro((t), $Table_node), ((ui) % BigInt.asUintN(64, BigInt((((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1)))), 24)));
+        return ((cptr.add(cptr.ldPtro((t), $Table_node), ((ui) % BigInt.asUintN(64, BigInt((((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1)))), $sizeof_Node)));
 }
 
 /** C ref: ltable.c:131 — @param {CDouble} n @returns {CInt} */
@@ -78,36 +79,36 @@ function mainpositionTV(t, key) {
         case 19:
         {
             let n = (cptr.ldF64(((key))));
-            return ((cptr.add(cptr.ldPtro((t), $Table_node), ((l_hashfloat(n)) % (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1)), 24)));
+            return ((cptr.add(cptr.ldPtro((t), $Table_node), ((l_hashfloat(n)) % (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1)), $sizeof_Node)));
         }
         case 4:
         {
             let ts = ((((((cptr.ldPtr(((key)))))))));
-            return ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((cptr.ldI32o((ts), $TString_hash))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
+            return ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((cptr.ldI32o((ts), $TString_hash))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), $sizeof_Node)));
         }
         case 20:
         {
             let ts = ((((((cptr.ldPtr(((key)))))))));
-            return ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((luaS_hashlongstr(ts))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
+            return ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((luaS_hashlongstr(ts))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), $sizeof_Node)));
         }
         case 1:
-        return ((cptr.add(cptr.ldPtro((t), $Table_node), ((((((0 & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0))))))), 24)));
+        return ((cptr.add(cptr.ldPtro((t), $Table_node), ((((((0 & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0))))))), $sizeof_Node)));
         case 17:
-        return ((cptr.add(cptr.ldPtro((t), $Table_node), ((((((1 & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0))))))), 24)));
+        return ((cptr.add(cptr.ldPtro((t), $Table_node), ((((((1 & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0))))))), $sizeof_Node)));
         case 2:
         {
             let p = (cptr.ldPtr(((key))));
-            return ((cptr.add(cptr.ldPtro((t), $Table_node), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((p)) & 4294967295n))))), (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1) >>> 0)), 24)));
+            return ((cptr.add(cptr.ldPtro((t), $Table_node), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((p)) & 4294967295n))))), (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1) >>> 0)), $sizeof_Node)));
         }
         case 22:
         {
             let f = (cptr.ldPtr(((key))));
-            return ((cptr.add(cptr.ldPtro((t), $Table_node), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((f)) & 4294967295n))))), (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1) >>> 0)), 24)));
+            return ((cptr.add(cptr.ldPtro((t), $Table_node), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((f)) & 4294967295n))))), (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1) >>> 0)), $sizeof_Node)));
         }
         default:
         {
             let o = (cptr.ldPtr(((key))));
-            return ((cptr.add(cptr.ldPtro((t), $Table_node), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((o)) & 4294967295n))))), (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1) >>> 0)), 24)));
+            return ((cptr.add(cptr.ldPtro((t), $Table_node), (u32mod(((Number(BigInt.asUintN(32, (cptr.addr((o)) & 4294967295n))))), (((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 0) | 1) >>> 0)), $sizeof_Node)));
         }
     }
 }
@@ -214,7 +215,7 @@ function findindex(L, t, key, asize) {
         let n = getgeneric(t, key, 1);
         if ((__builtin_expect(BigInt(((((cptr.ld1uo(((n)), $TValue_tt_)) == 32)) != 0)), 0n)))
             luaG_runerror(L, __s_invalid_key_to_next);
-        i = (Number(BigInt.asIntN(32, ((cptr.diff((((n))), (cptr.add(cptr.ldPtro((t), $Table_node), 0, 24))) / 24n))))) >>> 0;
+        i = (Number(BigInt.asIntN(32, ((cptr.diff((((n))), (cptr.add(cptr.ldPtro((t), $Table_node), 0, $sizeof_Node))) / 24n))))) >>> 0;
         return (((i + 1) >>> 0) + asize) >>> 0;
     }
 }
@@ -224,7 +225,7 @@ export function luaH_next(L, t, key) {
     let asize = luaH_realasize(t);
     let i = findindex(L, t, ((key)), asize);
     for (; i < asize; i++) {
-        if (!(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), i, 16))), $TValue_tt_))) & 15)) == 0)) {
+        if (!(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0)) {
             {
                 let io = (((key)));
                 cptr.stI64(((io)), BigInt(((i + 1) >>> 0) >>> 0));
@@ -233,7 +234,7 @@ export function luaH_next(L, t, key) {
             ;
             {
                 let io1 = (((cptr.add(key, 1, 16))));
-                let io2 = (cptr.add(cptr.ldPtro(t, $Table_array), i, 16));
+                let io2 = (cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue));
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
                 (void L, (void 0));
@@ -244,8 +245,8 @@ export function luaH_next(L, t, key) {
         }
     }
     for (i = (i - asize) | 0; (((i)) | 0) < ((1 << (cptr.ld1uo((t), $Table_lsizenode)))); i++) {
-        if (!(((((cptr.ld1uo((((((cptr.add(cptr.ldPtro((t), $Table_node), i, 24)))))), $TValue_tt_))) & 15)) == 0)) {
-            let n = (cptr.add(cptr.ldPtro((t), $Table_node), i, 24));
+        if (!(((((cptr.ld1uo((((((cptr.add(cptr.ldPtro((t), $Table_node), i, $sizeof_Node)))))), $TValue_tt_))) & 15)) == 0)) {
+            let n = (cptr.add(cptr.ldPtro((t), $Table_node), i, $sizeof_Node));
             {
                 let io_ = (((key)));
                 let n_ = (n);
@@ -320,7 +321,7 @@ function numusearray(t, nums) {
                 break;
         }
         for (; i <= lim; i++) {
-            if (!(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (i - 1) >>> 0, 16))), $TValue_tt_))) & 15)) == 0))
+            if (!(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (i - 1) >>> 0, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0))
                 lc++;
         }
         cptr.stI32o(nums, lg, (cptr.ldI32o(nums, lg, 4) + lc) | 0, 4);
@@ -335,7 +336,7 @@ function numusehash(t, nums, pna) {
     let ause = 0;
     let i = ((1 << (cptr.ld1uo((t), $Table_lsizenode))));
     while (i--) {
-        let n = cptr.add(cptr.ldPtro(t, $Table_node), i, 24);
+        let n = cptr.add(cptr.ldPtro(t, $Table_node), i, $sizeof_Node);
         if (!(((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0)) {
             if (((cptr.ld1uo((n), $NodeKey_key_tt)) == 3))
                 ause = (ause + countint((cptr.ldI64((cptr.add((n), $NodeKey_key_val)))), nums)) | 0;
@@ -360,13 +361,13 @@ function setnodevector(L, t, size) {
         size = (1 << (lsize)) >>> 0;
         cptr.stPtro(t, $Table_node, ((luaM_malloc_(L, BigInt.asUintN(64, BigInt((size) >>> 0) * 24n), 0))));
         for (i = 0; i < (((size)) | 0); i++) {
-            let n = (cptr.add(cptr.ldPtro((t), $Table_node), i, 24));
+            let n = (cptr.add(cptr.ldPtro((t), $Table_node), i, $sizeof_Node));
             cptr.stI32o((n), $NodeKey_next, 0);
             (cptr.st1o((n), $NodeKey_key_tt, 0));
             (cptr.st1o((((n))), $TValue_tt_, 16));
         }
         cptr.st1o(t, $Table_lsizenode, (uchar(((lsize)))));
-        cptr.stPtro(t, $Table_lastfree, (cptr.add(cptr.ldPtro((t), $Table_node), size, 24)));
+        cptr.stPtro(t, $Table_lastfree, (cptr.add(cptr.ldPtro((t), $Table_node), size, $sizeof_Node)));
     }
 }
 
@@ -375,7 +376,7 @@ function reinsert(L, ot, t) {
     let j;
     let size = ((1 << (cptr.ld1uo((ot), $Table_lsizenode))));
     for (j = 0; j < size; j++) {
-        let old = (cptr.add(cptr.ldPtro((ot), $Table_node), j, 24));
+        let old = (cptr.add(cptr.ldPtro((ot), $Table_node), j, $sizeof_Node));
         if (!(((((cptr.ld1uo(((((old)))), $TValue_tt_))) & 15)) == 0)) {
             let k = cptr.alloc(16);
             {
@@ -415,8 +416,8 @@ export function luaH_resize(L, t, newasize, nhsize) {
         cptr.stI32o(t, $Table_alimit, newasize);
         exchangehashpart(t, newt);
         for (i = newasize; i < oldasize; i++) {
-            if (!(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), i, 16))), $TValue_tt_))) & 15)) == 0))
-                luaH_setint(L, t, BigInt(((i + 1) >>> 0) >>> 0), cptr.add(cptr.ldPtro(t, $Table_array), i, 16));
+            if (!(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0))
+                luaH_setint(L, t, BigInt(((i + 1) >>> 0) >>> 0), cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue));
         }
         cptr.stI32o(t, $Table_alimit, oldasize);
         exchangehashpart(t, newt);
@@ -430,7 +431,7 @@ export function luaH_resize(L, t, newasize, nhsize) {
     cptr.stPtro(t, $Table_array, newarray);
     cptr.stI32o(t, $Table_alimit, newasize);
     for (i = oldasize; i < newasize; i++)
-        (cptr.st1o((cptr.add(cptr.ldPtro(t, $Table_array), i, 16)), $TValue_tt_, 16));
+        (cptr.st1o((cptr.add(cptr.ldPtro(t, $Table_array), i, $sizeof_TValue)), $TValue_tt_, 16));
     reinsert(L, newt, t);
     freehash(L, newt);
 }
@@ -569,10 +570,10 @@ function luaH_newkey(L, t, key, value) {
 export function luaH_getint(t, key) {
     let alimit = BigInt(cptr.ldI32o(t, $Table_alimit) >>> 0);
     if (BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n) < alimit)
-        return cptr.add(cptr.ldPtro(t, $Table_array), BigInt.asIntN(64, key - 1n), 16);
+        return cptr.add(cptr.ldPtro(t, $Table_array), BigInt.asIntN(64, key - 1n), $sizeof_TValue);
     else if (!(!(cptr.ld1uo((t), $Table_flags) & 128)) && (((BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n)) & BigInt.asUintN(64, ~(BigInt.asUintN(64, alimit - 1n)))) < alimit)) {
         cptr.stI32o(t, $Table_alimit, (Number(BigInt.asUintN(32, ((key))))));
-        return cptr.add(cptr.ldPtro(t, $Table_array), BigInt.asIntN(64, key - 1n), 16);
+        return cptr.add(cptr.ldPtro(t, $Table_array), BigInt.asIntN(64, key - 1n), $sizeof_TValue);
     } else {
         let n = hashint(t, key);
         for (; ; ) {
@@ -591,7 +592,7 @@ export function luaH_getint(t, key) {
 
 /** C ref: ltable.c:773 — @param {CPtr<Table>} t @param {CPtr<TString>} key @returns {CPtr<TValue>} */
 export function luaH_getshortstr(t, key) {
-    let n = ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((cptr.ldI32o((key), $TString_hash))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
+    let n = ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((cptr.ldI32o((key), $TString_hash))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), $sizeof_Node)));
     (void 0);
     for (; ; ) {
         if (((cptr.ld1uo((n), $NodeKey_key_tt)) == 68) && (cptr.eq((((((((cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))))))))), (key))))
@@ -718,7 +719,7 @@ function hash_search(t, j) {
 function binsearch(array, i, j) {
     while ((j - i) >>> 0 > 1) {
         let m = u32div(((i + j) >>> 0), 2);
-        if ((((((cptr.ld1uo(((cptr.add(array, (m - 1) >>> 0, 16))), $TValue_tt_))) & 15)) == 0))
+        if ((((((cptr.ld1uo(((cptr.add(array, (m - 1) >>> 0, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0))
             j = m;
         else
             i = m;
@@ -729,8 +730,8 @@ function binsearch(array, i, j) {
 /** C ref: ltable.c:938 — @param {CPtr<Table>} t @returns {*} */
 export function luaH_getn(t) {
     let limit = cptr.ldI32o(t, $Table_alimit);
-    if (limit > 0 && (((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 1) >>> 0, 16))), $TValue_tt_))) & 15)) == 0)) {
-        if (limit >= 2 && !(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 2) >>> 0, 16))), $TValue_tt_))) & 15)) == 0)) {
+    if (limit > 0 && (((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 1) >>> 0, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0)) {
+        if (limit >= 2 && !(((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 2) >>> 0, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0)) {
             if (ispow2realasize(t) && !(((((limit - 1) >>> 0) & ((((limit - 1) >>> 0) - 1) >>> 0)) >>> 0) == 0)) {
                 cptr.stI32o(t, $Table_alimit, (limit - 1) >>> 0);
                 (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) | 128));
@@ -746,10 +747,10 @@ export function luaH_getn(t) {
         }
     }
     if (!((!(cptr.ld1uo((t), $Table_flags) & 128)) || ((((cptr.ldI32o((t), $Table_alimit)) & (((cptr.ldI32o((t), $Table_alimit)) - 1) >>> 0)) >>> 0) == 0))) {
-        if ((((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), limit, 16))), $TValue_tt_))) & 15)) == 0))
+        if ((((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), limit, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0))
             return BigInt(limit >>> 0);
         limit = luaH_realasize(t);
-        if ((((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 1) >>> 0, 16))), $TValue_tt_))) & 15)) == 0)) {
+        if ((((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 1) >>> 0, $sizeof_TValue))), $TValue_tt_))) & 15)) == 0)) {
             let boundary = binsearch(cptr.ldPtro(t, $Table_array), cptr.ldI32o(t, $Table_alimit), limit);
             cptr.stI32o(t, $Table_alimit, boundary);
             return BigInt(boundary >>> 0);

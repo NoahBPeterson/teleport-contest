@@ -24,6 +24,10 @@ const $classic_representation_symidx = FLD.classic_representation_symidx, $custo
     $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
     $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
     $instance_globals_s_sym_customizations = FLD.instance_globals_s_sym_customizations,
+    $sizeof_gbuf_entry = FLD.sizeof_gbuf_entry, $sizeof_gbuf_entry_x80 = FLD.sizeof_gbuf_entry_x80,
+    $sizeof_glyph_map = FLD.sizeof_glyph_map, $sizeof_glyphinfo = FLD.sizeof_glyphinfo,
+    $sizeof_symset_customization = FLD.sizeof_symset_customization,
+    $sizeof_symset_customization_x4 = FLD.sizeof_symset_customization_x4,
     $symset_customization_count = FLD.symset_customization_count,
     $symset_customization_custtype = FLD.symset_customization_custtype,
     $symset_customization_details = FLD.symset_customization_details,
@@ -74,18 +78,18 @@ export function free_all_glyphmap_u() {
     let x;
     let y;
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
-        if (cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u)) {
-            if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u), $unicode_representation_utf8str)) {
-                cptr.free(cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u), $unicode_representation_utf8str));
-                cptr.stPtro(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u), $unicode_representation_utf8str, null);
+        if (cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u)) {
+            if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str)) {
+                cptr.free(cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str));
+                cptr.stPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str, null);
             }
-            cptr.free(cptr.ldPtro2(glyphmap, glyph, 32, $glyph_map_entry_u));
-            cptr.stPtro2(glyphmap, glyph, 32, $glyph_map_entry_u, null);
+            cptr.free(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u));
+            cptr.stPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u, null);
         }
     }
     for (y = 0; y < NHM.ROWNO; ++y) {
         for (x = 0; x < NHM.COLNO; ++x) {
-            cptr.stPtro3(gg, y, 4480, x, 56, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u, null);
+            cptr.stPtro3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u, null);
         }
     }
 }
@@ -93,7 +97,7 @@ export function free_all_glyphmap_u() {
 /** C ref: utf8map.c:86 — @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CPtr<char>} str @param {CPtr<int>} retflags @returns {CPtr<char>} */
 export function mixed_to_utf8(buf, bufsz, str, retflags) {
     let put = buf;
-    let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
+    let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
     if (!str)
         return cptr.strcpy(buf, __s_empty);
     while (cptr.ld1s(str) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0) {
@@ -141,7 +145,7 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
 
 /** C ref: utf8map.c:148 — @param {CPtr<char>} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr<uint8>} utf8str @param {*} which_set @returns {CInt} */
 export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf8str, which_set) {
-    let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, 128), NHC.custom_ureps, 32);
+    let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), NHC.custom_ureps, $sizeof_symset_customization);
     let details;
     let newdetails = null;
     if (!cptr.ldPtro(gdc, $symset_customization_details)) {

@@ -106,7 +106,11 @@ const $Race_adj = FLD.Race_adj, $Race_attrmax = FLD.Race_attrmax, $Race_individu
     $permonst_mlevel = FLD.permonst_mlevel, $permonst_mresists = FLD.permonst_mresists,
     $permonst_msize = FLD.permonst_msize, $permonst_msound = FLD.permonst_msound,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ,
-    $sinfo_restoring = FLD.sinfo_restoring, $trap_madeby_u = FLD.trap_madeby_u, $trap_ttyp = FLD.trap_ttyp,
+    $sinfo_restoring = FLD.sinfo_restoring, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_attack = FLD.sizeof_attack, $sizeof_mvitals = FLD.sizeof_mvitals,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $trap_madeby_u = FLD.trap_madeby_u, $trap_ttyp = FLD.trap_ttyp,
     $u_conduct_polyselfs = FLD.u_conduct_polyselfs, $warntype_info_polyd = FLD.warntype_info_polyd,
     $warntype_info_species = FLD.warntype_info_species,
     $warntype_info_speciesidx = FLD.warntype_info_speciesidx,
@@ -486,7 +490,7 @@ const no_longer_petrify_resistant = cptr.bytes("No longer petrify-resistant, you
 
 /** C ref: polyself.c:38 */
 export function set_uasmon() {
-    let mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96);
+    let mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst);
     let was_vampshifter = valid_vampshiftform(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham), cptr.ldI32o(u, $you_umonnum));
     set_mon_data(cptr.add(gy, $instance_globals_y_youmonst), mdat);
     cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_m_id, 1);
@@ -499,170 +503,170 @@ export function set_uasmon() {
     cptr.stI16o(u, $you_mcham, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham));
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_FIRE) != 0))
-            cptr.stI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_COLD) != 0))
-            cptr.stI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_SLEEP) != 0))
-            cptr.stI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_DISINT) != 0))
-            cptr.stI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DISINT_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_ELEC) != 0))
-            cptr.stI64o2(u, NHC.SHOCK_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SHOCK_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.SHOCK_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SHOCK_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_POISON) != 0))
-            cptr.stI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_ACID) != 0))
-            cptr.stI64o2(u, NHC.ACID_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.ACID_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ACID_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ld1uo(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mresists) & NHM.MR_STONE) != 0))
-            cptr.stI64o2(u, NHC.STONE_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STONE_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.STONE_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STONE_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         let save_uwep = uwep.v;
         uwep.v = null;
         {
             if (resists_drli(cptr.add(gy, $instance_globals_y_youmonst)))
-                cptr.stI64o2(u, NHC.DRAIN_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DRAIN_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+                cptr.stI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
             else
-                cptr.stI64o2(u, NHC.DRAIN_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DRAIN_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+                cptr.stI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
         }
         uwep.v = save_uwep;
     }
     {
-        if ((dmgtype(mdat, NHM.AD_MAGM) || cptr.eq(mdat, cptr.add(mons, NHC.PM_BABY_GRAY_DRAGON, 96)) || dmgtype(mdat, NHM.AD_RBRE)))
-            cptr.stI64o2(u, NHC.ANTIMAGIC, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+        if ((dmgtype(mdat, NHM.AD_MAGM) || cptr.eq(mdat, cptr.add(mons, NHC.PM_BABY_GRAY_DRAGON, $sizeof_permonst)) || dmgtype(mdat, NHM.AD_RBRE)))
+            cptr.stI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.ANTIMAGIC, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ANTIMAGIC, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.ANTIMAGIC, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
-        if ((cptr.ld1so(mdat, $permonst_mlet) == NHC.S_FUNGUS || cptr.eq(mdat, cptr.add(mons, NHC.PM_GHOUL, 96))))
-            cptr.stI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+        if ((cptr.ld1so(mdat, $permonst_mlet) == NHC.S_FUNGUS || cptr.eq(mdat, cptr.add(mons, NHC.PM_GHOUL, $sizeof_permonst))))
+            cptr.stI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
-        if ((cptr.eq(mdat, cptr.add(mons, NHC.PM_STALKER, 96)) || is_bat(mdat)))
-            cptr.stI64o2(u, NHC.STUNNED, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STUNNED, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+        if ((cptr.eq(mdat, cptr.add(mons, NHC.PM_STALKER, $sizeof_permonst)) || is_bat(mdat)))
+            cptr.stI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.STUNNED, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STUNNED, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STUNNED, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (dmgtype(mdat, NHM.AD_HALU))
-            cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 16777216n) != 0n))
-            cptr.stI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (telepathic(mdat))
-            cptr.stI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
-        if (((cptr.ldU16o((Upolyd() ? mdat : cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), 96)), $permonst_mflags3) & NHM.M3_INFRAVISION)))
-            cptr.stI64o2(u, NHC.INFRAVISION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INFRAVISION, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+        if (((cptr.ldU16o((Upolyd() ? mdat : cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), $sizeof_permonst)), $permonst_mflags3) & NHM.M3_INFRAVISION)))
+            cptr.stI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.INFRAVISION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INFRAVISION, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (pm_invisible(mdat))
-            cptr.stI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 33554432n) != 0n))
-            cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 67108864n) != 0n))
-            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (is_floater(mdat))
-            cptr.stI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if ((((cptr.ldU64o((mdat), $permonst_mflags1) & 1n) != 0n) && !is_floater(mdat)))
-            cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 2n) != 0n))
-            cptr.stI64o2(u, NHC.SWIMMING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SWIMMING, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.SWIMMING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SWIMMING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.SWIMMING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SWIMMING, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.SWIMMING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SWIMMING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 8n) != 0n))
-            cptr.stI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PASSES_WALLS, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PASSES_WALLS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (((cptr.ldU64o((mdat), $permonst_mflags1) & 8388608n) != 0n))
-            cptr.stI64o2(u, NHC.REGENERATION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REGENERATION, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.REGENERATION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REGENERATION, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
-        if ((cptr.eq(mdat, cptr.add(mons, NHC.PM_SILVER_DRAGON, 96))))
-            cptr.stI64o2(u, NHC.REFLECTING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REFLECTING, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+        if ((cptr.eq(mdat, cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst))))
+            cptr.stI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.REFLECTING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REFLECTING, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if (!((cptr.ldU64o((mdat), $permonst_mflags1) & 4096n) == 0n))
-            cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     {
         if ((dmgtype_fromattack(mdat, NHM.AD_BLND, NHM.AT_EXPL) || dmgtype_fromattack(mdat, NHM.AD_BLND, NHM.AT_GAZE)))
-            cptr.stI64o2(u, NHC.BLND_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLND_RES, 24, $you_uprops + $prop_intrinsic) | 268435456n);
+            cptr.stI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 268435456n);
         else
-            cptr.stI64o2(u, NHC.BLND_RES, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLND_RES, 24, $you_uprops + $prop_intrinsic) & (-268435457n));
+            cptr.stI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-268435457n));
     }
     if (!cptr.ldI32o(program_state, $sinfo_restoring))
         float_vs_flight();
@@ -676,13 +680,13 @@ export function set_uasmon() {
 export function float_vs_flight() {
     let stuck_in_floor = schar((cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT ? 1 : 0));
     if ((HLevitation() || ELevitation()) || ((HFlying() || EFlying()) && stuck_in_floor))
-        cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked) | 536870912n);
+        cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked) | 536870912n);
     else
-        cptr.stI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.FLYING, 24, $you_uprops + $prop_blocked) & (-536870913n));
+        cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked) & (-536870913n));
     if ((HLevitation() || ELevitation()) && stuck_in_floor)
-        cptr.stI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_blocked) | 536870912n);
+        cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked) | 536870912n);
     else
-        cptr.stI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_blocked) & (-536870913n));
+        cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked) & (-536870913n));
     steed_vs_stealth();
     cptr.st1(disp, 1);
 }
@@ -690,9 +694,9 @@ export function float_vs_flight() {
 /** C ref: polyself.c:158 */
 export function steed_vs_stealth() {
     if (cptr.ldPtro(u, $you_usteed) && !Flying() && !Levitation())
-        cptr.stI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_blocked) | 67108864n);
+        cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked) | 67108864n);
     else
-        cptr.stI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.STEALTH, 24, $you_uprops + $prop_blocked) & (-67108865n));
+        cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_blocked) & (-67108865n));
 }
 
 /** C ref: polyself.c:168 — @param {CInt} on */
@@ -700,14 +704,14 @@ function check_strangling(on) {
     if (on) {
         let was_strangled = schar((Strangled() != 0n));
         if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_STRANGULATION && can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst))) {
-            cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 6n);
+            cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 6n);
             cptr.st1(disp, 1);
             Your(__s_s_s_your_s, simpleonames(uamul.v), was_strangled ? __s_still_constricts : __s_begins_constricting, body_part(NHC.NECK));
             discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1);
         }
     } else {
         if (Strangled() && !can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst))) {
-            cptr.stI64o2(u, NHC.STRANGLED, 24, $you_uprops + $prop_intrinsic, 0n);
+            cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
             cptr.st1(disp, 1);
             You(__s_are_no_longer_being_strangled);
         }
@@ -762,7 +766,7 @@ function polyman(fmt, arg) {
         set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 256, __s_polyman), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
     }
     if (was_blind && !Blind()) {
-        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), 1n);
+        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), 1n);
         make_blinded(0n, 1);
     }
     check_strangling(1);
@@ -803,7 +807,7 @@ export function livelog_newform(viapoly, oldgend, newgend) {
             newrole = (newgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole);
             oldrank = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), schar(oldgend));
             newrank = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), schar(newgend));
-            void cptr.sprintf(cptr.decay(buf), __s_10s_30s, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female), 48), newrank);
+            void cptr.sprintf(cptr.decay(buf), __s_10s_30s, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender), newrank);
             livelog_printf(4096n, __s_s_into_s, viapoly ? __s_polymorphed : __s_transformed, an(strcmp(newrole, oldrole) ? newrole : (strcmp(newrank, oldrank) ? newrank : cptr.decay(buf))));
         }
     }
@@ -996,7 +1000,7 @@ export function polyself(psflags) {
         continue;
         }
         case 18: {
-        if (is_placeholder(cptr.add(mons, mntmp.v, 96)) && !((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && mntmp.v != NHC.PM_HUMAN) {
+        if (is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)) && !((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && mntmp.v != NHC.PM_HUMAN) {
             if (mntmp.v == NHC.PM_ORC)
                 mntmp.v = (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 554, __s_polyself), rn2(3)) : rn2(3)) ? NHC.PM_HILL_ORC : NHC.PM_MORDOR_ORC;
             else if (mntmp.v == NHC.PM_ELF)
@@ -1036,7 +1040,7 @@ export function polyself(psflags) {
         { __pc = 3; continue; }
         }
         case 27: {
-        if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) && !(mntmp.v == NHC.PM_HUMAN || (((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && (cptr.ldU16o2(mons, mntmp.v, 96, $permonst_geno) & NHM.G_UNIQ) == 0) || mntmp.v == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum))) { __pc = 29; continue; }
+        if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & 1n) == 0n) && !(mntmp.v == NHC.PM_HUMAN || (((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && (cptr.ldU16o2(mons, mntmp.v, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) == 0) || mntmp.v == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum))) { __pc = 29; continue; }
         __pc = 30; continue;
         }
         case 29: {
@@ -1056,10 +1060,10 @@ export function polyself(psflags) {
         continue;
         }
         case 31: {
-        pm_name = pmname(cptr.add(mons, mntmp.v, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE);
-        if (the_unique_pm(cptr.add(mons, mntmp.v, 96)))
+        pm_name = pmname(cptr.add(mons, mntmp.v, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE);
+        if (the_unique_pm(cptr.add(mons, mntmp.v, $sizeof_permonst)))
             pm_name = the(pm_name);
-        else if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 524288n) != 0n))
+        else if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n))
             pm_name = an(pm_name);
         You_cant(__s_polymorph_into_s, pm_name);
         __pc = 28;
@@ -1095,7 +1099,7 @@ export function polyself(psflags) {
         { __pc = 2; continue; }
         }
         case 35: {
-        if (isvamp && (tryct <= 0 || mntmp.v == NHC.PM_WOLF || mntmp.v == NHC.PM_FOG_CLOUD || is_bat(cptr.add(mons, mntmp.v, 96)))) { __pc = 38; continue; }
+        if (isvamp && (tryct <= 0 || mntmp.v == NHC.PM_WOLF || mntmp.v == NHC.PM_FOG_CLOUD || is_bat(cptr.add(mons, mntmp.v, $sizeof_permonst)))) { __pc = 38; continue; }
         __pc = 37; continue;
         }
         case 38: {
@@ -1119,7 +1123,7 @@ export function polyself(psflags) {
         }
         case 2 /* do_merge: */: {
         mntmp.v = armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp));
-        if (!(cptr.ld1uo2(svm, mntmp.v, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD)) {
+        if (!(cptr.ld1uo2(svm, mntmp.v, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD)) {
             was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
             arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
             if (Is_dragon_scales(uarm.v)) {
@@ -1167,13 +1171,13 @@ export function polyself(psflags) {
         continue;
         }
         case 4 /* do_vampyr: */: {
-        if (mntmp.v < NHC.LOW_PM || (cptr.ldU16o2(mons, mntmp.v, 96, $permonst_geno) & NHM.G_UNIQ)) {
-            mntmp.v = (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_VAMPIRE_LEADER, 96)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 674, __s_polyself), rn2(10)) : rn2(10))) ? NHC.PM_WOLF : (!(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 675, __s_polyself), rn2(4)) : rn2(4)) ? NHC.PM_FOG_CLOUD : NHC.PM_VAMPIRE_BAT);
+        if (mntmp.v < NHC.LOW_PM || (cptr.ldU16o2(mons, mntmp.v, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ)) {
+            mntmp.v = (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_VAMPIRE_LEADER, $sizeof_permonst)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 674, __s_polyself), rn2(10)) : rn2(10))) ? NHC.PM_WOLF : (!(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 675, __s_polyself), rn2(4)) : rn2(4)) ? NHC.PM_FOG_CLOUD : NHC.PM_VAMPIRE_BAT);
             if (ismnum(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)) && !(cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 678, __s_polyself), rn2(2)) : rn2(2)))
                 mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
         }
         if (controllable_poly) {
-            void cptr.sprintf(cptr.decay(buf), __s_become_s, an(pmname(cptr.add(mons, mntmp.v, 96), gvariant.v)));
+            void cptr.sprintf(cptr.decay(buf), __s_become_s, an(pmname(cptr.add(mons, mntmp.v, $sizeof_permonst), gvariant.v)));
             if (yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1) != 121)
                 return;
         }
@@ -1204,12 +1208,12 @@ export function polyself(psflags) {
             tryct = 200;
             do {
                 mntmp.v = (((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 702, __s_polyself), rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) : rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0))) + NHC.LOW_PM) | 0);
-                if (((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) && !is_placeholder(cptr.add(mons, mntmp.v, 96)))
+                if (((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & 1n) == 0n) && !is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)))
                     break;
             } while (--tryct > 0);
         }
         (cptr.stI32o(gs, $instance_globals_s_sex_change_ok, cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + 1)) - (1);
-        if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & 1n) == 0n) || (!forcecontrol && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 712, __s_polyself), rn2(5)) : rn2(5))) || ((cptr.ldU64o((cptr.add(mons, mntmp.v, 96)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) {
+        if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & 1n) == 0n) || (!forcecontrol && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 712, __s_polyself), rn2(5)) : rn2(5))) || ((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) {
             newman();
         } else {
             void polymon(mntmp.v);
@@ -1250,13 +1254,13 @@ export function polymon(mntmp) {
     let was_hiding_under = schar(((cptr.ldI32o(u, $you_uundetected) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
     let mlvl;
     let newMaxStr;
-    if (cptr.ld1uo2(svm, mntmp, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
-        You_feel(__s_rather_s_ish, pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
+    if (cptr.ld1uo2(svm, mntmp, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
+        You_feel(__s_rather_s_ish, pmname(cptr.add(mons, mntmp, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
         exercise(NHC.A_WIS, 1);
         return 0;
     }
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_polyselfs, cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs) + 1n)) - (1n)))
-        livelog_printf(32n, __s_changed_form_for_the_first_time, an(pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
+        livelog_printf(32n, __s_changed_form_for_the_first_time, an(pmname(cptr.add(mons, mntmp, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)));
     exercise(NHC.A_CON, 0);
     exercise(NHC.A_WIS, 1);
     if (!Upolyd()) {
@@ -1270,17 +1274,17 @@ export function polymon(mntmp) {
     }
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && U_AP_TYPE() == NHC.M_AP_OBJECT && cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_MIMIC)
         unmul(__s_empty);
-    if (cptr.ld1so2(mons, mntmp, 96, $permonst_mlet) != NHC.S_MIMIC) {
+    if (cptr.ld1so2(mons, mntmp, $sizeof_permonst, $permonst_mlet) != NHC.S_MIMIC) {
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
     }
-    if (((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 65536n) != 0n)) {
+    if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 65536n) != 0n)) {
         if (cptr.ld1so(flags, $flag_female))
             dochange = 1;
-    } else if (((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 131072n) != 0n)) {
+    } else if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 131072n) != 0n)) {
         if (!cptr.ld1so(flags, $flag_female))
             dochange = 1;
-    } else if (!((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 262144n) != 0n) && mntmp != cptr.ldI32o(u, $you_ulycn)) {
+    } else if (!((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 262144n) != 0n) && mntmp != cptr.ldI32o(u, $you_ulycn)) {
         if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 792, __s_polymon), rn2(10)) : rn2(10)))
             dochange = 1;
     }
@@ -1288,11 +1292,11 @@ export function polymon(mntmp) {
     void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __s_empty : __s_new);
     if (dochange) {
         cptr.st1o(flags, $flag_female, schar((!cptr.ld1so(flags, $flag_female))));
-        void cptr.strcat(cptr.decay(buf), (((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 131072n) != 0n)) ? __s_empty : (cptr.ld1so(flags, $flag_female) ? __s_female : __s_male));
+        void cptr.strcat(cptr.decay(buf), (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 131072n) != 0n)) ? __s_empty : (cptr.ld1so(flags, $flag_female) ? __s_female : __s_male));
     }
-    void cptr.strcat(cptr.decay(buf), pmname(cptr.add(mons, mntmp, 96), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
+    void cptr.strcat(cptr.decay(buf), pmname(cptr.add(mons, mntmp, $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
     You(__s_s_s, (cptr.ldI32o(u, $you_umonnum) != mntmp) ? __s_turn_into : __s_feel_like, an(cptr.decay(buf)));
-    if (Stoned() && poly_when_stoned(cptr.add(mons, mntmp, 96))) {
+    if (Stoned() && poly_when_stoned(cptr.add(mons, mntmp, $sizeof_permonst))) {
         mntmp = NHC.PM_STONE_GOLEM;
         make_stoned(0n, __s_you_turn_to_stone, 0, null);
     }
@@ -1300,7 +1304,7 @@ export function polymon(mntmp) {
     cptr.stI32o(u, $you_umonnum, mntmp);
     set_uasmon();
     newMaxStr = uasmon_maxStr();
-    if (((cptr.ldU64o((cptr.add(mons, mntmp, 96)), $permonst_mflags2) & 67108864n) != 0n)) {
+    if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 67108864n) != 0n)) {
         cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, cptr.st1o2(u, NHC.A_STR, 1, $you_amax, schar(newMaxStr)));
     } else {
         cptr.st1o2(u, NHC.A_STR, 1, $you_amax, schar(newMaxStr));
@@ -1310,7 +1314,7 @@ export function polymon(mntmp) {
     if (Stone_resistance() && Stoned()) {
         make_stoned(0n, __s_you_no_longer_seem_to_be_petrifying, 0, null);
     }
-    if ((cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) || defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)) && Sick()) {
+    if ((cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)) && Sick()) {
         make_sick(0n, null, 0, NHM.SICK_ALL);
         You(__s_no_longer_feel_sick);
     }
@@ -1324,7 +1328,7 @@ export function polymon(mntmp) {
     check_strangling(0);
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n))
         make_glib(0);
-    mlvl = cptr.ld1so2(mons, mntmp, 96, $permonst_mlevel);
+    mlvl = cptr.ld1so2(mons, mntmp, $sizeof_permonst, $permonst_mlevel);
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_DRAGON && mntmp >= NHC.PM_GRAY_DRAGON) {
         cptr.stI32o(u, $you_mhmax, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (Math.imul(8, mlvl)) : ((Math.imul(4, mlvl) + (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 861, __s_polymon), d((mlvl), 4)) : d((mlvl), 4))) | 0));
     } else if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GOLEM)) {
@@ -1334,7 +1338,7 @@ export function polymon(mntmp) {
             cptr.stI32o(u, $you_mhmax, (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 866, __s_polymon), rnd(4)) : rnd(4)));
         else
             cptr.stI32o(u, $you_mhmax, (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 868, __s_polymon), d((mlvl), 8)) : d((mlvl), 8)));
-        if (is_home_elemental(cptr.add(mons, mntmp, 96)))
+        if (is_home_elemental(cptr.add(mons, mntmp, $sizeof_permonst)))
             cptr.stI32o(u, $you_mhmax, Math.imul(cptr.ldI32o(u, $you_mhmax), 3));
     }
     cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
@@ -1352,7 +1356,7 @@ export function polymon(mntmp) {
         set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 897, __s_polymon), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
     }
     if (was_blind && !Blind()) {
-        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), 1n);
+        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), 1n);
         make_blinded(0n, 1);
     }
     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -1460,7 +1464,7 @@ export function polymon(mntmp) {
             pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_shriek);
         if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)))
             pline(cptr.decay(__static_polymon_use_thec), cptr.decay(__static_polymon_monsterc), __s_change_shape);
-        if (((cptr.ldU64o((uptr), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female) && !(cptr.eq(uptr, cptr.add(mons, NHC.PM_GIANT_EEL, 96)) || cptr.eq(uptr, cptr.add(mons, NHC.PM_ELECTRIC_EEL, 96))))
+        if (((cptr.ldU64o((uptr), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female) && !(cptr.eq(uptr, cptr.add(mons, NHC.PM_GIANT_EEL, $sizeof_permonst)) || cptr.eq(uptr, cptr.add(mons, NHC.PM_ELECTRIC_EEL, $sizeof_permonst))))
             pline(cptr.decay(__static_polymon_use_thec), __s_sit, eggs_in_water(uptr) ? __s_spawn_in_the_water : __s_lay_an_egg);
     }
     return 1;
@@ -1471,7 +1475,7 @@ export function uasmon_maxStr() {
     let R;
     let newMaxStr;
     let mndx = cptr.ldI32o(u, $you_umonnum);
-    let ptr = cptr.add(mons, mndx, 96);
+    let ptr = cptr.add(mons, mndx, $sizeof_permonst);
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 128n) != 0n)) {
         if (mndx != NHC.PM_URUK_HAI && mndx != NHC.PM_ORC_CAPTAIN)
             mndx = NHC.PM_ORC;
@@ -1778,7 +1782,7 @@ export function dospinweb() {
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
     let ttmp = t_at(x, y);
-    let reject_terrain = schar((is_pool_or_lava(x, y) || ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD) ? 1 : 0));
+    let reject_terrain = schar((is_pool_or_lava(x, y) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD) ? 1 : 0));
     if (Levitation() || reject_terrain) {
         You(__s_must_be_on_s_ground_to_spin_a_web, reject_terrain ? __s_solid : __s_the);
         return NHM.ECMD_OK;
@@ -1792,14 +1796,14 @@ export function dospinweb() {
         if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) {
             let i;
             for (i = 0; i < NHM.NATTK; i++)
-                if (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, 4, $permonst_mattk) == NHM.AT_ENGL)
+                if (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, $sizeof_attack, $permonst_mattk) == NHM.AT_ENGL)
                     break;
             if (i == NHM.NATTK)
                 impossible(__s_swallower_has_no_engulfing_attack);
             else {
                 let sweep = new Uint8Array(30);
                 cptr.st1o(cptr.decay(sweep), 0, 0, 1);
-                switch (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, 4, $permonst_mattk + $attack_adtyp)) {
+                switch (cptr.ld1uo2(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                     case NHM.AD_FIRE:
                     void cptr.strcpy(cptr.decay(sweep), __s_ignites_and);
                     break;
@@ -1875,7 +1879,7 @@ export function dospinweb() {
             return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
-        Your(__s_web_fails_to_impede_access_to_the_s, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS) ? __s_stairs : __s_ladder);
+        Your(__s_web_fails_to_impede_access_to_the_s, (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STAIRS) ? __s_stairs : __s_ladder);
         return NHM.ECMD_TIME;
     }
     ttmp = maketrap(x, y, NHC.WEB);
@@ -1913,8 +1917,8 @@ export function dogaze() {
     let i;
     let adtyp = 0;
     for (i = 0; i < NHM.NATTK; i++) {
-        if (cptr.ld1uo2(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), i, 4, $permonst_mattk) == NHM.AT_GAZE) {
-            adtyp = cptr.ld1uo2(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), i, 4, $permonst_mattk + $attack_adtyp);
+        if (cptr.ld1uo2(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), i, $sizeof_attack, $permonst_mattk) == NHM.AT_GAZE) {
+            adtyp = cptr.ld1uo2(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
             break;
         }
     }
@@ -1986,17 +1990,17 @@ export function dogaze() {
                 }
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
-                if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
+                if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     if (!Free_action()) {
                         You(__s_are_frozen_by_s_gaze, s_suffix(mon_nam(mtmp)));
-                        nomul((cptr.ldI32o(u, $you_ulevel) > 6 || (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1741, __s_dogaze), rn2(4)) : rn2(4))) ? -(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1743, __s_dogaze), d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, 4, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, 4, $permonst_mattk + $attack_damd)))) : -200);
+                        nomul((cptr.ldI32o(u, $you_ulevel) > 6 || (rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1741, __s_dogaze), rn2(4)) : rn2(4))) ? -(rng_log_enabled() ? (rng_log_set_caller(__s_polyself_c, 1743, __s_dogaze), d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, $sizeof_attack, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1uo(mtmp, $monst_m_lev) + 1) | 0), (cptr.ld1uo2(cptr.ldPtro(mtmp, $monst_data), 0, $sizeof_attack, $permonst_mattk + $attack_damd)))) : -200);
                         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_frozen_by_a_monster_s_gaze);
                         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
                         return NHM.ECMD_TIME;
                     } else
                         You(__s_stiffen_momentarily_under_s_gaze, s_suffix(mon_nam(mtmp)));
                 }
-                if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, 96)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
+                if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
                     pline(__s_gazing_at_the_awake_s_is_not_a_very, l_monnam(mtmp));
                     urgent_pline(__s_you_turn_to_stone__2);
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -2025,7 +2029,7 @@ export function dohide() {
         return NHM.ECMD_OK;
     }
     if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN))
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN))
             pline_The(__s_fountain_is_not_deep_enough_to_hide_in);
         else
             There(__s_is_no_s_to_hide_in_here, hliquid(__s_water));
@@ -2041,7 +2045,7 @@ export function dohide() {
             cptr.stI32o(u, $you_uundetected, 0);
             return NHM.ECMD_OK;
         }
-        for (otmp = otop; otmp && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)); otmp = cptr.ldPtro(otmp, $obj_v))
+        for (otmp = otop; otmp && cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)); otmp = cptr.ldPtro(otmp, $obj_v))
             ct += cptr.ldI64o(otmp, $obj_quan);
         if (!otmp && !Stone_resistance()) {
             let kbuf = new Uint8Array(256);
@@ -2403,7 +2407,7 @@ export function mbodypart(mon, part) {
         impossible(__s_mbodypart_bad_part_d, part);
         return __s_mystery_part;
     }
-    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_DOG || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_FELINE || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_RODENT || cptr.eq(mptr, cptr.add(mons, NHC.PM_OWLBEAR, 96))) {
+    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_DOG || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_FELINE || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_RODENT || cptr.eq(mptr, cptr.add(mons, NHC.PM_OWLBEAR, $sizeof_permonst))) {
         switch (part) {
             case NHC.HAND:
             return __s_paw;
@@ -2420,23 +2424,23 @@ export function mbodypart(mon, part) {
     } else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_YETI) {
         return cptr.ldPtro(__static_mbodypart_humanoid_parts, part, 8);
     }
-    if ((part == NHC.HAND || part == NHC.HANDED) && (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && attacktype(mptr, NHM.AT_CLAW) && !cptr.strchr(cptr.decay(__static_mbodypart_not_claws), cptr.ld1so(mptr, $permonst_mlet)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_STONE_GOLEM, 96)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, 96))))
+    if ((part == NHC.HAND || part == NHC.HANDED) && (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && attacktype(mptr, NHM.AT_CLAW) && !cptr.strchr(cptr.decay(__static_mbodypart_not_claws), cptr.ld1so(mptr, $permonst_mlet)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_STONE_GOLEM, $sizeof_permonst)) && !cptr.eq(mptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst))))
         return (part == NHC.HAND) ? __s_claw : __s_clawed;
-    if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_MUMAK, 96)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_MASTODON, 96))) && part == NHC.NOSE)
+    if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_MUMAK, $sizeof_permonst)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_MASTODON, $sizeof_permonst))) && part == NHC.NOSE)
         return __s_trunk;
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_SHARK, 96)) && part == NHC.HAIR)
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_SHARK, $sizeof_permonst)) && part == NHC.HAIR)
         return __s_skin;
-    if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, 96)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_KRAKEN, 96))) && (part == NHC.ARM || part == NHC.FINGER || part == NHC.HAND || part == NHC.FOOT || part == NHC.TOE))
+    if ((cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, $sizeof_permonst)) || cptr.eq(mptr, cptr.add(mons, NHC.PM_KRAKEN, $sizeof_permonst))) && (part == NHC.ARM || part == NHC.FINGER || part == NHC.HAND || part == NHC.FOOT || part == NHC.TOE))
         return __s_tentacle;
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_FLOATING_EYE, 96)) && part == NHC.EYE)
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && part == NHC.EYE)
         return __s_cornea;
     if (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) && (part == NHC.ARM || part == NHC.FINGER || part == NHC.FINGERTIP || part == NHC.HAND || part == NHC.HANDED))
         return cptr.ldPtro(__static_mbodypart_humanoid_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_COCKATRICE)
         return (part == NHC.HAIR) ? cptr.ldPtro(__static_mbodypart_snake_parts, part, 8) : cptr.ldPtro(__static_mbodypart_bird_parts, part, 8);
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_RAVEN, 96)))
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_RAVEN, $sizeof_permonst)))
         return cptr.ldPtro(__static_mbodypart_bird_parts, part, 8);
-    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_CENTAUR || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_UNICORN || cptr.eq(mptr, cptr.add(mons, NHC.PM_KI_RIN, 96)) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ROTHE, 96)) && part != NHC.HAIR))
+    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_CENTAUR || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_UNICORN || cptr.eq(mptr, cptr.add(mons, NHC.PM_KI_RIN, $sizeof_permonst)) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ROTHE, $sizeof_permonst)) && part != NHC.HAIR))
         return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_LIGHT) {
         if (part == NHC.HANDED)
@@ -2446,9 +2450,9 @@ export function mbodypart(mon, part) {
         else
             return __s_beam;
     }
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_STALKER, 96)) && part == NHC.HEAD)
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_STALKER, $sizeof_permonst)) && part == NHC.HEAD)
         return __s_head;
-    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_EEL && !cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, 96)))
+    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_EEL && !cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, $sizeof_permonst)))
         return cptr.ldPtro(__static_mbodypart_fish_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_WORM)
         return cptr.ldPtro(__static_mbodypart_worm_parts, part, 8);
@@ -2458,7 +2462,7 @@ export function mbodypart(mon, part) {
         return cptr.ldPtro(__static_mbodypart_snake_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_EYE)
         return cptr.ldPtro(__static_mbodypart_sphere_parts, part, 8);
-    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_JELLY || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_PUDDING || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_BLOB || cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, 96)))
+    if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_JELLY || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_PUDDING || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_BLOB || cptr.eq(mptr, cptr.add(mons, NHC.PM_JELLYFISH, $sizeof_permonst)))
         return cptr.ldPtro(__static_mbodypart_jelly_parts, part, 8);
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ELEMENTAL)
         return cptr.ldPtro(__static_mbodypart_vortex_parts, part, 8);
@@ -2550,7 +2554,7 @@ function polysense() {
     cptr.stI16o(svc, $context_info_warntype + $warntype_info_speciesidx, NHC.NON_PM);
     cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, null);
     cptr.stU64o(svc, $context_info_warntype + $warntype_info_polyd, 0n);
-    cptr.stI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic) & (-33554433n));
+    cptr.stI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-33554433n));
     switch (cptr.ldI32o(u, $you_umonnum)) {
         case NHC.PM_PURPLE_WORM:
         case NHC.PM_BABY_PURPLE_WORM:
@@ -2559,19 +2563,19 @@ function polysense() {
         case NHC.PM_VAMPIRE:
         case NHC.PM_VAMPIRE_LEADER:
         cptr.stU64o(svc, $context_info_warntype + $warntype_info_polyd, 24n);
-        cptr.stI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic) | 33554432n);
+        cptr.stI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) | 33554432n);
         return;
     }
     if (ismnum(warnidx)) {
         cptr.stI16o(svc, $context_info_warntype + $warntype_info_speciesidx, warnidx);
-        cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, cptr.add(mons, warnidx, 96));
-        cptr.stI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, 24, $you_uprops + $prop_intrinsic) | 33554432n);
+        cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, cptr.add(mons, warnidx, $sizeof_permonst));
+        cptr.stI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) | 33554432n);
     }
 }
 
 /** C ref: polyself.c:2265 @returns {CInt} */
 export function ugenocided() {
-    return schar(((cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) || (cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
+    return schar(((cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) || (cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
 }
 
 /** C ref: polyself.c:2273 @returns {CPtr<char>} */

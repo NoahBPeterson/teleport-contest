@@ -46,8 +46,8 @@ const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
     $instance_globals_t_true_rumor_start = FLD.instance_globals_t_true_rumor_start,
     $monst_mpeaceful = FLD.monst_mpeaceful, $permonst_geno = FLD.permonst_geno,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
-    $u_event_major_oracle = FLD.u_event_major_oracle,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $u_event_major_oracle = FLD.u_event_major_oracle,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
     $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
@@ -683,7 +683,7 @@ function init_CapMons() {
         let mgend;
         CapMonstCnt = (CapBogonCnt = 0);
         for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
-            mptr = cptr.add(mons, mndx, 96);
+            mptr = cptr.add(mons, mndx, $sizeof_permonst);
             if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
                 continue;
             for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {

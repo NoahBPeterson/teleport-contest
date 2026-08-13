@@ -44,7 +44,8 @@ const $NHFILE_mode = FLD.NHFILE_mode, $const_globals_zeroany = FLD.const_globals
     $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y,
     $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed, $obj_lamplit = FLD.obj_lamplit,
     $obj_o_id = FLD.obj_o_id, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $obj_where = FLD.obj_where, $rm_lit = FLD.rm_lit,
+    $obj_where = FLD.obj_where, $rm_lit = FLD.rm_lit, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
@@ -249,7 +250,7 @@ export function show_transient_light(obj, x, y) {
     let mon;
     let radius_squared;
     if (!obj) {
-        if ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit) & 1))
+        if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))
             return;
         cptr.memcpy(cameraflash, cptr.add(cg, $const_globals_zeroany), 8);
         ls = new_light_core(x, y, 0, NHC.LS_OBJECT, cameraflash);

@@ -63,8 +63,11 @@ const $Align_adj = FLD.Align_adj, $Align_value = FLD.Align_value, $Race_attrmax 
     $permonst_mlet = FLD.permonst_mlet,
     $poison_effect_message_effect_msg = FLD.poison_effect_message_effect_msg,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $you_abon = FLD.you_abon, $you_acurr = FLD.you_acurr, $you_aexe = FLD.you_aexe, $you_amax = FLD.you_amax,
+    $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sizeof_Align = FLD.sizeof_Align,
+    $sizeof_innate = FLD.sizeof_innate, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_poison_effect_message = FLD.sizeof_poison_effect_message,
+    $sizeof_prop = FLD.sizeof_prop, $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_abon = FLD.you_abon,
+    $you_acurr = FLD.you_acurr, $you_aexe = FLD.you_aexe, $you_amax = FLD.you_amax,
     $you_atemp = FLD.you_atemp, $you_atime = FLD.you_atime, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
     $you_moreluck = FLD.you_moreluck, $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
     $you_ublessed = FLD.you_ublessed, $you_ucreamed = FLD.you_ucreamed, $you_uhp = FLD.you_uhp,
@@ -243,17 +246,17 @@ cptr.stPtro(attrname, 40, __s_charisma);
 /** C ref: attrib.c:23 — struct innate { ulevel, ability, gainstr, losestr } (memory model v0.5) */
 
 /** C ref: attrib.c:27 — struct innate[4] */
-const arc_abil = cptr.alloc(4 * 32);
+const arc_abil = cptr.alloc(4 * $sizeof_innate);
 cptr.st1o(arc_abil, 0, 1);
-cptr.stPtro(arc_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, 24), $prop_intrinsic));
+cptr.stPtro(arc_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(arc_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(arc_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(arc_abil, 32, 5);
-cptr.stPtro(arc_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(arc_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(arc_abil, 32 + $innate_gainstr, __s_stealthy);
 cptr.stPtro(arc_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(arc_abil, 64, 10);
-cptr.stPtro(arc_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(arc_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(arc_abil, 64 + $innate_gainstr, __s_quick);
 cptr.stPtro(arc_abil, 64 + $innate_losestr, __s_slow);
 cptr.st1o(arc_abil, 96, 0);
@@ -262,17 +265,17 @@ cptr.stPtro(arc_abil, 96 + $innate_gainstr, null);
 cptr.stPtro(arc_abil, 96 + $innate_losestr, null);
 
 /** C ref: attrib.c:32 — struct innate[4] */
-const bar_abil = cptr.alloc(4 * 32);
+const bar_abil = cptr.alloc(4 * $sizeof_innate);
 cptr.st1o(bar_abil, 0, 1);
-cptr.stPtro(bar_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, 24), $prop_intrinsic));
+cptr.stPtro(bar_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(bar_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(bar_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(bar_abil, 32, 7);
-cptr.stPtro(bar_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(bar_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(bar_abil, 32 + $innate_gainstr, __s_quick);
 cptr.stPtro(bar_abil, 32 + $innate_losestr, __s_slow);
 cptr.st1o(bar_abil, 64, 15);
-cptr.stPtro(bar_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(bar_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(bar_abil, 64 + $innate_gainstr, __s_stealthy);
 cptr.stPtro(bar_abil, 64 + $innate_losestr, __s_empty);
 cptr.st1o(bar_abil, 96, 0);
@@ -281,13 +284,13 @@ cptr.stPtro(bar_abil, 96 + $innate_gainstr, null);
 cptr.stPtro(bar_abil, 96 + $innate_losestr, null);
 
 /** C ref: attrib.c:37 — struct innate[3] */
-const cav_abil = cptr.alloc(3 * 32);
+const cav_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(cav_abil, 0, 7);
-cptr.stPtro(cav_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(cav_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(cav_abil, 0 + $innate_gainstr, __s_quick);
 cptr.stPtro(cav_abil, 0 + $innate_losestr, __s_slow);
 cptr.st1o(cav_abil, 32, 15);
-cptr.stPtro(cav_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, 24), $prop_intrinsic));
+cptr.stPtro(cav_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(cav_abil, 32 + $innate_gainstr, __s_sensitive);
 cptr.stPtro(cav_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(cav_abil, 64, 0);
@@ -296,13 +299,13 @@ cptr.stPtro(cav_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(cav_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:41 — struct innate[3] */
-const hea_abil = cptr.alloc(3 * 32);
+const hea_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(hea_abil, 0, 1);
-cptr.stPtro(hea_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, 24), $prop_intrinsic));
+cptr.stPtro(hea_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(hea_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(hea_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(hea_abil, 32, 15);
-cptr.stPtro(hea_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, 24), $prop_intrinsic));
+cptr.stPtro(hea_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(hea_abil, 32 + $innate_gainstr, __s_sensitive);
 cptr.stPtro(hea_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(hea_abil, 64, 0);
@@ -311,9 +314,9 @@ cptr.stPtro(hea_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(hea_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:45 — struct innate[2] */
-const kni_abil = cptr.alloc(2 * 32);
+const kni_abil = cptr.alloc(2 * $sizeof_innate);
 cptr.st1o(kni_abil, 0, 7);
-cptr.stPtro(kni_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(kni_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(kni_abil, 0 + $innate_gainstr, __s_quick);
 cptr.stPtro(kni_abil, 0 + $innate_losestr, __s_slow);
 cptr.st1o(kni_abil, 32, 0);
@@ -322,49 +325,49 @@ cptr.stPtro(kni_abil, 32 + $innate_gainstr, null);
 cptr.stPtro(kni_abil, 32 + $innate_losestr, null);
 
 /** C ref: attrib.c:47 — struct innate[12] */
-const mon_abil = cptr.alloc(12 * 32);
+const mon_abil = cptr.alloc(12 * $sizeof_innate);
 cptr.st1o(mon_abil, 0, 1);
-cptr.stPtro(mon_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(mon_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(mon_abil, 32, 1);
-cptr.stPtro(mon_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEP_RES, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEP_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 32 + $innate_gainstr, __s_empty);
 cptr.stPtro(mon_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(mon_abil, 64, 1);
-cptr.stPtro(mon_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 64 + $innate_gainstr, __s_empty);
 cptr.stPtro(mon_abil, 64 + $innate_losestr, __s_empty);
 cptr.st1o(mon_abil, 96, 3);
-cptr.stPtro(mon_abil, 96 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 96 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 96 + $innate_gainstr, __s_healthy);
 cptr.stPtro(mon_abil, 96 + $innate_losestr, __s_empty);
 cptr.st1o(mon_abil, 128, 5);
-cptr.stPtro(mon_abil, 128 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 128 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 128 + $innate_gainstr, __s_stealthy);
 cptr.stPtro(mon_abil, 128 + $innate_losestr, __s_empty);
 cptr.st1o(mon_abil, 160, 7);
-cptr.stPtro(mon_abil, 160 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 160 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 160 + $innate_gainstr, __s_sensitive);
 cptr.stPtro(mon_abil, 160 + $innate_losestr, __s_empty);
 cptr.st1o(mon_abil, 192, 9);
-cptr.stPtro(mon_abil, 192 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 192 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 192 + $innate_gainstr, __s_perceptive);
 cptr.stPtro(mon_abil, 192 + $innate_losestr, __s_unaware);
 cptr.st1o(mon_abil, 224, 11);
-cptr.stPtro(mon_abil, 224 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 224 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 224 + $innate_gainstr, __s_cool);
 cptr.stPtro(mon_abil, 224 + $innate_losestr, __s_warmer);
 cptr.st1o(mon_abil, 256, 13);
-cptr.stPtro(mon_abil, 256 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 256 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 256 + $innate_gainstr, __s_warm);
 cptr.stPtro(mon_abil, 256 + $innate_losestr, __s_cooler);
 cptr.st1o(mon_abil, 288, 15);
-cptr.stPtro(mon_abil, 288 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SHOCK_RES, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 288 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SHOCK_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 288 + $innate_gainstr, __s_insulated);
 cptr.stPtro(mon_abil, 288 + $innate_losestr, __s_conductive);
 cptr.st1o(mon_abil, 320, 17);
-cptr.stPtro(mon_abil, 320 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.TELEPORT_CONTROL, 24), $prop_intrinsic));
+cptr.stPtro(mon_abil, 320 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.TELEPORT_CONTROL, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(mon_abil, 320 + $innate_gainstr, __s_controlled);
 cptr.stPtro(mon_abil, 320 + $innate_losestr, __s_uncontrolled);
 cptr.st1o(mon_abil, 352, 0);
@@ -373,13 +376,13 @@ cptr.stPtro(mon_abil, 352 + $innate_gainstr, null);
 cptr.stPtro(mon_abil, 352 + $innate_losestr, null);
 
 /** C ref: attrib.c:60 — struct innate[3] */
-const pri_abil = cptr.alloc(3 * 32);
+const pri_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(pri_abil, 0, 15);
-cptr.stPtro(pri_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, 24), $prop_intrinsic));
+cptr.stPtro(pri_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(pri_abil, 0 + $innate_gainstr, __s_sensitive);
 cptr.stPtro(pri_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(pri_abil, 32, 20);
-cptr.stPtro(pri_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, 24), $prop_intrinsic));
+cptr.stPtro(pri_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(pri_abil, 32 + $innate_gainstr, __s_cool);
 cptr.stPtro(pri_abil, 32 + $innate_losestr, __s_warmer);
 cptr.st1o(pri_abil, 64, 0);
@@ -388,17 +391,17 @@ cptr.stPtro(pri_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(pri_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:64 — struct innate[4] */
-const ran_abil = cptr.alloc(4 * 32);
+const ran_abil = cptr.alloc(4 * $sizeof_innate);
 cptr.st1o(ran_abil, 0, 1);
-cptr.stPtro(ran_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, 24), $prop_intrinsic));
+cptr.stPtro(ran_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(ran_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(ran_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(ran_abil, 32, 7);
-cptr.stPtro(ran_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(ran_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(ran_abil, 32 + $innate_gainstr, __s_stealthy);
 cptr.stPtro(ran_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(ran_abil, 64, 15);
-cptr.stPtro(ran_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, 24), $prop_intrinsic));
+cptr.stPtro(ran_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(ran_abil, 64 + $innate_gainstr, __s_empty);
 cptr.stPtro(ran_abil, 64 + $innate_losestr, __s_empty);
 cptr.st1o(ran_abil, 96, 0);
@@ -407,13 +410,13 @@ cptr.stPtro(ran_abil, 96 + $innate_gainstr, null);
 cptr.stPtro(ran_abil, 96 + $innate_losestr, null);
 
 /** C ref: attrib.c:69 — struct innate[3] */
-const rog_abil = cptr.alloc(3 * 32);
+const rog_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(rog_abil, 0, 1);
-cptr.stPtro(rog_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(rog_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(rog_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(rog_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(rog_abil, 32, 10);
-cptr.stPtro(rog_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, 24), $prop_intrinsic));
+cptr.stPtro(rog_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(rog_abil, 32 + $innate_gainstr, __s_perceptive);
 cptr.stPtro(rog_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(rog_abil, 64, 0);
@@ -422,13 +425,13 @@ cptr.stPtro(rog_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(rog_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:73 — struct innate[3] */
-const sam_abil = cptr.alloc(3 * 32);
+const sam_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(sam_abil, 0, 1);
-cptr.stPtro(sam_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(sam_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(sam_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(sam_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(sam_abil, 32, 15);
-cptr.stPtro(sam_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(sam_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(sam_abil, 32 + $innate_gainstr, __s_stealthy);
 cptr.stPtro(sam_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(sam_abil, 64, 0);
@@ -437,13 +440,13 @@ cptr.stPtro(sam_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(sam_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:77 — struct innate[3] */
-const tou_abil = cptr.alloc(3 * 32);
+const tou_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(tou_abil, 0, 10);
-cptr.stPtro(tou_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, 24), $prop_intrinsic));
+cptr.stPtro(tou_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(tou_abil, 0 + $innate_gainstr, __s_perceptive);
 cptr.stPtro(tou_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(tou_abil, 32, 20);
-cptr.stPtro(tou_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, 24), $prop_intrinsic));
+cptr.stPtro(tou_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(tou_abil, 32 + $innate_gainstr, __s_hardy);
 cptr.stPtro(tou_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(tou_abil, 64, 0);
@@ -452,17 +455,17 @@ cptr.stPtro(tou_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(tou_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:81 — struct innate[4] */
-const val_abil = cptr.alloc(4 * 32);
+const val_abil = cptr.alloc(4 * $sizeof_innate);
 cptr.st1o(val_abil, 0, 1);
-cptr.stPtro(val_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, 24), $prop_intrinsic));
+cptr.stPtro(val_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(val_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(val_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(val_abil, 32, 3);
-cptr.stPtro(val_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, 24), $prop_intrinsic));
+cptr.stPtro(val_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(val_abil, 32 + $innate_gainstr, __s_stealthy);
 cptr.stPtro(val_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(val_abil, 64, 7);
-cptr.stPtro(val_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic));
+cptr.stPtro(val_abil, 64 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(val_abil, 64 + $innate_gainstr, __s_quick);
 cptr.stPtro(val_abil, 64 + $innate_losestr, __s_slow);
 cptr.st1o(val_abil, 96, 0);
@@ -471,13 +474,13 @@ cptr.stPtro(val_abil, 96 + $innate_gainstr, null);
 cptr.stPtro(val_abil, 96 + $innate_losestr, null);
 
 /** C ref: attrib.c:86 — struct innate[3] */
-const wiz_abil = cptr.alloc(3 * 32);
+const wiz_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(wiz_abil, 0, 15);
-cptr.stPtro(wiz_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, 24), $prop_intrinsic));
+cptr.stPtro(wiz_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(wiz_abil, 0 + $innate_gainstr, __s_sensitive);
 cptr.stPtro(wiz_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(wiz_abil, 32, 17);
-cptr.stPtro(wiz_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.TELEPORT_CONTROL, 24), $prop_intrinsic));
+cptr.stPtro(wiz_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.TELEPORT_CONTROL, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(wiz_abil, 32 + $innate_gainstr, __s_controlled);
 cptr.stPtro(wiz_abil, 32 + $innate_losestr, __s_uncontrolled);
 cptr.st1o(wiz_abil, 64, 0);
@@ -486,9 +489,9 @@ cptr.stPtro(wiz_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(wiz_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:91 — struct innate[2] */
-const dwa_abil = cptr.alloc(2 * 32);
+const dwa_abil = cptr.alloc(2 * $sizeof_innate);
 cptr.st1o(dwa_abil, 0, 1);
-cptr.stPtro(dwa_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, 24), $prop_intrinsic));
+cptr.stPtro(dwa_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(dwa_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(dwa_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(dwa_abil, 32, 0);
@@ -497,13 +500,13 @@ cptr.stPtro(dwa_abil, 32 + $innate_gainstr, null);
 cptr.stPtro(dwa_abil, 32 + $innate_losestr, null);
 
 /** C ref: attrib.c:94 — struct innate[3] */
-const elf_abil = cptr.alloc(3 * 32);
+const elf_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(elf_abil, 0, 1);
-cptr.stPtro(elf_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, 24), $prop_intrinsic));
+cptr.stPtro(elf_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(elf_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(elf_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(elf_abil, 32, 4);
-cptr.stPtro(elf_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEP_RES, 24), $prop_intrinsic));
+cptr.stPtro(elf_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEP_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(elf_abil, 32 + $innate_gainstr, __s_awake);
 cptr.stPtro(elf_abil, 32 + $innate_losestr, __s_tired);
 cptr.st1o(elf_abil, 64, 0);
@@ -512,9 +515,9 @@ cptr.stPtro(elf_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(elf_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:98 — struct innate[2] */
-const gno_abil = cptr.alloc(2 * 32);
+const gno_abil = cptr.alloc(2 * $sizeof_innate);
 cptr.st1o(gno_abil, 0, 1);
-cptr.stPtro(gno_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, 24), $prop_intrinsic));
+cptr.stPtro(gno_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(gno_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(gno_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(gno_abil, 32, 0);
@@ -523,13 +526,13 @@ cptr.stPtro(gno_abil, 32 + $innate_gainstr, null);
 cptr.stPtro(gno_abil, 32 + $innate_losestr, null);
 
 /** C ref: attrib.c:101 — struct innate[3] */
-const orc_abil = cptr.alloc(3 * 32);
+const orc_abil = cptr.alloc(3 * $sizeof_innate);
 cptr.st1o(orc_abil, 0, 1);
-cptr.stPtro(orc_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, 24), $prop_intrinsic));
+cptr.stPtro(orc_abil, 0 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INFRAVISION, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(orc_abil, 0 + $innate_gainstr, __s_empty);
 cptr.stPtro(orc_abil, 0 + $innate_losestr, __s_empty);
 cptr.st1o(orc_abil, 32, 1);
-cptr.stPtro(orc_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, 24), $prop_intrinsic));
+cptr.stPtro(orc_abil, 32 + $innate_ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop), $prop_intrinsic));
 cptr.stPtro(orc_abil, 32 + $innate_gainstr, __s_empty);
 cptr.stPtro(orc_abil, 32 + $innate_losestr, __s_empty);
 cptr.st1o(orc_abil, 64, 0);
@@ -538,7 +541,7 @@ cptr.stPtro(orc_abil, 64 + $innate_gainstr, null);
 cptr.stPtro(orc_abil, 64 + $innate_losestr, null);
 
 /** C ref: attrib.c:105 — struct innate[1] */
-const hum_abil = cptr.alloc(1 * 32);
+const hum_abil = cptr.alloc(1 * $sizeof_innate);
 cptr.st1o(hum_abil, 0, 0);
 cptr.stPtro(hum_abil, 0 + $innate_ability, null);
 cptr.stPtro(hum_abil, 0 + $innate_gainstr, null);
@@ -662,7 +665,7 @@ export function poison_strdmg(strloss, dmg, knam, k_format) {
 /** C ref: attrib.c:280 — struct poison_effect_message { delivery_func, effect_msg } (memory model v0.5) */
 
 /** C ref: attrib.c:283 — struct poison_effect_message[6] */
-const poiseff = cptr.alloc(6 * 16);
+const poiseff = cptr.alloc(6 * $sizeof_poison_effect_message);
 cptr.stPtro(poiseff, 0, You_feel);
 cptr.stPtro(poiseff, 0 + $poison_effect_message_effect_msg, __s_weaker);
 cptr.stPtro(poiseff, 16, Your);
@@ -678,8 +681,8 @@ cptr.stPtro(poiseff, 80 + $poison_effect_message_effect_msg, __s_break_out_in_hi
 
 /** C ref: attrib.c:294 — @param {CInt} typ @param {CInt} exclaim */
 export function poisontell(typ, exclaim) {
-    let func = cptr.ldPtro(poiseff, typ, 16);
-    let msg_txt = cptr.ldPtro2(poiseff, typ, 16, $poison_effect_message_effect_msg);
+    let func = cptr.ldPtro(poiseff, typ, $sizeof_poison_effect_message);
+    let msg_txt = cptr.ldPtro2(poiseff, typ, $sizeof_poison_effect_message, $poison_effect_message_effect_msg);
     if (typ == NHC.A_STR && (acurr(NHC.A_STR)) == 125)
         msg_txt = __s_innately_weaker;
     else if (typ == NHC.A_CON && (acurr(NHC.A_CON)) == 25)
@@ -704,9 +707,9 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         return;
     }
     i = name_to_mon(pkiller, null);
-    if (ismnum(i) && (cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_UNIQ)) {
+    if (ismnum(i) && (cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ)) {
         kprefix = NHM.KILLED_BY;
-        if (!((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n))
+        if (!((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n))
             pkiller = the(pkiller);
     } else if (!strncmpi(pkiller, __s_the__2, 4) || !strncmpi(pkiller, __s_an, 3) || !strncmpi(pkiller, __s_a_sp, 2)) {
         kprefix = NHM.KILLED_BY;
@@ -1071,7 +1074,7 @@ export function vary_init_attr() {
 function postadjabil(ability) {
     if (!cptr.ldI32o(u, $you_ulevel))
         return;
-    if (cptr.eq(ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, 24), $prop_intrinsic)) || cptr.eq(ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, 24), $prop_intrinsic)))
+    if (cptr.eq(ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop), $prop_intrinsic)) || cptr.eq(ability, cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, $sizeof_prop), $prop_intrinsic)))
         see_monsters();
 }
 
@@ -1138,9 +1141,9 @@ export function is_innate(propidx) {
         return 6;
     if (propidx == NHC.FAST && Very_fast())
         return 0;
-    if ((innateness = innately(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, 24), $prop_intrinsic))) != 0)
+    if ((innateness = innately(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop), $prop_intrinsic))) != 0)
         return innateness;
-    if (propidx == NHC.JUMPING && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !cptr.ldI64o2(u, propidx, 24, $you_uprops))
+    if (propidx == NHC.JUMPING && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops))
         return 1;
     if ((propidx == NHC.BLINDED && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n)) || (propidx == NHC.BLND_RES && (HBlnd_resist() & 268435456n) != 0n))
         return 5;
@@ -1171,8 +1174,8 @@ export function from_what(propidx) {
             else if (innateness == 5)
                 void cptr.strcpy(cptr.decay(__static_from_what_buf), __s_from_your_creature_form);
             else if (propidx == NHC.FAST && Very_fast())
-                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ((HFast() & 16777215n) != 0n) ? __s_a_potion_or_spell : (((EFast() & 32n) != 0n && (cptr.ldI32o(uarmf.v, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), 120, $objclass_oc_name_known) & 1) | 0) ? ysimple_name(uarmf.v) : (EFast() ? __s_worn_equipment : cptr.ldPtro(c_common_strings, $c_common_strings_c_something))));
-            else if (wizard() && (obj = what_gives(cptr.add(cptr.add(u, $you_uprops), propidx, 24))) !== null)
+                void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ((HFast() & 16777215n) != 0n) ? __s_a_potion_or_spell : (((EFast() & 32n) != 0n && (cptr.ldI32o(uarmf.v, $obj_dknown) & 1) | 0 && (cptr.ldI32o2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) ? ysimple_name(uarmf.v) : (EFast() ? __s_worn_equipment : cptr.ldPtro(c_common_strings, $c_common_strings_c_something))));
+            else if (wizard() && (obj = what_gives(cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop))) !== null)
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), cptr.ld1so(obj, $obj_oartifact) ? bare_artifactname(obj) : ysimple_name(obj));
             else if (propidx == NHC.BLINDED && Blindfolded_only())
                 void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(ublindf.v));
@@ -1189,11 +1192,11 @@ export function from_what(propidx) {
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), bare_artifactname(ublindf.v));
                 break;
                 case NHC.INVIS:
-                if (cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_blocked) & 2n)
+                if (cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_blocked) & 2n)
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(uarmc.v));
                 break;
                 case NHC.CLAIRVOYANT:
-                if (wizard() && (cptr.ldI64o2(u, NHC.CLAIRVOYANT, 24, $you_uprops + $prop_blocked) & 4n))
+                if (wizard() && (cptr.ldI64o2(u, NHC.CLAIRVOYANT, $sizeof_prop, $you_uprops + $prop_blocked) & 4n))
                     void cptr.sprintf(cptr.decay(__static_from_what_buf), cptr.decay(__static_from_what_because_of), ysimple_name(uarmh.v));
                 break;
             }
@@ -1273,7 +1276,7 @@ export function newhp() {
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd) > 0)
             hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1090, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd)))) | 0;
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 0n) {
-            cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_value));
+            cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value));
             cptr.stI32o(u, $you_ualign + $align_record, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_initrecord));
         }
     } else {
@@ -1444,7 +1447,7 @@ export function uchangealign(newalign, reason) {
     cptr.stI32o(u, $you_ublessed, 0);
     cptr.st1(disp, 1);
     if (reason == NHC.A_CG_CONVERT) {
-        livelog_printf(512n, __s_permanently_converted_to_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, $Align_adj));
+        livelog_printf(512n, __s_permanently_converted_to_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, $sizeof_Align, $Align_adj));
         cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, schar(newalign));
         if (!uarmh.v || cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT)
             cptr.st1o(u, $you_ualign, cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase));
@@ -1457,7 +1460,7 @@ export function uchangealign(newalign, reason) {
             make_confused(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1346, __s_uchangealign), rn2(2)) : rn2(2)) + 3) | 0)), 0);
             if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || ((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1347, __s_uchangealign), rn2(50)) : rn2(50)) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
                 summon_furies((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 1);
-            livelog_printf(512n, __s_used_a_helm_to_turn_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, 32, $Align_adj));
+            livelog_printf(512n, __s_used_a_helm_to_turn_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, $sizeof_Align, $Align_adj));
         } else if (reason == NHC.A_CG_HELM_OFF) {
             Your(__s_mind_is_s, Hallucination() ? __s_much_of_a_muchness : __s_back_in_sync_with_your_body);
         }

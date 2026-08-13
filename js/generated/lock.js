@@ -73,6 +73,8 @@ const $Role_mnum = FLD.Role_mnum, $c_common_strings_c_Something = FLD.c_common_s
     $objclass_oc_wldam = FLD.objclass_oc_wldam, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $u_roleplay_deaf = FLD.u_roleplay_deaf, $xlock_s_box = FLD.xlock_s_box,
     $xlock_s_chance = FLD.xlock_s_chance, $xlock_s_magic_key = FLD.xlock_s_magic_key,
     $xlock_s_picktyp = FLD.xlock_s_picktyp, $xlock_s_usedtime = FLD.xlock_s_usedtime, $you_dx = FLD.you_dx,
@@ -251,7 +253,7 @@ export function picking_lock(x, y) {
 
 /** C ref: lock.c:30 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function picking_at(x, y) {
-    return schar((cptr.ldPtro(go, $instance_globals_o_occupation) === picklock && cptr.eq(cptr.ldPtro(gx, $instance_globals_x_xlock), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36)) ? 1 : 0));
+    return schar((cptr.ldPtro(go, $instance_globals_o_occupation) === picklock && cptr.eq(cptr.ldPtro(gx, $instance_globals_x_xlock), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm)) ? 1 : 0));
 }
 
 const __static_lock_action_actions = cptr.alloc(4 * 8);
@@ -285,7 +287,7 @@ function picklock() {
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
         }
     } else {
-        if (!cptr.eq(cptr.ldPtro(gx, $instance_globals_x_xlock), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, 756), (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0, 36))) {
+        if (!cptr.eq(cptr.ldPtro(gx, $instance_globals_x_xlock), cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, $sizeof_rm_x21), (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0, $sizeof_rm))) {
             return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
         }
         switch ((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) {
@@ -658,10 +660,10 @@ export function pick_lock(pick, rx, ry, container) {
             You_cant(__s_reach_over_the_edge_of_the_pit);
             return 0;
         }
-        door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), 756), cptr.ldI16o(cc, $nhcoord_y), 36);
+        door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), $sizeof_rm_x21), cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm);
         mtmp = (cptr.ldPtro3(svl, cptr.ldI16(cc), 168, cptr.ldI16o(cc, $nhcoord_y), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
         if (mtmp && canseemon(mtmp) && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT) {
-            if (picktyp == NHC.CREDIT_CARD && ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, 96)))) {
+            if (picktyp == NHC.CREDIT_CARD && ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, $sizeof_permonst)))) {
                 ;
                 verbalize(__s_no_checks_no_credit_no_problem);
             } else {
@@ -741,7 +743,7 @@ export function pick_lock(pick, rx, ry, container) {
 
 /** C ref: lock.c:660 @returns {CInt} */
 export function u_have_forceable_weapon() {
-    if (!uwep.v || ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)) ? (cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) < NHC.P_DAGGER || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) == NHC.P_FLAIL || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_subtyp) > NHC.P_LANCE ? 1 : 0) : cptr.ld1so(uwep.v, $obj_oclass) != NHC.ROCK_CLASS))
+    if (!uwep.v || ((cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)) ? (cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) < NHC.P_DAGGER || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) == NHC.P_FLAIL || cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) > NHC.P_LANCE ? 1 : 0) : cptr.ld1so(uwep.v, $obj_oclass) != NHC.ROCK_CLASS))
         return 0;
     return 1;
 }
@@ -792,7 +794,7 @@ export function doforce() {
             else
                 You(__s_start_bashing_it_with_s, yname(uwep.v));
             cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, otmp);
-            cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_chance, Math.imul(cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), 120, $objclass_oc_wldam), 2));
+            cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_chance, Math.imul(cptr.ld1so2(objects, cptr.ldI16o(uwep.v, $obj_otyp), $sizeof_objclass, $objclass_oc_wldam), 2));
             cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp, picktyp);
             cptr.st1o(gx, $instance_globals_x_xlock + $xlock_s_magic_key, 0);
             cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0);
@@ -850,7 +852,7 @@ export function doopen_indir(x, y) {
         return NHM.ECMD_TIME;
     if (HConfusion() || HStun())
         res = NHM.ECMD_TIME;
-    door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), 756), cptr.ldI16o(cc, $nhcoord_y), 36);
+    door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16(cc), $sizeof_rm_x21), cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm);
     portcullis = schar((is_drawbridge_wall(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)) >= 0));
     {
         let oldglyph = cptr.ldI32(door);
@@ -987,7 +989,7 @@ export function doclose() {
         return NHM.ECMD_TIME;
     if (HConfusion() || HStun())
         res = NHM.ECMD_TIME;
-    door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     portcullis = schar((is_drawbridge_wall(x, y) >= 0));
     if (Blind()) {
         let oldglyph = cptr.ldI32(door);
@@ -1079,7 +1081,7 @@ export function boxlock(obj, otmp) {
 
 /** C ref: lock.c:1103 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function doorlock(otmp, x, y) {
-    let door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     let res = 1;
     let loudness = 0;
     let msg = null;
@@ -1242,10 +1244,10 @@ function chest_shatter_msg(otmp) {
         return;
     }
     save_HBlinded = HBlinded(), save_BBlinded = BBlinded();
-    cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic, 1n), cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked, 0n);
+    cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n), cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked, 0n);
     thing = singular(otmp, xname);
-    cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic, save_HBlinded), cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked, save_BBlinded);
-    switch ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) {
+    cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, save_HBlinded), cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked, save_BBlinded);
+    switch ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) {
         case NHC.PAPER:
         disposition = __s_is_torn_to_shreds;
         break;

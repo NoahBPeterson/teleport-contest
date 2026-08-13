@@ -20,7 +20,8 @@ const $attack_adtyp = FLD.attack_adtyp, $attack_damd = FLD.attack_damd, $attack_
     $permonst_mlet = FLD.permonst_mlet, $permonst_mlevel = FLD.permonst_mlevel,
     $permonst_mmove = FLD.permonst_mmove, $permonst_mr = FLD.permonst_mr,
     $permonst_mresists = FLD.permonst_mresists, $permonst_msize = FLD.permonst_msize,
-    $permonst_msound = FLD.permonst_msound, $permonst_pmidx = FLD.permonst_pmidx;
+    $permonst_msound = FLD.permonst_msound, $permonst_pmidx = FLD.permonst_pmidx,
+    $sizeof_attack = FLD.sizeof_attack, $sizeof_permonst = FLD.sizeof_permonst;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_giant_ant = cptr.lit("giant ant");
@@ -434,7 +435,7 @@ const __s_apprentice = cptr.lit("apprentice");
 const __s_empty = cptr.lit("");
 
 /** C ref: monst.c:39 — struct permonst[384] */
-const mons_init = cptr.alloc(384 * 96);
+const mons_init = cptr.alloc(384 * $sizeof_permonst);
 cptr.stPtro(mons_init, 0, null);
 cptr.stPtro(mons_init, 8, null);
 cptr.stPtro(mons_init, 16, __s_giant_ant);
@@ -18101,7 +18102,7 @@ cptr.st1o(mons_init, 36768 + $permonst_difficulty, 0);
 cptr.st1o(mons_init, 36768 + $permonst_mcolor, 0);
 
 /** C ref: monst.c:69 — struct permonst[384] */
-export const mons = cptr.alloc(384 * 96);
+export const mons = cptr.alloc(384 * $sizeof_permonst);
 
 /** C ref: monst.c:72 */
 export function monst_globals_init() {
@@ -18110,7 +18111,7 @@ export function monst_globals_init() {
 }
 
 /** C ref: monst.c:78 — struct attack[6] */
-export const c_sa_yes = cptr.alloc(6 * 4);
+export const c_sa_yes = cptr.alloc(6 * $sizeof_attack);
 cptr.st1o(c_sa_yes, 0, NHM.AT_BITE);
 cptr.st1o(c_sa_yes, 0 + $attack_adtyp, NHM.AD_SSEX);
 cptr.st1o(c_sa_yes, 0 + $attack_damn, 0);
@@ -18137,7 +18138,7 @@ cptr.st1o(c_sa_yes, 20 + $attack_damn, 0);
 cptr.st1o(c_sa_yes, 20 + $attack_damd, 0);
 
 /** C ref: monst.c:79 — struct attack[6] */
-export const c_sa_no = cptr.alloc(6 * 4);
+export const c_sa_no = cptr.alloc(6 * $sizeof_attack);
 cptr.st1o(c_sa_no, 0, NHM.AT_CLAW);
 cptr.st1o(c_sa_no, 0 + $attack_adtyp, NHM.AD_PHYS);
 cptr.st1o(c_sa_no, 0 + $attack_damn, 1);

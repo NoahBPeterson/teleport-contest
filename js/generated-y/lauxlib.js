@@ -25,7 +25,7 @@ const $LoadF_buff = FLD.LoadF_buff, $LoadF_f = FLD.LoadF_f, $LoadS_size = FLD.Lo
     $lua_Debug_currentline = FLD.lua_Debug_currentline, $lua_Debug_istailcall = FLD.lua_Debug_istailcall,
     $lua_Debug_linedefined = FLD.lua_Debug_linedefined, $lua_Debug_name = FLD.lua_Debug_name,
     $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_short_src = FLD.lua_Debug_short_src,
-    $lua_Debug_what = FLD.lua_Debug_what;
+    $lua_Debug_what = FLD.lua_Debug_what, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_dot = cptr.lit(".");
@@ -465,7 +465,7 @@ function* boxgc(L) {
 }
 
 /** C ref: lauxlib.c:497 — luaL_Reg[3] */
-const boxmt = cptr.alloc(3 * 16);
+const boxmt = cptr.alloc(3 * $sizeof_luaL_Reg);
 cptr.stPtro(boxmt, 0, __s_gc);
 cptr.stPtro(boxmt, 0 + $luaL_Reg_func, boxgc);
 cptr.stPtro(boxmt, 16, __s_close);

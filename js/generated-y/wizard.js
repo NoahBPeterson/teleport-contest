@@ -72,6 +72,8 @@ const $context_info_made_amulet = FLD.context_info_made_amulet,
     $permonst_maligntyp = FLD.permonst_maligntyp, $permonst_mflags2 = FLD.permonst_mflags2,
     $permonst_mflags3 = FLD.permonst_mflags3, $permonst_mlet = FLD.permonst_mlet,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_mvitals = FLD.sizeof_mvitals,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
     $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
     $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
     $u_event_invoked = FLD.u_event_invoked, $u_event_udemigod = FLD.u_event_udemigod,
@@ -382,7 +384,7 @@ function* strategy(mtmp) {
         case 0:
         return 134217728n;
         case 1:
-        if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96)))
+        if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst)))
             return 134217728n;
         // @FallThrough
         ;
@@ -559,7 +561,7 @@ export function* aggravate() {
 /** C ref: wizard.c:517 */
 export function* clonewiz() {
     let mtmp2;
-    if ((mtmp2 = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT))) !== null) {
+    if ((mtmp2 = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT))) !== null) {
         cptr.stI32o(mtmp2, $monst_msleeping, cptr.st1o(mtmp2, $monst_mtame, schar(cptr.stI32o(mtmp2, $monst_mpeaceful, 0))));
         if (!(cptr.ldI32o(u, $you_uhave) & 1) && (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 524, __s_clonewiz), rn2(2)) : rn2(2))) {
             void (yield* add_to_minv(mtmp2, (yield* mksobj(NHC.FAKE_AMULET_OF_YENDOR, 1, 0))));
@@ -576,13 +578,13 @@ export function* clonewiz() {
 export function pick_nasty(difcap) {
     let alt;
     let res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 541, __s_pick_nasty), rn2(44)) : rn2(44)), 4);
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && !(65 <= (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, 96)), $permonst_mlet), 24)) && (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, 96)), $permonst_mlet), 24)) <= 90))
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && !(65 <= (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym)) && (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym)) <= 90))
         res = cptr.ldI32o(nasties, (rng_log_enabled() ? (rng_log_set_caller(__s_wizard_c, 551, __s_pick_nasty), rn2(44)) : rn2(44)), 4);
     alt = res;
-    if ((cptr.ld1uo2(svm, res, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo2(mons, res, 96, $permonst_difficulty) >= difcap) || (cptr.ldU16o2(mons, res, 96, $permonst_geno) & (In_hell(cptr.add(u, $you_uz)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0)
+    if ((cptr.ld1uo2(svm, res, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) != 0 || (difcap > 0 && cptr.ld1uo2(mons, res, $sizeof_permonst, $permonst_difficulty) >= difcap) || (cptr.ldU16o2(mons, res, $sizeof_permonst, $permonst_geno) & (In_hell(cptr.add(u, $you_uz)) ? NHM.G_NOHELL : NHM.G_HELL)) != 0)
         alt = big_to_little(res);
-    if (alt != res && (cptr.ld1uo2(svm, alt, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) == 0) {
-        let mnam = cptr.ldPtro3(mons, alt, 96, NHC.NEUTRAL, 8, 0);
+    if (alt != res && (cptr.ld1uo2(svm, alt, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) == 0) {
+        let mnam = cptr.ldPtro3(mons, alt, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
         let lastspace = cptr.strrchr(mnam, 32);
         if (cptr.strncmp(mnam, __s_baby, 5n) && (!lastspace || (strcmp(lastspace, __s_hatchling) && strcmp(lastspace, __s_pup) && strcmp(lastspace, __s_cub))))
             res = alt;
@@ -625,11 +627,11 @@ export function* nasty(summoner) {
                         if (!--trylimit)
                             break __lbl_nextj;
                         makeindex = pick_nasty(difcap);
-                        m_cls = cptr.ld1so2(mons, makeindex, 96, $permonst_mlet);
-                    } while ((difcap > 0 && cptr.ld1uo2(mons, makeindex, 96, $permonst_difficulty) >= difcap && attacktype(cptr.add(mons, makeindex, 96), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON));
-                    if (summoner && !(yield* enexto(bypos, cptr.ldI16o(summoner, $monst_mux), cptr.ldI16o(summoner, $monst_muy), cptr.add(mons, makeindex, 96))))
+                        m_cls = cptr.ld1so2(mons, makeindex, $sizeof_permonst, $permonst_mlet);
+                    } while ((difcap > 0 && cptr.ld1uo2(mons, makeindex, $sizeof_permonst, $permonst_difficulty) >= difcap && attacktype(cptr.add(mons, makeindex, $sizeof_permonst), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON));
+                    if (summoner && !(yield* enexto(bypos, cptr.ldI16o(summoner, $monst_mux), cptr.ldI16o(summoner, $monst_muy), cptr.add(mons, makeindex, $sizeof_permonst))))
                         continue;
-                    if ((mtmp = (yield* makemon(cptr.add(mons, makeindex, 96), cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), mmflags))) !== null) {
+                    if ((mtmp = (yield* makemon(cptr.add(mons, makeindex, $sizeof_permonst), cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), mmflags))) !== null) {
                         cptr.stI32o(mtmp, $monst_msleeping, cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0)));
                         set_malign(mtmp);
                     } else {
@@ -640,8 +642,8 @@ export function* nasty(summoner) {
                         }
                     }
                     if (mtmp) {
-                        if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCH_LICH, 96)) || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCHON, 96))) {
-                            tmp = min(cptr.ld1uo2(mons, NHC.PM_ARCHON, 96, $permonst_difficulty), cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, 96, $permonst_difficulty));
+                        if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCH_LICH, $sizeof_permonst)) || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ARCHON, $sizeof_permonst))) {
+                            tmp = min(cptr.ld1uo2(mons, NHC.PM_ARCHON, $sizeof_permonst, $permonst_difficulty), cptr.ld1uo2(mons, NHC.PM_ARCH_LICH, $sizeof_permonst, $permonst_difficulty));
                             if (!difcap || difcap > tmp)
                                 difcap = tmp;
                         }
@@ -667,7 +669,7 @@ export function* resurrect() {
     let verb;
     if (!cptr.ldI32o(svc, $context_info_no_of_wizards)) {
         verb = __s_kill;
-        mtmp = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT));
+        mtmp = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT));
         if (mtmp)
             cptr.stI32o(mtmp, $monst_mrevived, 1);
     } else {

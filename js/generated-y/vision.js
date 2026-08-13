@@ -53,10 +53,12 @@ const $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.
     $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_lit = FLD.rm_lit,
     $rm_roomno = FLD.rm_roomno, $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
     $sinfo_in_getlev = FLD.sinfo_in_getlev, $sinfo_panicking = FLD.sinfo_panicking,
-    $warntype_info_polyd = FLD.warntype_info_polyd, $warntype_info_species = FLD.warntype_info_species,
-    $you_nv_range = FLD.you_nv_range, $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops,
-    $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
+    $sizeof_mkroom = FLD.sizeof_mkroom, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $warntype_info_polyd = FLD.warntype_info_polyd,
+    $warntype_info_species = FLD.warntype_info_species, $you_nv_range = FLD.you_nv_range,
+    $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops, $you_uswallow = FLD.you_uswallow,
+    $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy,
+    $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_seethru = cptr.lit("seethru");
@@ -326,7 +328,7 @@ export function* vision_reset() {
     for (y = 0; y < NHM.ROWNO; y++) {
         dig_left = 0;
         block = 1;
-        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), 1, 756), y, 36);
+        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), 1, $sizeof_rm_x21), y, $sizeof_rm);
         for (x = 1; x < NHM.COLNO; x++, lev = cptr.add(lev, NHM.ROWNO, 36))
             if (block != (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || (yield* does_block(x, y, lev)) ? 1 : 0)) {
                 if (block) {
@@ -385,7 +387,7 @@ function* get_unused_cs(rows, rmin, rmax) {
 
 /** C ref: vision.c:314 — @param {CPtr<seenV *>} next @param {CPtr<coordxy>} rmin @param {CPtr<coordxy>} rmax */
 function* rogue_vision(next, rmin, rmax) {
-    let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
+    let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
     let start;
     let stop;
     let in_door;
@@ -396,19 +398,19 @@ function* rogue_vision(next, rmin, rmax) {
     let zx;
     let zy;
     if (rnum >= 0) {
-        for (zy = (cptr.ldI16o2(svr, rnum, 224, $mkroom_ly) - 1) | 0; zy <= ((cptr.ldI16o2(svr, rnum, 224, $mkroom_hy) + 1) | 0); zy++) {
-            cptr.stI16o(rmin, zy, i16((start = (cptr.ldI16o(svr, rnum, 224) - 1) | 0)), 2);
-            cptr.stI16o(rmax, zy, i16((stop = (cptr.ldI16o2(svr, rnum, 224, $mkroom_hx) + 1) | 0)), 2);
+        for (zy = (cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_ly) - 1) | 0; zy <= ((cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_hy) + 1) | 0); zy++) {
+            cptr.stI16o(rmin, zy, i16((start = (cptr.ldI16o(svr, rnum, $sizeof_mkroom) - 1) | 0)), 2);
+            cptr.stI16o(rmax, zy, i16((stop = (cptr.ldI16o2(svr, rnum, $sizeof_mkroom, $mkroom_hx) + 1) | 0)), 2);
             for (zx = start; zx <= stop; zx++) {
-                if (cptr.ld1so2(svr, rnum, 224, $mkroom_rlit)) {
+                if (cptr.ld1so2(svr, rnum, $sizeof_mkroom, $mkroom_rlit)) {
                     cptr.st1o(cptr.ldPtro(next, zy, 8), zx, 3);
-                    cptr.st1o3(svl, zx, 756, zy, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
+                    cptr.st1o3(svl, zx, $sizeof_rm_x21, zy, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
                 } else
                     cptr.st1o(cptr.ldPtro(next, zy, 8), zx, NHM.COULD_SEE);
             }
         }
     }
-    in_door = cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DOOR;
+    in_door = cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.DOOR;
     ylo = (((cptr.ldI16o(u, $you_uy) - 1) | 0) > 0 ? ((cptr.ldI16o(u, $you_uy) - 1) | 0) : 0);
     yhi = (((cptr.ldI16o(u, $you_uy) + 1) | 0) < 20 ? ((cptr.ldI16o(u, $you_uy) + 1) | 0) : 20);
     xlo = (((cptr.ldI16(u) - 1) | 0) > 1 ? ((cptr.ldI16(u) - 1) | 0) : 1);
@@ -512,8 +514,8 @@ export function* vision_recalc(control) {
                         for (col = start; col <= stop; col++) {
                             let old_row_val = schar(cptr.ld1uo(next_row, col));
                             cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
-                            oldseenv = cptr.ld1uo3(svl, col, 756, row, 36, $instance_globals_saved_l_level + $rm_seenv);
-                            cptr.st1o3(svl, col, 756, row, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
+                            oldseenv = cptr.ld1uo3(svl, col, $sizeof_rm_x21, row, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv);
+                            cptr.st1o3(svl, col, $sizeof_rm_x21, row, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
                             if (!(old_row_val & NHM.IN_SIGHT) || oldseenv != 255)
                                 (yield* newsym(i16(col), i16(row)));
                         }
@@ -522,7 +524,7 @@ export function* vision_recalc(control) {
                     }
                 } else {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
-                    cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_seenv, 255);
+                    cptr.st1o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
                     cptr.stI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), i16(min(cptr.ldI16(u), cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2))), 2);
                     cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(max(cptr.ldI16(u), cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2))), 2);
                 }
@@ -530,7 +532,7 @@ export function* vision_recalc(control) {
             if (has_night_vision && cptr.ldI32o(u, $you_xray_range) < cptr.ldI32o(u, $you_nv_range)) {
                 if (!cptr.ldI32o(u, $you_nv_range)) {
                     cptr.st1o(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u), cptr.ld1uo(cptr.ldPtro(next_array.v, cptr.ldI16o(u, $you_uy), 8), cptr.ldI16(u)) | NHM.IN_SIGHT);
-                    cptr.st1o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_seenv, 255);
+                    cptr.st1o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 255);
                     cptr.stI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), i16(min(cptr.ldI16(u), cptr.ldI16o(next_rmin.v, cptr.ldI16o(u, $you_uy), 2))), 2);
                     cptr.stI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), i16(max(cptr.ldI16(u), cptr.ldI16o(next_rmax.v, cptr.ldI16o(u, $you_uy), 2))), 2);
                 } else if (cptr.ldI32o(u, $you_nv_range) > 0) {
@@ -564,7 +566,7 @@ export function* vision_recalc(control) {
             old_row = cptr.ldPtro(temp_array, row, 8);
             start = min(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), cptr.ldI16o(next_rmin.v, row, 2));
             stop = max(cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), cptr.ldI16o(next_rmax.v, row, 2));
-            lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), start, 756), row, 36);
+            lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), start, $sizeof_rm_x21), row, $sizeof_rm);
             sv = cptr.add(cptr.decay(seenv_matrix[(dy + 1) | 0]), start < cptr.ldI16(u) ? 0 : (start > cptr.ldI16(u) ? 2 : 1), 1);
             for (col = start; col <= stop; lev = cptr.add(lev, NHM.ROWNO, 36), sv = cptr.add(sv, cptr.ldI16o(__static_vision_recalc_colbump, ++col, 2))) {
                 let __go_not_in_sight = false;
@@ -578,7 +580,7 @@ export function* vision_recalc(control) {
                         if ((((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ))) && !cptr.ld1so(cptr.decay(viz_clear[row]), col, 1)) {
                             dx = (cptr.ldI16(u) - col) | 0;
                             dx = ((dx) < 0 ? -1 : ((dx) ? 1 : 0));
-                            flev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (col + dx) | 0, 756), (row + dy) | 0, 36);
+                            flev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), (col + dx) | 0, $sizeof_rm_x21), (row + dy) | 0, $sizeof_rm);
                             if ((cptr.ldI32o(flev, $rm_lit) & 1) | 0 || cptr.ld1uo(cptr.ldPtro(next_array.v, (row + dy) | 0, 8), (col + dx) | 0) & NHM.TEMP_LIT) {
                                 cptr.st1o(next_row, col, cptr.ld1uo(next_row, col) | NHM.IN_SIGHT);
                                 oldseenv = cptr.ld1uo(lev, $rm_seenv);
@@ -624,7 +626,7 @@ export function* block_point(x, y) {
         cptr.stI32o(gs, $instance_globals_s_seethru, (wizard() && (yield* debugcore(__s_seethru, 0))) ? 1 : -1);
     }
     if (cptr.ldI32o(gs, $instance_globals_s_seethru) == 1) {
-        if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36))))
+        if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm))))
             return;
     }
     fill_point(y, x);
@@ -641,7 +643,7 @@ export function unblock_point(x, y) {
 
 /** C ref: vision.c:911 — @param {CInt} x @param {CInt} y */
 export function* recalc_block_point(x, y) {
-    if ((yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36))))
+    if ((yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm))))
         (yield* block_point(x, y));
     else
         unblock_point(x, y);

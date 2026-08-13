@@ -33,12 +33,14 @@ const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayD
     $instance_globals_s_symset = FLD.instance_globals_s_symset,
     $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
     $nomux_cell_attr = FLD.nomux_cell_attr, $nomux_cell_decgfx = FLD.nomux_cell_decgfx,
-    $nomux_cell_fg = FLD.nomux_cell_fg, $symsetentry_handling = FLD.symsetentry_handling,
-    $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE, $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO,
-    $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI, $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD,
-    $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE, $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI,
-    $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND, $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE,
-    $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US, $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack;
+    $nomux_cell_fg = FLD.nomux_cell_fg, $sizeof_nomux_cell = FLD.sizeof_nomux_cell,
+    $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_tc_lcl_data = FLD.sizeof_tc_lcl_data,
+    $symsetentry_handling = FLD.symsetentry_handling, $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE,
+    $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO, $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
+    $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD, $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE,
+    $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI, $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND,
+    $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE, $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US,
+    $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_term = cptr.lit("TERM");
@@ -113,7 +115,7 @@ const __s_emit256 = cptr.lit("emit256");
 const __s_38_5_dm = cptr.lit("\x1b[38;5;%dm");
 
 /** C ref: termcap.c:37 — struct tc_lcl_data */
-export let tc_lcl_data = cptr.alloc(64);
+export let tc_lcl_data = cptr.alloc($sizeof_tc_lcl_data);
 cptr.stPtr(tc_lcl_data, null);
 cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_ND, null);
 cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_CD, null);
@@ -361,7 +363,7 @@ function tty_decgraphics_termcap_fixup() {
         KS = cptr.decay(__static_tty_decgraphics_termcap_fixup_appMode);
     if (!KE)
         KE = cptr.decay(__static_tty_decgraphics_termcap_fixup_numMode);
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC)) {
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC)) {
         xputs(__s_esc_rparen_0);
         xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE));
     }
@@ -387,7 +389,7 @@ function tty_decgraphics_termcap_fixup() {
 export function term_start_screen() {
     xputs(TI);
     xputs(VS);
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), 48, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC))
+    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC))
         tty_decgraphics_termcap_fixup();
     decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
     utf8graphics_mode_callback.v = tty_utf8graphics_fixup;
@@ -528,10 +530,10 @@ export function nomux_clear_screen() {
     let c;
     for (r = 0; r < 24; r++)
         for (c = 0; c < 80; c++) {
-            cptr.st1o(cptr.decay(nomux_buf[r]), c, 32, 4);
-            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, $nomux_cell_fg, 7);
-            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, $nomux_cell_attr, 0);
-            cptr.st1o2(cptr.decay(nomux_buf[r]), c, 4, $nomux_cell_decgfx, 0);
+            cptr.st1o(cptr.decay(nomux_buf[r]), c, 32, $sizeof_nomux_cell);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, $sizeof_nomux_cell, $nomux_cell_fg, 7);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, $sizeof_nomux_cell, $nomux_cell_attr, 0);
+            cptr.st1o2(cptr.decay(nomux_buf[r]), c, $sizeof_nomux_cell, $nomux_cell_decgfx, 0);
         }
 }
 
@@ -541,10 +543,10 @@ export function nomux_clear_to_eol(row, col) {
     if (row < 0 || row >= 24)
         return;
     for (c = (col < 0 ? 0 : col); c < 80; c++) {
-        cptr.st1o(cptr.decay(nomux_buf[row]), c, 32, 4);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, $nomux_cell_fg, 7);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, $nomux_cell_attr, 0);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), c, 4, $nomux_cell_decgfx, 0);
+        cptr.st1o(cptr.decay(nomux_buf[row]), c, 32, $sizeof_nomux_cell);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, $sizeof_nomux_cell, $nomux_cell_fg, 7);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, $sizeof_nomux_cell, $nomux_cell_attr, 0);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), c, $sizeof_nomux_cell, $nomux_cell_decgfx, 0);
     }
 }
 
@@ -557,10 +559,10 @@ export function nomux_putch(ch) {
     row = cptr.ldI16o(ttyDisplay, $DisplayDesc_cury);
     col = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
     if (row >= 0 && row < 24 && col >= 0 && col < 80) {
-        cptr.st1o(cptr.decay(nomux_buf[row]), col, schar(ch), 4);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, $nomux_cell_fg, nomux_fg_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, $nomux_cell_attr, nomux_attr_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, 4, $nomux_cell_decgfx, nomux_decgfx_cur);
+        cptr.st1o(cptr.decay(nomux_buf[row]), col, schar(ch), $sizeof_nomux_cell);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell, $nomux_cell_fg, nomux_fg_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell, $nomux_cell_attr, nomux_attr_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell, $nomux_cell_decgfx, nomux_decgfx_cur);
     }
 }
 
@@ -620,11 +622,11 @@ export function* nomux_capture_screen() {
         cur_fg = 7;
         cur_attr = 0;
         end = 79;
-        while (end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, 4) == 0) && cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, $nomux_cell_attr) == 0 && (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, $nomux_cell_fg) == 7 || cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, 4, $nomux_cell_fg) == 0))
+        while (end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 0) && cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_attr) == 0 && (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_fg) == 7 || cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_fg) == 0))
             end--;
         let in_dec = 0;
         for (col = 0; col <= end; col++) {
-            let c = cptr.add(cptr.decay(nomux_buf[row]), col, 4);
+            let c = cptr.add(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell);
             let ch = schar((cptr.ld1s(c) ? cptr.ld1s(c) : 32));
             let fg = cptr.ld1uo(c, $nomux_cell_fg) ? cptr.ld1uo(c, $nomux_cell_fg) : 7;
             let at = cptr.ld1uo(c, $nomux_cell_attr);
@@ -707,10 +709,10 @@ function nomux_raw_putch(ch) {
     if (ch < 32)
         return;
     if (nomux_raw_row >= 0 && nomux_raw_row < 24 && nomux_raw_col >= 0 && nomux_raw_col < 80) {
-        cptr.st1o(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, schar(ch), 4);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, $nomux_cell_fg, nomux_fg_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, $nomux_cell_attr, nomux_attr_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, 4, $nomux_cell_decgfx, nomux_decgfx_cur);
+        cptr.st1o(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, schar(ch), $sizeof_nomux_cell);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, $sizeof_nomux_cell, $nomux_cell_fg, nomux_fg_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, $sizeof_nomux_cell, $nomux_cell_attr, nomux_attr_cur);
+        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, $sizeof_nomux_cell, $nomux_cell_decgfx, nomux_decgfx_cur);
     }
     nomux_raw_col++;
 }

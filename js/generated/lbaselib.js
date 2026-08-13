@@ -12,7 +12,7 @@ import { digit } from './hacklib.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $luaL_Reg_func = FLD.luaL_Reg_func;
+const $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tab = cptr.lit("\t");
@@ -541,7 +541,7 @@ function luaB_tostring(L) {
 }
 
 /** C ref: lbaselib.c:506 — luaL_Reg[26] */
-const base_funcs = cptr.alloc(26 * 16);
+const base_funcs = cptr.alloc(26 * $sizeof_luaL_Reg);
 cptr.stPtro(base_funcs, 0, __s_assert);
 cptr.stPtro(base_funcs, 0 + $luaL_Reg_func, luaB_assert);
 cptr.stPtro(base_funcs, 16, __s_collectgarbage);

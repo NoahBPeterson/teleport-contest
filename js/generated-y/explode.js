@@ -81,8 +81,10 @@ const $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his, $Role_mnum = F
     $scatter_chain_dx = FLD.scatter_chain_dx, $scatter_chain_dy = FLD.scatter_chain_dy,
     $scatter_chain_obj = FLD.scatter_chain_obj, $scatter_chain_ox = FLD.scatter_chain_ox,
     $scatter_chain_oy = FLD.scatter_chain_oy, $scatter_chain_range = FLD.scatter_chain_range,
-    $scatter_chain_stopped = FLD.scatter_chain_stopped, $trap_ttyp = FLD.trap_ttyp,
-    $u_roleplay_deaf = FLD.u_roleplay_deaf,
+    $scatter_chain_stopped = FLD.scatter_chain_stopped, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $trap_ttyp = FLD.trap_ttyp, $u_roleplay_deaf = FLD.u_roleplay_deaf,
     $window_procs_win_delay_output = FLD.window_procs_win_delay_output, $you_mh = FLD.you_mh,
     $you_uhp = FLD.you_uhp, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
     $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_urooms = FLD.you_urooms,
@@ -350,7 +352,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
         if (type < 0) {
             type = -type;
             exploding_wand_typ = i16(type);
-            if (((cptr.ldI32o2(objects, type, 120, $objclass_oc_dir) & 7) | 0) == NHM.RAY && type != NHC.WAN_DIGGING && type != NHC.WAN_SLEEP) {
+            if (((cptr.ldI32o2(objects, type, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) == NHM.RAY && type != NHC.WAN_DIGGING && type != NHC.WAN_SLEEP) {
                 type = (type - NHC.WAN_MAGIC_MISSILE) | 0;
                 if (type < 0 || type > 9) {
                     (yield* impossible(__s_explode_wand_has_bad_zap_type_d, type));
@@ -644,10 +646,10 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
                 } else if (olet == ((NHC.MAXOCLASSES + 3) | 0)) {
                     cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-                    nh_snprintf(__s_explode, 655, cptr.add(svk, $kinfo_name), 256n, __s_caught_sself_in_a_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_him)), str);
+                    nh_snprintf(__s_explode, 655, cptr.add(svk, $kinfo_name), 256n, __s_caught_sself_in_a_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)), str);
                 } else if (type >= 0 && olet != NHC.SCROLL_CLASS) {
                     cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-                    nh_snprintf(__s_explode, 660, cptr.add(svk, $kinfo_name), 256n, __s_caught_sself_in_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_him)), (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)), str);
+                    nh_snprintf(__s_explode, 660, cptr.add(svk, $kinfo_name), 256n, __s_caught_sself_in_s_own_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)), (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)), str);
                 } else {
                     cptr.stI32o(svk, $kinfo_format, (!(yield* strncmpi((str), (__s_tower_of_flame), -1)) || !(yield* strncmpi((str), (__s_fireball), -1))) ? NHM.KILLED_BY_AN : NHM.KILLED_BY);
                     void cptr.strcpy(cptr.add(svk, $kinfo_name), str);
@@ -745,7 +747,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             }
             (yield* newsym(sx, sy));
             used_up = 1;
-        } else if (((scflags & NHM.MAY_DESTROY) >>> 0) != 0 && (!(rng_log_enabled() ? (rng_log_set_caller(__s_explode_c, 809, __s_scatter), rn2(10)) : rn2(10)) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
+        } else if (((scflags & NHM.MAY_DESTROY) >>> 0) != 0 && (!(rng_log_enabled() ? (rng_log_set_caller(__s_explode_c, 809, __s_scatter), rn2(10)) : rn2(10)) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
             if ((yield* breaks(otmp, sx, sy)))
                 used_up = 1;
         }
@@ -779,7 +781,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
                 cptr.stI16o(gb, $instance_globals_b_bhitpos, i16(((cptr.ldI16o(stmp, $scatter_chain_ox) + cptr.ld1so(stmp, $scatter_chain_dx)) | 0)));
                 cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, i16(((cptr.ldI16o(stmp, $scatter_chain_oy) + cptr.ld1so(stmp, $scatter_chain_dy)) | 0)));
                 if (isok(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)))
-                    typ = uchar(cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), 756, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_typ));
+                    typ = uchar(cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ));
                 else
                     typ = NHC.STONE;
                 if (!isok(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y))) {
@@ -823,7 +825,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
                 }
                 cptr.stI16o(stmp, $scatter_chain_ox, cptr.ldI16o(gb, $instance_globals_b_bhitpos));
                 cptr.stI16o(stmp, $scatter_chain_oy, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
-                if (((cptr.ld1so3(svl, cptr.ldI16o(stmp, $scatter_chain_ox), 756, cptr.ldI16o(stmp, $scatter_chain_oy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK))
+                if (((cptr.ld1so3(svl, cptr.ldI16o(stmp, $scatter_chain_ox), $sizeof_rm_x21, cptr.ldI16o(stmp, $scatter_chain_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK))
                     cptr.st1o(stmp, $scatter_chain_stopped, 1);
                 cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
             }

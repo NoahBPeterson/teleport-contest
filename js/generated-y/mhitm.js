@@ -92,10 +92,13 @@ const $Gender_his = FLD.Gender_his, $attack_adtyp = FLD.attack_adtyp, $attack_da
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $permonst_mlevel = FLD.permonst_mlevel, $permonst_msize = FLD.permonst_msize,
     $permonst_pmidx = FLD.permonst_pmidx, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck,
-    $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy;
+    $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_attack = FLD.sizeof_attack, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ulycn = FLD.you_ulycn,
+    $you_umonnum = FLD.you_umonnum, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+    $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+    $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_s = cptr.lit("%s%s.");
@@ -330,7 +333,7 @@ export function* mdisplacem(magr, mdef, quietly) {
         return NHM.M_ATTK_MISS;
     if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 199, __s_mdisplacem), rn2(7)) : rn2(7)))
         return NHM.M_ATTK_MISS;
-    if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, 96)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
+    if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, $sizeof_permonst)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
         return NHM.M_ATTK_MISS;
     if ((cptr.ldI32o(mdef, $monst_mundetected) & 1))
         cptr.stI32o(mdef, $monst_mundetected, 0);
@@ -348,7 +351,7 @@ export function* mdisplacem(magr, mdef, quietly) {
             }
             if (!quietly && canspotmon(magr)) {
                 if (cptr.ld1so(gv, $instance_globals_v_vis)) {
-                    (yield* pline(__s_s_tries_to_move_s_out_of_s_way, (yield* Monnam(magr)), (yield* mon_nam(mdef)), is_rider(pa) ? __s_the : (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, $Gender_his))));
+                    (yield* pline(__s_s_tries_to_move_s_out_of_s_way, (yield* Monnam(magr)), (yield* mon_nam(mdef)), is_rider(pa) ? __s_the : (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his))));
                 }
                 (yield* pline_mon(magr, __s_s_turns_to_stone, (yield* Monnam(magr))));
             }
@@ -372,7 +375,7 @@ export function* mdisplacem(magr, mdef, quietly) {
     (yield* update_monster_region(magr));
     (yield* update_monster_region(mdef));
     if (cptr.ld1so(gv, $instance_globals_v_vis) && !quietly)
-        (yield* pline(__s_s_moves_s_out_of_s_way, (yield* Monnam(magr)), (yield* mon_nam(mdef)), is_rider(pa) ? __s_the : (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, $Gender_his))));
+        (yield* pline(__s_s_moves_s_out_of_s_way, (yield* Monnam(magr)), (yield* mon_nam(mdef)), is_rider(pa) ? __s_the : (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his))));
     (yield* newsym(i16(fx), i16(fy)));
     (yield* newsym(i16(tx), i16(ty)));
     (yield* flush_screen(0));
@@ -399,7 +402,7 @@ export function* mattackm(magr, mdef) {
         return NHM.M_ATTK_MISS;
     pa = cptr.ldPtro(magr, $monst_data);
     pd = cptr.ldPtro(mdef, $monst_data);
-    if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, 96)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
+    if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, $sizeof_permonst)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
         return NHM.M_ATTK_MISS;
     tmp = (find_mac(mdef) + cptr.ld1uo(magr, $monst_m_lev)) | 0;
     if ((cptr.ldI32o(mdef, $monst_mconf) & 1) | 0 || helpless(mdef)) {
@@ -491,7 +494,7 @@ export function* mattackm(magr, mdef) {
                     break;
                 }
                 cptr.stI32o(res, i, (yield* hitmm(magr, mdef, mattk, mwep, dieroll)), 4);
-                if ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_BLACK_PUDDING, 96)) || cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_BROWN_PUDDING, 96))) && (mwep && (((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON || ((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.METAL)) && cptr.ldI32o(mdef, $monst_mhp) > 1 && !(cptr.ldI32o(mdef, $monst_mcan) & 1)) {
+                if ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_BLACK_PUDDING, $sizeof_permonst)) || cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_BROWN_PUDDING, $sizeof_permonst))) && (mwep && (((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.IRON || ((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.METAL)) && cptr.ldI32o(mdef, $monst_mhp) > 1 && !(cptr.ldI32o(mdef, $monst_mcan) & 1)) {
                     let mclone;
                     if ((mclone = (yield* clone_mon(mdef, 0, 0))) !== null) {
                         if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef))
@@ -528,7 +531,7 @@ export function* mattackm(magr, mdef) {
                 strike = 1;
             break;
             case NHM.AT_ENGL:
-            if (cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_SHADE, 96))) {
+            if (cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst))) {
                 if (cptr.ld1so(gv, $instance_globals_v_vis))
                     (yield* pline(__s_s_attempt_to_engulf_s_is_futile, (yield* s_suffix((yield* Monnam(magr)))), (yield* mon_nam(mdef))));
                 strike = 0;
@@ -613,7 +616,7 @@ export function* failed_grab(magr, mdef, mattk) {
 function* hitmm(magr, mdef, mattk, mwep, dieroll) {
     let compat;
     let weaponhit = schar((cptr.ld1u(mattk) == NHM.AT_WEAP || (cptr.ld1u(mattk) == NHM.AT_CLAW && mwep) ? 1 : 0));
-    let silverhit = schar((weaponhit && mwep && ((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.SILVER ? 1 : 0));
+    let silverhit = schar((weaponhit && mwep && ((cptr.ldI32o2(objects, cptr.ldI16o(mwep, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER ? 1 : 0));
     (yield* pre_mm_attack(magr, mdef));
     compat = !(cptr.ldI32o(magr, $monst_mcan) & 1) ? could_seduce(magr, mdef, mattk) : 0;
     if (!compat && (yield* shade_miss(magr, mdef, mwep, 0, cptr.ld1so(gv, $instance_globals_v_vis))))
@@ -681,7 +684,7 @@ function* hitmm(magr, mdef, mattk, mwep, dieroll) {
 /** C ref: mhitm.c:736 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* gazemm(magr, mdef, mattk) {
     let buf = new Uint8Array(256);
-    let archon = schar((cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_ARCHON, 96)) && cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_BLND ? 1 : 0));
+    let archon = schar((cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_ARCHON, $sizeof_permonst)) && cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_BLND ? 1 : 0));
     let altmesg = schar((archon && !(cptr.ldI32o(magr, $monst_mcansee) & 1) ? 1 : 0));
     if (cptr.ld1so(cptr.ldPtro(mdef, $monst_data), $permonst_mlet) == NHC.S_MIMIC && (cptr.ld1uo((mdef), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING)
         (yield* seemimic(mdef));
@@ -695,7 +698,7 @@ function* gazemm(magr, mdef, mattk) {
             (yield* pline(__s_but_nothing_happens));
         return NHM.M_ATTK_MISS;
     }
-    if (cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, 96)) && (yield* mon_reflects(mdef, null))) {
+    if (cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) && (yield* mon_reflects(mdef, null))) {
         if (canseemon(mdef))
             void (yield* mon_reflects(mdef, __s_the_gaze_is_reflected_away_by_s_s));
         if ((cptr.ldI32o(mdef, $monst_mcansee) & 1)) {
@@ -706,7 +709,7 @@ function* gazemm(magr, mdef, mattk) {
             }
             if ((cptr.ldI32o(mdef, $monst_minvis) & 1) | 0 && !((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) {
                 if (canseemon(magr)) {
-                    (yield* pline(__s_s_doesn_t_seem_to_notice_that_s_gaze, (yield* Monnam(magr)), (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, $Gender_his))));
+                    (yield* pline(__s_s_doesn_t_seem_to_notice_that_s_gaze, (yield* Monnam(magr)), (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his))));
                 }
                 return NHM.M_ATTK_MISS;
             }
@@ -740,12 +743,12 @@ export function engulf_target(magr, mdef) {
         return 0;
     dx = (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI16(u) : cptr.ldI16o(mdef, $monst_mx);
     dy = (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mdef, $monst_my);
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dx, 756), dy, 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dx, $sizeof_rm_x21), dy, $sizeof_rm);
     if (!(udef ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || closed_door(i16(dx), i16(dy)) || IS_TREE(cptr.ld1so(lev, $rm_typ)) || (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS && !is_whirly(cptr.ldPtro(magr, $monst_data)))))
         return 0;
     ax = (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI16(u) : cptr.ldI16o(magr, $monst_mx);
     ay = (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(magr, $monst_my);
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), ax, 756), ay, 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), ax, $sizeof_rm_x21), ay, $sizeof_rm);
     if (!(uatk ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 8n) != 0n)) && (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) || closed_door(i16(ax), i16(ay)) || IS_TREE(cptr.ld1so(lev, $rm_typ)) || (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS && !is_whirly(cptr.ldPtro(mdef, $monst_data)))))
         return 0;
     return 1;
@@ -768,7 +771,7 @@ function* gulpmm(magr, mdef, mattk) {
         for (obj = cptr.ldPtro(mdef, $monst_minvent); obj; obj = cptr.ldPtr(obj))
             void (yield* snuff_lit(obj));
     }
-    if (is_vampshifter(mdef) && (yield* newcham(mdef, cptr.add(mons, cptr.ldI16o(mdef, $monst_cham), 96), NHM.NO_NC_FLAGS))) {
+    if (is_vampshifter(mdef) && (yield* newcham(mdef, cptr.add(mons, cptr.ldI16o(mdef, $monst_cham), $sizeof_permonst), NHM.NO_NC_FLAGS))) {
         if (cptr.ld1so(gv, $instance_globals_v_vis)) {
             (yield* pline(__s_s_expels_s, (yield* Monnam(magr)), canspotmon(mdef) ? __s_it : cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
             if (canspotmon(mdef)) {
@@ -861,7 +864,7 @@ function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
     cptr.stI32o(mhm, $mhitm_data_specialdmg, 0);
     cptr.stI32o(mhm, $mhitm_data_dieroll, dieroll);
     cptr.st1o(mhm, $mhitm_data_done, 0);
-    if ((touch_petrifies(pd) || (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST && cptr.eq(pd, cptr.add(mons, NHC.PM_MEDUSA, 96)))) && !(yield* Resists_Elem(magr, NHC.STONE_RES))) {
+    if ((touch_petrifies(pd) || (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST && cptr.eq(pd, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)))) && !(yield* Resists_Elem(magr, NHC.STONE_RES))) {
         let protector = attk_protection(cptr.ld1u(mattk));
         let wornitems = cptr.ldI64o(magr, $monst_misc_worn_check);
         if (mwep)
@@ -909,12 +912,12 @@ function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
         if (cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST) {
             if (ismnum(cptr.ldI16o(mdef, $monst_cham))) {
                 void (yield* newcham(magr, null, NHM.NC_SHOW_MSG));
-            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, 96)) && !slimeproof(pa)) {
-                void (yield* newcham(magr, cptr.add(mons, NHC.PM_GREEN_SLIME, 96), NHM.NC_SHOW_MSG));
-            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_WRAITH, 96))) {
+            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst)) && !slimeproof(pa)) {
+                void (yield* newcham(magr, cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst), NHM.NC_SHOW_MSG));
+            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_WRAITH, $sizeof_permonst))) {
                 void (yield* grow_up(magr, null));
                 return (NHM.M_ATTK_DEF_DIED | (!(cptr.ldI32o((magr), $monst_mhp) < 1) ? 0 : NHM.M_ATTK_AGR_DIED));
-            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_NURSE, 96))) {
+            } else if (cptr.eq(pd, cptr.add(mons, NHC.PM_NURSE, $sizeof_permonst))) {
                 (yield* healmon(magr, cptr.ldI32o(magr, $monst_mhpmax), 0));
             }
             (yield* mon_givit(magr, pd));
@@ -1041,7 +1044,7 @@ export function* rustm(mdef, obj) {
         dmgtyp = NHM.ERODE_CORRODE;
     } else if (dmgtype(cptr.ldPtro(mdef, $monst_data), NHM.AD_RUST)) {
         dmgtyp = NHM.ERODE_RUST;
-    } else if (dmgtype(cptr.ldPtro(mdef, $monst_data), NHM.AD_FIRE) && !cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_STEAM_VORTEX, 96))) {
+    } else if (dmgtype(cptr.ldPtro(mdef, $monst_data), NHM.AD_FIRE) && !cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_STEAM_VORTEX, $sizeof_permonst))) {
         dmgtyp = NHM.ERODE_BURN;
         chance = 6;
     }
@@ -1053,7 +1056,7 @@ export function* rustm(mdef, obj) {
 function* mswingsm(magr, mdef, otemp) {
     if (cptr.ld1so(flags, $flag_verbose) && !Blind() && mon_visible(magr)) {
         let bash = schar((is_pole(otemp) && !is_art(otemp, NHC.ART_SNICKERSNEE) && (dist2(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) <= 2) ? 1 : 0));
-        (yield* pline(__s_s_s_s_s_s_at_s, (yield* Monnam(magr)), mswings_verb(otemp, bash), (cptr.ldI64o(otemp, $obj_quan) > 1n) ? __s_one_of : __s_empty, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), 48, $Gender_his)), (yield* xname(otemp)), (yield* mon_nam(mdef))));
+        (yield* pline(__s_s_s_s_s_s_at_s, (yield* Monnam(magr)), mswings_verb(otemp, bash), (cptr.ldI64o(otemp, $obj_quan) > 1n) ? __s_one_of : __s_empty, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), (yield* xname(otemp)), (yield* mon_nam(mdef))));
     }
 }
 
@@ -1069,16 +1072,16 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
         for (i = 0; ; i++) {
             if (i >= NHM.NATTK)
                 return (mdead | mhit);
-            if (cptr.ld1uo2(mddat, i, 4, $permonst_mattk) == NHM.AT_NONE)
+            if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk) == NHM.AT_NONE)
                 break;
         }
-        if (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damn))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1324, __s_passivemm), d((cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damd)))) : d((cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damd))));
-        else if (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damd))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1326, __s_passivemm), d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_damd))));
+        if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn))
+            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1324, __s_passivemm), d((cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)))) : d((cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))));
+        else if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))
+            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1326, __s_passivemm), d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))));
         else
             tmp = 0;
-        switch (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_adtyp)) {
+        switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
             case NHM.AD_ACID:
             if (mhitb && !(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1333, __s_passivemm), rn2(2)) : rn2(2))) {
                 void cptr.strcpy(cptr.decay(buf), (yield* Monnam(magr)));
@@ -1107,11 +1110,11 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
         if (mdead || (cptr.ldI32o(mdef, $monst_mcan) & 1) | 0)
             return (mdead | mhit);
         if ((rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1363, __s_passivemm), rn2(3)) : rn2(3)))
-            switch (cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_adtyp)) {
+            switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                 case NHM.AD_PLYS:
                 if (tmp > 127)
                     tmp = 127;
-                if (cptr.eq(mddat, cptr.add(mons, NHC.PM_FLOATING_EYE, 96))) {
+                if (cptr.eq(mddat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
                     if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1369, __s_passivemm), rn2(4)) : rn2(4)))
                         tmp = 127;
                     if ((cptr.ldI32o(magr, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((madat), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 && (((cptr.ldU64o((madat), $permonst_mflags1) & 16777216n) != 0n) || !(cptr.ldI32o(mdef, $monst_minvis) & 1))) {
@@ -1189,7 +1192,7 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
             tmp = 0;
     }
     if ((cptr.stI32o(magr, $monst_mhp, (cptr.ldI32o(magr, $monst_mhp) - tmp) | 0)) <= 0) {
-        (yield* monkilled(magr, __s_empty, cptr.ld1uo2(mddat, i, 4, $permonst_mattk + $attack_adtyp)));
+        (yield* monkilled(magr, __s_empty, cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)));
         return (mdead | mhit | NHM.M_ATTK_AGR_DIED);
     }
     return (mdead | mhit);

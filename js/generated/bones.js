@@ -106,7 +106,11 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $permonst_geno = FLD.permonst_geno, $permonst_mflags2 = FLD.permonst_mflags2,
     $permonst_mlet = FLD.permonst_mlet, $permonst_msound = FLD.permonst_msound, $rm_roomno = FLD.rm_roomno,
     $rm_seenv = FLD.rm_seenv, $rm_waslit = FLD.rm_waslit, $s_level_boneid = FLD.s_level_boneid,
-    $sinfo_reading_bonesfile = FLD.sinfo_reading_bonesfile, $trap_madeby_u = FLD.trap_madeby_u,
+    $sinfo_reading_bonesfile = FLD.sinfo_reading_bonesfile, $sizeof_Align = FLD.sizeof_Align,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Race = FLD.sizeof_Race, $sizeof_Role = FLD.sizeof_Role,
+    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_mkroom = FLD.sizeof_mkroom,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_madeby_u = FLD.trap_madeby_u,
     $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $u_event_udemigod = FLD.u_event_udemigod,
     $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
     $u_roleplay_numbones = FLD.u_roleplay_numbones, $window_procs_wp_id = FLD.window_procs_wp_id,
@@ -147,7 +151,7 @@ function no_bones_level(lev) {
     let sptr;
     if (ledger_no(cptr.add(gs, $instance_globals_s_save_dlevel)))
         assign_level(lev, cptr.add(gs, $instance_globals_s_save_dlevel));
-    return schar((((sptr = Is_special(lev)) !== null && !cptr.ld1so(sptr, $s_level_boneid)) || !cptr.ld1so2(svd, cptr.ldI16(lev), 112, $dungeon_boneid) || Is_botlevel(lev) || (Is_branchlev(lev) && cptr.ldI16o(lev, $d_level_dlevel) > 1) || (In_hell(lev) && cptr.ldI16o(lev, $d_level_dlevel) == ((dunlevs_in_dungeon(lev) - 1) | 0)) ? 1 : 0));
+    return schar((((sptr = Is_special(lev)) !== null && !cptr.ld1so(sptr, $s_level_boneid)) || !cptr.ld1so2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_boneid) || Is_botlevel(lev) || (Is_branchlev(lev) && cptr.ldI16o(lev, $d_level_dlevel) > 1) || (In_hell(lev) && cptr.ldI16o(lev, $d_level_dlevel) == ((dunlevs_in_dungeon(lev) - 1) | 0)) ? 1 : 0));
 }
 
 /** C ref: bones.c:42 — @param {CInt} id */
@@ -189,10 +193,10 @@ function resetobjs(ochain, restore) {
                 let oy = cptr.box(0);
                 for (top = otmp; cptr.ld1so(top, $obj_where) == NHM.OBJ_CONTAINED; top = cptr.ldPtro(top, $obj_v))
                     continue;
-                cptr.stI32o(otmp, $obj_no_charge, (cptr.ld1so(top, $obj_where) == NHM.OBJ_FLOOR && get_obj_location(top, ox, oy, 0) && inside_shop(ox.v, oy.v) && cptr.ld1s((p = in_rooms(ox.v, oy.v, NHC.SHOPBASE))) && tended_shop(cptr.add(svr, (cptr.ld1s(p) - NHM.ROOMOFFSET) | 0, 224)) ? 1 : 0) >>> 0);
+                cptr.stI32o(otmp, $obj_no_charge, (cptr.ld1so(top, $obj_where) == NHM.OBJ_FLOOR && get_obj_location(top, ox, oy, 0) && inside_shop(ox.v, oy.v) && cptr.ld1s((p = in_rooms(ox.v, oy.v, NHC.SHOPBASE))) && tended_shop(cptr.add(svr, (cptr.ld1s(p) - NHM.ROOMOFFSET) | 0, $sizeof_mkroom)) ? 1 : 0) >>> 0);
             }
         } else {
-            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_uses_known) & 1))
+            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_uses_known) & 1))
                 cptr.stI32o(otmp, $obj_known, 0);
             cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, 0));
             cptr.stI32o(otmp, $obj_rknown, 0);
@@ -213,7 +217,7 @@ function resetobjs(ochain, restore) {
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG) {
                 cptr.st1o(otmp, $obj_spe, 0);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN) {
-                if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && ((cptr.ldU16o((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)), $permonst_geno) & NHM.G_UNIQ) != 0))
+                if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && ((cptr.ldU16o((cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)), $permonst_geno) & NHM.G_UNIQ) != 0))
                     cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);
             } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
                 let mnum = cptr.box(cptr.ldI32o(otmp, $obj_corpsenm));
@@ -328,22 +332,22 @@ function fixuporacle(oracle) {
     if (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology)))))
         return 0;
     cptr.stI32o(oracle, $monst_mpeaceful, 1);
-    o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), 756, cptr.ldI16o(oracle, $monst_my), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
-    if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, 224, $mkroom_rtype) == NHC.DELPHI)
+    o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(oracle, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
+    if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.DELPHI)
         return 1;
     for (ridx = 0; ridx < Number(BigInt.asIntN(32, (18368n / 224n))); ++ridx)
-        if (cptr.ld1so2(svr, ridx, 224, $mkroom_orig_rtype) == NHC.DELPHI)
+        if (cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_orig_rtype) == NHC.DELPHI)
             break;
     if (o_ridx != ridx && ridx < Number(BigInt.asIntN(32, (18368n / 224n)))) {
-        cptr.stI16(cc, i16(((((cptr.ldI16o(svr, ridx, 224) + cptr.ldI16o2(svr, ridx, 224, $mkroom_hx)) | 0) / 2) | 0)));
-        cptr.stI16o(cc, $nhcoord_y, i16(((((cptr.ldI16o2(svr, ridx, 224, $mkroom_ly) + cptr.ldI16o2(svr, ridx, 224, $mkroom_hy)) | 0) / 2) | 0)));
+        cptr.stI16(cc, i16(((((cptr.ldI16o(svr, ridx, $sizeof_mkroom) + cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hx)) | 0) / 2) | 0)));
+        cptr.stI16o(cc, $nhcoord_y, i16(((((cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_ly) + cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hy)) | 0) / 2) | 0)));
         if (enexto(cc, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.ldPtro(oracle, $monst_data))) {
             rloc_to(oracle, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-            o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), 756, cptr.ldI16o(oracle, $monst_my), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
+            o_ridx = (((cptr.ldI32o3(svl, cptr.ldI16o(oracle, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(oracle, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
         }
     }
     if (ridx == o_ridx)
-        cptr.st1o2(svr, ridx, 224, $mkroom_rtype, NHC.DELPHI);
+        cptr.st1o2(svr, ridx, $sizeof_mkroom, $mkroom_rtype, NHC.DELPHI);
     return 1;
 }
 
@@ -374,7 +378,7 @@ export function can_make_bones() {
 /** C ref: bones.c:390 — @param {CPtr<struct monst>} mtmp */
 function remove_mon_from_bones(mtmp) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
-    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, 96)) || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER || is_Vlad(mtmp) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ORACLE, 96)) && !fixuporacle(mtmp)))
+    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, $sizeof_permonst)) || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER || is_Vlad(mtmp) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ORACLE, $sizeof_permonst)) && !fixuporacle(mtmp)))
         mongone(mtmp);
 }
 
@@ -420,7 +424,7 @@ export function savebones(how, when, corpse) {
     set_ghostly_objlist(cptr.ldPtro(gi, $instance_globals_i_invent));
     if (ismnum(cptr.ldI32o(u, $you_ugrave_arise))) {
         cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
-        mtmp = makemon(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT);
+        mtmp = makemon(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT);
         cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
         if (!mtmp) {
             drop_upon_death(null, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -436,7 +440,7 @@ export function savebones(how, when, corpse) {
         m_dowear(mtmp, 1);
     } else if (cptr.ldI32o(u, $you_ugrave_arise) == NHC.LEAVESTATUE) {
         let otmp;
-        otmp = mk_named_object(NHC.STATUE, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp);
+        otmp = mk_named_object(NHC.STATUE, cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp);
         drop_upon_death(null, otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (!otmp)
             return;
@@ -444,7 +448,7 @@ export function savebones(how, when, corpse) {
     } else {
         drop_upon_death(null, null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
-        mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NONAME);
+        mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NONAME);
         cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
         if (!mtmp)
             return;
@@ -462,13 +466,13 @@ export function savebones(how, when, corpse) {
             newebones(mtmp);
         if (has_ebones(mtmp)) {
             for (i = 0; i <= NHM.NUM_ROLES; ++i) {
-                if (!strcmp(cptr.ldPtro(gu, $instance_globals_u_urole), cptr.ldPtro(roles, i, 312))) {
+                if (!strcmp(cptr.ldPtro(gu, $instance_globals_u_urole), cptr.ldPtro(roles, i, $sizeof_Role))) {
                     cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_role, uchar(i));
                     break;
                 }
             }
             for (i = 0; i <= NHM.NUM_RACES; ++i) {
-                if (!strcmp(cptr.ldPtro(gu, $instance_globals_u_urace), cptr.ldPtro(races, i, 112))) {
+                if (!strcmp(cptr.ldPtro(gu, $instance_globals_u_urace), cptr.ldPtro(races, i, $sizeof_Race))) {
                     cptr.st1o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), $ebones_race, uchar(i));
                     break;
                 }
@@ -502,14 +506,14 @@ export function savebones(how, when, corpse) {
     cptr.stI16(u, cptr.stI16o(u, $you_uy, 0));
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
-            cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv, 0);
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_waslit, 0);
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level, NHC.GLYPH_UNEXPLORED_OFF);
+            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv, 0);
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit, 0);
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level, NHC.GLYPH_UNEXPLORED_OFF);
             cptr.st1o3(svl, x, 21, y, 1, 0, 0);
         }
     newbones = alloc(184);
     void __builtin___memset_chk(newbones, 32, 184n, __builtin_object_size(newbones, 0));
-    void cptr.sprintf(cptr.add(newbones, $cemetery_who), __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), 48, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, 32, $Align_filecode));
+    void cptr.sprintf(cptr.add(newbones, $cemetery_who), __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, $sizeof_Align, $Align_filecode));
     formatkiller(cptr.add(newbones, $cemetery_how), 101, how, 1);
     void cptr.strcpy(cptr.add(newbones, $cemetery_when), yyyymmddhhmmss(when));
     cptr.stI16o(newbones, $cemetery_frpx, cptr.ldI16o(u, $you_ux0)), cptr.stI16o(newbones, $cemetery_frpy, cptr.ldI16o(u, $you_uy0));

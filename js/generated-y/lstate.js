@@ -64,8 +64,8 @@ const $CallInfo_callstatus = FLD.CallInfo_callstatus, $CallInfo_next = FLD.CallI
     $lua_State_stack = FLD.lua_State_stack, $lua_State_stack_last = FLD.lua_State_stack_last,
     $lua_State_status = FLD.lua_State_status, $lua_State_tbclist = FLD.lua_State_tbclist,
     $lua_State_top = FLD.lua_State_top, $lua_State_tt = FLD.lua_State_tt,
-    $lua_State_twups = FLD.lua_State_twups, $stringtable_nuse = FLD.stringtable_nuse,
-    $stringtable_size = FLD.stringtable_size;
+    $lua_State_twups = FLD.lua_State_twups, $sizeof_TValue = FLD.sizeof_TValue,
+    $stringtable_nuse = FLD.stringtable_nuse, $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_c_stack_overflow = cptr.lit("C stack overflow");
@@ -232,7 +232,7 @@ function* init_registry(L, g) {
     ;
     (yield* luaH_resize(L, registry, 2, 0));
     {
-        let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 0, 16));
+        let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 0, $sizeof_TValue));
         let x_ = (L);
         cptr.stPtr(((io)), ((((x_)))));
         (cptr.st1o((io), $TValue_tt_, 72));
@@ -240,7 +240,7 @@ function* init_registry(L, g) {
     }
     ;
     {
-        let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 1, 16));
+        let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 1, $sizeof_TValue));
         let x_ = ((yield* luaH_new(L)));
         cptr.stPtr(((io)), ((((x_)))));
         (cptr.st1o((io), $TValue_tt_, 69));

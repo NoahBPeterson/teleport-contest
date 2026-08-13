@@ -134,7 +134,11 @@ const $Role_filecode = FLD.Role_filecode, $branch_end1 = FLD.branch_end1,
     $rm_edge = FLD.rm_edge, $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal,
     $rm_lit = FLD.rm_lit, $rm_roomno = FLD.rm_roomno, $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ,
     $rm_waslit = FLD.rm_waslit, $s_level_dlevel = FLD.s_level_dlevel, $s_level_flags = FLD.s_level_flags,
-    $s_level_proto = FLD.s_level_proto, $stairway_u_traversed = FLD.stairway_u_traversed,
+    $s_level_proto = FLD.s_level_proto, $sizeof_coord = FLD.sizeof_coord,
+    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_mkroom = FLD.sizeof_mkroom,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_symdef = FLD.sizeof_symdef, $stairway_u_traversed = FLD.stairway_u_traversed,
     $symdef_explanation = FLD.symdef_explanation, $trap_dst = FLD.trap_dst, $trap_launch = FLD.trap_launch,
     $trap_once = FLD.trap_once, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
     $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
@@ -237,16 +241,16 @@ function good_rm_wall_doorpos(x, y, dir, room) {
     let rmno;
     if (!isok(x, y) || !cptr.ld1so(room, $mkroom_needjoining))
         return 0;
-    if (!(cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.HWALL || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.VWALL || ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR))
+    if (!(cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.HWALL || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.VWALL || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR))
         return 0;
     if (bydoor(x, y))
         return 0;
     tx = i16(((x + cptr.ld1so(cptr.decay(xdir), dir, 1)) | 0));
     ty = i16(((y + cptr.ld1so(cptr.decay(ydir), dir, 1)) | 0));
-    if (!isok(tx, ty) || ((cptr.ld1so3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
+    if (!isok(tx, ty) || ((cptr.ld1so3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
         return 0;
     rmno = Number(BigInt.asIntN(32, BigInt.asIntN(64, (cptr.diff(room, svr) / 224n) + 3n)));
-    if (rmno != ((cptr.ldI32o3(svl, tx, 756, ty, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0))
+    if (rmno != ((cptr.ldI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0))
         return 0;
     return 1;
 }
@@ -264,7 +268,7 @@ function finddpos_shift(x, y, dir, aroom) {
         let rx = cptr.ldI16(x);
         let ry = cptr.ldI16(y);
         let fail = 0;
-        while (!fail && isok(rx, ry) && (cptr.ld1so3(svl, rx, 756, ry, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE || cptr.ld1so3(svl, rx, 756, ry, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR)) {
+        while (!fail && isok(rx, ry) && (cptr.ld1so3(svl, rx, $sizeof_rm_x21, ry, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE || cptr.ld1so3(svl, rx, $sizeof_rm_x21, ry, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR)) {
             rx = i16(rx + dx);
             ry = i16(ry + dy);
             if (good_rm_wall_doorpos(rx, ry, dir, aroom)) {
@@ -272,7 +276,7 @@ function finddpos_shift(x, y, dir, aroom) {
                 cptr.stI16(y, ry);
                 return 1;
             }
-            if (!(cptr.ld1so3(svl, rx, 756, ry, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE || cptr.ld1so3(svl, rx, 756, ry, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR))
+            if (!(cptr.ld1so3(svl, rx, $sizeof_rm_x21, ry, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE || cptr.ld1so3(svl, rx, $sizeof_rm_x21, ry, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR))
                 fail = 1;
             if (rx < cptr.ldI16(aroom) || rx > cptr.ldI16o(aroom, $mkroom_hx) || ry < cptr.ldI16o(aroom, $mkroom_ly) || ry > cptr.ldI16o(aroom, $mkroom_hy))
                 fail = 1;
@@ -348,12 +352,12 @@ export function sort_rooms() {
     let n = cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >>> 0;
     nh_deterministic_qsort((svr), BigInt((n) >>> 0), 224n, (mkroom_cmp));
     for (i = 0; i < n; i++)
-        cptr.stI32o(ri, cptr.ld1so2(svr, i, 224, $mkroom_roomnoidx), i, 4);
+        cptr.stI32o(ri, cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_roomnoidx), i, 4);
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
-            let rno = (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63);
+            let rno = (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63);
             if (rno >= NHM.ROOMOFFSET && rno < 41)
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno, (cptr.ldI32o(ri, (rno - NHM.ROOMOFFSET) >>> 0, 4) + NHM.ROOMOFFSET) >>> 0);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, (cptr.ldI32o(ri, (rno - NHM.ROOMOFFSET) >>> 0, 4) + NHM.ROOMOFFSET) >>> 0);
         }
 }
 
@@ -372,7 +376,7 @@ function do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, is
         hiy = 19;
     if (lit) {
         for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x++) {
-            lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), (((lowy - 1) | 0) > 0 ? ((lowy - 1) | 0) : 0), 36);
+            lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), (((lowy - 1) | 0) > 0 ? ((lowy - 1) | 0) : 0), $sizeof_rm);
             for (y = i16(((lowy - 1) | 0)); y <= ((hiy + 1) | 0); y++)
                 cptr.stI32o(cptr.postinc(() => lev, (v) => { lev = v; }, 36), $rm_lit, 1);
         }
@@ -394,24 +398,24 @@ function do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, is
         cptr.st1o(croom, $mkroom_needjoining, 1);
         for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x++)
             for (y = i16(((lowy - 1) | 0)); y <= ((hiy + 1) | 0); y = i16(y + ((((hiy - lowy) | 0) + 2) | 0))) {
-                cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.HWALL);
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_horizontal, 1);
+                cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.HWALL);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 1);
             }
         for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x = i16(x + ((((hix - lowx) | 0) + 2) | 0)))
             for (y = lowy; y <= hiy; y++) {
-                cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.VWALL);
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_horizontal, 0);
+                cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.VWALL);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
             }
         for (x = lowx; x <= hix; x++) {
-            lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), lowy, 36);
+            lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), lowy, $sizeof_rm);
             for (y = lowy; y <= hiy; y++)
                 cptr.st1o(cptr.postinc(() => lev, (v) => { lev = v; }, 36), $rm_typ, NHC.ROOM);
         }
         if (is_room) {
-            cptr.st1o3(svl, (lowx - 1) | 0, 756, (lowy - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ, NHC.TLCORNER);
-            cptr.st1o3(svl, (hix + 1) | 0, 756, (lowy - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ, NHC.TRCORNER);
-            cptr.st1o3(svl, (lowx - 1) | 0, 756, (hiy + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ, NHC.BLCORNER);
-            cptr.st1o3(svl, (hix + 1) | 0, 756, (hiy + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ, NHC.BRCORNER);
+            cptr.st1o3(svl, (lowx - 1) | 0, $sizeof_rm_x21, (lowy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.TLCORNER);
+            cptr.st1o3(svl, (hix + 1) | 0, $sizeof_rm_x21, (lowy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.TRCORNER);
+            cptr.st1o3(svl, (lowx - 1) | 0, $sizeof_rm_x21, (hiy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.BLCORNER);
+            cptr.st1o3(svl, (hix + 1) | 0, $sizeof_rm_x21, (hiy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.BRCORNER);
         } else {
             wallification(i16(((lowx - 1) | 0)), i16(((lowy - 1) | 0)), i16(((hix + 1) | 0)), i16(((hiy + 1) | 0)));
         }
@@ -423,7 +427,7 @@ export function add_room(lowx, lowy, hix, hiy, lit, rtype, special) {
     let croom;
     if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= NHM.MAXNROFROOMS)
         panic(__s_level_has_too_many_rooms);
-    croom = cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224);
+    croom = cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom);
     do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, 1);
     croom = cptr.add(croom, 1, 224);
     cptr.stI16o(croom, $mkroom_hx, -1);
@@ -437,7 +441,7 @@ export function add_subroom(proom, lowx, lowy, hix, hiy, lit, rtype, special) {
         panic(__s_level_has_too_many_subrooms);
     if (cptr.ld1so(proom, $mkroom_nsubrooms) >= NHM.MAX_SUBROOMS)
         panic(__s_room_has_too_many_subrooms);
-    croom = cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), 224);
+    croom = cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), $sizeof_mkroom);
     do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, 0);
     cptr.stPtro2(proom, cptr.postinc1(cptr.add(proom, $mkroom_nsubrooms)), 8, $mkroom_sbrooms, croom);
     croom = cptr.add(croom, 1, 224);
@@ -465,7 +469,7 @@ function makerooms() {
     let fname;
     let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
     let themes = cptr.ldPtro2(gl, cptr.ldI16o(u, $you_uz), 8, $instance_globals_l_luathemes);
-    if (!themes && cptr.ld1s((fname = cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_themerms)))) {
+    if (!themes && cptr.ld1s((fname = cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon), $dungeon_themerms)))) {
         if ((themes = nhl_init(sbi)) !== null) {
             if (!nhl_loadlua(themes, fname)) {
                 nhl_done(themes);
@@ -490,9 +494,9 @@ function makerooms() {
         if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= 6 && (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 404, __s_makerooms), rn2(2)) : rn2(2)) && !tried_vault) {
             tried_vault = 1;
             if (create_room(-1, -1, 2, 2, -1, -1, NHC.VAULT, 1)) {
-                cptr.stI16o(gv, $instance_globals_v_vault_x, cptr.ldI16o(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224));
-                cptr.stI16o(gv, $instance_globals_v_vault_y, cptr.ldI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224, $mkroom_ly));
-                cptr.stI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224, $mkroom_hx, -1);
+                cptr.stI16o(gv, $instance_globals_v_vault_x, cptr.ldI16o(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom));
+                cptr.stI16o(gv, $instance_globals_v_vault_y, cptr.ldI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom, $mkroom_ly));
+                cptr.stI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom, $mkroom_hx, -1);
             }
         } else {
             if (themes) {
@@ -536,8 +540,8 @@ function join(a, b, nxcor) {
     let dy;
     let npoints = cptr.box(0);
     let dig_result;
-    croom = cptr.add(svr, a, 224);
-    troom = cptr.add(svr, b, 224);
+    croom = cptr.add(svr, a, $sizeof_mkroom);
+    troom = cptr.add(svr, b, $sizeof_mkroom);
     if (!cptr.ld1so(croom, $mkroom_needjoining) || !cptr.ld1so(troom, $mkroom_needjoining))
         return;
     if (cptr.ldI16o(troom, $mkroom_hx) < 0 || cptr.ldI16o(croom, $mkroom_hx) < 0)
@@ -575,7 +579,7 @@ function join(a, b, nxcor) {
     yy = cptr.ldI16o(cc, $nhcoord_y);
     tx = i16(((cptr.ldI16(tt) - dx) | 0));
     ty = i16(((cptr.ldI16o(tt, $nhcoord_y) - dy) | 0));
-    if (nxcor && cptr.ld1so3(svl, (xx + dx) | 0, 756, (yy + dy) | 0, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE)
+    if (nxcor && cptr.ld1so3(svl, (xx + dx) | 0, $sizeof_rm_x21, (yy + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE)
         return;
     cptr.stI16(org, i16(((xx + dx) | 0)));
     cptr.stI16o(org, $nhcoord_y, i16(((yy + dy) | 0)));
@@ -650,7 +654,7 @@ export function add_door(x, y, aroom) {
     if (cptr.ld1so(aroom, $mkroom_doorct)) {
         for (i = 0; i < cptr.ld1so(aroom, $mkroom_doorct); i++) {
             tmp = (cptr.ldI32o(aroom, $mkroom_fdoor) + i) | 0;
-            if (cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), tmp, 4) == x && cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), tmp, 4, $nhcoord_y) == y)
+            if (cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), tmp, $sizeof_coord) == x && cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), tmp, $sizeof_coord, $nhcoord_y) == y)
                 return;
         }
     }
@@ -658,47 +662,47 @@ export function add_door(x, y, aroom) {
         cptr.stI32o(aroom, $mkroom_fdoor, cptr.ldI32(gd));
     cptr.postinc1(cptr.add(aroom, $mkroom_doorct));
     for (tmp = cptr.ldI32(gd); tmp > cptr.ldI32o(aroom, $mkroom_fdoor); tmp--)
-        cptr.memcpy(cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), tmp, 4), cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), (tmp - 1) | 0, 4), 4);
+        cptr.memcpy(cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), tmp, $sizeof_coord), cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), (tmp - 1) | 0, $sizeof_coord), 4);
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++) {
-        broom = cptr.add(svr, i, 224);
+        broom = cptr.add(svr, i, $sizeof_mkroom);
         if (!cptr.eq(broom, aroom) && cptr.ld1so(broom, $mkroom_doorct) && cptr.ldI32o(broom, $mkroom_fdoor) >= cptr.ldI32o(aroom, $mkroom_fdoor))
             (cptr.stI32o(broom, $mkroom_fdoor, cptr.ldI32o(broom, $mkroom_fdoor) + 1)) - (1);
     }
     for (i = 0; i < cptr.ldI32o(gn, $instance_globals_n_nsubroom); i++) {
-        broom = cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), i, 224);
+        broom = cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), i, $sizeof_mkroom);
         if (!cptr.eq(broom, aroom) && cptr.ld1so(broom, $mkroom_doorct) && cptr.ldI32o(broom, $mkroom_fdoor) >= cptr.ldI32o(aroom, $mkroom_fdoor))
             (cptr.stI32o(broom, $mkroom_fdoor, cptr.ldI32o(broom, $mkroom_fdoor) + 1)) - (1);
     }
     (cptr.stI32(gd, cptr.ldI32(gd) + 1)) - (1);
-    cptr.stI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(aroom, $mkroom_fdoor), x, 4);
-    cptr.stI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(aroom, $mkroom_fdoor), 4, $nhcoord_y, y);
+    cptr.stI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(aroom, $mkroom_fdoor), x, $sizeof_coord);
+    cptr.stI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(aroom, $mkroom_fdoor), $sizeof_coord, $nhcoord_y, y);
 }
 
 /** C ref: mklev.c:615 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} aroom @param {CInt} type */
 function dosdoor(x, y, aroom, type) {
     let shdoor = schar((cptr.ld1s(in_rooms(x, y, NHC.SHOPBASE)) ? 1 : 0));
-    if (!((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
+    if (!((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
         type = NHC.DOOR;
-    cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, schar(type));
+    cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(type));
     if (type == NHC.DOOR) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 623, __s_dosdoor), rn2(3)) : rn2(3))) {
             if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 624, __s_dosdoor), rn2(5)) : rn2(5)))
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_ISOPEN);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_ISOPEN);
             else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 626, __s_dosdoor), rn2(6)) : rn2(6)))
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
             else
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
-            if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) != NHM.D_ISOPEN && !shdoor && level_difficulty() >= 5 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 632, __s_dosdoor), rn2(25)) : rn2(25)))
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) | NHM.D_TRAPPED);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
+            if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) != NHM.D_ISOPEN && !shdoor && level_difficulty() >= 5 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 632, __s_dosdoor), rn2(25)) : rn2(25)))
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.D_TRAPPED);
         } else {
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, (shdoor ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, (shdoor ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
         }
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
-        if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
+        if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
             let mtmp;
-            if (level_difficulty() >= 9 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 653, __s_dosdoor), rn2(5)) : rn2(5)) && !((cptr.ld1uo2(svm, NHC.PM_SMALL_MIMIC, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_LARGE_MIMIC, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_GIANT_MIMIC, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))) {
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
+            if (level_difficulty() >= 9 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 653, __s_dosdoor), rn2(5)) : rn2(5)) && !((cptr.ld1uo2(svm, NHC.PM_SMALL_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_LARGE_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_GIANT_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))) {
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
                 mtmp = makemon(mkclass(NHC.S_MIMIC, 0), x, y, NHM.NO_MM_FLAGS);
                 if (mtmp)
                     set_mimic_sym(mtmp);
@@ -706,11 +710,11 @@ function dosdoor(x, y, aroom, type) {
         }
     } else {
         if (shdoor || !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 666, __s_dosdoor), rn2(5)) : rn2(5)))
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
         else
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
         if (!shdoor && level_difficulty() >= 4 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 671, __s_dosdoor), rn2(20)) : rn2(20)))
-            cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) | NHM.D_TRAPPED);
+            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.D_TRAPPED);
     }
     add_door(x, y, aroom);
 }
@@ -718,13 +722,13 @@ function dosdoor(x, y, aroom, type) {
 /** C ref: mklev.c:681 — @param {CPtr<struct mkroom>} aroom @param {CInt} x @param {CInt} y @returns {CInt} */
 function cardinal_nextto_room(aroom, x, y) {
     let rmno = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(aroom, svr) / 224n) + 3n))));
-    if (isok(i16(((x - 1) | 0)), y) && !(cptr.ldI32o3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+    if (isok(i16(((x - 1) | 0)), y) && !(cptr.ldI32o3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
         return 1;
-    if (isok(i16(((x + 1) | 0)), y) && !(cptr.ldI32o3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+    if (isok(i16(((x + 1) | 0)), y) && !(cptr.ldI32o3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
         return 1;
-    if (isok(x, i16(((y - 1) | 0))) && !(cptr.ldI32o3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+    if (isok(x, i16(((y - 1) | 0))) && !(cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
         return 1;
-    if (isok(x, i16(((y + 1) | 0))) && !(cptr.ldI32o3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+    if (isok(x, i16(((y + 1) | 0))) && !(cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
         return 1;
     return 0;
 }
@@ -743,7 +747,7 @@ function place_niche(aroom, dy, xx, yy) {
     }
     cptr.stI16(xx, cptr.ldI16(dd));
     cptr.stI16(yy, cptr.ldI16o(dd, $nhcoord_y));
-    return schar(((isok(cptr.ldI16(xx), i16(((cptr.ldI16(yy) + cptr.ldI32(dy)) | 0))) && cptr.ld1so3(svl, cptr.ldI16(xx), 756, (cptr.ldI16(yy) + cptr.ldI32(dy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE) && (isok(cptr.ldI16(xx), i16(((cptr.ldI16(yy) - cptr.ldI32(dy)) | 0))) && !((cptr.ld1so3(svl, cptr.ldI16(xx), 756, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, cptr.ldI16(xx), 756, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP) && !((cptr.ld1so3(svl, cptr.ldI16(xx), 756, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.STAIRS && (cptr.ld1so3(svl, cptr.ldI16(xx), 756, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.ALTAR)) && cardinal_nextto_room(aroom, cptr.ldI16(xx), cptr.ldI16(yy)) ? 1 : 0));
+    return schar(((isok(cptr.ldI16(xx), i16(((cptr.ldI16(yy) + cptr.ldI32(dy)) | 0))) && cptr.ld1so3(svl, cptr.ldI16(xx), $sizeof_rm_x21, (cptr.ldI16(yy) + cptr.ldI32(dy)) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE) && (isok(cptr.ldI16(xx), i16(((cptr.ldI16(yy) - cptr.ldI32(dy)) | 0))) && !((cptr.ld1so3(svl, cptr.ldI16(xx), $sizeof_rm_x21, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, cptr.ldI16(xx), $sizeof_rm_x21, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP) && !((cptr.ld1so3(svl, cptr.ldI16(xx), $sizeof_rm_x21, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.STAIRS && (cptr.ld1so3(svl, cptr.ldI16(xx), $sizeof_rm_x21, (cptr.ldI16(yy) - cptr.ldI32(dy)) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.ALTAR)) && cardinal_nextto_room(aroom, cptr.ldI16(xx), cptr.ldI16(yy)) ? 1 : 0));
 }
 
 /** C ref: mklev.c:728 — char *[26] */
@@ -785,14 +789,14 @@ function makeniche(trap_type) {
     let yy = cptr.box(0);
     let ttmp;
     while (vct--) {
-        aroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 749, __s_makeniche), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224);
+        aroom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 749, __s_makeniche), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), $sizeof_mkroom);
         if (cptr.ld1so(aroom, $mkroom_rtype) != NHC.OROOM)
             continue;
         if (cptr.ld1so(aroom, $mkroom_doorct) == 1 && (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 752, __s_makeniche), rn2(5)) : rn2(5)))
             continue;
         if (!place_niche(aroom, dy, xx, yy))
             continue;
-        rm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xx.v, 756), (yy.v + dy.v) | 0, 36);
+        rm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xx.v, $sizeof_rm_x21), (yy.v + dy.v) | 0, $sizeof_rm);
         if (trap_type || !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 758, __s_makeniche), rn2(4)) : rn2(4))) {
             cptr.st1o(rm, $rm_typ, NHC.SCORR);
             if (trap_type) {
@@ -814,7 +818,7 @@ function makeniche(trap_type) {
             if ((rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 779, __s_makeniche), rn2(7)) : rn2(7))) {
                 dosdoor(xx.v, yy.v, aroom, (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 780, __s_makeniche), rn2(5)) : rn2(5)) ? NHC.SDOOR : NHC.DOOR);
             } else {
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 783, __s_makeniche), rn2(5)) : rn2(5)) && ((cptr.ld1so3(svl, xx.v, 756, yy.v, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, xx.v, 756, yy.v, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
+                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 783, __s_makeniche), rn2(5)) : rn2(5)) && ((cptr.ld1so3(svl, xx.v, $sizeof_rm_x21, yy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, xx.v, $sizeof_rm_x21, yy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
                     void set_levltyp(xx.v, yy.v, NHC.IRONBARS);
                     if ((rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 785, __s_makeniche), rn2(3)) : rn2(3)))
                         void mkcorpstat(NHC.CORPSE, null, mkclass(NHC.S_HUMAN, 0), xx.v, i16(((yy.v + dy.v) | 0)), 1);
@@ -859,7 +863,7 @@ export function count_level_features() {
     cptr.st1o(svl, $instance_globals_saved_l_level + $dlevel_t_flags, cptr.st1o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks, 0));
     for (y = 0; y < NHM.ROWNO; y++)
         for (x = 1; x < NHM.COLNO; x++) {
-            let typ = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+            let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
             if (typ == NHC.FOUNTAIN)
                 cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags));
             else if (typ == NHC.SINK)
@@ -867,7 +871,7 @@ export function count_level_features() {
         }
 }
 
-let __static_clear_level_structures_zerorm = cptr.alloc(36); /** C ref: mklev.c:852 — struct rm (function-static) */
+let __static_clear_level_structures_zerorm = cptr.alloc($sizeof_rm); /** C ref: mklev.c:852 — struct rm (function-static) */
 cptr.stI32(__static_clear_level_structures_zerorm, NHC.GLYPH_UNEXPLORED_OFF);
 cptr.st1o(__static_clear_level_structures_zerorm, $rm_typ, 0);
 cptr.st1o(__static_clear_level_structures_zerorm, $rm_seenv, 0);
@@ -885,7 +889,7 @@ export function clear_level_structures() {
     let y;
     let lev;
     for (x = 0; x < NHM.COLNO; x++) {
-        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), 0, 36);
+        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), 0, $sizeof_rm);
         for (y = 0; y < NHM.ROWNO; y++) {
             cptr.memcpy(cptr.postinc(() => lev, (v) => { lev = v; }, 36), __static_clear_level_structures_zerorm, 36);
             cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects, null);
@@ -928,9 +932,9 @@ export function clear_level_structures() {
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy, 0);
     cptr.stI64o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until, 0n);
     cptr.stI32o(svn, $instance_globals_saved_n_nroom, 0);
-    cptr.stI16o2(svr, 0, 224, $mkroom_hx, -1);
+    cptr.stI16o2(svr, 0, $sizeof_mkroom, $mkroom_hx, -1);
     cptr.stI32o(gn, $instance_globals_n_nsubroom, 0);
-    cptr.stI16o2(cptr.ldPtro(gs, $instance_globals_s_subrooms), 0, 224, $mkroom_hx, -1);
+    cptr.stI16o2(cptr.ldPtro(gs, $instance_globals_s_subrooms), 0, $sizeof_mkroom, $mkroom_hx, -1);
     cptr.stI32(gd, 0);
     if (cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc)) {
         cptr.free(cptr.ldPtro(svd, $instance_globals_saved_d_doors));
@@ -995,7 +999,7 @@ function fill_ordinary_room(croom, bonus_items) {
             return;
         if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 974, __s_fill_ordinary_room), rn2(3)) : rn2(3))) && somexyspace(croom, pos)) {
             tmonst = makemon(null, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHM.MM_NOGRP);
-            if (tmonst && cptr.eq(cptr.ldPtro(tmonst, $monst_data), cptr.add(mons, NHC.PM_GIANT_SPIDER, 96)) && !occupied(cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y)))
+            if (tmonst && cptr.eq(cptr.ldPtro(tmonst, $monst_data), cptr.add(mons, NHC.PM_GIANT_SPIDER, $sizeof_permonst)) && !occupied(cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y)))
                 void maketrap(cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHC.WEB);
         }
         x = i16(((8 - ((level_difficulty() / 6) | 0)) | 0));
@@ -1054,7 +1058,7 @@ function fill_ordinary_room(croom, bonus_items) {
                         let maxpass = (depth(cptr.add(u, $you_uz)) > 2) ? 2 : 3;
                         for (pass = 1; pass <= maxpass; ++pass) {
                             let otmp2 = mkobj(oclass, 0);
-                            if (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_oc2) <= cptr.ld1so2(objects, cptr.ldI16o(otmp2, $obj_otyp), 120, $objclass_oc_oc2)) {
+                            if (cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2) <= cptr.ld1so2(objects, cptr.ldI16o(otmp2, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2)) {
                                 dealloc_obj(otmp2);
                             } else {
                                 dealloc_obj(otmp);
@@ -1079,8 +1083,8 @@ function fill_ordinary_room(croom, bonus_items) {
                     void somexyspace(croom, pos);
                     x = cptr.ldI16(pos);
                     y = cptr.ldI16o(pos, $nhcoord_y);
-                } while (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1151, __s_fill_ordinary_room), rn2(40)) : rn2(40)));
-                if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM)
+                } while (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1151, __s_fill_ordinary_room), rn2(40)) : rn2(40)));
+                if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM)
                     make_engr_at(x, y, mesg, cptr.decay(pristinebuf), 0n, NHM.MARK);
             }
         }
@@ -1119,16 +1123,16 @@ function themerooms_post_level_generate() {
 
 /** C ref: mklev.c:1198 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function chk_okdoor(x, y) {
-    if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
-        if ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_horizontal) & 1)) {
-            if ((isok(x, i16(((y - 1) | 0))) && (cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)) && (isok(x, i16(((y + 1) | 0))) && (cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)))
+    if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+        if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal) & 1)) {
+            if ((isok(x, i16(((y - 1) | 0))) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)) && (isok(x, i16(((y + 1) | 0))) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)))
                 return 0;
-            if ((isok(x, i16(((y - 1) | 0))) && (cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)) && (isok(x, i16(((y + 1) | 0))) && (cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)))
+            if ((isok(x, i16(((y - 1) | 0))) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)) && (isok(x, i16(((y + 1) | 0))) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)))
                 return 0;
         } else {
-            if ((isok(i16(((x - 1) | 0)), y) && (cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)) && (isok(i16(((x + 1) | 0)), y) && (cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)))
+            if ((isok(i16(((x - 1) | 0)), y) && (cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)) && (isok(i16(((x + 1) | 0)), y) && (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)))
                 return 0;
-            if ((isok(i16(((x - 1) | 0)), y) && (cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)) && (isok(i16(((x + 1) | 0)), y) && (cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)))
+            if ((isok(i16(((x - 1) | 0)), y) && (cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) <= NHC.TREE)) && (isok(i16(((x + 1) | 0)), y) && (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) > NHC.TREE)))
                 return 0;
         }
         return 1;
@@ -1151,7 +1155,7 @@ function mklev_sanity_check() {
         }
     }
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++) {
-        if (!cptr.ld1so2(svr, i, 224, $mkroom_needjoining))
+        if (!cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_needjoining))
             continue;
         if (rmno == -1)
             rmno = cptr.ldI32o2(gs, i, 4, $instance_globals_s_smeq);
@@ -1178,10 +1182,10 @@ function makelevel() {
     slev = Is_special(cptr.add(u, $you_uz));
     if (slev && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         makemaz(cptr.add(slev, $s_level_proto));
-    } else if (cptr.ld1so3(svd, cptr.ldI16o(u, $you_uz), 112, 0, 1, $dungeon_proto)) {
+    } else if (cptr.ld1so3(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, 0, 1, $dungeon_proto)) {
         makemaz(__s_empty);
-    } else if (cptr.ld1so3(svd, cptr.ldI16o(u, $you_uz), 112, 0, 1, $dungeon_fill_lvl)) {
-        makemaz(cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), 112), $dungeon_fill_lvl));
+    } else if (cptr.ld1so3(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, 0, 1, $dungeon_fill_lvl)) {
+        makemaz(cptr.add(cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon), $dungeon_fill_lvl));
     } else if (In_quest(cptr.add(u, $you_uz))) {
         let fillname = new Uint8Array(9);
         let loc_lev;
@@ -1226,20 +1230,20 @@ function makelevel() {
                     if (check_room(cptr.add(gv, $instance_globals_v_vault_x), w, cptr.add(gv, $instance_globals_v_vault_y), h, 1)) {
                         __go_fill_vault = true; break __skip_fill_vault;
                     } else if (rnd_rect() && create_room(-1, -1, 2, 2, -1, -1, NHC.VAULT, 1)) {
-                        cptr.stI16o(gv, $instance_globals_v_vault_x, cptr.ldI16o(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224));
-                        cptr.stI16o(gv, $instance_globals_v_vault_y, cptr.ldI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224, $mkroom_ly));
+                        cptr.stI16o(gv, $instance_globals_v_vault_x, cptr.ldI16o(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom));
+                        cptr.stI16o(gv, $instance_globals_v_vault_y, cptr.ldI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom, $mkroom_ly));
                         if (check_room(cptr.add(gv, $instance_globals_v_vault_x), w, cptr.add(gv, $instance_globals_v_vault_y), h, 1))
                             { __go_fill_vault = true; break __skip_fill_vault; }
                         else
-                            cptr.stI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224, $mkroom_hx, -1);
+                            cptr.stI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom, $mkroom_hx, -1);
                     }
                 }
                 if (__go_fill_vault) {
                     add_room(cptr.ldI16o(gv, $instance_globals_v_vault_x), cptr.ldI16o(gv, $instance_globals_v_vault_y), i16(((cptr.ldI16o(gv, $instance_globals_v_vault_x) + w.v) | 0)), i16(((cptr.ldI16o(gv, $instance_globals_v_vault_y) + h.v) | 0)), 1, NHC.VAULT, 0);
                     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault, 1);
                     ++room_threshold;
-                    cptr.st1o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, 224, $mkroom_needfill, NHM.FILL_NORMAL);
-                    fill_special_room(cptr.add(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, 224));
+                    cptr.st1o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_needfill, NHM.FILL_NORMAL);
+                    fill_special_room(cptr.add(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom));
                     mk_knox_portal(i16(((cptr.ldI16o(gv, $instance_globals_v_vault_x) + w.v) | 0)), i16(((cptr.ldI16o(gv, $instance_globals_v_vault_y) + h.v) | 0)));
                     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1332, __s_makelevel), rn2(3)) : rn2(3)))
                         makevtele();
@@ -1251,23 +1255,23 @@ function makelevel() {
                 do_mkroom(NHC.SHOPBASE);
             else if (u_depth > 4 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1352, __s_makelevel), rn2(6)) : rn2(6)))
                 do_mkroom(NHC.COURT);
-            else if (u_depth > 5 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1354, __s_makelevel), rn2(8)) : rn2(8)) && !(cptr.ld1uo2(svm, NHC.PM_LEPRECHAUN, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 5 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1354, __s_makelevel), rn2(8)) : rn2(8)) && !(cptr.ld1uo2(svm, NHC.PM_LEPRECHAUN, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 do_mkroom(NHC.LEPREHALL);
             else if (u_depth > 6 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1357, __s_makelevel), rn2(7)) : rn2(7)))
                 do_mkroom(NHC.ZOO);
             else if (u_depth > 8 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1359, __s_makelevel), rn2(5)) : rn2(5)))
                 do_mkroom(NHC.TEMPLE);
-            else if (u_depth > 9 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1361, __s_makelevel), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 9 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1361, __s_makelevel), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 do_mkroom(NHC.BEEHIVE);
             else if (u_depth > 11 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1364, __s_makelevel), rn2(6)) : rn2(6)))
                 do_mkroom(NHC.MORGUE);
             else if (u_depth > 12 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1366, __s_makelevel), rn2(8)) : rn2(8)) && antholemon())
                 do_mkroom(NHC.ANTHOLE);
-            else if (u_depth > 14 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1368, __s_makelevel), rn2(4)) : rn2(4)) && !(cptr.ld1uo2(svm, NHC.PM_SOLDIER, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 14 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1368, __s_makelevel), rn2(4)) : rn2(4)) && !(cptr.ld1uo2(svm, NHC.PM_SOLDIER, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 do_mkroom(NHC.BARRACKS);
             else if (u_depth > 15 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1371, __s_makelevel), rn2(6)) : rn2(6)))
                 do_mkroom(NHC.SWAMP);
-            else if (u_depth > 16 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1373, __s_makelevel), rn2(8)) : rn2(8)) && !(cptr.ld1uo2(svm, NHC.PM_COCKATRICE, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 16 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1373, __s_makelevel), rn2(8)) : rn2(8)) && !(cptr.ld1uo2(svm, NHC.PM_COCKATRICE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 do_mkroom(NHC.COCKNEST);
         }
         prevstairs = cptr.ldPtro(gs, $instance_globals_s_stairs);
@@ -1288,7 +1292,7 @@ function makelevel() {
         }
     }
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); ++i) {
-        fill_special_room(cptr.add(svr, i, 224));
+        fill_special_room(cptr.add(svr, i, $sizeof_mkroom));
     }
     themerooms_post_level_generate();
     if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_LVL_ENTER, 4)) {
@@ -1301,7 +1305,7 @@ function makelevel() {
 
 /** C ref: mklev.c:1432 — @param {CInt} x @param {CInt} y @param {CInt} kelp_pool @param {CInt} kelp_moat @returns {CInt} */
 function water_has_kelp(x, y, kelp_pool, kelp_moat) {
-    if ((kelp_pool && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.WATER && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1436, __s_water_has_kelp), rn2(kelp_pool)) : rn2(kelp_pool))) || (kelp_moat && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1437, __s_water_has_kelp), rn2(kelp_moat)) : rn2(kelp_moat))))
+    if ((kelp_pool && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.WATER && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1436, __s_water_has_kelp), rn2(kelp_pool)) : rn2(kelp_pool))) || (kelp_moat && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT && !(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1437, __s_water_has_kelp), rn2(kelp_moat)) : rn2(kelp_moat))))
         return 1;
     return 0;
 }
@@ -1340,11 +1344,11 @@ export function mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_che
     }
     for (x = 2; x < 78; x++)
         for (y = 1; y < 20; y++)
-            if (cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE) {
+            if (cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE) {
                 y = i16(y + 2);
-            } else if (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE) {
+            } else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE) {
                 y = i16(y + 1);
-            } else if (!(((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) && cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE) {
+            } else if (!(((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) && cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE) {
                 if ((rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1515, __s_mineralize), rn2(1000)) : rn2(1000)) < goldprob) {
                     if ((otmp = mksobj(NHC.GOLD_PIECE, 0, 0)) !== null) {
                         cptr.stI16o(otmp, $obj_ox, x), cptr.stI16o(otmp, $obj_oy, y);
@@ -1384,12 +1388,12 @@ export function level_finalize_topology() {
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue) & 1))
         cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard, 1);
     if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1)) {
-        for (croom = cptr.add(svr, 0, 224); !cptr.eq(croom, cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 224)); croom = cptr.add(croom, 1, 224))
+        for (croom = cptr.add(svr, 0, $sizeof_mkroom); !cptr.eq(croom, cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom)); croom = cptr.add(croom, 1, 224))
             topologize(croom);
     }
     set_wall_state();
     for (ridx = 0; ridx < Number(BigInt.asIntN(32, (18368n / 224n))); ridx++)
-        cptr.st1o2(svr, ridx, 224, $mkroom_orig_rtype, cptr.ld1so2(svr, ridx, 224, $mkroom_rtype));
+        cptr.st1o2(svr, ridx, $sizeof_mkroom, $mkroom_orig_rtype, cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_rtype));
 }
 
 /** C ref: mklev.c:1577 */
@@ -1417,27 +1421,27 @@ export function topologize(croom) {
     let hiy = cptr.ldI16o(croom, $mkroom_hy);
     let subindex;
     let nsubrooms = cptr.ld1so(croom, $mkroom_nsubrooms);
-    if (((cptr.ldI32o3(svl, lowx, 756, lowy, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == roomno || cptr.ld1so(croom, $mkroom_irregular))
+    if (((cptr.ldI32o3(svl, lowx, $sizeof_rm_x21, lowy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == roomno || cptr.ld1so(croom, $mkroom_irregular))
         return;
     {
         for (x = lowx; x <= hix; x++)
             for (y = lowy; y <= hiy; y++)
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno, roomno >>> 0);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, roomno >>> 0);
         for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x++)
             for (y = i16(((lowy - 1) | 0)); y <= ((hiy + 1) | 0); y = i16(y + ((((hiy - lowy) | 0) + 2) | 0))) {
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_edge, 1);
-                if ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63))
-                    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno, NHM.SHARED);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge, 1);
+                if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63))
+                    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.SHARED);
                 else
-                    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno, roomno >>> 0);
+                    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, roomno >>> 0);
             }
         for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x = i16(x + ((((hix - lowx) | 0) + 2) | 0)))
             for (y = lowy; y <= hiy; y++) {
-                cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_edge, 1);
-                if ((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63))
-                    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno, NHM.SHARED);
+                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge, 1);
+                if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63))
+                    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.SHARED);
                 else
-                    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno, roomno >>> 0);
+                    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, roomno >>> 0);
             }
     }
     for (subindex = 0; subindex < nsubrooms; subindex++)
@@ -1499,7 +1503,7 @@ export function place_branch(br, x, y) {
         let goes_up = schar((on_level(cptr.add(br, $branch_end1), cptr.add(u, $you_uz)) ? cptr.ld1so(br, $branch_end1_up) : !cptr.ld1so(br, $branch_end1_up)));
         stairway_add(x, y, goes_up, 0, dest);
         void set_levltyp(x, y, NHC.STAIRS);
-        cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, (goes_up ? NHM.LA_UP : NHM.LA_DOWN) >>> 0);
+        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, (goes_up ? NHM.LA_UP : NHM.LA_DOWN) >>> 0);
     }
     cptr.st1o(gm, $instance_globals_m_made_branch, 1);
 }
@@ -1508,22 +1512,22 @@ export function place_branch(br, x, y) {
 function bydoor(x, y) {
     let typ;
     if (isok(i16(((x + 1) | 0)), y)) {
-        typ = cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+        typ = cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
         if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     if (isok(i16(((x - 1) | 0)), y)) {
-        typ = cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+        typ = cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
         if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     if (isok(x, i16(((y + 1) | 0)))) {
-        typ = cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ);
+        typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
         if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
     if (isok(x, i16(((y - 1) | 0)))) {
-        typ = cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ);
+        typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
         if (((typ) == NHC.DOOR) || typ == NHC.SDOOR)
             return 1;
     }
@@ -1533,7 +1537,7 @@ function bydoor(x, y) {
 /** C ref: mklev.c:1779 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function okdoor(x, y) {
     let near_door = bydoor(x, y);
-    return ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.HWALL || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.VWALL) && ((isok(i16(((x - 1) | 0)), y) && !((cptr.ld1so3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL)) || (isok(i16(((x + 1) | 0)), y) && !((cptr.ld1so3(svl, (x + 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL)) || (isok(x, i16(((y - 1) | 0))) && !((cptr.ld1so3(svl, x, 756, (y - 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL)) || (isok(x, i16(((y + 1) | 0))) && !((cptr.ld1so3(svl, x, 756, (y + 1) | 0, 36, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))) && !near_door ? 1 : 0);
+    return ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.HWALL || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.VWALL) && ((isok(i16(((x - 1) | 0)), y) && !((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL)) || (isok(i16(((x + 1) | 0)), y) && !((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL)) || (isok(x, i16(((y - 1) | 0))) && !((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL)) || (isok(x, i16(((y + 1) | 0))) && !((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))) && !near_door ? 1 : 0);
 }
 
 /** C ref: mklev.c:1793 — @param {CInt} chance @returns {CInt} */
@@ -1548,7 +1552,7 @@ export function dodoor(x, y, aroom) {
 
 /** C ref: mklev.c:1806 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function occupied(x, y) {
-    return schar((t_at(x, y) || ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.STAIRS && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.ALTAR) || is_lava(x, y) || is_pool(x, y) || invocation_pos(x, y) ? 1 : 0));
+    return schar((t_at(x, y) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.STAIRS && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.ALTAR) || is_lava(x, y) || is_pool(x, y) || invocation_pos(x, y) ? 1 : 0));
 }
 
 /** C ref: mklev.c:1815 — @param {CPtr<struct trap>} ttmp */
@@ -1627,7 +1631,7 @@ function mktrap_victim(ttmp) {
             cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
             curse(otmp);
             place_object(otmp, x, y);
-            if (!(cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit) & 1))
+            if (!(cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))
                 begin_burn(otmp, 0);
         }
         break;
@@ -1637,7 +1641,7 @@ function mktrap_victim(ttmp) {
     }
     if (victim_mnum == NHC.PM_HUMAN && (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1930, __s_mktrap_victim), rn2(25)) : rn2(25)))
         victim_mnum = (((rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1931, __s_mktrap_victim), rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0))) : rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
-    otmp = mkcorpstat(NHC.CORPSE, null, cptr.add(mons, victim_mnum, 96), x, y, NHM.CORPSTAT_INIT);
+    otmp = mkcorpstat(NHC.CORPSE, null, cptr.add(mons, victim_mnum, $sizeof_permonst), x, y, NHM.CORPSTAT_INIT);
     cptr.stI64o(otmp, $obj_age, cptr.ldI64o(otmp, $obj_age) - 51n);
 }
 
@@ -1774,7 +1778,7 @@ export function mktrap(num, mktrapflags, croom, tm) {
     t = maketrap(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), kind);
     kind = t ? (cptr.ldI32o(t, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP;
     if (kind == NHC.WEB && !((mktrapflags & NHM.MKTRAP_NOSPIDERONWEB) >>> 0))
-        void makemon(cptr.add(mons, NHC.PM_GIANT_SPIDER, 96), cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), NHM.NO_MM_FLAGS);
+        void makemon(cptr.add(mons, NHC.PM_GIANT_SPIDER, $sizeof_permonst), cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), NHM.NO_MM_FLAGS);
     if (t && ((mktrapflags & NHM.MKTRAP_SEEN) >>> 0))
         cptr.stI32o(t, $trap_tseen, 1);
     if (kind == NHC.MAGIC_PORTAL && (cptr.ldI16o(u, $you_ucamefrom) || cptr.ldI16o(u, $you_ucamefrom + $d_level_dlevel))) {
@@ -1799,12 +1803,12 @@ export function mkstairs(x, y, up, croom, force) {
         return;
     }
     if (force)
-        cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+        cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     if (ltyp != NHC.ROOM && ltyp != NHC.CORR && ltyp != NHC.ICE) {
         let glyph = back_to_glyph(x, y);
         let sidx = glyph_to_cmap(glyph);
-        impossible(__s_mkstairs_placing_stairs_s_on_s_at_d_d, up ? __s_up : __s_down, cptr.ldPtro2(defsyms, sidx, 24, $symdef_explanation), x, y);
+        impossible(__s_mkstairs_placing_stairs_s_on_s_at_d_d, up ? __s_up : __s_down, cptr.ldPtro2(defsyms, sidx, $sizeof_symdef, $symdef_explanation), x, y);
     }
     if (dunlev(cptr.add(u, $you_uz)) == (up ? 1 : dunlevs_in_dungeon(cptr.add(u, $you_uz))))
         return;
@@ -1812,7 +1816,7 @@ export function mkstairs(x, y, up, croom, force) {
     cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + (up ? -1 : 1)) | 0)));
     stairway_add(x, y, schar((up ? 1 : 0)), 0, dest);
     void set_levltyp(x, y, NHC.STAIRS);
-    cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, (up ? NHM.LA_UP : NHM.LA_DOWN) >>> 0);
+    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, (up ? NHM.LA_UP : NHM.LA_DOWN) >>> 0);
 }
 
 /** C ref: mklev.c:2201 — @param {CPtr<struct mkroom>} croom @param {CInt} phase @returns {CInt} */
@@ -1833,16 +1837,16 @@ function generate_stairs_find_room() {
     for (phase = 2; phase > -1; phase--) {
         ai = 0;
         for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); i++)
-            if (generate_stairs_room_good(cptr.add(svr, i, 224), phase))
+            if (generate_stairs_room_good(cptr.add(svr, i, $sizeof_mkroom), phase))
                 cptr.stI32o(rmarr, ai++, i, 4);
         if (ai > 0) {
             i = cptr.ldI32o(rmarr, (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 2236, __s_generate_stairs_find_room), rn2(ai)) : rn2(ai)), 4);
             cptr.free(rmarr);
-            return cptr.add(svr, i, 224);
+            return cptr.add(svr, i, $sizeof_mkroom);
         }
     }
     cptr.free(rmarr);
-    croom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 2243, __s_generate_stairs_find_room), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), 224);
+    croom = cptr.add(svr, (rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 2243, __s_generate_stairs_find_room), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))), $sizeof_mkroom);
     return croom;
 }
 
@@ -1880,7 +1884,7 @@ function mkfount(croom) {
     if (!set_levltyp(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), NHC.FOUNTAIN))
         return;
     if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 2296, __s_mkfount), rn2(7)) : rn2(7)))
-        cptr.stI32o3(svl, cptr.ldI16(m), 756, cptr.ldI16o(m, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_horizontal, 1);
+        cptr.stI32o3(svl, cptr.ldI16(m), $sizeof_rm_x21, cptr.ldI16o(m, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 1);
     cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags));
 }
 
@@ -1917,7 +1921,7 @@ function mkaltar(croom) {
     if (!set_levltyp(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), NHC.ALTAR))
         return;
     al = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 2348, __s_mkaltar), rn2(3)) : rn2(3)) - 1) | 0));
-    cptr.stI32o3(svl, cptr.ldI16(m), 756, cptr.ldI16o(m, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_flags, Align2amask(al));
+    cptr.stI32o3(svl, cptr.ldI16(m), $sizeof_rm_x21, cptr.ldI16o(m, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, Align2amask(al));
 }
 
 /** C ref: mklev.c:2353 — @param {CPtr<struct mkroom>} croom */
@@ -2027,7 +2031,7 @@ function mkinvpos(x, y, dist) {
     let ttmp;
     let otmp;
     let make_rocks;
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
+    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     let mon;
     if (!((x) >= 2 && (x) <= (cptr.ldI32(gx)) && (y) >= 2 && (y) <= (cptr.ldI32(gy)))) {
         if (dist < 5) {
@@ -2099,7 +2103,7 @@ function mkinvk_check_wall(x, y) {
         return 0;
     (__builtin_expect(BigInt((!(x > 0 && x < NHM.COLNO))), 0n) ? __assert_rtn(__s_mkinvk_check_wall, __s_mklev_c, 2609, __s_x_0_x_colno) : void 0);
     (__builtin_expect(BigInt((!(y >= 0 && y < NHM.ROWNO))), 0n) ? __assert_rtn(__s_mkinvk_check_wall, __s_mklev_c, 2610, __s_y_0_y_rowno) : void 0);
-    ltyp = cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ);
+    ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
     return (((ltyp) <= NHC.DBWALL) || ltyp == NHC.IRONBARS) ? 1 : 0;
 }
 

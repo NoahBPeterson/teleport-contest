@@ -95,7 +95,15 @@ const $RoleName_f = FLD.RoleName_f, $Role_mnum = FLD.Role_mnum, $Role_rank = FLD
     $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mlet = FLD.permonst_mlet,
     $permonst_mlevel = FLD.permonst_mlevel, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+    $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ, $sizeof_Role = FLD.sizeof_Role,
+    $sizeof_RoleName = FLD.sizeof_RoleName, $sizeof__cond_map = FLD.sizeof__cond_map,
+    $sizeof_conditions_t = FLD.sizeof_conditions_t, $sizeof_condmap = FLD.sizeof_condmap,
+    $sizeof_condtests_t = FLD.sizeof_condtests_t, $sizeof_dungeon = FLD.sizeof_dungeon,
+    $sizeof_fieldid_t = FLD.sizeof_fieldid_t, $sizeof_istat_s = FLD.sizeof_istat_s,
+    $sizeof_istat_s_x27 = FLD.sizeof_istat_s_x27, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_curs = FLD.window_procs_win_curs,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
@@ -629,7 +637,7 @@ export function do_statusline1() {
     if (Upolyd()) {
         let mbot = new Uint8Array(256);
         let k = 0;
-        void cptr.strcpy(cptr.decay(mbot), pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96), Ugender()));
+        void cptr.strcpy(cptr.decay(mbot), pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), Ugender()));
         while (cptr.ld1so(cptr.decay(mbot), k, 1) != 0) {
             if ((k == 0 || (k > 0 && cptr.ld1so(cptr.decay(mbot), (k - 1) | 0, 1) == 32)) && 97 <= cptr.ld1so(cptr.decay(mbot), k, 1) && cptr.ld1so(cptr.decay(mbot), k, 1) <= 122)
                 cptr.st1o(cptr.decay(mbot), k, cptr.ld1so(cptr.decay(mbot), k, 1) + -32, 1);
@@ -686,7 +694,7 @@ export function do_statusline2() {
     void cptr.sprintf(cptr.decay(__static_do_statusline2_hlth), __s_hp_d_d_pw_d_d_ac_2d, ((hp) < 9999 ? (hp) : 9999), ((hpmax) < 9999 ? (hpmax) : 9999), ((cptr.ldI32o(u, $you_uen)) < 9999 ? (cptr.ldI32o(u, $you_uen)) : 9999), ((cptr.ldI32o(u, $you_uenmax)) < 9999 ? (cptr.ldI32o(u, $you_uenmax)) : 9999), cptr.ld1so(u, $you_uac));
     hln = cptr.strlen(cptr.decay(__static_do_statusline2_hlth));
     if (Upolyd())
-        void cptr.sprintf(cptr.decay(__static_do_statusline2_expr), __s_hd_d, cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), 96, $permonst_mlevel));
+        void cptr.sprintf(cptr.decay(__static_do_statusline2_expr), __s_hd_d, cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel));
     else if (cptr.ld1so(flags, $flag_showexp))
         void cptr.sprintf(cptr.decay(__static_do_statusline2_expr), __s_xp_d_1ld, cptr.ldI32o(u, $you_ulevel), cptr.ldI64o(u, $you_uexp));
     else
@@ -805,10 +813,10 @@ export function rank_of(lev, monnum, female) {
     if (!cptr.ldPtr(role))
         role = cptr.add(gu, $instance_globals_u_urole);
     for (i = xlev_to_rank(lev); i >= 0; i--) {
-        if (female && cptr.ldPtro2(role, i, 16, $Role_rank + $RoleName_f))
-            return cptr.ldPtro2(role, i, 16, $Role_rank + $RoleName_f);
-        if (cptr.ldPtro2(role, i, 16, $Role_rank))
-            return cptr.ldPtro2(role, i, 16, $Role_rank);
+        if (female && cptr.ldPtro2(role, i, $sizeof_RoleName, $Role_rank + $RoleName_f))
+            return cptr.ldPtro2(role, i, $sizeof_RoleName, $Role_rank + $RoleName_f);
+        if (cptr.ldPtro2(role, i, $sizeof_RoleName, $Role_rank))
+            return cptr.ldPtro2(role, i, $sizeof_RoleName, $Role_rank);
     }
     if (female && cptr.ldPtro(role, $RoleName_f))
         return cptr.ldPtro(role, $RoleName_f);
@@ -826,21 +834,21 @@ function rank() {
 export function title_to_mon(str, rank_indx, title_length) {
     let i;
     let j;
-    for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
+    for (i = 0; cptr.ldPtro(roles, i, $sizeof_Role); i++) {
         for (j = 0; j < 9; j++) {
-            if (cptr.ldPtro3(roles, i, 312, j, 16, $Role_rank) && str_start_is(str, cptr.ldPtro3(roles, i, 312, j, 16, $Role_rank), 1)) {
+            if (cptr.ldPtro3(roles, i, $sizeof_Role, j, $sizeof_RoleName, $Role_rank) && str_start_is(str, cptr.ldPtro3(roles, i, $sizeof_Role, j, $sizeof_RoleName, $Role_rank), 1)) {
                 if (rank_indx)
                     cptr.stI32(rank_indx, j);
                 if (title_length)
-                    cptr.stI32(title_length, Strlen_(cptr.ldPtro3(roles, i, 312, j, 16, $Role_rank), __s_title_to_mon, 383) | 0);
-                return cptr.ldI16o2(roles, i, 312, $Role_mnum);
+                    cptr.stI32(title_length, Strlen_(cptr.ldPtro3(roles, i, $sizeof_Role, j, $sizeof_RoleName, $Role_rank), __s_title_to_mon, 383) | 0);
+                return cptr.ldI16o2(roles, i, $sizeof_Role, $Role_mnum);
             }
-            if (cptr.ldPtro3(roles, i, 312, j, 16, $Role_rank + $RoleName_f) && str_start_is(str, cptr.ldPtro3(roles, i, 312, j, 16, $Role_rank + $RoleName_f), 1)) {
+            if (cptr.ldPtro3(roles, i, $sizeof_Role, j, $sizeof_RoleName, $Role_rank + $RoleName_f) && str_start_is(str, cptr.ldPtro3(roles, i, $sizeof_Role, j, $sizeof_RoleName, $Role_rank + $RoleName_f), 1)) {
                 if (rank_indx)
                     cptr.stI32(rank_indx, j);
                 if (title_length)
-                    cptr.stI32(title_length, Strlen_(cptr.ldPtro3(roles, i, 312, j, 16, $Role_rank + $RoleName_f), __s_title_to_mon, 391) | 0);
-                return cptr.ldI16o2(roles, i, 312, $Role_mnum);
+                    cptr.stI32(title_length, Strlen_(cptr.ldPtro3(roles, i, $sizeof_Role, j, $sizeof_RoleName, $Role_rank + $RoleName_f), __s_title_to_mon, 391) | 0);
+                return cptr.ldI16o2(roles, i, $sizeof_Role, $Role_mnum);
             }
         }
     }
@@ -855,9 +863,9 @@ export function max_rank_sz() {
     let r;
     let maxr = 0n;
     for (i = 0; i < 9; i++) {
-        if (cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank) && (r = cptr.strlen(cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank))) > maxr)
+        if (cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank) && (r = cptr.strlen(cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank))) > maxr)
             maxr = r;
-        if (cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank + $RoleName_f) && (r = cptr.strlen(cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank + $RoleName_f))) > maxr)
+        if (cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank + $RoleName_f) && (r = cptr.strlen(cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank + $RoleName_f))) > maxr)
             maxr = r;
     }
     cptr.stI32o(gm, $instance_globals_m_mrank_sz, Number(BigInt.asIntN(32, maxr)));
@@ -870,7 +878,7 @@ export function describe_level(buf, dflgs) {
     let addbranch = schar(((dflgs & 2) != 0));
     let ret = 1;
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))) {
-        void cptr.sprintf(buf, __s_pct_s, cptr.add(svd, cptr.ldI16o(u, $you_uz), 112));
+        void cptr.sprintf(buf, __s_pct_s, cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon));
         addbranch = 0;
     } else if (In_quest(cptr.add(u, $you_uz))) {
         void cptr.sprintf(buf, __s_home_d, dunlev(cptr.add(u, $you_uz)));
@@ -887,7 +895,7 @@ export function describe_level(buf, dflgs) {
         ret = 0;
     }
     if (addbranch) {
-        void cptr.sprintf(eos(buf), __s_comma_sp_pct_s, cptr.add(svd, cptr.ldI16o(u, $you_uz), 112));
+        void cptr.sprintf(eos(buf), __s_comma_sp_pct_s, cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon));
         void strsubst(buf, __s_the__2, __s_the__3);
     }
     if (addspace)
@@ -975,7 +983,7 @@ export function armor_status(armbuf) {
 }
 
 /** C ref: botl.c:703 — struct istat_s[27] */
-const initblstats = cptr.alloc(27 * 88);
+const initblstats = cptr.alloc(27 * $sizeof_istat_s);
 cptr.stPtro(initblstats, 0, __s_title);
 cptr.stPtro(initblstats, 0 + $istat_s_fldfmt, __s_pct_s);
 cptr.stI64o(initblstats, 0 + $istat_s_time, 0n);
@@ -1383,7 +1391,7 @@ cptr.stPtro(initblstats, 2288 + $istat_s_hilite_rule, null);
 cptr.stPtro(initblstats, 2288 + $istat_s_thresholds, null);
 
 /** C ref: botl.c:749 — struct condmap[6] */
-const condition_aliases = cptr.alloc(6 * 16);
+const condition_aliases = cptr.alloc(6 * $sizeof_condmap);
 cptr.stPtro(condition_aliases, 0, __s_strangled);
 cptr.stU64o(condition_aliases, 0 + $condmap_bitmask, 2097152n);
 cptr.stPtro(condition_aliases, 16, __s_all);
@@ -1398,7 +1406,7 @@ cptr.stPtro(condition_aliases, 80, __s_opt_in);
 cptr.stU64o(condition_aliases, 80 + $condmap_bitmask, 1049270533n);
 
 /** C ref: botl.c:781 — struct conditions_t[30] */
-export const conditions = cptr.alloc(30 * 48);
+export const conditions = cptr.alloc(30 * $sizeof_conditions_t);
 cptr.stI32o(conditions, 0, 20);
 cptr.stI64o(conditions, 0 + $conditions_t_mask, 1n);
 cptr.stI32o(conditions, 0 + $conditions_t_c, NHC.bl_bareh);
@@ -1581,7 +1589,7 @@ cptr.stPtro(conditions, 1392 + $conditions_t_text + 8, __s_uhld);
 cptr.stPtro(conditions, 1392 + $conditions_t_text + 16, __s_uhd);
 
 /** C ref: botl.c:817 — struct condtests_t[30] */
-export const condtests = cptr.alloc(30 * 24);
+export const condtests = cptr.alloc(30 * $sizeof_condtests_t);
 cptr.stI32o(condtests, 0, NHC.bl_bareh);
 cptr.stPtro(condtests, 0 + $condtests_t_useroption, __s_barehanded);
 cptr.stI32o(condtests, 0 + $condtests_t_opt, NHC.opt_in);
@@ -1848,7 +1856,7 @@ function bot_via_windowport() {
     void __builtin___memset_chk(gv, 0, 27n, __builtin_object_size(gv, 0));
     void cptr.strcpy(nb = cptr.decay(buf), svp);
     cptr.st1o(nb, 0, highc(cptr.ld1so(nb, 0)));
-    titl = !Upolyd() ? rank() : pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), 96), Ugender());
+    titl = !Upolyd() ? rank() : pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), Ugender());
     i = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 6n) + cptr.strlen(titl)) - 1n))));
     if (i > 30) {
         i = (30 - Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, 6n + cptr.strlen(titl)) - 1n))))) | 0;
@@ -1861,113 +1869,113 @@ function bot_via_windowport() {
             if (i == 0 || cptr.ld1so(nb, (i - 1) | 0) == 32)
                 cptr.st1o(nb, i, highc(cptr.ld1so(nb, i)));
     }
-    void cptr.sprintf(cptr.ldPtro3(gb, idx, 2376, NHC.BL_TITLE, 88, $istat_s_val), __s_30s, cptr.decay(buf));
+    void cptr.sprintf(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_TITLE, $sizeof_istat_s, $istat_s_val), __s_30s, cptr.decay(buf));
     cptr.st1o(gv, NHC.BL_TITLE, 1, 1);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_STR, 88, $istat_s_a, (acurr(NHC.A_STR)));
-    void cptr.strcpy(cptr.ldPtro3(gb, idx, 2376, NHC.BL_STR, 88, $istat_s_val), get_strength_str());
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_STR, $sizeof_istat_s, $istat_s_a, (acurr(NHC.A_STR)));
+    void cptr.strcpy(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_STR, $sizeof_istat_s, $istat_s_val), get_strength_str());
     cptr.st1o(gv, NHC.BL_STR, 1, 1);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_DX, 88, $istat_s_a, (acurr(NHC.A_DEX)));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_CO, 88, $istat_s_a, (acurr(NHC.A_CON)));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_IN, 88, $istat_s_a, (acurr(NHC.A_INT)));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_WI, 88, $istat_s_a, (acurr(NHC.A_WIS)));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_CH, 88, $istat_s_a, (acurr(NHC.A_CHA)));
-    void cptr.strcpy(cptr.ldPtro3(gb, idx, 2376, NHC.BL_ALIGN, 88, $istat_s_val), (cptr.ld1so(u, $you_ualign) == -1) ? __s_chaotic__2 : ((cptr.ld1so(u, $you_ualign) == NHM.A_NEUTRAL) ? __s_neutral__2 : __s_lawful__2));
-    cptr.stI64o2(cptr.add(gb, idx, 2376), NHC.BL_SCORE, 88, $istat_s_a, 0n);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_DX, $sizeof_istat_s, $istat_s_a, (acurr(NHC.A_DEX)));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_CO, $sizeof_istat_s, $istat_s_a, (acurr(NHC.A_CON)));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_IN, $sizeof_istat_s, $istat_s_a, (acurr(NHC.A_INT)));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_WI, $sizeof_istat_s, $istat_s_a, (acurr(NHC.A_WIS)));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_CH, $sizeof_istat_s, $istat_s_a, (acurr(NHC.A_CHA)));
+    void cptr.strcpy(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ALIGN, $sizeof_istat_s, $istat_s_val), (cptr.ld1so(u, $you_ualign) == -1) ? __s_chaotic__2 : ((cptr.ld1so(u, $you_ualign) == NHM.A_NEUTRAL) ? __s_neutral__2 : __s_lawful__2));
+    cptr.stI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_SCORE, $sizeof_istat_s, $istat_s_a, 0n);
     i = Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp);
     if (i < 0)
         i = 0;
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_HP, 88, $istat_s_rawval, i);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_HP, 88, $istat_s_a, ((i) < 9999 ? (i) : 9999));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HP, $sizeof_istat_s, $istat_s_rawval, i);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HP, $sizeof_istat_s, $istat_s_a, ((i) < 9999 ? (i) : 9999));
     i = Upolyd() ? cptr.ldI32o(u, $you_mhmax) : cptr.ldI32o(u, $you_uhpmax);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_HPMAX, 88, $istat_s_rawval, i);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_HPMAX, 88, $istat_s_a, ((i) < 9999 ? (i) : 9999));
-    void describe_level(cptr.ldPtro3(gb, idx, 2376, NHC.BL_LEVELDESC, 88, $istat_s_val), 1);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HPMAX, $sizeof_istat_s, $istat_s_rawval, i);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HPMAX, $sizeof_istat_s, $istat_s_a, ((i) < 9999 ? (i) : 9999));
+    void describe_level(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_LEVELDESC, $sizeof_istat_s, $istat_s_val), 1);
     cptr.st1o(gv, NHC.BL_LEVELDESC, 1, 1);
     if ((money = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) < 0n)
         money = 0n;
-    cptr.stI64o2(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88, $istat_s_rawval, money);
-    cptr.stI64o2(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88, $istat_s_a, ((money) < 999999n ? (money) : 999999n));
-    void cptr.sprintf(cptr.ldPtro3(gb, idx, 2376, NHC.BL_GOLD, 88, $istat_s_val), __s_s_ld, (cptr.ld1so(iflags, $instance_flags_in_dumplog) || cptr.ld1so(iflags, $instance_flags_invis_goldsym)) ? __s_dollar : encglyph((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0)), cptr.ldI64o2(cptr.add(gb, idx, 2376), NHC.BL_GOLD, 88, $istat_s_a));
+    cptr.stI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_GOLD, $sizeof_istat_s, $istat_s_rawval, money);
+    cptr.stI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_GOLD, $sizeof_istat_s, $istat_s_a, ((money) < 999999n ? (money) : 999999n));
+    void cptr.sprintf(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_GOLD, $sizeof_istat_s, $istat_s_val), __s_s_ld, (cptr.ld1so(iflags, $instance_flags_in_dumplog) || cptr.ld1so(iflags, $instance_flags_invis_goldsym)) ? __s_dollar : encglyph((((NHC.GOLD_PIECE) + NHC.GLYPH_OBJ_OFF) | 0)), cptr.ldI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_GOLD, $sizeof_istat_s, $istat_s_a));
     cptr.st1o(gv, NHC.BL_GOLD, 1, 1);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_ENE, 88, $istat_s_rawval, cptr.ldI32o(u, $you_uen));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_ENE, 88, $istat_s_a, ((cptr.ldI32o(u, $you_uen)) < 9999 ? (cptr.ldI32o(u, $you_uen)) : 9999));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_ENEMAX, 88, $istat_s_rawval, cptr.ldI32o(u, $you_uenmax));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_ENEMAX, 88, $istat_s_a, ((cptr.ldI32o(u, $you_uenmax)) < 9999 ? (cptr.ldI32o(u, $you_uenmax)) : 9999));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_AC, 88, $istat_s_a, cptr.ld1so(u, $you_uac));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_HD, 88, $istat_s_a, Upolyd() ? cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), 96, $permonst_mlevel) : 0);
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_XP, 88, $istat_s_a, cptr.ldI32o(u, $you_ulevel));
-    cptr.stI64o2(cptr.add(gb, idx, 2376), NHC.BL_EXP, 88, $istat_s_a, cptr.ldI64o(u, $you_uexp));
-    cptr.stI64o2(cptr.add(gb, idx, 2376), NHC.BL_TIME, 88, $istat_s_a, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_HUNGER, 88, $istat_s_a, cptr.ldI32o(u, $you_uhs) | 0);
-    void cptr.strcpy(cptr.ldPtro3(gb, idx, 2376, NHC.BL_HUNGER, 88, $istat_s_val), (cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY) ? cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8) : __s_empty);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ENE, $sizeof_istat_s, $istat_s_rawval, cptr.ldI32o(u, $you_uen));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ENE, $sizeof_istat_s, $istat_s_a, ((cptr.ldI32o(u, $you_uen)) < 9999 ? (cptr.ldI32o(u, $you_uen)) : 9999));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ENEMAX, $sizeof_istat_s, $istat_s_rawval, cptr.ldI32o(u, $you_uenmax));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ENEMAX, $sizeof_istat_s, $istat_s_a, ((cptr.ldI32o(u, $you_uenmax)) < 9999 ? (cptr.ldI32o(u, $you_uenmax)) : 9999));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_AC, $sizeof_istat_s, $istat_s_a, cptr.ld1so(u, $you_uac));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HD, $sizeof_istat_s, $istat_s_a, Upolyd() ? cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel) : 0);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_XP, $sizeof_istat_s, $istat_s_a, cptr.ldI32o(u, $you_ulevel));
+    cptr.stI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_EXP, $sizeof_istat_s, $istat_s_a, cptr.ldI64o(u, $you_uexp));
+    cptr.stI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_TIME, $sizeof_istat_s, $istat_s_a, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HUNGER, $sizeof_istat_s, $istat_s_a, cptr.ldI32o(u, $you_uhs) | 0);
+    void cptr.strcpy(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HUNGER, $sizeof_istat_s, $istat_s_val), (cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY) ? cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8) : __s_empty);
     cptr.st1o(gv, NHC.BL_HUNGER, 1, 1);
     cap = near_capacity();
-    cptr.stI32o3(gb, idx, 2376, NHC.BL_CAP, 88, $istat_s_a, cap);
-    void cptr.strcpy(cptr.ldPtro3(gb, idx, 2376, NHC.BL_CAP, 88, $istat_s_val), (cap > NHC.UNENCUMBERED) ? cptr.ldPtro(enc_stat, cap, 8) : __s_empty);
+    cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_CAP, $sizeof_istat_s, $istat_s_a, cap);
+    void cptr.strcpy(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_CAP, $sizeof_istat_s, $istat_s_val), (cap > NHC.UNENCUMBERED) ? cptr.ldPtro(enc_stat, cap, 8) : __s_empty);
     cptr.st1o(gv, NHC.BL_CAP, 1, 1);
-    if (cptr.ldI32o3(gb, idx, 2376, NHC.BL_VERS, 88, $istat_s_a) != (cptr.ldI32o(flags, $flag_versinfo) | 0)) {
-        cptr.stI32o3(gb, idx, 2376, NHC.BL_VERS, 88, $istat_s_a, cptr.ldI32o(flags, $flag_versinfo) | 0);
+    if (cptr.ldI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_VERS, $sizeof_istat_s, $istat_s_a) != (cptr.ldI32o(flags, $flag_versinfo) | 0)) {
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_VERS, $sizeof_istat_s, $istat_s_a, cptr.ldI32o(flags, $flag_versinfo) | 0);
         cptr.st1o(gv, NHC.BL_VERS, 0, 1);
     }
     if (!cptr.ld1so(gv, NHC.BL_VERS, 1)) {
-        void status_version(cptr.ldPtro3(gb, idx, 2376, NHC.BL_VERS, 88, $istat_s_val), BigInt.asUintN(64, BigInt(cptr.ldI32o3(gb, idx, 2376, NHC.BL_VERS, 88, $istat_s_valwidth))), 0);
+        void status_version(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_VERS, $sizeof_istat_s, $istat_s_val), BigInt.asUintN(64, BigInt(cptr.ldI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_VERS, $sizeof_istat_s, $istat_s_valwidth))), 0);
         cptr.st1o(gv, NHC.BL_VERS, 1, 1);
     }
-    cptr.stU64o2(cptr.add(gb, idx, 2376), NHC.BL_CONDITION, 88, $istat_s_a, 0n);
-    cptr.st1o2(condtests, NHC.bl_foodpois, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_termill, 24, $condtests_t_test, 0));
+    cptr.stU64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_CONDITION, $sizeof_istat_s, $istat_s_a, 0n);
+    cptr.st1o2(condtests, NHC.bl_foodpois, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_termill, $sizeof_condtests_t, $condtests_t_test, 0));
     if (Sick()) {
-        if (cptr.ld1so2(condtests, NHC.bl_foodpois, 24, $condtests_t_enabled))
-            cptr.st1o2(condtests, NHC.bl_foodpois, 24, $condtests_t_test, schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0)));
-        if (cptr.ld1so2(condtests, NHC.bl_termill, 24, $condtests_t_enabled))
-            cptr.st1o2(condtests, NHC.bl_termill, 24, $condtests_t_test, schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) != 0)));
+        if (cptr.ld1so2(condtests, NHC.bl_foodpois, $sizeof_condtests_t, $condtests_t_enabled))
+            cptr.st1o2(condtests, NHC.bl_foodpois, $sizeof_condtests_t, $condtests_t_test, schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0)));
+        if (cptr.ld1so2(condtests, NHC.bl_termill, $sizeof_condtests_t, $condtests_t_enabled))
+            cptr.st1o2(condtests, NHC.bl_termill, $sizeof_condtests_t, $condtests_t_test, schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) != 0)));
     }
-    cptr.st1o2(condtests, NHC.bl_inlava, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_tethered, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_trapped, 24, $condtests_t_test, 0)));
+    cptr.st1o2(condtests, NHC.bl_inlava, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_tethered, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_trapped, $sizeof_condtests_t, $condtests_t_test, 0)));
     if (cptr.ldI32o(u, $you_utrap)) {
-        if (cptr.ld1so2(condtests, NHC.bl_inlava, 24, $condtests_t_enabled))
-            cptr.st1o2(condtests, NHC.bl_inlava, 24, $condtests_t_test, schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)));
-        if (cptr.ld1so2(condtests, NHC.bl_tethered, 24, $condtests_t_enabled))
-            cptr.st1o2(condtests, NHC.bl_tethered, 24, $condtests_t_test, schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)));
-        if (cptr.ld1so2(condtests, NHC.bl_trapped, 24, $condtests_t_enabled))
-            cptr.st1o2(condtests, NHC.bl_trapped, 24, $condtests_t_test, schar((!cptr.ld1so2(condtests, NHC.bl_inlava, 24, $condtests_t_test) && !cptr.ld1so2(condtests, NHC.bl_tethered, 24, $condtests_t_test) ? 1 : 0)));
+        if (cptr.ld1so2(condtests, NHC.bl_inlava, $sizeof_condtests_t, $condtests_t_enabled))
+            cptr.st1o2(condtests, NHC.bl_inlava, $sizeof_condtests_t, $condtests_t_test, schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)));
+        if (cptr.ld1so2(condtests, NHC.bl_tethered, $sizeof_condtests_t, $condtests_t_enabled))
+            cptr.st1o2(condtests, NHC.bl_tethered, $sizeof_condtests_t, $condtests_t_test, schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)));
+        if (cptr.ld1so2(condtests, NHC.bl_trapped, $sizeof_condtests_t, $condtests_t_enabled))
+            cptr.st1o2(condtests, NHC.bl_trapped, $sizeof_condtests_t, $condtests_t_test, schar((!cptr.ld1so2(condtests, NHC.bl_inlava, $sizeof_condtests_t, $condtests_t_test) && !cptr.ld1so2(condtests, NHC.bl_tethered, $sizeof_condtests_t, $condtests_t_test) ? 1 : 0)));
     }
-    cptr.st1o2(condtests, NHC.bl_grab, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_held, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_holding, 24, $condtests_t_test, 0)));
+    cptr.st1o2(condtests, NHC.bl_grab, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_holding, $sizeof_condtests_t, $condtests_t_test, 0)));
     if (cptr.ldPtro(u, $you_ustuck)) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-            if (cptr.ld1so2(condtests, NHC.bl_held, 24, $condtests_t_enabled))
-                cptr.st1o2(condtests, NHC.bl_held, 24, $condtests_t_test, 1);
+            if (cptr.ld1so2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_enabled))
+                cptr.st1o2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_test, 1);
         } else if (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            if (cptr.ld1so2(condtests, NHC.bl_holding, 24, $condtests_t_enabled))
-                cptr.st1o2(condtests, NHC.bl_holding, 24, $condtests_t_test, 1);
+            if (cptr.ld1so2(condtests, NHC.bl_holding, $sizeof_condtests_t, $condtests_t_enabled))
+                cptr.st1o2(condtests, NHC.bl_holding, $sizeof_condtests_t, $condtests_t_test, 1);
         } else {
-            if (cptr.ld1so2(condtests, NHC.bl_grab, 24, $condtests_t_enabled))
-                cptr.st1o2(condtests, NHC.bl_grab, 24, $condtests_t_test, schar((cptr.ld1so(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), $permonst_mlet) == NHC.S_EEL)));
-            if (cptr.ld1so2(condtests, NHC.bl_held, 24, $condtests_t_enabled))
-                cptr.st1o2(condtests, NHC.bl_held, 24, $condtests_t_test, schar((!cptr.ld1so2(condtests, NHC.bl_grab, 24, $condtests_t_test))));
+            if (cptr.ld1so2(condtests, NHC.bl_grab, $sizeof_condtests_t, $condtests_t_enabled))
+                cptr.st1o2(condtests, NHC.bl_grab, $sizeof_condtests_t, $condtests_t_test, schar((cptr.ld1so(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), $permonst_mlet) == NHC.S_EEL)));
+            if (cptr.ld1so2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_enabled))
+                cptr.st1o2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_test, schar((!cptr.ld1so2(condtests, NHC.bl_grab, $sizeof_condtests_t, $condtests_t_test))));
         }
     }
-    cptr.st1o2(condtests, NHC.bl_blind, 24, $condtests_t_test, schar(((Blind()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_conf, 24, $condtests_t_test, schar(((HConfusion()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_deaf, 24, $condtests_t_test, schar(((Deaf()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_fly, 24, $condtests_t_test, schar(((Flying()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_glowhands, 24, $condtests_t_test, schar(((cptr.ldI32o(u, $you_umconf)) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_hallu, 24, $condtests_t_test, schar(((Hallucination()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_lev, 24, $condtests_t_test, schar(((Levitation()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_ride, 24, $condtests_t_test, schar(((cptr.ldPtro(u, $you_usteed)) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_slime, 24, $condtests_t_test, schar(((Slimed()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_stone, 24, $condtests_t_test, schar(((Stoned()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_strngl, 24, $condtests_t_test, schar(((Strangled()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_stun, 24, $condtests_t_test, schar(((HStun()) ? 1 : 0)));
-    cptr.st1o2(condtests, NHC.bl_submerged, 24, $condtests_t_test, schar(((Underwater()) | 0 ? 1 : 0)));
-    if (cptr.ld1so2(condtests, NHC.bl_elf_iron, 24, $condtests_t_enabled))
-        cptr.st1o2(condtests, NHC.bl_elf_iron, 24, $condtests_t_test, 0);
-    if (cptr.ld1so2(condtests, NHC.bl_bareh, 24, $condtests_t_enabled))
-        cptr.st1o2(condtests, NHC.bl_bareh, 24, $condtests_t_test, schar((!uarmg.v && !uwep.v ? 1 : 0)));
-    if (cptr.ld1so2(condtests, NHC.bl_icy, 24, $condtests_t_enabled))
-        cptr.st1o2(condtests, NHC.bl_icy, 24, $condtests_t_test, schar((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ICE)));
-    if (cptr.ld1so2(condtests, NHC.bl_slippery, 24, $condtests_t_enabled))
-        cptr.st1o2(condtests, NHC.bl_slippery, 24, $condtests_t_test, schar(((Glib()) ? 1 : 0)));
-    if (cptr.ld1so2(condtests, NHC.bl_woundedl, 24, $condtests_t_enabled))
-        cptr.st1o2(condtests, NHC.bl_woundedl, 24, $condtests_t_test, schar(((Wounded_legs()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_blind, $sizeof_condtests_t, $condtests_t_test, schar(((Blind()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_conf, $sizeof_condtests_t, $condtests_t_test, schar(((HConfusion()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_deaf, $sizeof_condtests_t, $condtests_t_test, schar(((Deaf()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_fly, $sizeof_condtests_t, $condtests_t_test, schar(((Flying()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_glowhands, $sizeof_condtests_t, $condtests_t_test, schar(((cptr.ldI32o(u, $you_umconf)) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_hallu, $sizeof_condtests_t, $condtests_t_test, schar(((Hallucination()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_lev, $sizeof_condtests_t, $condtests_t_test, schar(((Levitation()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_ride, $sizeof_condtests_t, $condtests_t_test, schar(((cptr.ldPtro(u, $you_usteed)) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_slime, $sizeof_condtests_t, $condtests_t_test, schar(((Slimed()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_stone, $sizeof_condtests_t, $condtests_t_test, schar(((Stoned()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_strngl, $sizeof_condtests_t, $condtests_t_test, schar(((Strangled()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_stun, $sizeof_condtests_t, $condtests_t_test, schar(((HStun()) ? 1 : 0)));
+    cptr.st1o2(condtests, NHC.bl_submerged, $sizeof_condtests_t, $condtests_t_test, schar(((Underwater()) | 0 ? 1 : 0)));
+    if (cptr.ld1so2(condtests, NHC.bl_elf_iron, $sizeof_condtests_t, $condtests_t_enabled))
+        cptr.st1o2(condtests, NHC.bl_elf_iron, $sizeof_condtests_t, $condtests_t_test, 0);
+    if (cptr.ld1so2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_enabled))
+        cptr.st1o2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_test, schar((!uarmg.v && !uwep.v ? 1 : 0)));
+    if (cptr.ld1so2(condtests, NHC.bl_icy, $sizeof_condtests_t, $condtests_t_enabled))
+        cptr.st1o2(condtests, NHC.bl_icy, $sizeof_condtests_t, $condtests_t_test, schar((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ICE)));
+    if (cptr.ld1so2(condtests, NHC.bl_slippery, $sizeof_condtests_t, $condtests_t_enabled))
+        cptr.st1o2(condtests, NHC.bl_slippery, $sizeof_condtests_t, $condtests_t_test, schar(((Glib()) ? 1 : 0)));
+    if (cptr.ld1so2(condtests, NHC.bl_woundedl, $sizeof_condtests_t, $condtests_t_enabled))
+        cptr.st1o2(condtests, NHC.bl_woundedl, $sizeof_condtests_t, $condtests_t_test, schar(((Wounded_legs()) ? 1 : 0)));
     if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
         {
             let clear_cache = 0;
@@ -1997,49 +2005,49 @@ function bot_via_windowport() {
                 cptr.st1o(cptr.decay(cache_reslt), 1, cptr.st1o(cptr.decay(cache_avail), 1, 0, 1), 1);
             }
         }
-        if (cptr.ld1so2(condtests, NHC.bl_unconsc, 24, $condtests_t_enabled) && cache_nomovemsg && !cptr.ld1so(cptr.decay(cache_avail), 0, 1)) {
+        if (cptr.ld1so2(condtests, NHC.bl_unconsc, $sizeof_condtests_t, $condtests_t_enabled) && cache_nomovemsg && !cptr.ld1so(cptr.decay(cache_avail), 0, 1)) {
             cptr.st1o(cptr.decay(cache_reslt), 0, schar((!cptr.ldI64o(u, $you_usleep) && unconscious() ? 1 : 0)), 1);
             cptr.st1o(cptr.decay(cache_avail), 0, 1, 1);
         }
-        if (cptr.ld1so2(condtests, NHC.bl_parlyz, 24, $condtests_t_enabled) && cache_multi_reason && !cptr.ld1so(cptr.decay(cache_avail), 1, 1)) {
+        if (cptr.ld1so2(condtests, NHC.bl_parlyz, $sizeof_condtests_t, $condtests_t_enabled) && cache_multi_reason && !cptr.ld1so(cptr.decay(cache_avail), 1, 1)) {
             cptr.st1o(cptr.decay(cache_reslt), 1, schar((!cptr.strncmp(cache_multi_reason, __s_paralyzed, 9n) || !cptr.strncmp(cache_multi_reason, __s_frozen, 6n) ? 1 : 0)), 1);
             cptr.st1o(cptr.decay(cache_avail), 1, 1, 1);
         }
         if (cptr.ld1so(cptr.decay(cache_avail), 0, 1) && cptr.ld1so(cptr.decay(cache_reslt), 0, 1)) {
-            cptr.st1o2(condtests, NHC.bl_unconsc, 24, $condtests_t_test, cptr.ld1so(cptr.decay(cache_reslt), 0, 1));
+            cptr.st1o2(condtests, NHC.bl_unconsc, $sizeof_condtests_t, $condtests_t_test, cptr.ld1so(cptr.decay(cache_reslt), 0, 1));
         } else if (cptr.ld1so(cptr.decay(cache_avail), 1, 1) && cptr.ld1so(cptr.decay(cache_reslt), 1, 1)) {
-            cptr.st1o2(condtests, NHC.bl_parlyz, 24, $condtests_t_test, cptr.ld1so(cptr.decay(cache_reslt), 1, 1));
-        } else if (cptr.ld1so2(condtests, NHC.bl_sleeping, 24, $condtests_t_enabled) && cptr.ldI64o(u, $you_usleep)) {
-            cptr.st1o2(condtests, NHC.bl_sleeping, 24, $condtests_t_test, 1);
-        } else if (cptr.ld1so2(condtests, NHC.bl_busy, 24, $condtests_t_enabled)) {
-            cptr.st1o2(condtests, NHC.bl_busy, 24, $condtests_t_test, 1);
+            cptr.st1o2(condtests, NHC.bl_parlyz, $sizeof_condtests_t, $condtests_t_test, cptr.ld1so(cptr.decay(cache_reslt), 1, 1));
+        } else if (cptr.ld1so2(condtests, NHC.bl_sleeping, $sizeof_condtests_t, $condtests_t_enabled) && cptr.ldI64o(u, $you_usleep)) {
+            cptr.st1o2(condtests, NHC.bl_sleeping, $sizeof_condtests_t, $condtests_t_test, 1);
+        } else if (cptr.ld1so2(condtests, NHC.bl_busy, $sizeof_condtests_t, $condtests_t_enabled)) {
+            cptr.st1o2(condtests, NHC.bl_busy, $sizeof_condtests_t, $condtests_t_test, 1);
         }
     } else {
-        cptr.st1o2(condtests, NHC.bl_unconsc, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_parlyz, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_sleeping, 24, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_busy, 24, $condtests_t_test, 0))));
+        cptr.st1o2(condtests, NHC.bl_unconsc, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_parlyz, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_sleeping, $sizeof_condtests_t, $condtests_t_test, cptr.st1o2(condtests, NHC.bl_busy, $sizeof_condtests_t, $condtests_t_test, 0))));
     }
     for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
-        if (cptr.ld1so2(condtests, i, 24, $condtests_t_enabled) && cptr.ld1so2(condtests, i, 24, $condtests_t_test))
-            cptr.stU64o2(cptr.add(gb, idx, 2376), NHC.BL_CONDITION, 88, $istat_s_a, cptr.ldU64o2(cptr.add(gb, idx, 2376), NHC.BL_CONDITION, 88, $istat_s_a) | BigInt.asUintN(64, cptr.ldI64o2(conditions, (i), 48, $conditions_t_mask)));
+        if (cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_enabled) && cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_test))
+            cptr.stU64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_CONDITION, $sizeof_istat_s, $istat_s_a, cptr.ldU64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), NHC.BL_CONDITION, $sizeof_istat_s, $istat_s_a) | BigInt.asUintN(64, cptr.ldI64o2(conditions, (i), $sizeof_conditions_t, $conditions_t_mask)));
     }
     if (cptr.ld1so(flags, $flag_weaponstatus))
-        void weapon_status(cptr.ldPtro3(gb, idx, 2376, NHC.BL_WEAPON, 88, $istat_s_val));
+        void weapon_status(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_WEAPON, $sizeof_istat_s, $istat_s_val));
     else
-        cptr.st1(cptr.ldPtro3(gb, idx, 2376, NHC.BL_WEAPON, 88, $istat_s_val), 0);
+        cptr.st1(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_WEAPON, $sizeof_istat_s, $istat_s_val), 0);
     if (cptr.ld1so(flags, $flag_armorstatus))
-        void armor_status(cptr.ldPtro3(gb, idx, 2376, NHC.BL_ARMOR, 88, $istat_s_val));
+        void armor_status(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ARMOR, $sizeof_istat_s, $istat_s_val));
     else
-        cptr.st1(cptr.ldPtro3(gb, idx, 2376, NHC.BL_ARMOR, 88, $istat_s_val), 0);
+        cptr.st1(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_ARMOR, $sizeof_istat_s, $istat_s_val), 0);
     if (cptr.ld1so(flags, $flag_terrainstatus)) {
         if (cptr.ldI32o(iflags, $instance_flags_terrain_typ) == NHC.MAX_TYPE)
             classify_terrain();
         i = cptr.ldI32o(iflags, $instance_flags_terrain_typ);
-        if (cptr.ldI32o3(gb, idx, 2376, NHC.BL_TERRAIN, 88, $istat_s_a) != i) {
-            void cptr.strcpy(cptr.ldPtro3(gb, idx, 2376, NHC.BL_TERRAIN, 88, $istat_s_val), cptr.ldPtro(terrain_descr, i, 8));
-            cptr.stI32o3(gb, idx, 2376, NHC.BL_TERRAIN, 88, $istat_s_a, i);
+        if (cptr.ldI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_TERRAIN, $sizeof_istat_s, $istat_s_a) != i) {
+            void cptr.strcpy(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_TERRAIN, $sizeof_istat_s, $istat_s_val), cptr.ldPtro(terrain_descr, i, 8));
+            cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_TERRAIN, $sizeof_istat_s, $istat_s_a, i);
         }
     } else {
-        cptr.st1(cptr.ldPtro3(gb, idx, 2376, NHC.BL_TERRAIN, 88, $istat_s_val), 0);
-        cptr.stI32o3(gb, idx, 2376, NHC.BL_TERRAIN, 88, $istat_s_a, NHC.MAX_TYPE);
+        cptr.st1(cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_TERRAIN, $sizeof_istat_s, $istat_s_val), 0);
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_TERRAIN, $sizeof_istat_s, $istat_s_a, NHC.MAX_TYPE);
     }
     cptr.st1o(gv, NHC.BL_TERRAIN, 1, 1);
     evaluate_and_notify_windowport(gv, idx);
@@ -2049,7 +2057,7 @@ function bot_via_windowport() {
 function stat_update_time() {
     let idx = cptr.ldI32(gn);
     let fld = NHC.BL_TIME;
-    cptr.stI64o2(cptr.add(gb, idx, 2376), fld, 88, $istat_s_a, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
+    cptr.stI64o2(cptr.add(gb, idx, $sizeof_istat_s_x27), fld, $sizeof_istat_s, $istat_s_a, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     cptr.st1o(gv, fld, 0, 1);
     eval_notify_windowport_field(fld, gv, idx);
     if ((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 128n) != 0n)
@@ -2060,19 +2068,19 @@ function stat_update_time() {
 /** C ref: botl.c:1303 — @param {CInt} idx @param {CPtr<boolean>} addr @param {CInt} negated */
 export function condopt(idx, addr, negated) {
     let i;
-    if ((idx < 0 || idx >= NHC.CONDITION_COUNT) || (addr && !cptr.eq(addr, cptr.add(cptr.add(condtests, idx, 24), $condtests_t_choice))))
+    if ((idx < 0 || idx >= NHC.CONDITION_COUNT) || (addr && !cptr.eq(addr, cptr.add(cptr.add(condtests, idx, $sizeof_condtests_t), $condtests_t_choice))))
         return;
     if (!addr) {
         cptr.stI32o(gc, $instance_globals_c_condmenu_sortorder, 0);
         for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
             cptr.stI32o(cond_idx, i, i, 4);
-            cptr.st1o2(condtests, i, 24, $condtests_t_choice, cptr.ld1so2(condtests, i, 24, $condtests_t_enabled));
+            cptr.st1o2(condtests, i, $sizeof_condtests_t, $condtests_t_choice, cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_enabled));
         }
         nh_deterministic_qsort((cond_idx), 30n, 4n, (cond_cmp));
     } else {
-        cptr.st1o2(condtests, idx, 24, $condtests_t_enabled, schar((negated ? 0 : 1)));
-        cptr.st1o2(condtests, idx, 24, $condtests_t_choice, cptr.ld1so2(condtests, idx, 24, $condtests_t_enabled));
-        cptr.st1o2(condtests, idx, 24, $condtests_t_test, 0);
+        cptr.st1o2(condtests, idx, $sizeof_condtests_t, $condtests_t_enabled, schar((negated ? 0 : 1)));
+        cptr.st1o2(condtests, idx, $sizeof_condtests_t, $condtests_t_choice, cptr.ld1so2(condtests, idx, $sizeof_condtests_t, $condtests_t_enabled));
+        cptr.st1o2(condtests, idx, $sizeof_condtests_t, $condtests_t_test, 0);
     }
 }
 
@@ -2080,18 +2088,18 @@ export function condopt(idx, addr, negated) {
 function cond_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
-    let c1 = cptr.ldI32o(conditions, indx1, 48);
-    let c2 = cptr.ldI32o(conditions, indx2, 48);
+    let c1 = cptr.ldI32o(conditions, indx1, $sizeof_conditions_t);
+    let c2 = cptr.ldI32o(conditions, indx2, $sizeof_conditions_t);
     if (c1 != c2)
         return (c1 - c2) | 0;
-    return strncmpi((cptr.ldPtro2(condtests, indx1, 24, $condtests_t_useroption)), (cptr.ldPtro2(condtests, indx2, 24, $condtests_t_useroption)), -1);
+    return strncmpi((cptr.ldPtro2(condtests, indx1, $sizeof_condtests_t, $condtests_t_useroption)), (cptr.ldPtro2(condtests, indx2, $sizeof_condtests_t, $condtests_t_useroption)), -1);
 }
 
 /** C ref: botl.c:1346 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function menualpha_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
-    return strncmpi((cptr.ldPtro2(condtests, indx1, 24, $condtests_t_useroption)), (cptr.ldPtro2(condtests, indx2, 24, $condtests_t_useroption)), -1);
+    return strncmpi((cptr.ldPtro2(condtests, indx1, $sizeof_condtests_t, $condtests_t_useroption)), (cptr.ldPtro2(condtests, indx2, $sizeof_condtests_t, $condtests_t_useroption)), -1);
 }
 
 /** C ref: botl.c:1354 — @param {CInt} negated @param {CPtr<char>} opts @returns {CInt} */
@@ -2105,10 +2113,10 @@ export function parse_cond_option(negated, opts) {
         return 2;
     uniqpart = cptr.add(opts, 5n);
     for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
-        compareto = cptr.ldPtro2(condtests, i, 24, $condtests_t_useroption);
+        compareto = cptr.ldPtro2(condtests, i, $sizeof_condtests_t, $condtests_t_useroption);
         sl = Strlen_(compareto, __s_parse_cond_option, 1364) | 0;
         if (match_optname(uniqpart, compareto, (sl >= 4) ? 4 : sl, 0)) {
-            condopt(i, cptr.add(cptr.add(condtests, i, 24), $condtests_t_choice), negated);
+            condopt(i, cptr.add(cptr.add(condtests, i, $sizeof_condtests_t), $condtests_t_choice), negated);
             return 0;
         }
     }
@@ -2148,11 +2156,11 @@ export function cond_menu() {
         add_menu_heading(tmpwin, cptr.decay(mbuf));
         for (i = 0; i < 30; i++) {
             idx = cptr.ldI32o(sequence, i, 4);
-            void cptr.sprintf(cptr.decay(mbuf), __s_cond_14s, cptr.ldPtro2(condtests, idx, 24, $condtests_t_useroption));
+            void cptr.sprintf(cptr.decay(mbuf), __s_cond_14s, cptr.ldPtro2(condtests, idx, $sizeof_condtests_t, $condtests_t_useroption));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(any, (idx + 2) | 0);
-            cptr.st1o2(condtests, idx, 24, $condtests_t_choice, 0);
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mbuf), cptr.ld1so2(condtests, idx, 24, $condtests_t_enabled) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+            cptr.st1o2(condtests, idx, $sizeof_condtests_t, $condtests_t_choice, 0);
+            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mbuf), cptr.ld1so2(condtests, idx, $sizeof_condtests_t, $condtests_t_enabled) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
         }
         end_menu()(tmpwin, __s_choose_status_conditions_to_toggle);
         res = select_menu(tmpwin, NHM.PICK_ANY, picks);
@@ -2160,14 +2168,14 @@ export function cond_menu() {
         showmenu = 0;
         if (res > 0) {
             for (i = 0; i < res; i++) {
-                idx = cptr.ldI32o(picks.v, i, 24);
+                idx = cptr.ldI32o(picks.v, i, $sizeof_menu_item);
                 if (idx == 1) {
                     cptr.stI32o(gc, $instance_globals_c_condmenu_sortorder, (1 - cptr.ldI32o(gc, $instance_globals_c_condmenu_sortorder)) | 0);
                     showmenu = 1;
                     break;
                 } else {
                     idx = (idx - 2) | 0;
-                    cptr.st1o2(condtests, idx, 24, $condtests_t_choice, 1);
+                    cptr.st1o2(condtests, idx, $sizeof_condtests_t, $condtests_t_choice, 1);
                 }
             }
             cptr.free(picks.v);
@@ -2175,9 +2183,9 @@ export function cond_menu() {
     } while (showmenu);
     if (res >= 0) {
         for (i = 0; i < NHC.CONDITION_COUNT; ++i)
-            if (cptr.ld1so2(condtests, i, 24, $condtests_t_enabled) != cptr.ld1so2(condtests, i, 24, $condtests_t_choice)) {
-                cptr.st1o2(condtests, i, 24, $condtests_t_enabled, cptr.ld1so2(condtests, i, 24, $condtests_t_choice));
-                cptr.st1o2(condtests, idx, 24, $condtests_t_test, 0);
+            if (cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_enabled) != cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_choice)) {
+                cptr.st1o2(condtests, i, $sizeof_condtests_t, $condtests_t_enabled, cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_choice));
+                cptr.st1o2(condtests, idx, $sizeof_condtests_t, $condtests_t_test, 0);
                 cptr.st1(disp, changed = 1);
             }
     }
@@ -2189,8 +2197,8 @@ export function opt_next_cond(indx, outbuf) {
     cptr.st1(outbuf, 0);
     if (indx >= NHC.CONDITION_COUNT)
         return 0;
-    if ((cptr.ldI32o2(condtests, indx, 24, $condtests_t_opt) == NHC.opt_in && cptr.ld1so2(condtests, indx, 24, $condtests_t_enabled)) || (cptr.ldI32o2(condtests, indx, 24, $condtests_t_opt) == NHC.opt_out && !cptr.ld1so2(condtests, indx, 24, $condtests_t_enabled))) {
-        void cptr.sprintf(outbuf, __s_scond_s, cptr.ld1so2(condtests, indx, 24, $condtests_t_enabled) ? __s_empty : __s_bang, cptr.ldPtro2(condtests, indx, 24, $condtests_t_useroption));
+    if ((cptr.ldI32o2(condtests, indx, $sizeof_condtests_t, $condtests_t_opt) == NHC.opt_in && cptr.ld1so2(condtests, indx, $sizeof_condtests_t, $condtests_t_enabled)) || (cptr.ldI32o2(condtests, indx, $sizeof_condtests_t, $condtests_t_opt) == NHC.opt_out && !cptr.ld1so2(condtests, indx, $sizeof_condtests_t, $condtests_t_enabled))) {
+        void cptr.sprintf(outbuf, __s_scond_s, cptr.ld1so2(condtests, indx, $sizeof_condtests_t, $condtests_t_enabled) ? __s_empty : __s_bang, cptr.ldPtro2(condtests, indx, $sizeof_condtests_t, $condtests_t_useroption));
     }
     return 1;
 }
@@ -2209,14 +2217,14 @@ function eval_notify_windowport_field(fld, valsetlist, idx) {
     let curr;
     let prev;
     let fldmax;
-    anytype = cptr.ldI32o3(gb, idx, 2376, fld, 88, $istat_s_anytype);
-    curr = cptr.add(cptr.add(gb, idx, 2376), fld, 88);
-    prev = cptr.add(cptr.add(gb, (1 - idx) | 0, 2376), fld, 88);
+    anytype = cptr.ldI32o3(gb, idx, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_anytype);
+    curr = cptr.add(cptr.add(gb, idx, $sizeof_istat_s_x27), fld, $sizeof_istat_s);
+    prev = cptr.add(cptr.add(gb, (1 - idx) | 0, $sizeof_istat_s_x27), fld, $sizeof_istat_s);
     color.v = NHM.NO_COLOR;
     chg = cptr.ld1s(gu) ? 0 : compare_blstats(prev, curr);
     if (((chg || cptr.ld1s(gu) || fld == NHC.BL_XP) && cptr.ld1so(curr, $istat_s_percent_matters) && cptr.ldPtro(curr, $istat_s_thresholds)) || (fld == NHC.BL_HP && cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar))) {
         fldmax = cptr.ldI32o(curr, $istat_s_idxmax);
-        pc = (fldmax == NHC.BL_EXP) ? exp_percentage() : ((fldmax >= 0 && fldmax < NHC.MAXBLSTATS) ? percentage(curr, cptr.add(cptr.add(gb, idx, 2376), fldmax, 88)) : 0);
+        pc = (fldmax == NHC.BL_EXP) ? exp_percentage() : ((fldmax >= 0 && fldmax < NHC.MAXBLSTATS) ? percentage(curr, cptr.add(cptr.add(gb, idx, $sizeof_istat_s_x27), fldmax, $sizeof_istat_s)) : 0);
         if (pc != cptr.ldI16o(prev, $istat_s_percent_value))
             chg = (pc < cptr.ldI16o(prev, $istat_s_percent_value)) ? -1 : 1;
         cptr.stI16o(curr, $istat_s_percent_value, i16(pc));
@@ -2267,7 +2275,7 @@ function evaluate_and_notify_windowport(valsetlist, idx) {
     let fld;
     let updated = 0;
     for (i = 0; i < NHC.MAXBLSTATS; i++) {
-        fld = cptr.ldI32o2(initblstats, i, 88, $istat_s_fld);
+        fld = cptr.ldI32o2(initblstats, i, $sizeof_istat_s, $istat_s_fld);
         if (((fld == NHC.BL_SCORE) && !cptr.ld1so(flags, $flag_showscore)) || ((fld == NHC.BL_EXP) && !cptr.ld1so(flags, $flag_showexp)) || ((fld == NHC.BL_TIME) && !cptr.ld1so(flags, $flag_time)) || ((fld == NHC.BL_HD) && !Upolyd()) || ((fld == NHC.BL_XP || fld == NHC.BL_EXP) && Upolyd()) || ((fld == NHC.BL_VERS) && !cptr.ld1so(flags, $flag_showvers)) || ((fld == NHC.BL_TERRAIN) && !cptr.ld1so(flags, $flag_terrainstatus)) || ((fld == NHC.BL_WEAPON) && !cptr.ld1so(flags, $flag_weaponstatus)) || ((fld == NHC.BL_ARMOR) && !cptr.ld1so(flags, $flag_armorstatus))) {
             continue;
         }
@@ -2299,10 +2307,10 @@ export function status_initialize(reassessment) {
         panic(__s_status_reassess_before_init);
     }
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        fld = cptr.ldI32o2(initblstats, i, 88, $istat_s_fld);
+        fld = cptr.ldI32o2(initblstats, i, $sizeof_istat_s, $istat_s_fld);
         fldenabl = schar(((fld == NHC.BL_SCORE) ? cptr.ld1so(flags, $flag_showscore) : ((fld == NHC.BL_TIME) ? cptr.ld1so(flags, $flag_time) : ((fld == NHC.BL_EXP) ? schar((cptr.ld1so(flags, $flag_showexp) && !Upolyd() ? 1 : 0)) : ((fld == NHC.BL_XP) ? schar((!Upolyd())) : ((fld == NHC.BL_HD) ? schar(Upolyd()) : ((fld == NHC.BL_VERS) ? cptr.ld1so(flags, $flag_showvers) : ((fld == NHC.BL_WEAPON) ? cptr.ld1so(flags, $flag_weaponstatus) : ((fld == NHC.BL_ARMOR) ? cptr.ld1so(flags, $flag_armorstatus) : ((fld == NHC.BL_TERRAIN) ? cptr.ld1so(flags, $flag_terrainstatus) : 1))))))))));
-        fieldname = cptr.ldPtro(initblstats, i, 88);
-        fieldfmt = (fld == NHC.BL_TITLE && cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar)) ? __s_30_30s : cptr.ldPtro2(initblstats, i, 88, $istat_s_fldfmt);
+        fieldname = cptr.ldPtro(initblstats, i, $sizeof_istat_s);
+        fieldfmt = (fld == NHC.BL_TITLE && cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar)) ? __s_30_30s : cptr.ldPtro2(initblstats, i, $sizeof_istat_s, $istat_s_fldfmt);
         status_enablefield()(fld, fieldname, fieldfmt, fldenabl);
     }
     cptr.st1(gu, 1);
@@ -2315,19 +2323,19 @@ export function status_finish() {
     if (cptr.ldPtro(windowprocs, $window_procs_win_status_finish))
         (cptr.ldPtro(windowprocs, $window_procs_win_status_finish))();
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        if (cptr.ldPtro3(gb, 0, 2376, i, 88, $istat_s_val))
-            cptr.free(cptr.ldPtro3(gb, 0, 2376, i, 88, $istat_s_val)), cptr.stPtro3(gb, 0, 2376, i, 88, $istat_s_val, (null));
-        if (cptr.ldPtro3(gb, 1, 2376, i, 88, $istat_s_val))
-            cptr.free(cptr.ldPtro3(gb, 1, 2376, i, 88, $istat_s_val)), cptr.stPtro3(gb, 1, 2376, i, 88, $istat_s_val, (null));
-        cptr.stPtro3(gb, 0, 2376, i, 88, $istat_s_hilite_rule, cptr.stPtro3(gb, 1, 2376, i, 88, $istat_s_hilite_rule, null));
-        if (cptr.ldPtro3(gb, 0, 2376, i, 88, $istat_s_thresholds)) {
+        if (cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val))
+            cptr.free(cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val)), cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val, (null));
+        if (cptr.ldPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val))
+            cptr.free(cptr.ldPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val)), cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val, (null));
+        cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, null));
+        if (cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds)) {
             let temp;
             let next;
-            for (temp = cptr.ldPtro3(gb, 0, 2376, i, 88, $istat_s_thresholds); temp; temp = next) {
+            for (temp = cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds); temp; temp = next) {
                 next = cptr.ldPtro(temp, $hilite_s_next);
                 cptr.free(temp);
             }
-            cptr.stPtro3(gb, 0, 2376, i, 88, $istat_s_thresholds, cptr.stPtro3(gb, 1, 2376, i, 88, $istat_s_thresholds, (null)));
+            cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds, cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds, (null)));
         }
     }
 }
@@ -2344,15 +2352,15 @@ function init_blstats() {
     }
     for (i = 0; i <= 1; ++i) {
         for (j = 0; j < NHC.MAXBLSTATS; ++j) {
-            let keep_hilite_chain = cptr.ldPtro3(gb, i, 2376, j, 88, $istat_s_thresholds);
-            cptr.memcpy(cptr.add(cptr.add(gb, i, 2376), j, 88), cptr.add(initblstats, j, 88), 88);
-            cptr.memcpy(cptr.add(cptr.add(cptr.add(gb, i, 2376), j, 88), $istat_s_a), cptr.add(cg, $const_globals_zeroany), 8);
-            if (cptr.ldI32o3(gb, i, 2376, j, 88, $istat_s_valwidth)) {
-                cptr.stPtro3(gb, i, 2376, j, 88, $istat_s_val, alloc(cptr.ldI32o3(gb, i, 2376, j, 88, $istat_s_valwidth) >>> 0));
-                cptr.st1o(cptr.ldPtro3(gb, i, 2376, j, 88, $istat_s_val), 0, 0);
+            let keep_hilite_chain = cptr.ldPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_thresholds);
+            cptr.memcpy(cptr.add(cptr.add(gb, i, $sizeof_istat_s_x27), j, $sizeof_istat_s), cptr.add(initblstats, j, $sizeof_istat_s), 88);
+            cptr.memcpy(cptr.add(cptr.add(cptr.add(gb, i, $sizeof_istat_s_x27), j, $sizeof_istat_s), $istat_s_a), cptr.add(cg, $const_globals_zeroany), 8);
+            if (cptr.ldI32o3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_valwidth)) {
+                cptr.stPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_val, alloc(cptr.ldI32o3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_valwidth) >>> 0));
+                cptr.st1o(cptr.ldPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_val), 0, 0);
             } else
-                cptr.stPtro3(gb, i, 2376, j, 88, $istat_s_val, null);
-            cptr.stPtro3(gb, i, 2376, j, 88, $istat_s_thresholds, keep_hilite_chain);
+                cptr.stPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_val, null);
+            cptr.stPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_thresholds, keep_hilite_chain);
         }
     }
     __static_init_blstats_initalready = 1;
@@ -2595,7 +2603,7 @@ export function exp_percent_changing() {
     let rule;
     let curr;
     if (!cptr.ld1s(disp)) {
-        curr = cptr.add(cptr.add(gb, cptr.ldI32(gn), 2376), NHC.BL_XP, 88);
+        curr = cptr.add(cptr.add(gb, cptr.ldI32(gn), $sizeof_istat_s_x27), NHC.BL_XP, $sizeof_istat_s);
         if (cptr.ld1so(curr, $istat_s_percent_matters) && cptr.ldPtro(curr, $istat_s_thresholds) && (pc = exp_percentage()) != cptr.ldI16o(curr, $istat_s_percent_value)) {
             cptr.memcpy(a, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(a, cptr.ldI32o(u, $you_ulevel));
@@ -2610,21 +2618,21 @@ export function exp_percent_changing() {
 /** C ref: botl.c:2131 @returns {CInt} */
 export function stat_cap_indx() {
     let cap;
-    cap = cptr.ldI32o3(gb, cptr.ldI32(gn), 2376, NHC.BL_CAP, 88, $istat_s_a);
+    cap = cptr.ldI32o3(gb, cptr.ldI32(gn), $sizeof_istat_s_x27, NHC.BL_CAP, $sizeof_istat_s, $istat_s_a);
     return cap;
 }
 
 /** C ref: botl.c:2146 @returns {CInt} */
 export function stat_hunger_indx() {
     let uhs;
-    uhs = cptr.ldI32o3(gb, cptr.ldI32(gn), 2376, NHC.BL_HUNGER, 88, $istat_s_a);
+    uhs = cptr.ldI32o3(gb, cptr.ldI32(gn), $sizeof_istat_s_x27, NHC.BL_HUNGER, $sizeof_istat_s, $istat_s_a);
     return uhs;
 }
 
 /** C ref: botl.c:2160 — @param {CInt} idx @returns {CPtr<char>} */
 export function bl_idx_to_fldname(idx) {
     if (idx >= 0 && idx < NHC.MAXBLSTATS)
-        return cptr.ldPtro(initblstats, idx, 88);
+        return cptr.ldPtro(initblstats, idx, $sizeof_istat_s);
     return null;
 }
 
@@ -2640,7 +2648,7 @@ export function repad_with_dashes(inoutbuf) {
 /** C ref: botl.c:2186 — struct fieldid_t { fieldname, fldid } (memory model v0.5) */
 
 /** C ref: botl.c:2189 — struct fieldid_t[22] */
-const fieldids_alias = cptr.alloc(22 * 16);
+const fieldids_alias = cptr.alloc(22 * $sizeof_fieldid_t);
 cptr.stPtro(fieldids_alias, 0, __s_characteristics);
 cptr.stI32o(fieldids_alias, 0 + $fieldid_t_fldid, NHC.BL_CHARACTERISTICS);
 cptr.stPtro(fieldids_alias, 16, __s_encumbrance);
@@ -2699,22 +2707,22 @@ function fldname_to_bl_indx(name) {
     let fld = 0;
     if (name && cptr.ld1s(name)) {
         for (i = 0; i < 27; i++)
-            if (fuzzymatch(cptr.ldPtro(initblstats, i, 88), name, __s_sp_dash_us, 1)) {
-                fld = cptr.ldI32o2(initblstats, i, 88, $istat_s_fld);
+            if (fuzzymatch(cptr.ldPtro(initblstats, i, $sizeof_istat_s), name, __s_sp_dash_us, 1)) {
+                fld = cptr.ldI32o2(initblstats, i, $sizeof_istat_s, $istat_s_fld);
                 nmatches++;
             }
         if (!nmatches) {
-            for (i = 0; cptr.ldPtro(fieldids_alias, i, 16); i++)
-                if (fuzzymatch(cptr.ldPtro(fieldids_alias, i, 16), name, __s_sp_dash_us, 1)) {
-                    fld = cptr.ldI32o2(fieldids_alias, i, 16, $fieldid_t_fldid);
+            for (i = 0; cptr.ldPtro(fieldids_alias, i, $sizeof_fieldid_t); i++)
+                if (fuzzymatch(cptr.ldPtro(fieldids_alias, i, $sizeof_fieldid_t), name, __s_sp_dash_us, 1)) {
+                    fld = cptr.ldI32o2(fieldids_alias, i, $sizeof_fieldid_t, $fieldid_t_fldid);
                     nmatches++;
                 }
         }
         if (!nmatches) {
             let len = Number(BigInt.asIntN(32, cptr.strlen(name)));
             for (i = 0; i < 27; i++)
-                if (!strncmpi(name, cptr.ldPtro(initblstats, i, 88), len)) {
-                    fld = cptr.ldI32o2(initblstats, i, 88, $istat_s_fld);
+                if (!strncmpi(name, cptr.ldPtro(initblstats, i, $sizeof_istat_s), len)) {
+                    fld = cptr.ldI32o2(initblstats, i, $sizeof_istat_s, $istat_s_fld);
                     nmatches++;
                 }
         }
@@ -2742,9 +2750,9 @@ export function status_eval_next_unhilite() {
     cptr.stI64o(gb, $instance_globals_b_bl_hilite_moves, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
     next_unhilite = 0n;
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
-        curr = cptr.add(cptr.add(gb, 0, 2376), i, 88);
+        curr = cptr.add(cptr.add(gb, 0, $sizeof_istat_s_x27), i, $sizeof_istat_s);
         if (cptr.ld1so(curr, $istat_s_chg)) {
-            let prev = cptr.add(cptr.add(gb, 1, 2376), i, 88);
+            let prev = cptr.add(cptr.add(gb, 1, $sizeof_istat_s_x27), i, $sizeof_istat_s);
             if (((cptr.ldPtro(curr, $istat_s_hilite_rule)) && cptr.ldI32o((cptr.ldPtro(curr, $istat_s_hilite_rule)), $hilite_s_behavior) == NHM.BL_TH_UPDOWN))
                 cptr.stI64o(curr, $istat_s_time, (BigInt.asIntN(64, cptr.ldI64o(gb, $instance_globals_b_bl_hilite_moves) + cptr.ldI64o(iflags, $instance_flags_hilite_delta))));
             else
@@ -2769,7 +2777,7 @@ export function reset_status_hilites() {
     if (cptr.ldI64o(iflags, $instance_flags_hilite_delta)) {
         let i;
         for (i = 0; i < NHC.MAXBLSTATS; ++i)
-            cptr.stI64o2(cptr.add(gb, 0, 2376), i, 88, $istat_s_time, cptr.stI64o2(cptr.add(gb, 1, 2376), i, 88, $istat_s_time, 0n));
+            cptr.stI64o2(cptr.add(gb, 0, $sizeof_istat_s_x27), i, $sizeof_istat_s, $istat_s_time, cptr.stI64o2(cptr.add(gb, 1, $sizeof_istat_s_x27), i, $sizeof_istat_s, $istat_s_time, 0n));
         cptr.st1(gu, 1);
     }
     cptr.st1o(disp, $display_hints_botlx, 1);
@@ -2790,7 +2798,7 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
     let txtstr;
     if (fldidx < 0 || fldidx >= NHC.MAXBLSTATS)
         return null;
-    if ((cptr.ldPtro3(gb, 0, 2376, (fldidx), 88, $istat_s_thresholds))) {
+    if ((cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, (fldidx), $sizeof_istat_s, $istat_s_thresholds))) {
         let dt;
         let max_pc = -1;
         let min_pc = 101;
@@ -2803,8 +2811,8 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
         let changed = 0;
         let perc_or_abs = 0;
         let crit_hp = 0;
-        for (hl = cptr.ldPtro3(gb, 0, 2376, fldidx, 88, $istat_s_thresholds); hl; hl = cptr.ldPtro(hl, $hilite_s_next)) {
-            dt = cptr.ldI32o2(initblstats, fldidx, 88, $istat_s_anytype);
+        for (hl = cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fldidx, $sizeof_istat_s, $istat_s_thresholds); hl; hl = cptr.ldPtro(hl, $hilite_s_next)) {
+            dt = cptr.ldI32o2(initblstats, fldidx, $sizeof_istat_s, $istat_s_anytype);
             if (crit_hp && cptr.ldI32o(hl, $hilite_s_behavior) != NHM.BL_TH_CRITICALHP)
                 continue;
             if ((updown || changed) && cptr.ldI32o(hl, $hilite_s_behavior) != NHM.BL_TH_UPDOWN)
@@ -2901,7 +2909,7 @@ function get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
                 }
                 break;
                 case NHM.BL_TH_TEXTMATCH:
-                txtstr = cptr.ldPtro3(gb, idx, 2376, fldidx, 88, $istat_s_val);
+                txtstr = cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, fldidx, $sizeof_istat_s, $istat_s_val);
                 if (fldidx == NHC.BL_TITLE)
                     txtstr = cptr.add(txtstr, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(svp) + 6n) - 1n));
                 if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.TXT_VALUE && cptr.ld1so2(hl, 0, 1, $hilite_s_textmatch)) {
@@ -3115,14 +3123,14 @@ function status_hilite_add_threshold(fld, hilite) {
     cptr.st1o(new_hilite, $hilite_s_set, 1);
     cptr.stI32(new_hilite, fld);
     cptr.stPtro(new_hilite, $hilite_s_next, null);
-    if (!cptr.ldPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds)) {
-        cptr.stPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds, new_hilite);
+    if (!cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds)) {
+        cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds, new_hilite);
     } else {
-        for (old_hilite = cptr.ldPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds); cptr.ldPtro(old_hilite, $hilite_s_next); old_hilite = cptr.ldPtro(old_hilite, $hilite_s_next))
+        for (old_hilite = cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds); cptr.ldPtro(old_hilite, $hilite_s_next); old_hilite = cptr.ldPtro(old_hilite, $hilite_s_next))
             continue;
         cptr.stPtro(old_hilite, $hilite_s_next, new_hilite);
     }
-    cptr.stPtro3(gb, 1, 2376, fld, 88, $istat_s_thresholds, cptr.ldPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds));
+    cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds, cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds));
 }
 
 const __static_parse_status_hl2_aligntxt = cptr.alloc(3 * 8);
@@ -3169,7 +3177,7 @@ function parse_status_hl2(s, from_configfile) {
     if (fld == NHC.BL_CHARACTERISTICS) {
         let res = 0;
         for (fld = NHC.BL_STR; fld <= NHC.BL_CH; fld++) {
-            void cptr.strcpy(cptr.add(s, sidx, 128), cptr.ldPtro(initblstats, fld, 88));
+            void cptr.strcpy(cptr.add(s, sidx, 128), cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
             res = parse_status_hl2(s, from_configfile);
             if (!res)
                 return 0;
@@ -3201,7 +3209,7 @@ function parse_status_hl2(s, from_configfile) {
             if (cptr.ld1so(s, (sidx + 1) | 0, 128) == 0)
                 sidx--;
         } else if (!strncmpi((cptr.add(s, sidx, 128)), (__s_up), -1) || !strncmpi((cptr.add(s, sidx, 128)), (__s_down), -1)) {
-            if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype) == NHC.ANY_STR)
+            if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype) == NHC.ANY_STR)
                 ;
             else if (!strncmpi((cptr.add(s, sidx, 128)), (__s_down), -1))
                 down = 1;
@@ -3239,7 +3247,7 @@ function parse_status_hl2(s, from_configfile) {
             }
             tmp = stripchars(cptr.decay(tmpbuf), __s_pct_lt_gt_eq_plus, tmp);
             numeric = 1;
-            dt = (percent ? NHC.ANY_INT : cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype)) | 0;
+            dt = (percent ? NHC.ANY_INT : cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype)) | 0;
             void s_to_anything(cptr.add(hilite, $hilite_s_value), tmp, dt);
             op = grt ? __s_gt : (gte ? __s_gt_eq : (lt ? __s_lt : (le ? __s_lt_eq : __s_eq)));
             if (dt == NHC.ANY_INT && (cptr.ldI32o(hilite, $hilite_s_value) < ((fld == NHC.BL_AC) ? -128 : (grt ? -1 : (lt ? 1 : 0))) || cptr.ldI32o(hilite, $hilite_s_value) > (percent ? (lt ? 101 : 100) : NHM.LARGEST_INT))) {
@@ -3249,7 +3257,7 @@ function parse_status_hl2(s, from_configfile) {
                 config_error_add(__s_s_s_ld_s, cptr.decay(threshold_value), op, cptr.ldI64o(hilite, $hilite_s_value), cptr.decay(is_out_of_range));
                 return 0;
             }
-        } else if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype) == NHC.ANY_STR) {
+        } else if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype) == NHC.ANY_STR) {
             txt = cptr.add(s, sidx, 128);
             txtval = 1;
         } else {
@@ -3270,13 +3278,13 @@ function parse_status_hl2(s, from_configfile) {
             cptr.stI32o(hilite, $hilite_s_rel, NHC.TXT_VALUE);
         else
             cptr.stI32o(hilite, $hilite_s_rel, NHC.LT_VALUE);
-        if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype) == NHC.ANY_STR && (percent || numeric)) {
-            config_error_add(__s_field_s_does_not_support_numeric_values, cptr.ldPtro(initblstats, fld, 88));
+        if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype) == NHC.ANY_STR && (percent || numeric)) {
+            config_error_add(__s_field_s_does_not_support_numeric_values, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
             return 0;
         }
         if (percent) {
-            if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_idxmax) < 0) {
-                config_error_add(__s_cannot_use_percent_with_s, cptr.ldPtro(initblstats, fld, 88));
+            if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_idxmax) < 0) {
+                config_error_add(__s_cannot_use_percent_with_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
                 return 0;
             } else if ((cptr.ldI32o(hilite, $hilite_s_value) < -1) || (cptr.ldI32o(hilite, $hilite_s_value) == -1 && cptr.ldI32o(hilite, $hilite_s_value) != NHC.GT_VALUE) || (cptr.ldI32o(hilite, $hilite_s_value) == 0 && cptr.ldI32o(hilite, $hilite_s_rel) == NHC.LT_VALUE) || (cptr.ldI32o(hilite, $hilite_s_value) == 100 && cptr.ldI32o(hilite, $hilite_s_rel) == NHC.GT_VALUE) || (cptr.ldI32o(hilite, $hilite_s_value) == 101 && cptr.ldI32o(hilite, $hilite_s_value) != NHC.LT_VALUE) || (cptr.ldI32o(hilite, $hilite_s_value) > 101)) {
                 config_error_add(__s_hilite_status_invalid_percentage_value, (cptr.ldI32o(hilite, $hilite_s_rel) == NHC.LT_VALUE) ? __s_lt : ((cptr.ldI32o(hilite, $hilite_s_rel) == NHC.LE_VALUE) ? __s_lt_eq : ((cptr.ldI32o(hilite, $hilite_s_rel) == NHC.GT_VALUE) ? __s_gt : ((cptr.ldI32o(hilite, $hilite_s_rel) == NHC.GE_VALUE) ? __s_gt_eq : __s_eq))), cptr.ldI32o(hilite, $hilite_s_value));
@@ -3365,15 +3373,15 @@ function query_conditions() {
     start_menu()(tmpwin, 0n);
     for (i = 0; i < 30; i++) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-        cptr.stU64(any, BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro3(conditions, i, 48, 0, 8, $conditions_t_text), NHM.MENU_ITEMFLAGS_NONE);
+        cptr.stU64(any, BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)));
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro3(conditions, i, $sizeof_conditions_t, 0, 8, $conditions_t_text), NHM.MENU_ITEMFLAGS_NONE);
     }
     end_menu()(tmpwin, __s_choose_status_conditions);
     res = select_menu(tmpwin, NHM.PICK_ANY, picks);
     destroy_nhwindow()(tmpwin);
     if (res > 0) {
         for (i = 0; i < res; i++)
-            ret |= cptr.ldU64o(picks.v, i, 24);
+            ret |= cptr.ldU64o(picks.v, i, $sizeof_menu_item);
         cptr.free(picks.v);
     }
     return ret;
@@ -3390,11 +3398,11 @@ function conditionbitmask2str(ul) {
     if (!ul)
         return cptr.decay(__static_conditionbitmask2str_buf);
     for (i = 1; i < 6; i++)
-        if (cptr.ldU64o2(condition_aliases, i, 16, $condmap_bitmask) == ul)
-            alias = cptr.ldPtro(condition_aliases, i, 16);
+        if (cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask) == ul)
+            alias = cptr.ldPtro(condition_aliases, i, $sizeof_condmap);
     for (i = 0; i < 30; i++)
-        if ((BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)) & ul) != 0n) {
-            void cptr.sprintf(eos(cptr.decay(__static_conditionbitmask2str_buf)), __s_s_s__2, (first) ? __s_empty : __s_plus, cptr.ldPtro3(conditions, i, 48, 0, 8, $conditions_t_text));
+        if ((BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)) & ul) != 0n) {
+            void cptr.sprintf(eos(cptr.decay(__static_conditionbitmask2str_buf)), __s_s_s__2, (first) ? __s_empty : __s_plus, cptr.ldPtro3(conditions, i, $sizeof_conditions_t, 0, 8, $conditions_t_text));
             first = 0;
         }
     if (!first && alias)
@@ -3409,22 +3417,22 @@ function match_str2conditionbitmask(str) {
     let mask = 0n;
     if (str && cptr.ld1s(str)) {
         for (i = 0; i < 30; i++)
-            if (fuzzymatch(cptr.ldPtro3(conditions, i, 48, 0, 8, $conditions_t_text), str, __s_sp_dash_us, 1)) {
-                mask |= BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask));
+            if (fuzzymatch(cptr.ldPtro3(conditions, i, $sizeof_conditions_t, 0, 8, $conditions_t_text), str, __s_sp_dash_us, 1)) {
+                mask |= BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask));
                 nmatches++;
             }
         if (!nmatches) {
             for (i = 0; i < 6; i++)
-                if (fuzzymatch(cptr.ldPtro(condition_aliases, i, 16), str, __s_sp_dash_us, 1)) {
-                    mask |= cptr.ldU64o2(condition_aliases, i, 16, $condmap_bitmask);
+                if (fuzzymatch(cptr.ldPtro(condition_aliases, i, $sizeof_condmap), str, __s_sp_dash_us, 1)) {
+                    mask |= cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask);
                     nmatches++;
                 }
         }
         if (!nmatches) {
             let len = Number(BigInt.asIntN(32, cptr.strlen(str)));
             for (i = 0; i < 6; i++)
-                if (!strncmpi(str, cptr.ldPtro(condition_aliases, i, 16), len)) {
-                    mask |= cptr.ldU64o2(condition_aliases, i, 16, $condmap_bitmask);
+                if (!strncmpi(str, cptr.ldPtro(condition_aliases, i, $sizeof_condmap), len)) {
+                    mask |= cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask);
                     nmatches++;
                 }
         }
@@ -3527,12 +3535,12 @@ export function clear_status_hilites() {
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         let temp;
         let next;
-        for (temp = cptr.ldPtro3(gb, 0, 2376, i, 88, $istat_s_thresholds); temp; temp = next) {
+        for (temp = cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds); temp; temp = next) {
             next = cptr.ldPtro(temp, $hilite_s_next);
             cptr.free(temp);
         }
-        cptr.stPtro3(gb, 0, 2376, i, 88, $istat_s_thresholds, cptr.stPtro3(gb, 1, 2376, i, 88, $istat_s_thresholds, null));
-        cptr.stPtro3(gb, 0, 2376, i, 88, $istat_s_hilite_rule, cptr.stPtro3(gb, 1, 2376, i, 88, $istat_s_hilite_rule, null));
+        cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds, cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds, null));
+        cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, null));
     }
 }
 
@@ -3636,28 +3644,28 @@ export function count_status_hilites() {
 /** C ref: botl.c:3488 */
 function status_hilite_linestr_gather_conditions() {
     let i;
-    let cond_maps = cptr.alloc(30 * 16);
+    let cond_maps = cptr.alloc(30 * $sizeof__cond_map);
     void __builtin___memset_chk(cond_maps, 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(30)) * 16n), __builtin_object_size(cond_maps, 0));
     for (i = 0; i < 30; i++) {
         let clr = cptr.box(NHM.NO_COLOR);
         let atr = cptr.box(NHC.HL_NONE);
         let j;
         for (j = 0; j < NHM.CLR_MAX; j++)
-            if (cptr.ldU64o2(gc, j, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask))) {
+            if (cptr.ldU64o2(gc, j, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask))) {
                 clr.v = j;
                 break;
             }
-        if (cptr.ldU64o2(gc, 18, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)))
+        if (cptr.ldU64o2(gc, 18, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)))
             atr.v |= NHC.HL_BOLD;
-        if (cptr.ldU64o2(gc, 19, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)))
+        if (cptr.ldU64o2(gc, 19, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)))
             atr.v |= NHC.HL_DIM;
-        if (cptr.ldU64o2(gc, 20, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)))
+        if (cptr.ldU64o2(gc, 20, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)))
             atr.v |= NHC.HL_ITALIC;
-        if (cptr.ldU64o2(gc, 21, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)))
+        if (cptr.ldU64o2(gc, 21, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)))
             atr.v |= NHC.HL_ULINE;
-        if (cptr.ldU64o2(gc, 22, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)))
+        if (cptr.ldU64o2(gc, 22, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)))
             atr.v |= NHC.HL_BLINK;
-        if (cptr.ldU64o2(gc, 23, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)))
+        if (cptr.ldU64o2(gc, 23, 8, $instance_globals_c_cond_hilites) & BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)))
             atr.v |= NHC.HL_INVERSE;
         if (atr.v != NHC.HL_NONE)
             atr.v &= -2;
@@ -3665,26 +3673,26 @@ function status_hilite_linestr_gather_conditions() {
             let ca = (clr.v | (atr.v << 8)) >>> 0;
             let added_condmap = 0;
             for (j = 0; j < 30; j++)
-                if (cptr.ldI32o2(cond_maps, j, 16, $_cond_map_clratr) == ca) {
-                    cptr.stU64o(cond_maps, j, cptr.ldU64o(cond_maps, j, 16) | BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)), 16);
+                if (cptr.ldI32o2(cond_maps, j, $sizeof__cond_map, $_cond_map_clratr) == ca) {
+                    cptr.stU64o(cond_maps, j, cptr.ldU64o(cond_maps, j, $sizeof__cond_map) | BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)), $sizeof__cond_map);
                     added_condmap = 1;
                     break;
                 }
             if (!added_condmap) {
                 for (j = 0; j < 30; j++)
-                    if (!cptr.ldU64o(cond_maps, j, 16)) {
-                        cptr.stU64o(cond_maps, j, BigInt.asUintN(64, cptr.ldI64o2(conditions, i, 48, $conditions_t_mask)), 16);
-                        cptr.stI32o2(cond_maps, j, 16, $_cond_map_clratr, ca);
+                    if (!cptr.ldU64o(cond_maps, j, $sizeof__cond_map)) {
+                        cptr.stU64o(cond_maps, j, BigInt.asUintN(64, cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)), $sizeof__cond_map);
+                        cptr.stI32o2(cond_maps, j, $sizeof__cond_map, $_cond_map_clratr, ca);
                         break;
                     }
             }
         }
     }
     for (i = 0; i < 30; i++)
-        if (cptr.ldU64o(cond_maps, i, 16)) {
+        if (cptr.ldU64o(cond_maps, i, $sizeof__cond_map)) {
             let clr = cptr.box(NHM.NO_COLOR);
             let atr = cptr.box(NHC.HL_NONE);
-            split_clridx(cptr.ldI32o2(cond_maps, i, 16, $_cond_map_clratr) | 0, clr, atr);
+            split_clridx(cptr.ldI32o2(cond_maps, i, $sizeof__cond_map, $_cond_map_clratr) | 0, clr, atr);
             if (clr.v != NHM.NO_COLOR || atr.v != NHC.HL_NONE) {
                 let clrbuf = new Uint8Array(256);
                 let attrbuf = new Uint8Array(256);
@@ -3694,8 +3702,8 @@ function status_hilite_linestr_gather_conditions() {
                 tmpattr = hlattr2attrname(atr.v, cptr.decay(attrbuf), 256n);
                 if (tmpattr)
                     void cptr.sprintf(eos(cptr.decay(clrbuf)), __s_amp_pct_s, tmpattr);
-                nh_snprintf(__s_status_hilite_linestr_gather_conditions, 3562, cptr.decay(condbuf), 256n, __s_condition_s_s, conditionbitmask2str(cptr.ldU64o(cond_maps, i, 16)), cptr.decay(clrbuf));
-                status_hilite_linestr_add(NHC.BL_CONDITION, null, cptr.ldU64o(cond_maps, i, 16), cptr.decay(condbuf));
+                nh_snprintf(__s_status_hilite_linestr_gather_conditions, 3562, cptr.decay(condbuf), 256n, __s_condition_s_s, conditionbitmask2str(cptr.ldU64o(cond_maps, i, $sizeof__cond_map)), cptr.decay(clrbuf));
+                status_hilite_linestr_add(NHC.BL_CONDITION, null, cptr.ldU64o(cond_maps, i, $sizeof__cond_map), cptr.decay(condbuf));
             }
         }
 }
@@ -3706,7 +3714,7 @@ function status_hilite_linestr_gather() {
     let hl;
     status_hilite_linestr_done();
     for (i = 0; i < NHC.MAXBLSTATS; i++) {
-        hl = cptr.ldPtro3(gb, 0, 2376, i, 88, $istat_s_thresholds);
+        hl = cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds);
         while (hl) {
             status_hilite_linestr_add(i, hl, 0n, status_hilite2str(hl));
             hl = cptr.ldPtro(hl, $hilite_s_next);
@@ -3783,7 +3791,7 @@ function status_hilite2str(hl) {
         if ((tmpattr = hlattr2attrname(attr.v, cptr.decay(attrbuf), 256n)) !== null)
             void cptr.sprintf(eos(cptr.decay(clrbuf)), __s_amp_pct_s, tmpattr);
     }
-    nh_snprintf(__s_status_hilite2str, 3666, cptr.decay(__static_status_hilite2str_buf), 256n, __s_s_s_s, cptr.ldPtro(initblstats, cptr.ldI32(hl), 88), cptr.decay(behavebuf), cptr.decay(clrbuf));
+    nh_snprintf(__s_status_hilite2str, 3666, cptr.decay(__static_status_hilite2str_buf), 256n, __s_s_s_s, cptr.ldPtro(initblstats, cptr.ldI32(hl), $sizeof_istat_s), cptr.decay(behavebuf), cptr.decay(clrbuf));
     return cptr.decay(__static_status_hilite2str_buf);
 }
 
@@ -3799,11 +3807,11 @@ function status_hilite_menu_choose_field() {
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     for (i = 0; i < NHC.MAXBLSTATS; i++) {
-        if (cptr.ldI32o2(initblstats, i, 88, $istat_s_fld) == NHC.BL_SCORE && !cptr.ldPtro3(gb, 0, 2376, NHC.BL_SCORE, 88, $istat_s_thresholds))
+        if (cptr.ldI32o2(initblstats, i, $sizeof_istat_s, $istat_s_fld) == NHC.BL_SCORE && !cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, NHC.BL_SCORE, $sizeof_istat_s, $istat_s_thresholds))
             continue;
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, ((i + 1) | 0));
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro(initblstats, i, 88), NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro(initblstats, i, $sizeof_istat_s), NHM.MENU_ITEMFLAGS_NONE);
     }
     end_menu()(tmpwin, __s_select_a_hilite_field);
     res = select_menu(tmpwin, NHM.PICK_ONE, picks);
@@ -3829,13 +3837,13 @@ function status_hilite_menu_choose_behavior(fld) {
     let clr = NHM.NO_COLOR;
     if (fld < 0 || fld >= NHC.MAXBLSTATS)
         return NHM.BL_TH_NONE;
-    at = cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype);
+    at = cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype);
     tmpwin = create_nhwindow()(NHM.NHW_MENU);
     start_menu()(tmpwin, 0n);
     if (fld != NHC.BL_CONDITION) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, onlybeh = NHM.BL_TH_ALWAYS_HILITE);
-        void cptr.sprintf(cptr.decay(buf), __s_always_highlight_s, cptr.ldPtro(initblstats, fld, 88));
+        void cptr.sprintf(cptr.decay(buf), __s_always_highlight_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
         add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
@@ -3848,7 +3856,7 @@ function status_hilite_menu_choose_behavior(fld) {
     if (fld != NHC.BL_CONDITION && fld != NHC.BL_VERS) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, onlybeh = NHM.BL_TH_UPDOWN);
-        void cptr.sprintf(cptr.decay(buf), __s_s_value_changes, cptr.ldPtro(initblstats, fld, 88));
+        void cptr.sprintf(cptr.decay(buf), __s_s_value_changes, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
         add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
@@ -3858,7 +3866,7 @@ function status_hilite_menu_choose_behavior(fld) {
         add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __s_number_threshold, NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
-    if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_idxmax) >= 0) {
+    if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_idxmax) >= 0) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, onlybeh = NHM.BL_TH_VAL_PERCENTAGE);
         add_menu(tmpwin, nul_glyphinfo.v, any, 112, 0, NHM.ATR_NONE, clr, __s_percentage_threshold, NHM.MENU_ITEMFLAGS_NONE);
@@ -3867,18 +3875,18 @@ function status_hilite_menu_choose_behavior(fld) {
     if (fld == NHC.BL_HP) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, onlybeh = NHM.BL_TH_CRITICALHP);
-        void cptr.sprintf(cptr.decay(buf), __s_highlight_critically_low_s, cptr.ldPtro(initblstats, fld, 88));
+        void cptr.sprintf(cptr.decay(buf), __s_highlight_critically_low_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
         add_menu(tmpwin, nul_glyphinfo.v, any, 67, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
-    if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype) == NHC.ANY_STR || fld == NHC.BL_CAP || fld == NHC.BL_HUNGER) {
+    if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype) == NHC.ANY_STR || fld == NHC.BL_CAP || fld == NHC.BL_HUNGER) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, onlybeh = NHM.BL_TH_TEXTMATCH);
-        void cptr.sprintf(cptr.decay(buf), __s_s_text_match, cptr.ldPtro(initblstats, fld, 88));
+        void cptr.sprintf(cptr.decay(buf), __s_s_text_match, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
         add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
         nopts++;
     }
-    void cptr.sprintf(cptr.decay(buf), __s_select_s_field_hilite_behavior, cptr.ldPtro(initblstats, fld, 88));
+    void cptr.sprintf(cptr.decay(buf), __s_select_s_field_hilite_behavior, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
     end_menu()(tmpwin, cptr.decay(buf));
     if (nopts > 1) {
         res = select_menu(tmpwin, NHM.PICK_ONE, picks);
@@ -3945,7 +3953,7 @@ function status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
         cptr.stI32(any, ((10 + NHC.GT_VALUE) | 0));
         add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);
     }
-    void cptr.sprintf(cptr.decay(buf), __s_select_field_s_value, cptr.ldPtro(initblstats, fld, 88));
+    void cptr.sprintf(cptr.decay(buf), __s_select_field_s_value, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
     end_menu()(tmpwin, cptr.decay(buf));
     res = select_menu(tmpwin, NHM.PICK_ONE, picks);
     destroy_nhwindow()(tmpwin);
@@ -4024,7 +4032,7 @@ function status_hilite_menu_add(origfld) {
                     let op;
                     lt_gt_eq = NHC.NO_LTEQGT;
                     cptr.st1o(cptr.decay(inbuf), 0, 0, 1);
-                    void cptr.sprintf(cptr.decay(buf), __s_enter_svalue_for_s_threshold, percent ? __s_percentage : __s_empty, cptr.ldPtro(initblstats, fld, 88));
+                    void cptr.sprintf(cptr.decay(buf), __s_enter_svalue_for_s_threshold, percent ? __s_percentage : __s_empty, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
                     getlin(cptr.decay(buf), cptr.decay(inbuf));
                     if (cptr.ld1so(cptr.decay(inbuf), 0, 1) == 0 || cptr.ld1so(cptr.decay(inbuf), 0, 1) == 27)
                         continue __lbl_choose_behavior;
@@ -4066,12 +4074,12 @@ function status_hilite_menu_add(origfld) {
                     }
                     op = (lt_gt_eq == NHC.LT_VALUE) ? __s_lt : ((lt_gt_eq == NHC.LE_VALUE) ? __s_lt_eq : ((lt_gt_eq == NHC.GT_VALUE) ? __s_gt : ((lt_gt_eq == NHC.GE_VALUE) ? __s_gt_eq : ((lt_gt_eq == NHC.EQ_VALUE) ? __s_eq : __s_empty))));
                     cptr.memcpy(aval, cptr.add(cg, $const_globals_zeroany), 8);
-                    dt = (percent ? NHC.ANY_INT : cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype)) | 0;
+                    dt = (percent ? NHC.ANY_INT : cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype)) | 0;
                     void s_to_anything(aval, numstart, dt);
                     if (percent) {
                         val = cptr.ldI32(aval);
-                        if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_idxmax) == -1) {
-                            pline(__s_field_s_does_not_support_percentage, cptr.ldPtro(initblstats, fld, 88));
+                        if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_idxmax) == -1) {
+                            pline(__s_field_s_does_not_support_percentage, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
                             behavior = NHM.BL_TH_VAL_ABSOLUTE;
                             continue __lbl_choose_value;
                         }
@@ -4095,12 +4103,12 @@ function status_hilite_menu_add(origfld) {
                         if (lt_gt_eq == NHC.NO_LTEQGT)
                             continue __lbl_choose_value;
                     }
-                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_for_when_s_is_s_s_s, cptr.ldPtro(initblstats, fld, 88), (lt_gt_eq == NHC.LT_VALUE) ? __s_less_than : ((lt_gt_eq == NHC.GT_VALUE) ? __s_more_than : __s_empty), numstart, (lt_gt_eq == NHC.LE_VALUE) ? __s_or_less : ((lt_gt_eq == NHC.GE_VALUE) ? __s_or_more : __s_empty));
-                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_for_when_s_is_s_s_s, cptr.ldPtro(initblstats, fld, 88), (lt_gt_eq == NHC.LT_VALUE) ? __s_less_than : ((lt_gt_eq == NHC.GT_VALUE) ? __s_more_than : __s_empty), numstart, (lt_gt_eq == NHC.LE_VALUE) ? __s_or_less : ((lt_gt_eq == NHC.GE_VALUE) ? __s_or_more : __s_empty));
+                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_for_when_s_is_s_s_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s), (lt_gt_eq == NHC.LT_VALUE) ? __s_less_than : ((lt_gt_eq == NHC.GT_VALUE) ? __s_more_than : __s_empty), numstart, (lt_gt_eq == NHC.LE_VALUE) ? __s_or_less : ((lt_gt_eq == NHC.GE_VALUE) ? __s_or_more : __s_empty));
+                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_for_when_s_is_s_s_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s), (lt_gt_eq == NHC.LT_VALUE) ? __s_less_than : ((lt_gt_eq == NHC.GT_VALUE) ? __s_more_than : __s_empty), numstart, (lt_gt_eq == NHC.LE_VALUE) ? __s_or_less : ((lt_gt_eq == NHC.GE_VALUE) ? __s_or_more : __s_empty));
                     cptr.stI32o(hilite, $hilite_s_rel, lt_gt_eq);
                     cptr.memcpy(cptr.add(hilite, $hilite_s_value), aval, 8);
                 } else if (behavior == NHM.BL_TH_UPDOWN) {
-                    if (cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype) != NHC.ANY_STR) {
+                    if (cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype) != NHC.ANY_STR) {
                         let ltok = schar((fld != NHC.BL_TIME));
                         let gtok = 1;
                         lt_gt_eq = status_hilite_menu_choose_updownboth(fld, null, ltok, gtok);
@@ -4109,8 +4117,8 @@ function status_hilite_menu_add(origfld) {
                     } else {
                         lt_gt_eq = NHC.EQ_VALUE;
                     }
-                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_for_when_s_s, cptr.ldPtro(initblstats, fld, 88), (lt_gt_eq == NHC.EQ_VALUE) ? __s_changes : ((lt_gt_eq == NHC.LT_VALUE) ? __s_decreases : __s_increases));
-                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_for_when_s_s, cptr.ldPtro(initblstats, fld, 88), (lt_gt_eq == NHC.EQ_VALUE) ? __s_changes : ((lt_gt_eq == NHC.LT_VALUE) ? __s_decreases : __s_increases));
+                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_for_when_s_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s), (lt_gt_eq == NHC.EQ_VALUE) ? __s_changes : ((lt_gt_eq == NHC.LT_VALUE) ? __s_decreases : __s_increases));
+                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_for_when_s_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s), (lt_gt_eq == NHC.EQ_VALUE) ? __s_changes : ((lt_gt_eq == NHC.LT_VALUE) ? __s_decreases : __s_increases));
                     cptr.stI32o(hilite, $hilite_s_rel, lt_gt_eq);
                 } else if (behavior == NHM.BL_TH_CONDITION) {
                     cond = query_conditions();
@@ -4123,7 +4131,7 @@ function status_hilite_menu_add(origfld) {
                     nh_snprintf(__s_status_hilite_menu_add, 4124, cptr.decay(attrqry), 256n, __s_choose_attribute_for_conditions_s, conditionbitmask2str(cond));
                 } else if (behavior == NHM.BL_TH_TEXTMATCH) {
                     let qry_buf = new Uint8Array(256);
-                    void cptr.sprintf(cptr.decay(qry_buf), __s_s_s_text_value_to_match, (fld == NHC.BL_CAP || fld == NHC.BL_ALIGN || fld == NHC.BL_HUNGER || fld == NHC.BL_TITLE) ? __s_choose : __s_enter, cptr.ldPtro(initblstats, fld, 88));
+                    void cptr.sprintf(cptr.decay(qry_buf), __s_s_s_text_value_to_match, (fld == NHC.BL_CAP || fld == NHC.BL_ALIGN || fld == NHC.BL_HUNGER || fld == NHC.BL_TITLE) ? __s_choose : __s_enter, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
                     if (fld == NHC.BL_CAP) {
                         let rv = query_arrayvalue(cptr.decay(qry_buf), enc_stat, NHC.SLT_ENCUMBER, ((NHC.OVERLOADED + 1) | 0));
                         if (rv < NHC.SLT_ENCUMBER)
@@ -4151,9 +4159,9 @@ function status_hilite_menu_add(origfld) {
                         let j;
                         let rv;
                         for (i = (j = 0); i < 9; i++) {
-                            void cptr.sprintf(cptr.decay(mbuf), __s_quot_pct_s_quot, cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank));
-                            if (cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank + $RoleName_f)) {
-                                void cptr.sprintf(cptr.decay(fbuf), __s_quot_pct_s_quot, cptr.ldPtro2(gu, i, 16, $instance_globals_u_urole + $Role_rank + $RoleName_f));
+                            void cptr.sprintf(cptr.decay(mbuf), __s_quot_pct_s_quot, cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank));
+                            if (cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank + $RoleName_f)) {
+                                void cptr.sprintf(cptr.decay(fbuf), __s_quot_pct_s_quot, cptr.ldPtro2(gu, i, $sizeof_RoleName, $instance_globals_u_urole + $Role_rank + $RoleName_f));
                                 nh_snprintf(__s_status_hilite_menu_add, 4179, cptr.decay(obuf), 80n, __s_s_or_s, cptr.ld1so(flags, $flag_female) ? cptr.decay(fbuf) : cptr.decay(mbuf), cptr.ld1so(flags, $flag_female) ? cptr.decay(mbuf) : cptr.decay(fbuf));
                             } else {
                                 cptr.st1o(cptr.decay(fbuf), 0, cptr.st1o(cptr.decay(obuf), 0, 0, 1), 1);
@@ -4194,11 +4202,11 @@ function status_hilite_menu_add(origfld) {
                         else
                             return 0;
                     }
-                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_for_when_s_is_s, cptr.ldPtro(initblstats, fld, 88), cptr.add(hilite, $hilite_s_textmatch));
-                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_for_when_s_is_s, cptr.ldPtro(initblstats, fld, 88), cptr.add(hilite, $hilite_s_textmatch));
+                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_for_when_s_is_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s), cptr.add(hilite, $hilite_s_textmatch));
+                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_for_when_s_is_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s), cptr.add(hilite, $hilite_s_textmatch));
                 } else if (behavior == NHM.BL_TH_ALWAYS_HILITE) {
-                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_to_always_hilite_s, cptr.ldPtro(initblstats, fld, 88));
-                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_to_always_hilite_s, cptr.ldPtro(initblstats, fld, 88));
+                    void cptr.sprintf(cptr.decay(colorqry), __s_choose_a_color_to_always_hilite_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
+                    void cptr.sprintf(cptr.decay(attrqry), __s_choose_attribute_to_always_hilite_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
                 }
                 __lbl_choose_color: while (true) {
                     clr = query_color(cptr.decay(colorqry), NHM.NO_COLOR);
@@ -4245,7 +4253,7 @@ function status_hilite_menu_add(origfld) {
                         let p;
                         let q;
                         cptr.stI32o(hilite, $hilite_s_coloridx, clr | (atr << 8));
-                        cptr.stI32o(hilite, $hilite_s_anytype, cptr.ldI32o2(initblstats, fld, 88, $istat_s_anytype));
+                        cptr.stI32o(hilite, $hilite_s_anytype, cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype));
                         if (fld == NHC.BL_TITLE && (p = strstri(cptr.add(hilite, $hilite_s_textmatch), __s_or)) !== null) {
                             cptr.st1(p, 0);
                             status_hilite_add_threshold(fld, hilite);
@@ -4292,17 +4300,17 @@ function status_hilite_remove(id) {
         let fld = cptr.ldI32o(hlstr, $_status_hilite_line_str_fld);
         let hl;
         let hlprev = null;
-        for (hl = cptr.ldPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds); hl; hl = cptr.ldPtro(hl, $hilite_s_next)) {
+        for (hl = cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds); hl; hl = cptr.ldPtro(hl, $hilite_s_next)) {
             if (cptr.eq(cptr.ldPtro(hlstr, $_status_hilite_line_str_hl), hl)) {
                 if (hlprev) {
                     cptr.stPtro(hlprev, $hilite_s_next, cptr.ldPtro(hl, $hilite_s_next));
                 } else {
-                    cptr.stPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds, cptr.ldPtro(hl, $hilite_s_next));
-                    cptr.stPtro3(gb, 1, 2376, fld, 88, $istat_s_thresholds, cptr.ldPtro3(gb, 0, 2376, fld, 88, $istat_s_thresholds));
+                    cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds, cptr.ldPtro(hl, $hilite_s_next));
+                    cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds, cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_thresholds));
                 }
-                if (cptr.eq(cptr.ldPtro3(gb, 0, 2376, fld, 88, $istat_s_hilite_rule), hl)) {
-                    cptr.stPtro3(gb, 0, 2376, fld, 88, $istat_s_hilite_rule, cptr.stPtro3(gb, 1, 2376, fld, 88, $istat_s_hilite_rule, null));
-                    cptr.stI64o2(cptr.add(gb, 0, 2376), fld, 88, $istat_s_time, cptr.stI64o2(cptr.add(gb, 1, 2376), fld, 88, $istat_s_time, 0n));
+                if (cptr.eq(cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_hilite_rule), hl)) {
+                    cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_hilite_rule, cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, fld, $sizeof_istat_s, $istat_s_hilite_rule, null));
+                    cptr.stI64o2(cptr.add(gb, 0, $sizeof_istat_s_x27), fld, $sizeof_istat_s, $istat_s_time, cptr.stI64o2(cptr.add(gb, 1, $sizeof_istat_s_x27), fld, $sizeof_istat_s, $istat_s_time, 0n));
                 }
                 cptr.free(hl);
                 return 1;
@@ -4346,7 +4354,7 @@ function status_hilite_menu_fld(fld) {
             hlstr = cptr.ldPtro(hlstr, $_status_hilite_line_str_next);
         }
     } else {
-        void cptr.sprintf(cptr.decay(buf), __s_no_current_hilites_for_s, cptr.ldPtro(initblstats, fld, 88));
+        void cptr.sprintf(cptr.decay(buf), __s_no_current_hilites_for_s, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
         add_menu_str(tmpwin, cptr.decay(buf));
     }
     add_menu_str(tmpwin, __s_empty);
@@ -4362,14 +4370,14 @@ function status_hilite_menu_fld(fld) {
         cptr.stI32(any, -2);
         add_menu(tmpwin, nul_glyphinfo.v, any, 90, 0, NHM.ATR_NONE, clr, __s_add_new_hilites, NHM.MENU_ITEMFLAGS_NONE);
     }
-    void cptr.sprintf(cptr.decay(buf), __s_current_s_hilites, cptr.ldPtro(initblstats, fld, 88));
+    void cptr.sprintf(cptr.decay(buf), __s_current_s_hilites, cptr.ldPtro(initblstats, fld, $sizeof_istat_s));
     end_menu()(tmpwin, cptr.decay(buf));
     acted = 0;
     if ((res = select_menu(tmpwin, NHM.PICK_ANY, picks)) > 0) {
         let idx;
         let mode = 0;
         for (i = 0; i < res; i++) {
-            idx = cptr.ldI32o(picks.v, i, 24);
+            idx = cptr.ldI32o(picks.v, i, $sizeof_menu_item);
             if (idx == -1)
                 mode |= 1;
             else if (idx == -2)
@@ -4377,7 +4385,7 @@ function status_hilite_menu_fld(fld) {
         }
         if ((mode & 1) >>> 0) {
             for (i = 0; i < res; i++) {
-                idx = cptr.ldI32o(picks.v, i, 24);
+                idx = cptr.ldI32o(picks.v, i, $sizeof_menu_item);
                 if (idx > 0 && status_hilite_remove(idx))
                     acted = 1;
             }
@@ -4448,13 +4456,13 @@ export function status_hilite_menu() {
         for (i = 0; i < NHC.MAXBLSTATS; i++) {
             let count;
             let buf = new Uint8Array(256);
-            fld = cptr.ldI32o2(initblstats, i, 88, $istat_s_fld);
+            fld = cptr.ldI32o2(initblstats, i, $sizeof_istat_s, $istat_s_fld);
             count = status_hilite_linestr_countfield(fld);
             if (fld == NHC.BL_SCORE && !count)
                 continue;
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.stI32(any, (fld + 1) | 0);
-            void cptr.sprintf(cptr.decay(buf), __s_18s, cptr.ldPtro(initblstats, i, 88));
+            void cptr.sprintf(cptr.decay(buf), __s_18s, cptr.ldPtro(initblstats, i, $sizeof_istat_s));
             if (count)
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_d_defined, count);
             add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE);

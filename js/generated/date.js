@@ -20,7 +20,8 @@ const $nomakedefs_s_build_time = FLD.nomakedefs_s_build_time,
     $nomakedefs_s_version_id = FLD.nomakedefs_s_version_id,
     $nomakedefs_s_version_number = FLD.nomakedefs_s_version_number,
     $nomakedefs_s_version_sanity1 = FLD.nomakedefs_s_version_sanity1,
-    $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string, $tm_tm_hour = FLD.tm_tm_hour,
+    $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string,
+    $sizeof_nomakedefs_s = FLD.sizeof_nomakedefs_s, $tm_tm_hour = FLD.tm_tm_hour,
     $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min, $tm_tm_mon = FLD.tm_tm_mon,
     $tm_tm_year = FLD.tm_tm_year, $version_info_entity_count = FLD.version_info_entity_count,
     $version_info_feature_set = FLD.version_info_feature_set;
@@ -53,7 +54,7 @@ const __s_dot = cptr.lit(".");
 let nomakedefs_populated = 0;
 
 /** C ref: date.c:25 — struct nomakedefs_s */
-export let nomakedefs = cptr.alloc(96);
+export let nomakedefs = cptr.alloc($sizeof_nomakedefs_s);
 cptr.stPtr(nomakedefs, __s_tue_28_jul_87_13_18_57_edt);
 cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, __s_version_1_0_built_jul_28_13_18_57_1987);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_sha, null);

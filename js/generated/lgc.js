@@ -66,6 +66,8 @@ const $CClosure_gclist = FLD.CClosure_gclist, $CClosure_nupvalues = FLD.CClosure
     $lua_State_marked = FLD.lua_State_marked, $lua_State_openupval = FLD.lua_State_openupval,
     $lua_State_stack = FLD.lua_State_stack, $lua_State_stack_last = FLD.lua_State_stack_last,
     $lua_State_top = FLD.lua_State_top, $lua_State_twups = FLD.lua_State_twups,
+    $sizeof_LocVar = FLD.sizeof_LocVar, $sizeof_Node = FLD.sizeof_Node, $sizeof_TValue = FLD.sizeof_TValue,
+    $sizeof_UValue = FLD.sizeof_UValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc,
     $stringtable_nuse = FLD.stringtable_nuse, $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -335,9 +337,9 @@ function genlink(g, o) {
 /** C ref: lgc.c:446 — @param {CPtr<global_State>} g @param {CPtr<Table>} h */
 function traverseweakvalue(g, h) {
     let n;
-    let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
+    let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), $sizeof_Node));
     let hasclears = (cptr.ldI32o(h, $Table_alimit) > 0);
-    for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+    for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);
         else {
@@ -366,13 +368,13 @@ function traverseephemeron(g, h, inv) {
     let asize = luaH_realasize(h);
     let nsize = ((1 << (cptr.ld1uo((h), $Table_lsizenode)))) >>> 0;
     for (i = 0; i < asize; i++) {
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)))))), $GCObject_marked)) & 24))) {
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)))))), $GCObject_marked)) & 24))) {
             marked = 1;
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16))))));
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue))))));
         }
     }
     for (i = 0; i < nsize; i++) {
-        let n = inv ? (cptr.add(cptr.ldPtro((h), $Table_node), (((nsize - 1) >>> 0) - i) >>> 0, 24)) : (cptr.add(cptr.ldPtro((h), $Table_node), i, 24));
+        let n = inv ? (cptr.add(cptr.ldPtro((h), $Table_node), (((nsize - 1) >>> 0) - i) >>> 0, $sizeof_Node)) : (cptr.add(cptr.ldPtro((h), $Table_node), i, $sizeof_Node));
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);
         else if (iscleared(g, (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))) : null))) {
@@ -398,16 +400,16 @@ function traverseephemeron(g, h, inv) {
 /** C ref: lgc.c:523 — @param {CPtr<global_State>} g @param {CPtr<Table>} h */
 function traversestrongtable(g, h) {
     let n;
-    let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
+    let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), $sizeof_Node));
     let i;
     let asize = luaH_realasize(h);
     for (i = 0; i < asize; i++) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16)))))), $GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, 16))))));
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue))))));
     }
     ;
-    for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+    for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);
         else {
@@ -467,8 +469,8 @@ function traverseudata(g, u) {
     ;
     for (i = 0; i < cptr.ldU16o(u, $Udata_nuvalue); i++) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.add(u, $Udata_uv), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, 16)))))), $GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, 16))))));
+        if ((((cptr.ld1uo((cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue))))));
     }
     ;
     genlink(g, ((((u)))));
@@ -488,14 +490,14 @@ function traverseproto(g, f) {
     ;
     for (i = 0; i < cptr.ldI32o(f, $Proto_sizek); i++) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16)))))), $GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, 16))))));
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue))))));
     }
     ;
     for (i = 0; i < cptr.ldI32o(f, $Proto_sizeupvalues); i++) {
-        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16)), $TString_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16))))));
+        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc)) {
+            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc)), $TString_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc))))));
         }
         ;
     }
@@ -509,9 +511,9 @@ function traverseproto(g, f) {
     }
     ;
     for (i = 0; i < cptr.ldI32o(f, $Proto_sizelocvars); i++) {
-        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16)) {
-            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16)), $TString_marked)) & 24))
-                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, 16))))));
+        if (cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar)) {
+            if (((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar)), $TString_marked)) & 24))
+                reallymarkobject(g, ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar))))));
         }
         ;
     }
@@ -524,8 +526,8 @@ function traverseCclosure(g, cl) {
     let i;
     for (i = 0; i < cptr.ld1uo(cl, $CClosure_nupvalues); i++) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo((cptr.add(cptr.add(cl, $CClosure_upvalue), i, 16)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(cl, $CClosure_upvalue), i, 16)))))), $GCObject_marked)) & 24)))
-            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(cl, $CClosure_upvalue), i, 16))))));
+        if ((((cptr.ld1uo((cptr.add(cptr.add(cl, $CClosure_upvalue), i, $sizeof_TValue)), $TValue_tt_)) & 64) && ((cptr.ld1uo(((cptr.ldPtr(((cptr.add(cptr.add(cl, $CClosure_upvalue), i, $sizeof_TValue)))))), $GCObject_marked)) & 24)))
+            reallymarkobject(g, (cptr.ldPtr(((cptr.add(cptr.add(cl, $CClosure_upvalue), i, $sizeof_TValue))))));
     }
     ;
     return (1 + cptr.ld1uo(cl, $CClosure_nupvalues)) | 0;
@@ -647,9 +649,9 @@ function convergeephemerons(g) {
 function clearbykeys(g, l) {
     for (; l; l = cptr.ldPtro((((((l))))), $Table_gclist)) {
         let h = (((((l)))));
-        let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
+        let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), $sizeof_Node));
         let n;
-        for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+        for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
             if (iscleared(g, (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64) ? (cptr.ldPtr((cptr.add((n), $NodeKey_key_val)))) : null)))
                 (cptr.st1o((((n))), $TValue_tt_, 16));
             if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
@@ -663,15 +665,15 @@ function clearbyvalues(g, l, f) {
     for (; !cptr.eq(l, f); l = cptr.ldPtro((((((l))))), $Table_gclist)) {
         let h = (((((l)))));
         let n;
-        let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
+        let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), $sizeof_Node));
         let i;
         let asize = luaH_realasize(h);
         for (i = 0; i < asize; i++) {
-            let o = cptr.add(cptr.ldPtro(h, $Table_array), i, 16);
+            let o = cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue);
             if (iscleared(g, (((cptr.ld1uo((o), $TValue_tt_)) & 64) ? (cptr.ldPtr(((o)))) : null)))
                 (cptr.st1o((o), $TValue_tt_, 16));
         }
-        for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, 24)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
+        for (n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node)); cptr.cmp(n, limit) < 0; n = cptr.add(n, 1, 24)) {
             if (iscleared(g, (((cptr.ld1uo((((n))), $TValue_tt_)) & 64) ? (cptr.ldPtr(((((n)))))) : null)))
                 (cptr.st1o((((n))), $TValue_tt_, 16));
             if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))

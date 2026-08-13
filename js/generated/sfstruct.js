@@ -56,7 +56,8 @@ const $NHFILE_eof = FLD.NHFILE_eof, $restore_info_mread_flags = FLD.restore_info
     $sf_procs_sf_xint16 = FLD.sf_procs_sf_xint16, $sf_procs_sf_xint8 = FLD.sf_procs_sf_xint8,
     $sf_procs_sf_you = FLD.sf_procs_sf_you, $sf_structlevel_procs_fn = FLD.sf_structlevel_procs_fn,
     $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_reading_bonesfile = FLD.sinfo_reading_bonesfile,
-    $sinfo_restoring = FLD.sinfo_restoring,
+    $sinfo_restoring = FLD.sinfo_restoring, $sizeof_restore_info = FLD.sizeof_restore_info,
+    $sizeof_sf_structlevel_procs = FLD.sizeof_sf_structlevel_procs,
     $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -1178,7 +1179,7 @@ export function historical_sfi_bitfield(nhfp, d_bitfield, myname, bflen) {
 }
 
 /** C ref: sfstruct.c:149 — struct sf_structlevel_procs */
-export let historical_sfo_procs = cptr.alloc(552);
+export let historical_sfo_procs = cptr.alloc($sizeof_sf_structlevel_procs);
 cptr.stPtr(historical_sfo_procs, __s_empty);
 cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn, historical_sfo_arti_info);
 cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn + $sf_procs_sf_nhrect, historical_sfo_nhrect);
@@ -1250,7 +1251,7 @@ cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn + $sf_procs_sf_char, 
 cptr.stPtro(historical_sfo_procs, $sf_structlevel_procs_fn + $sf_procs_sf_bitfield, historical_sfo_bitfield);
 
 /** C ref: sfstruct.c:225 — struct sf_structlevel_procs */
-export let historical_sfi_procs = cptr.alloc(552);
+export let historical_sfi_procs = cptr.alloc($sizeof_sf_structlevel_procs);
 cptr.stPtr(historical_sfi_procs, __s_empty);
 cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn, historical_sfi_arti_info);
 cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn + $sf_procs_sf_nhrect, historical_sfi_nhrect);
@@ -1322,7 +1323,7 @@ cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn + $sf_procs_sf_char, 
 cptr.stPtro(historical_sfi_procs, $sf_structlevel_procs_fn + $sf_procs_sf_bitfield, historical_sfi_bitfield);
 
 /** C ref: sfstruct.c:320 — struct restore_info */
-export let restoreinfo = cptr.alloc(16);
+export let restoreinfo = cptr.alloc($sizeof_restore_info);
 cptr.stPtr(restoreinfo, __s_externalcomp);
 cptr.stI32o(restoreinfo, $restore_info_mread_flags, 0);
 

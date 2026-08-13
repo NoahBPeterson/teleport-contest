@@ -116,7 +116,11 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum,
     $objdescr_oc_descr = FLD.objdescr_oc_descr, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlevel = FLD.permonst_mlevel,
     $permonst_msound = FLD.permonst_msound, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ, $stairway_up = FLD.stairway_up,
+    $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_skills = FLD.sizeof_skills, $stairway_up = FLD.stairway_up,
     $u_conduct_polypiles = FLD.u_conduct_polypiles, $u_roleplay_deaf = FLD.u_roleplay_deaf,
     $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_acurr = FLD.you_acurr,
     $you_aexe = FLD.you_aexe, $you_amax = FLD.you_amax, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
@@ -488,7 +492,7 @@ export function make_confused(xtime, talk) {
     }
     if ((xtime && !old) || (!xtime && old))
         cptr.st1(disp, 1);
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CONFUSION, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CONFUSION, $sizeof_prop), $prop_intrinsic), xtime);
 }
 
 /** C ref: potion.c:107 — @param {CLongLong} xtime @param {CInt} talk */
@@ -510,7 +514,7 @@ export function make_stunned(xtime, talk) {
     }
     if ((!xtime && old) || (xtime && !old))
         cptr.st1(disp, 1);
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STUNNED, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STUNNED, $sizeof_prop), $prop_intrinsic), xtime);
 }
 
 /** C ref: potion.c:137 — @param {CLongLong} xtime @param {CPtr<char>} cause @param {CInt} talk @param {CInt} type */
@@ -518,7 +522,7 @@ export function make_sick(xtime, cause, talk, type) {
     let kptr;
     let old = Sick();
     if (xtime > 0n) {
-        if ((cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) || defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))
+        if ((cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))
             return;
         if (!old) {
             You_feel(__s_deathly_sick);
@@ -526,7 +530,7 @@ export function make_sick(xtime, cause, talk, type) {
             if (talk)
                 You_feel(__s_s_worse, xtime <= Sick() / 2n ? __s_much : __s_even);
         }
-        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, 24), $prop_intrinsic), xtime);
+        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, $sizeof_prop), $prop_intrinsic), xtime);
         cptr.stI32o(u, $you_usick_type, cptr.ldI32o(u, $you_usick_type) | type);
         cptr.st1(disp, 1);
     } else if (old && (type & ((cptr.ldI32o(u, $you_usick_type) & 3) | 0))) {
@@ -534,11 +538,11 @@ export function make_sick(xtime, cause, talk, type) {
         if ((cptr.ldI32o(u, $you_usick_type) & 3)) {
             if (talk)
                 You_feel(__s_somewhat_better);
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, 24), $prop_intrinsic), BigInt.asIntN(64, Sick() * 2n));
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SICK, $sizeof_prop), $prop_intrinsic), BigInt.asIntN(64, Sick() * 2n));
         } else {
             if (talk)
                 You_feel(__s_cured_what_a_relief);
-            cptr.stI64o2(u, NHC.SICK, 24, $you_uprops + $prop_intrinsic, 0n);
+            cptr.stI64o2(u, NHC.SICK, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
         }
         cptr.st1(disp, 1);
     }
@@ -556,7 +560,7 @@ export function make_sick(xtime, cause, talk, type) {
 /** C ref: potion.c:195 — @param {CLongLong} xtime @param {CPtr<char>} msg */
 export function make_slimed(xtime, msg) {
     let old = Slimed();
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLIMED, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLIMED, $sizeof_prop), $prop_intrinsic), xtime);
     if ((xtime != 0n) ^ (old != 0n)) {
         cptr.st1(disp, 1);
         if (msg)
@@ -574,7 +578,7 @@ export function make_slimed(xtime, msg) {
 /** C ref: potion.c:222 — @param {CLongLong} xtime @param {CPtr<char>} msg @param {CInt} killedby @param {CPtr<char>} killername */
 export function make_stoned(xtime, msg, killedby, killername) {
     let old = Stoned();
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONED, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONED, $sizeof_prop), $prop_intrinsic), xtime);
     if ((xtime != 0n) ^ (old != 0n)) {
         cptr.st1(disp, 1);
         if (msg)
@@ -591,7 +595,7 @@ export function make_vomiting(xtime, talk) {
     let old = Vomiting();
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.VOMITING, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.VOMITING, $sizeof_prop), $prop_intrinsic), xtime);
     cptr.st1(disp, 1);
     if (!xtime && old)
         if (talk)
@@ -611,9 +615,9 @@ export function make_blinded(xtime, talk) {
     let can_see_now;
     let eyes;
     u_could_see = schar((!Blind()));
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), xtime ? 1n : 0n);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), xtime ? 1n : 0n);
     can_see_now = schar((!Blind()));
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), old);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), old);
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
     if (can_see_now && !u_could_see) {
@@ -660,7 +664,7 @@ export function make_blinded(xtime, talk) {
             }
         }
     }
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop), $prop_intrinsic), xtime);
     if (u_could_see ^ can_see_now) {
         toggle_blindness();
     }
@@ -694,13 +698,13 @@ export function make_hallucinated(xtime, talk, mask) {
         if (HHallucination())
             changed = 1;
         if (!xtime)
-            cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops) | mask);
+            cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops) | mask);
         else
-            cptr.stI64o2(u, NHC.HALLUC_RES, 24, $you_uprops, cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops) & BigInt.asIntN(64, ~mask));
+            cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~mask));
     } else {
         if (!EHalluc_resistance() && (!!HHallucination() != !!xtime))
             changed = 1;
-        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.HALLUC, 24), $prop_intrinsic), xtime);
+        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.HALLUC, $sizeof_prop), $prop_intrinsic), xtime);
         if (!changed && !HHallucination() && old && talk) {
             if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n)) {
                 strange_feeling(null, null);
@@ -737,7 +741,7 @@ export function make_deaf(xtime, talk) {
     let old = HDeaf();
     if ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
         talk = 0;
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, 24), $prop_intrinsic), xtime);
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), xtime);
     if ((xtime != 0n) ^ (old != 0n)) {
         cptr.st1(disp, 1);
         if (talk)
@@ -748,7 +752,7 @@ export function make_deaf(xtime, talk) {
 /** C ref: potion.c:461 — @param {CInt} xtime */
 export function make_glib(xtime) {
     cptr.st1(disp, cptr.ld1s(disp) | (!Glib() ^ !!xtime));
-    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.GLIB, 24), $prop_intrinsic), BigInt(xtime));
+    set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.GLIB, $sizeof_prop), $prop_intrinsic), BigInt(xtime));
     if (uarmg.v)
         update_inventory();
 }
@@ -760,7 +764,7 @@ export function self_invis_message() {
 
 /** C ref: potion.c:481 */
 function ghost_from_bottle() {
-    let mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG);
+    let mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG);
     if (!mtmp) {
         pline(__s_this_bottle_turns_out_to_be_empty);
         return;
@@ -795,14 +799,14 @@ export function dodrink() {
     }
     drink_ok_extra = 0;
     if (!cptr.ld1so(iflags, $instance_flags_menu_requested)) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && can_reach_floor(0)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && can_reach_floor(0)) {
             if (yn_function(__s_drink_from_the_fountain, cptr.decay(ynchars), 110, 1) == 121) {
                 drinkfountain();
                 return NHM.ECMD_TIME;
             }
             ++drink_ok_extra;
         }
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK) && can_reach_floor(0)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK) && can_reach_floor(0)) {
             if (yn_function(__s_drink_from_the_sink, cptr.decay(ynchars), 110, 1) == 121) {
                 drinksink();
                 return NHM.ECMD_TIME;
@@ -829,11 +833,11 @@ export function dodrink() {
         }
     }
     cptr.stI32o(otmp, $obj_in_use, 1);
-    if (objdescr_is(otmp, __s_milky) && !(cptr.ld1uo2(svm, NHC.PM_GHOST, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && !(rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 603, __s_dodrink), rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_GHOST, 12, $instance_globals_saved_m_mvitals)))) | 0))) : rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_GHOST, 12, $instance_globals_saved_m_mvitals)))) | 0)))) {
+    if (objdescr_is(otmp, __s_milky) && !(cptr.ld1uo2(svm, NHC.PM_GHOST, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && !(rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 603, __s_dodrink), rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_GHOST, $sizeof_mvitals, $instance_globals_saved_m_mvitals)))) | 0))) : rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_GHOST, $sizeof_mvitals, $instance_globals_saved_m_mvitals)))) | 0)))) {
         ghost_from_bottle();
         useup(otmp);
         return NHM.ECMD_TIME;
-    } else if (objdescr_is(otmp, __s_smoky) && !(cptr.ld1uo2(svm, NHC.PM_DJINNI, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && !(rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 609, __s_dodrink), rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_DJINNI, 12, $instance_globals_saved_m_mvitals)))) | 0))) : rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_DJINNI, 12, $instance_globals_saved_m_mvitals)))) | 0)))) {
+    } else if (objdescr_is(otmp, __s_smoky) && !(cptr.ld1uo2(svm, NHC.PM_DJINNI, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && !(rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 609, __s_dodrink), rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_DJINNI, $sizeof_mvitals, $instance_globals_saved_m_mvitals)))) | 0))) : rn2(((13 + Math.imul(2, (cptr.ld1uo2(svm, NHC.PM_DJINNI, $sizeof_mvitals, $instance_globals_saved_m_mvitals)))) | 0)))) {
         djinni_from_bottle(otmp);
         useup(otmp);
         return NHM.ECMD_TIME;
@@ -852,7 +856,7 @@ export function dopotion(otmp) {
         (cptr.stI32o(gp, $instance_globals_p_potion_unkn, cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1)) - (1);
         You(__s_have_a_s_feeling_for_a_moment_then_it, Hallucination() ? __s_normal : __s_peculiar);
     }
-    if ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 && !(cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_name_known) & 1)) {
+    if ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 && !(cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1)) {
         if (!cptr.ldI32o(gp, $instance_globals_p_potion_unkn)) {
             discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1);
             more_experienced(0, 10);
@@ -926,8 +930,8 @@ function peffect_water(otmp) {
             pline(__s_this_burns_like_s, hliquid(__s_acid));
             exercise(NHC.A_CON, 0);
             if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
-                Your(__s_affinity_to_s_disappears, makeplural(cptr.ldPtro3(mons, cptr.ldI32o(u, $you_ulycn), 96, NHC.NEUTRAL, 8, 0)));
-                if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, cptr.ldI32o(u, $you_ulycn), 96)))
+                Your(__s_affinity_to_s_disappears, makeplural(cptr.ldPtro3(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
+                if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst)))
                     you_unwere(0);
                 set_ulycn(NHC.NON_PM);
             }
@@ -1007,14 +1011,14 @@ function peffect_invisibility(otmp) {
         self_invis_message();
     }
     if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 825, __s_peffect_invisibility), rn2(HInvis() ? 15 : 30)) : rn2(HInvis() ? 15 : 30)))
-        cptr.stI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
     else
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INVIS, 24), $prop_intrinsic), ((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 828, __s_peffect_invisibility), d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100)) : d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100)) + 100) | 0);
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INVIS, $sizeof_prop), $prop_intrinsic), ((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 828, __s_peffect_invisibility), d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100)) : d(((6 - Math.imul(3, bcsign(otmp))) | 0), 100)) + 100) | 0);
     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__s_for_some_reason_you_feel_your_presence);
         aggravate();
-        cptr.stI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, 24, $you_uprops + $prop_intrinsic) & (-67108865n));
+        cptr.stI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-67108865n));
     }
 }
 
@@ -1036,9 +1040,9 @@ function peffect_see_invisible(otmp) {
         make_blinded(0n, 1);
     }
     if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 867, __s_peffect_see_invisible), rn2(permchance)) : rn2(permchance)))
-        cptr.stI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
     else
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, 24), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 870, __s_peffect_see_invisible), rn2(100)) : rn2(100)) + 750) | 0));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SEE_INVIS, $sizeof_prop), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 870, __s_peffect_see_invisible), rn2(100)) : rn2(100)) + 750) | 0));
     set_mimic_blocking();
     see_monsters();
     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -1093,10 +1097,10 @@ function peffect_monster_detection(otmp) {
             i = (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 926, __s_peffect_monster_detection), rn2(40)) : rn2(40)) + 21) | 0);
         else
             i = ((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 928, __s_peffect_monster_detection), rn2(100)) : rn2(100)) + 100) | 0;
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DETECT_MONSTERS, 24), $prop_intrinsic), i);
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DETECT_MONSTERS, $sizeof_prop), $prop_intrinsic), i);
         for (x = 1; x < NHM.COLNO; x++) {
             for (y = 0; y < NHM.ROWNO; y++) {
-                if (cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level) == NHC.GLYPH_INVIS_OFF) {
+                if (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) == NHC.GLYPH_INVIS_OFF) {
                     unmap_object(i16(x), i16(y));
                     newsym(i16(x), i16(y));
                 }
@@ -1207,7 +1211,7 @@ function peffect_speed(otmp) {
     speed_up(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 1063, __s_peffect_speed), rn2(10)) : rn2(10)) + ((100 + Math.imul(60, bcsign(otmp))) | 0)) | 0)));
     if (is_speed && !(cptr.ldI32o(otmp, $obj_cursed) & 1) && !(HFast() & 117440512n)) {
         Your(__s_quickness_feels_very_natural);
-        cptr.stI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
     }
 }
 
@@ -1284,13 +1288,13 @@ function peffect_full_healing(otmp) {
 /** C ref: potion.c:1165 — @param {CPtr<struct obj>} otmp */
 function peffect_levitation(otmp) {
     if (!Levitation() && !BLevitation()) {
-        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, 24), $prop_intrinsic), 1n);
+        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), 1n);
         float_up();
     } else
         (cptr.stI32o(gp, $instance_globals_p_potion_nothing, cptr.ldI32o(gp, $instance_globals_p_potion_nothing) + 1)) - (1);
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         let stway;
-        cptr.stI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) & (-536870913n));
+        cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-536870913n));
         if (BLevitation()) {
             ;
         } else if ((stway = stairway_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null && cptr.ld1so(stway, $stairway_up)) {
@@ -1303,11 +1307,11 @@ function peffect_levitation(otmp) {
             cptr.stI32o(gp, $instance_globals_p_potion_nothing, 0);
         }
     } else if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, 24), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 1210, __s_peffect_levitation), rn2(50)) : rn2(50)) + 250) | 0));
-        cptr.stI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, 24, $you_uprops + $prop_intrinsic) | 536870912n);
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 1210, __s_peffect_levitation), rn2(50)) : rn2(50)) + 250) | 0));
+        cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 536870912n);
     } else
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, 24), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 1215, __s_peffect_levitation), rn2(140)) : rn2(140)) + 10) | 0));
-    if (Levitation() && ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK))
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 1215, __s_peffect_levitation), rn2(140)) : rn2(140)) + 10) | 0));
+    if (Levitation() && ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK))
         spoteffects(0);
     float_vs_flight();
 }
@@ -1783,7 +1787,7 @@ export function potionhit(mon, obj, how) {
         case 13: {
         if ((cptr.ldI32o(obj, $obj_blessed) & 1))
             cureblind = 1;
-        if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_PESTILENCE, 96))) { __pc = 29; continue; }
+        if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_PESTILENCE, $sizeof_permonst))) { __pc = 29; continue; }
         __pc = 28; continue;
         }
         case 29: {
@@ -1815,7 +1819,7 @@ export function potionhit(mon, obj, how) {
         { __pc = 9; continue; }
         }
         case 16: {
-        if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_PESTILENCE, 96))) { __pc = 31; continue; }
+        if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_PESTILENCE, $sizeof_permonst))) { __pc = 31; continue; }
         __pc = 30; continue;
         }
         case 31: {
@@ -1912,10 +1916,10 @@ export function potionhit(mon, obj, how) {
                 if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n) && !Protection_from_shape_changers())
                     new_were(mon);
             }
-        } else if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_GREMLIN, 96))) {
+        } else if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst))) {
             angermon = 0;
             void split_mon(mon, null);
-        } else if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_IRON_GOLEM, 96))) {
+        } else if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_IRON_GOLEM, $sizeof_permonst))) {
             if (canseemon(mon))
                 pline(__s_s_rusts, Monnam(mon));
             cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - (rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 1860, __s_potionhit), d(1, 6)) : d(1, 6))) | 0);
@@ -2112,7 +2116,7 @@ export function potionbreathe(obj) {
         case NHC.POT_SPEED:
         if (!Fast())
             Your(__s_knees_seem_more_flexible_now);
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 2068, __s_potionbreathe), rnd(5)) : rnd(5)));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 2068, __s_potionbreathe), rnd(5)) : rnd(5)));
         exercise(NHC.A_DEX, 1);
         break;
         case NHC.POT_BLINDNESS:
@@ -2128,7 +2132,7 @@ export function potionbreathe(obj) {
         if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
             void split_mon(cptr.add(gy, $instance_globals_y_youmonst), null);
         } else if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
-            if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, cptr.ldI32o(u, $you_ulycn), 96)))
+            if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst)))
                 you_unwere(0);
             else if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && !Upolyd())
                 you_were();
@@ -2270,7 +2274,7 @@ export function dodip() {
     let qbuf = new Uint8Array(128);
     let obuf = new Uint8Array(128);
     let shortestname;
-    let here = uchar(cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ));
+    let here = uchar(cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ));
     let is_hands;
     let at_pool = is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     let at_fountain = schar(((here) == NHC.FOUNTAIN));
@@ -2316,7 +2320,7 @@ export function dodip() {
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) == 121) {
                 if (Levitation()) {
                     floating_above(pooltype);
-                } else if (cptr.ldPtro(u, $you_usteed) && !((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 2n) != 0n) && (cptr.ldI16o2(u, NHC.P_RIDING, 6, $you_weapon_skills)) < NHC.P_BASIC) {
+                } else if (cptr.ldPtro(u, $you_usteed) && !((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)), $permonst_mflags1) & 2n) != 0n) && (cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills)) < NHC.P_BASIC) {
                     rider_cant_reach();
                 } else if (is_hands || cptr.eq(obj, uarmg.v)) {
                     if (!is_hands)
@@ -2415,7 +2419,7 @@ function potion_dip(obj, potion) {
             } else {
                 let save_otyp = cptr.ldI16o(obj, $obj_otyp);
                 if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_polypiles, cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles) + 1n)) - (1n)))
-                    livelog_printf(32n, __s_polymorphed_s_first_item, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
+                    livelog_printf(32n, __s_polymorphed_s_first_item, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)));
                 obj = poly_obj(obj, NHC.STRANGE_OBJECT);
                 if (!obj) {
                     discover_object(NHC.POT_POLYMORPH, 1, 1, 1);
@@ -2437,7 +2441,7 @@ function potion_dip(obj, potion) {
             let amt = Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan)));
             let magic;
             mixture = mixtype(obj, potion);
-            magic = schar(((mixture != NHC.STRANGE_OBJECT) ? (cptr.ldI32o2(objects, mixture, 120, $objclass_oc_magic) & 1) | 0 : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_magic) & 1) | 0 || (cptr.ldI32o2(objects, cptr.ldI16o(potion, $obj_otyp), 120, $objclass_oc_magic) & 1) | 0 ? 1 : 0)));
+            magic = schar(((mixture != NHC.STRANGE_OBJECT) ? (cptr.ldI32o2(objects, mixture, $sizeof_objclass, $objclass_oc_magic) & 1) | 0 : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) & 1) | 0 || (cptr.ldI32o2(objects, cptr.ldI16o(potion, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) & 1) | 0 ? 1 : 0)));
             void cptr.strcpy(cptr.decay(qbuf), __s_the);
             if (amt > ((cptr.ldI32o(obj, $obj_oeroded) & 3) | 0 ? 2 : (magic ? 3 : 7))) {
                 if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
@@ -2487,7 +2491,7 @@ function potion_dip(obj, potion) {
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER && !Hallucination()) {
                 pline_The(__s_mixture_bubbles_s, Blind() ? __s_empty : __s_then_clears);
             } else if (!Blind()) {
-                pline_The(__s_mixture_looks_s, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))));
+                pline_The(__s_mixture_looks_s, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))));
             }
             freeinv(obj);
             hold_potion(obj, __s_you_drop_s, doname(obj), null);
@@ -2538,7 +2542,7 @@ function potion_dip(obj, potion) {
                 make_glib((Number(BigInt.asIntN(32, (Glib() & 16777215n))) + (rng_log_enabled() ? (rng_log_set_caller(__s_potion_c, 2653, __s_potion_dip), d(2, 10)) : d(2, 10))) | 0);
             } else if (cptr.ld1so(obj, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(obj)) {
                 break __lbl_more_dips;
-            } else if ((!(((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) && !is_corrodeable(obj)) || is_ammo(obj) || (!(cptr.ldI32o(obj, $obj_oeroded) & 3) && !(cptr.ldI32o(obj, $obj_oeroded2) & 3))) {
+            } else if ((!(((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.IRON) && !is_corrodeable(obj)) || is_ammo(obj) || (!(cptr.ldI32o(obj, $obj_oeroded) & 3) && !(cptr.ldI32o(obj, $obj_oeroded2) & 3))) {
                 if (!Blind())
                     pline(__s_s_s_with_an_oily_sheen, Yname2(obj), otense(obj, __s_gleam));
                 else
@@ -2597,7 +2601,7 @@ function potion_dip(obj, potion) {
         cptr.st1o(cptr.decay(oldbuf), 0, 0, 1);
         if ((cptr.ldI32o(potion, $obj_dknown) & 1)) {
             old_dknown = 1;
-            void cptr.sprintf(cptr.decay(oldbuf), __s_pct_s_sp, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(potion, $obj_otyp), 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))));
+            void cptr.sprintf(cptr.decay(oldbuf), __s_pct_s_sp, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(potion, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))));
         }
         if (cptr.ldI64o(potion, $obj_quan) > 1n) {
             singlepotion = splitobj(potion, 1n);
@@ -2619,12 +2623,12 @@ function potion_dip(obj, potion) {
             if (mixture == NHC.POT_WATER && (cptr.ldI32o(singlepotion, $obj_dknown) & 1) | 0)
                 void cptr.sprintf(cptr.decay(newbuf), __s_clears);
             else if (!Blind())
-                void cptr.sprintf(cptr.decay(newbuf), __s_turns_s, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, mixture, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr))));
+                void cptr.sprintf(cptr.decay(newbuf), __s_turns_s, hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, mixture, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))));
             if (cptr.ld1s(cptr.decay(newbuf)))
                 pline_The(__s_spotion_s_s, cptr.decay(oldbuf), more_than_one ? __s_that_you_dipped_into : __s_empty, cptr.decay(newbuf));
             else
                 pline(__s_something_happens);
-            if (old_dknown && !(cptr.ldI32o2(objects, old_otyp, 120, $objclass_oc_name_known) & 1) && !cptr.ldPtro2(objects, old_otyp, 120, $objclass_oc_uname)) {
+            if (old_dknown && !(cptr.ldI32o2(objects, old_otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) && !cptr.ldPtro2(objects, old_otyp, $sizeof_objclass, $objclass_oc_uname)) {
                 let fakeobj = cptr.alloc(216);
                 cptr.memcpy(fakeobj, cg, 216);
                 cptr.stI32o(fakeobj, $obj_dknown, 1);
@@ -2658,7 +2662,7 @@ export function mongrantswish(monp) {
 export function djinni_from_bottle(obj) {
     let mtmp = cptr.box(0);
     let chance;
-    if (!(mtmp.v = makemon(cptr.add(mons, NHC.PM_DJINNI, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG))) {
+    if (!(mtmp.v = makemon(cptr.add(mons, NHC.PM_DJINNI, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG))) {
         pline(__s_it_turns_out_to_be_empty);
         return;
     }
@@ -2742,7 +2746,7 @@ export function speed_up(duration) {
     else
         Your(__s_s_get_new_energy, makeplural(body_part(NHC.LEG)));
     exercise(NHC.A_DEX, 1);
-    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, 24), $prop_intrinsic), Number(BigInt.asIntN(32, duration)));
+    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FAST, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, duration)));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

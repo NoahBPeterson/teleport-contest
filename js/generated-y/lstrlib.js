@@ -24,7 +24,7 @@ const $GMatchState_lastmatch = FLD.GMatchState_lastmatch, $GMatchState_ms = FLD.
     $MatchState_matchdepth = FLD.MatchState_matchdepth, $MatchState_p_end = FLD.MatchState_p_end,
     $MatchState_src_end = FLD.MatchState_src_end, $luaL_Buffer_n = FLD.luaL_Buffer_n,
     $luaL_Buffer_size = FLD.luaL_Buffer_size, $luaL_Reg_func = FLD.luaL_Reg_func,
-    $str_Writer_B = FLD.str_Writer_B;
+    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $str_Writer_B = FLD.str_Writer_B;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -359,7 +359,7 @@ function* arith_unm(L) {
 }
 
 /** C ref: lstrlib.c:330 — luaL_Reg[10] */
-const stringmetamethods = cptr.alloc(10 * 16);
+const stringmetamethods = cptr.alloc(10 * $sizeof_luaL_Reg);
 cptr.stPtro(stringmetamethods, 0, __s_add);
 cptr.stPtro(stringmetamethods, 0 + $luaL_Reg_func, arith_add);
 cptr.stPtro(stringmetamethods, 16, __s_sub);
@@ -1858,7 +1858,7 @@ function* str_unpack(L) {
 }
 
 /** C ref: lstrlib.c:1830 — luaL_Reg[18] */
-const strlib = cptr.alloc(18 * 16);
+const strlib = cptr.alloc(18 * $sizeof_luaL_Reg);
 cptr.stPtro(strlib, 0, __s_byte);
 cptr.stPtro(strlib, 0 + $luaL_Reg_func, str_byte);
 cptr.stPtro(strlib, 16, __s_char);

@@ -152,10 +152,12 @@ const $Race_adj = FLD.Race_adj, $RoleName_f = FLD.RoleName_f, $Role_allow = FLD.
     $prop_intrinsic = FLD.prop_intrinsic, $s_level_dlevel = FLD.s_level_dlevel,
     $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load, $sinfo_done_hup = FLD.sinfo_done_hup,
     $sinfo_in_moveloop = FLD.sinfo_in_moveloop,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
-    $tribute_info_enabled = FLD.tribute_info_enabled, $u_event_amulet_wish = FLD.u_event_amulet_wish,
-    $u_event_udemigod = FLD.u_event_udemigod, $u_realtime_start_timing = FLD.u_realtime_start_timing,
-    $u_roleplay_pauper = FLD.u_roleplay_pauper, $u_roleplay_reroll = FLD.u_roleplay_reroll,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $tribute_info_enabled = FLD.tribute_info_enabled,
+    $u_event_amulet_wish = FLD.u_event_amulet_wish, $u_event_udemigod = FLD.u_event_udemigod,
+    $u_realtime_start_timing = FLD.u_realtime_start_timing, $u_roleplay_pauper = FLD.u_roleplay_pauper,
+    $u_roleplay_reroll = FLD.u_roleplay_reroll,
     $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_display_file = FLD.window_procs_win_display_file,
@@ -709,7 +711,7 @@ export function* newgame() {
     cptr.stU64o(svc, $context_info_tribute, 24n);
     get_nhuuid();
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
-        cptr.st1o2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags, uchar((cptr.ldU16o2(mons, i, 96, $permonst_geno) & NHM.G_NOCORPSE)));
+        cptr.st1o2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, uchar((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_NOCORPSE)));
     (yield* init_objects());
     cptr.stI32o(flags, $flag_pantheon, -1);
     (yield* role_init());
@@ -778,7 +780,7 @@ export function* welcome(new_game) {
     if (new_game || cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) || adrift)
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, adrift ? __s_adrift : __s_empty, adrift ? align_str(cptr.ld1so(u, $you_ualign)) : align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
     if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) && (new_game ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) == 12288 : currentgend != cptr.ldI32o(flags, $flag_initgend)))
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_pct_s, cptr.ldPtro(genders, currentgend, 48));
+        void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_pct_s, cptr.ldPtro(genders, currentgend, $sizeof_Gender));
     void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s__2, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj), (currentgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole));
     (yield* pline(new_game ? __s_s_s_welcome_to_nethack_you_are_a_s : __s_s_s_the_s_welcome_back_to_nethack, Hello(null), svp, cptr.decay(buf)));
     if (new_game) {

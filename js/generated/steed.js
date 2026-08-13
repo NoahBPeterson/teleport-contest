@@ -73,7 +73,10 @@ const $Gender_he = FLD.Gender_he, $Role_mnum = FLD.Role_mnum,
     $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $permonst_mflags1 = FLD.permonst_mflags1,
     $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
     $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_Gender = FLD.sizeof_Gender,
+    $sizeof_coord = FLD.sizeof_coord, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+    $sizeof_skills = FLD.sizeof_skills, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
     $you_dx = FLD.you_dx, $you_dy = FLD.you_dy, $you_ugallop = FLD.you_ugallop,
     $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum,
     $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_urideturns = FLD.you_urideturns,
@@ -217,7 +220,7 @@ export function use_saddle(otmp) {
             instapetrify(cptr.decay(kbuf));
         }
     }
-    if (cptr.eq(ptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, 96))) {
+    if (cptr.eq(ptr, cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst))) {
         pline(__s_shame_on_you);
         exercise(NHC.A_WIS, 0);
         return NHM.ECMD_TIME;
@@ -236,7 +239,7 @@ export function use_saddle(otmp) {
         chance = (chance - Math.imul(10, cptr.ld1uo(mtmp, $monst_m_lev))) | 0;
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT))
         chance = (chance + 20) | 0;
-    switch ((cptr.ldI16o2(u, NHC.P_RIDING, 6, $you_weapon_skills))) {
+    switch ((cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills))) {
         case NHC.P_ISRESTRICTED:
         case NHC.P_UNSKILLED:
         default:
@@ -347,7 +350,7 @@ export function mount_steed(mtmp, force) {
         pline(__s_i_see_nobody_there);
         return 0;
     }
-    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)) && (((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0) != cptr.ldI16o(mtmp, $monst_mx) || ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0) != cptr.ldI16o(mtmp, $monst_my))) {
+    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)) && (((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0) != cptr.ldI16o(mtmp, $monst_mx) || ((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0) != cptr.ldI16o(mtmp, $monst_my))) {
         You(__s_couldn_t_ride_s_let_alone_its_tail, a_monnam(mtmp));
         return 0;
     }
@@ -376,7 +379,7 @@ export function mount_steed(mtmp, force) {
     }
     if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
         let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-        You_cant(__s_mount_s_while_s_s_trapped_in_s, mon_nam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)), an(trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)));
+        You_cant(__s_mount_s_while_s_s_trapped_in_s, mon_nam(mtmp), (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)), an(trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)));
         return 0;
     }
     if (!force && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !(cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) + -1))) {
@@ -452,7 +455,7 @@ export function kick_steed() {
     if (!cptr.ldPtro(u, $you_usteed))
         return;
     if (helpless(cptr.ldPtro(u, $you_usteed))) {
-        void cptr.strcpy(cptr.decay(He), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_usteed), NHM.PRONOUN_HALLU), 48, $Gender_he)));
+        void cptr.strcpy(cptr.decay(He), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_usteed), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)));
         cptr.st1(cptr.decay(He), highc(cptr.ld1s(cptr.decay(He))));
         if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1) | 0 || (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 415, __s_kick_steed), rn2(2)) : rn2(2))) {
             if ((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1))
@@ -488,7 +491,7 @@ export function kick_steed() {
 /** C ref: steed.c:460 — @param {CPtr<coord>} spot @param {CInt} reason @param {CInt} forceit @returns {CInt} */
 function landing_spot(spot, reason, forceit) {
     let cc = cptr.alloc(4);
-    let try$ = cptr.alloc(8 * 4);
+    let try$ = cptr.alloc(8 * $sizeof_coord);
     let i;
     let j;
     let best_j;
@@ -510,14 +513,14 @@ function landing_spot(spot, reason, forceit) {
     j = xytodir(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy));
     if (reason == NHC.DISMOUNT_KNOCKED && j != NHC.DIR_ERR) {
         best_j = j;
-        cptr.stI16o(cptr.decay(try$), 0, i16(cptr.ldI32o(u, $you_dx)), 4), cptr.stI16o2(cptr.decay(try$), 0, 4, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
+        cptr.stI16o(cptr.decay(try$), 0, i16(cptr.ldI32o(u, $you_dx)), $sizeof_coord), cptr.stI16o2(cptr.decay(try$), 0, $sizeof_coord, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
         i = (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 480, __s_landing_spot), rn2(2)) : rn2(2));
         clockwise_j = ((((j) + 1) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
         dirtocoord(cc, clockwise_j);
-        cptr.stI16o(cptr.decay(try$), (1 + i) | 0, cptr.ldI16(cc), 4), cptr.stI16o2(cptr.decay(try$), (1 + i) | 0, 4, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
+        cptr.stI16o(cptr.decay(try$), (1 + i) | 0, cptr.ldI16(cc), $sizeof_coord), cptr.stI16o2(cptr.decay(try$), (1 + i) | 0, $sizeof_coord, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
         counterclk_j = ((((j) + 7) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
         dirtocoord(cc, counterclk_j);
-        cptr.stI16o(cptr.decay(try$), (2 - i) | 0, cptr.ldI16(cc), 4), cptr.stI16o2(cptr.decay(try$), (2 - i) | 0, 4, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
+        cptr.stI16o(cptr.decay(try$), (2 - i) | 0, cptr.ldI16(cc), $sizeof_coord), cptr.stI16o2(cptr.decay(try$), (2 - i) | 0, $sizeof_coord, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
         n = 3;
         {
             if (debugcore(__s_steed_c, 1)) {
@@ -535,15 +538,15 @@ function landing_spot(spot, reason, forceit) {
         if (reason == NHC.DISMOUNT_POLY && ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) && (j % 1) != 0)
             continue;
         dirtocoord(cc, j);
-        cptr.memcpy(cptr.add(cptr.decay(try$), n++, 4), cc, 4);
+        cptr.memcpy(cptr.add(cptr.decay(try$), n++, $sizeof_coord), cc, 4);
     }
     impaird = schar((HStun() || HConfusion() || Fumbling() ? 1 : 0));
     viable = 0;
     found = 0;
     for (i = (reason == NHC.DISMOUNT_BYCHOICE && !impaird) ? 0 : (((reason == NHC.DISMOUNT_BYCHOICE && impaird) || reason == NHC.DISMOUNT_KNOCKED) ? 1 : 2); i <= 2 && !found; ++i) {
         for (j = 0; j < n; ++j) {
-            x = i16(((cptr.ldI16(u) + cptr.ldI16o(cptr.decay(try$), j, 4)) | 0));
-            y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI16o2(cptr.decay(try$), j, 4, $nhcoord_y)) | 0));
+            x = i16(((cptr.ldI16(u) + cptr.ldI16o(cptr.decay(try$), j, $sizeof_coord)) | 0));
+            y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI16o2(cptr.decay(try$), j, $sizeof_coord, $nhcoord_y)) | 0));
             if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 continue;
             if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), i16(((x - cptr.ldI16(u)) | 0)), i16(((y - cptr.ldI16o(u, $you_uy)) | 0)), NHM.TEST_MOVE)) {
@@ -579,7 +582,7 @@ export function dismount_steed(reason) {
     let save_utrap = cptr.ldI32o(u, $you_utrap);
     let ulev;
     let ufly;
-    let repair_leg_damage = schar((BigInt((cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, 24, $you_uprops) ? 1 : 0)) != 0n));
+    let repair_leg_damage = schar((BigInt((cptr.ldI64o2(u, NHC.WOUNDED_LEGS, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WOUNDED_LEGS, $sizeof_prop, $you_uprops) ? 1 : 0)) != 0n));
     let have_spot = landing_spot(cc, reason, 0);
     mtmp = cptr.ldPtro(u, $you_usteed);
     if (!mtmp)
@@ -650,8 +653,8 @@ export function dismount_steed(reason) {
     }
     cptr.stI16(steedcc, cptr.ldI16(u)), cptr.stI16o(steedcc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) {
-        if (!enexto(steedcc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(mtmp, $monst_data)) && !enexto(steedcc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_BAT, 96)))
-            void enexto(steedcc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_GHOST, 96));
+        if (!enexto(steedcc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(mtmp, $monst_data)) && !enexto(steedcc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_BAT, $sizeof_permonst)))
+            void enexto(steedcc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst));
     }
     if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
         cptr.postinc1(cptr.add(gi, $instance_globals_i_in_steed_dismounting));

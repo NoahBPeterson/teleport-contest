@@ -135,7 +135,10 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $polearm_info_m_id = FLD.polearm_info_m_id, $sinfo_done_hup = FLD.sinfo_done_hup,
     $sinfo_freeingdata = FLD.sinfo_freeingdata, $sinfo_restoring = FLD.sinfo_restoring,
     $sinfo_savefile_completed = FLD.sinfo_savefile_completed, $sinfo_saving = FLD.sinfo_saving,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_Align = FLD.sizeof_Align,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_fruit = FLD.sizeof_fruit, $sizeof_linfo = FLD.sizeof_linfo,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_spell = FLD.sizeof_spell, $sizeof_trap = FLD.sizeof_trap,
     $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound, $stairway_next = FLD.stairway_next,
     $stairway_tolev = FLD.stairway_tolev, $tin_info_o_id = FLD.tin_info_o_id, $trap_dst = FLD.trap_dst,
     $u_realtime_finish_time = FLD.u_realtime_finish_time,
@@ -344,7 +347,7 @@ export function dosave0() {
         for (ltmp.v = 1; ltmp.v <= maxledgerno(); ltmp.v++) {
             if (ltmp.v == ledger_no(cptr.add(gu, $instance_globals_u_uz_save)))
                 continue;
-            if (!(cptr.ld1uo2(svl, ltmp.v, 1, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS))
+            if (!(cptr.ld1uo2(svl, ltmp.v, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS))
                 continue;
             onhfp = open_levelfile(ltmp.v, cptr.decay(whynot));
             if (!onhfp) {
@@ -450,13 +453,13 @@ function savegamestate(nhfp) {
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
         cptr.stPtro(gm, $instance_globals_m_migrating_mons, null);
     for (i = 0; i < NHC.NUMMONS; ++i) {
-        sfo_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, 12), __s_gamestate_mvitals);
+        sfo_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, $sizeof_mvitals), __s_gamestate_mvitals);
     }
     save_dungeon(nhfp, schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & 3))), schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))));
     savelevchn(nhfp);
     sfo_q_score(nhfp, svq, __s_gamestate_quest_status);
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
-        sfo_spell(nhfp, cptr.add(svs, i, 8), __s_gamestate_spl_book);
+        sfo_spell(nhfp, cptr.add(svs, i, $sizeof_spell), __s_gamestate_spl_book);
     }
     save_artifacts(nhfp);
     save_oracles(nhfp);
@@ -568,7 +571,7 @@ function savelev_core(nhfp, lev) {
             if (cptr.ldPtr(go))
                 dobjsfree();
             if (lev.v >= 0 && lev.v <= maxledgerno())
-                cptr.st1o2(svl, lev.v, 1, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev.v, 1, $instance_globals_saved_l_level_info) | NHM.VISITED);
+                cptr.st1o2(svl, lev.v, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev.v, $sizeof_linfo, $instance_globals_saved_l_level_info) | NHM.VISITED);
             sfo_int(nhfp, svh, __s_gamestate_hackpid);
             sfo_xint8(nhfp, lev, __s_gamestate_dlvl);
             ;
@@ -639,7 +642,7 @@ function savelevl(nhfp) {
     let y;
     for (x = 0; x < NHM.COLNO; x++) {
         for (y = 0; y < NHM.ROWNO; y++) {
-            sfo_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36), __s_location_rm);
+            sfo_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm), __s_location_rm);
         }
     }
     return;
@@ -913,7 +916,7 @@ function savemonchn(nhfp, mtmp) {
     }
 }
 
-let __static_savetrapchn_zerotrap = cptr.alloc(40); /** C ref: save.c:922 — struct trap (function-static) */
+let __static_savetrapchn_zerotrap = cptr.alloc($sizeof_trap); /** C ref: save.c:922 — struct trap (function-static) */
 
 /** C ref: save.c:920 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct trap>} trap */
 function savetrapchn(nhfp, trap) {
@@ -937,7 +940,7 @@ function savetrapchn(nhfp, trap) {
     }
 }
 
-let __static_savefruitchn_zerofruit = cptr.alloc(48); /** C ref: save.c:953 — struct fruit (function-static) */
+let __static_savefruitchn_zerofruit = cptr.alloc($sizeof_fruit); /** C ref: save.c:953 — struct fruit (function-static) */
 
 /** C ref: save.c:951 — @param {CPtr<NHFILE>} nhfp */
 export function savefruitchn(nhfp) {
@@ -987,7 +990,7 @@ export function store_plname_in_file(nhfp) {
     let hero = new Uint8Array(49);
     let plsiztmp = cptr.box(49);
     void __builtin___memset_chk(cptr.decay(hero), 0, 49n, __builtin_object_size(cptr.decay(hero), 0));
-    nh_snprintf(__s_store_plname_in_file, 1010, cptr.decay(hero), 49n, __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), 48, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, 32, $Align_filecode));
+    nh_snprintf(__s_store_plname_in_file, 1010, cptr.decay(hero), 49n, __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, $sizeof_Align, $Align_filecode));
     cptr.st1o(cptr.decay(hero), cptr.strlen(svp), 0, 1);
     (__builtin_expect(BigInt((!(cptr.ld1so(cptr.decay(hero), 47, 1) == 0))), 0n) ? __assert_rtn(__s_store_plname_in_file, __s_save_c, 1017, __s_hero_pl_nsiz_plus_1_1_0) : void 0);
     cptr.st1o(cptr.decay(hero), 48, schar((wizard() ? 68 : (discover() ? 88 : 45))), 1);

@@ -80,9 +80,12 @@ const $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode = FLD.NHFILE_mode, $NhRect_
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
     $permonst_mlet = FLD.permonst_mlet, $permonst_msound = FLD.permonst_msound,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uinwater = FLD.you_uinwater,
-    $you_uprops = FLD.you_uprops, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
+    $sizeof_NhRect = FLD.sizeof_NhRect, $sizeof_coord = FLD.sizeof_coord,
+    $sizeof_nhcoord = FLD.sizeof_nhcoord, $sizeof_nhrect = FLD.sizeof_nhrect,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $window_procs_win_putstr = FLD.window_procs_win_putstr,
+    $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops, $you_uswallow = FLD.you_uswallow,
+    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_add_mon_to_reg_s_u_already_in_region = cptr.lit("add_mon_to_reg: %s [#%u] already in region.");
@@ -158,7 +161,7 @@ export function inside_region(reg, x, y) {
     if (reg === null || !inside_rect(reg, x, y))
         return 0;
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_nrects); i++)
-        if (inside_rect(cptr.add(cptr.ldPtro(reg, $NhRegion_rects), i, 8), x, y))
+        if (inside_rect(cptr.add(cptr.ldPtro(reg, $NhRegion_rects), i, $sizeof_NhRect), x, y))
             return 1;
     return 0;
 }
@@ -170,7 +173,7 @@ export function* create_region(rects, nrect) {
     reg = (yield* alloc(96));
     void __builtin___memset_chk(reg, 0, 96n, __builtin_object_size(reg, 0));
     if (nrect > 0) {
-        cptr.memcpy(reg, cptr.add(rects, 0, 8), 8);
+        cptr.memcpy(reg, cptr.add(rects, 0, $sizeof_NhRect), 8);
     } else {
         cptr.stI16(reg, NHM.COLNO);
         cptr.stI16o(reg, $nhrect_ly, NHM.ROWNO);
@@ -180,15 +183,15 @@ export function* create_region(rects, nrect) {
     cptr.stI16o(reg, $NhRegion_nrects, i16(nrect));
     cptr.stPtro(reg, $NhRegion_rects, (nrect > 0) ? (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(nrect)) * 8n))))) : null);
     for (i = 0; i < nrect; i++) {
-        if (cptr.ldI16o(rects, i, 8) < cptr.ldI16(reg))
-            cptr.stI16(reg, cptr.ldI16o(rects, i, 8));
-        if (cptr.ldI16o2(rects, i, 8, $nhrect_ly) < cptr.ldI16o(reg, $nhrect_ly))
-            cptr.stI16o(reg, $nhrect_ly, cptr.ldI16o2(rects, i, 8, $nhrect_ly));
-        if (cptr.ldI16o2(rects, i, 8, $nhrect_hx) > cptr.ldI16o(reg, $nhrect_hx))
-            cptr.stI16o(reg, $nhrect_hx, cptr.ldI16o2(rects, i, 8, $nhrect_hx));
-        if (cptr.ldI16o2(rects, i, 8, $nhrect_hy) > cptr.ldI16o(reg, $nhrect_hy))
-            cptr.stI16o(reg, $nhrect_hy, cptr.ldI16o2(rects, i, 8, $nhrect_hy));
-        cptr.memcpy(cptr.add(cptr.ldPtro(reg, $NhRegion_rects), i, 8), cptr.add(rects, i, 8), 8);
+        if (cptr.ldI16o(rects, i, $sizeof_NhRect) < cptr.ldI16(reg))
+            cptr.stI16(reg, cptr.ldI16o(rects, i, $sizeof_NhRect));
+        if (cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_ly) < cptr.ldI16o(reg, $nhrect_ly))
+            cptr.stI16o(reg, $nhrect_ly, cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_ly));
+        if (cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hx) > cptr.ldI16o(reg, $nhrect_hx))
+            cptr.stI16o(reg, $nhrect_hx, cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hx));
+        if (cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hy) > cptr.ldI16o(reg, $nhrect_hy))
+            cptr.stI16o(reg, $nhrect_hy, cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hy));
+        cptr.memcpy(cptr.add(cptr.ldPtro(reg, $NhRegion_rects), i, $sizeof_NhRect), cptr.add(rects, i, $sizeof_NhRect), 8);
     }
     cptr.stI64o(reg, $NhRegion_ttl, -1n);
     cptr.st1o(reg, $NhRegion_attach_2_u, 0);
@@ -218,7 +221,7 @@ export function* add_rect_to_reg(reg, rect) {
         void cptr.memcpy(tmp_rect, cptr.ldPtro(reg, $NhRegion_rects), BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI16o(reg, $NhRegion_nrects))) * 8n));
         cptr.free(cptr.ldPtro(reg, $NhRegion_rects));
     }
-    cptr.memcpy(cptr.add(tmp_rect, cptr.ldI16o(reg, $NhRegion_nrects), 8), rect, 8);
+    cptr.memcpy(cptr.add(tmp_rect, cptr.ldI16o(reg, $NhRegion_nrects), $sizeof_NhRect), rect, 8);
     (cptr.stI16o(reg, $NhRegion_nrects, cptr.ldI16o(reg, $NhRegion_nrects) + 1)) - (1);
     cptr.stPtro(reg, $NhRegion_rects, tmp_rect);
     if (cptr.ldI16(reg) > cptr.ldI16(rect))
@@ -236,7 +239,7 @@ export function* add_mon_to_reg(reg, mon) {
     let i;
     let tmp_m;
     if (mon_in_region(reg, mon)) {
-        if (!cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, 96)))
+        if (!cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)))
             (yield* impossible(__s_add_mon_to_reg_s_u_already_in_region, (yield* m_monnam(mon)), cptr.ldI32o(mon, $monst_m_id)));
         return;
     }
@@ -352,7 +355,7 @@ export function* remove_region(reg) {
                 for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++)
                     if (isok(i16(x), i16(y)) && inside_region(reg, x, y)) {
                         if (pass == 1) {
-                            if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36))))
+                            if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm))))
                                 unblock_point(x, y);
                         } else {
                             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
@@ -595,7 +598,7 @@ export function* save_regions(nhfp) {
             (yield* sfo_nhrect(nhfp, r, __s_region_bounding_box));
             (yield* sfo_short(nhfp, cptr.add(r, $NhRegion_nrects), __s_region_nrects));
             for (j = 0; j < cptr.ldI16o(r, $NhRegion_nrects); j++) {
-                (yield* sfo_nhrect(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, 8), __s_region_rect));
+                (yield* sfo_nhrect(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, $sizeof_NhRect), __s_region_rect));
             }
             (yield* sfo_boolean(nhfp, cptr.add(r, $NhRegion_attach_2_u), __s_region_attach_2_u));
             (yield* sfo_unsigned(nhfp, cptr.add(r, $NhRegion_attach_2_m), __s_region_attach_2_m));
@@ -662,7 +665,7 @@ export function* rest_regions(nhfp) {
         else
             cptr.stPtro(r, $NhRegion_rects, null);
         for (j = 0; j < cptr.ldI16o(r, $NhRegion_nrects); j++) {
-            (yield* sfi_nhrect(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, 8), __s_region_rect));
+            (yield* sfi_nhrect(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, $sizeof_NhRect), __s_region_rect));
         }
         (yield* sfi_boolean(nhfp, cptr.add(r, $NhRegion_attach_2_u), __s_region_attach_2_u));
         (yield* sfi_unsigned(nhfp, cptr.add(r, $NhRegion_attach_2_m), __s_region_attach_2_m));
@@ -782,7 +785,7 @@ export function* expire_gas_cloud(p1, p2) {
             for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++) {
                 if (inside_region(reg, x, y)) {
                     if (pass == 1) {
-                        if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36))))
+                        if (!(yield* does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm))))
                             unblock_point(x, y);
                     } else {
                         if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -805,7 +808,7 @@ export function* inside_gas_cloud(p1, p2) {
     let mtmp = p2;
     let umon = mtmp ? mtmp : cptr.add(gy, $instance_globals_y_youmonst);
     let dam = cptr.ldI32o(reg, $NhRegion_arg);
-    if (cptr.ldI64o(reg, $NhRegion_ttl) < 20n && umon && cptr.eq(cptr.ldPtro(umon, $monst_data), cptr.add(mons, NHC.PM_FOG_CLOUD, 96)))
+    if (cptr.ldI64o(reg, $NhRegion_ttl) < 20n && umon && cptr.eq(cptr.ldPtro(umon, $monst_data), cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)))
         cptr.stI64o(reg, $NhRegion_ttl, cptr.ldI64o(reg, $NhRegion_ttl) + 5n);
     if (dam < 1)
         return 0;
@@ -913,17 +916,17 @@ export function* create_gas_cloud(x, y, cloudsize, damage) {
             break;
         let xx = cptr.ldI16o(xcoords, curridx, 2);
         let yy = cptr.ldI16o(ycoords, curridx, 2);
-        let dirs = cptr.alloc(4 * 4); cptr.stI16o(dirs, 0, 0); cptr.stI16o(dirs, 0 + $coord_y, -1); cptr.stI16o(dirs, 4, 0); cptr.stI16o(dirs, 4 + $coord_y, 1); cptr.stI16o(dirs, 8, -1); cptr.stI16o(dirs, 8 + $coord_y, 0); cptr.stI16o(dirs, 12, 1); cptr.stI16o(dirs, 12 + $coord_y, 0);
+        let dirs = cptr.alloc(4 * $sizeof_coord); cptr.stI16o(dirs, 0, 0); cptr.stI16o(dirs, 0 + $coord_y, -1); cptr.stI16o(dirs, 4, 0); cptr.stI16o(dirs, 4 + $coord_y, 1); cptr.stI16o(dirs, 8, -1); cptr.stI16o(dirs, 8 + $coord_y, 0); cptr.stI16o(dirs, 12, 1); cptr.stI16o(dirs, 12 + $coord_y, 0);
         for (i = 4; i > 0; --i) {
             let swapidx = i16((rng_log_enabled() ? (rng_log_set_caller(__s_region_c, 1255, __s_create_gas_cloud), rn2(i)) : rn2(i)));
-            let tmp = cptr.alloc(4); cptr.memcpy(tmp, cptr.add(dirs, swapidx, 4), 4);
-            cptr.memcpy(cptr.add(dirs, swapidx, 4), cptr.add(dirs, (i - 1) | 0, 4), 4);
-            cptr.memcpy(cptr.add(dirs, (i - 1) | 0, 4), tmp, 4);
+            let tmp = cptr.alloc(4); cptr.memcpy(tmp, cptr.add(dirs, swapidx, $sizeof_coord), $sizeof_nhcoord);
+            cptr.memcpy(cptr.add(dirs, swapidx, $sizeof_coord), cptr.add(dirs, (i - 1) | 0, $sizeof_coord), 4);
+            cptr.memcpy(cptr.add(dirs, (i - 1) | 0, $sizeof_coord), tmp, 4);
         }
         let nvalid = 0;
         for (i = 0; i < 4; ++i) {
-            let dx = cptr.ldI16o(dirs, i, 4);
-            let dy = cptr.ldI16o2(dirs, i, 4, $nhcoord_y);
+            let dx = cptr.ldI16o(dirs, i, $sizeof_coord);
+            let dy = cptr.ldI16o2(dirs, i, $sizeof_coord, $nhcoord_y);
             let isunpicked = 1;
             if (valid_cloud_pos(i16(((xx + dx) | 0)), i16(((yy + dy) | 0)))) {
                 nvalid++;
@@ -964,7 +967,7 @@ export function* create_gas_cloud_selection(sel, damage) {
     let tmprect = cptr.alloc(8);
     let x;
     let y;
-    let r = cptr.alloc(8); cptr.memcpy(r, cptr.add(cg, $const_globals_zeroNhRect), 8);
+    let r = cptr.alloc(8); cptr.memcpy(r, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     let inside_cloud = is_hero_inside_gas_cloud();
     selection_getbounds(sel, r);
     cloud = (yield* create_region(null, 0));
@@ -1017,7 +1020,7 @@ export function* region_safety() {
     if (n > 1 || (n == 1 && !r)) {
         void (yield* safe_teleds(NHM.TELEDS_NO_FLAGS));
         if (region_danger()) {
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.MAGICAL_BREATHING, 24), $prop_intrinsic), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_region_c, 1391, __s_region_safety), d(4, 4)) : d(4, 4)) + 4) | 0)));
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.MAGICAL_BREATHING, $sizeof_prop), $prop_intrinsic), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_region_c, 1391, __s_region_safety), d(4, 4)) : d(4, 4)) + 4) | 0)));
             (yield* You_feel(__s_able_to_breathe));
         }
     } else if (r) {

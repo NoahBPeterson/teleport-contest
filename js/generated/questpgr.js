@@ -55,7 +55,9 @@ const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FL
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
     $q_score_godgend = FLD.q_score_godgend, $q_score_ldrgend = FLD.q_score_ldrgend,
     $q_score_nemgend = FLD.q_score_nemgend, $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_dungeon = FLD.sizeof_dungeon,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
     $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
     $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
@@ -137,7 +139,7 @@ export function quest_info(typ) {
 /** C ref: questpgr.c:50 @returns {CPtr<char>} */
 export function ldrname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
-    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
@@ -197,14 +199,14 @@ export function find_quest_artifact(whichchains) {
 /** C ref: questpgr.c:124 @returns {CPtr<char>} */
 function neminame() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
-    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
+    void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __s_s_s, ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : __s_the, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
 /** C ref: questpgr.c:134 @returns {CPtr<char>} */
 function guardname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
-    return cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0);
+    return cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
 }
 
 /** C ref: questpgr.c:142 @returns {CPtr<char>} */
@@ -237,7 +239,7 @@ function qtext_pronoun(who, which) {
         pnoun = (lwhich == 104) ? __s_they : ((lwhich == 105) ? __s_them : ((lwhich == 106) ? __s_their : __s_query));
     } else {
         godgend = (who == 100) ? (cptr.ldI32o(svq, $q_score_godgend) & 3) | 0 : ((who == 108) ? (cptr.ldI32o(svq, $q_score_ldrgend) & 3) | 0 : ((who == 110) ? (cptr.ldI32o(svq, $q_score_nemgend) & 3) | 0 : 2));
-        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, 48, $Gender_he) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, 48, $Gender_him) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, 48, $Gender_his) : __s_query));
+        pnoun = (lwhich == 104) ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_he) : ((lwhich == 105) ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_him) : ((lwhich == 106) ? cptr.ldPtro2(genders, godgend, $sizeof_Gender, $Gender_his) : __s_query));
     }
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), pnoun);
     if (lwhich != which)
@@ -319,7 +321,7 @@ function convert_arg(c) {
         str = Blind() ? __s_sense : __s_see;
         break;
         case 90:
-        str = cptr.add(svd, 0, 112);
+        str = cptr.add(svd, 0, $sizeof_dungeon);
         break;
         case 37:
         str = __s_pct;
@@ -653,13 +655,13 @@ export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 641, __s_qt_montype), rn2(5)) : rn2(5))) {
         qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy1num);
-        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 643, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
-            return cptr.add(mons, qpm, 96);
+        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 643, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+            return cptr.add(mons, qpm, $sizeof_permonst);
         return mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy1sym), 0);
     }
     qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy2num);
-    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 648, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
-        return cptr.add(mons, qpm, 96);
+    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 648, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+        return cptr.add(mons, qpm, $sizeof_permonst);
     return mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy2sym), 0);
 }
 

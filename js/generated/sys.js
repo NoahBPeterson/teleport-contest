@@ -15,8 +15,9 @@ import { gc } from './decl.js';
 // (values from ./nhfield.js, which is the whole table)
 const $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
     $instance_globals_c_crash_name = FLD.instance_globals_c_crash_name,
-    $sysopt_s_accessibility = FLD.sysopt_s_accessibility, $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools,
-    $sysopt_s_bonesformat = FLD.sysopt_s_bonesformat, $sysopt_s_check_plname = FLD.sysopt_s_check_plname,
+    $sizeof_sysopt_s = FLD.sizeof_sysopt_s, $sysopt_s_accessibility = FLD.sysopt_s_accessibility,
+    $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools, $sysopt_s_bonesformat = FLD.sysopt_s_bonesformat,
+    $sysopt_s_check_plname = FLD.sysopt_s_check_plname,
     $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid,
     $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl, $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles,
     $sysopt_s_entrymax = FLD.sysopt_s_entrymax, $sysopt_s_env_dbgfl = FLD.sysopt_s_env_dbgfl,
@@ -39,7 +40,7 @@ const __s_usr_bin_gdb = cptr.lit("/usr/bin/gdb");
 const __s_bin_grep = cptr.lit("/bin/grep");
 
 /** C ref: sys.c:18 — struct sysopt_s */
-export let sysopt = cptr.alloc(184);
+export let sysopt = cptr.alloc($sizeof_sysopt_s);
 
 /** C ref: sys.c:21 */
 export function sys_early_init() {

@@ -67,13 +67,18 @@ const $Align_value = FLD.Align_value, $Race_mnum = FLD.Race_mnum, $Role_mnum = F
     $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_oc2 = FLD.objclass_oc_oc2,
     $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_uses_known = FLD.objclass_oc_uses_known,
     $objdescr_oc_descr = FLD.objdescr_oc_descr, $prop_intrinsic = FLD.prop_intrinsic,
-    $skills_advance = FLD.skills_advance, $trobj_trbless = FLD.trobj_trbless,
-    $trobj_trclass = FLD.trobj_trclass, $trobj_trquan_max = FLD.trobj_trquan_max,
-    $trobj_trquan_min = FLD.trobj_trquan_min, $trobj_trspe = FLD.trobj_trspe,
-    $u_roleplay_nudist = FLD.u_roleplay_nudist, $u_roleplay_pauper = FLD.u_roleplay_pauper,
-    $you_nv_range = FLD.you_nv_range, $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
-    $you_ublesscnt = FLD.you_ublesscnt, $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc,
-    $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak, $you_ugrave_arise = FLD.you_ugrave_arise,
+    $sizeof_Align = FLD.sizeof_Align, $sizeof_def_skill = FLD.sizeof_def_skill,
+    $sizeof_inv_sub = FLD.sizeof_inv_sub, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_prop = FLD.sizeof_prop,
+    $sizeof_skills = FLD.sizeof_skills, $sizeof_spell = FLD.sizeof_spell, $sizeof_trobj = FLD.sizeof_trobj,
+    $sizeof_u_roleplay = FLD.sizeof_u_roleplay, $skills_advance = FLD.skills_advance,
+    $trobj_trbless = FLD.trobj_trbless, $trobj_trclass = FLD.trobj_trclass,
+    $trobj_trquan_max = FLD.trobj_trquan_max, $trobj_trquan_min = FLD.trobj_trquan_min,
+    $trobj_trspe = FLD.trobj_trspe, $u_roleplay_nudist = FLD.u_roleplay_nudist,
+    $u_roleplay_pauper = FLD.u_roleplay_pauper, $you_nv_range = FLD.you_nv_range,
+    $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt,
+    $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc, $you_uenmax = FLD.you_uenmax,
+    $you_uenpeak = FLD.you_uenpeak, $you_ugrave_arise = FLD.you_ugrave_arise,
     $you_uhandedness = FLD.you_uhandedness, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
     $you_uhppeak = FLD.you_uhppeak, $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax,
     $you_ulycn = FLD.you_ulycn, $you_umoney0 = FLD.you_umoney0, $you_umonnum = FLD.you_umonnum,
@@ -99,7 +104,7 @@ const __s_ini_inv_adjust_obj = cptr.lit("ini_inv_adjust_obj");
 /** C ref: u_init.c:8 — struct trobj { trotyp, trspe, trclass, trquan_min, trquan_max, trbless } (memory model v0.5) */
 
 /** C ref: u_init.c:42 — struct trobj[9] */
-const Archeologist = cptr.alloc(9 * 8);
+const Archeologist = cptr.alloc(9 * $sizeof_trobj);
 cptr.stI16o(Archeologist, 0, NHC.BULLWHIP);
 cptr.st1o(Archeologist, 0 + $trobj_trspe, 2);
 cptr.st1o(Archeologist, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -156,7 +161,7 @@ cptr.st1o(Archeologist, 64 + $trobj_trquan_max, 0);
 cptr.st1o(Archeologist, 64 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:54 — struct trobj[5] */
-const Barbarian_0 = cptr.alloc(5 * 8);
+const Barbarian_0 = cptr.alloc(5 * $sizeof_trobj);
 cptr.stI16o(Barbarian_0, 0, NHC.TWO_HANDED_SWORD);
 cptr.st1o(Barbarian_0, 0 + $trobj_trspe, 0);
 cptr.st1o(Barbarian_0, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -189,7 +194,7 @@ cptr.st1o(Barbarian_0, 32 + $trobj_trquan_max, 0);
 cptr.st1o(Barbarian_0, 32 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:61 — struct trobj[5] */
-const Barbarian_1 = cptr.alloc(5 * 8);
+const Barbarian_1 = cptr.alloc(5 * $sizeof_trobj);
 cptr.stI16o(Barbarian_1, 0, NHC.BATTLE_AXE);
 cptr.st1o(Barbarian_1, 0 + $trobj_trspe, 0);
 cptr.st1o(Barbarian_1, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -222,7 +227,7 @@ cptr.st1o(Barbarian_1, 32 + $trobj_trquan_max, 0);
 cptr.st1o(Barbarian_1, 32 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:68 — struct trobj[6] */
-const Cave_man = cptr.alloc(6 * 8);
+const Cave_man = cptr.alloc(6 * $sizeof_trobj);
 cptr.stI16o(Cave_man, 0, NHC.CLUB);
 cptr.st1o(Cave_man, 0 + $trobj_trspe, 1);
 cptr.st1o(Cave_man, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -261,7 +266,7 @@ cptr.st1o(Cave_man, 40 + $trobj_trquan_max, 0);
 cptr.st1o(Cave_man, 40 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:76 — struct trobj[11] */
-const Healer = cptr.alloc(11 * 8);
+const Healer = cptr.alloc(11 * $sizeof_trobj);
 cptr.stI16o(Healer, 0, NHC.SCALPEL);
 cptr.st1o(Healer, 0 + $trobj_trspe, 0);
 cptr.st1o(Healer, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -330,7 +335,7 @@ cptr.st1o(Healer, 80 + $trobj_trquan_max, 0);
 cptr.st1o(Healer, 80 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:90 — struct trobj[9] */
-const Knight = cptr.alloc(9 * 8);
+const Knight = cptr.alloc(9 * $sizeof_trobj);
 cptr.stI16o(Knight, 0, NHC.LONG_SWORD);
 cptr.st1o(Knight, 0 + $trobj_trspe, 1);
 cptr.st1o(Knight, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -387,7 +392,7 @@ cptr.st1o(Knight, 64 + $trobj_trquan_max, 0);
 cptr.st1o(Knight, 64 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:101 — struct trobj[9] */
-const Monk = cptr.alloc(9 * 8);
+const Monk = cptr.alloc(9 * $sizeof_trobj);
 cptr.stI16o(Monk, 0, NHC.LEATHER_GLOVES);
 cptr.st1o(Monk, 0 + $trobj_trspe, 2);
 cptr.st1o(Monk, 0 + $trobj_trclass, NHC.ARMOR_CLASS);
@@ -444,7 +449,7 @@ cptr.st1o(Monk, 64 + $trobj_trquan_max, 0);
 cptr.st1o(Monk, 64 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:114 — struct trobj[8] */
-const Priest = cptr.alloc(8 * 8);
+const Priest = cptr.alloc(8 * $sizeof_trobj);
 cptr.stI16o(Priest, 0, NHC.MACE);
 cptr.st1o(Priest, 0 + $trobj_trspe, 1);
 cptr.st1o(Priest, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -495,7 +500,7 @@ cptr.st1o(Priest, 56 + $trobj_trquan_max, 0);
 cptr.st1o(Priest, 56 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:124 — struct trobj[7] */
-const Ranger = cptr.alloc(7 * 8);
+const Ranger = cptr.alloc(7 * $sizeof_trobj);
 cptr.stI16o(Ranger, 0, NHC.DAGGER);
 cptr.st1o(Ranger, 0 + $trobj_trspe, 1);
 cptr.st1o(Ranger, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -540,7 +545,7 @@ cptr.st1o(Ranger, 48 + $trobj_trquan_max, 0);
 cptr.st1o(Ranger, 48 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:133 — struct trobj[7] */
-const Rogue = cptr.alloc(7 * 8);
+const Rogue = cptr.alloc(7 * $sizeof_trobj);
 cptr.stI16o(Rogue, 0, NHC.SHORT_SWORD);
 cptr.st1o(Rogue, 0 + $trobj_trspe, 0);
 cptr.st1o(Rogue, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -585,7 +590,7 @@ cptr.st1o(Rogue, 48 + $trobj_trquan_max, 0);
 cptr.st1o(Rogue, 48 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:142 — struct trobj[6] */
-const Samurai = cptr.alloc(6 * 8);
+const Samurai = cptr.alloc(6 * $sizeof_trobj);
 cptr.stI16o(Samurai, 0, NHC.KATANA);
 cptr.st1o(Samurai, 0 + $trobj_trspe, 0);
 cptr.st1o(Samurai, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -624,7 +629,7 @@ cptr.st1o(Samurai, 40 + $trobj_trquan_max, 0);
 cptr.st1o(Samurai, 40 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:150 — struct trobj[8] */
-const Tourist = cptr.alloc(8 * 8);
+const Tourist = cptr.alloc(8 * $sizeof_trobj);
 cptr.stI16o(Tourist, 0, NHC.DART);
 cptr.st1o(Tourist, 0 + $trobj_trspe, 2);
 cptr.st1o(Tourist, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -675,7 +680,7 @@ cptr.st1o(Tourist, 56 + $trobj_trquan_max, 0);
 cptr.st1o(Tourist, 56 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:160 — struct trobj[5] */
-const Valkyrie = cptr.alloc(5 * 8);
+const Valkyrie = cptr.alloc(5 * $sizeof_trobj);
 cptr.stI16o(Valkyrie, 0, NHC.SPEAR);
 cptr.st1o(Valkyrie, 0 + $trobj_trspe, 1);
 cptr.st1o(Valkyrie, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -708,7 +713,7 @@ cptr.st1o(Valkyrie, 32 + $trobj_trquan_max, 0);
 cptr.st1o(Valkyrie, 32 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:167 — struct trobj[10] */
-const Wizard = cptr.alloc(10 * 8);
+const Wizard = cptr.alloc(10 * $sizeof_trobj);
 cptr.stI16o(Wizard, 0, NHC.QUARTERSTAFF);
 cptr.st1o(Wizard, 0 + $trobj_trspe, 1);
 cptr.st1o(Wizard, 0 + $trobj_trclass, NHC.WEAPON_CLASS);
@@ -771,7 +776,7 @@ cptr.st1o(Wizard, 72 + $trobj_trquan_max, 0);
 cptr.st1o(Wizard, 72 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:184 — struct trobj[2] */
-const Healing_book = cptr.alloc(2 * 8);
+const Healing_book = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Healing_book, 0, NHC.SPE_HEALING);
 cptr.st1o(Healing_book, 0 + $trobj_trspe, 127);
 cptr.st1o(Healing_book, 0 + $trobj_trclass, NHC.SPBOOK_CLASS);
@@ -786,7 +791,7 @@ cptr.st1o(Healing_book, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Healing_book, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:187 — struct trobj[2] */
-const Protection_book = cptr.alloc(2 * 8);
+const Protection_book = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Protection_book, 0, NHC.SPE_PROTECTION);
 cptr.st1o(Protection_book, 0 + $trobj_trspe, 127);
 cptr.st1o(Protection_book, 0 + $trobj_trclass, NHC.SPBOOK_CLASS);
@@ -801,7 +806,7 @@ cptr.st1o(Protection_book, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Protection_book, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:190 — struct trobj[2] */
-const Confuse_monster_book = cptr.alloc(2 * 8);
+const Confuse_monster_book = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Confuse_monster_book, 0, NHC.SPE_CONFUSE_MONSTER);
 cptr.st1o(Confuse_monster_book, 0 + $trobj_trspe, 127);
 cptr.st1o(Confuse_monster_book, 0 + $trobj_trclass, NHC.SPBOOK_CLASS);
@@ -816,7 +821,7 @@ cptr.st1o(Confuse_monster_book, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Confuse_monster_book, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:193 — struct trobj[2] */
-const Tinopener = cptr.alloc(2 * 8);
+const Tinopener = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Tinopener, 0, NHC.TIN_OPENER);
 cptr.st1o(Tinopener, 0 + $trobj_trspe, 0);
 cptr.st1o(Tinopener, 0 + $trobj_trclass, NHC.TOOL_CLASS);
@@ -831,7 +836,7 @@ cptr.st1o(Tinopener, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Tinopener, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:196 — struct trobj[2] */
-const Magicmarker = cptr.alloc(2 * 8);
+const Magicmarker = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Magicmarker, 0, NHC.MAGIC_MARKER);
 cptr.st1o(Magicmarker, 0 + $trobj_trspe, 19);
 cptr.st1o(Magicmarker, 0 + $trobj_trclass, NHC.TOOL_CLASS);
@@ -846,7 +851,7 @@ cptr.st1o(Magicmarker, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Magicmarker, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:199 — struct trobj[2] */
-const Lamp = cptr.alloc(2 * 8);
+const Lamp = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Lamp, 0, NHC.OIL_LAMP);
 cptr.st1o(Lamp, 0 + $trobj_trspe, 1);
 cptr.st1o(Lamp, 0 + $trobj_trclass, NHC.TOOL_CLASS);
@@ -861,7 +866,7 @@ cptr.st1o(Lamp, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Lamp, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:202 — struct trobj[2] */
-const Blindfold = cptr.alloc(2 * 8);
+const Blindfold = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Blindfold, 0, NHC.BLINDFOLD);
 cptr.st1o(Blindfold, 0 + $trobj_trspe, 0);
 cptr.st1o(Blindfold, 0 + $trobj_trclass, NHC.TOOL_CLASS);
@@ -876,7 +881,7 @@ cptr.st1o(Blindfold, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Blindfold, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:205 — struct trobj[2] */
-const Xtra_food = cptr.alloc(2 * 8);
+const Xtra_food = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Xtra_food, 0, 0);
 cptr.st1o(Xtra_food, 0 + $trobj_trspe, 127);
 cptr.st1o(Xtra_food, 0 + $trobj_trclass, NHC.FOOD_CLASS);
@@ -891,7 +896,7 @@ cptr.st1o(Xtra_food, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Xtra_food, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:208 — struct trobj[2] */
-const Leash = cptr.alloc(2 * 8);
+const Leash = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Leash, 0, NHC.LEASH);
 cptr.st1o(Leash, 0 + $trobj_trspe, 0);
 cptr.st1o(Leash, 0 + $trobj_trclass, NHC.TOOL_CLASS);
@@ -906,7 +911,7 @@ cptr.st1o(Leash, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Leash, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:211 — struct trobj[2] */
-const Towel = cptr.alloc(2 * 8);
+const Towel = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Towel, 0, NHC.TOWEL);
 cptr.st1o(Towel, 0 + $trobj_trspe, 0);
 cptr.st1o(Towel, 0 + $trobj_trclass, NHC.TOOL_CLASS);
@@ -921,7 +926,7 @@ cptr.st1o(Towel, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Towel, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:214 — struct trobj[2] */
-const Wishing = cptr.alloc(2 * 8);
+const Wishing = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Wishing, 0, NHC.WAN_WISHING);
 cptr.st1o(Wishing, 0 + $trobj_trspe, 3);
 cptr.st1o(Wishing, 0 + $trobj_trclass, NHC.WAND_CLASS);
@@ -936,7 +941,7 @@ cptr.st1o(Wishing, 8 + $trobj_trquan_max, 0);
 cptr.st1o(Wishing, 8 + $trobj_trbless, 0);
 
 /** C ref: u_init.c:217 — struct trobj[2] */
-const Money = cptr.alloc(2 * 8);
+const Money = cptr.alloc(2 * $sizeof_trobj);
 cptr.stI16o(Money, 0, NHC.GOLD_PIECE);
 cptr.st1o(Money, 0 + $trobj_trspe, 0);
 cptr.st1o(Money, 0 + $trobj_trclass, NHC.COIN_CLASS);
@@ -953,7 +958,7 @@ cptr.st1o(Money, 8 + $trobj_trbless, 0);
 /** C ref: u_init.c:223 — struct inv_sub { race_pm, item_otyp, subs_otyp } (memory model v0.5) */
 
 /** C ref: u_init.c:225 — struct inv_sub[26] */
-const inv_subs = cptr.alloc(26 * 6);
+const inv_subs = cptr.alloc(26 * $sizeof_inv_sub);
 cptr.stI16o(inv_subs, 0, NHC.PM_ELF);
 cptr.stI16o(inv_subs, 0 + $inv_sub_item_otyp, NHC.DAGGER);
 cptr.stI16o(inv_subs, 0 + $inv_sub_subs_otyp, NHC.ELVEN_DAGGER);
@@ -1034,7 +1039,7 @@ cptr.stI16o(inv_subs, 150 + $inv_sub_item_otyp, NHC.STRANGE_OBJECT);
 cptr.stI16o(inv_subs, 150 + $inv_sub_subs_otyp, NHC.STRANGE_OBJECT);
 
 /** C ref: u_init.c:257 — struct def_skill[20] */
-const Skill_A = cptr.alloc(20 * 4);
+const Skill_A = cptr.alloc(20 * $sizeof_def_skill);
 cptr.stI16o(Skill_A, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_A, 0 + $def_skill_skmax, NHC.P_BASIC);
 cptr.stI16o(Skill_A, 4, NHC.P_KNIFE);
@@ -1077,7 +1082,7 @@ cptr.stI16o(Skill_A, 76, NHC.P_NONE);
 cptr.stI16o(Skill_A, 76 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:279 — struct def_skill[23] */
-const Skill_B = cptr.alloc(23 * 4);
+const Skill_B = cptr.alloc(23 * $sizeof_def_skill);
 cptr.stI16o(Skill_B, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_B, 0 + $def_skill_skmax, NHC.P_BASIC);
 cptr.stI16o(Skill_B, 4, NHC.P_AXE);
@@ -1126,7 +1131,7 @@ cptr.stI16o(Skill_B, 88, NHC.P_NONE);
 cptr.stI16o(Skill_B, 88 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:304 — struct def_skill[21] */
-const Skill_C = cptr.alloc(21 * 4);
+const Skill_C = cptr.alloc(21 * $sizeof_def_skill);
 cptr.stI16o(Skill_C, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_C, 0 + $def_skill_skmax, NHC.P_BASIC);
 cptr.stI16o(Skill_C, 4, NHC.P_KNIFE);
@@ -1171,7 +1176,7 @@ cptr.stI16o(Skill_C, 80, NHC.P_NONE);
 cptr.stI16o(Skill_C, 80 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:327 — struct def_skill[17] */
-const Skill_H = cptr.alloc(17 * 4);
+const Skill_H = cptr.alloc(17 * $sizeof_def_skill);
 cptr.stI16o(Skill_H, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_H, 0 + $def_skill_skmax, NHC.P_SKILLED);
 cptr.stI16o(Skill_H, 4, NHC.P_KNIFE);
@@ -1208,7 +1213,7 @@ cptr.stI16o(Skill_H, 64, NHC.P_NONE);
 cptr.stI16o(Skill_H, 64 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:346 — struct def_skill[27] */
-const Skill_K = cptr.alloc(27 * 4);
+const Skill_K = cptr.alloc(27 * $sizeof_def_skill);
 cptr.stI16o(Skill_K, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_K, 0 + $def_skill_skmax, NHC.P_BASIC);
 cptr.stI16o(Skill_K, 4, NHC.P_KNIFE);
@@ -1265,7 +1270,7 @@ cptr.stI16o(Skill_K, 104, NHC.P_NONE);
 cptr.stI16o(Skill_K, 104 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:375 — struct def_skill[13] */
-const Skill_Mon = cptr.alloc(13 * 4);
+const Skill_Mon = cptr.alloc(13 * $sizeof_def_skill);
 cptr.stI16o(Skill_Mon, 0, NHC.P_QUARTERSTAFF);
 cptr.stI16o(Skill_Mon, 0 + $def_skill_skmax, NHC.P_BASIC);
 cptr.stI16o(Skill_Mon, 4, NHC.P_SPEAR);
@@ -1294,7 +1299,7 @@ cptr.stI16o(Skill_Mon, 48, NHC.P_NONE);
 cptr.stI16o(Skill_Mon, 48 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:390 — struct def_skill[22] */
-const Skill_P = cptr.alloc(22 * 4);
+const Skill_P = cptr.alloc(22 * $sizeof_def_skill);
 cptr.stI16o(Skill_P, 0, NHC.P_CLUB);
 cptr.stI16o(Skill_P, 0 + $def_skill_skmax, NHC.P_EXPERT);
 cptr.stI16o(Skill_P, 4, NHC.P_MACE);
@@ -1341,7 +1346,7 @@ cptr.stI16o(Skill_P, 84, NHC.P_NONE);
 cptr.stI16o(Skill_P, 84 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:414 — struct def_skill[24] */
-const Skill_R = cptr.alloc(24 * 4);
+const Skill_R = cptr.alloc(24 * $sizeof_def_skill);
 cptr.stI16o(Skill_R, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_R, 0 + $def_skill_skmax, NHC.P_EXPERT);
 cptr.stI16o(Skill_R, 4, NHC.P_KNIFE);
@@ -1392,7 +1397,7 @@ cptr.stI16o(Skill_R, 92, NHC.P_NONE);
 cptr.stI16o(Skill_R, 92 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:440 — struct def_skill[25] */
-const Skill_Ran = cptr.alloc(25 * 4);
+const Skill_Ran = cptr.alloc(25 * $sizeof_def_skill);
 cptr.stI16o(Skill_Ran, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_Ran, 0 + $def_skill_skmax, NHC.P_EXPERT);
 cptr.stI16o(Skill_Ran, 4, NHC.P_KNIFE);
@@ -1445,7 +1450,7 @@ cptr.stI16o(Skill_Ran, 96, NHC.P_NONE);
 cptr.stI16o(Skill_Ran, 96 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:467 — struct def_skill[21] */
-const Skill_S = cptr.alloc(21 * 4);
+const Skill_S = cptr.alloc(21 * $sizeof_def_skill);
 cptr.stI16o(Skill_S, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_S, 0 + $def_skill_skmax, NHC.P_BASIC);
 cptr.stI16o(Skill_S, 4, NHC.P_KNIFE);
@@ -1490,7 +1495,7 @@ cptr.stI16o(Skill_S, 80, NHC.P_NONE);
 cptr.stI16o(Skill_S, 80 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:490 — struct def_skill[33] */
-const Skill_T = cptr.alloc(33 * 4);
+const Skill_T = cptr.alloc(33 * $sizeof_def_skill);
 cptr.stI16o(Skill_T, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_T, 0 + $def_skill_skmax, NHC.P_EXPERT);
 cptr.stI16o(Skill_T, 4, NHC.P_KNIFE);
@@ -1559,7 +1564,7 @@ cptr.stI16o(Skill_T, 128, NHC.P_NONE);
 cptr.stI16o(Skill_T, 128 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:525 — struct def_skill[21] */
-const Skill_V = cptr.alloc(21 * 4);
+const Skill_V = cptr.alloc(21 * $sizeof_def_skill);
 cptr.stI16o(Skill_V, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_V, 0 + $def_skill_skmax, NHC.P_EXPERT);
 cptr.stI16o(Skill_V, 4, NHC.P_AXE);
@@ -1604,7 +1609,7 @@ cptr.stI16o(Skill_V, 80, NHC.P_NONE);
 cptr.stI16o(Skill_V, 80 + $def_skill_skmax, 0);
 
 /** C ref: u_init.c:548 — struct def_skill[23] */
-const Skill_W = cptr.alloc(23 * 4);
+const Skill_W = cptr.alloc(23 * $sizeof_def_skill);
 cptr.stI16o(Skill_W, 0, NHC.P_DAGGER);
 cptr.stI16o(Skill_W, 0 + $def_skill_skmax, NHC.P_EXPERT);
 cptr.stI16o(Skill_W, 4, NHC.P_KNIFE);
@@ -1678,10 +1683,10 @@ function* knows_class(sym) {
                 continue;
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) && (!is_launcher(o) && !is_ammo(o) && !is_spear(o)))
                 continue;
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) && (cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), 120, $objclass_oc_subtyp) != NHC.P_DAGGER))
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) && (cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) != NHC.P_DAGGER))
                 continue;
         }
-        if (cptr.ld1so2(objects, ct, 120, $objclass_oc_class) == sym && !(cptr.ldI32o2(objects, ct, 120, $objclass_oc_magic) & 1))
+        if (cptr.ld1so2(objects, ct, $sizeof_objclass, $objclass_oc_class) == sym && !(cptr.ldI32o2(objects, ct, $sizeof_objclass, $objclass_oc_magic) & 1))
             (yield* knows_object(ct, 0));
     }
 }
@@ -1732,7 +1737,7 @@ function* u_init_role() {
         (yield* ini_inv(Knight));
         (yield* knows_class(NHC.WEAPON_CLASS));
         (yield* knows_class(NHC.ARMOR_CLASS));
-        cptr.stI64o2(u, NHC.JUMPING, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.JUMPING, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
         break;
         case NHC.PM_MONK:
         {
@@ -1773,7 +1778,7 @@ function* u_init_role() {
         (yield* knows_class(NHC.WEAPON_CLASS));
         (yield* knows_class(NHC.ARMOR_CLASS));
         for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-            if ((cptr.ldI32o2(objects, i, 120, $objclass_oc_magic) & 1))
+            if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
                 continue;
             if (Japanese_item_name(i, null))
                 (yield* knows_object(i, 0));
@@ -1827,7 +1832,7 @@ function* u_init_race() {
         break;
         case NHC.PM_ELF:
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
-            let Instrument = cptr.alloc(2 * 8); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, (rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 810, __s_u_init_race), rn2(6)) : rn2(6)), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
+            let Instrument = cptr.alloc(2 * $sizeof_trobj); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, (rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 810, __s_u_init_race), rn2(6)) : rn2(6)), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
             (yield* ini_inv(Instrument));
         }
         (yield* knows_object(NHC.ELVEN_SHORT_SWORD, 0));
@@ -1880,9 +1885,9 @@ function* pauper_reinit() {
     if (!cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
         return;
     for (skill = 0; skill < NHC.P_NUM_SKILLS; skill++)
-        if ((cptr.ldI16o2(u, skill, 6, $you_weapon_skills)) > NHC.P_UNSKILLED) {
-            cptr.stI16o2(u, skill, 6, $you_weapon_skills, NHC.P_UNSKILLED);
-            cptr.stI16o2(u, skill, 6, $you_weapon_skills + $skills_advance, 0);
+        if ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) > NHC.P_UNSKILLED) {
+            cptr.stI16o2(u, skill, $sizeof_skills, $you_weapon_skills, NHC.P_UNSKILLED);
+            cptr.stI16o2(u, skill, $sizeof_skills, $you_weapon_skills + $skills_advance, 0);
         }
     cptr.stI32o(u, $you_weapon_slots, 2);
     switch (Role_switch()) {
@@ -1934,7 +1939,7 @@ function* u_init_carry_attr_boost() {
 /** C ref: u_init.c:944 */
 export function* u_init_misc() {
     let i;
-    let tmpuroleplay = cptr.alloc(24); cptr.memcpy(tmpuroleplay, cptr.add(u, $you_uroleplay), 24);
+    let tmpuroleplay = cptr.alloc(24); cptr.memcpy(tmpuroleplay, cptr.add(u, $you_uroleplay), $sizeof_u_roleplay);
     cptr.st1o(flags, $flag_female, schar(cptr.ldI32o(flags, $flag_initgend)));
     cptr.st1o(flags, $flag_beginner, 1);
     void __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
@@ -1959,15 +1964,15 @@ export function* u_init_misc() {
     cptr.stI32o(u, $you_ulevel, cptr.stI32o(u, $you_ulevelmax, 1));
     (yield* init_uhunger());
     for (i = 0; i <= NHC.MAXSPELL; i++)
-        cptr.stI16o(svs, i, NHM.NO_SPELL, 8);
+        cptr.stI16o(svs, i, NHM.NO_SPELL, $sizeof_spell);
     cptr.stI32o(u, $you_ublesscnt, 300);
-    cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, cptr.st1o2(u, NHM.A_ORIGINAL, 1, $you_ualignbase, cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_value))));
+    cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, cptr.st1o2(u, NHM.A_ORIGINAL, 1, $you_ualignbase, cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value))));
     ubirthday.v = (yield* getnow());
     cptr.stI32o(u, $you_nv_range, 1);
     cptr.stI32o(u, $you_xray_range, -1);
     cptr.stI32o(u, $you_unblind_telepat_range, -1);
     if (cptr.ld1so(u, $you_uroleplay))
-        cptr.stI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
     cptr.stI32o(u, $you_uhandedness, ((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1028, __s_u_init_misc), rn2(10)) : rn2(10)) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
     max_rank_sz();
     return;
@@ -2049,7 +2054,7 @@ function* ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
     let trycnt = 0;
     obj = (yield* mkobj(oclass, 0));
     otyp = cptr.ldI16o(obj, $obj_otyp);
-    while (otyp == NHC.WAN_WISHING || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate2) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate3) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate4) || otyp == NHC.RIN_LEVITATION || otyp == NHC.POT_HALLUCINATION || otyp == NHC.POT_ACID || otyp == NHC.SCR_AMNESIA || otyp == NHC.SCR_FIRE || otyp == NHC.SCR_BLANK_PAPER || otyp == NHC.SPE_BLANK_PAPER || otyp == NHC.RIN_AGGRAVATE_MONSTER || otyp == NHC.RIN_HUNGER || otyp == NHC.WAN_NOTHING || (otyp == NHC.RIN_POISON_RESISTANCE && (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) || (otyp == NHC.SCR_ENCHANT_WEAPON && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (otyp == NHC.SPE_FORCE_BOLT && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) || (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && (cptr.ld1so2(objects, otyp, 120, $objclass_oc_oc2) > (got_level1_spellbook ? 3 : 1) || (yield* restricted_spell_discipline(otyp)))) || otyp == NHC.SPE_NOVEL) {
+    while (otyp == NHC.WAN_WISHING || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate2) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate3) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate4) || otyp == NHC.RIN_LEVITATION || otyp == NHC.POT_HALLUCINATION || otyp == NHC.POT_ACID || otyp == NHC.SCR_AMNESIA || otyp == NHC.SCR_FIRE || otyp == NHC.SCR_BLANK_PAPER || otyp == NHC.SPE_BLANK_PAPER || otyp == NHC.RIN_AGGRAVATE_MONSTER || otyp == NHC.RIN_HUNGER || otyp == NHC.WAN_NOTHING || (otyp == NHC.RIN_POISON_RESISTANCE && (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) || (otyp == NHC.SCR_ENCHANT_WEAPON && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (otyp == NHC.SPE_FORCE_BOLT && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) || (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2) > (got_level1_spellbook ? 3 : 1) || (yield* restricted_spell_discipline(otyp)))) || otyp == NHC.SPE_NOVEL) {
         (yield* dealloc_obj(obj));
         if (++trycnt > 1000) {
             obj = (yield* mksobj(NHC.PANCAKE, 1, 0));
@@ -2065,16 +2070,16 @@ function* ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
 function* ini_inv_obj_substitution(trop, obj) {
     if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) != NHC.PM_HUMAN) {
         let i;
-        for (i = 0; cptr.ldI16o(inv_subs, i, 6) != NHC.NON_PM; ++i)
-            if (cptr.ldI16o(inv_subs, i, 6) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) && cptr.ldI16o(obj, $obj_otyp) == cptr.ldI16o2(inv_subs, i, 6, $inv_sub_item_otyp)) {
+        for (i = 0; cptr.ldI16o(inv_subs, i, $sizeof_inv_sub) != NHC.NON_PM; ++i)
+            if (cptr.ldI16o(inv_subs, i, $sizeof_inv_sub) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) && cptr.ldI16o(obj, $obj_otyp) == cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_item_otyp)) {
                 {
                     if ((yield* debugcore(__s_u_init_c, 1))) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                        (yield* pline(__s_ini_inv_substituting_s_for_s_s, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o2(inv_subs, i, 6, $inv_sub_subs_otyp), 120))), 16)), (cptr.ldI16(trop) == 0) ? __s_random : __s_empty, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120))), 16))));
+                        (yield* pline(__s_ini_inv_substituting_s_for_s_s, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_subs_otyp), $sizeof_objclass))), $sizeof_objdescr)), (cptr.ldI16(trop) == 0) ? __s_random : __s_empty, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr))));
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
-                cptr.stI16o(obj, $obj_otyp, cptr.ldI16o2(inv_subs, i, 6, $inv_sub_subs_otyp));
+                cptr.stI16o(obj, $obj_otyp, cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_subs_otyp));
                 break;
             }
     }
@@ -2087,7 +2092,7 @@ function* ini_inv_adjust_obj(trop, obj) {
     if (cptr.ld1so(trop, $trobj_trclass) == NHC.COIN_CLASS) {
         cptr.stI64o(obj, $obj_quan, cptr.ldI64o(u, $you_umoney0));
     } else {
-        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uses_known) & 1))
+        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uses_known) & 1))
             cptr.stI32o(obj, $obj_known, 1);
         cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1)));
         if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
@@ -2108,7 +2113,7 @@ function* ini_inv_adjust_obj(trop, obj) {
             if (cptr.ldI16(trop) == NHC.MAGIC_MARKER && cptr.ld1so(obj, $obj_spe) < 96)
                 cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1233, __s_ini_inv_adjust_obj), rn2(4)) : rn2(4)));
         } else {
-            if (cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_class) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) | 0 && cptr.ld1so(obj, $obj_spe) <= 0)
+            if (cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_class) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) | 0 && cptr.ld1so(obj, $obj_spe) <= 0)
                 cptr.st1o(obj, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1238, __s_ini_inv_adjust_obj), rne(3)) : rne(3))));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
@@ -2120,7 +2125,7 @@ function* ini_inv_adjust_obj(trop, obj) {
 
 /** C ref: u_init.c:1251 — @param {CPtr<struct obj>} obj */
 function* ini_inv_use_obj(obj) {
-    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr)) && (cptr.ldI32o(obj, $obj_known) & 1) | 0)
+    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)) && (cptr.ldI32o(obj, $obj_known) & 1) | 0)
         (yield* discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0));
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP)
         (yield* discover_object(NHC.POT_OIL, 1, 1, 0));
@@ -2195,7 +2200,7 @@ function* ini_inv(trop) {
         if ((yield* ini_inv_adjust_obj(trop, obj)))
             quan = 1n;
         obj = (yield* addinv(obj));
-        if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oc2) == 1)
+        if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2) == 1)
             got_sp1 = 1;
         if (--quan)
             continue;

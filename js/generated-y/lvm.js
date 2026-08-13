@@ -36,7 +36,8 @@ const $CallInfo_callstatus = FLD.CallInfo_callstatus, $CallInfo_nresults = FLD.C
     $Upvaldesc_instack = FLD.Upvaldesc_instack, $global_State_GCdebt = FLD.global_State_GCdebt,
     $global_State_tmname = FLD.global_State_tmname, $lua_State_ci = FLD.lua_State_ci,
     $lua_State_hookmask = FLD.lua_State_hookmask, $lua_State_l_G = FLD.lua_State_l_G,
-    $lua_State_oldpc = FLD.lua_State_oldpc, $lua_State_top = FLD.lua_State_top;
+    $lua_State_oldpc = FLD.lua_State_oldpc, $lua_State_top = FLD.lua_State_top,
+    $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_limit = cptr.lit("limit");
@@ -720,10 +721,10 @@ function* pushclosure(L, p, encup, base, ra) {
     }
     ;
     for (i = 0; i < nup; i++) {
-        if (cptr.ld1uo2(uv, i, 16, $Upvaldesc_instack))
-            cptr.stPtro2(ncl, i, 8, $LClosure_upvals, (yield* luaF_findupval(L, cptr.add(base, cptr.ld1uo2(uv, i, 16, $Upvaldesc_idx), 16))));
+        if (cptr.ld1uo2(uv, i, $sizeof_Upvaldesc, $Upvaldesc_instack))
+            cptr.stPtro2(ncl, i, 8, $LClosure_upvals, (yield* luaF_findupval(L, cptr.add(base, cptr.ld1uo2(uv, i, $sizeof_Upvaldesc, $Upvaldesc_idx), 16))));
         else
-            cptr.stPtro2(ncl, i, 8, $LClosure_upvals, cptr.ldPtro(encup, cptr.ld1uo2(uv, i, 16, $Upvaldesc_idx), 8));
+            cptr.stPtro2(ncl, i, 8, $LClosure_upvals, cptr.ldPtro(encup, cptr.ld1uo2(uv, i, $sizeof_Upvaldesc, $Upvaldesc_idx), 8));
         ((((cptr.ld1uo((ncl), $LClosure_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro2(ncl, i, 8, $LClosure_upvals)), $UpVal_marked)) & 24)) ? luaC_barrier_(L, ((((ncl)))), ((((cptr.ldPtro2(ncl, i, 8, $LClosure_upvals)))))) : (void 0));
     }
 }
@@ -1194,7 +1195,7 @@ export function* luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16))));
         rc = (((cptr.add(base, ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((cptr.ld1uo(((rc)), $TValue_tt_)) == 3) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rc)))))))), (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, ((n)) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((rb))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array), BigInt.asUintN(64, n - 1n), 16) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) : (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((rb))))))))), rc), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
+        if (((cptr.ld1uo(((rc)), $TValue_tt_)) == 3) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rc)))))))), (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, ((n)) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((rb))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array), BigInt.asUintN(64, n - 1n), $sizeof_TValue) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) : (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((rb))))))))), rc), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
             {
                 io1 = (((ra)));
                 io2 = (slot);
@@ -1222,7 +1223,7 @@ export function* luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16))));
         c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((rb))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array), (c - 1) | 0, 16) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt(c)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
+        if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((rb))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array), (c - 1) | 0, $sizeof_TValue) : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt(c)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
             {
                 io1 = (((ra)));
                 io2 = (slot);
@@ -1320,7 +1321,7 @@ export function* luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), 16));
         rb = (((cptr.add(base, ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16))));
         rc = ((((((((((i) & 32768) >>> 0))) | 0)))) ? cptr.add(k, ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16) : ((cptr.add(base, ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16))));
-        if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rb)))))))), (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, ((n)) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((((ra))))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array), BigInt.asUintN(64, n - 1n), 16) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) : (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((((ra))))))))))), rb), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
+        if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3) ? ((void ((n = BigInt.asUintN(64, (cptr.ldI64(((rb)))))))), (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, ((n)) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((((ra))))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array), BigInt.asUintN(64, n - 1n), $sizeof_TValue) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt.asIntN(64, n)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) : (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = luaH_get(((((((cptr.ldPtr(((((ra))))))))))), rb), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
             {
                 {
                     io1 = (((slot)));
@@ -1352,7 +1353,7 @@ export function* luaV_execute(L, ci) {
         ra = (cptr.add(base, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), 16));
         c = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
         rc = ((((((((((i) & 32768) >>> 0))) | 0)))) ? cptr.add(k, ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16) : ((cptr.add(base, ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), 16))));
-        if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((((ra))))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array), (c - 1) | 0, 16) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt(c)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
+        if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((((ra))))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array), (c - 1) | 0, $sizeof_TValue) : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt(c)), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
             {
                 {
                     io1 = (((slot)));
@@ -3207,7 +3208,7 @@ export function* luaV_execute(L, ci) {
         for (; n > 0; n--) {
             val = ((cptr.add(ra, n, 16)));
             {
-                io1 = (cptr.add(cptr.ldPtro(h, $Table_array), (last - 1) >>> 0, 16));
+                io1 = (cptr.add(cptr.ldPtro(h, $Table_array), (last - 1) >>> 0, $sizeof_TValue));
                 io2 = (val);
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));

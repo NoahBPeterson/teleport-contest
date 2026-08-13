@@ -81,11 +81,14 @@ const $Gender_his = FLD.Gender_his, $align_record = FLD.align_record, $d_level_d
     $nhcoord_y = FLD.nhcoord_y, $permonst_maligntyp = FLD.permonst_maligntyp,
     $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
     $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $u_conduct_gnostic = FLD.u_conduct_gnostic, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $you_ualign = FLD.you_ualign, $you_ublessed = FLD.you_ublessed, $you_ucleansed = FLD.you_ucleansed,
-    $you_uconduct = FLD.you_uconduct, $you_uinwater = FLD.you_uinwater, $you_ulevelpeak = FLD.you_ulevelpeak,
-    $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_urooms = FLD.you_urooms,
-    $you_urooms0 = FLD.you_urooms0, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
+    $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender, $sizeof_coord = FLD.sizeof_coord,
+    $sizeof_mkroom = FLD.sizeof_mkroom, $sizeof_mvitals = FLD.sizeof_mvitals,
+    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $u_conduct_gnostic = FLD.u_conduct_gnostic,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ualign = FLD.you_ualign, $you_ublessed = FLD.you_ublessed,
+    $you_ucleansed = FLD.you_ucleansed, $you_uconduct = FLD.you_uconduct, $you_uinwater = FLD.you_uinwater,
+    $you_ulevelpeak = FLD.you_ulevelpeak, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+    $you_urooms = FLD.you_urooms, $you_urooms0 = FLD.you_urooms0, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_priest_c = cptr.lit("priest.c");
@@ -217,9 +220,9 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
     __lbl_pick_move: for (;;) {
         chcnt = 0;
         for (i = 0; i < cnt; i++) {
-            nx = cptr.ldI16o2(mfp, i, 4, $mfndposdata_poss);
-            ny = cptr.ldI16o2(mfp, i, 4, $mfndposdata_poss + $nhcoord_y);
-            if (((cptr.ld1so3(svl, nx, 756, ny, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (!in_his_shop || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_following)))) {
+            nx = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss);
+            ny = cptr.ldI16o2(mfp, i, $sizeof_coord, $mfndposdata_poss + $nhcoord_y);
+            if (((cptr.ld1so3(svl, nx, $sizeof_rm_x21, ny, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (!in_his_shop || cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_following)))) {
                 if (avoid && (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 2097152n) && !(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n))
                     continue;
                 if ((!appr && !(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 85, __s_move_special), rn2(++chcnt)) : rn2(++chcnt))) || (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy))) || (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n)) {
@@ -262,7 +265,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
 export function temple_occupied(array) {
     let ptr;
     for (ptr = array; cptr.ld1s(ptr); ptr = cptr.add(ptr, 1))
-        if (cptr.ld1so2(svr, (cptr.ld1s(ptr) - NHM.ROOMOFFSET) | 0, 224, $mkroom_rtype) == NHC.TEMPLE)
+        if (cptr.ld1so2(svr, (cptr.ld1s(ptr) - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == NHC.TEMPLE)
             return cptr.ld1s(ptr);
     return 0;
 }
@@ -325,7 +328,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     let py = 0;
     let i;
     let si = (rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 229, __s_priestini), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
-    let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, 96);
+    let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, $sizeof_permonst);
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
         px = (sx + cptr.ld1so(cptr.decay(xdir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1)) | 0;
         py = (sy + cptr.ld1so(cptr.decay(ydir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1)) | 0;
@@ -339,7 +342,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     priest = makemon(prim, i16(px), i16(py), NHM.MM_EPRI);
     if (priest) {
         cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shroom, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
-        cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shralign, (schar(((((((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_flags) & 31)) | 0) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_flags) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_flags) & 31)) | 0) & NHM.AM_MASK)) - 2) | 0)))));
+        cptr.st1o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shralign, (schar(((((((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31)) | 0) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31)) | 0) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31)) | 0) & NHM.AM_MASK)) - 2) | 0)))));
         cptr.stI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos, i16(sx));
         cptr.stI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y, i16(sy));
         assign_level(cptr.add((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrlevel), lvl);
@@ -374,9 +377,9 @@ export function mon_aligntyp(mon) {
 
 /** C ref: priest.c:302 — @param {CPtr<struct monst>} mon @param {CInt} article @param {CInt} reveal_high_priest @param {CPtr<char>} pname @returns {CPtr<char>} */
 export function priestname(mon, article, reveal_high_priest, pname) {
-    let do_hallu = schar((cptr.ldI64o2(u, NHC.HALLUC, 24, $you_uprops + $prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops)) ? 1 : 0));
-    let aligned_priest = schar(cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, 96)));
-    let high_priest = schar(cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)));
+    let do_hallu = schar((cptr.ldI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops)) ? 1 : 0));
+    let aligned_priest = schar(cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, $sizeof_permonst)));
+    let high_priest = schar(cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)));
     let whatcode = cptr.box(0);
     let what = do_hallu ? rndmonnam(whatcode) : mon_pmname(mon);
     if (!(cptr.ldI32o(mon, $monst_ispriest) & 1) && !(cptr.ldI32o(mon, $monst_isminion) & 1))
@@ -432,7 +435,7 @@ function has_shrine(pri) {
     if (!pri || !(cptr.ldI32o(pri, $monst_ispriest) & 1))
         return 0;
     epri_p = (cptr.ldPtro(cptr.ldPtro((pri), $monst_mextra), $mextra_epri));
-    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(epri_p, $epri_shrpos), 756), cptr.ldI16o(epri_p, $epri_shrpos + $nhcoord_y), 36);
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(epri_p, $epri_shrpos), $sizeof_rm_x21), cptr.ldI16o(epri_p, $epri_shrpos + $nhcoord_y), $sizeof_rm);
     if (!((cptr.ld1so(lev, $rm_typ)) == NHC.ALTAR) || !(((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_SHRINE))
         return 0;
     return schar((cptr.ld1so(epri_p, $epri_shralign) == ((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0)))))));
@@ -469,7 +472,7 @@ export function intemple(roomno) {
         record_achievement(NHC.ACH_TMPL);
         epri_p = (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri));
         shrined = has_shrine(priest);
-        sanctum = schar((cptr.eq(cptr.ldPtro(priest, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) ? 1 : 0));
+        sanctum = schar((cptr.eq(cptr.ldPtro(priest, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) && ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) ? 1 : 0));
         can_speak = schar((!helpless(priest)));
         if (can_speak && !Deaf() && cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(epri_p, $epri_intone_time)) {
             let save_priest = (cptr.ldI32o(priest, $monst_ispriest) & 1);
@@ -535,8 +538,8 @@ export function intemple(roomno) {
             default:
             break;
         }
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 519, __s_intemple), rn2(5)) : rn2(5)) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, 96), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
-            let ngen = cptr.ld1uo2(svm, NHC.PM_GHOST, 12, $instance_globals_saved_m_mvitals);
+        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 519, __s_intemple), rn2(5)) : rn2(5)) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+            let ngen = cptr.ld1uo2(svm, NHC.PM_GHOST, $sizeof_mvitals, $instance_globals_saved_m_mvitals);
             if (canspotmon(mtmp))
                 pline(__s_a_s_ghost_appears_next_to_you_c, ngen < 5 ? __s_n_enormous : __s_empty, ngen < 10 ? 33 : 46);
             else
@@ -583,7 +586,7 @@ export function priest_talk(priest) {
     }
     if (!inhistemple(priest) || !(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || helpless(priest)) {
         if (helpless(priest)) {
-            pline(__s_s_breaks_out_of_s_reverie, Monnam(priest), (cptr.ldPtro2(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), 48, $Gender_his)));
+            pline(__s_s_breaks_out_of_s_reverie, Monnam(priest), (cptr.ldPtro2(genders, pronoun_gender(priest, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)));
             cptr.stI32o(priest, $monst_mfrozen, cptr.stI32o(priest, $monst_msleeping, 0));
             cptr.stI32o(priest, $monst_mcanmove, 1);
         }
@@ -650,11 +653,11 @@ export function priest_talk(priest) {
                     adjalign(1);
             }
             verbalize(__s_i_bestow_upon_thee_a_blessing);
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, 24), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 680, __s_priest_talk), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 680, __s_priest_talk), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, $you_ublessed);
             if (!(HProtection() & 117440512n)) {
-                cptr.stI64o2(u, NHC.PROTECTION, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, 24, $you_uprops + $prop_intrinsic) | 67108864n);
+                cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
                 orig_ublessed = -1;
             }
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
@@ -707,7 +710,7 @@ export function mk_roamer(ptr, alignment, x, y, peaceful) {
 export function reset_hostility(roamer) {
     if (!(cptr.ldI32o(roamer, $monst_isminion) & 1))
         return;
-    if (!cptr.eq(cptr.ldPtro(roamer, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, 96)) && !cptr.eq(cptr.ldPtro(roamer, $monst_data), cptr.add(mons, NHC.PM_ANGEL, 96)))
+    if (!cptr.eq(cptr.ldPtro(roamer, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, $sizeof_permonst)) && !cptr.eq(cptr.ldPtro(roamer, $monst_data), cptr.add(mons, NHC.PM_ANGEL, $sizeof_permonst)))
         return;
     if (cptr.ld1so((cptr.ldPtro(cptr.ldPtro((roamer), $monst_mextra), $mextra_emin)), $emin_min_align) != cptr.ld1so(u, $you_ualign)) {
         cptr.stI32o(roamer, $monst_mpeaceful, cptr.st1o(roamer, $monst_mtame, 0));
@@ -748,9 +751,9 @@ export function ghod_hitsu(priest) {
         return;
     ax = (x = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos));
     ay = (y = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y));
-    troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, 224);
+    troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom);
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || !linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1)) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
             if (cptr.ldI16(u) == ((cptr.ldI16(troom) - 1) | 0)) {
                 x = cptr.ldI16o(troom, $mkroom_hx);
                 y = cptr.ldI16o(u, $you_uy);
@@ -816,7 +819,7 @@ export function angry_priest() {
         let eprip = (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri));
         wakeup(priest, 0);
         setmangry(priest, 0);
-        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(eprip, $epri_shrpos), 756), cptr.ldI16o(eprip, $epri_shrpos + $nhcoord_y), 36);
+        lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(eprip, $epri_shrpos), $sizeof_rm_x21), cptr.ldI16o(eprip, $epri_shrpos + $nhcoord_y), $sizeof_rm);
         if (!((cptr.ld1so(lev, $rm_typ)) == NHC.ALTAR) || ((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))) != cptr.ld1so(eprip, $epri_shralign))) {
             if (!(cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)))
                 newemin(priest);

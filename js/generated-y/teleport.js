@@ -127,11 +127,15 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum,
     $permonst_mflags3 = FLD.permonst_mflags3, $permonst_mlet = FLD.permonst_mlet,
     $permonst_msound = FLD.permonst_msound, $prop_blocked = FLD.prop_blocked,
     $prop_intrinsic = FLD.prop_intrinsic, $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ,
-    $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
-    $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev, $stairway_up = FLD.stairway_up,
-    $tporttypes_menudesc = FLD.tporttypes_menudesc, $trap_dst = FLD.trap_dst, $trap_launch = FLD.trap_launch,
-    $trap_once = FLD.trap_once, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
-    $u_event_invoked = FLD.u_event_invoked,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_coord = FLD.sizeof_coord,
+    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+    $sizeof_tporttypes = FLD.sizeof_tporttypes, $stairway_isladder = FLD.stairway_isladder,
+    $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
+    $stairway_up = FLD.stairway_up, $tporttypes_menudesc = FLD.tporttypes_menudesc, $trap_dst = FLD.trap_dst,
+    $trap_launch = FLD.trap_launch, $trap_once = FLD.trap_once, $trap_tseen = FLD.trap_tseen,
+    $trap_ttyp = FLD.trap_ttyp, $u_event_invoked = FLD.u_event_invoked,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
     $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
@@ -310,13 +314,13 @@ export function* noteleport_level(mon) {
 function* goodpos_onscary(x, y, mptr) {
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_HUMAN || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL || is_rider(mptr) || ((cptr.ldU16o((mptr), $permonst_geno) & NHM.G_UNIQ) != 0))
         return 0;
-    if (((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE)
+    if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE)
         return 1;
     if (sobj_at(NHC.SCR_SCARE_MONSTER, x, y))
         return 1;
     if (In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return 0;
-    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_MINOTAUR, 96)) || !((cptr.ldU64o((mptr), $permonst_mflags1) & 4096n) == 0n))
+    if (cptr.eq(mptr, cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst)) || !((cptr.ldU64o((mptr), $permonst_mflags1) & 4096n) == 0n))
         return 0;
     return schar(((yield* sengr_at(__s_elbereth, x, y, 1)) ? 1 : 0));
 }
@@ -344,16 +348,16 @@ export function* goodpos(x, y, mtmp, gpflags) {
         mdat = cptr.ldPtro(mtmp, $monst_data);
         if (is_pool(x, y) && !ignorewater) {
             if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
-                return schar((Swimming() || Amphibious() || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && (Levitation() || Flying() || ((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))))) ? 1 : 0));
+                return schar((Swimming() || Amphibious() || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && (Levitation() || Flying() || ((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))))) ? 1 : 0));
             else
                 return schar((((cptr.ldU64o((mdat), $permonst_mflags1) & 2n) != 0n) || (!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !is_waterwall(x, y) && m_in_air(mtmp)) ? 1 : 0));
         } else if (cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EEL && (rng_log_enabled() ? (rng_log_set_caller(__s_teleport_c, 148, __s_goodpos), rn2(13)) : rn2(13)) && !ignorewater) {
             return 0;
         } else if (is_lava(x, y) && !ignorelava) {
-            if (cptr.eq(mdat, cptr.add(mons, NHC.PM_FLOATING_EYE, 96)))
+            if (cptr.eq(mdat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)))
                 return 0;
             else if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
-                return schar((Levitation() || Flying() || (Fire_resistance() && ((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && uarmf.v && (cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1) | 0) || (Upolyd() && likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? 1 : 0));
+                return schar((Levitation() || Flying() || (Fire_resistance() && ((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && uarmf.v && (cptr.ldI32o(uarmf.v, $obj_oerodeproof) & 1) | 0) || (Upolyd() && likes_lava(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? 1 : 0));
             else
                 return schar((m_in_air(mtmp) || likes_lava(mdat) ? 1 : 0));
         }
@@ -387,7 +391,7 @@ export function* enexto_gpflags(cc, xx, yy, mdat, entflags) {
 
 /** C ref: teleport.c:219 — @param {CPtr<coord>} cc @param {CInt} xx @param {CInt} yy @param {CPtr<struct permonst>} mdat @param {CUInt} entflags @returns {CInt} */
 export function* enexto_core(cc, xx, yy, mdat, entflags) {
-    let candy = cptr.alloc(1659 * 4);
+    let candy = cptr.alloc(1659 * $sizeof_coord);
     let i;
     let nearcandyct;
     let allcandyct;
@@ -401,19 +405,19 @@ export function* enexto_core(cc, xx, yy, mdat, entflags) {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
-        mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonster), 96);
+        mdat = cptr.add(mons, cptr.ldI32o(u, $you_umonster), $sizeof_permonst);
     }
     cptr.memcpy(fakemon, cptr.add(cg, $const_globals_zeromonst), 320);
     set_mon_data(fakemon, mdat);
     nearcandyct = (yield* collect_coords(candy, xx, yy, 3, NHM.CC_NO_FLAGS, null));
     for (i = 0; i < nearcandyct; ++i) {
-        cptr.memcpy(cc, cptr.add(candy, i, 4), 4);
+        cptr.memcpy(cc, cptr.add(candy, i, $sizeof_coord), 4);
         if ((yield* goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), fakemon, entflags)))
             return 1;
     }
     allcandyct = (yield* collect_coords(candy, xx, yy, 0, NHM.CC_NO_FLAGS, null));
     for (i = nearcandyct; i < allcandyct; ++i) {
-        cptr.memcpy(cc, cptr.add(candy, i, 4), 4);
+        cptr.memcpy(cc, cptr.add(candy, i, $sizeof_coord), 4);
         if ((yield* goodpos(cptr.ldI16(cc), cptr.ldI16o(cc, $coord_y), fakemon, entflags)))
             return 1;
     }
@@ -536,7 +540,7 @@ export function* teleds(nux, nuy, teleds_flags) {
     (yield* vision_recalc(0));
     if (is_teleport && cptr.ld1so(flags, $flag_verbose))
         (yield* You(__s_materialize_in_s_location, (nux == cptr.ldI16o(u, $you_ux0) && nuy == cptr.ldI16o(u, $you_uy0)) ? __s_the_same : __s_a_different));
-    if (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ) != cptr.ld1so3(svl, cptr.ldI16o(u, $you_ux0), 756, cptr.ldI16o(u, $you_uy0), 36, $instance_globals_saved_l_level + $rm_typ))
+    if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != cptr.ld1so3(svl, cptr.ldI16o(u, $you_ux0), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy0), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))
         (yield* switch_terrain());
     if (vault_guard) {
         let save_urooms = new Uint8Array(5);
@@ -609,7 +613,7 @@ export function* collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
                     break;
                 if (x != lox && x != hix && y != loy && y != hiy)
                     continue;
-                if ((skip_mons && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || (skip_inaccessible && !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL)))
+                if ((skip_mons && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) || (skip_inaccessible && !((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL)))
                     continue;
                 if (filter && !(yield* Y.icall((filter)(x, y))))
                     continue;
@@ -623,9 +627,9 @@ export function* collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
             while (n > 1) {
                 k = (rng_log_enabled() ? (rng_log_set_caller(__s_teleport_c, 700, __s_collect_coords), rn2(n)) : rn2(n));
                 if (k) {
-                    cptr.memcpy(cc, cptr.add(passcc, 0, 4), 4);
-                    cptr.memcpy(cptr.add(passcc, 0, 4), cptr.add(passcc, k, 4), 4);
-                    cptr.memcpy(cptr.add(passcc, k, 4), cc, 4);
+                    cptr.memcpy(cc, cptr.add(passcc, 0, $sizeof_coord), 4);
+                    cptr.memcpy(cptr.add(passcc, 0, $sizeof_coord), cptr.add(passcc, k, $sizeof_coord), 4);
+                    cptr.memcpy(cptr.add(passcc, k, $sizeof_coord), cc, 4);
                 }
                 passcc = cptr.add(passcc, 1, 4);
                 --n;
@@ -647,7 +651,7 @@ export function* safe_teleds(teleds_flags) {
     let nux;
     let nuy;
     let cc_flags;
-    let candy = cptr.alloc(1659 * 4);
+    let candy = cptr.alloc(1659 * $sizeof_coord);
     let backupspot = cptr.alloc(4);
     let tcnt;
     let candycount;
@@ -665,7 +669,7 @@ export function* safe_teleds(teleds_flags) {
     candycount = (yield* collect_coords(candy, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, cc_flags, null));
     cptr.stI16(backupspot, cptr.stI16o(backupspot, $nhcoord_y, 0));
     for (tcnt = 0; tcnt < candycount; ++tcnt) {
-        nux = cptr.ldI16o(candy, tcnt, 4), nuy = cptr.ldI16o2(candy, tcnt, 4, $nhcoord_y);
+        nux = cptr.ldI16o(candy, tcnt, $sizeof_coord), nuy = cptr.ldI16o2(candy, tcnt, $sizeof_coord, $nhcoord_y);
         if ((yield* teleok(nux, nuy, 0))) {
             (yield* teleds(nux, nuy, teleds_flags));
             return 1;
@@ -793,7 +797,7 @@ export function* scrolltele(scroll) {
     void (yield* safe_teleds(NHM.TELEDS_TELEPORT));
 }
 
-const __static_dotelecmd_tports = cptr.alloc(4 * 16);
+const __static_dotelecmd_tports = cptr.alloc(4 * $sizeof_tporttypes);
 cptr.st1o(__static_dotelecmd_tports, 0, 110);
 cptr.stPtro(__static_dotelecmd_tports, 0 + $tporttypes_menudesc, __s_normal_t_on_demand_no_spell_obey);
 cptr.st1o(__static_dotelecmd_tports, 16, 115);
@@ -828,16 +832,16 @@ export function* dotelecmd() {
         (yield* Y.icall(start_menu()(win, 0n)));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         for (i = 0; i < 4; ++i) {
-            cptr.stI32(any, cptr.ld1so(__static_dotelecmd_tports, i, 16));
-            (yield* add_menu(win, nul_glyphinfo.v, any, schar(cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.ldPtro2(__static_dotelecmd_tports, i, 16, $tporttypes_menudesc), (cptr.ld1so(__static_dotelecmd_tports, i, 16) == 119) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            cptr.stI32(any, cptr.ld1so(__static_dotelecmd_tports, i, $sizeof_tporttypes));
+            (yield* add_menu(win, nul_glyphinfo.v, any, schar(cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.ldPtro2(__static_dotelecmd_tports, i, $sizeof_tporttypes, $tporttypes_menudesc), (cptr.ld1so(__static_dotelecmd_tports, i, $sizeof_tporttypes) == 119) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
         }
         (yield* Y.icall(end_menu()(win, __s_which_way_do_you_want_to_teleport)));
         i = (yield* select_menu(win, NHM.PICK_ONE, picks));
         (yield* Y.icall(destroy_nhwindow()(win)));
         if (i > 0) {
-            tmode = cptr.ldI32o(picks.v, 0, 24);
+            tmode = cptr.ldI32o(picks.v, 0, $sizeof_menu_item);
             if (i > 1 && tmode == 119)
-                tmode = cptr.ldI32o(picks.v, 1, 24);
+                tmode = cptr.ldI32o(picks.v, 1, $sizeof_menu_item);
             cptr.free(picks.v);
         } else if (i == 0) {
             tmode = 119;
@@ -846,15 +850,15 @@ export function* dotelecmd() {
         }
         switch (tmode) {
             case 110:
-            cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic) | 536870912n);
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 536870912n);
             hidden = (yield* tport_spell(1));
             break;
             case 115:
-            cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops, 0n));
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n));
             added = (yield* tport_spell(2));
             break;
             case 116:
-            cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops, 0n));
+            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n));
             hidden = (yield* tport_spell(1));
             break;
             case 119:
@@ -863,8 +867,8 @@ export function* dotelecmd() {
         }
     }
     res = (yield* dotele(ignore_restrictions));
-    cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops + $prop_intrinsic, save_HTele);
-    cptr.stI64o2(u, NHC.TELEPORT, 24, $you_uprops, save_ETele);
+    cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, save_HTele);
+    cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, save_ETele);
     if (added != 0 || hidden != 0)
         void (yield* tport_spell((((added + hidden) | 0) - 0) | 0));
     return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
@@ -913,7 +917,7 @@ export function* dotele(break_the_rules) {
             }
         }
         cantdoit = null;
-        energy = Math.imul(5, (cptr.ld1so2(objects, NHC.SPE_TELEPORT_AWAY, 120, $objclass_oc_oc2)));
+        energy = Math.imul(5, (cptr.ld1so2(objects, NHC.SPE_TELEPORT_AWAY, $sizeof_objclass, $objclass_oc_oc2)));
         if (cptr.ldI32o(u, $you_uhunger) <= 10) {
             cantdoit = __s_are_too_weak_from_hunger;
         } else if ((acurr(NHC.A_STR)) < 4) {
@@ -973,7 +977,7 @@ export function* level_tele() {
         if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             do {
                 cptr.stI16(newlevel, i16((rng_log_enabled() ? (rng_log_set_caller(__s_teleport_c, 1176, __s_level_tele), rn2(cptr.ldI32(svn))) : rn2(cptr.ldI32(svn)))));
-            } while (cptr.ldI16(newlevel) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))) || (cptr.ldI32o2(svd, cptr.ldI16(newlevel), 112, $dungeon_flags + $d_flags_unconnected) & 1) | 0 || !cptr.ldI16o2(svd, cptr.ldI16(newlevel), 112, $dungeon_num_dunlevs));
+            } while (cptr.ldI16(newlevel) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))) || (cptr.ldI32o2(svd, cptr.ldI16(newlevel), $sizeof_dungeon, $dungeon_flags + $d_flags_unconnected) & 1) | 0 || !cptr.ldI16o2(svd, cptr.ldI16(newlevel), $sizeof_dungeon, $dungeon_num_dunlevs));
             cptr.stI16o(newlevel, $d_level_dlevel, i16(((1 + (rng_log_enabled() ? (rng_log_set_caller(__s_teleport_c, 1180, __s_level_tele), rn2(dunlevs_in_dungeon(newlevel))) : rn2(dunlevs_in_dungeon(newlevel)))) | 0)));
             assign_level(cptr.add(u, $you_ucamefrom), cptr.add(u, $you_uz));
             (yield* schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null));
@@ -1114,7 +1118,7 @@ export function* level_tele() {
             return;
         }
         if (In_quest(cptr.add(u, $you_uz)) && newlev > 0)
-            newlev = (((newlev + cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start)) | 0) - 1) | 0;
+            newlev = (((newlev + cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start)) | 0) - 1) | 0;
         __pc = 3;
         continue;
         }
@@ -1185,7 +1189,7 @@ export function* level_tele() {
             } else {
                 (yield* pline(__s_unfortunately_you_don_t_know_how_to_fly));
                 (yield* You(__s_plummet_a_few_thousand_feet_to_your));
-                void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_teleported_out_of_the_dungeon_and_fell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, 48, $Gender_his)));
+                void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_teleported_out_of_the_dungeon_and_fell, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)));
                 cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
             }
         }
@@ -1204,11 +1208,11 @@ export function* level_tele() {
             cptr.stI16o(newlevel, $d_level_dlevel, 0);
         } else if (force_dest) {
             ;
-        } else if (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && newlev >= ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start) + dunlevs_in_dungeon(cptr.add(u, $you_uz))) | 0)) {
+        } else if (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && newlev >= ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) + dunlevs_in_dungeon(cptr.add(u, $you_uz))) | 0)) {
             find_hell(newlevel);
         } else {
             qbranch = In_quest(cptr.add(u, $you_uz)) ? cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level) : (In_mines(cptr.add(u, $you_uz)) ? cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level) : cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level));
-            deepest = (((cptr.ldI32o2(svd, cptr.ldI16(qbranch), 112, $dungeon_depth_start) + dunlevs_in_dungeon(qbranch)) | 0) - 1) | 0;
+            deepest = (((cptr.ldI32o2(svd, cptr.ldI16(qbranch), $sizeof_dungeon, $dungeon_depth_start) + dunlevs_in_dungeon(qbranch)) | 0) - 1) | 0;
             if (!wizard() && In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) && newlev >= deepest) {
                 newlev = (deepest - 1) | 0;
                 (yield* pline(__s_sorry));
@@ -1342,10 +1346,10 @@ function* rloc_pos_ok(x, y, mtmp) {
             return schar((((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_ly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hy))) && (!cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx) || !((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)))) ? 1 : 0));
     } else {
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && (yield* inhishop(mtmp))) {
-            if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != uchar(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shoproom)))
+            if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != uchar(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shoproom)))
                 return 0;
         } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && (yield* inhistemple(mtmp))) {
-            if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != uchar(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shroom)))
+            if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != uchar(cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shroom)))
                 return 0;
         }
         if (!tele_jump_ok(xx, yy, x, y))
@@ -1457,7 +1461,7 @@ function stairway_find_forwiz(isladder, up) {
 export function* rloc(mtmp, rlocflags) {
     let cc = cptr.alloc(4);
     let backupcc = cptr.alloc(4);
-    let candy = cptr.alloc(1659 * 4);
+    let candy = cptr.alloc(1659 * $sizeof_coord);
     let cc_flags;
     let x;
     let y;
@@ -1504,11 +1508,11 @@ export function* rloc(mtmp, rlocflags) {
         cptr.stI16(backupcc, cptr.stI16o(backupcc, $nhcoord_y, 0));
         for (i = 0; i < candycount; ++i) {
             if ((j = (rng_log_enabled() ? (rng_log_set_caller(__s_teleport_c, 1868, __s_rloc), rn2((candycount - i) | 0)) : rn2((candycount - i) | 0))) > 0) {
-                cptr.memcpy(cc, cptr.add(candy, i, 4), 4);
-                cptr.memcpy(cptr.add(candy, i, 4), cptr.add(candy, (i + j) | 0, 4), 4);
-                cptr.memcpy(cptr.add(candy, (i + j) | 0, 4), cc, 4);
+                cptr.memcpy(cc, cptr.add(candy, i, $sizeof_coord), 4);
+                cptr.memcpy(cptr.add(candy, i, $sizeof_coord), cptr.add(candy, (i + j) | 0, $sizeof_coord), 4);
+                cptr.memcpy(cptr.add(candy, (i + j) | 0, $sizeof_coord), cc, 4);
             }
-            x = cptr.ldI16o(candy, i, 4), y = cptr.ldI16o2(candy, i, 4, $nhcoord_y);
+            x = cptr.ldI16o(candy, i, $sizeof_coord), y = cptr.ldI16o2(candy, i, $sizeof_coord, $nhcoord_y);
             if ((yield* rloc_pos_ok(x, y, mtmp)))
                 break __lbl_found_xy;
             if (!cptr.ldI16(backupcc) && (yield* goodpos(x, y, mtmp, NHM.NO_MM_FLAGS)))
@@ -1669,7 +1673,7 @@ export function* rloco(obj) {
     let oty;
     let restricted_fall;
     let try_limit = 4000;
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96))) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) {
         if ((yield* revive_corpse(obj)))
             return 0;
     }
@@ -1725,13 +1729,13 @@ export function random_teleport_level() {
     if (In_quest(cptr.add(u, $you_uz))) {
         let bottom = dunlevs_in_dungeon(cptr.add(u, $you_uz));
         let qlocate_depth = cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel);
-        if ((cptr.ldI16o2(svd, cptr.ldI16((cptr.add(u, $you_uz))), 112, $dungeon_dunlev_ureached)) < qlocate_depth)
+        if ((cptr.ldI16o2(svd, cptr.ldI16((cptr.add(u, $you_uz))), $sizeof_dungeon, $dungeon_dunlev_ureached)) < qlocate_depth)
             bottom = qlocate_depth;
-        min_depth = cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start);
-        max_depth = (bottom + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start) - 1) | 0)) | 0;
+        min_depth = cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start);
+        max_depth = (bottom + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) - 1) | 0)) | 0;
     } else {
         min_depth = 1;
-        max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), 112, $dungeon_depth_start) - 1) | 0)) | 0;
+        max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) + ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) - 1) | 0)) | 0;
         if (In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1))
             max_depth = (max_depth - 1) | 0;
     }

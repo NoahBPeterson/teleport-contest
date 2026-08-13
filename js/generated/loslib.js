@@ -12,9 +12,10 @@ import { lua_close } from './lstate.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $luaL_Buffer_n = FLD.luaL_Buffer_n, $luaL_Buffer_size = FLD.luaL_Buffer_size,
-    $luaL_Reg_func = FLD.luaL_Reg_func, $tm_tm_hour = FLD.tm_tm_hour, $tm_tm_isdst = FLD.tm_tm_isdst,
-    $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min, $tm_tm_mon = FLD.tm_tm_mon,
-    $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday, $tm_tm_year = FLD.tm_tm_year;
+    $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $tm_tm_hour = FLD.tm_tm_hour,
+    $tm_tm_isdst = FLD.tm_tm_isdst, $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min,
+    $tm_tm_mon = FLD.tm_tm_mon, $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday,
+    $tm_tm_year = FLD.tm_tm_year;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tmp_lua_xxxxxx = cptr.lit("/tmp/lua_XXXXXX");
@@ -305,7 +306,7 @@ function os_exit(L) {
 }
 
 /** C ref: loslib.c:407 — luaL_Reg[12] */
-const syslib = cptr.alloc(12 * 16);
+const syslib = cptr.alloc(12 * $sizeof_luaL_Reg);
 cptr.stPtro(syslib, 0, __s_clock);
 cptr.stPtro(syslib, 0 + $luaL_Reg_func, os_clock);
 cptr.stPtro(syslib, 16, __s_date);

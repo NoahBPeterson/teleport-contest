@@ -108,6 +108,12 @@ const $const_globals_zeroany = FLD.const_globals_zeroany, $d_level_dlevel = FLD.
     $objclass_oc_uname = FLD.objclass_oc_uname, $rm_candig = FLD.rm_candig, $rm_edge = FLD.rm_edge,
     $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit,
     $rm_roomno = FLD.rm_roomno, $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
+    $sizeof_any = FLD.sizeof_any, $sizeof_class_sym = FLD.sizeof_class_sym,
+    $sizeof_d_level = FLD.sizeof_d_level, $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_e = FLD.sizeof_e,
+    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+    $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
     $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
     $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev, $stairway_up = FLD.stairway_up,
     $trap_launch = FLD.trap_launch, $trap_madeby_u = FLD.trap_madeby_u, $trap_once = FLD.trap_once,
@@ -828,42 +834,42 @@ function* nhl_getmap(L) {
     if (isok(x.v, y.v)) {
         let buf = new Uint8Array(256);
         (yield* lua_createtable(L, 0, 0));
-        (yield* nhl_add_table_entry_int(L, __s_glyph, BigInt(cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level))));
-        (yield* nhl_add_table_entry_int(L, __s_typ, BigInt(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ))));
-        (yield* nhl_add_table_entry_str(L, __s_typ_name, levltyp_to_name(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ))));
-        void cptr.sprintf(cptr.decay(buf), __s_pct_c, splev_typ2chr(cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)));
+        (yield* nhl_add_table_entry_int(L, __s_glyph, BigInt(cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level))));
+        (yield* nhl_add_table_entry_int(L, __s_typ, BigInt(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))));
+        (yield* nhl_add_table_entry_str(L, __s_typ_name, levltyp_to_name(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))));
+        void cptr.sprintf(cptr.decay(buf), __s_pct_c, splev_typ2chr(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)));
         (yield* nhl_add_table_entry_str(L, __s_mapchr, cptr.decay(buf)));
-        (yield* nhl_add_table_entry_int(L, __s_seenv, BigInt(cptr.ld1uo3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_seenv) >>> 0)));
-        (yield* nhl_add_table_entry_bool(L, __s_horizontal, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_horizontal) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __s_lit, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_lit) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __s_waslit, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_waslit) & 1))));
-        (yield* nhl_add_table_entry_int(L, __s_roomno, BigInt((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) >>> 0)));
-        (yield* nhl_add_table_entry_bool(L, __s_edge, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_edge) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __s_candig, schar((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_candig) & 1))));
+        (yield* nhl_add_table_entry_int(L, __s_seenv, BigInt(cptr.ld1uo3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv) >>> 0)));
+        (yield* nhl_add_table_entry_bool(L, __s_horizontal, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal) & 1))));
+        (yield* nhl_add_table_entry_bool(L, __s_lit, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))));
+        (yield* nhl_add_table_entry_bool(L, __s_waslit, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit) & 1))));
+        (yield* nhl_add_table_entry_int(L, __s_roomno, BigInt((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) >>> 0)));
+        (yield* nhl_add_table_entry_bool(L, __s_edge, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1))));
+        (yield* nhl_add_table_entry_bool(L, __s_candig, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_candig) & 1))));
         (yield* nhl_add_table_entry_bool(L, __s_has_trap, schar((t_at(x.v, y.v) ? 1 : 0))));
         (yield* lua_pushstring(L, __s_flags));
         (yield* lua_createtable(L, 0, 0));
-        if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
-            (yield* nhl_add_table_entry_bool(L, __s_nodoor, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR))));
-            (yield* nhl_add_table_entry_bool(L, __s_broken, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_BROKEN))));
-            (yield* nhl_add_table_entry_bool(L, __s_isopen, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_ISOPEN))));
-            (yield* nhl_add_table_entry_bool(L, __s_closed, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED))));
-            (yield* nhl_add_table_entry_bool(L, __s_locked, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED))));
-            (yield* nhl_add_table_entry_bool(L, __s_trapped, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR)) {
-            (yield* nhl_add_table_entry_bool(L, __s_shrine, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SHRINE))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
-            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.T_LOOTED))));
-        } else if (cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.TREE) {
-            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_LOOTED))));
-            (yield* nhl_add_table_entry_bool(L, __s_swarm, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_SWARM))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
-            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED))));
-            (yield* nhl_add_table_entry_bool(L, __s_warned, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))));
-        } else if (((cptr.ld1so3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
-            (yield* nhl_add_table_entry_bool(L, __s_pudding, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LPUDDING))));
-            (yield* nhl_add_table_entry_bool(L, __s_dishwasher, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LDWASHER))));
-            (yield* nhl_add_table_entry_bool(L, __s_ring, schar((((cptr.ldI32o3(svl, x.v, 756, y.v, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING))));
+        if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+            (yield* nhl_add_table_entry_bool(L, __s_nodoor, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR))));
+            (yield* nhl_add_table_entry_bool(L, __s_broken, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_BROKEN))));
+            (yield* nhl_add_table_entry_bool(L, __s_isopen, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_ISOPEN))));
+            (yield* nhl_add_table_entry_bool(L, __s_closed, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED))));
+            (yield* nhl_add_table_entry_bool(L, __s_locked, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED))));
+            (yield* nhl_add_table_entry_bool(L, __s_trapped, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED))));
+        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR)) {
+            (yield* nhl_add_table_entry_bool(L, __s_shrine, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SHRINE))));
+        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
+            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.T_LOOTED))));
+        } else if (cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.TREE) {
+            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_LOOTED))));
+            (yield* nhl_add_table_entry_bool(L, __s_swarm, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_SWARM))));
+        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
+            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED))));
+            (yield* nhl_add_table_entry_bool(L, __s_warned, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))));
+        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
+            (yield* nhl_add_table_entry_bool(L, __s_pudding, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LPUDDING))));
+            (yield* nhl_add_table_entry_bool(L, __s_dishwasher, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LDWASHER))));
+            (yield* nhl_add_table_entry_bool(L, __s_ring, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING))));
         }
         (yield* lua_settable(L, -3));
         return 1;
@@ -996,9 +1002,9 @@ function* nhl_menu(L) {
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (pick_cnt > 0) {
         let buf = new Uint8Array(2);
-        cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 0, 24), 1);
-        if (pick == NHM.PICK_ONE && pick_cnt > 1 && cptr.ld1s(defval) && cptr.ld1so(defval, 0) == cptr.ld1so(picks.v, 0, 24))
-            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 1, 24), 1);
+        cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 0, $sizeof_menu_item), 1);
+        if (pick == NHM.PICK_ONE && pick_cnt > 1 && cptr.ld1s(defval) && cptr.ld1so(defval, 0) == cptr.ld1so(picks.v, 0, $sizeof_menu_item))
+            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 1, $sizeof_menu_item), 1);
         cptr.st1o(cptr.decay(buf), 1, 0, 1);
         (yield* lua_pushstring(L, cptr.decay(buf)));
     } else {
@@ -1255,7 +1261,7 @@ function* nhl_is_genocided(L) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
         let mgend = cptr.box(0);
         let i = (yield* name_to_mon(paramstr, mgend));
-        (yield* lua_pushboolean(L, (i != NHC.NON_PM) && (cptr.ld1uo2(svm, i, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
+        (yield* lua_pushboolean(L, (i != NHC.NON_PM) && (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
     } else {
         (yield* nhl_error(L, __s_wrong_args));
     }
@@ -1388,7 +1394,7 @@ function* nhl_dnum_name(L) {
     if (argc == 1) {
         let dnum = (yield* luaL_checkinteger(L, 1));
         if (dnum >= 0n && dnum < BigInt(cptr.ldI32(svn)))
-            (yield* lua_pushstring(L, cptr.add(svd, dnum, 112)));
+            (yield* lua_pushstring(L, cptr.add(svd, dnum, $sizeof_dungeon)));
         else
             (yield* lua_pushstring(L, __s_empty));
     } else
@@ -1402,7 +1408,7 @@ function* nhl_int_to_pm_name(L) {
     if (argc == 1) {
         let i = (yield* luaL_checkinteger(L, 1));
         if (i >= 0n && i <= 382n)
-            (yield* lua_pushstring(L, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0)));
+            (yield* lua_pushstring(L, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
         else
             (yield* lua_pushstring(L, __s_empty));
     } else
@@ -1416,9 +1422,9 @@ function* nhl_int_to_obj_name(L) {
     if (argc == 1) {
         let buf = new Uint8Array(8);
         let i = (yield* luaL_checkinteger(L, 1));
-        if (i >= 0n && i < 481n && (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))) {
-            (yield* lua_pushstring(L, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16))));
-            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(def_oc_syms, cptr.ld1so2(objects, i, 120, $objclass_oc_class), 24), 1);
+        if (i >= 0n && i < 481n && (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr))) {
+            (yield* lua_pushstring(L, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr))));
+            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(def_oc_syms, cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class), $sizeof_class_sym), 1);
             cptr.st1o(cptr.decay(buf), 1, 0, 1);
             (yield* lua_pushstring(L, cptr.decay(buf)));
         } else {
@@ -1804,8 +1810,8 @@ function* nhl_gamestate(L) {
         }
     }
     if (reststate && cptr.ld1so(gg, $instance_globals_g_gmst_stored)) {
-        let cur_uz = cptr.alloc(4); cptr.memcpy(cur_uz, cptr.add(u, $you_uz), 4);
-        let cur_uz0 = cptr.alloc(4); cptr.memcpy(cur_uz0, cptr.add(u, $you_uz0), 4);
+        let cur_uz = cptr.alloc(4); cptr.memcpy(cur_uz, cptr.add(u, $you_uz), $sizeof_d_level);
+        let cur_uz0 = cptr.alloc(4); cptr.memcpy(cur_uz0, cptr.add(u, $you_uz0), $sizeof_d_level);
         cptr.stI64o(svm, $instance_globals_saved_m_moves, cptr.ldI64o(gg, $instance_globals_g_gmst_moves));
         (yield* pline(__s_resetting_time_to_move_ld, cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
         cptr.stI64o(gg, $instance_globals_g_gmst_moves, 0n);
@@ -1827,9 +1833,9 @@ function* nhl_gamestate(L) {
         (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), (null))))), 0n) ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1911, __s_gg_gmst_mvitals_null) : void 0);
         void cptr.memcpy(cptr.add(svm, $instance_globals_saved_m_mvitals), cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), 4596n);
         for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
-            if (cptr.ldPtro2(objects, otyp, 120, $objclass_oc_uname)) {
-                cptr.free(cptr.ldPtro2(objects, otyp, 120, $objclass_oc_uname));
-                cptr.stPtro2(objects, otyp, 120, $objclass_oc_uname, null);
+            if (cptr.ldPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname)) {
+                cptr.free(cptr.ldPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname));
+                cptr.stPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname, null);
             }
         cptr.memcpy(cptr.add(u, $you_uz), cur_uz, 4), cptr.memcpy(cptr.add(u, $you_uz0), cur_uz0, 4);
         (yield* init_uhunger());
@@ -1888,7 +1894,7 @@ export function* tutorial(entering) {
 }
 
 /** C ref: nhlua.c:2002 — struct luaL_Reg[41] */
-const nhl_functions = cptr.alloc(41 * 16);
+const nhl_functions = cptr.alloc(41 * $sizeof_luaL_Reg);
 cptr.stPtro(nhl_functions, 0, __s_test);
 cptr.stPtro(nhl_functions, 0 + $luaL_Reg_func, nhl_test);
 cptr.stPtro(nhl_functions, 16, __s_getmap);
@@ -2009,7 +2015,7 @@ function* init_nhc_data(L) {
 
 /** C ref: nhlua.c:2094 — @param {CPtr<lua_State>} L @param {CInt} anytype @param {CPtr<void>} src @returns {CInt} */
 function* nhl_push_anything(L, anytype, src) {
-    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
+    let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
     switch (anytype) {
         case NHC.ANY_INT:
         cptr.stI32(any, cptr.ldI32(src));
@@ -2151,7 +2157,7 @@ function* nhl_u_giveobj(L) {
 }
 
 /** C ref: nhlua.c:2210 — struct luaL_Reg[3] */
-const nhl_u_functions = cptr.alloc(3 * 16);
+const nhl_u_functions = cptr.alloc(3 * $sizeof_luaL_Reg);
 cptr.stPtro(nhl_u_functions, 0, __s_clear_inventory);
 cptr.stPtro(nhl_u_functions, 0 + $luaL_Reg_func, nhl_u_clear_inventory);
 cptr.stPtro(nhl_u_functions, 16, __s_giveobj);
@@ -2438,7 +2444,7 @@ export const EOT = 2;
 /** C ref: nhlua.c:2648 — struct e { when, fnname } (memory model v0.5) */
 
 /** C ref: nhlua.c:2654 — struct e[10] */
-const ct_base_base = cptr.alloc(10 * 16);
+const ct_base_base = cptr.alloc(10 * $sizeof_e);
 cptr.stI32o(ct_base_base, 0, NHC.IFFLAG);
 cptr.stPtro(ct_base_base, 0 + $e_fnname, __s_ipairs);
 cptr.stI32o(ct_base_base, 16, NHC.IFFLAG);
@@ -2461,7 +2467,7 @@ cptr.stI32o(ct_base_base, 144, NHC.EOT);
 cptr.stPtro(ct_base_base, 144 + $e_fnname, null);
 
 /** C ref: nhlua.c:2668 — struct e[5] */
-const ct_base_error = cptr.alloc(5 * 16);
+const ct_base_error = cptr.alloc(5 * $sizeof_e);
 cptr.stI32o(ct_base_error, 0, NHC.IFFLAG);
 cptr.stPtro(ct_base_error, 0 + $e_fnname, __s_assert);
 cptr.stI32o(ct_base_error, 16, NHC.IFFLAG);
@@ -2474,7 +2480,7 @@ cptr.stI32o(ct_base_error, 64, NHC.EOT);
 cptr.stPtro(ct_base_error, 64 + $e_fnname, null);
 
 /** C ref: nhlua.c:2679 — struct e[7] */
-const ct_base_meta = cptr.alloc(7 * 16);
+const ct_base_meta = cptr.alloc(7 * $sizeof_e);
 cptr.stI32o(ct_base_meta, 0, NHC.IFFLAG);
 cptr.stPtro(ct_base_meta, 0 + $e_fnname, __s_getmetatable);
 cptr.stI32o(ct_base_meta, 16, NHC.IFFLAG);
@@ -2491,14 +2497,14 @@ cptr.stI32o(ct_base_meta, 96, NHC.EOT);
 cptr.stPtro(ct_base_meta, 96 + $e_fnname, null);
 
 /** C ref: nhlua.c:2690 — struct e[2] */
-const ct_base_iffy = cptr.alloc(2 * 16);
+const ct_base_iffy = cptr.alloc(2 * $sizeof_e);
 cptr.stI32o(ct_base_iffy, 0, NHC.IFFLAG);
 cptr.stPtro(ct_base_iffy, 0 + $e_fnname, __s_collectgarbage);
 cptr.stI32o(ct_base_iffy, 16, NHC.EOT);
 cptr.stPtro(ct_base_iffy, 16 + $e_fnname, null);
 
 /** C ref: nhlua.c:2698 — struct e[4] */
-const ct_base_unsafe = cptr.alloc(4 * 16);
+const ct_base_unsafe = cptr.alloc(4 * $sizeof_e);
 cptr.stI32o(ct_base_unsafe, 0, NHC.IFFLAG);
 cptr.stPtro(ct_base_unsafe, 0 + $e_fnname, __s_dofile);
 cptr.stI32o(ct_base_unsafe, 16, NHC.IFFLAG);
@@ -2509,7 +2515,7 @@ cptr.stI32o(ct_base_unsafe, 48, NHC.EOT);
 cptr.stPtro(ct_base_unsafe, 48 + $e_fnname, null);
 
 /** C ref: nhlua.c:2713 — struct e[17] */
-const ct_debug_debug = cptr.alloc(17 * 16);
+const ct_debug_debug = cptr.alloc(17 * $sizeof_e);
 cptr.stI32o(ct_debug_debug, 0, NHC.NEVER);
 cptr.stPtro(ct_debug_debug, 0 + $e_fnname, __s_debug);
 cptr.stI32o(ct_debug_debug, 16, NHC.IFFLAG);
@@ -2546,14 +2552,14 @@ cptr.stI32o(ct_debug_debug, 256, NHC.EOT);
 cptr.stPtro(ct_debug_debug, 256 + $e_fnname, null);
 
 /** C ref: nhlua.c:2732 — struct e[2] */
-const ct_debug_safe = cptr.alloc(2 * 16);
+const ct_debug_safe = cptr.alloc(2 * $sizeof_e);
 cptr.stI32o(ct_debug_safe, 0, NHC.IFFLAG);
 cptr.stPtro(ct_debug_safe, 0 + $e_fnname, __s_traceback);
 cptr.stI32o(ct_debug_safe, 16, NHC.EOT);
 cptr.stPtro(ct_debug_safe, 16 + $e_fnname, null);
 
 /** C ref: nhlua.c:2738 — struct e[5] */
-const ct_os_time = cptr.alloc(5 * 16);
+const ct_os_time = cptr.alloc(5 * $sizeof_e);
 cptr.stI32o(ct_os_time, 0, NHC.IFFLAG);
 cptr.stPtro(ct_os_time, 0 + $e_fnname, __s_clock);
 cptr.stI32o(ct_os_time, 16, NHC.IFFLAG);
@@ -2566,7 +2572,7 @@ cptr.stI32o(ct_os_time, 64, NHC.EOT);
 cptr.stPtro(ct_os_time, 64 + $e_fnname, null);
 
 /** C ref: nhlua.c:2746 — struct e[8] */
-const ct_os_files = cptr.alloc(8 * 16);
+const ct_os_files = cptr.alloc(8 * $sizeof_e);
 cptr.stI32o(ct_os_files, 0, NHC.NEVER);
 cptr.stPtro(ct_os_files, 0 + $e_fnname, __s_execute);
 cptr.stI32o(ct_os_files, 16, NHC.NEVER);

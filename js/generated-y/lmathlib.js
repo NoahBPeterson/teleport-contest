@@ -15,7 +15,7 @@ import { d } from './rnd.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $luaL_Reg_func = FLD.luaL_Reg_func;
+const $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_zero = cptr.lit("zero");
@@ -388,7 +388,7 @@ function* math_randomseed(L) {
 }
 
 /** C ref: lmathlib.c:649 — luaL_Reg[3] */
-const randfuncs = cptr.alloc(3 * 16);
+const randfuncs = cptr.alloc(3 * $sizeof_luaL_Reg);
 cptr.stPtro(randfuncs, 0, __s_random);
 cptr.stPtro(randfuncs, 0 + $luaL_Reg_func, math_random);
 cptr.stPtro(randfuncs, 16, __s_randomseed);
@@ -405,7 +405,7 @@ function* setrandfunc(L) {
 }
 
 /** C ref: lmathlib.c:722 — luaL_Reg[28] */
-const mathlib = cptr.alloc(28 * 16);
+const mathlib = cptr.alloc(28 * $sizeof_luaL_Reg);
 cptr.stPtro(mathlib, 0, __s_abs);
 cptr.stPtro(mathlib, 0 + $luaL_Reg_func, math_abs);
 cptr.stPtro(mathlib, 16, __s_acos);

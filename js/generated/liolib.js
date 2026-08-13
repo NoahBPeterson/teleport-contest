@@ -13,7 +13,7 @@ import { lua_copy, lua_createtable, lua_getfield, lua_gettop, lua_isinteger, lua
 // (values from ./nhfield.js, which is the whole table)
 const $FILE__r = FLD.FILE__r, $LStream_closef = FLD.LStream_closef, $RN_buff = FLD.RN_buff, $RN_c = FLD.RN_c,
     $RN_n = FLD.RN_n, $luaL_Buffer_n = FLD.luaL_Buffer_n, $luaL_Buffer_size = FLD.luaL_Buffer_size,
-    $luaL_Reg_func = FLD.luaL_Reg_func;
+    $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_rwa = cptr.lit("rwa");
@@ -600,7 +600,7 @@ function f_flush(L) {
 }
 
 /** C ref: liolib.c:754 — luaL_Reg[12] */
-const iolib = cptr.alloc(12 * 16);
+const iolib = cptr.alloc(12 * $sizeof_luaL_Reg);
 cptr.stPtro(iolib, 0, __s_close);
 cptr.stPtro(iolib, 0 + $luaL_Reg_func, io_close);
 cptr.stPtro(iolib, 16, __s_flush);
@@ -627,7 +627,7 @@ cptr.stPtro(iolib, 176, null);
 cptr.stPtro(iolib, 176 + $luaL_Reg_func, null);
 
 /** C ref: liolib.c:773 — luaL_Reg[8] */
-const meth = cptr.alloc(8 * 16);
+const meth = cptr.alloc(8 * $sizeof_luaL_Reg);
 cptr.stPtro(meth, 0, __s_read);
 cptr.stPtro(meth, 0 + $luaL_Reg_func, f_read);
 cptr.stPtro(meth, 16, __s_write);
@@ -646,7 +646,7 @@ cptr.stPtro(meth, 112, null);
 cptr.stPtro(meth, 112 + $luaL_Reg_func, null);
 
 /** C ref: liolib.c:788 — luaL_Reg[5] */
-const metameth = cptr.alloc(5 * 16);
+const metameth = cptr.alloc(5 * $sizeof_luaL_Reg);
 cptr.stPtro(metameth, 0, __s_index);
 cptr.stPtro(metameth, 0 + $luaL_Reg_func, null);
 cptr.stPtro(metameth, 16, __s_gc);

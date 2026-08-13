@@ -262,11 +262,21 @@ const $Align_adj = FLD.Align_adj, $accessibility_data_glyph_updates = FLD.access
     $paranoia_opts_synMinLen = FLD.paranoia_opts_synMinLen,
     $paranoia_opts_synonym = FLD.paranoia_opts_synonym, $plinemsg_type_next = FLD.plinemsg_type_next,
     $plinemsg_type_pattern = FLD.plinemsg_type_pattern, $plinemsg_type_regex = FLD.plinemsg_type_regex,
-    $sinfo_in_parseoptions = FLD.sinfo_in_parseoptions, $symsetentry_explicitly = FLD.symsetentry_explicitly,
-    $symsetentry_handling = FLD.symsetentry_handling, $symsetentry_name = FLD.symsetentry_name,
-    $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $u_roleplay_nudist = FLD.u_roleplay_nudist, $u_roleplay_pauper = FLD.u_roleplay_pauper,
-    $u_roleplay_reroll = FLD.u_roleplay_reroll, $wc_Opt_wc_bit = FLD.wc_Opt_wc_bit,
+    $sinfo_in_parseoptions = FLD.sinfo_in_parseoptions, $sizeof_Align = FLD.sizeof_Align,
+    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Race = FLD.sizeof_Race, $sizeof_Role = FLD.sizeof_Role,
+    $sizeof_action = FLD.sizeof_action, $sizeof_allopt_t = FLD.sizeof_allopt_t,
+    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_condtests_t = FLD.sizeof_condtests_t,
+    $sizeof_menu_cmd_t = FLD.sizeof_menu_cmd_t, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_menuscrollinfo = FLD.sizeof_menuscrollinfo, $sizeof_objclass = FLD.sizeof_objclass,
+    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_objsymopt = FLD.sizeof_objsymopt,
+    $sizeof_paranoia_opts = FLD.sizeof_paranoia_opts, $sizeof_symdef = FLD.sizeof_symdef,
+    $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_wc_Opt = FLD.sizeof_wc_Opt,
+    $sizeof_windowcolors_struct = FLD.sizeof_windowcolors_struct,
+    $symsetentry_explicitly = FLD.symsetentry_explicitly, $symsetentry_handling = FLD.symsetentry_handling,
+    $symsetentry_name = FLD.symsetentry_name, $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE,
+    $u_roleplay_deaf = FLD.u_roleplay_deaf, $u_roleplay_nudist = FLD.u_roleplay_nudist,
+    $u_roleplay_pauper = FLD.u_roleplay_pauper, $u_roleplay_reroll = FLD.u_roleplay_reroll,
+    $wc_Opt_wc_bit = FLD.wc_Opt_wc_bit,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
     $window_procs_win_display_file = FLD.window_procs_win_display_file,
@@ -1286,7 +1296,7 @@ const __s_windowcolors_for_s_windows_specified = cptr.lit("windowcolors for %s w
 const __s_windowcolors_for_unrecognized_window = cptr.lit("windowcolors for unrecognized window type: %s");
 
 /** C ref: options.c:60 — struct allopt_t[218] */
-const allopt_init = cptr.alloc(218 * 104);
+const allopt_init = cptr.alloc(218 * $sizeof_allopt_t);
 cptr.stPtro(allopt_init, 0, __s_windowtype);
 cptr.stI32o(allopt_init, 0 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 0 + $allopt_t_minmatch, 0);
@@ -6105,7 +6115,7 @@ export const get_val = 4;
 export const get_cnf_val = 5;
 
 /** C ref: options.c:90 — struct allopt_t[218] */
-const allopt = cptr.alloc(218 * 104);
+const allopt = cptr.alloc(218 * $sizeof_allopt_t);
 
 /** C ref: options.c:106 — char[1] */
 const empty_optstr = [0];
@@ -6157,7 +6167,7 @@ const defbrief = cptr.bytes("def");
 /** C ref: options.c:129 — struct paranoia_opts { flagmask, argname, argMinLen, synonym, synMinLen, explain } (memory model v0.5) */
 
 /** C ref: options.c:136 — struct paranoia_opts[15] */
-const paranoia = cptr.alloc(15 * 48);
+const paranoia = cptr.alloc(15 * $sizeof_paranoia_opts);
 cptr.stI32o(paranoia, 0, NHM.PARANOID_CONFIRM);
 cptr.stPtro(paranoia, 0 + $paranoia_opts_argname, __s_confirm__2);
 cptr.stI32o(paranoia, 0 + $paranoia_opts_argMinLen, 1);
@@ -6345,7 +6355,7 @@ cptr.stPtro(cptr.decay(perminv_modes[8]), 16, __s_subset_items_currently_in_use)
 /** C ref: options.c:242 — struct objsymopt { num, nam, descr } (memory model v0.5) */
 
 /** C ref: options.c:273 — struct objsymopt[6] */
-const objsymvals = cptr.alloc(6 * 24);
+const objsymvals = cptr.alloc(6 * $sizeof_objsymopt);
 cptr.stI32o(objsymvals, 0, 0);
 cptr.stPtro(objsymvals, 0 + $objsymopt_nam, __s_none);
 cptr.stPtro(objsymvals, 0 + $objsymopt_descr, __s_don_t_show_object_symbols_in_menus);
@@ -6370,7 +6380,7 @@ cptr.stPtro(objsymvals, 120 + $objsymopt_descr, __s_show_objsyms_in_header_in_en
 /** C ref: options.c:312 — typedef menu_cmd_t (type alias only, no runtime output) */
 
 /** C ref: options.c:314 — menu_cmd_t[14] */
-const default_menu_cmd_info = cptr.alloc(14 * 24);
+const default_menu_cmd_info = cptr.alloc(14 * $sizeof_menu_cmd_t);
 cptr.stPtro(default_menu_cmd_info, 0, __s_menu_next_page);
 cptr.st1o(default_menu_cmd_info, 0 + $menu_cmd_t_cmd, 62);
 cptr.stPtro(default_menu_cmd_info, 0 + $menu_cmd_t_desc, __s_go_to_next_page);
@@ -6449,7 +6459,7 @@ export function* ask_do_tutorial() {
             (yield* Y.icall(destroy_nhwindow()(win)));
         } while (!n);
         if (n > 0) {
-            dotut = schar((cptr.ld1so(sel.v, 0, 24) == 121));
+            dotut = schar((cptr.ld1so(sel.v, 0, $sizeof_menu_item) == 121));
             cptr.free(sel.v);
         } else {
             dotut = 0;
@@ -6504,17 +6514,17 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     }
     for (i = 0; i < NHC.OPTCOUNT; ++i) {
         got_match = 0;
-        if (cptr.ldI32o2(allopt, i, 104, $allopt_t_pfx)) {
-            if (str_start_is(opts, cptr.ldPtro(allopt, i, 104), 1)) {
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_pfx)) {
+            if (str_start_is(opts, cptr.ldPtro(allopt, i, $sizeof_allopt_t), 1)) {
                 matchidx = i;
                 got_match = (pfx_match = 1);
             }
         }
-        if (!got_match && cptr.ldPtro(allopt, i, 104))
-            got_match = (yield* match_optname(opts, cptr.ldPtro(allopt, i, 104), cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch), 1));
+        if (!got_match && cptr.ldPtro(allopt, i, $sizeof_allopt_t))
+            got_match = (yield* match_optname(opts, cptr.ldPtro(allopt, i, $sizeof_allopt_t), cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch), 1));
         if (got_match) {
-            if (!cptr.ldI32o2(allopt, i, 104, $allopt_t_pfx) && optlen < cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch)) {
-                (yield* config_error_add(__s_ambiguous_option_s_d_characters_are, opts, cptr.ldI32o2(allopt, i, 104, $allopt_t_minmatch)));
+            if (!cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_pfx) && optlen < cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch)) {
+                (yield* config_error_add(__s_ambiguous_option_s_d_characters_are, opts, cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch)));
                 break;
             }
             matchidx = i;
@@ -6523,9 +6533,9 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     }
     if (!got_match) {
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
-            if (!cptr.ldPtro2(allopt, i, 104, $allopt_t_alias))
+            if (!cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias))
                 continue;
-            got_match = (yield* match_optname(opts, cptr.ldPtro2(allopt, i, 104, $allopt_t_alias), Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro2(allopt, i, 104, $allopt_t_alias)))), 1));
+            got_match = (yield* match_optname(opts, cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias), Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias)))), 1));
             if (got_match) {
                 matchidx = i;
                 using_alias = 1;
@@ -6534,17 +6544,17 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         }
     }
     (cptr.stI32o(program_state, $sinfo_in_parseoptions, cptr.ldI32o(program_state, $sinfo_in_parseoptions) + 1)) - (1);
-    if (got_match && (matchidx >= 0 && matchidx < NHC.OPTCOUNT) && !cptr.ld1so2(allopt, matchidx, 104, $allopt_t_disregarded)) {
+    if (got_match && (matchidx >= 0 && matchidx < NHC.OPTCOUNT) && !cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) {
         duplicate = duplicate_opt_detection(matchidx);
-        if (duplicate && !cptr.ldI32o2(allopt, matchidx, 104, $allopt_t_dupeok))
+        if (duplicate && !cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_dupeok))
             (yield* complain_about_duplicate(matchidx));
-        if (negated && !cptr.ldI32o2(allopt, matchidx, 104, $allopt_t_negateok)) {
-            (yield* bad_negation(cptr.ldPtro(allopt, matchidx, 104), 1));
+        if (negated && !cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_negateok)) {
+            (yield* bad_negation(cptr.ldPtro(allopt, matchidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
-        if (cptr.ldPtro2(allopt, matchidx, 104, $allopt_t_optfn)) {
+        if (cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn)) {
             op = (yield* string_for_opt(opts, 1));
-            optresult = (yield* Y.icall((cptr.ldPtro2(allopt, matchidx, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, matchidx, 104, $allopt_t_idx), NHC.do_set, negated, opts, op)));
+            optresult = (yield* Y.icall((cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_idx), NHC.do_set, negated, opts, op)));
             if (optresult == NHC.optn_ok)
                 cptr.st1o(cptr.decay(opt_set_in_config), matchidx, 1, 1);
         }
@@ -6558,7 +6568,7 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
             optresult = NHC.optn_ok;
         }
     }
-    if (optresult == NHC.optn_silenterr || (got_match && cptr.ld1so2(allopt, matchidx, 104, $allopt_t_disregarded)) || (!got_match && config_unmatched_ignored()))
+    if (optresult == NHC.optn_silenterr || (got_match && cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) || (!got_match && config_unmatched_ignored()))
         return 0;
     if (pfx_match && optresult == NHC.optn_err) {
         let pfxbuf = new Uint8Array(256);
@@ -6581,8 +6591,8 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
 function* check_misc_menu_command(opts, op) {
     let i;
     let name_to_check;
-    for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, 24); i++) {
-        name_to_check = cptr.ldPtro(default_menu_cmd_info, i, 24);
+    for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t); i++) {
+        name_to_check = cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t);
         if ((yield* match_optname(opts, name_to_check, Number(BigInt.asIntN(32, cptr.strlen(name_to_check))), 1)))
             return i;
     }
@@ -6687,19 +6697,19 @@ function* optfn_alignment(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op)))
+        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initalign, (yield* str2align(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
                 return NHC.optn_err;
             }
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), 32, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -6727,11 +6737,11 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
             else if (!(yield* strncmpi(op, __s_bottom, 6)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_BOTTOM);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -6765,11 +6775,11 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
             else if (!(yield* strncmpi(op, __s_bottom, 6)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_BOTTOM);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -6854,13 +6864,13 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
                 }
             }
             if (!matched) {
-                (yield* config_error_add(__s_invalid_value_for_s_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_invalid_value_for_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_silenterr;
             }
             op = nxt;
         }
         if (negated && newflags != 0) {
-            (yield* config_error_add(__s_invalid_value_combination_for_s_none, cptr.ldPtro(allopt, optidx, 104)));
+            (yield* config_error_add(__s_invalid_value_combination_for_s_none, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
             return NHC.optn_silenterr;
         }
         cptr.stI32o(flags, $flag_autounlock, newflags);
@@ -6922,7 +6932,7 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
-        void cptr.sprintf(opts, __s_pct_c, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, 120, $objclass_oc_class) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms));
+        void cptr.sprintf(opts, __s_pct_c, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, $sizeof_objclass, $objclass_oc_class) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms));
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7013,10 +7023,10 @@ function* optfn_DECgraphics(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!negated) {
-            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name)) {
+            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
                 badflag = 1;
             } else {
-                cptr.stPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(cptr.ldPtro(allopt, optidx, 104))));
+                cptr.stPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))));
                 if (!(yield* read_sym_file(NHC.PRIMARYSET))) {
                     badflag = 1;
                     clear_symsetentry(NHC.PRIMARYSET, 1);
@@ -7024,7 +7034,7 @@ function* optfn_DECgraphics(optidx, req, negated, opts, op) {
                     (yield* switch_symbols(1));
             }
             if (badflag) {
-                (yield* config_error_add(__s_failure_to_load_symbol_set_s, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_failure_to_load_symbol_set_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                 return NHC.optn_err;
             }
         }
@@ -7051,7 +7061,7 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, 1));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         if (cptr.eq(op, cptr.decay(empty_optstr)) || !(yield* strncmpi((op), (__s_all), -1)) || !(yield* strncmpi((op), (__s_none), -1))) {
@@ -7094,7 +7104,7 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
             } else if (c == 32) {
                 ;
             } else {
-                (yield* config_error_add(__s_unknown_s_parameter_c, cptr.ldPtro(allopt, optidx, 104), cptr.ld1s(op)));
+                (yield* config_error_add(__s_unknown_s_parameter_c, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.ld1s(op)));
                 return NHC.optn_err;
             }
             op = cptr.add(op, 1);
@@ -7269,20 +7279,20 @@ function* optfn_gender(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op)))
+        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initgend, (yield* str2gend(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
                 return NHC.optn_err;
             }
             cptr.st1o(flags, $flag_female, schar(cptr.ldI32o(flags, $flag_initgend)));
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), 48) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7358,7 +7368,7 @@ function* optfn_horsename(optidx, req, negated, opts, op) {
 
 /** C ref: options.c:1906 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
-    let sym_name = cptr.ldPtro(allopt, optidx, 104);
+    let sym_name = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let badflag = 0;
     let i;
     if (req == NHC.do_init) {
@@ -7367,12 +7377,12 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (!negated) {
             for (i = 0; i < NHC.NUM_GRAPHICS; ++i) {
-                if (cptr.ldPtro2(gs, i, 48, $instance_globals_s_symset + $symsetentry_name)) {
+                if (cptr.ldPtro2(gs, i, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
                     badflag = 1;
                 } else {
                     if (i == NHC.ROGUESET)
                         sym_name = __s_rogueibm;
-                    cptr.stPtro2(gs, i, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(sym_name)));
+                    cptr.stPtro2(gs, i, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(sym_name)));
                     if (!(yield* read_sym_file(i))) {
                         badflag = 1;
                         clear_symsetentry(i, 1);
@@ -7435,7 +7445,7 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
             else if (!(yield* strncmpi(op, __s_tiles_fit_to_screen, 19)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_TILES_FIT_TO_SCREEN);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
             if (wc_supported(__s_map_mode)) {
@@ -7443,7 +7453,7 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
                     (yield* Y.icall(preference_update()(__s_map_mode)));
             }
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -7555,7 +7565,7 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
             cptr.stI32o(iflags, $instance_flags_menu_headings, NHM.NO_COLOR);
             return NHC.optn_ok;
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_silenterr;
         }
         if (!(yield* color_attr_parse_str(ca, op)))
@@ -7596,7 +7606,7 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         } else if (digit(cptr.ld1s(op))) {
             i = atoi(op);
             if (i >= 6) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
             osyms = i;
@@ -7605,10 +7615,10 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
             osyms = 0;
             k = Number(BigInt.asUintN(32, cptr.strlen(op)));
             for (i = 0; i < 6; ++i) {
-                l = Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro2(objsymvals, i, 24, $objsymopt_nam))));
+                l = Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam))));
                 if (k >= 4)
                     l = k;
-                if (!(yield* strncmpi(cptr.ldPtro2(objsymvals, i, 24, $objsymopt_nam), op, l | 0)) || (i == 5 && !(yield* strncmpi(cptr.decay(__static_optfn_menu_objsyms_alt5), op, l5 | 0)))) {
+                if (!(yield* strncmpi(cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam), op, l | 0)) || (i == 5 && !(yield* strncmpi(cptr.decay(__static_optfn_menu_objsyms_alt5), op, l5 | 0)))) {
                     osyms = i;
                     break;
                 }
@@ -7618,7 +7628,7 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, $instance_flags_menuobjsyms), 24, $objsymopt_nam));
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, $instance_flags_menuobjsyms), $sizeof_objsymopt, $objsymopt_nam));
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7636,7 +7646,7 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let mode = atoi(op);
             if (mode < 0 || mode > 2) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
             cptr.stI32o(iflags, $instance_flags_menuinvertmode, mode);
@@ -7681,7 +7691,7 @@ function* optfn_menustyle(optidx, req, negated, opts, op) {
             cptr.st1o(flags, $flag_menu_style, NHM.MENU_PARTIAL);
             break;
             default:
-            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -7735,7 +7745,7 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
         } else {
             let mode = atoi(op);
             if (mode < 0 || mode > 2 || (mode == 0 && cptr.ld1s(op) != 48)) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc_mouse_support, mode);
@@ -7768,7 +7778,7 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             tmp = negated ? 115 : 102;
         } else {
             if (negated) {
-                (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+                (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
                 return NHC.optn_err;
             }
             tmp = lowc(cptr.ld1s(op));
@@ -7781,7 +7791,7 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             cptr.st1o(iflags, $instance_flags_prevmsg_window, schar(tmp));
             break;
             default:
-            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
             retval = NHC.optn_err;
         }
         return retval;
@@ -7808,11 +7818,11 @@ function* optfn_msghistory(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, negated));
+        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, negated));
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_msg_history, (negated ? 0 : atoi(op)) >>> 0);
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -7830,7 +7840,7 @@ function* optfn_name(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             (yield* nmcpy(svp, op, NHM.PL_NSIZ));
         } else
             return NHC.optn_err;
@@ -7866,12 +7876,12 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
                 cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
             }
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         } else {
             let mode = atoi(op);
             if (mode < -1 || mode > 4 || (mode == 0 && cptr.ld1s(op) != 48)) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             } else if (mode <= 0) {
                 cptr.st1o(iflags, $instance_flags_num_pad, 0);
@@ -7960,7 +7970,7 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 (yield* config_error_add(__s_deprecated_sprayconfirm_option_takes_no, opt_negated ? __s_bang : __s_empty, op));
                 return NHC.optn_silenterr;
             }
-            (yield* config_error_add(__s_sprayconfirm_option_is_deprecated, opt_negated ? __s_bang : __s_empty, cptr.ldPtro(allopt, optidx, 104), opt_negated ? 45 : 43));
+            (yield* config_error_add(__s_sprayconfirm_option_is_deprecated, opt_negated ? __s_bang : __s_empty, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opt_negated ? 45 : 43));
             void cptr.sprintf(cptr.decay(prayconfirm), __s_cpray, opt_negated ? 45 : 43);
             op = cptr.decay(prayconfirm);
             opt_negated = 0;
@@ -7969,11 +7979,11 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 cptr.stI32o(flags, $flag_paranoia_bits, 0);
                 return NHC.optn_ok;
             } else {
-                (yield* config_error_add(__s_s_does_not_accept_a_value, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_s_does_not_accept_a_value, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                 return NHC.optn_silenterr;
             }
         } else if (!cptr.ld1s(op)) {
-            (yield* config_error_add(__s_s_requires_a_value_use_none_to_cancel, cptr.ldPtro(allopt, optidx, 104)));
+            (yield* config_error_add(__s_s_requires_a_value_use_none_to_cancel, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
             return NHC.optn_silenterr;
         }
         void (yield* mungspaces(op));
@@ -8000,20 +8010,20 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
             if (pp)
                 cptr.st1(pp, 0);
             for (i = 0; i < 15; ++i) {
-                if ((yield* match_optname(op, cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_argname), cptr.ldI32o2(paranoia, i, 48, $paranoia_opts_argMinLen), 0)) || (cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_synonym) && (yield* match_optname(op, cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_synonym), cptr.ldI32o2(paranoia, i, 48, $paranoia_opts_synMinLen), 0)))) {
-                    if (!cptr.ldI32o(paranoia, i, 48)) {
+                if ((yield* match_optname(op, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname), cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argMinLen), 0)) || (cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym) && (yield* match_optname(op, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym), cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synMinLen), 0)))) {
+                    if (!cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) {
                         if (!plus_or_minus)
                             cptr.stI32o(flags, $flag_paranoia_bits, 0);
                     } else if (opt_negated || fld_negated) {
-                        cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) & ((~cptr.ldI32o(paranoia, i, 48)) >>> 0));
+                        cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) & ((~cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) >>> 0));
                     } else {
-                        cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia, i, 48) >>> 0));
+                        cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0));
                     }
                     break;
                 }
             }
             if (i == 15) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_silenterr;
             }
             if (pp)
@@ -8026,9 +8036,9 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let tmpbuf = new Uint8Array(256);
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
-        for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
-            if (((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, 48) != NHM.PARANOID_BONES || wizard() || req == NHC.get_cnf_val))
-                nh_snprintf(__s_optfn_paranoid_confirmation, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __s_sp_pct_s, cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_argname));
+        for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
+            if (((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != NHM.PARANOID_BONES || wizard() || req == NHC.get_cnf_val))
+                nh_snprintf(__s_optfn_paranoid_confirmation, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __s_sp_pct_s, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname));
         }
         cptr.st1o(opts, 0, 0);
         void __builtin___strncat_chk(opts, cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __s_none, 255n, __builtin_object_size(opts, 1));
@@ -8050,7 +8060,7 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
     } else if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             retval = NHC.optn_silenterr;
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let pi0;
@@ -8064,7 +8074,7 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                 if (!(yield* strncmpi(op, pi0, ln | 0)) || !(yield* strncmpi(op, pi1, ln | 0)) || cptr.ld1so(op, 0) == ((i + 48) | 0)) {
                     if ((yield* strstri(pi0, __s_grid)) && !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty)) {
                         i &= -5;
-                        (yield* config_error_add(__s_s_unavailable_perm_invent_mode_s_using_s, cptr.ldPtro(allopt, optidx, 104), pi0, cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)));
+                        (yield* config_error_add(__s_s_unavailable_perm_invent_mode_s_using_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), pi0, cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)));
                     }
                     cptr.st1o(iflags, $instance_flags_perminv_mode, uchar(i));
                     cptr.st1o(iflags, $instance_flags_perm_invent, 1);
@@ -8072,7 +8082,7 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                 }
             }
             if (i == perminv_modes.length) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 cptr.st1o(iflags, $instance_flags_perminv_mode, NHC.InvOptNone);
                 cptr.st1o(iflags, $instance_flags_perm_invent, 0);
                 retval = NHC.optn_silenterr;
@@ -8111,12 +8121,12 @@ function* optfn_petattr(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if (!cptr.eq(op, cptr.decay(empty_optstr)) && negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             retval = NHC.optn_err;
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let itmp = (yield* match_str2attr(op, 0));
             if (itmp == -1) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), opts));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
                 retval = NHC.optn_err;
             } else
                 cptr.stI32o(iflags, $instance_flags_wc2_petattr, itmp);
@@ -8152,7 +8162,7 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, negated))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, negated))), cptr.decay(empty_optstr))) {
             switch (lowc(cptr.ld1s(op))) {
                 case 100:
                 cptr.st1o(gp, $instance_globals_p_preferred_pet, 100);
@@ -8200,7 +8210,7 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             switch (lowc(cptr.ld1s(op))) {
                 case 117:
                 cptr.stI32o(flags, $flag_pickup_burden, NHC.UNENCUMBERED);
@@ -8222,7 +8232,7 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
                 cptr.stI32o(flags, $flag_pickup_burden, NHC.OVERLOADED);
                 break;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         } else
@@ -8267,7 +8277,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
                 let wasspace;
                 use_menu = 0;
-                void cptr.sprintf(cptr.decay(qbuf), __s_new_s_s_am_s, cptr.ldPtro(allopt, optidx, 104), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __s_all);
+                void cptr.sprintf(cptr.decay(qbuf), __s_new_s_s_am_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __s_all);
                 cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                 (yield* getlin(cptr.decay(qbuf), cptr.decay(abuf)));
                 wasspace = schar((cptr.ld1so(cptr.decay(abuf), 0, 1) == 32));
@@ -8287,7 +8297,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             }
         }
         if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         while (cptr.ld1s(op) == 32)
@@ -8304,7 +8314,7 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
                 op = cptr.add(op, 1);
             }
             if (badopt) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         }
@@ -8331,7 +8341,7 @@ function* optfn_pile_limit(optidx, req, negated, opts, op) {
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr))))
             cptr.stI32o(flags, $flag_pile_limit, negated ? 0 : atoi(op));
         else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         } else
             cptr.stI32o(flags, $flag_pile_limit, 5);
@@ -8359,7 +8369,7 @@ function* optfn_player_selection(optidx, req, negated, opts, op) {
             } else if (!(yield* strncmpi(op, __s_prompt, 6))) {
                 cptr.stI32o(iflags, $instance_flags_wc_player_selection, NHM.VIA_PROMPTS);
             } else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         }
@@ -8389,7 +8399,7 @@ function* optfn_playmode(optidx, req, negated, opts, op) {
         } else if (!(yield* strncmpi(op, __s_debug, 5)) || !(yield* strncmpi(op, __s_wizard, 6))) {
             cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
         } else {
-            (yield* config_error_add(__s_invalid_value_for_s_s__2, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_invalid_value_for_s_s__2, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -8408,20 +8418,20 @@ function* optfn_race(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op)))
+        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrace, (yield* str2race(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
                 return NHC.optn_err;
             }
             cptr.st1o(gp, $instance_globals_p_pl_race, cptr.ld1s(op.v));
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), 112) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), 112) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8439,9 +8449,9 @@ function* optfn_roguesymset(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name))
-                cptr.free(cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name)), cptr.stPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name, null);
-            cptr.stPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
+            if (cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
+                cptr.free(cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), cptr.stPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
+            cptr.stPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
             if (!(yield* read_sym_file(NHC.ROGUESET))) {
                 clear_symsetentry(NHC.ROGUESET, 1);
                 (yield* config_error_add(__s_unable_to_load_symbol_set_s_from_s, op, __s_symbols));
@@ -8457,8 +8467,8 @@ function* optfn_roguesymset(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name) : __s_default);
-        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET && cptr.ldPtro2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_name))
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_default);
+        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET && cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
             void cptr.strcat(opts, __s_active);
         return NHC.optn_ok;
     }
@@ -8475,20 +8485,20 @@ function* optfn_role(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, 104), opts, op)))
+        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
             return NHC.optn_silenterr;
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrole, (yield* str2role(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, 104), op.v));
+                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
                 return NHC.optn_err;
             }
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_character), op.v, NHM.PL_NSIZ));
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), 312) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), 312) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8517,11 +8527,11 @@ function* optfn_runmode(optidx, req, negated, opts, op) {
             else if (str_start_is(__s_crawl, op, 1))
                 cptr.stI32o(flags, $flag_runmode, NHC.RUN_CRAWL);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         } else {
-            (yield* config_error_add(__s_value_is_mandatory_for_s, cptr.ldPtro(allopt, optidx, 104)));
+            (yield* config_error_add(__s_value_is_mandatory_for_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -8574,13 +8584,13 @@ function* optfn_scores(optidx, req, negated, opts, op) {
                 break;
                 case 45:
                 if (digit(cptr.ld1s((cptr.add(op, 1))))) {
-                    (yield* config_error_add(__s_values_for_s_top_and_s_around_must_not, cptr.ldPtro(allopt, optidx, 104), cptr.ldPtro(allopt, optidx, 104)));
+                    (yield* config_error_add(__s_values_for_s_top_and_s_around_must_not, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                     return NHC.optn_silenterr;
                 }
                 // @FallThrough
                 ;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_silenterr;
             }
             while (letter(cptr.ld1s(op)))
@@ -8617,7 +8627,7 @@ function* optfn_scroll_amount(optidx, req, negated, opts, op) {
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_scroll_amount, negated ? 1 : atoi(op));
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -8642,7 +8652,7 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_scroll_margin, negated ? 5 : atoi(op));
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -8664,7 +8674,7 @@ function* optfn_soundlib(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             let option_id;
             (yield* get_soundlib_name(cptr.decay(soundlibbuf), NHM.WINTYPELEN));
             option_id = soundlib_id_from_opt(op);
@@ -8689,7 +8699,7 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0));
+        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0));
         if (negated) {
             cptr.st1o(flags, $flag_discosort, 111);
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
@@ -8711,7 +8721,7 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_discosort, 97);
                 break;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_silenterr;
             }
         } else
@@ -8735,7 +8745,7 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0));
+        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0));
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
             switch (c) {
@@ -8745,7 +8755,7 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_sortloot, c);
                 break;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         } else
@@ -8770,13 +8780,13 @@ const __static_optfn_sortvanquished_vanqmodes = cptr.bytes("tdaACcnz"); /** C re
 
 /** C ref: options.c:3958 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_sortvanquished(optidx, req, negated, opts, op) {
-    let optname = cptr.ldPtro(allopt, optidx, 104);
+    let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     if (req == NHC.do_init) {
         cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0));
+        op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0));
         if (negated) {
             cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_MLVL_MNDX);
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
@@ -8850,14 +8860,14 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             itmp = 2;
             retval = NHC.optn_err;
         } else if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             itmp = atoi(op);
         }
         if (itmp < 2 || itmp > 3) {
-            (yield* config_error_add(__s_s_s_is_invalid_must_be_2_or_3, cptr.ldPtro(allopt, optidx, 104), op));
+            (yield* config_error_add(__s_s_s_is_invalid_must_be_2_or_3, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
             retval = NHC.optn_silenterr;
         } else {
             cptr.stI32o(iflags, $instance_flags_wc2_statuslines, itmp);
@@ -8867,7 +8877,7 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
         return retval;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if (wc2_supported(cptr.ldPtro(allopt, optidx, 104)))
+        if (wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)))
             void cptr.strcpy(opts, (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 3) ? __s_2 : __s_3);
         else
             void cptr.strcpy(opts, __s_unknown);
@@ -8883,10 +8893,10 @@ function* optfn_suppress_alert(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 0));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 0));
             return NHC.optn_err;
         } else if (!cptr.eq(op, cptr.decay(empty_optstr)))
-            void (yield* feature_alert_opts(op, cptr.ldPtro(allopt, optidx, 104)));
+            void (yield* feature_alert_opts(op, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -8908,17 +8918,17 @@ function* optfn_symset(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name))
-                cptr.free(cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name)), cptr.stPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name, null);
-            cptr.stPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
+            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
+                cptr.free(cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), cptr.stPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
+            cptr.stPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
             if (!(yield* read_sym_file(NHC.PRIMARYSET))) {
                 clear_symsetentry(NHC.PRIMARYSET, 1);
                 (yield* config_error_add(__s_unable_to_load_symbol_set_s_from_s, op, __s_symbols));
                 return NHC.optn_err;
             } else {
-                if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling)) {
+                if (cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling)) {
                 }
-                (yield* switch_symbols(cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) !== null));
+                (yield* switch_symbols(cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) !== null));
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1));
                 cptr.st1o(go, $instance_globals_o_opt_symset_changed, 1);
             }
@@ -8927,16 +8937,16 @@ function* optfn_symset(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) : __s_default);
-        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name))
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_default);
+        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
             void cptr.strcat(opts, __s_active);
-        if (cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling)) {
-            void cptr.sprintf(eos(opts), __s_handler_s, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_handling), 8));
+        if (cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling)) {
+            void cptr.sprintf(eos(opts), __s_handler_s, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling), 8));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_name) : __s_default);
+        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_default);
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8962,7 +8972,7 @@ function* optfn_term_cols(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, negated))), cptr.decay(empty_optstr))) {
             ltmp = atol(op);
             if (ltmp <= 0n || ltmp >= 32767n) {
-                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, 104), ltmp));
+                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), ltmp));
                 retval = NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_term_cols, Number(BigInt.asIntN(32, ltmp)));
@@ -8993,7 +9003,7 @@ function* optfn_term_rows(optidx, req, negated, opts, op) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, negated))), cptr.decay(empty_optstr))) {
             ltmp = atol(op);
             if (ltmp <= 0n || ltmp >= 32767n) {
-                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, 104), ltmp));
+                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), ltmp));
                 retval = NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_term_rows, Number(BigInt.asIntN(32, ltmp)));
@@ -9051,7 +9061,7 @@ function* optfn_tile_height(optidx, req, negated, opts, op) {
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_tile_height, negated ? 0 : atoi(op));
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -9078,7 +9088,7 @@ function* optfn_tile_width(optidx, req, negated, opts, op) {
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_tile_width, negated ? 0 : atoi(op));
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -9124,7 +9134,7 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
         if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_vary_msgcount, negated ? 0 : atoi(op));
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -9143,7 +9153,7 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
 
 /** C ref: options.c:4472 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function* optfn_versinfo(optidx, req, negated, opts, op) {
-    let optname = cptr.ldPtro(allopt, optidx, 104);
+    let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let vi = cptr.ldI32o(flags, $flag_versinfo);
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9153,7 +9163,7 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
         let val;
         let dflt = have_branch ? NHM.VI_BRANCH : NHM.VI_NUMBER;
         if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_silenterr;
         }
         op = (yield* string_for_opt(opts, 0));
@@ -9191,7 +9201,7 @@ function* optfn_warnings(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        reslt = (yield* warning_opts(opts, cptr.ldPtro(allopt, optidx, 104)));
+        reslt = (yield* warning_opts(opts, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
         return reslt ? NHC.optn_ok : NHC.optn_err;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -9212,12 +9222,12 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
         if (negated) {
             cptr.stI32o(iflags, $instance_flags_getpos_coords, 110);
             return NHC.optn_ok;
-        } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0))), cptr.decay(empty_optstr))) {
+        } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
             if (c && cptr.strchr(cptr.decay(__static_optfn_whatis_coord_gpcoords), c))
                 cptr.stI32o(iflags, $instance_flags_getpos_coords, c);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         } else
@@ -9243,7 +9253,7 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
         if (negated) {
             cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_NONE);
             return NHC.optn_ok;
-        } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0))), cptr.decay(empty_optstr))) {
+        } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
             let c = lowc(cptr.ld1s(op));
             switch (c) {
                 case 110:
@@ -9257,7 +9267,7 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
                 break;
                 default:
                 {
-                    (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), op));
+                    (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                     return NHC.optn_err;
                 }
             }
@@ -9284,7 +9294,7 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         op = (yield* string_for_opt(opts, negated));
         if (negated && !cptr.eq(op, cptr.decay(empty_optstr))) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             retval = NHC.optn_err;
         } else {
             let itmp;
@@ -9295,7 +9305,7 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
             else
                 itmp = atoi(op);
             if (itmp < 0 || itmp > 4) {
-                (yield* config_error_add(__s_invalid_s_should_be_within_0_to_4_s, cptr.ldPtro(allopt, optidx, 104), opts));
+                (yield* config_error_add(__s_invalid_s_should_be_within_0_to_4_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
                 retval = NHC.optn_silenterr;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_windowborders, itmp);
@@ -9346,7 +9356,7 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             if (!(yield* wc_set_window_colors(op))) {
-                (yield* config_error_add(__s_could_not_set_s_s, cptr.ldPtro(allopt, optidx, 104), op));
+                (yield* config_error_add(__s_could_not_set_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
                 return NHC.optn_err;
             }
         }
@@ -9357,8 +9367,8 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
         let bg;
         cptr.st1o(opts, 0, 0);
         for (wccount = 0; wccount < NHC.WC_COUNT; ++wccount) {
-            fg = cptr.ldPtro2(iflags, wccount, 16, $instance_flags_wcolors);
-            bg = cptr.ldPtro2(iflags, wccount, 16, $instance_flags_wcolors + $windowcolors_struct_bg);
+            fg = cptr.ldPtro2(iflags, wccount, $sizeof_windowcolors_struct, $instance_flags_wcolors);
+            bg = cptr.ldPtro2(iflags, wccount, $sizeof_windowcolors_struct, $instance_flags_wcolors + $windowcolors_struct_bg);
             if (fg && (!cptr.ld1s(fg) || !strcmp(fg, cptr.decay(defbrief))))
                 fg = null;
             if (bg && (!cptr.ld1s(bg) || !strcmp(bg, cptr.decay(defbrief))))
@@ -9379,7 +9389,7 @@ function* optfn_windowtype(optidx, req, negated, opts, op) {
         if (!cptr.ld1so(iflags, $instance_flags_window_inited)) {
             if (cptr.ld1so(iflags, $instance_flags_windowtype_locked))
                 return NHC.optn_ok;
-            if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, 104), opts, 0))), cptr.decay(empty_optstr))) {
+            if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
                 (yield* nmcpy(cptr.add(gc, $instance_globals_c_chosen_windowtype), op, NHM.WINTYPELEN));
                 if (!cptr.ld1so(iflags, $instance_flags_windowtype_deferred)) {
                     (yield* choose_windows(cptr.add(gc, $instance_globals_c_chosen_windowtype)));
@@ -9463,7 +9473,7 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
             else if (optidx == NHC.opt_font_size_status)
                 opttype = NHC.STATUS_OPTION;
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, 104), opts));
+                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
                 return NHC.optn_err;
             }
             if (duplicate)
@@ -9496,7 +9506,7 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
             (yield* wc_set_font_name(opttype, op));
             return NHC.optn_ok;
         } else if (negated) {
-            (yield* bad_negation(cptr.ldPtro(allopt, optidx, 104), 1));
+            (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -9551,16 +9561,16 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         let nosexchange = 0;
         let ln = 0;
-        if (!cptr.ldPtro2(allopt, optidx, 104, $allopt_t_addr))
+        if (!cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr))
             return NHC.optn_ok;
-        if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (cptr.ldI32o2(allopt, optidx, 104, $allopt_t_setwhere) == NHC.set_in_config))
+        if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_config))
             return NHC.optn_err;
-        if (cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ldI32o2(allopt, optidx, 104, $allopt_t_setwhere) == NHC.set_wiznofuz)
+        if (cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz)
             return NHC.optn_err;
         op = (yield* string_for_opt(opts, 1));
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             if (negated) {
-                (yield* config_error_add(__s_negated_boolean_s_should_not_have_a, cptr.ldPtro(allopt, optidx, 104)));
+                (yield* config_error_add(__s_negated_boolean_s_should_not_have_a, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                 return NHC.optn_silenterr;
             }
             ln = Number(BigInt.asIntN(32, cptr.strlen(op)));
@@ -9568,7 +9578,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
                 negated = 0;
             } else if (!(yield* strncmpi(op, __s_false, ln)) || !(yield* strncmpi(op, __s_no, ln)) || !(yield* strncmpi((op), (__s_off), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 0)) {
                 negated = 1;
-            } else if (!cptr.ldI32o2(allopt, optidx, 104, $allopt_t_valok)) {
+            } else if (!cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_valok)) {
                 (yield* config_error_add(__s_s_is_not_valid_for_a_boolean, opts));
                 return NHC.optn_silenterr;
             }
@@ -9607,7 +9617,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             (yield* config_error_add(__s_s_is_not_anatomically_possible, opts));
             return NHC.optn_silenterr;
         }
-        cptr.st1((cptr.ldPtro2(allopt, optidx, 104, $allopt_t_addr)), schar((!negated)));
+        cptr.st1((cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr)), schar((!negated)));
         switch (optidx) {
             case NHC.opt_pauper:
             cptr.st1o(u, $you_uroleplay + $u_roleplay_nudist, cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper));
@@ -9642,8 +9652,8 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             ;
             case NHC.opt_weaponstatus:
             case NHC.opt_armorstatus:
-            if (!wc2_supported(cptr.ldPtro(allopt, optidx, 104))) {
-                (yield* config_error_add(__s_s_is_not_supported, cptr.ldPtro(allopt, optidx, 104)));
+            if (!wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))) {
+                (yield* config_error_add(__s_s_is_not_supported, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
                 return NHC.optn_ok;
             }
             // @FallThrough
@@ -9716,7 +9726,7 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             break;
         }
         if (give_opt_msg)
-            (yield* pline(__s_s_option_toggled_s, cptr.ldPtro(allopt, optidx, 104), !negated ? __s_on : __s_off));
+            (yield* pline(__s_s_option_toggled_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), !negated ? __s_on : __s_off));
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
@@ -9733,13 +9743,13 @@ function* spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         if (negated) {
-            (yield* bad_negation(cptr.ldPtro(default_menu_cmd_info, midx, 24), 0));
+            (yield* bad_negation(cptr.ldPtro(default_menu_cmd_info, midx, $sizeof_menu_cmd_t), 0));
             return NHC.optn_err;
         } else if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             let c = schar((yield* txt2key(op)));
             if ((yield* illegal_menu_cmd_key(uchar(c))))
                 return NHC.optn_err;
-            (yield* add_menu_cmd_alias(c, cptr.ld1so2(default_menu_cmd_info, midx, 24, $menu_cmd_t_cmd)));
+            (yield* add_menu_cmd_alias(c, cptr.ld1so2(default_menu_cmd_info, midx, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)));
         }
         return NHC.optn_ok;
     }
@@ -9787,9 +9797,9 @@ function* handler_menustyle() {
     (yield* Y.icall(end_menu()(tmpwin, __s_select_menustyle)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, style_pick));
     if (n > 0) {
-        i = (cptr.ldI32o(style_pick.v, 0, 24) - 1) | 0;
+        i = (cptr.ldI32o(style_pick.v, 0, $sizeof_menu_item) - 1) | 0;
         if (n > 1 && i == old_menu_style)
-            i = (cptr.ldI32o(style_pick.v, 1, 24) - 1) | 0;
+            i = (cptr.ldI32o(style_pick.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.st1o(flags, $flag_menu_style, schar(i));
         cptr.free(style_pick.v);
     }
@@ -9837,7 +9847,7 @@ function* handler_autounlock(optidx) {
     let any = cptr.alloc(8);
     let chngd;
     let oldflags = cptr.ldI32o(flags, $flag_autounlock);
-    let optname = cptr.ldPtro(allopt, optidx, 104);
+    let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let buf = new Uint8Array(256);
     let sep = schar((cptr.ld1so(iflags, $instance_flags_menu_tab_sep) ? 9 : 32));
     let window_pick = cptr.box(null);
@@ -9861,7 +9871,7 @@ function* handler_autounlock(optidx) {
     if (n > 0) {
         let newflags = 0;
         for (i = 0; i < n; ++i)
-            newflags |= (1 << ((cptr.ldI32o(window_pick.v, i, 24) - 1) | 0)) >>> 0;
+            newflags |= (1 << ((cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1) | 0)) >>> 0;
         cptr.stI32o(flags, $flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
@@ -9911,7 +9921,7 @@ function* handler_disclose() {
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, disclosure_pick));
     if (pick_cnt > 0) {
         for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
-            opt_idx = (cptr.ldI32o(disclosure_pick.v, pick_idx, 24) - 1) | 0;
+            opt_idx = (cptr.ldI32o(disclosure_pick.v, pick_idx, $sizeof_menu_item) - 1) | 0;
             cptr.stI32o(disc_cat, opt_idx, 1, 4);
         }
         cptr.free(disclosure_pick.v);
@@ -9944,9 +9954,9 @@ function* handler_disclose() {
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
             n = (yield* select_menu(tmpwin, NHM.PICK_ONE, disclosure_pick));
             if (n > 0) {
-                cptr.st1o2(flags, i, 1, $flag_end_disclose, cptr.ld1so(disclosure_pick.v, 0, 24));
+                cptr.st1o2(flags, i, 1, $flag_end_disclose, cptr.ld1so(disclosure_pick.v, 0, $sizeof_menu_item));
                 if (n > 1 && cptr.ld1so2(flags, i, 1, $flag_end_disclose) == c)
-                    cptr.st1o2(flags, i, 1, $flag_end_disclose, cptr.ld1so(disclosure_pick.v, 1, 24));
+                    cptr.st1o2(flags, i, 1, $flag_end_disclose, cptr.ld1so(disclosure_pick.v, 1, $sizeof_menu_item));
                 cptr.free(disclosure_pick.v);
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -9981,17 +9991,17 @@ function* handler_menu_objsyms() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 6; ++i) {
-        nh_snprintf(__s_handler_menu_objsyms, 5809, cptr.decay(buf), 256n, __s_12_12s_c_60s, cptr.ldPtro2(objsymvals, i, 24, $objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, 24, $objsymopt_descr));
+        nh_snprintf(__s_handler_menu_objsyms, 5809, cptr.decay(buf), 256n, __s_12_12s_c_60s, cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_descr));
         cptr.stI32(any, (i + 1) | 0);
-        j = cptr.ldI32o(objsymvals, i, 24);
+        j = cptr.ldI32o(objsymvals, i, $sizeof_objsymopt);
         (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((48 + i) | 0)), cptr.ld1s(cptr.decay(buf)), NHM.ATR_NONE, clr, cptr.decay(buf), (j == cptr.ldI32o(iflags, $instance_flags_menuobjsyms)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_set_object_symbols_in_menus_to_what)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, picklist));
     if (n > 0) {
-        i = (cptr.ldI32o(picklist.v, 0, 24) - 1) | 0;
+        i = (cptr.ldI32o(picklist.v, 0, $sizeof_menu_item) - 1) | 0;
         if (n > 1 && i == cptr.ldI32o(iflags, $instance_flags_menuobjsyms))
-            i = (cptr.ldI32o(picklist.v, 1, 24) - 1) | 0;
+            i = (cptr.ldI32o(picklist.v, 1, $sizeof_menu_item) - 1) | 0;
         set_menuobjsyms_flags(i);
         cptr.free(picklist.v);
     }
@@ -10030,9 +10040,9 @@ function* handler_msg_window() {
         (yield* Y.icall(end_menu()(tmpwin, __s_select_message_history_display_type)));
         n = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick));
         if (n > 0) {
-            c = cptr.ld1so(window_pick.v, 0, 24);
+            c = cptr.ld1so(window_pick.v, 0, $sizeof_menu_item);
             if (n > 1 && c == old_prevmsg_window)
-                c = cptr.ld1so(window_pick.v, 1, 24);
+                c = cptr.ld1so(window_pick.v, 1, $sizeof_menu_item);
             cptr.st1o(iflags, $instance_flags_prevmsg_window, c);
             cptr.free(window_pick.v);
         }
@@ -10043,7 +10053,7 @@ function* handler_msg_window() {
             (yield* pline(__s_msg_window_20s_20s, chngd ? __s_changed_to : __s_is_still, cptr.decay(buf)));
         }
     } else
-        (yield* pline(__s_s_option_is_not_supported_for_s, cptr.ldPtro(allopt, NHC.opt_msg_window, 104), cptr.ldPtr(windowprocs)));
+        (yield* pline(__s_s_option_is_not_supported_for_s, cptr.ldPtro(allopt, NHC.opt_msg_window, $sizeof_allopt_t), cptr.ldPtr(windowprocs)));
     return NHC.optn_ok;
 }
 
@@ -10121,10 +10131,10 @@ function* handler_paranoid_confirmation() {
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    for (i = 0; cptr.ldI32o(paranoia, i, 48) != 0; ++i) {
-        if (cptr.ldI32o(paranoia, i, 48) == NHM.PARANOID_BONES && !wizard())
+    for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
+        if (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) == NHM.PARANOID_BONES && !wizard())
             continue;
-        explain = cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_explain);
+        explain = cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_explain);
         if ((yield* strstri(explain, __s_apos_m_apos)) && (mkey = cmd_from_func(do_reqmenu)) != 109) {
             if (mkey) {
                 void cptr.sprintf(cptr.decay(mbuf), __s_9s, visctrl(mkey));
@@ -10136,8 +10146,8 @@ function* handler_paranoid_confirmation() {
             }
             explain = strsubst(cptr.strcpy(cptr.decay(ebuf), explain), __s_apos_m_apos, cptr.decay(mbuf));
         }
-        cptr.stI32(any, cptr.ldI32o(paranoia, i, 48));
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, 48, $paranoia_opts_argname)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, 48) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        cptr.stI32(any, cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts));
+        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_actions_requiring_extra_confirmation)));
     i = (yield* select_menu(tmpwin, NHM.PICK_ANY, paranoia_picks));
@@ -10145,7 +10155,7 @@ function* handler_paranoid_confirmation() {
         cptr.stI32o(flags, $flag_paranoia_bits, 0);
         if (i > 0) {
             while (--i >= 0)
-                cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia_picks.v, i, 24) >>> 0));
+                cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia_picks.v, i, $sizeof_menu_item) >>> 0));
             cptr.free(paranoia_picks.v);
         }
     }
@@ -10191,9 +10201,9 @@ function* handler_perminv_mode() {
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, pi_pick));
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     if (n > 0) {
-        new_pi = (cptr.ldI32o(pi_pick.v, 0, 24) - 1) | 0;
+        new_pi = (cptr.ldI32o(pi_pick.v, 0, $sizeof_menu_item) - 1) | 0;
         if (n > 1 && new_pi == old_pi)
-            new_pi = (cptr.ldI32o(pi_pick.v, 1, 24) - 1) | 0;
+            new_pi = (cptr.ldI32o(pi_pick.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.free(pi_pick.v);
         cptr.st1o(iflags, $instance_flags_perminv_mode, uchar(new_pi));
     }
@@ -10302,9 +10312,9 @@ function* handler_sortloot() {
     (yield* Y.icall(end_menu()(tmpwin, __s_select_loot_sorting_type)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, sortl_pick));
     if (n > 0) {
-        let c = cptr.ld1so(sortl_pick.v, 0, 24);
+        let c = cptr.ld1so(sortl_pick.v, 0, $sizeof_menu_item);
         if (n > 1 && c == cptr.ld1so(flags, $flag_sortloot))
-            c = cptr.ld1so(sortl_pick.v, 1, 24);
+            c = cptr.ld1so(sortl_pick.v, 1, $sizeof_menu_item);
         cptr.st1o(flags, $flag_sortloot, c);
         if (cptr.ld1so(iflags, $instance_flags_perm_invent))
             (yield* update_inventory());
@@ -10346,9 +10356,9 @@ function* handler_whatis_coord() {
     (yield* add_menu_str(tmpwin, __s_empty));
     (yield* Y.icall(end_menu()(tmpwin, __s_select_coordinate_display_when_auto)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
-        cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, 24));
+        cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, $sizeof_menu_item));
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getpos_coords) == gpc)
-            cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 1, 24));
+            cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 1, $sizeof_menu_item));
         cptr.free(window_pick.v);
     }
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -10374,9 +10384,9 @@ function* handler_whatis_filter() {
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __s_in_same_area, (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     (yield* Y.icall(end_menu()(tmpwin, __s_select_location_filtering_when_going)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
-        cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, 24) - 1) | 0));
+        cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, $sizeof_menu_item) - 1) | 0));
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getloc_filter) == gfilt)
-            cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 1, 24) - 1) | 0));
+            cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 1, $sizeof_menu_item) - 1) | 0));
         cptr.free(window_pick.v);
     }
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -10441,7 +10451,7 @@ function* handler_autopickup_exception() {
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    remove_autopickup_exception(cptr.ldPtro(pick_list.v, pick_idx, 24));
+                    remove_autopickup_exception(cptr.ldPtro(pick_list.v, pick_idx, $sizeof_menu_item));
                 cptr.free(pick_list.v), pick_list.v = null;
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -10523,7 +10533,7 @@ function* handler_menu_colors() {
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_menu_coloring((((cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0) - pick_idx) | 0);
+                    free_one_menu_coloring((((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1) | 0) - pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -10587,7 +10597,7 @@ function* handler_msgtype() {
             pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_msgtype((((cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0) - pick_idx) | 0);
+                    free_one_msgtype((((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1) | 0) - pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -10621,7 +10631,7 @@ function* handler_versinfo() {
         let i;
         let newval = 0;
         for (i = 0; i < n; ++i)
-            newval |= cptr.ldI32o(vi_pick.v, i, 24);
+            newval |= cptr.ldI32o(vi_pick.v, i, $sizeof_menu_item);
         newval &= 7;
         if (newval)
             cptr.stI32o(flags, $flag_versinfo, newval >>> 0);
@@ -10709,8 +10719,8 @@ function* determine_ambiguities() {
         for (j = 0; j < ((218 - 1) | 0); ++j) {
             if (j == i)
                 continue;
-            p1 = cptr.ldPtro(allopt, i, 104);
-            p2 = cptr.ldPtro(allopt, j, 104);
+            p1 = cptr.ldPtro(allopt, i, $sizeof_allopt_t);
+            p2 = cptr.ldPtro(allopt, j, $sizeof_allopt_t);
             tmpneeded = 1;
             while (cptr.ld1s(p1) && cptr.ld1s(p2) && lowc(cptr.ld1s(p1)) == lowc(cptr.ld1s(p2))) {
                 ++tmpneeded;
@@ -10724,8 +10734,8 @@ function* determine_ambiguities() {
         }
     }
     for (i = 0; i < ((218 - 1) | 0); ++i) {
-        len = (yield* Strlen_(cptr.ldPtro(allopt, i, 104), __s_determine_ambiguities, 6732)) | 0;
-        cptr.stI32o2(allopt, i, 104, $allopt_t_minmatch, (cptr.ldI32o(needed, i, 4) < 3) ? 3 : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len));
+        len = (yield* Strlen_(cptr.ldPtro(allopt, i, $sizeof_allopt_t), __s_determine_ambiguities, 6732)) | 0;
+        cptr.stI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch, (cptr.ldI32o(needed, i, 4) < 3) ? 3 : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len));
     }
 }
 
@@ -10755,13 +10765,13 @@ export function* match_optname(user_string, optn_name, min_length, val_allowed) 
 export function reset_duplicate_opt_detection() {
     let k;
     for (k = 0; k < NHC.OPTCOUNT; ++k)
-        cptr.st1o2(allopt, k, 104, $allopt_t_dupdetected, 0);
+        cptr.st1o2(allopt, k, $sizeof_allopt_t, $allopt_t_dupdetected, 0);
 }
 
 /** C ref: options.c:6782 — @param {CInt} optidx @returns {CInt} */
 function duplicate_opt_detection(optidx) {
     if (cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ld1so(go, $instance_globals_o_opt_from_file))
-        return cptr.postinc1(cptr.add(cptr.add(allopt, optidx, 104), $allopt_t_dupdetected));
+        return cptr.postinc1(cptr.add(cptr.add(allopt, optidx, $sizeof_allopt_t), $allopt_t_dupdetected));
     return 0;
 }
 
@@ -10770,8 +10780,8 @@ function* complain_about_duplicate(optidx) {
     let buf = new Uint8Array(256);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (using_alias)
-        void cptr.sprintf(cptr.decay(buf), __s_via_alias_s, cptr.ldPtro2(allopt, optidx, 104, $allopt_t_alias));
-    (yield* config_error_add(__s_s_option_specified_multiple_times_s_s, (cptr.ldI32o2(allopt, optidx, 104, $allopt_t_opttyp) == NHC.CompOpt) ? __s_compound : __s_boolean, cptr.ldPtro(allopt, optidx, 104), cptr.decay(buf)));
+        void cptr.sprintf(cptr.decay(buf), __s_via_alias_s, cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_alias));
+    (yield* config_error_add(__s_s_option_specified_multiple_times_s_s, (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt) ? __s_compound : __s_boolean, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.decay(buf)));
     return;
 }
 
@@ -10962,9 +10972,9 @@ export function* initoptions_init() {
     init_random(rn2);
     init_random(rn2_on_display_rng);
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.builtin_opt);
-    for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldPtro2(allopt, i, 104, $allopt_t_addr))
-            cptr.st1((cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)), cptr.ld1so2(allopt, i, 104, $allopt_t_initval));
+    for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
+        if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr))
+            cptr.st1((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)), cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval));
     }
     cptr.st1o(flags, $flag_end_own, 0);
     cptr.stI32o(flags, $flag_end_top, 3);
@@ -10983,7 +10993,7 @@ export function* initoptions_init() {
     init_ov_rogue_symbols();
     init_symbols();
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gw, i, 1, $instance_globals_w_warnsyms, cptr.ld1uo(def_warnsyms, i, 24));
+        cptr.st1o2(gw, i, 1, $instance_globals_w_warnsyms, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef));
     void cptr.memcpy(cptr.add(flags, $flag_inv_order), cptr.decay(def_inv_order), 18n);
     cptr.st1o2(flags, 0, 1, $flag_pickup_types, 0);
     cptr.stI32o(flags, $flag_pickup_burden, NHC.MOD_ENCUMBER);
@@ -10993,15 +11003,15 @@ export function* initoptions_init() {
     (yield* switch_symbols(0));
     init_rogue_symbols();
     if ((opts = nh_getenv(__s_term)) && !cptr.strncmp(opts, __s_at, 2n)) {
-        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
+        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
             (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
-        if (!(cptr.ldI32o2(gs, NHC.ROGUESET, 48, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
+        if (!(cptr.ldI32o2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
             (yield* load_symset(__s_rogueibm, NHC.ROGUESET));
         (yield* switch_symbols(1));
         cptr.st1o(iflags, $instance_flags_wc_color, 1);
     }
     if ((opts = nh_getenv(__s_term)) && !(yield* strncmpi(opts, __s_vt, 2)) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data), 14) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE), 15)) {
-        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, 48, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
+        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
             (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
         (yield* switch_symbols(1));
     }
@@ -11012,8 +11022,8 @@ export function* initoptions_init() {
     cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_INVERSE);
     cptr.stI32o(iflags, $instance_flags_wc2_windowborders, 2);
     cptr.stI32o(iflags, $instance_flags_menuinvertmode, 1);
-    cptr.stI16o(objects, NHC.SLIME_MOLD, NHC.SLIME_MOLD, 120);
-    (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, 120))), 16)), NHM.PL_FSIZ));
+    cptr.stI16o(objects, NHC.SLIME_MOLD, NHC.SLIME_MOLD, $sizeof_objclass);
+    (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, $sizeof_objclass))), $sizeof_objdescr)), NHM.PL_FSIZ));
     (yield* assure_syscf_file());
     (yield* config_error_init(1, __s_sysconf, 0));
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.syscf_opt);
@@ -11029,7 +11039,7 @@ export function* initoptions_finish() {
     let sym = 0;
     (yield* rcfile());
     void (yield* fruitadd(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null));
-    cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __s_fruit, 16);
+    cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __s_fruit, $sizeof_objdescr);
     sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
     if (sym)
         cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
@@ -11059,14 +11069,14 @@ export function* allopt_array_init() {
     if (!__static_allopt_array_init_options_array_inited_already) {
         cptr.memcpy(allopt, allopt_init, 22672n);
         (yield* determine_ambiguities());
-        for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-            if (cptr.ldPtro2(allopt, i, 104, $allopt_t_addr))
-                cptr.st1((cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)), cptr.ld1so2(allopt, i, 104, $allopt_t_initval));
+        for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
+            if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr))
+                cptr.st1((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)), cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval));
         }
         heed_all_options();
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
-            if (cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn))
-                (yield* Y.icall((cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn))(i, NHC.do_init, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+            if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))
+                (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(i, NHC.do_init, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
         }
         __static_allopt_array_init_options_array_inited_already = 1;
     }
@@ -11127,7 +11137,7 @@ function* warning_opts(opts, optype) {
     (yield* escapes(opts, opts));
     length = Number(BigInt.asIntN(32, cptr.strlen(opts)));
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o(cptr.decay(translate), i, uchar(((i >= length) ? 0 : (cptr.ld1so(opts, i) ? uchar(cptr.ld1so(opts, i)) : cptr.ld1uo(def_warnsyms, i, 24)))), 1);
+        cptr.st1o(cptr.decay(translate), i, uchar(((i >= length) ? 0 : (cptr.ld1so(opts, i) ? uchar(cptr.ld1so(opts, i)) : cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)))), 1);
     assign_warnings(cptr.decay(translate));
     return 1;
 }
@@ -11202,13 +11212,13 @@ export function* parsebindings(bindings) {
     }
     if (bind_specialkey(key, bind))
         return ret;
-    for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, 24); i++) {
-        if (!strcmp(cptr.ldPtro(default_menu_cmd_info, i, 24), bind)) {
+    for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t); i++) {
+        if (!strcmp(cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t), bind)) {
             if ((yield* illegal_menu_cmd_key(key))) {
                 (yield* config_error_add(__s_bad_menu_key_s_s, visctrl(schar(key)), bind));
                 return 0;
             } else {
-                (yield* add_menu_cmd_alias(schar(key), cptr.ld1so2(default_menu_cmd_info, i, 24, $menu_cmd_t_cmd)));
+                (yield* add_menu_cmd_alias(schar(key), cptr.ld1so2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)));
             }
             return ret;
         }
@@ -11511,7 +11521,7 @@ function* illegal_menu_cmd_key(c) {
     } else {
         let j;
         for (j = 1; j < NHC.MAXOCLASSES; j++)
-            if (c == uchar(cptr.ld1so(def_oc_syms, j, 24))) {
+            if (c == uchar(cptr.ld1so(def_oc_syms, j, $sizeof_class_sym))) {
                 (yield* config_error_add(__s_menu_command_key_s_is_an_object_class, visctrl(schar(c))));
                 return 1;
             }
@@ -11526,7 +11536,7 @@ export function* oc_to_str(src, dest) {
         if (i < 0 || i >= NHC.MAXOCLASSES)
             (yield* impossible(__s_oc_to_str_illegal_object_class_d, i));
         else
-            cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1so(def_oc_syms, i, 24));
+            cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1so(def_oc_syms, i, $sizeof_class_sym));
     }
     cptr.st1(dest, 0);
 }
@@ -11564,7 +11574,7 @@ export function map_menu_cmd(ch) {
     return ch;
 }
 
-const __static_collect_menu_keys_scroll_keys = cptr.alloc(6 * 2);
+const __static_collect_menu_keys_scroll_keys = cptr.alloc(6 * $sizeof_menuscrollinfo);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 0, 94);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 0 + $menuscrollinfo_maskindx, 1);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 2, 60);
@@ -11583,8 +11593,8 @@ export function* collect_menu_keys(outbuf, scrollmask, printable) {
     let i;
     cptr.st1o(outbuf, 0, 0);
     for (i = 0; i < 6; ++i) {
-        if ((scrollmask & cptr.ld1uo2(__static_collect_menu_keys_scroll_keys, i, 2, $menuscrollinfo_maskindx)) >>> 0) {
-            let c = get_menu_cmd_key(cptr.ld1so(__static_collect_menu_keys_scroll_keys, i, 2));
+        if ((scrollmask & cptr.ld1uo2(__static_collect_menu_keys_scroll_keys, i, $sizeof_menuscrollinfo, $menuscrollinfo_maskindx)) >>> 0) {
+            let c = get_menu_cmd_key(cptr.ld1so(__static_collect_menu_keys_scroll_keys, i, $sizeof_menuscrollinfo));
             if (printable)
                 void cptr.strcat(outbuf, visctrl(c));
             else
@@ -11609,8 +11619,8 @@ export function* fruitadd(str, replace_fruit) {
             let numeric = 0;
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (yield* makesingular(str)), NHM.PL_FSIZ));
             globpfx = (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_small, 6n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_large, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_medium, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_very_large, 11n)) ? 11 : 0));
-            for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, $instance_globals_saved_b_bases); cptr.ld1so2(objects, i, 120, $objclass_oc_class) == NHC.FOOD_CLASS; i++) {
-                if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(svp, $instance_globals_saved_p_pl_fruit)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, 120))), 16)), cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) {
+            for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, $instance_globals_saved_b_bases); cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS; i++) {
+                if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), cptr.add(svp, $instance_globals_saved_p_pl_fruit)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) {
                     found = 1;
                     break;
                 }
@@ -11807,14 +11817,14 @@ const __static_get_option_value_retbuf = new Uint8Array(256); /** C ref: options
 export function* get_option_value(optname, cnfvalid) {
     let bool_p;
     let i;
-    for (i = 0; cptr.ldPtro(allopt, i, 104) !== null; i++)
-        if (!strcmp(optname, cptr.ldPtro(allopt, i, 104))) {
-            if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) !== null) {
+    for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t) !== null; i++)
+        if (!strcmp(optname, cptr.ldPtro(allopt, i, $sizeof_allopt_t))) {
+            if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null) {
                 void cptr.sprintf(cptr.decay(__static_get_option_value_retbuf), __s_pct_s, cptr.ld1s(bool_p) ? __s_true : __s_false);
                 return cptr.decay(__static_get_option_value_retbuf);
-            } else if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.CompOpt && cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn)) {
+            } else if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
                 let reslt = NHC.optn_err;
-                reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, 104, $allopt_t_idx), cnfvalid ? NHC.get_cnf_val : NHC.get_val, 0, cptr.decay(__static_get_option_value_retbuf), cptr.decay(empty_optstr))));
+                reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx), cnfvalid ? NHC.get_cnf_val : NHC.get_val, 0, cptr.decay(__static_get_option_value_retbuf), cptr.decay(empty_optstr))));
                 if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(__static_get_option_value_retbuf), 0, 1))
                     return cptr.decay(__static_get_option_value_retbuf);
                 return null;
@@ -11831,10 +11841,10 @@ function* longest_option_name(startpass, endpass) {
     let optflags;
     let name;
     for (pass = 0; pass < 2; pass++)
-        for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-            if (pass == 0 && (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)))
+        for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
+            if (pass == 0 && (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)))
                 continue;
-            optflags = cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere);
+            optflags = cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere);
             if (optflags < startpass || optflags > endpass)
                 continue;
             if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
@@ -11886,44 +11896,44 @@ function* doset_simple_menu() {
             (yield* add_menu_str(tmpwin, __s_empty));
             void cptr.sprintf(cptr.decay(buf), __s_30s, cptr.ldPtro(OptS_type, section, 8));
             (yield* add_menu_heading(tmpwin, cptr.decay(buf)));
-            for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_section) != section)
+            for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_section) != section)
                     continue;
                 if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                     continue;
                 cptr.stI32(any, (i + 1) | 0);
-                switch (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp)) {
+                switch (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp)) {
                     case NHC.BoolOpt:
-                    bool_p = cptr.ldPtro2(allopt, i, 104, $allopt_t_addr);
+                    bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
                     if (!bool_p)
                         continue;
-                    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_color)
+                    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_color)
                         continue;
                     void cptr.sprintf(cptr.decay(buf), fmtstr, name, cptr.ld1s(bool_p) ? __s_x : __s_sp);
                     break;
                     case NHC.CompOpt:
                     case NHC.OthrOpt:
                     k = i;
-                    if (cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn) === optfn_symset && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+                    if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn) === optfn_symset && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
                         k = NHC.opt_roguesymset;
-                        name = cptr.ldPtro(allopt, k, 104);
+                        name = cptr.ldPtro(allopt, k, $sizeof_allopt_t);
                         cptr.stI32(any, (k + 1) | 0);
                     }
                     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
                     reslt = NHC.optn_err;
-                    if (cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn))
-                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
+                    if (cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))
+                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
                     void cptr.sprintf(cptr.decay(buf), fmtstr, name, ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1)) ? cptr.decay(buf2) : __s_unknown));
                     break;
                     default:
                     void cptr.sprintf(cptr.decay(buf), __s_error);
                     break;
                 }
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, 104, $allopt_t_idx) == NHC.opt_dropped_nopick)
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_dropped_nopick)
                     void cptr.strcat(cptr.decay(buf), __s_for_autopickup);
                 (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
-                if (cptr.ld1so(gs, $instance_globals_s_simple_options_help) && cptr.ldPtro2(allopt, i, 104, $allopt_t_descr)) {
-                    void cptr.sprintf(cptr.decay(buf), __s_sp4_pct_s, cptr.ldPtro2(allopt, i, 104, $allopt_t_descr));
+                if (cptr.ld1so(gs, $instance_globals_s_simple_options_help) && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr)) {
+                    void cptr.sprintf(cptr.decay(buf), __s_sp4_pct_s, cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr));
                     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
                     (yield* add_menu_str(tmpwin, __s_empty));
                 }
@@ -11937,31 +11947,31 @@ function* doset_simple_menu() {
         cptr.st1o(go, $instance_globals_o_opt_update_basic_palette, 0);
         pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list));
         if (pick_cnt > 0) {
-            k = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
+            k = (cptr.ldI32o(pick_list.v, 0, $sizeof_menu_item) - 1) | 0;
             cptr.st1o(cptr.decay(abuf), 0, 0, 1);
             if (k == -2) {
                 cptr.st1o(gs, $instance_globals_s_simple_options_help, schar((!cptr.ld1so(gs, $instance_globals_s_simple_options_help))));
                 toggled_help = 1;
-            } else if (cptr.ldI32o2(allopt, k, 104, $allopt_t_opttyp) == NHC.BoolOpt) {
-                void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, k, 104, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, k, 104));
+            } else if (cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt) {
+                void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
                 void (yield* parseoptions(cptr.decay(buf), 0, 0));
             } else {
-                if (cptr.ld1so2(allopt, k, 104, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn)) {
-                    reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
-                    if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, 104, $allopt_t_idx) != NHC.pfx_cond_)
+                if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
+                    reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                    if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx) != NHC.pfx_cond_)
                         cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                 } else {
-                    void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, k, 104));
+                    void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
                     (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
                     if (cptr.ld1so(cptr.decay(abuf), 0, 1) != 27) {
-                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, k, 104));
+                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
                         (yield* copynchars(eos(cptr.decay(buf)), cptr.decay(abuf), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
                 }
             }
-            if (k >= 0 && cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 && (wc_supported(cptr.ldPtro(allopt, k, 104)) || wc2_supported(cptr.ldPtro(allopt, k, 104))))
-                (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, k, 104))));
+            if (k >= 0 && cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 && (wc_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t)) || wc2_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t))))
+                (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, k, $sizeof_allopt_t))));
             cptr.free(pick_list.v), pick_list.v = null;
         }
         (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -12012,7 +12022,7 @@ function term_for_boolean(idx, b) {
     let f_t = (cptr.ld1s(b)) ? 1 : 0;
     let boolean_term;
     boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), 0, 8);
-    i = cptr.ldI32o2(allopt, idx, 104, $allopt_t_termpref);
+    i = cptr.ldI32o2(allopt, idx, $sizeof_allopt_t, $allopt_t_termpref);
     if (i > NHC.Term_False && i < NHC.num_terms && i < Number(BigInt.asIntN(32, (32n / 8n))))
         boolean_term = cptr.ldPtro(cptr.decay(__static_term_for_boolean_booleanterms[f_t]), i, 8);
     return boolean_term;
@@ -12078,13 +12088,13 @@ export function* doset() {
         (yield* add_menu_heading(tmpwin, __s_booleans_selecting_will_toggle_value));
         cptr.stI32(any, 0);
         for (pass = 0; pass <= 1; pass++)
-            for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++)
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) !== null && ((cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) >= NHC.set_in_game && pass == 1))) {
+            for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++)
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null && ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) >= NHC.set_in_game && pass == 1))) {
                     if (cptr.eq(bool_p, cptr.add(flags, $flag_female)))
                         continue;
-                    if (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wizonly && !wizard())
+                    if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard())
                         continue;
-                    if (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
+                    if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
                         continue;
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
@@ -12092,16 +12102,16 @@ export function* doset() {
                     indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) ? __s_sp4 : __s_empty;
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr_doset), indent, name, term_for_boolean(i, bool_p));
                     if (pass == 0)
-                        enhance_menu_text(cptr.decay(buf), 256n, pass, bool_p, cptr.add(allopt, i, 104));
+                        enhance_menu_text(cptr.decay(buf), 256n, pass, bool_p, cptr.add(allopt, i, $sizeof_allopt_t));
                     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
                 }
         (yield* add_menu_str(tmpwin, __s_empty));
         (yield* add_menu_heading(tmpwin, __s_compounds_selecting_will_prompt_for_new));
         for (pass = startpass; pass <= endpass; pass++)
-            for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.CompOpt)
+            for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt)
                     continue;
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == pass) {
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == pass) {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
@@ -12110,10 +12120,10 @@ export function* doset() {
         (yield* add_menu_str(tmpwin, __s_empty));
         (yield* add_menu_heading(tmpwin, __s_other_settings));
         for (pass = startpass; pass <= endpass; pass++)
-            for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.OthrOpt)
+            for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.OthrOpt)
                     continue;
-                if (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == pass) {
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == pass) {
                     if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
                     (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
@@ -12124,7 +12134,7 @@ export function* doset() {
         cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 0);
         if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ANY, pick_list))) > 0) {
             for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx) {
-                opt_indx = (cptr.ldI32o(pick_list.v, pick_idx, 24) - 1) | 0;
+                opt_indx = (cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1) | 0;
                 if (opt_indx == (218)) {
                     (yield* Y.icall(display_file()(__s_optmenu, 0)));
                     gavehelp = 1;
@@ -12134,30 +12144,30 @@ export function* doset() {
                     opt_indx++;
                 opt_indx = (opt_indx - indexoffset) | 0;
                 (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__s_doset, __s_options_c, 8924, __s_indexok_opt_indx_allopt) : void 0);
-                if (cptr.ldI32o2(allopt, opt_indx, 104, $allopt_t_opttyp) == NHC.BoolOpt) {
-                    void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, 104, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, opt_indx, 104));
+                if (cptr.ldI32o2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt) {
+                    void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
                     void (yield* parseoptions(cptr.decay(buf), 0, 0));
                 } else {
                     let k = opt_indx;
                     let reslt;
-                    if (cptr.ld1so2(allopt, k, 104, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn)) {
-                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, 104, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                    if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
+                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
                         if (reslt == NHC.optn_ok)
                             cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                     } else {
                         let abuf = new Uint8Array(256);
-                        void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, opt_indx, 104));
+                        void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
                         cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                         (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
                         if (cptr.ld1so(cptr.decay(abuf), 0, 1) == 27)
                             continue;
-                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, opt_indx, 104));
+                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
                         void __builtin___strncat_chk(eos(cptr.decay(buf)), cptr.decay(abuf), (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))), __builtin_object_size(eos(cptr.decay(buf)), 1));
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
                 }
-                if (wc_supported(cptr.ldPtro(allopt, opt_indx, 104)) || wc2_supported(cptr.ldPtro(allopt, opt_indx, 104)))
-                    (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, opt_indx, 104))));
+                if (wc_supported(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)) || wc2_supported(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)))
+                    (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t))));
             }
             cptr.free(pick_list.v), pick_list.v = null;
         }
@@ -12216,10 +12226,10 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     let clr = NHM.NO_COLOR;
     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    if (i >= 0 && i < NHC.OPTCOUNT && cptr.ldPtro(allopt, i, 104) && cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn)) {
+    if (i >= 0 && i < NHC.OPTCOUNT && cptr.ldPtro(allopt, i, $sizeof_allopt_t) && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
         cptr.stI32(any, (indexoffset == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
-        if (cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn))
-            reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, 104, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, 104, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
+        if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))
+            reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
         if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
             value = cptr.decay(buf2);
     } else {
@@ -12261,11 +12271,11 @@ export function* show_menu_controls(win, dolist) {
         let i;
         let ch;
         fmt = __s_7s_s;
-        for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, 24, $menu_cmd_t_desc); i++) {
-            ch = cptr.ld1so2(default_menu_cmd_info, i, 24, $menu_cmd_t_cmd);
+        for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc); i++) {
+            ch = cptr.ld1so2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_cmd);
             if ((ch == 125 || ch == 123) && !has_menu_shift)
                 continue;
-            void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, 24, $menu_cmd_t_desc));
+            void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc));
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
         fmt = __s_s_7s_s;
@@ -12316,7 +12326,7 @@ function count_cond() {
     let i;
     let cnt = 0;
     for (i = 0; i < NHC.CONDITION_COUNT; ++i) {
-        if (cptr.ld1so2(condtests, i, 24, $condtests_t_enabled))
+        if (cptr.ld1so2(condtests, i, $sizeof_condtests_t, $condtests_t_enabled))
             cnt++;
     }
     return cnt;
@@ -12333,7 +12343,7 @@ function count_apes() {
     return numapes;
 }
 
-const __static_handle_add_list_remove_action_titles = cptr.alloc(4 * 16);
+const __static_handle_add_list_remove_action_titles = cptr.alloc(4 * $sizeof_action);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 0, 97);
 cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __s_add_new_s);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 16, 108);
@@ -12360,14 +12370,14 @@ function* handle_add_list_remove(optname, numtotal) {
         (cptr.stI32(any, cptr.ldI32(any) + 1)) - (1);
         if (!numtotal && (i == 1 || i == 2))
             continue;
-        void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, 16, $action_desc), (i == 1) ? (yield* makeplural(optname)) : optname);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, 16), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, $sizeof_action, $action_desc), (i == 1) ? (yield* makeplural(optname)) : optname);
+        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, $sizeof_action), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_do_what)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list))) > 0) {
-        opt_idx = (cptr.ldI32o(pick_list.v, 0, 24) - 1) | 0;
+        opt_idx = (cptr.ldI32o(pick_list.v, 0, $sizeof_menu_item) - 1) | 0;
         if (pick_cnt > 1 && opt_idx == 3)
-            opt_idx = (cptr.ldI32o(pick_list.v, 1, 24) - 1) | 0;
+            opt_idx = (cptr.ldI32o(pick_list.v, 1, $sizeof_menu_item) - 1) | 0;
         cptr.free(pick_list.v);
     } else
         opt_idx = 3;
@@ -12395,9 +12405,9 @@ export function* toggle_bool_option(p) {
     let i;
     let ret = NHM.ECMD_FAIL;
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        if (!(yield* strncmpi(cptr.ldPtro(allopt, i, 104), p, Number(BigInt.asIntN(32, cptr.strlen(p))))) && cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_in_game && cptr.ldPtro2(allopt, i, 104, $allopt_t_addr) !== null) {
+        if (!(yield* strncmpi(cptr.ldPtro(allopt, i, $sizeof_allopt_t), p, Number(BigInt.asIntN(32, cptr.strlen(p))))) && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr) !== null) {
             let buf = new Uint8Array(256);
-            void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, i, 104));
+            void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, i, $sizeof_allopt_t));
             if ((yield* parseoptions(cptr.decay(buf), 0, 0)))
                 ret = NHM.ECMD_OK;
             (yield* reset_needed_visuals());
@@ -12543,36 +12553,36 @@ export function* option_help() {
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
         (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_intro, i, 8))));
-    for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if ((cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, 104, $allopt_t_addr)) || (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
+    for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
+        if ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
-        if (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
             continue;
-        optname = cptr.ldPtro(allopt, i, 104);
+        optname = cptr.ldPtro(allopt, i, $sizeof_allopt_t);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
         (yield* next_opt(datawin, optname));
     }
     (yield* next_opt(datawin, __s_empty));
     (yield* Y.icall(putstr()(datawin, 0, __s_compound_options)));
-    for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
+    for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
             continue;
-        if (cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
             continue;
-        optname = cptr.ldPtro(allopt, i, 104);
+        optname = cptr.ldPtro(allopt, i, $sizeof_allopt_t);
         if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
         void cptr.sprintf(cptr.decay(buf2), __s_tick_pct_s_apos, optname);
-        nh_snprintf(__s_option_help, 9507, cptr.decay(buf), 256n, __s_20s_s_c, cptr.decay(buf2), cptr.ldPtro2(allopt, i, 104, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, 104) ? 44 : 46);
+        nh_snprintf(__s_option_help, 9507, cptr.decay(buf), 256n, __s_20s_s_c, cptr.decay(buf2), cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, $sizeof_allopt_t) ? 44 : 46);
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     (yield* Y.icall(putstr()(datawin, 0, __s_other_settings)));
-    for (i = 0; cptr.ldPtro(allopt, i, 104); i++) {
-        if (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp) != NHC.OthrOpt)
+    for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.OthrOpt)
             continue;
-        void cptr.sprintf(cptr.decay(buf), __s_sp_pct_s, cptr.ldPtro(allopt, i, 104));
+        void cptr.sprintf(cptr.decay(buf), __s_sp_pct_s, cptr.ldPtro(allopt, i, $sizeof_allopt_t));
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
@@ -12669,21 +12679,21 @@ export function* all_options_strbuf(sbuf) {
     strbuf_init(sbuf);
     void cptr.sprintf(cptr.decay(tmp), __s_nethack_config_saved_s, (yield* yyyymmddhhmmss(0n)));
     (yield* strbuf_append(sbuf, cptr.decay(tmp)));
-    for (i = 0; (name = cptr.ldPtro(allopt, i, 104)) !== null; i++) {
+    for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
         if (!cptr.ld1so(cptr.decay(opt_set_in_config), i, 1))
             continue;
-        switch (cptr.ldI32o2(allopt, i, 104, $allopt_t_opttyp)) {
+        switch (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp)) {
             case NHC.BoolOpt:
-            bool_p = cptr.ldPtro2(allopt, i, 104, $allopt_t_addr);
+            bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
             if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
                 break;
-            if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, 104, $allopt_t_initval)) {
+            if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)) {
                 void cptr.sprintf(cptr.decay(tmp), __s_options_s_s, cptr.ld1s(bool_p) ? __s_empty : __s_bang, name);
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
             }
             break;
             case NHC.CompOpt:
-            if (!(cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_in_config || cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_gameview || cptr.ldI32o2(allopt, i, 104, $allopt_t_setwhere) == NHC.set_in_game))
+            if (!(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_config || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_gameview || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game))
                 break;
             buf2 = (yield* get_option_value(name, 1));
             if (buf2) {
@@ -12742,7 +12752,7 @@ export function* next_opt(datawin, str) {
 }
 
 /** C ref: options.c:9787 — struct wc_Opt[34] */
-const wc_options = cptr.alloc(34 * 16);
+const wc_options = cptr.alloc(34 * $sizeof_wc_Opt);
 cptr.stPtro(wc_options, 0, __s_ascii_map);
 cptr.stU64o(wc_options, 0 + $wc_Opt_wc_bit, 4n);
 cptr.stPtro(wc_options, 16, __s_color);
@@ -12813,7 +12823,7 @@ cptr.stPtro(wc_options, 528, null);
 cptr.stU64o(wc_options, 528 + $wc_Opt_wc_bit, 0n);
 
 /** C ref: options.c:9823 — struct wc_Opt[19] */
-const wc2_options = cptr.alloc(19 * 16);
+const wc2_options = cptr.alloc(19 * $sizeof_wc_Opt);
 cptr.stPtro(wc2_options, 0, __s_armorstatus);
 cptr.stU64o(wc2_options, 0 + $wc_Opt_wc_bit, 524288n);
 cptr.stPtro(wc2_options, 16, __s_fullscreen);
@@ -12860,9 +12870,9 @@ export function* set_option_mod_status(optnam, status) {
         (yield* impossible(__s_set_option_mod_status_status_out_of, status));
         return;
     }
-    for (k = 0; cptr.ldPtro(allopt, k, 104); k++) {
-        if (str_start_is(cptr.ldPtro(allopt, k, 104), optnam, 1)) {
-            cptr.stI32o2(allopt, k, 104, $allopt_t_setwhere, status);
+    for (k = 0; cptr.ldPtro(allopt, k, $sizeof_allopt_t); k++) {
+        if (str_start_is(cptr.ldPtro(allopt, k, $sizeof_allopt_t), optnam, 1)) {
+            cptr.stI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_setwhere, status);
             return;
         }
     }
@@ -12875,9 +12885,9 @@ export function* set_wc_option_mod_status(optmask, status) {
         (yield* impossible(__s_set_wc_option_mod_status_status_out_of, status));
         return;
     }
-    while (cptr.ldPtro(wc_options, k, 16)) {
-        if (optmask & cptr.ldU64o2(wc_options, k, 16, $wc_Opt_wc_bit)) {
-            (yield* set_option_mod_status(cptr.ldPtro(wc_options, k, 16), status));
+    while (cptr.ldPtro(wc_options, k, $sizeof_wc_Opt)) {
+        if (optmask & cptr.ldU64o2(wc_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) {
+            (yield* set_option_mod_status(cptr.ldPtro(wc_options, k, $sizeof_wc_Opt), status));
         }
         k++;
     }
@@ -12886,8 +12896,8 @@ export function* set_wc_option_mod_status(optmask, status) {
 /** C ref: options.c:9899 — @param {CPtr<char>} optnam @returns {CInt} */
 function is_wc_option(optnam) {
     let k = 0;
-    while (cptr.ldPtro(wc_options, k, 16)) {
-        if (strcmp(cptr.ldPtro(wc_options, k, 16), optnam) == 0)
+    while (cptr.ldPtro(wc_options, k, $sizeof_wc_Opt)) {
+        if (strcmp(cptr.ldPtro(wc_options, k, $sizeof_wc_Opt), optnam) == 0)
             return 1;
         k++;
     }
@@ -12897,9 +12907,9 @@ function is_wc_option(optnam) {
 /** C ref: options.c:9912 — @param {CPtr<char>} optnam @returns {CInt} */
 function wc_supported(optnam) {
     let k;
-    for (k = 0; cptr.ldPtro(wc_options, k, 16); ++k) {
-        if (!strcmp(cptr.ldPtro(wc_options, k, 16), optnam))
-            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap) & cptr.ldU64o2(wc_options, k, 16, $wc_Opt_wc_bit)) ? 1 : 0));
+    for (k = 0; cptr.ldPtro(wc_options, k, $sizeof_wc_Opt); ++k) {
+        if (!strcmp(cptr.ldPtro(wc_options, k, $sizeof_wc_Opt), optnam))
+            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap) & cptr.ldU64o2(wc_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) ? 1 : 0));
     }
     return 0;
 }
@@ -12911,9 +12921,9 @@ export function* set_wc2_option_mod_status(optmask, status) {
         (yield* impossible(__s_set_wc2_option_mod_status_status_out_of, status));
         return;
     }
-    while (cptr.ldPtro(wc2_options, k, 16)) {
-        if (optmask & cptr.ldU64o2(wc2_options, k, 16, $wc_Opt_wc_bit)) {
-            (yield* set_option_mod_status(cptr.ldPtro(wc2_options, k, 16), status));
+    while (cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt)) {
+        if (optmask & cptr.ldU64o2(wc2_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) {
+            (yield* set_option_mod_status(cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt), status));
         }
         k++;
     }
@@ -12922,8 +12932,8 @@ export function* set_wc2_option_mod_status(optmask, status) {
 /** C ref: options.c:9953 — @param {CPtr<char>} optnam @returns {CInt} */
 function is_wc2_option(optnam) {
     let k = 0;
-    while (cptr.ldPtro(wc2_options, k, 16)) {
-        if (strcmp(cptr.ldPtro(wc2_options, k, 16), optnam) == 0)
+    while (cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt)) {
+        if (strcmp(cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt), optnam) == 0)
             return 1;
         k++;
     }
@@ -12933,9 +12943,9 @@ function is_wc2_option(optnam) {
 /** C ref: options.c:9966 — @param {CPtr<char>} optnam @returns {CInt} */
 function wc2_supported(optnam) {
     let k;
-    for (k = 0; cptr.ldPtro(wc2_options, k, 16); ++k) {
-        if (!strcmp(cptr.ldPtro(wc2_options, k, 16), optnam))
-            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap2) & cptr.ldU64o2(wc2_options, k, 16, $wc_Opt_wc_bit)) ? 1 : 0));
+    for (k = 0; cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt); ++k) {
+        if (!strcmp(cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt), optnam))
+            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap2) & cptr.ldU64o2(wc2_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) ? 1 : 0));
     }
     return 0;
 }
@@ -12974,17 +12984,17 @@ function* wc_set_font_name(opttype, fontname) {
 
 /** C ref: options.c:10012 — char **[4] */
 const fgp = cptr.alloc(4 * 8);
-cptr.stPtro(fgp, 0, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_menu, 16));
-cptr.stPtro(fgp, 8, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_message, 16));
-cptr.stPtro(fgp, 16, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_status, 16));
-cptr.stPtro(fgp, 24, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_text, 16));
+cptr.stPtro(fgp, 0, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_menu, $sizeof_windowcolors_struct));
+cptr.stPtro(fgp, 8, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_message, $sizeof_windowcolors_struct));
+cptr.stPtro(fgp, 16, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_status, $sizeof_windowcolors_struct));
+cptr.stPtro(fgp, 24, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_text, $sizeof_windowcolors_struct));
 
 /** C ref: options.c:10016 — char **[4] */
 const bgp = cptr.alloc(4 * 8);
-cptr.stPtro(bgp, 0, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_menu, 16), $windowcolors_struct_bg));
-cptr.stPtro(bgp, 8, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_message, 16), $windowcolors_struct_bg));
-cptr.stPtro(bgp, 16, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_status, 16), $windowcolors_struct_bg));
-cptr.stPtro(bgp, 24, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_text, 16), $windowcolors_struct_bg));
+cptr.stPtro(bgp, 0, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_menu, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
+cptr.stPtro(bgp, 8, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_message, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
+cptr.stPtro(bgp, 16, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_status, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
+cptr.stPtro(bgp, 24, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_text, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
 
 /** C ref: options.c:10020 — int */
 export let options_set_window_colors_flag = 0;
@@ -13105,26 +13115,26 @@ function enhance_menu_text(buf, sz, whichpass, bool_p, thisopt) {
 export function heed_all_options() {
     let i;
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        cptr.st1o2(allopt, i, 104, $allopt_t_disregarded, 0);
+        cptr.st1o2(allopt, i, $sizeof_allopt_t, $allopt_t_disregarded, 0);
 }
 
 /** C ref: options.c:10192 */
 export function disregard_all_options() {
     let i;
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        cptr.st1o2(allopt, i, 104, $allopt_t_disregarded, 1);
+        cptr.st1o2(allopt, i, $sizeof_allopt_t, $allopt_t_disregarded, 1);
 }
 
 /** C ref: options.c:10201 — @param {*} optidx */
 export function heed_this_option(optidx) {
     if (optidx >= 0 && optidx < NHC.OPTCOUNT)
-        cptr.st1o2(allopt, optidx, 104, $allopt_t_disregarded, 0);
+        cptr.st1o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_disregarded, 0);
 }
 
 /** C ref: options.c:10207 — @param {*} optidx */
 export function disregard_this_option(optidx) {
     if (optidx >= 0 && optidx < NHC.OPTCOUNT)
-        cptr.st1o2(allopt, optidx, 104, $allopt_t_disregarded, 1);
+        cptr.st1o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_disregarded, 1);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

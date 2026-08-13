@@ -35,7 +35,9 @@ const $AbsLineInfo_line = FLD.AbsLineInfo_line, $FuncState_freereg = FLD.FuncSta
     $Proto_numparams = FLD.Proto_numparams, $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo,
     $Proto_sizecode = FLD.Proto_sizecode, $Proto_sizek = FLD.Proto_sizek,
     $Proto_sizelineinfo = FLD.Proto_sizelineinfo, $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
-    $expdesc_f = FLD.expdesc_f, $expdesc_t = FLD.expdesc_t, $expdesc_u = FLD.expdesc_u;
+    $expdesc_f = FLD.expdesc_f, $expdesc_t = FLD.expdesc_t, $expdesc_u = FLD.expdesc_u,
+    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_TValue = FLD.sizeof_TValue,
+    $sizeof_Vardesc = FLD.sizeof_Vardesc, $sizeof_expdesc = FLD.sizeof_expdesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_control_structure_too_long = cptr.lit("control structure too long");
@@ -79,7 +81,7 @@ function tonumeral(e, v) {
 /** C ref: lcode.c:75 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CPtr<TValue>} */
 function const2val(fs, e) {
     (void 0);
-    return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), 24);
+    return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), $sizeof_Vardesc);
 }
 
 /** C ref: lcode.c:85 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CPtr<TValue>} v @returns {CInt} */
@@ -283,8 +285,8 @@ function* savelineinfo(fs, f, line) {
     let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
     if (Math.abs(linedif) >= 128 || cptr.postinc1(cptr.add(fs, $FuncState_iwthabs)) >= 128) {
         (cptr.stPtro(f, $Proto_abslineinfo, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), cptr.add(f, $Proto_sizeabslineinfo), 8, 2147483647, __s_lines))))));
-        cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), pc, 8);
-        cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), (cptr.stI32o(fs, $FuncState_nabslineinfo, cptr.ldI32o(fs, $FuncState_nabslineinfo) + 1)) - (1), 8, $AbsLineInfo_line, line);
+        cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), pc, $sizeof_AbsLineInfo);
+        cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), (cptr.stI32o(fs, $FuncState_nabslineinfo, cptr.ldI32o(fs, $FuncState_nabslineinfo) + 1)) - (1), $sizeof_AbsLineInfo, $AbsLineInfo_line, line);
         linedif = -128;
         cptr.st1o(fs, $FuncState_iwthabs, 1);
     }
@@ -427,7 +429,7 @@ function* addk(fs, key, v) {
     let oldsize;
     if (((cptr.ld1uo(((idx)), $TValue_tt_)) == 3)) {
         k = (Number(BigInt.asIntN(32, (((cptr.ldI64(((idx)))))))));
-        if (k < cptr.ldI32o(fs, $FuncState_nk) && (((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), k, 16)), $TValue_tt_))) & 63) == (((cptr.ld1uo((v), $TValue_tt_))) & 63) && (yield* luaV_equalobj(null, cptr.add(cptr.ldPtro(f, $Proto_k), k, 16), v)))
+        if (k < cptr.ldI32o(fs, $FuncState_nk) && (((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), k, $sizeof_TValue)), $TValue_tt_))) & 63) == (((cptr.ld1uo((v), $TValue_tt_))) & 63) && (yield* luaV_equalobj(null, cptr.add(cptr.ldPtro(f, $Proto_k), k, $sizeof_TValue), v)))
             return k;
     }
     oldsize = cptr.ldI32o(f, $Proto_sizek);
@@ -441,9 +443,9 @@ function* addk(fs, key, v) {
     (yield* luaH_finishset(L, cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_h), key, idx, val));
     (cptr.stPtro(f, $Proto_k, (((yield* luaM_growaux_(L, cptr.ldPtro(f, $Proto_k), k, cptr.add(f, $Proto_sizek), 16, 33554431, __s_constants))))));
     while (oldsize < cptr.ldI32o(f, $Proto_sizek))
-        (cptr.st1o((cptr.add(cptr.ldPtro(f, $Proto_k), oldsize++, 16)), $TValue_tt_, 0));
+        (cptr.st1o((cptr.add(cptr.ldPtro(f, $Proto_k), oldsize++, $sizeof_TValue)), $TValue_tt_, 0));
     {
-        let io1 = (cptr.add(cptr.ldPtro(f, $Proto_k), k, 16));
+        let io1 = (cptr.add(cptr.ldPtro(f, $Proto_k), k, $sizeof_TValue));
         let io2 = (v);
         cptr.memcpy(io1, io2, 8);
         (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -1066,7 +1068,7 @@ function* codenot(fs, e) {
 
 /** C ref: lcode.c:1222 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function isKstr(fs, e) {
-    return (cptr.ldI32(e) == NHC.VK && !(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) && cptr.ldI32o(e, $expdesc_u) <= 255 && ((cptr.ld1uo(((cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_k), cptr.ldI32o(e, $expdesc_u), 16))), $TValue_tt_)) == 68) ? 1 : 0);
+    return (cptr.ldI32(e) == NHC.VK && !(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) && cptr.ldI32o(e, $expdesc_u) <= 255 && ((cptr.ld1uo(((cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_k), cptr.ldI32o(e, $expdesc_u), $sizeof_TValue))), $TValue_tt_)) == 68) ? 1 : 0);
 }
 
 /** C ref: lcode.c:1230 — @param {CPtr<expdesc>} e @returns {CInt} */
@@ -1252,7 +1254,7 @@ function* finishbinexpneg(fs, e1, e2, op, line, event) {
 
 /** C ref: lcode.c:1483 — @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function swapexps(e1, e2) {
-    let temp = cptr.alloc(24); cptr.memcpy(temp, e1, 24);
+    let temp = cptr.alloc(24); cptr.memcpy(temp, e1, $sizeof_expdesc);
     cptr.memcpy(e1, e2, 24);
     cptr.memcpy(e2, temp, 24);
 }
@@ -1350,7 +1352,7 @@ function* codeeq(fs, opr, e1, e2) {
     cptr.stI32(e1, NHC.VJMP);
 }
 
-let __static_luaK_prefix_ef = cptr.alloc(24); /** C ref: lcode.c:1617 — struct expdesc (function-static) */
+let __static_luaK_prefix_ef = cptr.alloc($sizeof_expdesc); /** C ref: lcode.c:1617 — struct expdesc (function-static) */
 cptr.stI32(__static_luaK_prefix_ef, NHC.VKINT);
 cptr.stI64o(__static_luaK_prefix_ef, $expdesc_u, 0n);
 cptr.stI32o(__static_luaK_prefix_ef, $expdesc_t, -1);

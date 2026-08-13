@@ -59,7 +59,9 @@ const $CClosure_f = FLD.CClosure_f, $CClosure_marked = FLD.CClosure_marked,
     $lua_State_errfunc = FLD.lua_State_errfunc, $lua_State_l_G = FLD.lua_State_l_G,
     $lua_State_nCcalls = FLD.lua_State_nCcalls, $lua_State_stack = FLD.lua_State_stack,
     $lua_State_stack_last = FLD.lua_State_stack_last, $lua_State_status = FLD.lua_State_status,
-    $lua_State_tbclist = FLD.lua_State_tbclist, $lua_State_top = FLD.lua_State_top;
+    $lua_State_tbclist = FLD.lua_State_tbclist, $lua_State_top = FLD.lua_State_top,
+    $sizeof_TValue = FLD.sizeof_TValue, $sizeof_UValue = FLD.sizeof_UValue,
+    $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -89,7 +91,7 @@ function index2value(L, idx) {
         (void L, (void 0));
         if (((cptr.ld1uo(((((cptr.ldPtr(ci))))), $TValue_tt_)) == 102)) {
             let func = ((((((cptr.ldPtr(((((cptr.ldPtr(ci))))))))))));
-            return (idx <= cptr.ld1uo(func, $CClosure_nupvalues)) ? cptr.add(cptr.add(func, $CClosure_upvalue), (idx - 1) | 0, 16) : cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue);
+            return (idx <= cptr.ld1uo(func, $CClosure_nupvalues)) ? cptr.add(cptr.add(func, $CClosure_upvalue), (idx - 1) | 0, $sizeof_TValue) : cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue);
         } else {
             (void L, (void 0));
             return cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue);
@@ -734,7 +736,7 @@ export function* lua_pushcclosure(L, fn, n) {
         cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), n, 16));
         while (n--) {
             {
-                let io1 = (cptr.add(cptr.add(cl, $CClosure_upvalue), n, 16));
+                let io1 = (cptr.add(cptr.add(cl, $CClosure_upvalue), n, $sizeof_TValue));
                 let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), n, 16))));
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -866,7 +868,7 @@ function* auxgetstr(L, t, k) {
 export function* lua_getglobal(L, name) {
     let G;
     (void 0);
-    G = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, 16));
+    G = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, $sizeof_TValue));
     return (yield* auxgetstr(L, G, name));
 }
 
@@ -904,7 +906,7 @@ export function* lua_geti(L, idx, n) {
     let slot;
     (void 0);
     t = index2value(L, idx);
-    if ((!((cptr.ld1uo(((t)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, (n))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((t))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_array), BigInt.asIntN(64, n - 1n), 16) : luaH_getint(((((((cptr.ldPtr(((t))))))))), n), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
+    if ((!((cptr.ld1uo(((t)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, (n))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((t))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_array), BigInt.asIntN(64, n - 1n), $sizeof_TValue) : luaH_getint(((((((cptr.ldPtr(((t))))))))), n), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
         {
             let io1 = (((cptr.ldPtro(L, $lua_State_top))));
             let io2 = (slot);
@@ -1081,7 +1083,7 @@ export function* lua_getiuservalue(L, idx, n) {
     } else {
         {
             let io1 = (((cptr.ldPtro(L, $lua_State_top))));
-            let io2 = (cptr.add(cptr.add(((((((cptr.ldPtr(((o))))))))), $Udata_uv), (n - 1) | 0, 16));
+            let io2 = (cptr.add(cptr.add(((((((cptr.ldPtr(((o))))))))), $Udata_uv), (n - 1) | 0, $sizeof_UValue));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
             (void L, (void 0));
@@ -1143,7 +1145,7 @@ function* auxsetstr(L, t, k) {
 export function* lua_setglobal(L, name) {
     let G;
     (void 0);
-    G = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, 16));
+    G = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, $sizeof_TValue));
     (yield* auxsetstr(L, G, name));
 }
 
@@ -1187,7 +1189,7 @@ export function* lua_seti(L, idx, n) {
     (void 0);
     (void L, (void 0));
     t = index2value(L, idx);
-    if ((!((cptr.ld1uo(((t)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, (n))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((t))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_array), BigInt.asIntN(64, n - 1n), 16) : luaH_getint(((((((cptr.ldPtr(((t))))))))), n), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
+    if ((!((cptr.ld1uo(((t)), $TValue_tt_)) == 69) ? (slot = null, 0) : (slot = (BigInt.asUintN(64, (BigInt.asUintN(64, (n))) - 1n) < BigInt(cptr.ldI32o(((((((cptr.ldPtr(((t))))))))), $Table_alimit) >>> 0)) ? cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((t))))))))), $Table_array), BigInt.asIntN(64, n - 1n), $sizeof_TValue) : luaH_getint(((((((cptr.ldPtr(((t))))))))), n), !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)))) {
         {
             {
                 let io1 = (((slot)));
@@ -1312,7 +1314,7 @@ export function* lua_setiuservalue(L, idx, n) {
         res = 0;
     else {
         {
-            let io1 = (cptr.add(cptr.add(((((((cptr.ldPtr(((o))))))))), $Udata_uv), (n - 1) | 0, 16));
+            let io1 = (cptr.add(cptr.add(((((((cptr.ldPtr(((o))))))))), $Udata_uv), (n - 1) | 0, $sizeof_UValue));
             let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
             cptr.memcpy(io1, io2, 8);
             (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -1415,7 +1417,7 @@ export function* lua_load(L, reader, data, chunkname, mode) {
     if (status == 0) {
         let f = ((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))));
         if (cptr.ld1uo(f, $LClosure_nupvalues) >= 1) {
-            let gt = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, 16));
+            let gt = (cptr.add(cptr.ldPtro(((((((cptr.ldPtr(((cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_l_registry)))))))))), $Table_array), 1, $sizeof_TValue));
             {
                 let io1 = (cptr.ldPtro(cptr.ldPtro2(f, 0, 8, $LClosure_upvals), $UpVal_v));
                 let io2 = (gt);
@@ -1741,7 +1743,7 @@ function aux_upvalue(fi, n, val, owner) {
             let f = ((((((cptr.ldPtr(((fi)))))))));
             if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ld1uo(f, $CClosure_nupvalues))))))
                 return null;
-            cptr.stPtr(val, cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, 16));
+            cptr.stPtr(val, cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue));
             if (owner)
                 cptr.stPtr(owner, ((((f)))));
             return __s_empty;
@@ -1756,7 +1758,7 @@ function aux_upvalue(fi, n, val, owner) {
             cptr.stPtr(val, cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v));
             if (owner)
                 cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
-            name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, 16);
+            name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, $sizeof_Upvaldesc);
             return (cptr.eq(name, (null))) ? __s_no_name : (cptr.add((name), $TString_contents));
         }
         default:
@@ -1845,7 +1847,7 @@ export function lua_upvalueid(L, fidx, n) {
         {
             let f = ((((((cptr.ldPtr(((fi)))))))));
             if (1 <= n && n <= cptr.ld1uo(f, $CClosure_nupvalues))
-                return cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, 16);
+                return cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue);
         }
         case 22:
         return (null);

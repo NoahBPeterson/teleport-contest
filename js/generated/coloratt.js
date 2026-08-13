@@ -32,7 +32,9 @@ const $attr_names_attr = FLD.attr_names_attr, $color_attr_attr = FLD.color_attr_
     $nethack_color_b = FLD.nethack_color_b, $nethack_color_g = FLD.nethack_color_g,
     $nethack_color_name = FLD.nethack_color_name, $nethack_color_r = FLD.nethack_color_r,
     $nethack_color_rgbindex = FLD.nethack_color_rgbindex,
-    $nethack_color_tableindex = FLD.nethack_color_tableindex,
+    $nethack_color_tableindex = FLD.nethack_color_tableindex, $sizeof_attr_names = FLD.sizeof_attr_names,
+    $sizeof_color_names = FLD.sizeof_color_names, $sizeof_menu_item = FLD.sizeof_menu_item,
+    $sizeof_nethack_color = FLD.sizeof_nethack_color,
     $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
     $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
     $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
@@ -230,7 +232,7 @@ const __s_empty = cptr.lit("");
 /** C ref: coloratt.c:7 — struct color_names { name, color } (memory model v0.5) */
 
 /** C ref: coloratt.c:12 — struct color_names[27] */
-const colornames = cptr.alloc(27 * 16);
+const colornames = cptr.alloc(27 * $sizeof_color_names);
 cptr.stPtro(colornames, 0, __s_black);
 cptr.stI32o(colornames, 0 + $color_names_color, NHM.CLR_BLACK);
 cptr.stPtro(colornames, 16, __s_red);
@@ -289,7 +291,7 @@ cptr.stI32o(colornames, 416 + $color_names_color, NHM.CLR_BRIGHT_CYAN);
 /** C ref: coloratt.c:42 — struct attr_names { name, attr } (memory model v0.5) */
 
 /** C ref: coloratt.c:47 — struct attr_names[11] */
-const attrnames = cptr.alloc(11 * 16);
+const attrnames = cptr.alloc(11 * $sizeof_attr_names);
 cptr.stPtro(attrnames, 0, __s_none);
 cptr.stI32o(attrnames, 0 + $attr_names_attr, NHM.ATR_NONE);
 cptr.stPtro(attrnames, 16, __s_bold);
@@ -314,7 +316,7 @@ cptr.stPtro(attrnames, 160, __s_reverse);
 cptr.stI32o(attrnames, 160 + $attr_names_attr, NHM.ATR_INVERSE);
 
 /** C ref: coloratt.c:67 — struct nethack_color[155] */
-export const colortable = cptr.alloc(155 * 48);
+export const colortable = cptr.alloc(155 * $sizeof_nethack_color);
 cptr.stI32o(colortable, 0, NHC.nh_color);
 cptr.stI32o(colortable, 0 + $nethack_color_tableindex, 0);
 cptr.stI32o(colortable, 0 + $nethack_color_rgbindex, 0);
@@ -1475,8 +1477,8 @@ export function query_color_attr(ca, prompt) {
 export function attr2attrname(attr) {
     let i;
     for (i = 0; i < 11; i++)
-        if (cptr.ldI32o2(attrnames, i, 16, $attr_names_attr) == attr)
-            return cptr.ldPtro(attrnames, i, 16);
+        if (cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr) == attr)
+            return cptr.ldPtro(attrnames, i, $sizeof_attr_names);
     return null;
 }
 
@@ -1484,8 +1486,8 @@ export function attr2attrname(attr) {
 export function clr2colorname(clr) {
     let i;
     for (i = 0; i < 27; i++)
-        if (cptr.ldPtro(colornames, i, 16) && cptr.ldI32o2(colornames, i, 16, $color_names_color) == clr)
-            return cptr.ldPtro(colornames, i, 16);
+        if (cptr.ldPtro(colornames, i, $sizeof_color_names) && cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == clr)
+            return cptr.ldPtro(colornames, i, $sizeof_color_names);
     return null;
 }
 
@@ -1494,8 +1496,8 @@ export function match_str2clr(str, suppress_msg) {
     let i;
     let c = NHM.CLR_MAX;
     for (i = 0; i < 27; i++)
-        if (cptr.ldPtro(colornames, i, 16) && fuzzymatch(str, cptr.ldPtro(colornames, i, 16), __s_sp_dash_us, 1)) {
-            c = cptr.ldI32o2(colornames, i, 16, $color_names_color);
+        if (cptr.ldPtro(colornames, i, $sizeof_color_names) && fuzzymatch(str, cptr.ldPtro(colornames, i, $sizeof_color_names), __s_sp_dash_us, 1)) {
+            c = cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color);
             break;
         }
     if (i == 27 && digit(cptr.ld1s(str)))
@@ -1513,8 +1515,8 @@ export function match_str2attr(str, complain) {
     let i;
     let a = -1;
     for (i = 0; i < 11; i++)
-        if (cptr.ldPtro(attrnames, i, 16) && fuzzymatch(str, cptr.ldPtro(attrnames, i, 16), __s_sp_dash_us, 1)) {
-            a = cptr.ldI32o2(attrnames, i, 16, $attr_names_attr);
+        if (cptr.ldPtro(attrnames, i, $sizeof_attr_names) && fuzzymatch(str, cptr.ldPtro(attrnames, i, $sizeof_attr_names), __s_sp_dash_us, 1)) {
+            a = cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr);
             break;
         }
     if (a == -1 && complain)
@@ -1535,10 +1537,10 @@ export function query_attr(prompt, dflt_attr) {
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 11; i++) {
-        if (!cptr.ldPtro(attrnames, i, 16))
+        if (!cptr.ldPtro(attrnames, i, $sizeof_attr_names))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o2(attrnames, i, 16, $attr_names_attr), clr, cptr.ldPtro(attrnames, i, 16), (cptr.ldI32o2(attrnames, i, 16, $attr_names_attr) == dflt_attr) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr), clr, cptr.ldPtro(attrnames, i, $sizeof_attr_names), (cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr) == dflt_attr) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
     end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __s_pick_an_attribute);
     pick_cnt = select_menu(tmpwin, allow_many ? NHM.PICK_ANY : NHM.PICK_ONE, picks);
@@ -1548,9 +1550,9 @@ export function query_attr(prompt, dflt_attr) {
         let k = 0;
         if (allow_many) {
             for (i = 0; i < pick_cnt; ++i) {
-                j = (cptr.ldI32o(picks.v, i, 24) - 1) | 0;
-                if (cptr.ldI32o2(attrnames, j, 16, $attr_names_attr) != NHM.ATR_NONE || pick_cnt == 1) {
-                    switch (cptr.ldI32o2(attrnames, j, 16, $attr_names_attr)) {
+                j = (cptr.ldI32o(picks.v, i, $sizeof_menu_item) - 1) | 0;
+                if (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) != NHM.ATR_NONE || pick_cnt == 1) {
+                    switch (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr)) {
                         case NHM.ATR_NONE:
                         k = NHC.HL_NONE;
                         break;
@@ -1576,10 +1578,10 @@ export function query_attr(prompt, dflt_attr) {
                 }
             }
         } else {
-            j = (cptr.ldI32o(picks.v, 0, 24) - 1) | 0;
-            if (pick_cnt == 2 && cptr.ldI32o2(attrnames, j, 16, $attr_names_attr) == dflt_attr)
-                j = (cptr.ldI32o(picks.v, 1, 24) - 1) | 0;
-            k = cptr.ldI32o2(attrnames, j, 16, $attr_names_attr);
+            j = (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0;
+            if (pick_cnt == 2 && cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) == dflt_attr)
+                j = (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0;
+            k = cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr);
         }
         cptr.free(picks.v);
         return k;
@@ -1601,19 +1603,19 @@ export function query_color(prompt, dflt_color) {
     start_menu()(tmpwin, 0n);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 27; i++) {
-        if (!cptr.ldPtro(colornames, i, 16))
+        if (!cptr.ldPtro(colornames, i, $sizeof_color_names))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ldPtro(colornames, i, 16), (cptr.ldI32o2(colornames, i, 16, $color_names_color) == dflt_color) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ldPtro(colornames, i, $sizeof_color_names), (cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == dflt_color) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
     }
     end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __s_pick_a_color);
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     destroy_nhwindow()(tmpwin);
     basic_menu_colors(0);
     if (pick_cnt > 0) {
-        i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 0, 24) - 1) | 0, 16, $color_names_color);
+        i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0, $sizeof_color_names, $color_names_color);
         if (pick_cnt == 2 && i == NHM.NO_COLOR)
-            i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 1, 24) - 1) | 0, 16, $color_names_color);
+            i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0, $sizeof_color_names, $color_names_color);
         cptr.free(picks.v);
         return i;
     } else if (pick_cnt == 0) {
@@ -1638,12 +1640,12 @@ export function basic_menu_colors(load_colors) {
             let patternfmt = pmatchregex ? __s_star_pct_s : __s_pct_s;
             cptr.stPtro(gm, $instance_globals_m_menu_colorings, null);
             for (i = 0; i < 27; ++i) {
-                if (!cptr.ldPtro(colornames, i, 16))
+                if (!cptr.ldPtro(colornames, i, $sizeof_color_names))
                     break;
-                c = cptr.ldI32o2(colornames, i, 16, $color_names_color);
+                c = cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color);
                 if (c == NHM.CLR_BLACK || c == NHM.CLR_WHITE || c == NHM.NO_COLOR)
                     continue;
-                void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtro(colornames, i, 16));
+                void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtro(colornames, i, $sizeof_color_names));
                 add_menu_coloring_parsed(cptr.decay(cnm), c, NHM.ATR_NONE);
             }
             cptr.stPtro(gc, $instance_globals_c_color_colorings, cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
@@ -1789,8 +1791,8 @@ export function check_enhanced_colors(buf) {
             void cptr.memcpy(cptr.add(altbuf, greyoffset), __s_gray, 4n);
         }
         for (color = 0; color < 155; ++color) {
-            if (fuzzymatch(buf, cptr.ldPtro2(colortable, color, 48, $nethack_color_name), __s_sp_dash_us, 1) || (altbuf && fuzzymatch(altbuf, cptr.ldPtro2(colortable, color, 48, $nethack_color_name), __s_sp_dash_us, 1))) {
-                retcolor = colortable_to_int32(cptr.add(colortable, color, 48));
+            if (fuzzymatch(buf, cptr.ldPtro2(colortable, color, $sizeof_nethack_color, $nethack_color_name), __s_sp_dash_us, 1) || (altbuf && fuzzymatch(altbuf, cptr.ldPtro2(colortable, color, $sizeof_nethack_color, $nethack_color_name), __s_sp_dash_us, 1))) {
+                retcolor = colortable_to_int32(cptr.add(colortable, color, $sizeof_nethack_color));
                 break;
             }
         }
@@ -1809,7 +1811,7 @@ export function wc_color_name(colorindx) {
         let basicindx = colorindx & -16777217;
         if (basicindx != colorindx) {
             (__builtin_expect(BigInt((!(basicindx < 16))), 0n) ? __assert_rtn(__s_wc_color_name, __s_coloratt_c, 775, __s_basicindx_16) : void 0);
-            result = cptr.ldPtro2(colortable, basicindx, 48, $nethack_color_name);
+            result = cptr.ldPtro2(colortable, basicindx, $sizeof_nethack_color, $nethack_color_name);
         } else {
             let indx;
             let r = BigInt(((colorindx >> 16) & 255));
@@ -1818,8 +1820,8 @@ export function wc_color_name(colorindx) {
             nh_snprintf(__s_wc_color_name, 784, cptr.decay(__static_wc_color_name_hexcolor), 8n, __s_02x_02x_02x, Number(BigInt.asUintN(8, r)), Number(BigInt.asUintN(8, g)), Number(BigInt.asUintN(8, b)));
             result = cptr.decay(__static_wc_color_name_hexcolor);
             for (indx = 16; indx < 155; ++indx)
-                if (cptr.ldI64o2(colortable, indx, 48, $nethack_color_r) == r && cptr.ldI64o2(colortable, indx, 48, $nethack_color_g) == g && cptr.ldI64o2(colortable, indx, 48, $nethack_color_b) == b) {
-                    result = cptr.ldPtro2(colortable, indx, 48, $nethack_color_name);
+                if (cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_r) == r && cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_g) == g && cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_b) == b) {
+                    result = cptr.ldPtro2(colortable, indx, $sizeof_nethack_color, $nethack_color_name);
                     break;
                 }
         }
