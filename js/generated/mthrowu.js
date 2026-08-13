@@ -9,8 +9,8 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { BZ_VALID_ADTYP, ammo_and_launcher, canspotmon, eyecount, is_ammo, is_flimsy, is_launcher, is_mplayer, is_poisonable, is_pole, is_unicorn, is_vampshifter, matching_launcher, nonliving, obj_is_generic, passes_rocks, stone_missile, touch_petrifies } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, Blind, BlindedTimeout, Deaf, Fumbling, HConfusion, HStun, Half_physical_damage, Hallucination, Sleep_resistance, Stone_resistance, Stoned, U_AP_TYPE, Underwater, Upolyd, nh_delay_output } from './nhprop.js';
+import { rn2, rn2_on_display_rng, rnd } from './rnd.js';
 import { objects } from './objects.js';
 import { panic } from './end.js';
 import { The, Tobjnam, an, distant_name, doname, killer_xname, makeplural, mshot_xname, obj_is_pname, otense, simpleonames, singular, the, vtense, xname } from './objnam.js';
@@ -42,7 +42,6 @@ import { minstapetrify } from './trap.js';
 import { freehand } from './engrave.js';
 import { isok } from './cmd.js';
 import { closed_door, dissolve_bars } from './monmove.js';
-import { rn2_on_display_rng } from './rnd.js';
 import { body_part, mbodypart, polymon } from './polyself.js';
 import { stop_occupation } from './allmain.js';
 import { windowprocs } from './windows.js';
@@ -221,13 +220,10 @@ const __s_waveforms = cptr.lit("waveforms");
 const __s_wind = cptr.lit("wind");
 const __s_x_rays = cptr.lit("X-rays");
 const __s_zorkmids = cptr.lit("zorkmids");
-const __s_mthrowu_c = cptr.lit("mthrowu.c");
-const __s_rnd_hallublast = cptr.lit("rnd_hallublast");
 const __s_thitu_name_obj_both_null = cptr.lit("thitu: name & obj both null?");
 const __s_the = cptr.lit("the ");
 const __s_an = cptr.lit("an ");
 const __s_a_sp = cptr.lit("a ");
-const __s_thitu = cptr.lit("thitu");
 const __s_it_misses = cptr.lit("It misses.");
 const __s_s_s_you = cptr.lit("%s %s you.");
 const __s_miss = cptr.lit("miss");
@@ -241,14 +237,12 @@ const __s_doesn_t_harm = cptr.lit("doesn't harm");
 const __s_silver_sears_your_flesh = cptr.lit("silver sears your flesh!");
 const __s_it_burns = cptr.lit("It burns!");
 const __s_fall = cptr.lit("fall");
-const __s_monmulti = cptr.lit("monmulti");
 const __s_d_s = cptr.lit("%d %s");
 const __s_empty = cptr.lit("");
 const __s_s_s_s_s_s = cptr.lit("%s %s %s%s%s!");
 const __s_shoots = cptr.lit("shoots");
 const __s_throws = cptr.lit("throws");
 const __s_at = cptr.lit(" at ");
-const __s_ohitmon = cptr.lit("ohitmon");
 const __s_it_is_missed = cptr.lit("It is missed.");
 const __s_splat_s_is_hit_with_s_egg = cptr.lit("Splat!  %s is hit with %s egg!");
 const __s_an__2 = cptr.lit("an");
@@ -279,7 +273,6 @@ const __s_you_catch = cptr.lit("You catch:");
 const __s_u_catch_thrown_obj = cptr.lit("u_catch_thrown_obj");
 const __s_you_catch_the_s = cptr.lit("You catch the %s!");
 const __s_you_catch_but_drop_the_s = cptr.lit("You catch, but drop, the %s.");
-const __s_m_throw = cptr.lit("m_throw");
 const __s_s_misfires = cptr.lit("%s misfires!");
 const __s_s_as_s_throws_it = cptr.lit("%s as %s throws it!");
 const __s_slip = cptr.lit("slip");
@@ -294,7 +287,6 @@ const __s_plop = cptr.lit("plop");
 const __s_drop = cptr.lit("drop");
 const __s_s_misses = cptr.lit("%s misses.");
 const __s_pct_s = cptr.lit("%s");
-const __s_return_from_mtoss = cptr.lit("return_from_mtoss");
 const __s_s_to_s_s = cptr.lit("%s to %s %s!");
 const __s_return = cptr.lit("return");
 const __s_s_back_to_s_landing_s_s_s = cptr.lit("%s back to %s, landing %s %s %s.");
@@ -307,26 +299,19 @@ const __s_s_hit_s_with_a_thud = cptr.lit("%s hit %s with a thud!");
 const __s_a_loud_snap = cptr.lit("a loud snap!");
 const __s_splash = cptr.lit("Splash!");
 const __s_plop__2 = cptr.lit("Plop!");
-const __s_thrwmm = cptr.lit("thrwmm");
 const __s_a_dry_rattle_comes_from_s_throat = cptr.lit("A dry rattle comes from %s throat.");
 const __s_a_dry_rattle_nearby = cptr.lit("a dry rattle nearby.");
 const __s_bad_attack_type_in_spitmm = cptr.lit("bad attack type in spitmm");
-const __s_spitmm = cptr.lit("spitmm");
 const __s_s_spits_venom = cptr.lit("%s spits venom!");
 const __s_s_coughs = cptr.lit("%s coughs.");
 const __s_a_cough = cptr.lit("a cough.");
-const __s_breamm = cptr.lit("breamm");
 const __s_s_breathes_s = cptr.lit("%s breathes %s!");
 const __s_breath_weapon_d_used = cptr.lit("Breath weapon %d used");
 const __s_s_s_s = cptr.lit("%s %s %s.");
-const __s_thrwmu = cptr.lit("thrwmu");
-const __s_linedup = cptr.lit("linedup");
-const __s_m_lined_up = cptr.lit("m_lined_up");
 const __s_iron_bars_are_dissolved = cptr.lit("iron bars are dissolved!");
 const __s_angry_snakes = cptr.lit("angry snakes!");
 const __s_a_hissing_noise = cptr.lit("a hissing noise.");
 const __s_pct_s_bang = cptr.lit("%s!");
-const __s_hit_bars = cptr.lit("hit_bars");
 const __s_break_the_bars_apart = cptr.lit("break the bars apart!");
 const __s_whang = cptr.lit("Whang");
 const __s_whap = cptr.lit("Whap");
@@ -453,7 +438,7 @@ cptr.stPtro(hallublasts, 760, __s_zorkmids);
 /* Return a random hallucinatory blast. */
 /** C ref: mthrowu.c:52 @returns {CPtr<char>} */
 export function rnd_hallublast() {
-    return cptr.ldPtro(hallublasts, rn2_at(__s_mthrowu_c, 54, __s_rnd_hallublast, 96), 8);
+    return cptr.ldPtro(hallublasts, rn2(96), 8);
 }
 
 /** C ref: mthrowu.c:58 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
@@ -499,7 +484,7 @@ export function thitu(tlev, dam, objp, name) {
     onm = (obj && obj_is_pname(obj)) ? the(name) : ((obj && cptr.ldI64o(obj, $obj_quan) > 1n) ? name : an(name));
     is_acid = schar((obj && cptr.ldI16o(obj, $obj_otyp) == NHC.ACID_VENOM ? 1 : 0));
 
-    if (((cptr.ld1so(u, $you_uac) + tlev) | 0) <= (dieroll = rnd_at(__s_mthrowu_c, 106, __s_thitu, 20))) {
+    if (((cptr.ld1so(u, $you_uac) + tlev) | 0) <= (dieroll = rnd(20))) {
         cptr.stI32o(gm, $instance_globals_m_mesg_given, cptr.ldI32o(gm, $instance_globals_m_mesg_given) + 1);
         if (Blind() || !cptr.ld1so(flags, $flag_verbose)) {
             pline(__s_it_misses);
@@ -611,7 +596,7 @@ function monmulti(mtmp, otmp, mwep) {
         if (ammo_and_launcher(otmp, mwep) && cptr.ld1so(mwep, $obj_spe) > 1)
             multishot = Number(BigInt.asIntN(32, BigInt(multishot) + BigInt(rounddiv(BigInt(cptr.ld1so(mwep, $obj_spe)), 3))));
         /* Some randomness */
-        multishot = rnd_at(__s_mthrowu_c, 238, __s_monmulti, multishot);
+        multishot = rnd(multishot);
 
         /* class bonus */
         multishot = (multishot + multishot_class_bonus((cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)), otmp, mwep)) | 0;
@@ -710,7 +695,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
         if (mon_launcher && cptr.ld1so(mon_launcher, $obj_oartifact))
             tmp = (tmp + spec_abon(mon_launcher, mtmp)) | 0;
     }
-    if (tmp < rnd_at(__s_mthrowu_c, 350, __s_ohitmon, 20)) {
+    if (tmp < rnd(20)) {
         if (!ismimic) {
             if (vis)
                 miss(distant_name(otmp, mshot_xname), mtmp);
@@ -760,8 +745,8 @@ export function ohitmon(mtmp, otmp, range, verbose) {
                 if (vis)
                     pline_The(__s_poison_doesn_t_seem_to_affect_s, mon_nam(mtmp));
             } else {
-                if (rn2_at(__s_mthrowu_c, 409, __s_ohitmon, 30)) {
-                    damage = (damage + rnd_at(__s_mthrowu_c, 410, __s_ohitmon, 6)) | 0;
+                if (rn2(30)) {
+                    damage = (damage + rnd(6)) | 0;
                 } else {
                     if (vis)
                         pline_The(__s_poison_was_deadly);
@@ -825,7 +810,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
                    "<Mon> is blinded by the {venom,pie}." */
                 pline(__s_s_is_blinded_by_s, Monnam(mtmp), the((cptr.ld1so(otmp, $obj_oclass) == NHC.VENOM_CLASS) ? __s_venom : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CREAM_PIE) ? __s_pie : xname(otmp))));  /* catchall; not used */
             cptr.stI32o(mtmp, $monst_mcansee, 0);
-            tmp = (((((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0) + rnd_at(__s_mthrowu_c, 485, __s_ohitmon, 25)) | 0) + 20) | 0;
+            tmp = (((((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0) + rnd(25)) | 0) + 20) | 0;
             if (tmp > 127)
                 tmp = 127;
             cptr.stI32o(mtmp, $monst_mblinded, tmp >>> 0);
@@ -871,7 +856,7 @@ function ucatchgem(gem, mon) {
 function u_catch_thrown_obj(otmp) {
     let catch_chance = (((100 - (acurr(NHC.A_DEX))) | 0) - (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE)) ? 20 : 0)) | 0;
 
-    if (!Blind() && !HConfusion() && !HStun() && !Fumbling() && cptr.ld1so(otmp, $obj_oclass) != NHC.VENOM_CLASS && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) && freehand() && calc_capacity(cptr.ldI32o(otmp, $obj_owt) | 0) <= NHC.SLT_ENCUMBER && !rn2_at(__s_mthrowu_c, 541, __s_u_catch_thrown_obj, catch_chance)) {
+    if (!Blind() && !HConfusion() && !HStun() && !Fumbling() && cptr.ld1so(otmp, $obj_oclass) != NHC.VENOM_CLASS && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) && freehand() && calc_capacity(cptr.ldI32o(otmp, $obj_owt) | 0) <= NHC.SLT_ENCUMBER && !rn2(catch_chance)) {
         let buf = new Uint8Array(256);
 
         nh_snprintf(__s_u_catch_thrown_obj, 544, cptr.decay(buf), 256n, __s_you_catch_the_s, simpleonames(otmp));
@@ -927,15 +912,15 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
     if (!canseemon(mon))
         clear_dknown(singleobj.v);  /* singleobj->dknown = 0; */
 
-    if (((cptr.ldI32o(singleobj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(singleobj.v, $obj_greased) & 1) | 0) && (dx || dy) && !rn2_at(__s_mthrowu_c, 622, __s_m_throw, 7)) {
+    if (((cptr.ldI32o(singleobj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(singleobj.v, $obj_greased) & 1) | 0) && (dx || dy) && !rn2(7)) {
         if (canseemon(mon) && cptr.ld1so(flags, $flag_verbose)) {
             if (is_ammo(singleobj.v))
                 pline(__s_s_misfires, Monnam(mon));
             else
                 pline(__s_s_as_s_throws_it, Tobjnam(singleobj.v, __s_slip), mon_nam(mon));
         }
-        dx = i16(((rn2_at(__s_mthrowu_c, 630, __s_m_throw, 3) - 1) | 0));
-        dy = i16(((rn2_at(__s_mthrowu_c, 631, __s_m_throw, 3) - 1) | 0));
+        dx = i16(((rn2(3) - 1) | 0));
+        dy = i16(((rn2(3) - 1) | 0));
         /* check validity of new direction */
         if (!dx && !dy) {
             void drop_throw(singleobj.v, 0, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
@@ -1057,7 +1042,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
                 poisoned(cptr.decay(onmbuf), NHC.A_STR, cptr.decay(knmbuf), (cptr.ldI32o(u, $you_umortality) > oldumort) ? 0 : 10, 1);
             }
             if (hitu && can_blnd(null, cptr.add(gy, $instance_globals_y_youmonst), uchar(((cptr.ldI16o(singleobj.v, $obj_otyp) == NHC.BLINDING_VENOM) ? NHM.AT_SPIT : NHM.AT_WEAP)), singleobj.v)) {
-                blindinc = rnd_at(__s_mthrowu_c, 760, __s_m_throw, 25);
+                blindinc = rnd(25);
                 if (cptr.ldI16o(singleobj.v, $obj_otyp) == NHC.CREAM_PIE) {
                     if (!Blind())
                         pline(__s_yecch_you_ve_been_creamed);
@@ -1092,7 +1077,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
             }
         }
 
-        forcehit = schar((!rn2_at(__s_mthrowu_c, 798, __s_m_throw, 5)));
+        forcehit = schar((!rn2(5)));
         if (!range || (!isok(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || ((cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, $sizeof_rm_x21, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0))) || (cptr.ld1so3(svl, (cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0, $sizeof_rm_x21, (cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS && hits_bars(singleobj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos) + dx) | 0)), i16(((cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) + dy) | 0)), (forcehit), 0)) || (((cptr.ld1so3(svl, cptr.ldI16o(gb, $instance_globals_b_bhitpos), $sizeof_rm_x21, cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)))) {
             /* end of path or blocked */
             if (singleobj.v) {
@@ -1142,7 +1127,7 @@ function return_from_mtoss(magr, otmp, tethered_weapon) {
     let hits_thrower = 0;
     let x = cptr.ldI16o(gb, $instance_globals_b_bhitpos);
     let y = cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y);
-    let made_it_back = rn2_at(__s_mthrowu_c, 858, __s_return_from_mtoss, 100);
+    let made_it_back = rn2(100);
     let dmg = cptr.box(0);
 
     if (otmp && made_it_back) {
@@ -1166,7 +1151,7 @@ function return_from_mtoss(magr, otmp, tethered_weapon) {
         }
         x = cptr.ldI16o(magr, $monst_mx);
         y = cptr.ldI16o(magr, $monst_my);
-        if (!impaired && rn2_at(__s_mthrowu_c, 881, __s_return_from_mtoss, 100)) {
+        if (!impaired && rn2(100)) {
 
             if (!__static_return_from_mtoss_do_not_annoy || (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - __static_return_from_mtoss_do_not_annoy)) > 500n) {
                 pline(__s_s_to_s_s, Tobjnam(otmp, __s_return), s_suffix(mon_nam(magr)), mbodypart(magr, NHC.HAND));
@@ -1184,7 +1169,7 @@ function return_from_mtoss(magr, otmp, tethered_weapon) {
         } else {
             let mlevitating = 0;  /* msg future-proofing only */
 
-            dmg.v = rn2_at(__s_mthrowu_c, 902, __s_return_from_mtoss, 2);
+            dmg.v = rn2(2);
             if (!dmg.v) {
                 if (canseemon(magr)) {
                     pline(__s_s_back_to_s_landing_s_s_s, Tobjnam(otmp, __s_return), mon_nam(magr), mlevitating ? __s_beneath : __s_at__2, (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), makeplural(mbodypart(magr, NHC.FOOT)));
@@ -1192,7 +1177,7 @@ function return_from_mtoss(magr, otmp, tethered_weapon) {
                     You_hear(__s_s_land_near_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), mon_nam(magr));
                 }
             } else {
-                dmg.v = (dmg.v + rnd_at(__s_mthrowu_c, 913, __s_return_from_mtoss, 3)) | 0;
+                dmg.v = (dmg.v + rnd(3)) | 0;
                 if (canseemon(magr)) {
                     pline(__s_s_back_toward_s_hitting_s_s, Tobjnam(otmp, __s_fly), mon_nam(magr), (cptr.ldPtro2(genders, pronoun_gender(magr, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), body_part(NHC.ARM));
                 } else if (!Deaf()) {
@@ -1274,7 +1259,7 @@ export function thrwmm(mtmp, mtarg) {
     if (!ispole && m_lined_up(mtarg, mtmp)) {
         let chance = (((NHM.BOLT_LIM - distmin(x, y, cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my))) | 0) > 1 ? ((NHM.BOLT_LIM - distmin(x, y, cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my))) | 0) : 1);
 
-        if (!(cptr.ldI32o(mtarg, $monst_mflee) & 1) || !rn2_at(__s_mthrowu_c, 997, __s_thrwmm, chance)) {
+        if (!(cptr.ldI32o(mtarg, $monst_mflee) & 1) || !rn2(chance)) {
             if (ammo_and_launcher(otmp, mwep) && dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtarg, $monst_mx), cptr.ldI16o(mtarg, $monst_my)) > NHM.PET_MISSILE_RANGE2)
                 return NHM.M_ATTK_MISS;  /* Out of range */
             /* Set target monster */
@@ -1323,7 +1308,7 @@ export function spitmm(mtmp, mattk, mtarg) {
             otmp = mksobj(NHC.ACID_VENOM, 1, 0);
             break;
         }
-        if (!rn2_at(__s_mthrowu_c, 1050, __s_spitmm, (NHM.BOLT_LIM - distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), tx, ty)) | 0)) {
+        if (!rn2((NHM.BOLT_LIM - distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), tx, ty)) | 0)) {
             if (canseemon(mtmp))
                 pline(__s_s_spits_venom, Monnam(mtmp));
             if (!utarg)
@@ -1386,7 +1371,7 @@ export function breamm(mtmp, mattk, mtarg) {
         if (utarget && ((cptr.ldU64o((mtmp), $monst_seen_resistance) & (cvt_adtyp_to_mseenres(uchar(typ)))) || (cptr.ldU64o((mtmp), $monst_seen_resistance) & 256n)))
             return NHM.M_ATTK_HIT;
 
-        if (!cptr.ldI32o(mtmp, $monst_mspec_used) && rn2_at(__s_mthrowu_c, 1117, __s_breamm, 3)) {
+        if (!cptr.ldI32o(mtmp, $monst_mspec_used) && rn2(3)) {
             if (BZ_VALID_ADTYP(typ)) {
                 if (canseemon(mtmp))
                     pline(__s_s_breathes_s, Monnam(mtmp), breathwep_name(typ));
@@ -1397,10 +1382,10 @@ export function breamm(mtmp, mattk, mtarg) {
                 /* breath runs out sometimes. Also, give monster some
                  * cunning; don't breath if the target fell asleep.
                  */
-                if (!utarget || !rn2_at(__s_mthrowu_c, 1131, __s_breamm, 3))
-                    cptr.stI32o(mtmp, $monst_mspec_used, (8 + rn2_at(__s_mthrowu_c, 1132, __s_breamm, 18)) | 0);
+                if (!utarget || !rn2(3))
+                    cptr.stI32o(mtmp, $monst_mspec_used, (8 + rn2(18)) | 0);
                 if (utarget && typ == NHM.AD_SLEE && !Sleep_resistance())
-                    cptr.stI32o(mtmp, $monst_mspec_used, (cptr.ldI32o(mtmp, $monst_mspec_used) + rnd_at(__s_mthrowu_c, 1134, __s_breamm, 20)) | 0);
+                    cptr.stI32o(mtmp, $monst_mspec_used, (cptr.ldI32o(mtmp, $monst_mspec_used) + rnd(20)) | 0);
 
                 /* If this is a pet, it'll get hungry. Minions and
                  * spell beings won't hunger */
@@ -1519,7 +1504,7 @@ export function thrwmu(mtmp) {
      * going away, you are probably hurt or running.  Give
      * chase, but if you are getting too far away, throw.
      */
-    if (!lined_up(mtmp) || ((distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) > distmin(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0), x, y)) && (!always_toss && rn2_at(__s_mthrowu_c, 1258, __s_thrwmu, (NHM.BOLT_LIM - distmin(x, y, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy))) | 0))))
+    if (!lined_up(mtmp) || ((distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) > distmin(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0), x, y)) && (!always_toss && rn2((NHM.BOLT_LIM - distmin(x, y, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy))) | 0))))
         return;
 
     mwep = (cptr.ldPtro((mtmp), $monst_mw));  /* wielded weapon */
@@ -1614,7 +1599,7 @@ export function linedup(ax, ay, bx, by, boulderhandling) {
                 ++boulderspots;
         } while (bx != ax || by != ay);
         /* reached target position without encountering obstacle */
-        if (boulderhandling == 1 || rn2_at(__s_mthrowu_c, 1369, __s_linedup, (2 + boulderspots) | 0) < 2)
+        if (boulderhandling == 1 || rn2((2 + boulderspots) | 0) < 2)
             return 1;
     }
     return 0;
@@ -1628,7 +1613,7 @@ function m_lined_up(mtarg, mtmp) {
     let ignore_boulders = schar((utarget && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 134217728n) != 0n) || m_carrying(mtmp, NHC.WAN_STRIKING)) ? 1 : 0));
 
     /* hero concealment usually trumps monst awareness of being lined up */
-    if (utarget && Upolyd() && rn2_at(__s_mthrowu_c, 1385, __s_m_lined_up, 25) && ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (U_AP_TYPE() != NHC.M_AP_NOTHING && U_AP_TYPE() != NHC.M_AP_MONSTER)))
+    if (utarget && Upolyd() && rn2(25) && ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (U_AP_TYPE() != NHC.M_AP_NOTHING && U_AP_TYPE() != NHC.M_AP_MONSTER)))
         return 0;
 
     /* [no callers care about the 1 vs 2 situation any more] */
@@ -1709,7 +1694,7 @@ export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
                break those when 'chance' is _lower_; acurrstr(): 3..25 */
             let chance = ((((melee_attk ? 40 : 60) - acurrstr()) | 0) - spe) | 0;
 
-            if (!rn2_at(__s_mthrowu_c, 1485, __s_hit_bars, (2 > (chance) ? 2 : (chance)))) {
+            if (!rn2((2 > (chance) ? 2 : (chance)))) {
                 You(__s_break_the_bars_apart);
                 dissolve_bars(barsx, barsy);
                 noise = Math.imul(noise, 2);

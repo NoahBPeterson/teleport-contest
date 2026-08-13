@@ -9,13 +9,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { is_hole, is_pit } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Half_physical_damage, Levitation, Luck, Punished } from './nhprop.js';
 import { flags, gi, gv, svd, svl, u, uarmh, uball, uchain, uquiver, uswapwep, uwep } from './decl.js';
 import { setuqwep, setuswapwep, setuwep, welded } from './wield.js';
 import { You, You_feel, Your, impossible, pline, pline_The } from './pline.js';
 import { freeinv } from './invent.js';
 import { encumber_msg } from './pickup.js';
+import { rn2, rnd } from './rnd.js';
 import { body_part } from './polyself.js';
 import { hard_helmet } from './do_wear.js';
 import { Yname2, otense, safe_typename, xname, yname } from './objnam.js';
@@ -57,8 +57,6 @@ const $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_water_level = FLD.dg
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_startled_you_drop_the_iron_ball = cptr.lit("Startled, you drop the iron ball.");
-const __s_ball_c = cptr.lit("ball.c");
-const __s_ballfall = cptr.lit("ballfall");
 const __s_iron_ball_falls_on_your_s = cptr.lit("iron ball falls on your %s.");
 const __s_fortunately_you_are_wearing_a_hard = cptr.lit("Fortunately, you are wearing a hard helmet.");
 const __s_s_does_not_protect_you = cptr.lit("%s does not protect you.");
@@ -68,9 +66,7 @@ const __s_empty = cptr.lit("");
 const __s_bc_already_placed = cptr.lit("bc already placed?");
 const __s_unplacebc_denied_restriction_in_place = cptr.lit("unplacebc denied, restriction in place");
 const __s_unplacebc_and_covet_placebc_denied = cptr.lit("unplacebc_and_covet_placebc denied, already restricted");
-const __s_unplacebc_and_covet_placebc = cptr.lit("unplacebc_and_covet_placebc");
 const __s_bc_order_ball_chain_not_in_same_location = cptr.lit("bc_order:  ball&chain not in same location!");
-const __s_drag_ball = cptr.lit("drag_ball");
 const __s_bad_chain_movement = cptr.lit("bad chain movement");
 const __s_cannot_sdrag_the_heavy_iron_ball = cptr.lit("cannot %sdrag the heavy iron ball.");
 const __s_carry_all_that_and_also = cptr.lit("carry all that and also ");
@@ -81,18 +77,15 @@ const __s_pit = cptr.lit("pit");
 const __s_web = cptr.lit("web");
 const __s_web_is_destroyed = cptr.lit("web is destroyed!");
 const __s_lava = cptr.lit("lava");
-const __s_drop_ball = cptr.lit("drop_ball");
 const __s_bear_trap = cptr.lit("bear trap");
 const __s_s_s_is_severely_damaged = cptr.lit("%s %s is severely damaged.");
 const __s_left = cptr.lit("left");
 const __s_right = cptr.lit("right");
 const __s_leg_damage_from_being_pulled_out_of_a = cptr.lit("leg damage from being pulled out of a bear trap");
-const __s_litter = cptr.lit("litter");
 const __s_drop_s_and_s_s_down_the_stairs_with_you = cptr.lit("drop %s and %s %s down the stairs with you.");
 const __s_it = cptr.lit("it");
 const __s_they = cptr.lit("they");
 const __s_fall = cptr.lit("fall");
-const __s_drag_down = cptr.lit("drag_down");
 const __s_lose_your_grip_on_the_iron_ball = cptr.lit("lose your grip on the iron ball.");
 const __s_iron_ball_drags_you_downstairs = cptr.lit("iron ball drags you downstairs!");
 const __s_dragged_downstairs_by_an_iron_ball = cptr.lit("dragged downstairs by an iron ball");
@@ -137,10 +130,10 @@ export function ballfall() {
     if (!uball.v || (uball.v && (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && welded(uball.v)))
         return;
 
-    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar(rn2_at(__s_ball_c, 51, __s_ballfall, 5))) ? 1 : 0));
+    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar(rn2(5))) ? 1 : 0));
     ballrelease(1);
     if (gets_hit) {
-        let dmg = ((rn2_at(__s_ball_c, 54, __s_ballfall, 7) + 25) | 0);
+        let dmg = ((rn2(7) + 25) | 0);
 
         pline_The(__s_iron_ball_falls_on_your_s, body_part(NHC.HEAD));
         if (uarmh.v) {
@@ -259,7 +252,7 @@ export function unplacebc_and_covet_placebc() {
     if (bcrestriction) {
         impossible(__s_unplacebc_and_covet_placebc_denied);
     } else {
-        restriction = (bcrestriction = rnd_at(__s_ball_c, 229, __s_unplacebc_and_covet_placebc, 400));
+        restriction = (bcrestriction = rnd(400));
         unplacebc_core();
     }
     return restriction;
@@ -621,7 +614,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                             move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy));
                             break __lbl_drag;
                         }
-                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && rn2_at(__s_ball_c, 706, __s_drag_ball, 2))) {
+                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && rn2(2))) {
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
                     } else {
@@ -701,7 +694,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
             You(__s_are_jerked_back_by_the_iron_ball);
             if ((victim = (cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
                 let tmp;
-                let dieroll = rnd_at(__s_ball_c, 800, __s_drag_ball, 20);
+                let dieroll = rnd(20);
 
                 tmp = (((-2 + Luck()) | 0) + find_mac(victim)) | 0;
                 tmp = (tmp + omon_adj(victim, uball.v, 1)) | 0;
@@ -811,9 +804,9 @@ export function drop_ball(x, y) {
                 pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), hliquid(__s_lava));
                 break;
                 case NHC.TT_BEARTRAP:
-                side = rn2_at(__s_ball_c, 912, __s_drop_ball, 3) ? 131072n : 262144n;
+                side = rn2(3) ? 131072n : 262144n;
                 pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_bear_trap);
-                set_wounded_legs(side, ((rn2_at(__s_ball_c, 914, __s_drop_ball, 1000) + 500) | 0));
+                set_wounded_legs(side, ((rn2(1000) + 500) | 0));
                 if (!cptr.ldPtro(u, $you_usteed)) {
                     Your(__s_s_s_is_severely_damaged, (side == 131072n) ? __s_left : __s_right, body_part(NHC.LEG));
                     losehp(((Half_physical_damage()) ? 1 : 2), __s_leg_damage_from_being_pulled_out_of_a, NHM.KILLED_BY);
@@ -863,7 +856,7 @@ function litter() {
 
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
         nextobj = cptr.ldPtr(otmp);
-        if (!cptr.eq(otmp, uball.v) && rnd_at(__s_ball_c, 972, __s_litter, capacity) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
+        if (!cptr.eq(otmp, uball.v) && rnd(capacity) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
             if (canletgo(otmp, __s_empty)) {
                 You(__s_drop_s_and_s_s_down_the_stairs_with_you, yname(otmp), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they, otense(otmp, __s_fall));
                 setnotworn(otmp);
@@ -887,7 +880,7 @@ export function drag_down() {
      *     not wielding any weapon), or
      *  c) (perhaps) it falls forward out of his non-weapon hand
      */
-    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !rn2_at(__s_ball_c, 999, __s_drag_down, 3)) ? 1 : 0));
+    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !rn2(3)) ? 1 : 0));
 
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && !welded(uball.v))
         You(__s_lose_your_grip_on_the_iron_ball);
@@ -895,22 +888,22 @@ export function drag_down() {
     cls();
 
     if (forward) {
-        if (rn2_at(__s_ball_c, 1008, __s_drag_down, 6)) {
+        if (rn2(6)) {
             pline_The(__s_iron_ball_drags_you_downstairs);
-            losehp(((Half_physical_damage()) ? ((((rnd_at(__s_ball_c, 1010, __s_drag_down, 6) + 1) | 0) / 2) | 0) : rnd_at(__s_ball_c, 1010, __s_drag_down, 6)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
+            losehp(((Half_physical_damage()) ? ((((rnd(6) + 1) | 0) / 2) | 0) : rnd(6)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
             litter();
         }
     } else {
-        if (rn2_at(__s_ball_c, 1015, __s_drag_down, 2)) {
+        if (rn2(2)) {
             ;
             pline_The(__s_iron_ball_smacks_into_you);
-            losehp(((Half_physical_damage()) ? ((((rnd_at(__s_ball_c, 1018, __s_drag_down, 20) + 1) | 0) / 2) | 0) : rnd_at(__s_ball_c, 1018, __s_drag_down, 20)), __s_iron_ball_collision, NHM.KILLED_BY_AN);
+            losehp(((Half_physical_damage()) ? ((((rnd(20) + 1) | 0) / 2) | 0) : rnd(20)), __s_iron_ball_collision, NHM.KILLED_BY_AN);
             exercise(NHC.A_STR, 0);
             dragchance = uchar(dragchance - 2);
         }
-        if (dragchance >= rnd_at(__s_ball_c, 1023, __s_drag_down, 6)) {
+        if (dragchance >= rnd(6)) {
             pline_The(__s_iron_ball_drags_you_downstairs);
-            losehp(((Half_physical_damage()) ? ((((rnd_at(__s_ball_c, 1025, __s_drag_down, 3) + 1) | 0) / 2) | 0) : rnd_at(__s_ball_c, 1025, __s_drag_down, 3)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
+            losehp(((Half_physical_damage()) ? ((((rnd(3) + 1) | 0) / 2) | 0) : rnd(3)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX);
             exercise(NHC.A_STR, 0);
             litter();
         }

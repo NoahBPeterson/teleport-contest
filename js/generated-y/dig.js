@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_FURNITURE, IS_TREE, IS_WALL, bimanual, greatest_erosion, grounded, is_axe, is_floater, is_hole, is_magical_trap, is_pick, is_pit, is_watch, is_whirly, undestroyable_trap } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Blind, Deaf, Flying, Fumbling, Half_physical_damage, Hallucination, Invis, Levitation, Underwater, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { WIN_MESSAGE, disp, flags, gd, gm, gn, go, gu, gv, gy, iflags, svc, svd, svl, svm, u, uarmf, uarmh, uball, uchain, uwep, xdir, ydir } from './decl.js';
 import { cmd_from_dir, cmdq_add_ec, cmdq_add_key, confdir, dxdy_moveok, getdir, isok, movecmd, set_occupation, xytodir } from './cmd.js';
@@ -34,6 +33,7 @@ import { destroy_drawbridge, find_drawbridge, is_db_wall, is_drawbridge_wall, is
 import { Monnam, hliquid, mon_nam } from './do_name.js';
 import { dist2, s_suffix, sgn } from './hacklib.js';
 import { in_rooms, in_town, losehp, may_dig, nomul, obj_to_any, pooleffects, spot_checks, spoteffects, switch_terrain } from './hack.js';
+import { d, rn2, rnd, rnl } from './rnd.js';
 import { welded, wield_tool } from './wield.js';
 import { An, Yobjnam2, an, corpse_xname, otense, simpleonames, the, xname, yname, yobjnam } from './objnam.js';
 import { dropx, goto_level, set_wounded_legs } from './do.js';
@@ -157,8 +157,6 @@ const __s_this_tree_seems_to_be_petrified = cptr.lit("This tree seems to be petr
 const __s_this_s_is_too_hard_to_s = cptr.lit("This %s is too hard to %s.");
 const __s_drawbridge = cptr.lit("drawbridge");
 const __s_wall = cptr.lit("wall");
-const __s_dig_c = cptr.lit("dig.c");
-const __s_dig = cptr.lit("dig");
 const __s_fumble_and_drop_s = cptr.lit("fumble and drop %s.");
 const __s_s_and_s_s = cptr.lit("%s and %s %s!");
 const __s_bounce = cptr.lit("bounce");
@@ -189,7 +187,6 @@ const __s_rock = cptr.lit("rock");
 const __s_statue = cptr.lit("statue");
 const __s_boulder = cptr.lit("boulder");
 const __s_tree = cptr.lit("tree");
-const __s_fillholetyp = cptr.lit("fillholetyp");
 const __s_digactualhole_can_t_dig_s_on_this_level = cptr.lit("digactualhole: can't dig %s on this level.");
 const __s_floor = cptr.lit("floor");
 const __s_ground = cptr.lit("ground");
@@ -203,7 +200,6 @@ const __s_s_crumbles_into_s = cptr.lit("%s crumbles into %s.");
 const __s_s_appears_in_the_s = cptr.lit("%s appears in the %s.");
 const __s_s_falls_into_the_s = cptr.lit("%s falls into the %s!");
 const __s_ruin = cptr.lit("ruin");
-const __s_digactualhole = cptr.lit("digactualhole");
 const __s_s_s_over_the_pit = cptr.lit("%s %s over the pit.");
 const __s_flies = cptr.lit("flies");
 const __s_floats = cptr.lit("floats");
@@ -216,7 +212,6 @@ const __s_no_mesg = cptr.lit("no mesg");
 const __s_lava = cptr.lit("lava");
 const __s_s_shere_is_too_hard_to_dig_in = cptr.lit("%s %shere is too hard to dig in.");
 const __s_t = cptr.lit("t");
-const __s_dighole = cptr.lit("dighole");
 const __s_s_sloshes_furiously_for_a_moment_then = cptr.lit("%s sloshes furiously for a moment, then subsides.");
 const __s_drawbridge_seems_too_hard_to_dig_through = cptr.lit("drawbridge seems too hard to dig through.");
 const __s_boulder_settles_into_the_spit = cptr.lit("boulder settles into the %spit.");
@@ -226,7 +221,6 @@ const __s_as_you_dig_the_hole_fills_with_s = cptr.lit("As you dig, the hole fill
 const __s_like_a_despicable_grave_robber = cptr.lit("like a despicable grave-robber!");
 const __s_disturb_the_honorable_dead = cptr.lit("disturb the honorable dead!");
 const __s_have_violated_the_sanctity_of_this_grave = cptr.lit("have violated the sanctity of this grave!");
-const __s_dig_up_grave = cptr.lit("dig_up_grave");
 const __s_unearth_a_corpse = cptr.lit("unearth a corpse.");
 const __s_pct_s_bang = cptr.lit("%s!");
 const __s_dude_the_living_dead = cptr.lit("Dude!  The living dead");
@@ -235,6 +229,7 @@ const __s_i_want_my_mummy = cptr.lit("I want my mummy");
 const __s_you_ve_disturbed_a_tomb = cptr.lit("You've disturbed a tomb");
 const __s_grave_is_unoccupied_strange = cptr.lit("grave is unoccupied.  Strange...");
 const __s_swing = cptr.lit("swing");
+const __s_dig = cptr.lit("dig");
 const __s_s_you_can_t_s_while_entangled_in_a_web = cptr.lit("%s you can't %s while entangled in a web.");
 const __s_unfortunately = cptr.lit("Unfortunately,");
 const __s_but = cptr.lit("But");
@@ -244,7 +239,6 @@ const __s_chopping = cptr.lit("chopping");
 const __s_turbulence_torpedoes_your_s_attempts = cptr.lit("Turbulence torpedoes your %s attempts.");
 const __s_don_t_have_enough_leverage = cptr.lit("don't have enough leverage.");
 const __s_reach_the_s = cptr.lit("reach the %s.");
-const __s_use_pick_axe2 = cptr.lit("use_pick_axe2");
 const __s_hit_yourself_with_s = cptr.lit("hit yourself with %s.");
 const __s_s_own_s = cptr.lit("%s own %s");
 const __s_clash = cptr.lit("Clash!");
@@ -280,7 +274,6 @@ const __s_cutting_the_tree = cptr.lit("cutting the tree");
 const __s_halt_vandal_you_re_under_arrest = cptr.lit("Halt, vandal!  You're under arrest!");
 const __s_fountain = cptr.lit("fountain");
 const __s_hey_stop_damaging_that_s = cptr.lit("Hey, stop damaging that %s!");
-const __s_mdig_tunnel = cptr.lit("mdig_tunnel");
 const __s_mdig_tunnel_s_at_d_d_is_undiggable = cptr.lit("mdig_tunnel:  %s at (%d,%d) is undiggable");
 const __s_stone = cptr.lit("stone");
 const __s_crashing_rock = cptr.lit("crashing rock.");
@@ -289,7 +282,6 @@ const __s_like_you_are_s = cptr.lit("like you are %s.");
 const __s_4_f = cptr.lit("4-F");
 const __s_1_a = cptr.lit("1-A");
 const __s_a_draft = cptr.lit("a draft.");
-const __s_draft_message = cptr.lit("draft_message");
 const __s_like_s = cptr.lit("like %s.");
 const __s_enlisting = cptr.lit("enlisting");
 const __s_marching = cptr.lit("marching");
@@ -301,7 +293,6 @@ const __s_ladder = cptr.lit("ladder");
 const __s_stairs = cptr.lit("stairs");
 const __s_loosen_a_rock_from_the_s = cptr.lit("loosen a rock from the %s.");
 const __s_it_falls_on_your_s = cptr.lit("It falls on your %s!");
-const __s_zap_dig = cptr.lit("zap_dig");
 const __s_falling_rock = cptr.lit("falling rock");
 const __s_door_is_razed = cptr.lit("door is razed!");
 const __s_wall_glows_then_fades = cptr.lit("wall glows then fades.");
@@ -318,8 +309,8 @@ const __s_throne = cptr.lit("throne");
 const __s_altar = cptr.lit("altar");
 const __s_the_s_supporting_structures_remain = cptr.lit("The %s supporting structures remain intact.");
 const __s_suddenly_s_flows_in_from_the_adjacent = cptr.lit("Suddenly %s flows in from the adjacent pit!");
+const __s_dig_c = cptr.lit("dig.c");
 const __s_bury_an_obj_s = cptr.lit("bury_an_obj: %s");
-const __s_bury_an_obj = cptr.lit("bury_an_obj");
 const __s_iron_ball_gets_buried = cptr.lit("iron ball gets buried!");
 const __s_bury_objs_at_d_d = cptr.lit("bury_objs: at <%d,%d>");
 const __s_owe_s_ld_s_for_burying_merchandise = cptr.lit("owe %s %ld %s for burying merchandise.");
@@ -622,8 +613,8 @@ function* dig() {
             return 0;
         }
     }
-    if (Fumbling() && !rn2_at(__s_dig_c, 336, __s_dig, 3)) {
-        switch (rn2_at(__s_dig_c, 337, __s_dig, 3)) {
+    if (Fumbling() && !rn2(3)) {
+        switch (rn2(3)) {
             case 0:
             if (!(yield* welded(uwep.v))) {
                 (yield* You(__s_fumble_and_drop_s, (yield* yname(uwep.v))));
@@ -633,7 +624,7 @@ function* dig() {
                     (yield* pline(__s_s_and_s_s, (yield* Yobjnam2(uwep.v, __s_bounce)), (yield* otense(uwep.v, __s_hit)), (yield* mon_nam(cptr.ldPtro(u, $you_usteed)))));
                 else
                     (yield* pline(__s_ouch_s_and_s_you, (yield* Yobjnam2(uwep.v, __s_bounce)), (yield* otense(uwep.v, __s_hit))));
-                (yield* set_wounded_legs(262144n, (5 + rnd_at(__s_dig_c, 349, __s_dig, 5)) | 0));
+                (yield* set_wounded_legs(262144n, (5 + rnd(5)) | 0));
             }
             break;
             case 1:
@@ -648,7 +639,7 @@ function* dig() {
         return 0;
     }
 
-    cptr.stI32o(svc, $context_info_digging, (cptr.ldI32o(svc, $context_info_digging) + ((((((((((10 + rn2_at(__s_dig_c, 366, __s_dig, 5)) | 0) + (yield* abon())) | 0) + cptr.ld1so(uwep.v, $obj_spe)) | 0) - greatest_erosion(uwep.v)) | 0) + cptr.ld1so(u, $you_udaminc)) | 0)) | 0);
+    cptr.stI32o(svc, $context_info_digging, (cptr.ldI32o(svc, $context_info_digging) + ((((((((((10 + rn2(5)) | 0) + (yield* abon())) | 0) + cptr.ld1so(uwep.v, $obj_spe)) | 0) - greatest_erosion(uwep.v)) | 0) + cptr.ld1so(u, $you_udaminc)) | 0)) | 0);
     if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))
         cptr.stI32o(svc, $context_info_digging, Math.imul(cptr.ldI32o(svc, $context_info_digging), 2));
     if (cptr.ld1so(svc, $context_info_digging + $dig_info_down)) {
@@ -670,7 +661,7 @@ function* dig() {
             void __builtin___memset_chk(cptr.add(svc, $context_info_digging), 0, 32n, __builtin_object_size(cptr.add(svc, $context_info_digging), 0));
             return 0;
         } else if (ttmp && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP && cptr.ldI32o(u, $you_utrap)) {
-            if (rnl_at(__s_dig_c, 393, __s_dig, 7) > (Fumbling() ? 1 : 4)) {
+            if (rnl(7) > (Fumbling() ? 1 : 4)) {
                 let kbuf = new Uint8Array(256);
                 let dmg = ((yield* dmgval(uwep.v, cptr.add(gy, $instance_globals_y_youmonst))) + dbon()) | 0;
 
@@ -741,10 +732,10 @@ function* dig() {
                 digtxt = __s_the_boulder_falls_apart;
             } else if (cptr.ld1so(lev, $rm_typ) == NHC.STONE || cptr.ld1so(lev, $rm_typ) == NHC.SCORR || IS_TREE(cptr.ld1so(lev, $rm_typ))) {
                 if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))) {
-                    if ((cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && !rn2_at(__s_dig_c, 468, __s_dig, 3)) {
+                    if ((cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && !rn2(3)) {
                         (yield* mkcavearea(0));
                         break __lbl_cleanup;
-                    } else if (((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 && !rn2_at(__s_dig_c, 471, __s_dig, 4)) || (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) && !rn2_at(__s_dig_c, 472, __s_dig, 6))) {
+                    } else if (((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 && !rn2(4)) || (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) && !rn2(6))) {
                         (yield* mkcavearea(1));
                         break __lbl_cleanup;
                     }
@@ -752,7 +743,7 @@ function* dig() {
                 if (digtyp == NHC.DIGTYP_TREE) {
                     digtxt = __s_you_cut_down_the_tree;
                     cptr.st1o(lev, $rm_typ, NHC.ROOM), cptr.stI32o(lev, $rm_flags, 0);
-                    if (!rn2_at(__s_dig_c, 480, __s_dig, 5))
+                    if (!rn2(5))
                         void (yield* rnd_treefruit_at(dpx, dpy));
                     if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER))
                         adjalign(-1);
@@ -798,8 +789,8 @@ function* dig() {
             if (dmgtxt)
                 (yield* pay_for_damage(dmgtxt, 0));
 
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && !rn2_at(__s_dig_c, 528, __s_dig, 3)) {
-                let mndx = rn2_at(__s_dig_c, 529, __s_dig, 2) ? NHC.PM_EARTH_ELEMENTAL : NHC.PM_XORN;
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && !rn2(3)) {
+                let mndx = rn2(2) ? NHC.PM_EARTH_ELEMENTAL : NHC.PM_XORN;
 
                 if ((yield* makemon(cptr.add(mons, mndx, $sizeof_permonst), dpx, dpy, NHM.MM_NOMSG)))
                     (yield* pline_The(__s_debris_from_your_digging_comes_to_life));
@@ -895,11 +886,11 @@ export function fillholetyp(x, y, fill_if_any) {
     if (!fill_if_any)
         pool_cnt = (pool_cnt / 3) | 0;  /* not as much liquid as the others */
 
-    if ((lava_cnt > ((moat_cnt + pool_cnt) | 0) && rn2_at(__s_dig_c, 628, __s_fillholetyp, (lava_cnt + 1) | 0)) || (lava_cnt && fill_if_any))
+    if ((lava_cnt > ((moat_cnt + pool_cnt) | 0) && rn2((lava_cnt + 1) | 0)) || (lava_cnt && fill_if_any))
         return NHC.LAVAPOOL;
-    else if ((moat_cnt > 0 && rn2_at(__s_dig_c, 631, __s_fillholetyp, (moat_cnt + 1) | 0)) || (moat_cnt && fill_if_any))
+    else if ((moat_cnt > 0 && rn2((moat_cnt + 1) | 0)) || (moat_cnt && fill_if_any))
         return NHC.MOAT;
-    else if ((pool_cnt > 0 && rn2_at(__s_dig_c, 633, __s_fillholetyp, (pool_cnt + 1) | 0)) || (pool_cnt && fill_if_any))
+    else if ((pool_cnt > 0 && rn2((pool_cnt + 1) | 0)) || (pool_cnt && fill_if_any))
         return NHC.POOL;
     else
         return NHC.ROOM;
@@ -1007,7 +998,7 @@ export function* digactualhole(x, y, madeby, ttyp) {
 
         if (at_u) {
             if (!wont_fall) {
-                set_utrap(((rn2_at(__s_dig_c, 739, __s_digactualhole, 4) + 2) | 0) >>> 0, NHC.TT_PIT);
+                set_utrap(((rn2(4) + 2) | 0) >>> 0, NHC.TT_PIT);
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* vision limits change */
             } else
                 (yield* reset_utrap(1));
@@ -1170,7 +1161,7 @@ export function* dighole(pit_only, by_magic, cc) {
     if ((ttmp && (undestroyable_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || nohole)) || (((old_typ) < NHC.POOL) && old_typ != NHC.SDOOR && (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0)) {
         (yield* pline_The(__s_s_shere_is_too_hard_to_dig_in, surface(dig_x, dig_y), (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __s_t : __s_empty));
     } else if (ttmp && is_magical_trap((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) {
-        (yield* explode(dig_x, dig_y, 0, (20 + d_at(__s_dig_c, 919, __s_dighole, 3, 6)) | 0, (schar(((NHC.MAXOCLASSES + 3) | 0))), NHC.EXPL_MAGICAL));
+        (yield* explode(dig_x, dig_y, 0, (20 + d(3, 6)) | 0, (schar(((NHC.MAXOCLASSES + 3) | 0))), NHC.EXPL_MAGICAL));
         (yield* deltrap(ttmp));
         (yield* newsym(dig_x, dig_y));
     } else if (is_pool_or_lava(dig_x, dig_y)) {
@@ -1193,7 +1184,7 @@ export function* dighole(pit_only, by_magic, cc) {
         }
 
     } else if ((boulder_here = sobj_at(NHC.BOULDER, dig_x, dig_y)) !== null) {
-        if (ttmp && is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && rn2_at(__s_dig_c, 944, __s_dighole, 2)) {
+        if (ttmp && is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) && rn2(2)) {
             (yield* pline_The(__s_boulder_settles_into_the_spit, (dig_x != cptr.ldI16(u) || dig_y != cptr.ldI16o(u, $you_uy)) ? __s_adjacent : __s_empty));
             cptr.stI32o(ttmp, $trap_ttyp, NHC.PIT);  /* crush spikes */
         } else {
@@ -1299,7 +1290,7 @@ function* dig_up_grave(cc) {
     }
 
     /* -1: force default case for empty grave */
-    what_happens = (cptr.ldI32o3(svl, dig_x, $sizeof_rm_x21, dig_y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0 ? -1 : rn2_at(__s_dig_c, 1058, __s_dig_up_grave, 5);
+    what_happens = (cptr.ldI32o3(svl, dig_x, $sizeof_rm_x21, dig_y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0 ? -1 : rn2(5);
     switch (what_happens) {
         case 0:
         case 1:
@@ -1433,7 +1424,7 @@ export function* use_pick_axe2(obj) {
         let buf = new Uint8Array(256);
         let dam;
 
-        dam = (((rnd_at(__s_dig_c, 1184, __s_use_pick_axe2, 2) + dbon()) | 0) + cptr.ld1so(obj, $obj_spe)) | 0;
+        dam = (((rnd(2) + dbon()) | 0) + cptr.ld1so(obj, $obj_spe)) | 0;
         if (dam <= 0)
             dam = 1;
         (yield* You(__s_hit_yourself_with_s, (yield* yname(uwep.v))));
@@ -1467,7 +1458,7 @@ export function* use_pick_axe2(obj) {
                 (yield* pline(__s_s_entangled_in_the_web, (yield* Yobjnam2(obj, __s_become))));
                 /* you ought to be able to let go; tough luck */
                 /* (maybe `move_into_trap()' would be better) */
-                nomul(-d_at(__s_dig_c, 1218, __s_use_pick_axe2, 2, 2));
+                nomul(-d(2, 2));
                 cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_stuck_in_a_spider_web);
                 cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_pull_free);
             } else if (cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) {
@@ -1488,7 +1479,7 @@ export function* use_pick_axe2(obj) {
                 let what = boulder ? __s_boulder : __s_statue;
 
                 if (!ispick) {
-                    let vibrate = schar((!rn2_at(__s_dig_c, 1240, __s_use_pick_axe2, 3)));
+                    let vibrate = schar((!rn2(3)));
 
                     (yield* pline(__s_sparks_fly_as_you_whack_the_s_s, what, vibrate ? __s_the_axe_handle_vibrates_violently : __s_empty));
                     if (vibrate)
@@ -1630,7 +1621,7 @@ export function* mdig_tunnel(mtmp) {
     let sawit;
     let seeit;
     let trapped;
-    let pile = rnd_at(__s_dig_c, 1418, __s_mdig_tunnel, 12);
+    let pile = rnd(12);
 
     here = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21), cptr.ldI16o(mtmp, $monst_my), $sizeof_rm);
     if (cptr.ld1so(here, $rm_typ) == NHC.SDOOR)
@@ -1654,7 +1645,7 @@ export function* mdig_tunnel(mtmp) {
             }
         } else {
             if (cptr.ld1so(flags, $flag_verbose)) {
-                if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) && !rn2_at(__s_dig_c, 1442, __s_mdig_tunnel, 3))
+                if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) && !rn2(3))
                     (yield* draft_message(1));  /* "You feel an unexpected draft." */
             }
         }
@@ -1677,7 +1668,7 @@ export function* mdig_tunnel(mtmp) {
 
     if (IS_WALL(cptr.ld1so(here, $rm_typ))) {
         /* KMH -- Okay on arboreal levels (room walls are still stone) */
-        if (cptr.ld1so(flags, $flag_verbose) && !rn2_at(__s_dig_c, 1468, __s_mdig_tunnel, 5)) {
+        if (cptr.ld1so(flags, $flag_verbose) && !rn2(5)) {
             ;
             (yield* You_hear(__s_crashing_rock));
         }
@@ -1738,10 +1729,10 @@ export function* draft_message(unexpected) {
             let dridx;
 
             /* Lawful: 0..1, Neutral: 1..2, Chaotic: 2..3 */
-            dridx = ((rn2_at(__s_dig_c, 1537, __s_draft_message, 2) + ((1 - sgn(cptr.ld1so(u, $you_ualign))) | 0)) | 0);
+            dridx = ((rn2(2) + ((1 - sgn(cptr.ld1so(u, $you_ualign))) | 0)) | 0);
             if (cptr.ldI32o(u, $you_ualign + $align_record) < 4)
                 /* L: +(0..2), N: +(-1..1), C: +(-2..0); all: 0..3 */
-                dridx = (dridx + ((rn2_at(__s_dig_c, 1540, __s_draft_message, 3) + ((sgn(cptr.ld1so(u, $you_ualign)) - 1) | 0)) | 0)) | 0;
+                dridx = (dridx + ((rn2(3) + ((sgn(cptr.ld1so(u, $you_ualign)) - 1) | 0)) | 0)) | 0;
             (yield* You_feel(__s_like_s, cptr.ldPtro(__static_draft_message_draft_reaction, dridx, 8)));
         }
     }
@@ -1801,7 +1792,7 @@ export function* zap_dig() {
                 }
                 (yield* You(__s_loosen_a_rock_from_the_s, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
                 (yield* pline(__s_it_falls_on_your_s, (yield* body_part(NHC.HEAD))));
-                dmg = rnd_at(__s_dig_c, 1596, __s_zap_dig, hard_helmet(uarmh.v) ? 2 : 6);
+                dmg = rnd(hard_helmet(uarmh.v) ? 2 : 6);
                 (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_falling_rock, NHM.KILLED_BY_AN));
                 otmp = (yield* mksobj_at(NHC.ROCK, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 0));
                 if (otmp) {
@@ -1826,7 +1817,7 @@ export function* zap_dig() {
         pitdig = 1;
         diridx = xytodir(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy));
     }
-    digdepth = ((rn2_at(__s_dig_c, 1622, __s_zap_dig, 18) + 8) | 0);
+    digdepth = ((rn2(18) + 8) | 0);
     (yield* tmp_at(-1, (i16(((((((NHC.S_digbeam) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
     while (--digdepth >= 0) {
         if (!isok(zx, zy))
@@ -2171,7 +2162,7 @@ export function* bury_an_obj(otmp, dealloced) {
         cptr.st1(dealloced, 0);
     if (cptr.eq(otmp, uball.v)) {
         (yield* unpunish());
-        set_utrap(((rn2_at(__s_dig_c, 1994, __s_bury_an_obj, 50) + 20) | 0) >>> 0, NHC.TT_BURIEDBALL);
+        set_utrap(((rn2(50) + 20) | 0) >>> 0, NHC.TT_BURIEDBALL);
         (yield* pline_The(__s_iron_ball_gets_buried));
     }
     /* after unpunish(), or might get deallocated chain */
@@ -2210,7 +2201,7 @@ export function* bury_an_obj(otmp, dealloced) {
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE) {
         ;  /* should cancel timer if under_ice */
     } else if ((under_ice ? (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) : (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) <= NHC.WOOD)) && !obj_resists(otmp, 5, 95)) {
-        void (yield* start_timer(BigInt.asIntN(64, (under_ice ? 0n : 250n) + BigInt(rnd_at(__s_dig_c, 2034, __s_bury_an_obj, 250))), NHC.TIMER_OBJECT, NHC.ROT_ORGANIC, obj_to_any(otmp)));
+        void (yield* start_timer(BigInt.asIntN(64, (under_ice ? 0n : 250n) + BigInt(rnd(250))), NHC.TIMER_OBJECT, NHC.ROT_ORGANIC, obj_to_any(otmp)));
     }
     (yield* add_to_buried(otmp));
     return otmp2;

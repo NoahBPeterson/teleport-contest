@@ -12,14 +12,13 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { gm, gn, gs, svl, svn, svr, u } from './decl.js';
+import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { isok } from './cmd.js';
 import { add_room } from './mklev.js';
 import { somexy } from './mkroom.js';
 import { impossible } from './pline.js';
 import { dig_corridor, wallify_map } from './sp_lev.js';
-import { rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { depth } from './dungeon.js';
 import { alloc } from './alloc.js';
 
@@ -47,11 +46,9 @@ const $dlevel_t_flags = FLD.dlevel_t_flags, $instance_globals_m_max_rx = FLD.ins
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_mkmap_c = cptr.lit("mkmap.c");
-const __s_init_fill = cptr.lit("init_fill");
 const __s_no_start_end_room_loc_in_join_map = cptr.lit("No start/end room loc in join_map.");
-const __s_join_map = cptr.lit("join_map");
 const __s_regular_room_in_joined_map = cptr.lit("regular room in joined map");
+const __s_mkmap_c = cptr.lit("mkmap.c");
 const __s_litstate_rnd = cptr.lit("litstate_rnd");
 
 /** C ref: mkmap.c:24 — @param {CInt} bg_typ */
@@ -77,8 +74,8 @@ function init_fill(bg_typ, fg_typ) {
     limit = 624n;
     count = 0n;
     while (count < limit) {
-        x = i16(((rn2_at(__s_mkmap_c, 45, __s_init_fill, 77) + 2) | 0));
-        y = i16(rnd_at(__s_mkmap_c, 46, __s_init_fill, 19));
+        x = i16(((rn2(77) + 2) | 0));
+        y = i16(rnd(19));
         if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == bg_typ) {
             cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, fg_typ);
             count++;
@@ -352,7 +349,7 @@ function* join_map(bg_typ, fg_typ) {
 
         /* choose next region to join */
         /* only increment croom if croom and croom2 are non-overlapping */
-        if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) || ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) || cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) && rn2_at(__s_mkmap_c, 322, __s_join_map, 3))) {
+        if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) || ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) || cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) && rn2(3))) {
             croom = croom2;
         }
         croom2 = cptr.add(croom2, 1, 224);  /* always increment the next room */
@@ -460,7 +457,7 @@ function remove_room(roomno) {
 /** C ref: mkmap.c:443 — @param {CInt} litstate @returns {CInt} */
 export function litstate_rnd(litstate) {
     if (litstate < 0)
-        return schar((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd), rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 && rn2_at(__s_mkmap_c, 446, __s_litstate_rnd, 77)) ? 1 : 0));
+        return schar((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd), rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 && rn2(77)) ? 1 : 0));
     return schar(litstate);
 }
 

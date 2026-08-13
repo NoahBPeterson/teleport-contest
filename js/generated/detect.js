@@ -9,13 +9,12 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_FURNITURE, Is_box, SchroedingersBox, canspotmon, glyph_is_cmap, glyph_is_monster, glyph_is_object, glyph_is_swallow, glyph_is_trap, glyph_is_warning, glyph_to_mon, glyph_to_obj, has_mcorpsenm, helpless, is_cmap_furniture } from './nhmacrofn.js';
-import { rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Blind, BlindedTimeout, Clairvoyant, Deaf, EDetect_monsters, HConfusion, HHallucination, HStun, Half_physical_damage, Hallucination, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, c_common_strings, cg, flags, ga, gd, gf, gi, gk, gm, gn, gs, gu, gv, gy, iflags, quitchars, svd, svl, u, ublindf, uwep } from './decl.js';
 import { back_to_glyph, canseemon, cls, docrt, feel_location, feel_newsym, flash_glyph_at, flush_screen, glyph_at, magic_map_background, map_background, map_engraving, map_invisible, map_object, map_trap, mon_visible, newsym, see_monsters, sensemon, show_glyph, swallowed, under_ground, under_water, unmap_invisible, unmap_object, warning_of, xy_set_wall_state } from './display.js';
 import { getpos } from './getpos.js';
 import { def_char_is_furniture, def_char_to_monclass, def_char_to_objclass, def_monsyms, def_oc_syms } from './drawing.js';
-import { rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
 import { mons } from './monst.js';
 import { detect_wsegs } from './worm.js';
 import { consume_obj_charge, currency, sobj_at, useup } from './invent.js';
@@ -123,15 +122,11 @@ const $NhRegion_glyph = FLD.NhRegion_glyph, $Race_mnum = FLD.Race_mnum,
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_detect_c = cptr.lit("detect.c");
-const __s_trapped_chest_at = cptr.lit("trapped_chest_at");
-const __s_trapped_door_at = cptr.lit("trapped_door_at");
 const __s_you_feel_like_a_million_s = cptr.lit("You feel like a million %s!");
 const __s_you_feel_worried_about_your_future = cptr.lit("You feel worried about your future financial situation.");
 const __s_you_feel_interested_in_s_financial = cptr.lit("You feel interested in %s financial situation.");
 const __s_you_feel_materially_poor = cptr.lit("You feel materially poor.");
 const __s_notice_some_gold_between_your_s = cptr.lit("notice some gold between your %s.");
-const __s_gold_detect = cptr.lit("gold_detect");
 const __s_very_greedy_and_sense_gold = cptr.lit("very greedy, and sense gold!");
 const __s_gold = cptr.lit("gold");
 const __s_food = cptr.lit("food");
@@ -153,7 +148,6 @@ const __s_objects = cptr.lit("objects");
 const __s_and_or_large_stones = cptr.lit(" and/or large stones");
 const __s_you_feel_a_lack_of_something = cptr.lit("You feel a lack of something.");
 const __s_sense_s_nearby = cptr.lit("sense %s nearby.");
-const __s_object_detect = cptr.lit("object_detect");
 const __s_detect_the_s_of_s = cptr.lit("detect the %s of %s.");
 const __s_presence = cptr.lit("presence");
 const __s_absence = cptr.lit("absence");
@@ -163,7 +157,6 @@ const __s_you_feel_threatened = cptr.lit("You feel threatened.");
 const __s_sense_the_presence_of_monsters = cptr.lit("sense the presence of monsters.");
 const __s_monsters_sense_the_presence_of_you = cptr.lit("Monsters sense the presence of you.");
 const __s_monster_of_interest = cptr.lit("monster of interest");
-const __s_sense_trap = cptr.lit("sense_trap");
 const __s_pct_s_dot = cptr.lit("%s.");
 const __s_very_greedy = cptr.lit("very greedy");
 const __s_entrapped = cptr.lit("entrapped");
@@ -173,7 +166,6 @@ const __s_s_itch = cptr.lit("%s itch.");
 const __s_seems_to_be_nothing_of_interest_on_this = cptr.lit("seems to be nothing of interest on this level.");
 const __s_map_already_shows_all_relevant_locations = cptr.lit("map already shows all relevant locations.");
 const __s_location = cptr.lit("location");
-const __s_level_distance = cptr.lit("level_distance");
 const __s_far_away = cptr.lit("far away");
 const __s_far_below = cptr.lit("far below");
 const __s_away_below_you = cptr.lit("away below you");
@@ -190,6 +182,7 @@ const __s_medusa_s_lair = cptr.lit("Medusa's lair");
 const __s_a_castle = cptr.lit("a castle");
 const __s_the_wizard_of_yendor_s_tower = cptr.lit("the Wizard of Yendor's tower");
 const __s_too_bad_you_can_t_see_s = cptr.lit("Too bad you can't see %s.");
+const __s_detect_c = cptr.lit("detect.c");
 const __s_use_crystal_ball = cptr.lit("use_crystal_ball");
 const __s_s_too_much_to_comprehend = cptr.lit("%s too much to comprehend!");
 const __s_are = cptr.lit("are");
@@ -224,7 +217,6 @@ const __s_gazing_into_a_crystal_ball = cptr.lit("gazing into a crystal ball");
 const __s_vision_is_unclear = cptr.lit("vision is unclear.");
 const __s_s_s = cptr.lit("%s, %s.");
 const __s_the_wizard_of_yendor_gazing_out_at_you = cptr.lit("the Wizard of Yendor gazing out at you.");
-const __s_show_map_spot = cptr.lit("show_map_spot");
 const __s_anything_of_interest = cptr.lit("anything of interest");
 const __s_sense_your_surroundings = cptr.lit("sense your surroundings.");
 const __s_door = cptr.lit("door");
@@ -261,7 +253,6 @@ const __s_to_check_nearby = cptr.lit("to check nearby");
 const __s_look_close_by = cptr.lit("look close by");
 const __s_an_unseen_monster = cptr.lit("an unseen monster!");
 const __s_what_are_you_looking_for_the_exit = cptr.lit("What are you looking for?  The exit?");
-const __s_dosearch0 = cptr.lit("dosearch0");
 const __s_find_a_hidden_door = cptr.lit("find a hidden door.");
 const __s_find_a_hidden_passage = cptr.lit("find a hidden passage.");
 const __s_searching = cptr.lit("Searching");
@@ -356,7 +347,7 @@ export function trapped_chest_at(ttyp, x, y) {
 
     if (!glyph_is_trap(glyph_at(x, y)))
         return 0;
-    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && rn2_at(__s_detect_c, 146, __s_trapped_chest_at, 20)))
+    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && rn2(20)))
         return 0;
 
     /*
@@ -397,7 +388,7 @@ export function trapped_door_at(ttyp, x, y) {
 
     if (!glyph_is_trap(glyph_at(x, y)))
         return 0;
-    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && rn2_at(__s_detect_c, 188, __s_trapped_door_at, 20)))
+    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && rn2(20)))
         return 0;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (!((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
@@ -635,7 +626,7 @@ export function gold_detect(sobj) {
         if (findgold(cptr.ldPtro(mtmp, $monst_minvent)) || (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == NHC.PM_GOLD_GOLEM) {
             cptr.memcpy(gold, cg, 216);  /* ensure oextra is cleared too */
             cptr.stI16o(gold, $obj_otyp, NHC.GOLD_PIECE);
-            cptr.stI64o(gold, $obj_quan, BigInt(rnd_at(__s_detect_c, 442, __s_gold_detect, 10)));  /* usually more than 1 */
+            cptr.stI64o(gold, $obj_quan, BigInt(rnd(10)));  /* usually more than 1 */
             cptr.stI16o(gold, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(gold, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
             map_object(gold, 1);
@@ -954,7 +945,7 @@ export function object_detect(detector, class$) {
 
             cptr.memcpy(gold, cg, 216);  /* ensure oextra is cleared too */
             cptr.stI16o(gold, $obj_otyp, NHC.GOLD_PIECE);
-            cptr.stI64o(gold, $obj_quan, BigInt(rnd_at(__s_detect_c, 770, __s_object_detect, 10)));  /* usually more than 1 */
+            cptr.stI64o(gold, $obj_quan, BigInt(rnd(10)));  /* usually more than 1 */
             cptr.stI16o(gold, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(gold, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
             map_object(gold, 1);
@@ -1057,7 +1048,7 @@ function sense_trap(trap, x, y, src_cursed) {
             cptr.stI16o(obj, $obj_oy, y);
         }
         cptr.stI16o(obj, $obj_otyp, i16((!Hallucination() ? NHC.GOLD_PIECE : (((rn2)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))));
-        cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? rnd_at(__s_detect_c, 879, __s_sense_trap, 10) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 ? rnd_at(__s_detect_c, 880, __s_sense_trap, 2) : 1))));
+        cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? rnd(10) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 ? rnd(2) : 1))));
         cptr.stI32o(obj, $obj_corpsenm, ((rn2)(NHC.NUMMONS)));  /* if otyp == CORPSE */
         map_object(obj, 1);
     } else if (trap) {
@@ -1314,7 +1305,7 @@ export function level_distance(where) {
     let res = __s_empty;  /* always replaced by some other non-Null value */
 
     if (ll < 0) {
-        if (ll < ((-8 - rn2_at(__s_detect_c, 1149, __s_level_distance, 3)) | 0))
+        if (ll < ((-8 - rn2(3)) | 0))
             if (!indun)
                 res = __s_far_away;
             else
@@ -1329,7 +1320,7 @@ export function level_distance(where) {
         else
             res = __s_just_below;
     } else if (ll > 0) {
-        if (ll > ((8 + rn2_at(__s_detect_c, 1164, __s_level_distance, 3)) | 0))
+        if (ll > ((8 + rn2(3)) | 0))
             if (!indun)
                 res = __s_far_away;
             else
@@ -1385,10 +1376,10 @@ export function use_crystal_ball(optr) {
         return;
     }
     oops = is_quest_artifact(obj) ? 8 : ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 16 : 20);
-    if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || rnd_at(__s_detect_c, 1218, __s_use_crystal_ball, oops) > (acurr(NHC.A_INT)))) {
+    if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || rnd(oops) > (acurr(NHC.A_INT)))) {
         let impair = BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1219, __s_use_crystal_ball), rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)) : rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)));
 
-        switch (rnd_at(__s_detect_c, 1221, __s_use_crystal_ball, (cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5)) {
+        switch (rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5)) {
             case 1:
             pline(__s_s_too_much_to_comprehend, Tobjnam(obj, __s_are));
             break;
@@ -1416,7 +1407,7 @@ export function use_crystal_ball(optr) {
             useup(obj);
             cptr.stPtr(optr, obj = null);  /* it's gone */
             /* physical damage cause by the shards and force */
-            losehp(((Half_physical_damage()) ? ((((rnd_at(__s_detect_c, 1250, __s_use_crystal_ball, 30) + 1) | 0) / 2) | 0) : rnd_at(__s_detect_c, 1250, __s_use_crystal_ball, 30)), __s_exploding_crystal_ball, NHM.KILLED_BY_AN);
+            losehp(((Half_physical_damage()) ? ((((rnd(30) + 1) | 0) / 2) | 0) : rnd(30)), __s_exploding_crystal_ball, NHM.KILLED_BY_AN);
             break;
         }
         if (obj)
@@ -1425,7 +1416,7 @@ export function use_crystal_ball(optr) {
     }
 
     if (Hallucination()) {
-        nomul(-rnd_at(__s_detect_c, 1260, __s_use_crystal_ball, charged ? 4 : 2));
+        nomul(-rnd(charged ? 4 : 2));
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_gazing_into_a_magic_8_ball_tm);
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
 
@@ -1439,7 +1430,7 @@ export function use_crystal_ball(optr) {
                     return;
                 }  /* destroy it when it has been cancelled */
         } else {
-            switch (rnd_at(__s_detect_c, 1269, __s_use_crystal_ball, 6)) {
+            switch (rnd(6)) {
                 case 1:
                 You(__s_grok_some_groovy_globs_of_incandescent);
                 break;
@@ -1480,7 +1471,7 @@ export function use_crystal_ball(optr) {
      */
 
     You(__s_peer_into_s, the(xname(obj)));
-    nomul(-rnd_at(__s_detect_c, 1313, __s_use_crystal_ball, charged ? 10 : 2));
+    nomul(-rnd(charged ? 10 : 2));
     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_gazing_into_a_crystal_ball);
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
 
@@ -1520,13 +1511,13 @@ export function use_crystal_ball(optr) {
         } else if (ch == 94) {
             ret = trap_detect(null);
         } else {
-            i = rn2_at(__s_detect_c, 1354, __s_use_crystal_ball, 4);
+            i = rn2(4);
             You_see(__s_s_s, cptr.ldPtro(level_detects, i, $sizeof_crystalballlevels), level_distance(cptr.ldPtro2(level_detects, i, $sizeof_crystalballlevels, $crystalballlevels_where)));
             ret = 0;
         }
 
         if (ret) {
-            if (!rn2_at(__s_detect_c, 1361, __s_use_crystal_ball, 100))
+            if (!rn2(100))
                 You_see(__s_the_wizard_of_yendor_gazing_out_at_you);
             else
                 pline_The(__s_vision_is_unclear);
@@ -1543,7 +1534,7 @@ export function show_map_spot(x, y, cnf) {
     let ep;
     let oldglyph;
 
-    if (cnf && rn2_at(__s_detect_c, 1379, __s_show_map_spot, 7))
+    if (cnf && rn2(7))
         return;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
 
@@ -2137,7 +2128,7 @@ export function dosearch0(aflag) {
                 if (!aflag && (Blind() || visible_region_at(x, y)))
                     feel_location(x, y);
                 if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
-                    if (rnl_at(__s_detect_c, 2043, __s_dosearch0, (7 - fund) | 0))
+                    if (rnl((7 - fund) | 0))
                         continue;
                     cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));  /* .typ = DOOR */
                     recalc_block_point(x, y);
@@ -2147,7 +2138,7 @@ export function dosearch0(aflag) {
                     set_msg_xy(x, y);
                     You(__s_find_a_hidden_door);
                 } else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SCORR) {
-                    if (rnl_at(__s_detect_c, 2053, __s_dosearch0, (7 - fund) | 0))
+                    if (rnl((7 - fund) | 0))
                         continue;
                     cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.CORR);
                     unblock_point(x, y);  /* vision */
@@ -2173,7 +2164,7 @@ export function dosearch0(aflag) {
                     if (!aflag && !mtmp && !Blind())
                         void unmap_invisible(x, y);
 
-                    if ((trap = t_at(x, y)) && !(cptr.ldI32o(trap, $trap_tseen) & 1) && !rnl_at(__s_detect_c, 2079, __s_dosearch0, 8)) {
+                    if ((trap = t_at(x, y)) && !(cptr.ldI32o(trap, $trap_tseen) & 1) && !rnl(8)) {
                         nomul(0);
                         if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP) {
                             if (activate_statue_trap(trap, x, y, 0))

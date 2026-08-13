@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { nonliving } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Blind, BlindedTimeout, Breathless, Half_gas_damage, Half_physical_damage, Poison_resistance, putstr, sokoban_dnum } from './nhprop.js';
 import { alloc } from './alloc.js';
 import { c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf } from './decl.js';
@@ -28,6 +27,7 @@ import { killed, m_poisongas_ok, monkilled, setmangry, wake_nearto } from './mon
 import { makeplural } from './objnam.js';
 import { body_part } from './polyself.js';
 import { make_blinded, set_itimeout } from './potion.js';
+import { d, rn2, rnd } from './rnd.js';
 import { losehp } from './hack.js';
 import { Resists_Elem, monstseesu, monstunseesu } from './mondata.js';
 import { In_hell, In_mines, on_level } from './dungeon.js';
@@ -127,8 +127,6 @@ const __s_region_bounding_box__2 = cptr.lit("region-bounding box");
 const __s_s_sting = cptr.lit("%s sting.");
 const __s_s_is_burning_your_s = cptr.lit("%s is burning your %s!");
 const __s_cough_and_spit_blood = cptr.lit("cough and spit blood!");
-const __s_region_c = cptr.lit("region.c");
-const __s_inside_gas_cloud = cptr.lit("inside_gas_cloud");
 const __s_gas_cloud = cptr.lit("gas cloud");
 const __s_cough = cptr.lit("cough!");
 const __s_s_coughs = cptr.lit("%s coughs!");
@@ -136,8 +134,6 @@ const __s_are_enveloped_in_a_cloud_of_s = cptr.lit("are enveloped in a cloud of 
 const __s_noxious_gas = cptr.lit("noxious gas");
 const __s_steam = cptr.lit("steam");
 const __s_create_gas_cloud_cloud_too_large_d = cptr.lit("create_gas_cloud: cloud too large (%d)!");
-const __s_create_gas_cloud = cptr.lit("create_gas_cloud");
-const __s_region_safety = cptr.lit("region_safety");
 const __s_able_to_breathe = cptr.lit("able to breathe.");
 const __s_gas_cloud_enveloping_you_dissipates = cptr.lit("gas cloud enveloping you dissipates.");
 const __s_gas_cloud_has_dissipated = cptr.lit("gas cloud has dissipated.");
@@ -1000,7 +996,7 @@ export function inside_gas_cloud(p1, p2) {
             pline(__s_s_is_burning_your_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), makeplural(body_part(NHC.LUNG)));
             You(__s_cough_and_spit_blood);
             wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 2);
-            dam = ((Half_physical_damage()) ? ((((((rnd_at(__s_region_c, 1122, __s_inside_gas_cloud, dam) + 5) | 0) + 1) | 0) / 2) | 0) : ((rnd_at(__s_region_c, 1122, __s_inside_gas_cloud, dam) + 5) | 0));
+            dam = ((Half_physical_damage()) ? ((((((rnd(dam) + 5) | 0) + 1) | 0) / 2) | 0) : ((rnd(dam) + 5) | 0));
             if (Half_gas_damage())
                 dam = (((dam + 1) | 0) / 2) | 0;
             losehp(dam, __s_gas_cloud, NHM.KILLED_BY_AN);
@@ -1029,7 +1025,7 @@ export function inside_gas_cloud(p1, p2) {
             }
             if (Resists_Elem(mtmp, NHC.POISON_RES))
                 return 0;
-            cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - ((rnd_at(__s_region_c, 1152, __s_inside_gas_cloud, dam) + 5) | 0)) | 0);
+            cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - ((rnd(dam) + 5) | 0)) | 0);
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                 if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
                     killed(mtmp);
@@ -1112,7 +1108,7 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
          * directions chosen. */
         let dirs = cptr.alloc(4 * $sizeof_coord); cptr.stI16o(dirs, 0, 0); cptr.stI16o(dirs, 0 + $coord_y, -1); cptr.stI16o(dirs, 4, 0); cptr.stI16o(dirs, 4 + $coord_y, 1); cptr.stI16o(dirs, 8, -1); cptr.stI16o(dirs, 8 + $coord_y, 0); cptr.stI16o(dirs, 12, 1); cptr.stI16o(dirs, 12 + $coord_y, 0);
         for (i = 4; i > 0; --i) {
-            let swapidx = i16(rn2_at(__s_region_c, 1255, __s_create_gas_cloud, i));
+            let swapidx = i16(rn2(i));
             let tmp = cptr.alloc(4); cptr.memcpy(tmp, cptr.add(dirs, swapidx, $sizeof_coord), $sizeof_nhcoord);
 
             cptr.memcpy(cptr.add(dirs, swapidx, $sizeof_coord), cptr.add(dirs, (i - 1) | 0, $sizeof_coord), 4);
@@ -1137,7 +1133,7 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
                 /* randomly disrupt the natural breadth-first search, so that
                  * clouds released in open spaces don't always tend towards a
                  * rhombus shape */
-                if (nvalid == 4 && !rn2_at(__s_region_c, 1279, __s_create_gas_cloud, 2))
+                if (nvalid == 4 && !rn2(2))
                     continue;
 
                 if (isunpicked) {
@@ -1161,7 +1157,7 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
         cptr.stI16o(tmprect, $nhrect_ly, cptr.stI16o(tmprect, $nhrect_hy, cptr.ldI16o(ycoords, i, 2)));
         add_rect_to_reg(cloud, tmprect);
     }
-    cptr.stI64o(cloud, $NhRegion_ttl, BigInt(((rn2_at(__s_region_c, 1303, __s_create_gas_cloud, 3) + 4) | 0)));
+    cptr.stI64o(cloud, $NhRegion_ttl, BigInt(((rn2(3) + 4) | 0)));
     /* If cloud was constrained in small space, give it more time to live. */
     cptr.stI64o(cloud, $NhRegion_ttl, (BigInt.asIntN(64, cptr.ldI64o(cloud, $NhRegion_ttl) * BigInt(cloudsize))) / BigInt(newidx));
 
@@ -1248,7 +1244,7 @@ export function region_safety() {
         /* maybe there's no safe place available; must get hero out of danger
            or prayer's "fix all troubles" result will get stuck in a loop */
         if (region_danger()) {
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.MAGICAL_BREATHING, $sizeof_prop), $prop_intrinsic), BigInt(((d_at(__s_region_c, 1391, __s_region_safety, 4, 4) + 4) | 0)));
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.MAGICAL_BREATHING, $sizeof_prop), $prop_intrinsic), BigInt(((d(4, 4) + 4) | 0)));
             /* not already Breathless or wouldn't be in region danger */
             You_feel(__s_able_to_breathe);
         }

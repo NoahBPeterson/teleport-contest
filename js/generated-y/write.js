@@ -12,7 +12,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at, rnl_at } from './nhrng.js';
 import { Blind, Glib, Hallucination } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
@@ -25,7 +24,7 @@ import { mungspaces, strncmpi, strstri, upstart } from './hacklib.js';
 import { discover_object, observe_object } from './o_init.js';
 import { exercise } from './attrib.js';
 import { getlin } from './windows.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
 import { bcsign, mksobj } from './mkobj.js';
 import { check_unpaid, obfree } from './shk.js';
 import { known_spell } from './spell.js';
@@ -293,8 +292,8 @@ export function* dowrite(pen) {
         (yield* pline(__s_it_s_obscene));
         return NHM.ECMD_TIME;
     } else if (i == NHC.SPE_NOVEL) {
-        let fanfic = schar((!rn2_at(__s_write_c, 216, __s_dowrite, 3)));
-        let tearup = schar((!rn2_at(__s_write_c, 216, __s_dowrite, 3)));
+        let fanfic = schar((!rn2(3)));
+        let tearup = schar((!rn2(3)));
 
         if (!fanfic) {
             (yield* You(__s_s_to_write_the_great_yendorian_novel, !tearup ? __s_prepare : __s_try, !Hallucination() ? __s_lack : __s_have_too_much));
@@ -337,7 +336,7 @@ export function* dowrite(pen) {
 
     /* we're really going to write now, so calculate cost
      */
-    actualcost = ((rn2_at(__s_write_c, 265, __s_dowrite, (basecost / 2) | 0) + ((basecost / 2) | 0)) | 0);
+    actualcost = ((rn2((basecost / 2) | 0) + ((basecost / 2) | 0)) | 0);
     curseval = (bcsign(pen) + bcsign(paper)) | 0;
     (yield* exercise(NHC.A_WIS, 1));
     /* dry out marker */
@@ -385,7 +384,7 @@ export function* dowrite(pen) {
         spell_knowledge = NHC.spe_Unknown;
     }
     /* if known, then either by-name or by-descr works */
-    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && rnl_at(__s_write_c, 321, __s_dowrite, (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) {
+    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) {
         (yield* You(__s_s_to_write_that, by_descr ? __s_fail : __s_don_t_know_how));
         /* scrolls disappear, spellbooks don't */
         if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
@@ -405,7 +404,7 @@ export function* dowrite(pen) {
     }
     /* can write scrolls when blind, but requires luck too;
        attempts to write books when blind are caught above */
-    if (Blind() && rnl_at(__s_write_c, 342, __s_dowrite, 3)) {
+    if (Blind() && rnl(3)) {
         /* writing while blind usually fails regardless of
            whether the target scroll is known; even if we
            have passed the write-an-unknown scroll test

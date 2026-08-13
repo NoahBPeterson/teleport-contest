@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_TREE, canspotmon, flaming, helpless, is_pole, is_rider, is_vampshifter, is_whirly, ismnum, slimeproof, touch_petrifies, troll_baned } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Antimagic, Blind, Conflict, Deaf, Passes_walls, Unchanging } from './nhprop.js';
 import { dist2, distmin, nh_snprintf, s_suffix, strNsubst, strncmpi, strsubst } from './hacklib.js';
 import { c_common_strings, flags, gb, gf, gl, gm, gn, gs, gv, gy, gz, iflags, svl, svm, u } from './decl.js';
@@ -20,6 +19,7 @@ import { Adjmonnam, Monnam, a_monnam, hliquid, mon_nam, mon_nam_too, noname_monn
 import { could_seduce, getmattk, mswings_verb, mtrapped_in_pit } from './mhitu.js';
 import { Resists_Elem, attacktype, defended, dmgtype, dmgtype_fromattack, mon_hates_silver, poly_when_stoned, pronoun_gender, resist_conflict, resists_blnd, resists_magm, stagger, sticks } from './mondata.js';
 import { closed_door, itsstuck } from './monmove.js';
+import { d, rn2, rnd } from './rnd.js';
 import { mons } from './monst.js';
 import { finish_meating } from './dogmove.js';
 import { find_mac, which_armor } from './worn.js';
@@ -105,10 +105,7 @@ const __s_empty = cptr.lit("");
 const __s_s_s_s = cptr.lit("%s %s %s.");
 const __s_misses = cptr.lit("misses");
 const __s_pretends_to_be_friendly_to = cptr.lit("pretends to be friendly to");
-const __s_mhitm_c = cptr.lit("mhitm.c");
-const __s_fightm = cptr.lit("fightm");
 const __s_s_releases_you = cptr.lit("%s releases you!");
-const __s_mdisplacem = cptr.lit("mdisplacem");
 const __s_s_tries_to_move_s_out_of_s_way = cptr.lit("%s tries to move %s out of %s way.");
 const __s_the = cptr.lit("the");
 const __s_s_turns_to_stone = cptr.lit("%s turns to stone!");
@@ -118,7 +115,6 @@ const __s_dream_of_s = cptr.lit("dream of %s.");
 const __s_s_emerges_from_hiding = cptr.lit("%s emerges from hiding.");
 const __s_notice_s = cptr.lit("notice %s.");
 const __s_suddenly_you_notice_s = cptr.lit("Suddenly, you notice %s.");
-const __s_mattackm = cptr.lit("mattackm");
 const __s_s_divides_as_s_hits_it = cptr.lit("%s divides as %s hits it!");
 const __s_s_attempt_to_engulf_s_is_futile = cptr.lit("%s attempt to engulf %s is futile.");
 const __s_gulp = cptr.lit("gulp");
@@ -162,7 +158,6 @@ const __s_but_nothing_happens = cptr.lit("but nothing happens.");
 const __s_the_gaze_is_reflected_away_by_s_s = cptr.lit("The gaze is reflected away by %s %s.");
 const __s_s_doesn_t_seem_to_notice_that_s_gaze = cptr.lit("%s doesn't seem to notice that %s gaze was reflected.");
 const __s_s_is_turned_to_stone = cptr.lit("%s is turned to stone!");
-const __s_gazemm = cptr.lit("gazemm");
 const __s_swallows = cptr.lit("swallows");
 const __s_encloses = cptr.lit("encloses");
 const __s_engulfs = cptr.lit("engulfs");
@@ -176,11 +171,9 @@ const __s_expelled = cptr.lit("expelled");
 const __s_s_explodes = cptr.lit("%s explodes!");
 const __s_leash_falls_slack = cptr.lit("leash falls slack.");
 const __s_melancholy = cptr.lit("melancholy");
-const __s_mdamagem = cptr.lit("mdamagem");
 const __s_are_subjected_to_a_freakish = cptr.lit("are subjected to a freakish metamorphosis.");
 const __s_an_unnatural_urge_coming_on = cptr.lit("an unnatural urge coming on.");
 const __s_a_natural_urge_coming_on = cptr.lit("a natural urge coming on.");
-const __s_mon_poly = cptr.lit("mon_poly");
 const __s_s_shudders = cptr.lit("%s shudders!");
 const __s_it__2 = cptr.lit("It");
 const __s_s_s_s_turns_into_s = cptr.lit("%s%s%s turns into %s.");
@@ -189,10 +182,8 @@ const __s_s_s_s__2 = cptr.lit("%s%s%s.");
 const __s_and_disappears = cptr.lit(" and disappears");
 const __s_pct_s = cptr.lit("%s");
 const __s_s_grip_relaxes = cptr.lit("%s grip relaxes.");
-const __s_rustm = cptr.lit("rustm");
 const __s_s_s_s_s_s_at_s = cptr.lit("%s %s %s%s %s at %s.");
 const __s_one_of = cptr.lit("one of ");
-const __s_passivemm = cptr.lit("passivemm");
 const __s_s_is_splashed_by_s_s = cptr.lit("%s is splashed by %s %s!");
 const __s_acid = cptr.lit("acid");
 const __s_s_is_not_affected = cptr.lit("%s is not affected.");
@@ -208,7 +199,6 @@ const __s_s_is_mildly_warmed = cptr.lit("%s is mildly warmed.");
 const __s_s_is_suddenly_very_hot = cptr.lit("%s is suddenly very hot!");
 const __s_s_is_mildly_tingled = cptr.lit("%s is mildly tingled.");
 const __s_s_is_jolted_with_electricity = cptr.lit("%s is jolted with electricity!");
-const __s_xdrainenergym = cptr.lit("xdrainenergym");
 const __s_s_seems_lethargic = cptr.lit("%s seems lethargic.");
 
 /** C ref: mhitm.c:9 — char[48] */
@@ -311,7 +301,7 @@ export function fightm(mtmp) {
         if (!cptr.eq(mon, mtmp) && !(cptr.ldI32o((mon), $monst_mhp) < 1)) {
             if (monnear(mtmp, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
                 if (!(cptr.ldI32o(u, $you_uswallow) & 1) && (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))) {
-                    if (!rn2_at(__s_mhitm_c, 133, __s_fightm, 4)) {
+                    if (!rn2(4)) {
                         set_ustuck(null);
                         pline(__s_s_releases_you, Monnam(mtmp));
                     } else
@@ -334,7 +324,7 @@ export function fightm(mtmp) {
 
                 /* allow attacked monsters a chance to hit back, primarily
                    to allow monsters that resist conflict to respond */
-                if ((result & 3) == NHM.M_ATTK_HIT && rn2_at(__s_mhitm_c, 157, __s_fightm, 4) && cptr.ldI16o(mon, $monst_movement) > rn2_at(__s_mhitm_c, 157, __s_fightm, NHM.NORMAL_SPEED)) {
+                if ((result & 3) == NHM.M_ATTK_HIT && rn2(4) && cptr.ldI16o(mon, $monst_movement) > rn2(NHM.NORMAL_SPEED)) {
                     if (cptr.ldI16o(mon, $monst_movement) > NHM.NORMAL_SPEED)
                         cptr.stI16o(mon, $monst_movement, cptr.ldI16o(mon, $monst_movement) - NHM.NORMAL_SPEED);
                     else
@@ -376,7 +366,7 @@ export function mdisplacem(magr, mdef, quietly) {
     /* The 1 in 7 failure below matches the chance in do_attack()
      * for pet displacement.
      */
-    if (!rn2_at(__s_mhitm_c, 199, __s_mdisplacem, 7))
+    if (!rn2(7))
         return NHM.M_ATTK_MISS;
 
     /* Grid bugs cannot displace at an angle. */
@@ -608,7 +598,7 @@ export function mattackm(magr, mdef) {
                 strike = 0;
                 break;
             }
-            dieroll = rnd_at(__s_mhitm_c, 441, __s_mattackm, (20 + i) | 0);
+            dieroll = rnd((20 + i) | 0);
             strike = (tmp > dieroll);
             /* KMH -- don't accumulate to-hit bonuses */
             if (mwep)
@@ -684,7 +674,7 @@ export function mattackm(magr, mdef) {
             /* Engulfing attacks are directed at the hero if possible. -dlc */
             if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (magr))))) {
                 strike = 0;
-            } else if ((strike = (tmp > rnd_at(__s_mhitm_c, 528, __s_mattackm, (20 + i) | 0))) != 0) {
+            } else if ((strike = (tmp > rnd((20 + i) | 0))) != 0) {
                 if (failed_grab(magr, mdef, mattk))
                     strike = 0;  /* purple worm can't swallow unsolid mons */
                 else
@@ -911,7 +901,7 @@ function gazemm(magr, mdef, mattk) {
            a stunned monster recovers randomly instead of via countdown;
            both cases make an effort to prevent the target from being
            continuously stunned due to repeated gaze attacks */
-        if (rn2_at(__s_mhitm_c, 798, __s_gazemm, 2))
+        if (rn2(2))
             cptr.stI32o(mdef, $monst_mstun, 1);
     }
 
@@ -1111,7 +1101,7 @@ function mdamagem(magr, mdef, mattk, mwep, dieroll) {
     let pa = cptr.ldPtro(magr, $monst_data);
     let pd = cptr.ldPtro(mdef, $monst_data);
     let mhm = cptr.alloc(20);
-    cptr.stI32(mhm, d_at(__s_mhitm_c, 1025, __s_mdamagem, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd))));
+    cptr.stI32(mhm, d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd))));
     cptr.stI32o(mhm, $mhitm_data_hitflags, NHM.M_ATTK_MISS);
     cptr.st1o(mhm, $mhitm_data_permdmg, 0);
     cptr.stI32o(mhm, $mhitm_data_specialdmg, 0);
@@ -1231,7 +1221,7 @@ export function mon_poly(magr, mdef, dmg) {
         } else if (resist(mdef, NHC.WAND_CLASS, 0, NHM.TELL)) {
             /* general resistance to magic... */
             ;
-        } else if (!rn2_at(__s_mhitm_c, 1157, __s_mon_poly, 25) && cptr.ldI16o(mdef, $monst_cham) == NHC.NON_PM && ((cptr.ldI32o(mdef, $monst_mcan) & 1) | 0 || pm_to_cham((cptr.ldI32o((cptr.ldPtro(mdef, $monst_data)), $permonst_pmidx))) != NHC.NON_PM)) {
+        } else if (!rn2(25) && cptr.ldI16o(mdef, $monst_cham) == NHC.NON_PM && ((cptr.ldI32o(mdef, $monst_mcan) & 1) | 0 || pm_to_cham((cptr.ldI32o((cptr.ldPtro(mdef, $monst_data)), $permonst_pmidx))) != NHC.NON_PM)) {
             /* system shock; this variation takes away half of mon's HP
                rather than kill outright */
             if (cptr.ld1so(gv, $instance_globals_v_vis))
@@ -1271,7 +1261,7 @@ export function mon_poly(magr, mdef, dmg) {
     /* when a transformation has happened, can't attack again for poly
        effect during next turn or two; not enforced for poly'd hero */
     if (!cptr.eq(cptr.ldPtro(mdef, $monst_data), oldform) && !cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)))
-        cptr.stI32o(magr, $monst_mspec_used, (cptr.ldI32o(magr, $monst_mspec_used) + rnd_at(__s_mhitm_c, 1204, __s_mon_poly, 2)) | 0);
+        cptr.stI32o(magr, $monst_mspec_used, (cptr.ldI32o(magr, $monst_mspec_used) + rnd(2)) | 0);
 
     return dmg;
 }
@@ -1336,7 +1326,7 @@ export function rustm(mdef, obj) {
         chance = 6;
     }
 
-    if (dmgtyp != -1 && !rn2_at(__s_mhitm_c, 1278, __s_rustm, chance))
+    if (dmgtyp != -1 && !rn2(chance))
         void erode_obj(obj, null, dmgtyp, 5);
 }
 
@@ -1370,16 +1360,16 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
                 break;
         }
         if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn))
-            tmp = d_at(__s_mhitm_c, 1324, __s_passivemm, (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
+            tmp = d((cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
         else if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))
-            tmp = d_at(__s_mhitm_c, 1326, __s_passivemm, ((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
+            tmp = d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
         else
             tmp = 0;
 
         /* These affect the enemy even if defender killed */
         switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
             case NHM.AD_ACID:
-            if (mhitb && !rn2_at(__s_mhitm_c, 1333, __s_passivemm, 2)) {
+            if (mhitb && !rn2(2)) {
                 void cptr.strcpy(cptr.decay(buf), Monnam(magr));
                 if (canseemon(magr))
                     pline(__s_s_is_splashed_by_s_s, cptr.decay(buf), s_suffix(mon_nam(mdef)), hliquid(__s_acid));
@@ -1390,9 +1380,9 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
                 }
             } else
                 tmp = 0;
-            if (!rn2_at(__s_mhitm_c, 1345, __s_passivemm, 30))
+            if (!rn2(30))
                 erode_armor(magr, NHM.ERODE_CORRODE);
-            if (!rn2_at(__s_mhitm_c, 1347, __s_passivemm, 6))
+            if (!rn2(6))
                 acid_damage((cptr.ldPtro((magr), $monst_mw)));
             break __lbl_assess_dmg;
             case NHM.AD_ENCH:
@@ -1408,13 +1398,13 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
             return (mdead | mhit);
 
         /* These affect the enemy only if defender is still alive */
-        if (rn2_at(__s_mhitm_c, 1363, __s_passivemm, 3))
+        if (rn2(3))
             switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                 case NHM.AD_PLYS:
                 if (tmp > 127)
                     tmp = 127;
                 if (cptr.eq(mddat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
-                    if (!rn2_at(__s_mhitm_c, 1369, __s_passivemm, 4))
+                    if (!rn2(4))
                         tmp = 127;
                     if ((cptr.ldI32o(magr, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((madat), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 && (((cptr.ldU64o((madat), $permonst_mflags1) & 16777216n) != 0n) || !(cptr.ldI32o(mdef, $monst_minvis) & 1))) {
                         /* construct format string; guard against '%' in Monnam */
@@ -1502,7 +1492,7 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
 /** C ref: mhitm.c:1461 — @param {CPtr<struct monst>} mon @param {CInt} givemsg */
 export function xdrainenergym(mon, givemsg) {
     if (cptr.ldI32o(mon, $monst_mspec_used) < 20 && (attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_MAGC) || attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_BREA))) {
-        cptr.stI32o(mon, $monst_mspec_used, (cptr.ldI32o(mon, $monst_mspec_used) + d_at(__s_mhitm_c, 1466, __s_xdrainenergym, 2, 2)) | 0);
+        cptr.stI32o(mon, $monst_mspec_used, (cptr.ldI32o(mon, $monst_mspec_used) + d(2, 2)) | 0);
         if (givemsg)
             pline_mon(mon, __s_s_seems_lethargic, Monnam(mon));
     }

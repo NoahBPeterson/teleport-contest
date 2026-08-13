@@ -9,11 +9,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_box, canspotmon, greatest_erosion, is_blade, is_door_mappear, is_pick, is_weptool } from './nhmacrofn.js';
-import { rn2_at, rnl_at } from './nhrng.js';
 import { BBlinded, Blind, Deaf, HBlinded, HConfusion, HStun, Levitation, Passes_walls, Protection_from_shape_changers, Underwater } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gu, gv, gx, gy, svc, svd, svl, svm, u, uwep, ynchars, ynqchars } from './decl.js';
 import { There, You, You_cant, You_hear, impossible, pline, pline_The, set_msg_xy, verbalize } from './pline.js';
 import { acurr, acurrstr, exercise } from './attrib.js';
+import { rn2, rnl } from './rnd.js';
 import { cmdq_add_dir, cmdq_add_ec, get_adjacent_loc, getdir, isok, set_occupation, yn_function } from './cmd.js';
 import { b_trapped, chest_trap, could_untrap, t_at, unconscious, untrap } from './trap.js';
 import { block_point, recalc_block_point, unblock_point, vision_recalc } from './vision.js';
@@ -93,8 +93,6 @@ const __s_this_doorway_has_no_door = cptr.lit("This doorway has no door.");
 const __s_cannot_lock_an_open_door = cptr.lit("cannot lock an open door.");
 const __s_this_door_is_broken = cptr.lit("This door is broken.");
 const __s_give_up_your_attempt_at_s = cptr.lit("give up your attempt at %s.");
-const __s_lock_c = cptr.lit("lock.c");
-const __s_picklock = cptr.lit("picklock");
 const __s_find_a_trap = cptr.lit("find a trap!");
 const __s_do_you_want_to_try_to_disarm_it = cptr.lit("Do you want to try to disarm it?");
 const __s_door = cptr.lit("door");
@@ -106,10 +104,8 @@ const __s_empty = cptr.lit("");
 const __s_stop_s = cptr.lit("stop %s.");
 const __s_succeed_in_s = cptr.lit("succeed in %s.");
 const __s_in_fact_you_ve_totally_destroyed_s = cptr.lit("In fact, you've totally destroyed %s.");
-const __s_breakchestlock = cptr.lit("breakchestlock");
 const __s_owe_ld_s_for_objects_destroyed = cptr.lit("owe %ld %s for objects destroyed.");
 const __s_give_up_your_attempt_to_force_the_lock = cptr.lit("give up your attempt to force the lock.");
-const __s_forcelock = cptr.lit("forcelock");
 const __s_sour_s_broke = cptr.lit("%sour %s broke!");
 const __s_one_of_y = cptr.lit("One of y");
 const __s_y = cptr.lit("Y");
@@ -191,7 +187,6 @@ const __s_is_locked = cptr.lit(" is locked");
 const __s_this_door_s = cptr.lit("This door%s.");
 const __s_kick_it = cptr.lit("Kick it?");
 const __s_you_re_too_small_to_pull_the_door_open = cptr.lit("You're too small to pull the door open.");
-const __s_doopen_indir = cptr.lit("doopen_indir");
 const __s_door_opens = cptr.lit("door opens.");
 const __s_door_resists = cptr.lit("door resists!");
 const __s_s_s_in_the_way = cptr.lit("%s's in the way.");
@@ -203,7 +198,6 @@ const __s_drawbridge_is_already_closed = cptr.lit("drawbridge is already closed.
 const __s_is_no_obvious_way_to_close_the = cptr.lit("is no obvious way to close the drawbridge.");
 const __s_this_door_is_already_closed = cptr.lit("This door is already closed.");
 const __s_you_re_too_small_to_push_the_door_closed = cptr.lit("You're too small to push the door closed.");
-const __s_doclose = cptr.lit("doclose");
 const __s_door_closes = cptr.lit("door closes.");
 const __s_klunk = cptr.lit("Klunk!");
 const __s_klick = cptr.lit("Klick!");
@@ -313,7 +307,7 @@ function picklock() {
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
 
-    if (rn2_at(__s_lock_c, 98, __s_picklock, 100) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
+    if (rn2(100) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
         return 1;  /* still busy */
 
     /* using the Master Key of Thievery finds traps if its bless/curse
@@ -395,7 +389,7 @@ export function breakchestlock(box, destroyit) {
         /* Put the contents on ground at the hero's feet. */
         while ((otmp = cptr.ldPtro(box, $obj_cobj)) !== null) {
             obj_extract_self(otmp);
-            if (!rn2_at(__s_lock_c, 186, __s_breakchestlock, 3) || cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
+            if (!rn2(3) || cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
                 chest_shatter_msg(otmp);
                 if (costly)
                     loss += stolen_value(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), peaceful_shk, 1);
@@ -436,7 +430,7 @@ function forcelock() {
     }
 
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
-        if (rn2_at(__s_lock_c, 229, __s_forcelock, (1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
+        if (rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
             /* for a +0 weapon, probability that it survives an unsuccessful
              * attempt to force the lock is (.992)^50 = .67
              */
@@ -449,7 +443,7 @@ function forcelock() {
     } else
         wake_nearby(0);  /* due to hammering on the container */
 
-    if (rn2_at(__s_lock_c, 244, __s_forcelock, 100) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
+    if (rn2(100) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
         return 1;  /* still busy */
 
     You(__s_succeed_in_forcing_the_lock);
@@ -457,7 +451,7 @@ function forcelock() {
     /* breakchestlock() might destroy xlock.box; if so, xlock context will
        be cleared (delobj -> obfree -> maybe_reset_pick); but it might not,
        so explicitly clear that manually */
-    breakchestlock(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), schar((!cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) && !rn2_at(__s_lock_c, 252, __s_forcelock, 3) ? 1 : 0)));
+    breakchestlock(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), schar((!cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) && !rn2(3) ? 1 : 0)));
     reset_pick();  /* lock-picking context is no longer valid */
 
     return 0;
@@ -1049,7 +1043,7 @@ export function doopen_indir(x, y) {
     }
 
     /* door is known to be CLOSED */
-    if (rnl_at(__s_lock_c, 904, __s_doopen_indir, 20) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+    if (rnl(20) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
         pline_The(__s_door_opens);
         if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
@@ -1186,7 +1180,7 @@ export function doclose() {
             pline(__s_you_re_too_small_to_push_the_door_closed);
             return res;
         }
-        if (cptr.ldPtro(u, $you_usteed) || rn2_at(__s_lock_c, 1039, __s_doclose, 25) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+        if (cptr.ldPtro(u, $you_usteed) || rn2(25) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
             pline_The(__s_door_closes);
             cptr.stI32o(door, $rm_flags, NHM.D_CLOSED);
             feel_newsym(x, y);  /* the hero knows she closed it */

@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_TREE, Is_container, canspotmon, glyph_is_cmap, has_mgivenname, is_mind_flayer, is_unicorn, is_vampshifter, webmaker } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
@@ -81,7 +80,7 @@ import { wiz_timeout_queue } from './timeout.js';
 import { doextversion, doversion } from './version.js';
 import { wiz_debug_cmd_bury } from './dig.js';
 import { dozap } from './zap.js';
-import { d } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { On_stairs_dn, On_stairs_up, stairway_at } from './stairs.js';
 import { defsyms } from './drawing.js';
 import { which_armor } from './worn.js';
@@ -756,8 +755,6 @@ const __s_bad_autocomplete_invalid_extended = cptr.lit("Bad autocomplete: invali
 const __s_autocomplete_s_s = cptr.lit("AUTOCOMPLETE=%s%s\n");
 const __s_bang = cptr.lit("!");
 const __s_rest_one_move_via_rest_on_space_option = cptr.lit("rest one move via 'rest_on_space' option");
-const __s_randomkey = cptr.lit("randomkey");
-const __s_rnd_extcmd_idx = cptr.lit("rnd_extcmd_idx");
 const __s_move_no_pickup_or_request_menu = cptr.lit("move-no-pickup or request-menu");
 const __s_the_s_command_does_not_accept_s_prefix = cptr.lit("The %s command does not accept '%s' prefix.");
 const __s_the_s_prefix_should_be_followed_by_a = cptr.lit("The '%s' prefix should be followed by a movement command%s.");
@@ -766,7 +763,6 @@ const __s_get_there_from_here = cptr.lit("get there from here...");
 const __s_unknown_command_s = cptr.lit("Unknown command '%s'.");
 const __s_getdir_command_queue_had_no_dir = cptr.lit("getdir: command queue had no dir?");
 const __s_in_what_direction = cptr.lit("In what direction?");
-const __s_getdir = cptr.lit("getdir");
 const __s_desired_location_then_type_s_for_left = cptr.lit("desired location, then type '%s' for left click, '%s' for right");
 const __s_getpos_successful_but_not_one_of_d = cptr.lit("getpos successful but not one of [.,;:] (%d)");
 const __s_invalid_direction_key = cptr.lit("Invalid direction key!");
@@ -791,7 +787,6 @@ const __s_up__2 = cptr.lit("          <  up");
 const __s_down__2 = cptr.lit("          >  down");
 const __s_4s_direct_at_yourself = cptr.lit("       %4s  direct at yourself");
 const __s_suppress_this_message_with_cmdassist_in = cptr.lit("(Suppress this message with !cmdassist in config file.)");
-const __s_confdir = cptr.lit("confdir");
 const __s_invalid = cptr.lit("invalid");
 const __s_west = cptr.lit("west");
 const __s_northwest = cptr.lit("northwest");
@@ -863,8 +858,8 @@ const __s_all = cptr.lit("All");
 const __s_quit__2 = cptr.lit("Quit");
 const __s_query_truncated = cptr.lit("Query truncated: ");
 const __s_dot3 = cptr.lit("...");
-const __s_yn_function = cptr.lit("yn_function");
 const __s_pct_s_sp = cptr.lit("%s ");
+const __s_yn_function = cptr.lit("yn_function");
 const __s_s_s_s__4 = cptr.lit("%s [%s] (%s)");
 const __s_yn_debug = cptr.lit("yn debug");
 const __s_yn_function_returned_s_using_s_instead = cptr.lit("yn_function() returned '%s'; using '%s' instead");
@@ -4757,10 +4752,10 @@ export function randomkey() {
     let c;
 
     /* give ^A and ^P a high probability of being repeated */
-    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && rn2_at(__s_cmd_c, 3525, __s_randomkey, 5))
+    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && rn2(5))
         return __static_randomkey_last_c;
 
-    switch (rn2_at(__s_cmd_c, 3528, __s_randomkey, 16)) {
+    switch (rn2(16)) {
         default:
         c = 27;
         break;
@@ -4771,16 +4766,16 @@ export function randomkey() {
         case 2:
         case 3:
         case 4:
-        c = schar(((rn2_at(__s_cmd_c, 3539, __s_randomkey, 95) + 32) | 0));
+        c = schar(((rn2(95) + 32) | 0));
         break;
         case 5:
-        c = schar((rn2_at(__s_cmd_c, 3542, __s_randomkey, 2) ? 9 : 32));
+        c = schar((rn2(2) ? 9 : 32));
         break;
         case 6:
-        c = schar(((rn2_at(__s_cmd_c, 3545, __s_randomkey, 26) + 97) | 0));
+        c = schar(((rn2(26) + 97) | 0));
         break;
         case 7:
-        c = schar(((rn2_at(__s_cmd_c, 3548, __s_randomkey, 26) + 65) | 0));
+        c = schar(((rn2(26) + 65) | 0));
         break;
         case 8:
         c = schar(cptr.ld1uo(extcmdlist, u32mod(__static_randomkey_i++, 171 >>> 0), $sizeof_ext_func_tab));
@@ -4792,18 +4787,18 @@ export function randomkey() {
         case 11:
         case 12:
         {
-            let d = rn2_at(__s_cmd_c, 3560, __s_randomkey, ((NHC.N_DIRS_Z - 2) | 0));
-            let m = rn2_at(__s_cmd_c, 3561, __s_randomkey, 7) ? NHC.MV_WALK : (!rn2_at(__s_cmd_c, 3561, __s_randomkey, 3) ? NHC.MV_RUSH : NHC.MV_RUN);
+            let d = rn2(((NHC.N_DIRS_Z - 2) | 0));
+            let m = rn2(7) ? NHC.MV_WALK : (!rn2(3) ? NHC.MV_RUSH : NHC.MV_RUN);
 
             c = cmd_from_dir(d, m);
         }
         break;
         case 13:
-        c = schar(((rn2_at(__s_cmd_c, 3567, __s_randomkey, 10) + 48) | 0));
+        c = schar(((rn2(10) + 48) | 0));
         break;
         case 14:
         /* any char, but avoid '\0' because it's used for mouse click */
-        c = schar(rnd_at(__s_cmd_c, 3571, __s_randomkey, cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127));
+        c = schar(rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127));
         break;
     }
 
@@ -4833,7 +4828,7 @@ export function random_response(buf, sz) {
 
 /** C ref: cmd.c:3601 @returns {CInt} */
 export function rnd_extcmd_idx() {
-    return (rn2_at(__s_cmd_c, 3603, __s_rnd_extcmd_idx, (extcmdlist_length + 1) | 0) - 1) | 0;
+    return (rn2((extcmdlist_length + 1) | 0) - 1) | 0;
 }
 
 /** C ref: cmd.c:3607 — @param {CInt} reset_cmdq */
@@ -5267,16 +5262,16 @@ export function getdir(s) {
                don't try to enforce no-diagonal for hero in grid bug form since
                things like '^' to look at adjacent trap shouldn't be bound by
                that (caller is expected to handle situations where it matters) */
-            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2_at(__s_cmd_c, 3996, __s_getdir, 20)) {
-                switch (rn2_at(__s_cmd_c, 3997, __s_getdir, 20)) {
+            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2(20)) {
+                switch (rn2(20)) {
                     case 0:
-                    dirsym = cptr.ld1so2(gc, rn2_at(__s_cmd_c, 3999, __s_getdir, 2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys);
+                    dirsym = cptr.ld1so2(gc, rn2(2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys);
                     break;
                     case 1:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2_at(__s_cmd_c, 4002, __s_getdir, 2) ? NHC.DIR_DOWN : NHC.DIR_UP);
+                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2(2) ? NHC.DIR_DOWN : NHC.DIR_UP);
                     break;
                     default:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2_at(__s_cmd_c, 4005, __s_getdir, ((NHC.N_DIRS_Z - 2) | 0)));
+                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2(((NHC.N_DIRS_Z - 2) | 0)));
                     break;
                 }
             }
@@ -5558,7 +5553,7 @@ function help_dir(sym, spkey, msg) {
 export function confdir(force_impairment) {
     if (force_impairment || u_maybe_impaired()) {
         let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
-        let k = cptr.ld1so(cptr.decay(dirs_ord), rn2_at(__s_cmd_c, 4304, __s_confdir, kmax), 1);
+        let k = cptr.ld1so(cptr.decay(dirs_ord), rn2(kmax), 1);
 
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), k, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), k, 1));
@@ -6656,9 +6651,9 @@ export function yn_function(query, resp, def, addcmdq) {
 
         /* for the fuzzer, usually force a valid response, but sometimes let
            it exercise windowport yn_function and invalid response handling */
-    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && rn2_at(__s_cmd_c, 5513, __s_yn_function, 20)) {
+    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && rn2(20)) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));
-        let ridx = rn2_at(__s_cmd_c, 5514, __s_yn_function, ln);
+        let ridx = rn2(ln);
 
         res.v = cptr.ld1so(resp, ridx);
         /* if valid-responses includes ESC followed by unshown candidates
@@ -6667,7 +6662,7 @@ export function yn_function(query, resp, def, addcmdq) {
         if (res.v == 27) {
             if (ln > 1) {
                 /* if ESC is at start (ridx==0), pick something after it */
-                ridx = (ridx == 0) ? ((1 + rn2_at(__s_cmd_c, 5523, __s_yn_function, (ln - 1) | 0)) | 0) : rn2_at(__s_cmd_c, 5523, __s_yn_function, ridx);
+                ridx = (ridx == 0) ? ((1 + rn2((ln - 1) | 0)) | 0) : rn2(ridx);
                 res.v = cptr.ld1so(resp, ridx);
             } else {
                 /* ESC is the only thing (ln==1); something is strange... */

@@ -13,7 +13,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_DRAWBRIDGE, canspotmon, helpless, is_floater, likes_lava } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Amphibious, Breathless, Deaf, Flying, Fumbling, HConfusion, HStun, Hallucination, Levitation, Passes_walls, Swimming, Underwater } from './nhprop.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
@@ -31,6 +30,7 @@ import { canseemon, newsym, sensemon } from './display.js';
 import { genders } from './role.js';
 import { pronoun_gender } from './mondata.js';
 import { is_fainted } from './eat.js';
+import { rn2, rnd } from './rnd.js';
 import { revive_nasty, spoteffects } from './hack.js';
 import { place_monster } from './steed.js';
 import { update_monster_region } from './region.js';
@@ -86,10 +86,8 @@ const __s_empty = cptr.lit("");
 const __s_unfortunately_for_s_s_is_still_crushed = cptr.lit("Unfortunately for %s, %s is still crushed.");
 const __s_do_chunks_miss = cptr.lit("Do chunks miss?");
 const __s_miss_chance_d_out_of_8 = cptr.lit("Miss chance = %d (out of 8)");
-const __s_e_missed = cptr.lit("e_missed");
 const __s_s_to_jump_d_chances_in_10 = cptr.lit("%s to jump (%d chances in 10)");
 const __s_try = cptr.lit("try");
-const __s_e_jumps = cptr.lit("e_jumps");
 const __s_s_passes_through_s = cptr.lit("%s passes through %s!");
 const __s_portcullis = cptr.lit("portcullis");
 const __s_drawbridge = cptr.lit("drawbridge");
@@ -148,7 +146,6 @@ const __s_a_loud_splash = cptr.lit("a loud *SPLASH*!");
 const __s_drawbridge_collapses_into_the_s = cptr.lit("drawbridge collapses into the %s!");
 const __s_drawbridge_disintegrates = cptr.lit("drawbridge disintegrates!");
 const __s_a_loud_crash = cptr.lit("a loud *CRASH*!");
-const __s_destroy_drawbridge = cptr.lit("destroy_drawbridge");
 const __s_s_blown_apart_by_flying_debris = cptr.lit("%s blown apart by flying debris.");
 const __s_exploding_drawbridge = cptr.lit("exploding drawbridge");
 const __s_s_spared = cptr.lit("%s spared!");
@@ -601,7 +598,7 @@ function* e_missed(etmp, chunks) {
         }
     }
 
-    return schar(((misses >= rnd_at(__s_dbridge_c, 524, __s_e_missed, 8)) ? 1 : 0));
+    return schar(((misses >= rnd(8)) ? 1 : 0));
 }
 
 /*
@@ -630,7 +627,7 @@ function* e_jumps(etmp) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    return schar(((tmp >= rnd_at(__s_dbridge_c, 550, __s_e_jumps, 10)) ? 1 : 0));
+    return schar(((tmp >= rnd(10)) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:554 — @param {CPtr<struct entity>} etmp */
@@ -1098,11 +1095,11 @@ export function* destroy_drawbridge(x, y) {
         (yield* deltrap(t));
     (yield* del_engr_at(x, y));
     (yield* del_engr_at(x2.v, y2.v));
-    for (i = rn2_at(__s_dbridge_c, 949, __s_destroy_drawbridge, 6); i > 0; --i) {
+    for (i = rn2(6); i > 0; --i) {
         /* doesn't matter if we happen to pick <x,y2> or <x2,y>;
            since drawbridges are never placed diagonally, those
            pairings will always match one of <x,y> or <x2,y2> */
-        otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16((rn2_at(__s_dbridge_c, 953, __s_destroy_drawbridge, 2) ? x : x2.v)), i16((rn2_at(__s_dbridge_c, 953, __s_destroy_drawbridge, 2) ? y : y2.v)), 1, 0));
+        otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16((rn2(2) ? x : x2.v)), i16((rn2(2) ? y : y2.v)), 1, 0));
         /* a force of 5 here would yield a radius of 2 for
            iron chain; anything less produces a radius of 1 */
         void (yield* scatter(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy), 1, 6, otmp));

@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_candle, emits_light, touch_petrifies } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, BInvis, Blind, Breathless, Deaf, Displaced, EFumbling, ELevitation, EPasses_walls, Fast, Fire_resistance, Flying, Fumbling, HConfusion, HDeaf, HFlying, HFumbling, HLevitation, HMagical_breathing, HPasses_walls, HSleepy, HStun, Hallucination, Invis, Levitation, Passes_walls, Poison_resistance, Protection_from_shape_changers, See_invisible, Sick, Sleep_resistance, Sleepy, Slimed, Stone_resistance, Stoned, Strangled, Unchanging, Upolyd, Very_fast, Vomiting, Warn_of_mon, Wounded_legs, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gb, gm, gn, gt, gu, gv, gy, iflags, svc, svd, svk, svl, svm, svq, svt, u, uamul, uarmf, uarmh, uswapwep, uwep } from './decl.js';
 import { eos, highc, ing_suffix, s_suffix, strstri, strsubst, upstart } from './hacklib.js';
@@ -25,6 +24,7 @@ import { stop_occupation } from './allmain.js';
 import { heal_legs, revive_mon, zombify_mon } from './do.js';
 import { incr_itimeout, make_blinded, make_confused, make_deaf, make_glib, make_hallucinated, make_sick, make_slimed, make_stoned, make_stunned, make_vomiting, set_itimeout } from './potion.js';
 import { acurr, adjattrib, exercise, stone_luck } from './attrib.js';
+import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { big_to_little, cantvomit, little_to_big, locomotion, name_to_mon, pronoun_gender } from './mondata.js';
 import { body_part, polymon, rehumanize } from './polyself.js';
 import { Monnam, a_monnam, hcolor, m_monnam, rndmonnam, x_monnam } from './do_name.js';
@@ -53,7 +53,6 @@ import { container_weight, obj_extract_self, shrink_glob, weight } from './mkobj
 import { Shk_Your, find_oid, obfree } from './shk.js';
 import { which_armor } from './worn.js';
 import { dismount_steed } from './steed.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { confdir, isok } from './cmd.js';
 import { hurtle } from './dothrow.js';
 import { artifact_light } from './artifact.js';
@@ -217,8 +216,6 @@ const __s_feel_incredibly_sick = cptr.lit("feel incredibly sick.");
 const __s_are_about_to_vomit = cptr.lit("are about to vomit.");
 const __s_confused__2 = cptr.lit(" confused");
 const __s_more_confused = cptr.lit(" more confused");
-const __s_timeout_c = cptr.lit("timeout.c");
-const __s_vomiting_dialogue = cptr.lit("vomiting_dialogue");
 const __s_think = cptr.lit(" think");
 const __s_can_t_seem_to = cptr.lit("can't seem to ");
 const __s_can_t = cptr.lit("can't ");
@@ -237,7 +234,6 @@ const __s_your_s_is_becoming_constricted = cptr.lit("Your %s is becoming constri
 const __s_your_blood_is_having_trouble_reaching = cptr.lit("Your blood is having trouble reaching your brain.");
 const __s_the_pressure_on_your_s_increases = cptr.lit("The pressure on your %s increases.");
 const __s_your_consciousness_is_fading = cptr.lit("Your consciousness is fading.");
-const __s_choke_dialogue = cptr.lit("choke_dialogue");
 const __s_your_illness_feels_worse = cptr.lit("Your illness feels worse.");
 const __s_your_illness_is_severe = cptr.lit("Your illness is severe.");
 const __s_you_are_at_death_s_door = cptr.lit("You are at Death's door.");
@@ -267,7 +263,6 @@ const __s_you_start_to_feel_bloated = cptr.lit("You start to feel bloated.");
 const __s_you_are_feeling_rather_flabby = cptr.lit("You are feeling rather flabby.");
 const __s_you_seem_to_have_some_trouble_breathing = cptr.lit("You seem to have some trouble breathing.");
 const __s_the_air_here_seems_foul = cptr.lit("The air here seems foul.");
-const __s_nh_timeout = cptr.lit("nh_timeout");
 const __s_the_s_haze_around_you_s = cptr.lit("The %s haze around you %s.");
 const __s_becomes_less_dense = cptr.lit("becomes less dense");
 const __s_disappears = cptr.lit("disappears");
@@ -300,8 +295,6 @@ const __s_amulet_vanishes = cptr.lit("amulet vanishes!");
 const __s_make_a_lot_of_noise = cptr.lit("make a lot of noise!");
 const __s_sleeping = cptr.lit("sleeping");
 const __s_you_wake_up = cptr.lit("You wake up.");
-const __s_attach_egg_hatch_timeout = cptr.lit("attach_egg_hatch_timeout");
-const __s_hatch_egg = cptr.lit("hatch_egg");
 const __s_s_s = cptr.lit("%s%s");
 const __s_some = cptr.lit("some ");
 const __s_s_s_from_your_pack = cptr.lit("%s %s from your pack!");
@@ -322,7 +315,6 @@ const __s_empty_water = cptr.lit("empty water");
 const __s_thin_air = cptr.lit("thin air");
 const __s_s_s_out_of_s = cptr.lit("%s %s out of %s!");
 const __s_egg_hatched_where_d = cptr.lit("egg hatched where? (%d)");
-const __s_attach_fig_transform_timeout = cptr.lit("attach_fig_transform_timeout");
 const __s_it = cptr.lit("it");
 const __s_they = cptr.lit("they");
 const __s_them = cptr.lit("them");
@@ -332,7 +324,6 @@ const __s_egads_s_bite_s_your_s = cptr.lit("Egads!  %s bite%s your %s!");
 const __s_s = cptr.lit("s");
 const __s_trip_over_s = cptr.lit("trip over %s.");
 const __s_tripping_over_s_corpse = cptr.lit("tripping over %s corpse");
-const __s_slip_or_trip = cptr.lit("slip_or_trip");
 const __s_s_s_s_the_ice = cptr.lit("%s %s %s the ice.");
 const __s_you = cptr.lit("You");
 const __s_steed = cptr.lit("steed");
@@ -342,6 +333,8 @@ const __s_slide = cptr.lit("slide");
 const __s_on = cptr.lit("on");
 const __s_off = cptr.lit("off");
 const __s_lose_your_balance = cptr.lit("lose your balance.");
+const __s_timeout_c = cptr.lit("timeout.c");
+const __s_slip_or_trip = cptr.lit("slip_or_trip");
 const __s_trip_over_your_own_s = cptr.lit("trip over your own %s.");
 const __s_elbow = cptr.lit("elbow");
 const __s_slip_s = cptr.lit("slip %s.");
@@ -396,7 +389,6 @@ const __s_begin_burn_can_t_get_obj_position = cptr.lit("begin_burn: can't get ob
 const __s_end_burn_obj_s_not_lit = cptr.lit("end_burn: obj %s not lit");
 const __s_end_burn_obj_s_not_timed = cptr.lit("end_burn: obj %s not timed!");
 const __s_cleanup_burn_obj_s_not_lit = cptr.lit("cleanup_burn: obj %s not lit");
-const __s_do_storms = cptr.lit("do_storms");
 const __s_kaboom_boom_boom = cptr.lit("Kaboom!!!  Boom!!  Boom!!");
 const __s_hiding_from_thunderstorm = cptr.lit("hiding from thunderstorm");
 const __s_a_rumbling_noise = cptr.lit("a rumbling noise.");
@@ -405,6 +397,7 @@ const __s_rot_corpse = cptr.lit("rot_corpse");
 const __s_revive_mon = cptr.lit("revive_mon");
 const __s_zombify_mon = cptr.lit("zombify_mon");
 const __s_burn_object = cptr.lit("burn_object");
+const __s_hatch_egg = cptr.lit("hatch_egg");
 const __s_fig_transform = cptr.lit("fig_transform");
 const __s_shrink_glob = cptr.lit("shrink_glob");
 const __s_melt_ice_away = cptr.lit("melt_ice_away");
@@ -696,13 +689,13 @@ function* vomiting_dialogue() {
             txt = strsubst(cptr.strcpy(cptr.decay(buf), txt), __s_confused__2, __s_more_confused);
         break;
         case 6:
-        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(d_at(__s_timeout_c, 215, __s_vomiting_dialogue, 2, 4))), 0));
+        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(d(2, 4))), 0));
         if (!Popeye(NHC.VOMITING))
             (yield* stop_occupation());
         // @FallThrough
         ;
         case 9:
-        (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(d_at(__s_timeout_c, 221, __s_vomiting_dialogue, 2, 4))), 0));
+        (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(d(2, 4))), 0));
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
             nomul(0);
         break;
@@ -777,7 +770,7 @@ function* choke_dialogue() {
     let i = (Strangled() & 16777215n);
 
     if (i > 0n && i <= BigInt(5)) {
-        if (Breathless() || !rn2_at(__s_timeout_c, 300, __s_choke_dialogue, 50)) {
+        if (Breathless() || !rn2(50)) {
             (yield* urgent_pline(cptr.ldPtro(choke_texts2, BigInt.asIntN(64, BigInt(5) - i), 8), (yield* body_part(NHC.NECK))));
         } else {
             let str = cptr.ldPtro(choke_texts, BigInt.asIntN(64, BigInt(5) - i), 8);
@@ -1105,7 +1098,7 @@ export function* nh_timeout() {
         (yield* sleep_dialogue());
     if (cptr.ldI32o(u, $you_mtimedone) && !cptr.stI32o(u, $you_mtimedone, cptr.ldI32o(u, $you_mtimedone) + -1)) {
         if (Unchanging())
-            cptr.stI32o(u, $you_mtimedone, rnd_at(__s_timeout_c, 643, __s_nh_timeout, (Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0));
+            cptr.stI32o(u, $you_mtimedone, rnd((Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0));
         else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n))
             (yield* you_unwere(0));  /* if polycontrl, asks whether to rehumanize */
         else
@@ -1156,7 +1149,7 @@ export function* nh_timeout() {
                 case 17n:
                 /* hero might be able to bounce back from food poisoning,
                    but not other forms of illness */
-                if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0 && rn2_at(__s_timeout_c, 696, __s_nh_timeout, 100) < (acurr(NHC.A_CON))) {
+                if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0 && rn2(100) < (acurr(NHC.A_CON))) {
                     (yield* You(__s_have_recovered_from_your_illness));
                     (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
                     (yield* exercise(NHC.A_CON, 0));
@@ -1243,12 +1236,12 @@ export function* nh_timeout() {
                 break;
                 case 27n:
                 if (unconscious() || Sleep_resistance()) {
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), rnd_at(__s_timeout_c, 786, __s_nh_timeout, 100));
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), rnd(100));
                 } else if (Sleepy()) {
                     (yield* You(__s_fall_asleep));
-                    sleeptime = rnd_at(__s_timeout_c, 789, __s_nh_timeout, 20);
+                    sleeptime = rnd(20);
                     (yield* fall_asleep(-sleeptime, 1));
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), (sleeptime + rnd_at(__s_timeout_c, 791, __s_nh_timeout, 100)) | 0);
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), (sleeptime + rnd(100)) | 0);
                 }
                 break;
                 case 48n:
@@ -1377,7 +1370,7 @@ export function* nh_timeout() {
                    counter if that's the only fumble reason */
                 cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-67108865n));
                 if (Fumbling())
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_timeout_c, 924, __s_nh_timeout, 20));
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd(20));
 
                 if (cptr.ld1so(iflags, $instance_flags_defer_decor)) {
                     /* 'mention_decor' was deferred for message sequencing
@@ -1432,7 +1425,7 @@ export function* attach_egg_hatch_timeout(egg, when) {
      */
     if (!when) {
         for (i = 151; i <= NHM.MAX_EGG_HATCH_TIME; i++)
-            if (rnd_at(__s_timeout_c, 996, __s_attach_egg_hatch_timeout, i) > 150) {
+            if (rnd(i) > 150) {
                 /* egg will hatch */
                 when = BigInt(i);
                 break;
@@ -1475,14 +1468,14 @@ export function* hatch_egg(arg, timeout) {
     mon = (mon2 = null);
     mnum = big_to_little(cptr.ldI32o(egg, $obj_corpsenm));
     /* The identity of one's father is learned, not innate */
-    yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && (cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && !rn2_at(__s_timeout_c, 1035, __s_hatch_egg, 2)) ? 1 : 0));
+    yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && (cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && !rn2(2)) ? 1 : 0));
     silent = schar((timeout != cptr.ldI64o(svm, $instance_globals_saved_m_moves)));  /* hatched while away */
 
     /* only can hatch when in INVENT, FLOOR, MINVENT;
        get_obj_location() will fail for MIGRATING, also for CONTAINED
        and BURIED when the flags for those aren't included in the call */
     if (get_obj_location(egg, x, y, 0)) {
-        hatchcount = rnd_at(__s_timeout_c, 1042, __s_hatch_egg, Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan))));
+        hatchcount = rnd(Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan))));
         cansee_hatchspot = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0) && !silent ? 1 : 0));
         if (!(cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) && !(cptr.ld1uo2(svm, mnum, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
             for (i = hatchcount; i > 0; i--) {
@@ -1573,7 +1566,7 @@ export function* hatch_egg(arg, timeout) {
             /* still some eggs left; we didn't split the stack, just
                subtracted from quantity so weight needs to be updated;
                for remainder of stack, add a new, short hatch timer */
-            (yield* attach_egg_hatch_timeout(egg, BigInt(rnd_at(__s_timeout_c, 1172, __s_hatch_egg, 12))));
+            (yield* attach_egg_hatch_timeout(egg, BigInt(rnd(12))));
             /* container_weight(arg) updates arg->owt, and if contained,
                its enclosing container arg->ocontainer (recursively)
                [egg won't be contained due to conditions imposed above] */
@@ -1613,7 +1606,7 @@ export function* attach_fig_transform_timeout(figurine) {
     /*
      * Decide when to transform the figurine.
      */
-    i = (rnd_at(__s_timeout_c, 1214, __s_attach_fig_transform_timeout, 9000) + 200) | 0;
+    i = (rnd(9000) + 200) | 0;
     /* figurine will transform */
     void (yield* start_timer(BigInt(i), NHC.TIMER_OBJECT, NHC.FIG_TRANSFORM, obj_to_any(figurine)));
 }
@@ -1651,16 +1644,16 @@ function* slip_or_trip() {
             void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_tripping_over_s_corpse, (yield* an(cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
             (yield* instapetrify(cptr.add(svk, $kinfo_name)));
         }
-    } else if ((HFumbling() & 67108864n) || (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !rn2_at(__s_timeout_c, 1262, __s_slip_or_trip, 3))) {
+    } else if ((HFumbling() & 67108864n) || (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !rn2(3))) {
         /* is fumbling from ice alone? */
         let ice_only = schar((!(EFumbling() || (HFumbling() & -67108865n))));
 
-        (yield* pline(__s_s_s_s_the_ice, cptr.ldPtro(u, $you_usteed) ? upstart((yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0))) : __s_you, (yield* vtense(cptr.ldPtro(u, $you_usteed) ? __s_steed : __s_you__2, rn2_at(__s_timeout_c, 1273, __s_slip_or_trip, 2) ? __s_slip : __s_slide)), is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_on : __s_off));
+        (yield* pline(__s_s_s_s_the_ice, cptr.ldPtro(u, $you_usteed) ? upstart((yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0))) : __s_you, (yield* vtense(cptr.ldPtro(u, $you_usteed) ? __s_steed : __s_you__2, rn2(2) ? __s_slip : __s_slide)), is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_on : __s_off));
         /* fumbling outside of ice while mounted always causes the hero to
            fall from the saddle (unless it is cursed), so to avoid a
            counterintuitive effect where ice makes riding _less_ hazardous,
            unconditionally dismount if fumbling is from a non-ice source */
-        if (!on_foot && ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) && (!ice_only || !rn2_at(__s_timeout_c, 1284, __s_slip_or_trip, 3))) {
+        if (!on_foot && ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) && (!ice_only || !rn2(3))) {
             (yield* You(__s_lose_your_balance));
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
         } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1287, __s_slip_or_trip), rn2((10 + (acurr(NHC.A_DEX))) | 0)) : rn2((10 + (acurr(NHC.A_DEX))) | 0))) {
@@ -1678,7 +1671,7 @@ function* slip_or_trip() {
         }
     } else {
         if (on_foot) {
-            switch (rn2_at(__s_timeout_c, 1302, __s_slip_or_trip, 4)) {
+            switch (rn2(4)) {
                 case 1:
                 (yield* You(__s_trip_over_your_own_s, Hallucination() ? __s_elbow : (yield* makeplural((yield* body_part(NHC.FOOT))))));
                 break;
@@ -1696,7 +1689,7 @@ function* slip_or_trip() {
             /* mounted; saddle should never end up being Null here;
                don't fall off when it happens to be cursed */
         } else if ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) {
-            switch (rn2_at(__s_timeout_c, 1323, __s_slip_or_trip, 4)) {
+            switch (rn2(4)) {
                 case 1:
                 (yield* Your(__s_s_slip_out_of_the_stirrups, (yield* makeplural((yield* body_part(NHC.FOOT))))));
                 break;
@@ -2198,20 +2191,20 @@ export function* do_storms() {
     let count;
 
     /* no lightning if not stormy level or too often, even then */
-    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) & 1) || rn2_at(__s_timeout_c, 1855, __s_do_storms, 8))
+    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) & 1) || rn2(8))
         return;
 
     /* the number of strikes is 8-log2(nstrike) */
-    for (nstrike = rnd_at(__s_timeout_c, 1859, __s_do_storms, 64); nstrike <= 64; nstrike = Math.imul(nstrike, 2)) {
+    for (nstrike = rnd(64); nstrike <= 64; nstrike = Math.imul(nstrike, 2)) {
         count = 0;
         do {
-            x = rnd_at(__s_timeout_c, 1862, __s_do_storms, 79);
-            y = rn2_at(__s_timeout_c, 1863, __s_do_storms, NHM.ROWNO);
+            x = rnd(79);
+            y = rn2(NHM.ROWNO);
         } while (++count < 100 && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.CLOUD);
 
         if (count < 100) {
-            dirx = (rn2_at(__s_timeout_c, 1867, __s_do_storms, 3) - 1) | 0;
-            diry = (rn2_at(__s_timeout_c, 1868, __s_do_storms, 3) - 1) | 0;
+            dirx = (rn2(3) - 1) | 0;
+            diry = (rn2(3) - 1) | 0;
             if (dirx != 0 || diry != 0) {
                 /* BZ_M_SPELL(BZ_OFS_AD(AD_ELEC)): monster LIGHTNING spell */
                 cptr.stPtro(gb, $instance_globals_b_buzzer, null);  /* unspecified attacker */
@@ -2225,7 +2218,7 @@ export function* do_storms() {
         /* Even if already deaf, we sense the thunder's vibrations. */
         ;
         (yield* pline(__s_kaboom_boom_boom));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), ((rn2_at(__s_timeout_c, 1882, __s_do_storms, 20) + 30) | 0));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), ((rn2(20) + 30) | 0));
         cptr.st1(disp, 1);
         if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
             (yield* stop_occupation());

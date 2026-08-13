@@ -13,9 +13,8 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at } from './nhrng.js';
 import { Role_switch, askname, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
-import { rn2_on_display_rng } from './rnd.js';
+import { rn2, rn2_on_display_rng } from './rnd.js';
 import { Strlen_ } from './strutil.js';
 import { eos, findword, highc, lowc, s_suffix, strNsubst, strkitten, strncmpi, strstri, strsubst, trimspaces } from './hacklib.js';
 import { cg, flags, gp, gr, gu, iflags, program_state, svp, svq } from './decl.js';
@@ -359,20 +358,10 @@ const __s_cha = cptr.lit("Cha");
 const __s_evil = cptr.lit("evil");
 const __s_unaligned = cptr.lit("unaligned");
 const __s_una = cptr.lit("Una");
-const __s_role_c = cptr.lit("role.c");
-const __s_randrole = cptr.lit("randrole");
-const __s_randrole_filtered = cptr.lit("randrole_filtered");
 const __s_str2role = cptr.lit("str2role");
-const __s_randrace = cptr.lit("randrace");
 const __s_str2race = cptr.lit("str2race");
-const __s_randgend = cptr.lit("randgend");
 const __s_str2gend = cptr.lit("str2gend");
-const __s_randalign = cptr.lit("randalign");
 const __s_str2align = cptr.lit("str2align");
-const __s_pick_role = cptr.lit("pick_role");
-const __s_pick_race = cptr.lit("pick_race");
-const __s_pick_gend = cptr.lit("pick_gend");
-const __s_pick_align = cptr.lit("pick_align");
 const __s_3s = cptr.lit(" !%.3s");
 const __s_sp_bang_pct_s = cptr.lit(" !%s");
 const __s_rolefilterstring_bad_role_aspect_d = cptr.lit("rolefilterstring: bad role aspect (%d)");
@@ -381,6 +370,7 @@ const __s_and = cptr.lit("and ");
 const __s_comma = cptr.lit(",");
 const __s_sp = cptr.lit(" ");
 const __s_root_plselection_prompt = cptr.lit("root_plselection_prompt");
+const __s_role_c = cptr.lit("role.c");
 const __s_indexokt_rolenum_roles = cptr.lit("IndexOkT(rolenum, roles)");
 const __s_slash = cptr.lit("/");
 const __s_character = cptr.lit("character");
@@ -423,7 +413,6 @@ const __s_reset = cptr.lit("Reset");
 const __s_random = cptr.lit("Random");
 const __s_quit = cptr.lit("Quit");
 const __s_role_menu_extra_bad_arg_d = cptr.lit("role_menu_extra: bad arg (%d)");
-const __s_role_init = cptr.lit("role_init");
 const __s_goddess = cptr.lit("goddess");
 const __s_salutations = cptr.lit("Salutations");
 const __s_irasshaimase = cptr.lit("Irasshaimase");
@@ -1708,7 +1697,7 @@ export function randrole(for_display) {
     if (for_display)
         res = rn2_on_display_rng(res);
     else
-        res = rn2_at(__s_role_c, 726, __s_randrole, res);
+        res = rn2(res);
     return res;
 }
 
@@ -1723,7 +1712,7 @@ function randrole_filtered() {
     for (i = 0; i < ((14 - 1) | 0); ++i)
         if (ok_role(i, -1, -1, -1) && ok_race(i, -2, -1, -1) && ok_gend(i, -1, -2, -1) && ok_align(i, -1, -1, -2))
             cptr.stI32o(set, n++, i, 4);
-    return n ? cptr.ldI32o(set, rn2_at(__s_role_c, 743, __s_randrole_filtered, n), 4) : randrole(0);
+    return n ? cptr.ldI32o(set, rn2(n), 4) : randrole(0);
 }
 
 /** C ref: role.c:747 — @param {CPtr<char>} str @returns {CInt} */
@@ -1775,7 +1764,7 @@ export function randrace(rolenum) {
     /* Pick a random race */
     /* Use a factor of 100 in case of bad random number generators */
     if (n)
-        n = (rn2_at(__s_role_c, 799, __s_randrace, Math.imul(n, 100)) / 100) | 0;
+        n = (rn2(Math.imul(n, 100)) / 100) | 0;
     for (i = 0; cptr.ldPtro(races, i, $sizeof_Race); i++)
         if (cptr.ldI16o2(roles, rolenum, $sizeof_Role, $Role_allow) & cptr.ldI16o2(races, i, $sizeof_Race, $Race_allow) & NHM.ROLE_RACEMASK) {
             if (n)
@@ -1785,7 +1774,7 @@ export function randrace(rolenum) {
         }
 
     /* This role has no permitted races? */
-    return rn2_at(__s_role_c, 809, __s_randrace, (6 - 1) | 0);
+    return rn2((6 - 1) | 0);
 }
 
 /** C ref: role.c:813 — @param {CPtr<char>} str @returns {CInt} */
@@ -1836,7 +1825,7 @@ export function randgend(rolenum, racenum) {
 
     /* Pick a random gender */
     if (n)
-        n = rn2_at(__s_role_c, 865, __s_randgend, n);
+        n = rn2(n);
     for (i = 0; i < NHM.ROLE_GENDERS; i++)
         if (cptr.ldI16o2(roles, rolenum, $sizeof_Role, $Role_allow) & cptr.ldI16o2(races, racenum, $sizeof_Race, $Race_allow) & cptr.ldI16o2(genders, i, $sizeof_Gender, $Gender_allow) & NHM.ROLE_GENDMASK) {
             if (n)
@@ -1846,7 +1835,7 @@ export function randgend(rolenum, racenum) {
         }
 
     /* This role/race has no permitted genders? */
-    return rn2_at(__s_role_c, 876, __s_randgend, NHM.ROLE_GENDERS);
+    return rn2(NHM.ROLE_GENDERS);
 }
 
 /** C ref: role.c:880 — @param {CPtr<char>} str @returns {CInt} */
@@ -1893,7 +1882,7 @@ export function randalign(rolenum, racenum) {
 
     /* Pick a random alignment */
     if (n)
-        n = rn2_at(__s_role_c, 928, __s_randalign, n);
+        n = rn2(n);
     for (i = 0; i < NHM.ROLE_ALIGNS; i++)
         if (cptr.ldI16o2(roles, rolenum, $sizeof_Role, $Role_allow) & cptr.ldI16o2(races, racenum, $sizeof_Race, $Race_allow) & cptr.ldI16o2(aligns, i, $sizeof_Align, $Align_allow) & NHM.AM_MASK) {
             if (n)
@@ -1903,7 +1892,7 @@ export function randalign(rolenum, racenum) {
         }
 
     /* This role/race has no permitted alignments? */
-    return rn2_at(__s_role_c, 939, __s_randalign, NHM.ROLE_ALIGNS);
+    return rn2(NHM.ROLE_ALIGNS);
 }
 
 /** C ref: role.c:943 — @param {CPtr<char>} str @returns {CInt} */
@@ -1982,7 +1971,7 @@ export function pick_role(racenum, gendnum, alignnum, pickhow) {
     }
     if (roles_ok == 0 || (roles_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    return cptr.ldI32o(set, rn2_at(__s_role_c, 1032, __s_pick_role, roles_ok), 4);
+    return cptr.ldI32o(set, rn2(roles_ok), 4);
 }
 
 /* is racenum compatible with any rolenum/gendnum/alignnum constraints? */
@@ -2034,7 +2023,7 @@ export function pick_race(rolenum, gendnum, alignnum, pickhow) {
     }
     if (races_ok == 0 || (races_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    races_ok = rn2_at(__s_role_c, 1092, __s_pick_race, races_ok);
+    races_ok = rn2(races_ok);
     for (i = 0; i < ((6 - 1) | 0); i++) {
         if (ok_race(rolenum, i, gendnum, alignnum)) {
             if (races_ok == 0)
@@ -2093,7 +2082,7 @@ export function pick_gend(rolenum, racenum, alignnum, pickhow) {
     }
     if (gends_ok == 0 || (gends_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    gends_ok = rn2_at(__s_role_c, 1157, __s_pick_gend, gends_ok);
+    gends_ok = rn2(gends_ok);
     for (i = 0; i < NHM.ROLE_GENDERS; i++) {
         if (ok_gend(rolenum, racenum, i, alignnum)) {
             if (gends_ok == 0)
@@ -2152,7 +2141,7 @@ export function pick_align(rolenum, racenum, gendnum, pickhow) {
     }
     if (aligns_ok == 0 || (aligns_ok > 1 && pickhow == NHM.PICK_RIGID))
         return -1;
-    aligns_ok = rn2_at(__s_role_c, 1222, __s_pick_align, aligns_ok);
+    aligns_ok = rn2(aligns_ok);
     for (i = 0; i < NHM.ROLE_ALIGNS; i++) {
         if (ok_align(rolenum, racenum, gendnum, i)) {
             if (aligns_ok == 0)
@@ -2895,7 +2884,7 @@ export function* role_init() {
         cptr.st1o(pm, $permonst_maligntyp, schar(Math.imul(alignmnt, 3)));
         /* if gender is random, we choose it now instead of waiting
            until the leader monster is created */
-        cptr.stI32o(svq, $q_score_ldrgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : (rn2_at(__s_role_c, 2039, __s_role_init, 100) < 50)))) >>> 0);
+        cptr.stI32o(svq, $q_score_ldrgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : (rn2(100) < 50)))) >>> 0);
     }
 
     /* Fix up the quest guardians */
@@ -2915,7 +2904,7 @@ export function* role_init() {
         cptr.stI16o(pm, $permonst_mflags3, cptr.ldU16o(pm, $permonst_mflags3) | 80);
         /* if gender is random, we choose it now instead of waiting
            until the nemesis monster is created */
-        cptr.stI32o(svq, $q_score_nemgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : (rn2_at(__s_role_c, 2060, __s_role_init, 100) < 50)))) >>> 0);
+        cptr.stI32o(svq, $q_score_nemgend, (((cptr.ldU64o((pm), $permonst_mflags2) & 262144n) != 0n) ? 2 : (((cptr.ldU64o((pm), $permonst_mflags2) & 131072n) != 0n) ? 1 : (((cptr.ldU64o((pm), $permonst_mflags2) & 65536n) != 0n) ? 0 : (rn2(100) < 50)))) >>> 0);
     }
 
     /* Fix up the god names */

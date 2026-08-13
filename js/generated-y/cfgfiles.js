@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at } from './nhrng.js';
 import { wait_synch } from './nhprop.js';
 import { pline, raw_printf } from './pline.js';
 import { flags, gc, gd, gn, go, gw, iflags, program_state, svp } from './decl.js';
@@ -23,6 +22,7 @@ import { strbuf_empty, strbuf_init } from './strutil.js';
 import { add_autopickup_exception, all_options_strbuf, allopt_array_init, assign_warnings, disregard_all_options, disregard_this_option, heed_all_options, heed_this_option, match_optname, msgtype_parse_add, nh_getenv, parsebindings, parseoptions, reset_duplicate_opt_detection } from './options.js';
 import { debugcore, do_deferred_showpaths, fqname } from './files.js';
 import { c_eos, eos, mungspaces, nh_snprintf, trimspaces } from './hacklib.js';
+import { rn2 } from './rnd.js';
 import { alloc, dupstr } from './alloc.js';
 import { str2role } from './role.js';
 import { sysopt, sysopt_seduce_set } from './sys.js';
@@ -109,9 +109,8 @@ const __s_library_preferences_nethack_defaults_txt = cptr.lit("Library/Preferenc
 const __s_empty = cptr.lit("");
 const __s_couldn_t_open_default_config_file_s_s_d = cptr.lit("Couldn't open default config file %s %s(%d).");
 const __s_syntax_error_in_s = cptr.lit("Syntax error in %s");
-const __s_cfgfiles_c = cptr.lit("cfgfiles.c");
-const __s_choose_random_part = cptr.lit("choose_random_part");
 const __s_section_s_without_choose = cptr.lit("Section \"[%s]\" without CHOOSE");
+const __s_cfgfiles_c = cptr.lit("cfgfiles.c");
 const __s_set_config_section_s = cptr.lit("set config section: '%s'");
 const __s_unset_config_section = cptr.lit("unset config section");
 const __s_star = cptr.lit("*");
@@ -456,7 +455,7 @@ function choose_random_part(str, sep) {
             nsep++;
         str = cptr.add(str, 1);
     }
-    csep = rn2_at(__s_cfgfiles_c, 480, __s_choose_random_part, nsep);
+    csep = rn2(nsep);
     str = begin;
     while ((csep > 0) && cptr.ld1s(str)) {
         str = cptr.add(str, 1);

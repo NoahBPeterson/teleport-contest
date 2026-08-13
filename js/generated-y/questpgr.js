@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at } from './nhrng.js';
 import { Blind, Role_switch, create_nhwindow, destroy_nhwindow, display_nhwindow, putmsghistory, putstr } from './nhprop.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
@@ -30,6 +29,7 @@ import { windowprocs } from './windows.js';
 import { get_table_option, get_table_str_opt, nhl_done, nhl_init, nhl_loadlua } from './nhlua.js';
 import { lua_getfield, lua_getglobal, lua_gettable, lua_len, lua_pushinteger, lua_settop, lua_tointegerx, lua_type } from './lapi.js';
 import { dupstr } from './alloc.js';
+import { rn2 } from './rnd.js';
 import { luaL_checklstring } from './lauxlib.js';
 import { mkclass } from './makemon.js';
 
@@ -115,14 +115,11 @@ const __s_synopsis = cptr.lit("synopsis");
 const __s_output = cptr.lit("output");
 const __s_default = cptr.lit("default");
 const __s_com_pager_questtext_s_s_in_s_is_not_an = cptr.lit("com_pager: questtext[%s][%s] in %s is not an array of strings");
-const __s_questpgr_c = cptr.lit("questpgr.c");
-const __s_com_pager_core = cptr.lit("com_pager_core");
 const __s_lbrack_pct_dot_star_s_rbrack = cptr.lit("[%.*s]");
 const __s_pline = cptr.lit("pline");
 const __s_window = cptr.lit("window");
 const __s_menu = cptr.lit("menu");
 const __s_common = cptr.lit("common");
-const __s_qt_montype = cptr.lit("qt_montype");
 
 /** C ref: questpgr.c:31 — @param {CInt} typ @returns {CInt} */
 export function* quest_info(typ) {
@@ -665,7 +662,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
                     return res;
                 }
             }
-            nelems = (rn2_at(__s_questpgr_c, 566, __s_com_pager_core, nelems) + 1) | 0;
+            nelems = (rn2(nelems) + 1) | 0;
             (yield* lua_pushinteger(L, BigInt(nelems)));
             (yield* lua_gettable(L, -2));
             text = (yield* dupstr(((yield* luaL_checklstring(L, -1, null)))));
@@ -731,14 +728,14 @@ export function* qt_pager(msgid) {
 export function* qt_montype() {
     let qpm;
 
-    if (rn2_at(__s_questpgr_c, 641, __s_qt_montype, 5)) {
+    if (rn2(5)) {
         qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy1num);
-        if (qpm != NHC.NON_PM && rn2_at(__s_questpgr_c, 643, __s_qt_montype, 5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+        if (qpm != NHC.NON_PM && rn2(5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
             return cptr.add(mons, qpm, $sizeof_permonst);
         return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy1sym), 0));
     }
     qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy2num);
-    if (qpm != NHC.NON_PM && rn2_at(__s_questpgr_c, 648, __s_qt_montype, 5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    if (qpm != NHC.NON_PM && rn2(5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
         return cptr.add(mons, qpm, $sizeof_permonst);
     return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy2sym), 0));
 }

@@ -13,7 +13,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, ismnum } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { Punished, Role_switch, URIGHTY, discover, wizard } from './nhprop.js';
 import { In_hell, Is_botlevel, Is_branchlev, Is_special, assign_level, depth, dunlevs_in_dungeon, ledger_no, maxledgerno, on_level } from './dungeon.js';
 import { flags, gb, gf, gi, gs, gu, iflags, program_state, svc, svd, svl, svn, svp, svr, u, uball, ynchars } from './decl.js';
@@ -32,6 +31,7 @@ import { end_burn } from './timeout.js';
 import { windowprocs } from './windows.js';
 import { isok, yn_function } from './cmd.js';
 import { attacktype, give_u_to_m_resistances } from './mondata.js';
+import { rn2 } from './rnd.js';
 import { can_carry, dmonsfree, iter_mons, mongone } from './mon.js';
 import { obj_no_longer_held } from './do.js';
 import { obj_is_burning } from './light.js';
@@ -126,10 +126,6 @@ const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_fileco
     $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_bones_c = cptr.lit("bones.c");
-const __s_give_to_nearby_mon = cptr.lit("give_to_nearby_mon");
-const __s_drop_upon_death = cptr.lit("drop_upon_death");
-const __s_can_make_bones = cptr.lit("can_make_bones");
 const __s_bones_file_already_exists_replace_it = cptr.lit("Bones file already exists.  Replace it?");
 const __s_cannot_unlink_old_bones = cptr.lit("Cannot unlink old bones.");
 const __s_s_3s_3s_3s_3s = cptr.lit("%s-%.3s-%.3s-%.3s-%.3s");
@@ -138,9 +134,9 @@ const __s_savebones = cptr.lit("savebones");
 const __s_ancestor_nhuuid = cptr.lit("ancestor-nhuuid");
 const __s_bones_count = cptr.lit("bones_count");
 const __s_bonesid = cptr.lit("bonesid");
-const __s_getbones = cptr.lit("getbones");
 const __s_discarding_unusable_bones_no_need_to = cptr.lit("Discarding unusable bones; no need to panic...");
 const __s_get_bones = cptr.lit("Get bones?");
+const __s_bones_c = cptr.lit("bones.c");
 const __s_abandoning_bones_u_u = cptr.lit("Abandoning bones , %u > %u.");
 const __s_this_is_bones_level_s_not_s = cptr.lit("This is bones level '%s', not '%s'!");
 const __s_removing_defunct_monster_s_from_bones = cptr.lit("Removing defunct monster %s from bones.");
@@ -352,7 +348,7 @@ function* give_to_nearby_mon(otmp, x, y) {
             if (!(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2147483648n) != 0n)))
                 continue;
             nmon++;
-            if (!rn2_at(__s_bones_c, 247, __s_give_to_nearby_mon, nmon))
+            if (!rn2(nmon))
                 selected = mtmp;
         }
     }
@@ -391,13 +387,13 @@ export function* drop_upon_death(mtmp, cont, x, y) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD)
             goodfruit(cptr.ld1so(otmp, $obj_spe));
 
-        if (rn2_at(__s_bones_c, 290, __s_drop_upon_death, 5))
+        if (rn2(5))
             (yield* curse(otmp));
         if (mtmp)
             void (yield* add_to_minv(mtmp, otmp));
         else if (cont)
             void (yield* add_to_container(cont, otmp));
-        else if (!rn2_at(__s_bones_c, 296, __s_drop_upon_death, 8))
+        else if (!rn2(8))
             (yield* give_to_nearby_mon(otmp, x, y));
         else
             (yield* place_object(otmp, x, y));
@@ -476,7 +472,7 @@ export function can_make_bones() {
                 return 0;
     }
 
-    if (depth(cptr.add(u, $you_uz)) <= 0 || (!rn2_at(__s_bones_c, 377, __s_can_make_bones, (1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0) && !wizard()))
+    if (depth(cptr.add(u, $you_uz)) <= 0 || (!rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0) && !wizard()))
         return 0;
     /* don't let multiple restarts generate multiple copies of objects
        in bones files */
@@ -732,7 +728,7 @@ export function* getbones() {
     if (!cptr.ld1so(flags, $flag_bones))
         return 0;
     /* wizard check added by GAN 02/05/87 */
-    if (rn2_at(__s_bones_c, 645, __s_getbones, 3) && !wizard())
+    if (rn2(3) && !wizard())
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;

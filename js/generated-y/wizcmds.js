@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_WALL, canspotmon, glyph_is_cmap, glyph_is_cmap_zap, glyph_is_monster, glyph_is_object, glyph_to_mon, glyph_to_obj, has_mgivenname, nonliving } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { HConfusion, HHallucination, Slimed, Sokoban, Stoned, Underwater, Upolyd, Vomiting, Warn_of_mon, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, wizard } from './nhprop.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, disp, flags, gb, gc, gf, gi, gm, gs, gu, gv, gy, head_engr, iflags, program_state, svc, svd, svk, svl, svm, svn, u, ynchars, ynqchars } from './decl.js';
 import { makewish } from './zap.js';
@@ -48,6 +47,7 @@ import { defsyms } from './drawing.js';
 import { mstrength, olfaction } from './mondata.js';
 import { property_by_index, timer_sanity_check, timer_stats } from './timeout.js';
 import { incr_itimeout, make_blinded, make_deaf, make_glib, make_hallucinated, make_sick, make_slimed, make_stoned, make_stunned, make_vomiting } from './potion.js';
+import { rn2 } from './rnd.js';
 import { rumor_check } from './rumors.js';
 import { size_wseg } from './worm.js';
 import { engr_stats, engraving_sanity_check } from './engrave.js';
@@ -269,8 +269,6 @@ const __s_precede_any_selection_with_a_count_to = cptr.lit("[Precede any selecti
 const __s_dash2 = cptr.lit("--");
 const __s_27s_li = cptr.lit("%-27s [%li]");
 const __s_which_intrinsics = cptr.lit("Which intrinsics?");
-const __s_wizcmds_c = cptr.lit("wizcmds.c");
-const __s_wiz_intrinsic = cptr.lit("wiz_intrinsic");
 const __s_still = cptr.lit(" still");
 const __s_turning_into_slime = cptr.lit("turning into slime");
 const __s_turning_into_stone = cptr.lit("turning into stone");
@@ -1305,7 +1303,7 @@ export function* wiz_intrinsic() {
                 (yield* make_hallucinated(newtimeout, 1, 0n));
                 break;
                 case NHC.SICK:
-                typ = !rn2_at(__s_wizcmds_c, 1036, __s_wiz_intrinsic, 2) ? NHM.SICK_VOMITABLE : NHM.SICK_NONVOMITABLE;
+                typ = !rn2(2) ? NHM.SICK_VOMITABLE : NHM.SICK_NONVOMITABLE;
                 (yield* make_sick(newtimeout, cptr.decay(__static_wiz_intrinsic_wizintrinsic), 1, typ));
                 break;
                 case NHC.SLIMED:

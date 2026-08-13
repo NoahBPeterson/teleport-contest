@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, has_edog, helpless, is_floater, is_pick, is_vampshifter, likes_lava, m_cansee, touch_petrifies } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Conflict, Deaf, Hallucination, Protection_from_shape_changers, Underwater, display_nhwindow } from './nhprop.js';
 import { WIN_MAP, c_common_strings, cg, flags, gb, gf, gg, gi, gn, gv, gy, iflags, svc, svd, svl, svm, u } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -29,6 +28,7 @@ import { currency, sobj_at } from './invent.js';
 import { can_carry, check_gear_next_turn, m_consume_obj, mfndpos, mon_allowflags, mondied, monnear } from './mon.js';
 import { beg, domonnoise, whimper } from './sounds.js';
 import { stop_occupation } from './allmain.js';
+import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mpickobj, relobj } from './steal.js';
 import { Resists_Elem, attacktype, locomotion, max_passive_dmg, pronoun_gender, resist_conflict } from './mondata.js';
 import { mon_wield_item } from './weapon.js';
@@ -44,7 +44,6 @@ import { dismount_steed, place_monster } from './steed.js';
 import { lose_guardian_angel } from './minion.js';
 import { mon_reflects } from './muse.js';
 import { t_at } from './trap.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { genders } from './role.js';
 import { m_unleash } from './apply.js';
 import { m_in_out_region } from './region.js';
@@ -140,9 +139,6 @@ const __s_dog_invent = cptr.lit("dog_invent");
 const __s_dogmove_c = cptr.lit("dogmove.c");
 const __s_edog_apport_0 = cptr.lit("edog->apport > 0");
 const __s_s_picks_up_s = cptr.lit("%s picks up %s.");
-const __s_dog_goal = cptr.lit("dog_goal");
-const __s_score_targ = cptr.lit("score_targ");
-const __s_pet_ranged_attk = cptr.lit("pet_ranged_attk");
 const __s_dog_move_for_non_pet = cptr.lit("dog_move for non-pet?");
 const __s_dog_move = cptr.lit("dog_move");
 const __s_s_breaks_loose_of_s_leash = cptr.lit("%s breaks loose of %s leash!");
@@ -150,7 +146,6 @@ const __s_s_s_reluctantly_s_s = cptr.lit("%s %s reluctantly %s %s.");
 const __s_step = cptr.lit("step");
 const __s_over = cptr.lit("over");
 const __s_onto = cptr.lit("onto");
-const __s_quickmimic = cptr.lit("quickmimic");
 const __s_s_s_s_where_s_was = cptr.lit("%s %s %s where %s was!");
 const __s_see = cptr.lit("see");
 const __s_sense_that = cptr.lit("sense that");
@@ -513,8 +508,8 @@ function dog_invent(mtmp, edog, udist) {
      */
     if (droppables(mtmp)) {
         (__builtin_expect(BigInt((!(cptr.ldI32o(edog, $edog_apport) > 0))), 0n) ? __assert_rtn(__s_dog_invent, __s_dogmove_c, 417, __s_edog_apport_0) : void 0);
-        if (!rn2_at(__s_dogmove_c, 418, __s_dog_invent, (udist + 1) | 0) || !rn2_at(__s_dogmove_c, 418, __s_dog_invent, cptr.ldI32o(edog, $edog_apport)))
-            if (rn2_at(__s_dogmove_c, 419, __s_dog_invent, 10) < cptr.ldI32o(edog, $edog_apport)) {
+        if (!rn2((udist + 1) | 0) || !rn2(cptr.ldI32o(edog, $edog_apport)))
+            if (rn2(10) < cptr.ldI32o(edog, $edog_apport)) {
                 relobj(mtmp, (cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0, 1);
                 if (cptr.ldI32o(edog, $edog_apport) > 1)
                     (cptr.stI32o(edog, $edog_apport, cptr.ldI32o(edog, $edog_apport) + -1)) - (-1);
@@ -530,8 +525,8 @@ function dog_invent(mtmp, edog, udist) {
 
             carryamt = can_carry(mtmp, obj);
             if (carryamt > 0 && !(cptr.ldI32o(obj, $obj_cursed) & 1) && could_reach_item(mtmp, cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy))) {
-                if (rn2_at(__s_dogmove_c, 446, __s_dog_invent, 20) < ((cptr.ldI32o(edog, $edog_apport) + 3) | 0)) {
-                    if (rn2_at(__s_dogmove_c, 447, __s_dog_invent, udist) || !rn2_at(__s_dogmove_c, 447, __s_dog_invent, cptr.ldI32o(edog, $edog_apport))) {
+                if (rn2(20) < ((cptr.ldI32o(edog, $edog_apport) + 3) | 0)) {
+                    if (rn2(udist) || !rn2(cptr.ldI32o(edog, $edog_apport))) {
                         otmp = obj;
                         if (BigInt(carryamt) != cptr.ldI64o(obj, $obj_quan))
                             otmp = splitobj(obj, BigInt(carryamt));
@@ -629,7 +624,7 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                         cptr.stI16o(gg, $instance_globals_g_gy, ny);
                         cptr.stI16o(gg, $instance_globals_g_gtyp, otyp);
                     }
-                } else if (cptr.ldI16o(gg, $instance_globals_g_gtyp) == NHC.UNDEF && in_masters_sight && !dog_has_minvent && (!(cptr.ldI32o3(svl, omx, $sizeof_rm_x21, omy, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) || (cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) | 0) && (otyp == NHC.MANFOOD || m_cansee(mtmp, nx, ny)) && cptr.ldI32o(edog, $edog_apport) > rn2_at(__s_dogmove_c, 554, __s_dog_goal, 8) && can_carry(mtmp, obj) > 0) {
+                } else if (cptr.ldI16o(gg, $instance_globals_g_gtyp) == NHC.UNDEF && in_masters_sight && !dog_has_minvent && (!(cptr.ldI32o3(svl, omx, $sizeof_rm_x21, omy, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) || (cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) | 0) && (otyp == NHC.MANFOOD || m_cansee(mtmp, nx, ny)) && cptr.ldI32o(edog, $edog_apport) > rn2(8) && can_carry(mtmp, obj) > 0) {
                     cptr.stI16o(gg, $instance_globals_g_gx, nx);
                     cptr.stI16o(gg, $instance_globals_g_gy, ny);
                     cptr.stI16o(gg, $instance_globals_g_gtyp, NHC.APPORT);
@@ -646,7 +641,7 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
             return -2;
         appr = (udist >= 9) ? 1 : (((cptr.ldI32o(mtmp, $monst_mflee) & 1)) | 0 ? -1 : 0);
         if (udist > 1) {
-            if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || !rn2_at(__s_dogmove_c, 575, __s_dog_goal, 4) || whappr || (dog_has_minvent && rn2_at(__s_dogmove_c, 576, __s_dog_goal, cptr.ldI32o(edog, $edog_apport))))
+            if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) || !rn2(4) || whappr || (dog_has_minvent && rn2(cptr.ldI32o(edog, $edog_apport))))
                 appr = 1;
         }
         /* if you have dog food it'll follow you more closely; if you are
@@ -807,7 +802,7 @@ function score_targ(mtmp, mtarg) {
 
     /* Give 1 in 3 chance of safe breathing even if pet is confused or
      * if you're on the quest start level */
-    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) || !rn2_at(__s_dogmove_c, 748, __s_score_targ, 3) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
+    if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) || !rn2(3) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
         let mtmp_lev;
         let align1 = -128;
         let align2 = -128;  /* For priests, minions */
@@ -871,7 +866,7 @@ function score_targ(mtmp, mtarg) {
             /* is_vampshifter() implies (mtmp->cham >= LOW_PM) */
             mtmp_lev = cptr.ld1so2(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst, $permonst_mlevel);
             /* actual vampire level would range from 1.0*mlvl to 1.5*mlvl */
-            mtmp_lev = (mtmp_lev + rn2_at(__s_dogmove_c, 813, __s_score_targ, (((mtmp_lev / 2) | 0) + 1) | 0)) | 0;
+            mtmp_lev = (mtmp_lev + rn2((((mtmp_lev / 2) | 0) + 1) | 0)) | 0;
             /* we don't expect actual level in weak form to exceed
                base level of strong form, but handle that if it happens */
             if (cptr.ld1uo(mtmp, $monst_m_lev) > mtmp_lev)
@@ -888,9 +883,9 @@ function score_targ(mtmp, mtarg) {
     }
     /* Fuzz factor to make things less predictable when very
        similar targets are abundant. */
-    score += BigInt(rnd_at(__s_dogmove_c, 830, __s_score_targ, 5));
+    score += BigInt(rnd(5));
     /* Pet may decide not to use ranged attack when confused */
-    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && !rn2_at(__s_dogmove_c, 832, __s_score_targ, 3))
+    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && !rn2(3))
         score -= 1000n;
     return score;
 }
@@ -966,7 +961,7 @@ export function pet_ranged_attk(mtmp, forced) {
     mtarg = best_target(mtmp, forced);
 
     /* Hungry pets are unlikely to use breath/spit attacks */
-    if (mtarg && (!hungry || !rn2_at(__s_dogmove_c, 907, __s_pet_ranged_attk, 5))) {
+    if (mtarg && (!hungry || !rn2(5))) {
         let mstatus = NHM.M_ATTK_MISS;
 
         if (cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -992,7 +987,7 @@ export function pet_ranged_attk(mtmp, forced) {
              * the targeted beast doesn't have a ranged attack,
              * nothing will happen.
              */
-            if ((mstatus & NHM.M_ATTK_HIT) && !(mstatus & NHM.M_ATTK_DEF_DIED) && rn2_at(__s_dogmove_c, 934, __s_pet_ranged_attk, 4) && !cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))) {
+            if ((mstatus & NHM.M_ATTK_HIT) && !(mstatus & NHM.M_ATTK_DEF_DIED) && rn2(4) && !cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))) {
 
                 /* Can monster see?  If it can, it can retaliate
                  * even if the pet is invisible, since it'll see
@@ -1185,7 +1180,7 @@ export function dog_move(mtmp, after) {
                     if (cptr.ld1uo(mtmp2, $monst_m_lev) >= balk || (cptr.ld1so(mtmp2, $monst_mtame) && cptr.ld1so(mtmp, $monst_mtame) && !Conflict()) || (max_passive_dmg(mtmp2, mtmp) >= cptr.ldI32o(mtmp, $monst_mhp)) || ((Math.imul(cptr.ldI32o(mtmp, $monst_mhp), 4) < cptr.ldI32o(mtmp, $monst_mhpmax) || cptr.ld1uo(cptr.ldPtro(mtmp2, $monst_data), $permonst_msound) == NHC.MS_GUARDIAN || cptr.ld1uo(cptr.ldPtro(mtmp2, $monst_data), $permonst_msound) == NHC.MS_LEADER) && (cptr.ldI32o(mtmp2, $monst_mpeaceful) & 1) | 0 && !Conflict())) {
                         continue;
                     }
-                    if ((cptr.eq(cptr.ldPtro(mtmp2, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && rn2_at(__s_dogmove_c, 1130, __s_dog_move, 10) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mtmp2, $monst_mcansee) & 1) | 0 && (!(cptr.ldI32o(mtmp2, $monst_minvis) & 1) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !mon_reflects(mtmp, (null))) || (cptr.eq(cptr.ldPtro(mtmp2, $monst_data), cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) && rn2_at(__s_dogmove_c, 1134, __s_dog_move, 10)) || (touch_petrifies(cptr.ldPtro(mtmp2, $monst_data)) && !Resists_Elem(mtmp, NHC.STONE_RES))) {
+                    if ((cptr.eq(cptr.ldPtro(mtmp2, $monst_data), cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)) && rn2(10) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mtmp2, $monst_mcansee) & 1) | 0 && (!(cptr.ldI32o(mtmp2, $monst_minvis) & 1) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !mon_reflects(mtmp, (null))) || (cptr.eq(cptr.ldPtro(mtmp2, $monst_data), cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) && rn2(10)) || (touch_petrifies(cptr.ldPtro(mtmp2, $monst_data)) && !Resists_Elem(mtmp, NHC.STONE_RES))) {
                         /* only skip this foe if a ranged attack isn't viable */
                         if (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI16o(mtmp2, $monst_mx), cptr.ldI16o(mtmp2, $monst_my)) <= 2 || !cptr.eq(best_target(mtmp, 0), mtmp2))
                             continue;
@@ -1206,7 +1201,7 @@ export function dog_move(mtmp, after) {
                     if (mstatus & NHM.M_ATTK_AGR_DIED)
                         return NHM.MMOVE_DIED;
 
-                    if ((mstatus & 3) == NHM.M_ATTK_HIT && rn2_at(__s_dogmove_c, 1158, __s_dog_move, 4) && cptr.ldI64o(mtmp2, $monst_mlstmv) != cptr.ldI64o(svm, $instance_globals_saved_m_moves) && !onscary(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), mtmp2) && monnear(mtmp2, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
+                    if ((mstatus & 3) == NHM.M_ATTK_HIT && rn2(4) && cptr.ldI64o(mtmp2, $monst_mlstmv) != cptr.ldI64o(svm, $instance_globals_saved_m_moves) && !onscary(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), mtmp2) && monnear(mtmp2, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my))) {
                         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(mtmp, $monst_my));
                         cptr.st1o(gn, $instance_globals_n_notonhead, 0);
                         mstatus = mattackm(mtmp2, mtmp);  /* return attack */
@@ -1249,7 +1244,7 @@ export function dog_move(mtmp, after) {
                             /* 1/40 chance of stepping on it anyway, in case
                              * it has to pass one to follow the player...
                              */
-                            if ((cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && rn2_at(__s_dogmove_c, 1206, __s_dog_move, 40))
+                            if ((cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && rn2(40))
                                 continue;
                         }
                     }
@@ -1277,7 +1272,7 @@ export function dog_move(mtmp, after) {
                 }
                 /* didn't find something to eat; if we saw a cursed item and
                    aren't being forced to walk on it, usually keep looking */
-                if (cptr.ld1so(cptr.decay(cursemsg), i, 1) && !(cptr.ldI32o(mtmp, $monst_mleashed) & 1) && uncursedcnt > 0 && rn2_at(__s_dogmove_c, 1238, __s_dog_move, Math.imul(13, uncursedcnt)))
+                if (cptr.ld1so(cptr.decay(cursemsg), i, 1) && !(cptr.ldI32o(mtmp, $monst_mleashed) & 1) && uncursedcnt > 0 && rn2(Math.imul(13, uncursedcnt)))
                     continue;
 
                 /*
@@ -1289,12 +1284,12 @@ export function dog_move(mtmp, after) {
                     k = edog ? uncursedcnt : cnt;
                     for (j = 0; j < NHM.MTSZ && j < ((k - 1) | 0); j++)
                         if (nx == cptr.ldI16o2(mtmp, j, $sizeof_coord, $monst_mtrack) && ny == cptr.ldI16o2(mtmp, j, $sizeof_coord, $monst_mtrack + $nhcoord_y))
-                            if (rn2_at(__s_dogmove_c, 1250, __s_dog_move, Math.imul(NHM.MTSZ, ((k - j) | 0))))
+                            if (rn2(Math.imul(NHM.MTSZ, ((k - j) | 0))))
                                 break __lbl_nxti;
                 }
 
                 j = Math.imul((((ndist = (dist2(nx, ny, cptr.ldI16o(gg, $instance_globals_g_gx), cptr.ldI16o(gg, $instance_globals_g_gy)))) - nidist) | 0), appr);
-                if ((j == 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_dogmove_c, 1255, __s_dog_move), rn2(++chcnt)) : rn2(++chcnt))) || j < 0 || (j > 0 && !whappr && ((omx == nix && omy == niy && !rn2_at(__s_dogmove_c, 1257, __s_dog_move, 3)) || !rn2_at(__s_dogmove_c, 1257, __s_dog_move, 12)))) {
+                if ((j == 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_dogmove_c, 1255, __s_dog_move), rn2(++chcnt)) : rn2(++chcnt))) || j < 0 || (j > 0 && !whappr && ((omx == nix && omy == niy && !rn2(3)) || !rn2(12)))) {
                     nix = nx;
                     niy = ny;
                     nidist = ndist;
@@ -1529,7 +1524,7 @@ export function quickmimic(mtmp) {
         dismount_steed(NHC.DISMOUNT_POLY);
 
     do {
-        idx = rn2_at(__s_dogmove_c, 1491, __s_quickmimic, 9);
+        idx = rn2(9);
         if (cptr.ldI32o(qm, idx, $sizeof_qmchoices) != 0 && (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == cptr.ldI32o(qm, idx, $sizeof_qmchoices))
             break;
         if (cptr.ld1so2(qm, idx, $sizeof_qmchoices, $qmchoices_mlet) != 0 && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == cptr.ld1so2(qm, idx, $sizeof_qmchoices, $qmchoices_mlet))

@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask, Amask2msa, IS_AIR, IS_WALL, Msa2amask, SURFACE_AT } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, EAggravate_monster, Flying, Hallucination, Levitation, Sokoban, Underwater, Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, tutorial_dnum, wizard } from './nhprop.js';
 import { debugcore } from './files.js';
 import { WIN_MAP, cg, emptystr, flags, gf, gu, iflags, svb, svd, sve, svi, svl, svm, svn, svq, svr, svs, svt, svu, u, vowels } from './decl.js';
@@ -18,6 +17,7 @@ import { savecemetery } from './save.js';
 import { alloc, dupstr } from './alloc.js';
 import { done, panic } from './end.js';
 import { eos, highc, mungspaces, nh_snprintf, strncmpi, strstri, strsubst, trimspaces } from './hacklib.js';
+import { rn2, rnd } from './rnd.js';
 import { You, impossible, pline } from './pline.js';
 import { lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_len, lua_next, lua_pushinteger, lua_pushnil, lua_settop, lua_tointegerx, lua_type } from './lapi.js';
 import { luaL_checkoption } from './lauxlib.js';
@@ -225,12 +225,9 @@ const __s_the = cptr.lit("The ");
 const __s_parent_dnum_couldn_t_resolve_branch = cptr.lit("parent_dnum: couldn't resolve branch.");
 const __s_level_range_empty_chain_level = cptr.lit("level_range: empty chain level!");
 const __s_level_range_base_value_out_of_range = cptr.lit("level_range: base value out of range");
-const __s_parent_dlevel = cptr.lit("parent_dlevel");
 const __s_correct_branch_type_unknown_branch_type = cptr.lit("correct_branch_type: unknown branch type");
 const __s_insert_branch_not_found = cptr.lit("insert_branch: not found");
-const __s_init_level = cptr.lit("init_level");
 const __s_pick_level_ran_out_of_valid_levels = cptr.lit("pick_level:  ran out of valid levels");
-const __s_place_level = cptr.lit("place_level");
 const __s_air = cptr.lit("air");
 const __s_asmodeus = cptr.lit("asmodeus");
 const __s_astral = cptr.lit("astral");
@@ -300,13 +297,11 @@ const __s_entry = cptr.lit("entry");
 const __s_lvlfill = cptr.lit("lvlfill");
 const __s_themerooms = cptr.lit("themerooms");
 const __s_dungeon_i_s_base_i_i = cptr.lit("DUNGEON[%i]: %s, base=(%i,%i)");
-const __s_init_dungeon_dungeons = cptr.lit("init_dungeon_dungeons");
 const __s_ignoring_s = cptr.lit("IGNORING %s");
 const __s_levels = cptr.lit("levels");
 const __s_dungeon_i_levels_is_not_an_array_of = cptr.lit("dungeon[%i].levels is not an array of hashes");
 const __s_branches__2 = cptr.lit("branches");
 const __s_dungeon_i_branches_is_not_an_array_of = cptr.lit("dungeon[%i].branches is not an array of hashes");
-const __s_init_castle_tune = cptr.lit("init_castle_tune");
 const __s_x_dash = cptr.lit("x-");
 const __s_s_s = cptr.lit("%s%s");
 const __s_the_quest = cptr.lit("The Quest");
@@ -359,8 +354,6 @@ const __s_ground = cptr.lit("ground");
 const __s_get_level_can_t_find_parent_dungeon = cptr.lit("get_level: can't find parent dungeon");
 const __s_dgn_entrance_can_t_find_entrance_to_s = cptr.lit("dgn_entrance: can't find entrance to %s");
 const __s_no_boundary_for_wizard_s_tower = cptr.lit("No boundary for Wizard's Tower?");
-const __s_assign_rnd_level = cptr.lit("assign_rnd_level");
-const __s_induced_align = cptr.lit("induced_align");
 const __s_the__2 = cptr.lit("the ");
 const __s_level = cptr.lit(" level");
 const __s_gehennom = cptr.lit("gehennom");
@@ -775,7 +768,7 @@ function parent_dlevel(s, pd) {
     num = level_range(i16(dnum), cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev), cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev + $couple_rand), cptr.ldI32o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_chain), pd, base);
 
     /* KMH -- Try our best to find a level without an existing branch */
-    i = (j = rn2_at(__s_dungeon_c, 426, __s_parent_dlevel, num));
+    i = (j = rn2(num));
     do {
         if (++i >= num)
             i = 0;
@@ -907,7 +900,7 @@ function init_level(dgn, proto_index, pd) {
     let tlevel = cptr.add(cptr.add(pd, $proto_dungeon_tmplevel), proto_index, $sizeof_tmplevel);
 
     cptr.stPtro2(pd, proto_index, 8, $proto_dungeon_final_lev, null);  /* no "real" level */
-    if (!wizard() && cptr.ldI32o(tlevel, $tmplevel_chance) <= rn2_at(__s_dungeon_c, 572, __s_init_level, 100))
+    if (!wizard() && cptr.ldI32o(tlevel, $tmplevel_chance) <= rn2(100))
         return;
 
     cptr.stPtro2(pd, proto_index, 8, $proto_dungeon_final_lev, new_level = alloc(56));
@@ -994,7 +987,7 @@ function place_level(proto_index, pd) {
     npossible = possible_places(proto_index, cptr.decay(map), pd);
 
     for (; npossible; --npossible) {
-        cptr.stI16o(lev, $s_level_dlevel + $d_level_dlevel, pick_level(cptr.decay(map), rn2_at(__s_dungeon_c, 687, __s_place_level, npossible)));
+        cptr.stI16o(lev, $s_level_dlevel + $d_level_dlevel, pick_level(cptr.decay(map), rn2(npossible)));
         if (place_level((proto_index + 1) | 0, pd))
             return 1;
         cptr.st1o(cptr.decay(map), cptr.ldI16o(lev, $s_level_dlevel + $d_level_dlevel), 0, 1);  /* this choice didn't work */
@@ -1400,7 +1393,7 @@ function init_dungeon_dungeons(L, pd, dngidx) {
         }
     }
 
-    if (!wizard() && dgn_chance && (dgn_chance <= rn2_at(__s_dungeon_c, 1022, __s_init_dungeon_dungeons, 100))) {
+    if (!wizard() && dgn_chance && (dgn_chance <= rn2(100))) {
         {
             if (debugcore(__s_dungeon_c, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1458,7 +1451,7 @@ function init_dungeon_dungeons(L, pd, dngidx) {
     cptr.free(dgn_themerms);
 
     if (dgn_range)
-        cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(((rn2_at(__s_dungeon_c, 1074, __s_init_dungeon_dungeons, dgn_range) + (dgn_base)) | 0)));
+        cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(((rn2(dgn_range) + (dgn_base)) | 0)));
     else
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(dgn_base));
 
@@ -1497,7 +1490,7 @@ function init_castle_tune() {
     let i;
 
     for (i = 0; i < 5; i++)
-        cptr.st1o(svt, i, schar(((65 + rn2_at(__s_dungeon_c, 1116, __s_init_castle_tune, 7)) | 0)), 1);
+        cptr.st1o(svt, i, schar(((65 + rn2(7)) | 0)), 1);
     cptr.st1o(svt, 5, 0, 1);
 }
 
@@ -2264,7 +2257,7 @@ export function assign_level(dest, src) {
 /** C ref: dungeon.c:1986 — @param {CPtr<d_level>} dest @param {CPtr<d_level>} src @param {CInt} range */
 export function assign_rnd_level(dest, src, range) {
     cptr.stI16(dest, cptr.ldI16(src));
-    cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? rnd_at(__s_dungeon_c, 1989, __s_assign_rnd_level, range) : -rnd_at(__s_dungeon_c, 1989, __s_assign_rnd_level, -range))) | 0)));
+    cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? rnd(range) : -rnd(-range))) | 0)));
 
     if (cptr.ldI16o(dest, $d_level_dlevel) > dunlevs_in_dungeon(dest))
         cptr.stI16o(dest, $d_level_dlevel, dunlevs_in_dungeon(dest));
@@ -2279,14 +2272,14 @@ export function induced_align(pct) {
     let al;
 
     if (lev && (cptr.ldI32o(lev, $s_level_flags + $d_flags_align) & 7) | 0)
-        if (rn2_at(__s_dungeon_c, 2005, __s_induced_align, 100) < pct)
+        if (rn2(100) < pct)
             return (cptr.ldI32o(lev, $s_level_flags + $d_flags_align) & 7);
 
     if ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_flags + $d_flags_align) & 7))
-        if (rn2_at(__s_dungeon_c, 2009, __s_induced_align, 100) < pct)
+        if (rn2(100) < pct)
             return (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_flags + $d_flags_align) & 7);
 
-    al = schar(((rn2_at(__s_dungeon_c, 2012, __s_induced_align, 3) - 1) | 0));
+    al = schar(((rn2(3) - 1) | 0));
     return Align2amask(al);
 }
 

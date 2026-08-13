@@ -14,11 +14,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { display_nhwindow, mines_dnum, nh_delay_output, tutorial_dnum, wizard } from './nhprop.js';
 import { isok } from './cmd.js';
 import { WIN_MESSAGE, flags, gc, gd, gi, gl, gm, gn, gs, gt, gu, gv, gx, gy, iflags, nhcb_counts, nhcb_name, svd, svi, svl, svm, svn, svr, u, xdir, ydir } from './decl.js';
 import { You, impossible, pline, pline_The } from './pline.js';
+import { reseed_random, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { nh_deterministic_qsort, nh_snprintf } from './hacklib.js';
 import { bound_digging, makemaz, mazexy, mkportal, set_levltyp, wallification } from './mkmaze.js';
 import { panic } from './end.js';
@@ -39,7 +39,6 @@ import { antholemon, do_mkroom, has_dnstairs, has_upstairs, inside_room, somex, 
 import { mons } from './monst.js';
 import { cursed } from './do_wear.js';
 import { objects } from './objects.js';
-import { reseed_random, rn2, rn2_on_display_rng, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { oinit } from './o_init.js';
 import { makerogueghost, makeroguerooms } from './extralev.js';
 import { debugcore, paniclog } from './files.js';
@@ -155,28 +154,21 @@ const $Role_filecode = FLD.Role_filecode, $branch_end1 = FLD.branch_end1,
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_finddpos_illegal_dir = cptr.lit("finddpos: illegal dir");
-const __s_mklev_c = cptr.lit("mklev.c");
-const __s_finddpos = cptr.lit("finddpos");
 const __s_level_has_too_many_rooms = cptr.lit("level has too many rooms");
 const __s_level_has_too_many_subrooms = cptr.lit("level has too many subrooms");
 const __s_room_has_too_many_subrooms = cptr.lit("room has too many subrooms");
 const __s_pre_themerooms_generate = cptr.lit("pre_themerooms_generate");
 const __s_makerooms_1 = cptr.lit("makerooms-1");
-const __s_makerooms = cptr.lit("makerooms");
 const __s_themerooms_generate = cptr.lit("themerooms_generate");
 const __s_makerooms_2 = cptr.lit("makerooms-2");
 const __s_post_themerooms_generate = cptr.lit("post_themerooms_generate");
 const __s_makerooms_3 = cptr.lit("makerooms-3");
-const __s_makecorridors = cptr.lit("makecorridors");
-const __s_dosdoor = cptr.lit("dosdoor");
-const __s_place_niche = cptr.lit("place_niche");
 const __s_vlad_was_here = cptr.lit("Vlad was here");
 const __s_ad_aerarium = cptr.lit("ad aerarium");
-const __s_makeniche = cptr.lit("makeniche");
-const __s_make_niches = cptr.lit("make_niches");
 const __s_fill_ordinary_room_null_subroom = cptr.lit("fill_ordinary_room: Null subroom");
-const __s_fill_ordinary_room = cptr.lit("fill_ordinary_room");
 const __s_couldn_t_generate_supply_chest_item = cptr.lit("couldn't generate supply chest item");
+const __s_mklev_c = cptr.lit("mklev.c");
+const __s_fill_ordinary_room = cptr.lit("fill_ordinary_room");
 const __s_trycnt_overflow4 = cptr.lit("trycnt overflow4");
 const __s_post_level_generate = cptr.lit("post_level_generate");
 const __s_levl_i_i_door_not_ok = cptr.lit("levl[%i][%i] door not ok");
@@ -192,16 +184,11 @@ const __s_svn_nroom_0 = cptr.lit("svn.nroom > 0");
 const __s_trying_to_make_a_vault = cptr.lit("trying to make a vault...");
 const __s_shoptype = cptr.lit("SHOPTYPE");
 const __s_nh_callback_run = cptr.lit("nh_callback_run");
-const __s_water_has_kelp = cptr.lit("water_has_kelp");
-const __s_mineralize = cptr.lit("mineralize");
 const __s_find_branch_room = cptr.lit("find_branch_room");
 const __s_croom_null = cptr.lit("croom != NULL");
 const __s_can_t_place_branch = cptr.lit("Can't place branch!");
-const __s_maybe_sdoor = cptr.lit("maybe_sdoor");
 const __s_mktrap_victim = cptr.lit("mktrap_victim");
 const __s_x_0_x_colno_y_0_y_rowno = cptr.lit("x > 0 && x < COLNO && y >= 0 && y < ROWNO");
-const __s_traptype_rnd = cptr.lit("traptype_rnd");
-const __s_traptype_roguelvl = cptr.lit("traptype_roguelvl");
 const __s_mktrap = cptr.lit("mktrap");
 const __s_args_d_d_s_s_are_invalid = cptr.lit("args (%d,%d,%s,%s) are invalid");
 const __s_null_room = cptr.lit("null room");
@@ -210,10 +197,6 @@ const __s_mkstairs_bogus_stair_attempt_at_d_d = cptr.lit("mkstairs:  bogus stair
 const __s_mkstairs_placing_stairs_s_on_s_at_d_d = cptr.lit("mkstairs:  placing stairs %s on %s at <%d,%d>");
 const __s_up = cptr.lit("up");
 const __s_down = cptr.lit("down");
-const __s_generate_stairs_find_room = cptr.lit("generate_stairs_find_room");
-const __s_mkfount = cptr.lit("mkfount");
-const __s_mkaltar = cptr.lit("mkaltar");
-const __s_mkgrave = cptr.lit("mkgrave");
 const __s_saved_by_the_bell = cptr.lit("Saved by the bell!");
 const __s_floor_shakes_violently_under_you = cptr.lit("floor shakes violently under you!");
 const __s_walls_around_you_begin_to_bend_and = cptr.lit("walls around you begin to bend and crumble!");
@@ -357,8 +340,8 @@ function* finddpos(cc, dir, aroom) {
 
         /* try random points */
         do {
-            x.v = i16((((x2 - x1) | 0) ? ((rn2_at(__s_mklev_c, 185, __s_finddpos, (((x2 - x1) | 0) + 1) | 0) + (x1)) | 0) : x1));
-            y.v = i16((((y2 - y1) | 0) ? ((rn2_at(__s_mklev_c, 186, __s_finddpos, (((y2 - y1) | 0) + 1) | 0) + (y1)) | 0) : y1));
+            x.v = i16((((x2 - x1) | 0) ? ((rn2((((x2 - x1) | 0) + 1) | 0) + (x1)) | 0) : x1));
+            y.v = i16((((y2 - y1) | 0) ? ((rn2((((y2 - y1) | 0) + 1) | 0) + (y1)) | 0) : y1));
             if (finddpos_shift(x, y, dir, aroom))
                 break __lbl_gotit;
         } while (++tryct < 20);
@@ -559,7 +542,7 @@ function* makerooms() {
     /* make rooms until satisfied */
     /* rnd_rect() will returns 0 if no more rects are available... */
     while (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) < 39 && rnd_rect()) {
-        if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= 6 && rn2_at(__s_mklev_c, 404, __s_makerooms, 2) && !tried_vault) {
+        if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= 6 && rn2(2) && !tried_vault) {
             tried_vault = 1;
             if ((yield* create_room(-1, -1, 2, 2, -1, -1, NHC.VAULT, 1))) {
                 cptr.stI16o(gv, $instance_globals_v_vault_x, cptr.ldI16o(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom));
@@ -690,7 +673,7 @@ export function* makecorridors() {
 
     for (a = 0; a < ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0); a++) {
         (yield* join(a, (a + 1) | 0, 0));
-        if (!rn2_at(__s_mklev_c, 529, __s_makecorridors, 50))
+        if (!rn2(50))
             break;  /* allow some randomness */
     }
     for (a = 0; a < ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 2) | 0); a++)
@@ -706,9 +689,9 @@ export function* makecorridors() {
     }
     /* add some extra corridors which may be blocked off */
     if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) > 2)
-        for (i = (rn2_at(__s_mklev_c, 545, __s_makecorridors, cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) + 4) | 0; i; i--) {
-            a = rn2_at(__s_mklev_c, 546, __s_makecorridors, cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
-            b = rn2_at(__s_mklev_c, 547, __s_makecorridors, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 2) | 0);
+        for (i = (rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) + 4) | 0; i; i--) {
+            a = rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom));
+            b = rn2((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 2) | 0);
             if (b >= a)
                 b = (b + 2) | 0;
             (yield* join(a, b, 1));
@@ -780,15 +763,15 @@ function* dosdoor(x, y, aroom, type) {
         type = NHC.DOOR;
     cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(type));
     if (type == NHC.DOOR) {
-        if (!rn2_at(__s_mklev_c, 623, __s_dosdoor, 3)) {
-            if (!rn2_at(__s_mklev_c, 624, __s_dosdoor, 5))
+        if (!rn2(3)) {
+            if (!rn2(5))
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_ISOPEN);
-            else if (!rn2_at(__s_mklev_c, 626, __s_dosdoor, 6))
+            else if (!rn2(6))
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
             else
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
 
-            if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) != NHM.D_ISOPEN && !shdoor && (yield* level_difficulty()) >= 5 && !rn2_at(__s_mklev_c, 632, __s_dosdoor, 25))
+            if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) != NHM.D_ISOPEN && !shdoor && (yield* level_difficulty()) >= 5 && !rn2(25))
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.D_TRAPPED);
         } else {
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, (shdoor ? NHM.D_ISOPEN : NHM.D_NODOOR) >>> 0);
@@ -802,7 +785,7 @@ function* dosdoor(x, y, aroom, type) {
         if (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
             let mtmp;
 
-            if ((yield* level_difficulty()) >= 9 && !rn2_at(__s_mklev_c, 653, __s_dosdoor, 5) && !((cptr.ld1uo2(svm, NHC.PM_SMALL_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_LARGE_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_GIANT_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))) {
+            if ((yield* level_difficulty()) >= 9 && !rn2(5) && !((cptr.ld1uo2(svm, NHC.PM_SMALL_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_LARGE_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (cptr.ld1uo2(svm, NHC.PM_GIANT_MIMIC, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))) {
                 /* make a mimic instead */
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_NODOOR);
                 mtmp = (yield* makemon((yield* mkclass(NHC.S_MIMIC, 0)), x, y, NHM.NO_MM_FLAGS));
@@ -812,12 +795,12 @@ function* dosdoor(x, y, aroom, type) {
         }
         /* newsym(x,y); */
     } else {
-        if (shdoor || !rn2_at(__s_mklev_c, 666, __s_dosdoor, 5))
+        if (shdoor || !rn2(5))
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
         else
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_CLOSED);
 
-        if (!shdoor && (yield* level_difficulty()) >= 4 && !rn2_at(__s_mklev_c, 671, __s_dosdoor, 20))
+        if (!shdoor && (yield* level_difficulty()) >= 4 && !rn2(20))
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.D_TRAPPED);
     }
 
@@ -845,7 +828,7 @@ function cardinal_nextto_room(aroom, x, y) {
 function* place_niche(aroom, dy, xx, yy) {
     let dd = cptr.alloc(4);
 
-    if (rn2_at(__s_mklev_c, 708, __s_place_niche, 2)) {
+    if (rn2(2)) {
         cptr.stI32(dy, 1);
         if (!(yield* finddpos(dd, NHC.DIR_S, aroom)))
             return 0;
@@ -900,16 +883,16 @@ function* makeniche(trap_type) {
     let ttmp;
 
     while (vct--) {
-        aroom = cptr.add(svr, rn2_at(__s_mklev_c, 749, __s_makeniche, cptr.ldI32o(svn, $instance_globals_saved_n_nroom)), $sizeof_mkroom);
+        aroom = cptr.add(svr, rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom)), $sizeof_mkroom);
         if (cptr.ld1so(aroom, $mkroom_rtype) != NHC.OROOM)
             continue;  /* not an ordinary room */
-        if (cptr.ld1so(aroom, $mkroom_doorct) == 1 && rn2_at(__s_mklev_c, 752, __s_makeniche, 5))
+        if (cptr.ld1so(aroom, $mkroom_doorct) == 1 && rn2(5))
             continue;
         if (!(yield* place_niche(aroom, dy, xx, yy)))
             continue;
 
         rm = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), xx.v, $sizeof_rm_x21), (yy.v + dy.v) | 0, $sizeof_rm);
-        if (trap_type || !rn2_at(__s_mklev_c, 758, __s_makeniche, 4)) {
+        if (trap_type || !rn2(4)) {
             cptr.st1o(rm, $rm_typ, NHC.SCORR);
             if (trap_type) {
                 if (((trap_type) == NHC.HOLE || (trap_type) == NHC.TRAPDOOR) && !Can_fall_thru(cptr.add(u, $you_uz)))
@@ -927,18 +910,18 @@ function* makeniche(trap_type) {
             (yield* dosdoor(xx.v, yy.v, aroom, NHC.SDOOR));
         } else {
             cptr.st1o(rm, $rm_typ, NHC.CORR);
-            if (rn2_at(__s_mklev_c, 779, __s_makeniche, 7)) {
-                (yield* dosdoor(xx.v, yy.v, aroom, rn2_at(__s_mklev_c, 780, __s_makeniche, 5) ? NHC.SDOOR : NHC.DOOR));
+            if (rn2(7)) {
+                (yield* dosdoor(xx.v, yy.v, aroom, rn2(5) ? NHC.SDOOR : NHC.DOOR));
             } else {
                 /* inaccessible niches occasionally have iron bars */
-                if (!rn2_at(__s_mklev_c, 783, __s_makeniche, 5) && ((cptr.ld1so3(svl, xx.v, $sizeof_rm_x21, yy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, xx.v, $sizeof_rm_x21, yy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
+                if (!rn2(5) && ((cptr.ld1so3(svl, xx.v, $sizeof_rm_x21, yy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, xx.v, $sizeof_rm_x21, yy.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
                     void (yield* set_levltyp(xx.v, yy.v, NHC.IRONBARS));
-                    if (rn2_at(__s_mklev_c, 785, __s_makeniche, 3))
+                    if (rn2(3))
                         void (yield* mkcorpstat(NHC.CORPSE, null, (yield* mkclass(NHC.S_HUMAN, 0)), xx.v, i16(((yy.v + dy.v) | 0)), 1));
                 }
                 if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1))
                     void (yield* mksobj_at(NHC.SCR_TELEPORTATION, xx.v, i16(((yy.v + dy.v) | 0)), 1, 0));
-                if (!rn2_at(__s_mklev_c, 793, __s_makeniche, 3))
+                if (!rn2(3))
                     void (yield* mkobj_at(NHC.RANDOM_CLASS, xx.v, i16(((yy.v + dy.v) | 0)), 1));
             }
         }
@@ -948,16 +931,16 @@ function* makeniche(trap_type) {
 
 /** C ref: mklev.c:802 */
 function* make_niches() {
-    let ct = rnd_at(__s_mklev_c, 804, __s_make_niches, ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >> 1) + 1) | 0);
+    let ct = rnd(((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >> 1) + 1) | 0);
     let dep = depth(cptr.add(u, $you_uz));
     let ltptr = schar((!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) && dep > 15 ? 1 : 0));
     let vamp = schar((dep > 5 && dep < 25 ? 1 : 0));
 
     while (ct--) {
-        if (ltptr && !rn2_at(__s_mklev_c, 809, __s_make_niches, 6)) {
+        if (ltptr && !rn2(6)) {
             ltptr = 0;
             (yield* makeniche(NHC.LEVEL_TELEP));
-        } else if (vamp && !rn2_at(__s_mklev_c, 812, __s_make_niches, 6)) {
+        } else if (vamp && !rn2(6)) {
             vamp = 0;
             (yield* makeniche(NHC.TRAPDOOR));
         } else
@@ -1145,7 +1128,7 @@ function* fill_ordinary_room(croom, bonus_items) {
            while a monster was on the stairs. Conclusion:
            we have to check for monsters on the stairs anyway. */
 
-        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || !rn2_at(__s_mklev_c, 974, __s_fill_ordinary_room, 3)) && somexyspace(croom, pos)) {
+        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || !rn2(3)) && somexyspace(croom, pos)) {
             tmonst = (yield* makemon(null, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHM.MM_NOGRP));
             if (tmonst && cptr.eq(cptr.ldPtro(tmonst, $monst_data), cptr.add(mons, NHC.PM_GIANT_SPIDER, $sizeof_permonst)) && !occupied(cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y)))
                 void (yield* maketrap(cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHC.WEB));
@@ -1154,26 +1137,26 @@ function* fill_ordinary_room(croom, bonus_items) {
         x = i16(((8 - (((yield* level_difficulty()) / 6) | 0)) | 0));
         if (x <= 1)
             x = 2;
-        while (!rn2_at(__s_mklev_c, 984, __s_fill_ordinary_room, x) && (++trycnt < 1000))
+        while (!rn2(x) && (++trycnt < 1000))
             (yield* mktrap(0, NHM.MKTRAP_NOFLAGS, croom, null));
-        if (!rn2_at(__s_mklev_c, 986, __s_fill_ordinary_room, 3) && somexyspace(croom, pos))
+        if (!rn2(3) && somexyspace(croom, pos))
             void (yield* mkgold(0n, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y)));
         if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
             break __lbl_skip_nonrogue;
-        if (!rn2_at(__s_mklev_c, 990, __s_fill_ordinary_room, 10))
+        if (!rn2(10))
             (yield* mkfount(croom));
-        if (!rn2_at(__s_mklev_c, 992, __s_fill_ordinary_room, 60))
+        if (!rn2(60))
             (yield* mksink(croom));
-        if (!rn2_at(__s_mklev_c, 994, __s_fill_ordinary_room, 60))
+        if (!rn2(60))
             (yield* mkaltar(croom));
         x = i16(((80 - (Math.imul(depth(cptr.add(u, $you_uz)), 2))) | 0));
         if (x < 2)
             x = 2;
-        if (!rn2_at(__s_mklev_c, 999, __s_fill_ordinary_room, x))
+        if (!rn2(x))
             (yield* mkgrave(croom));
 
         /* put statues inside */
-        if (!rn2_at(__s_mklev_c, 1003, __s_fill_ordinary_room, 20) && somexyspace(croom, pos))
+        if (!rn2(20) && somexyspace(croom, pos))
             void (yield* mkcorpstat(NHC.STATUE, null, null, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), NHM.CORPSTAT_INIT));
 
         /*
@@ -1198,8 +1181,8 @@ function* fill_ordinary_room(croom, bonus_items) {
             let uz_branch = Is_branchlev(cptr.add(u, $you_uz));
 
             if (uz_branch && cptr.ldI16o(u, $you_uz) != mines_dnum() && (cptr.ldI16o(uz_branch, $branch_end1) == mines_dnum() || cptr.ldI16o(uz_branch, $branch_end2) == mines_dnum())) {
-                void (yield* mksobj_at((rn2_at(__s_mklev_c, 1032, __s_fill_ordinary_room, 5) < 3) ? NHC.FOOD_RATION : (rn2_at(__s_mklev_c, 1033, __s_fill_ordinary_room, 2) ? NHC.CRAM_RATION : NHC.LEMBAS_WAFER), cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 1, 0));
-            } else if (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology))) && cptr.ldI16o(u, $you_uz + $d_level_dlevel) < cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) && rn2_at(__s_mklev_c, 1037, __s_fill_ordinary_room, 3)) {
+                void (yield* mksobj_at((rn2(5) < 3) ? NHC.FOOD_RATION : (rn2(2) ? NHC.CRAM_RATION : NHC.LEMBAS_WAFER), cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 1, 0));
+            } else if (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology))) && cptr.ldI16o(u, $you_uz + $d_level_dlevel) < cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology)), $d_level_dlevel) && rn2(3)) {
                 let otmp;
                 let otyp;
                 let tryct = 0;
@@ -1207,16 +1190,16 @@ function* fill_ordinary_room(croom, bonus_items) {
                 /* reverse probabilities compared to non-supply chests;
                    these are twice as likely to be chests than large
                    boxes, rather than vice versa */
-                let supply_chest = (yield* mksobj_at(rn2_at(__s_mklev_c, 1044, __s_fill_ordinary_room, 3) ? NHC.CHEST : NHC.LARGE_BOX, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 0, 0));
+                let supply_chest = (yield* mksobj_at(rn2(3) ? NHC.CHEST : NHC.LARGE_BOX, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 0, 0));
 
-                cptr.stI32o(supply_chest, $obj_olocked, (!!rn2_at(__s_mklev_c, 1047, __s_fill_ordinary_room, 6)) >>> 0);
+                cptr.stI32o(supply_chest, $obj_olocked, (!!rn2(6)) >>> 0);
 
                 do {
 
                     /* 50% this is a potion of healing */
-                    otyp = rn2_at(__s_mklev_c, 1063, __s_fill_ordinary_room, 2) ? NHC.POT_HEALING : cptr.ldI32o(__static_fill_ordinary_room_supply_items, rn2_at(__s_mklev_c, 1063, __s_fill_ordinary_room, 9), 4);
+                    otyp = rn2(2) ? NHC.POT_HEALING : cptr.ldI32o(__static_fill_ordinary_room_supply_items, rn2(9), 4);
                     otmp = (yield* mksobj(otyp, 1, 0));
-                    if (otyp == NHC.POT_HEALING && rn2_at(__s_mklev_c, 1065, __s_fill_ordinary_room, 2)) {
+                    if (otyp == NHC.POT_HEALING && rn2(2)) {
                         cptr.stI64o(otmp, $obj_quan, 2n);
                         cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
                     }
@@ -1232,13 +1215,13 @@ function* fill_ordinary_room(croom, bonus_items) {
                        probability of more; if we generate a cursed item, it's
                        added to the supply chest but we reroll for a noncursed
                        item and add that too */
-                } while (cursed || !rn2_at(__s_mklev_c, 1081, __s_fill_ordinary_room, 5));
+                } while (cursed || !rn2(5));
 
                 /* maybe put a random item into the supply chest, biased
                    slightly towards low-level spellbooks; avoid tools
                    because chests don't fit into other chests */
-                if (rn2_at(__s_mklev_c, 1086, __s_fill_ordinary_room, 3)) {
-                    let oclass = cptr.ldI32o(__static_fill_ordinary_room_extra_classes, rn2_at(__s_mklev_c, 1099, __s_fill_ordinary_room, 10), 4);
+                if (rn2(3)) {
+                    let oclass = cptr.ldI32o(__static_fill_ordinary_room_extra_classes, rn2(10), 4);
 
                     otmp = (yield* mkobj(oclass, 0));
                     if (oclass == ((0 - NHC.SPBOOK_CLASS) | 0)) {
@@ -1275,8 +1258,8 @@ function* fill_ordinary_room(croom, bonus_items) {
          *  when few rooms; chance for 3 or more is negligible.
          */
         /*assert(svn.nroom > 0); // must be true because we're filling a room*/
-        if (!skip_chests && !rn2_at(__s_mklev_c, 1137, __s_fill_ordinary_room, (Math.imul(cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 5) / 2) | 0) && somexyspace(croom, pos))
-            void (yield* mksobj_at(rn2_at(__s_mklev_c, 1138, __s_fill_ordinary_room, 3) ? NHC.LARGE_BOX : NHC.CHEST, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 1, 0));
+        if (!skip_chests && !rn2((Math.imul(cptr.ldI32o(svn, $instance_globals_saved_n_nroom), 5) / 2) | 0) && somexyspace(croom, pos))
+            void (yield* mksobj_at(rn2(3) ? NHC.LARGE_BOX : NHC.CHEST, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 1, 0));
 
         /* maybe make some graffiti */
         if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mklev_c, 1142, __s_fill_ordinary_room), rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0)) : rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0))) {
@@ -1289,16 +1272,16 @@ function* fill_ordinary_room(croom, bonus_items) {
                     void somexyspace(croom, pos);
                     x = cptr.ldI16(pos);
                     y = cptr.ldI16o(pos, $nhcoord_y);
-                } while (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM && !rn2_at(__s_mklev_c, 1151, __s_fill_ordinary_room, 40));
+                } while (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM && !rn2(40));
                 if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM)
                     (yield* make_engr_at(x, y, mesg, cptr.decay(pristinebuf), 0n, NHM.MARK));
             }
         }
     }
-    if (!rn2_at(__s_mklev_c, 1158, __s_fill_ordinary_room, 3) && somexyspace(croom, pos)) {
+    if (!rn2(3) && somexyspace(croom, pos)) {
         void (yield* mkobj_at(NHC.RANDOM_CLASS, cptr.ldI16(pos), cptr.ldI16o(pos, $nhcoord_y), 1));
         trycnt = 0;
-        while (!rn2_at(__s_mklev_c, 1161, __s_fill_ordinary_room, 5)) {
+        while (!rn2(5)) {
             if (++trycnt > 100) {
                 (yield* impossible(__s_trycnt_overflow4));
                 break;
@@ -1415,7 +1398,7 @@ function* makelevel() {
         void cptr.sprintf(cptr.decay(fillname), __s_s_fil, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode));
         void cptr.strcat(cptr.decay(fillname), (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < cptr.ldI16o(loc_lev, $s_level_dlevel + $d_level_dlevel)) ? __s_a : __s_b);
         (yield* makemaz(cptr.decay(fillname)));
-    } else if (In_hell(cptr.add(u, $you_uz)) || (rn2_at(__s_mklev_c, 1287, __s_makelevel, 5) && cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) {
+    } else if (In_hell(cptr.add(u, $you_uz)) || (rn2(5) && cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) {
         (yield* makemaz(__s_empty));
     } else {
         /* otherwise, fall through - it's a "regular" level. */
@@ -1474,7 +1457,7 @@ function* makelevel() {
                     cptr.st1o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_needfill, NHM.FILL_NORMAL);
                     (yield* fill_special_room(cptr.add(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom)));
                     (yield* mk_knox_portal(i16(((cptr.ldI16o(gv, $instance_globals_v_vault_x) + w.v) | 0)), i16(((cptr.ldI16o(gv, $instance_globals_v_vault_y) + h.v) | 0))));
-                    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) && !rn2_at(__s_mklev_c, 1332, __s_makelevel, 3))
+                    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport) & 1) && !rn2(3))
                         (yield* makevtele());
                 }
             }
@@ -1484,27 +1467,27 @@ function* makelevel() {
                this step only sets the room's rtype - it doesn't fill it yet. */
             if (wizard() && nh_getenv(__s_shoptype))
                 (yield* do_mkroom(NHC.SHOPBASE));
-            else if (u_depth > 1 && u_depth < depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)) && cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= room_threshold && rn2_at(__s_mklev_c, 1350, __s_makelevel, u_depth) < 3)
+            else if (u_depth > 1 && u_depth < depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)) && cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= room_threshold && rn2(u_depth) < 3)
                 (yield* do_mkroom(NHC.SHOPBASE));
-            else if (u_depth > 4 && !rn2_at(__s_mklev_c, 1352, __s_makelevel, 6))
+            else if (u_depth > 4 && !rn2(6))
                 (yield* do_mkroom(NHC.COURT));
-            else if (u_depth > 5 && !rn2_at(__s_mklev_c, 1354, __s_makelevel, 8) && !(cptr.ld1uo2(svm, NHC.PM_LEPRECHAUN, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 5 && !rn2(8) && !(cptr.ld1uo2(svm, NHC.PM_LEPRECHAUN, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 (yield* do_mkroom(NHC.LEPREHALL));
-            else if (u_depth > 6 && !rn2_at(__s_mklev_c, 1357, __s_makelevel, 7))
+            else if (u_depth > 6 && !rn2(7))
                 (yield* do_mkroom(NHC.ZOO));
-            else if (u_depth > 8 && !rn2_at(__s_mklev_c, 1359, __s_makelevel, 5))
+            else if (u_depth > 8 && !rn2(5))
                 (yield* do_mkroom(NHC.TEMPLE));
-            else if (u_depth > 9 && !rn2_at(__s_mklev_c, 1361, __s_makelevel, 5) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 9 && !rn2(5) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 (yield* do_mkroom(NHC.BEEHIVE));
-            else if (u_depth > 11 && !rn2_at(__s_mklev_c, 1364, __s_makelevel, 6))
+            else if (u_depth > 11 && !rn2(6))
                 (yield* do_mkroom(NHC.MORGUE));
-            else if (u_depth > 12 && !rn2_at(__s_mklev_c, 1366, __s_makelevel, 8) && (yield* antholemon()))
+            else if (u_depth > 12 && !rn2(8) && (yield* antholemon()))
                 (yield* do_mkroom(NHC.ANTHOLE));
-            else if (u_depth > 14 && !rn2_at(__s_mklev_c, 1368, __s_makelevel, 4) && !(cptr.ld1uo2(svm, NHC.PM_SOLDIER, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 14 && !rn2(4) && !(cptr.ld1uo2(svm, NHC.PM_SOLDIER, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 (yield* do_mkroom(NHC.BARRACKS));
-            else if (u_depth > 15 && !rn2_at(__s_mklev_c, 1371, __s_makelevel, 6))
+            else if (u_depth > 15 && !rn2(6))
                 (yield* do_mkroom(NHC.SWAMP));
-            else if (u_depth > 16 && !rn2_at(__s_mklev_c, 1373, __s_makelevel, 8) && !(cptr.ld1uo2(svm, NHC.PM_COCKATRICE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+            else if (u_depth > 16 && !rn2(8) && !(cptr.ld1uo2(svm, NHC.PM_COCKATRICE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 (yield* do_mkroom(NHC.COCKNEST));
         }
         prevstairs = cptr.ldPtro(gs, $instance_globals_s_stairs);  /* used to test for place_branch() success */
@@ -1530,7 +1513,7 @@ function* makelevel() {
            bonus items, if there are any; if there aren't any we don't
            generate the bonus items (but levels with no fillable rooms
            typically don't have any bonus items to generate anyway) */
-        let bonus_item_room_countdown = fillable_room_count ? rn2_at(__s_mklev_c, 1402, __s_makelevel, fillable_room_count) : -1;
+        let bonus_item_room_countdown = fillable_room_count ? rn2(fillable_room_count) : -1;
 
         /* for each room: put things inside */
         for (croom = svr; cptr.ldI16o(croom, $mkroom_hx) > 0; croom = cptr.add(croom, 1, 224)) {
@@ -1560,7 +1543,7 @@ function* makelevel() {
 /* return TRUE if water location at (x,y) should have kelp. */
 /** C ref: mklev.c:1432 — @param {CInt} x @param {CInt} y @param {CInt} kelp_pool @param {CInt} kelp_moat @returns {CInt} */
 function water_has_kelp(x, y, kelp_pool, kelp_moat) {
-    if ((kelp_pool && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.WATER && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) && !rn2_at(__s_mklev_c, 1436, __s_water_has_kelp, kelp_pool)) || (kelp_moat && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT && !rn2_at(__s_mklev_c, 1437, __s_water_has_kelp, kelp_moat)))
+    if ((kelp_pool && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.WATER && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))) && !rn2(kelp_pool)) || (kelp_moat && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.MOAT && !rn2(kelp_moat)))
         return 1;
     return 0;
 }
@@ -1626,25 +1609,25 @@ export function* mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_ch
             } else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.STONE) {
                 y = i16(y + 1);  /* next spot isn't eligible either */
             } else if (!(((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) && cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE && cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE) {
-                if (rn2_at(__s_mklev_c, 1515, __s_mineralize, 1000) < goldprob) {
+                if (rn2(1000) < goldprob) {
                     if ((otmp = (yield* mksobj(NHC.GOLD_PIECE, 0, 0))) !== null) {
                         cptr.stI16o(otmp, $obj_ox, x), cptr.stI16o(otmp, $obj_oy, y);
-                        cptr.stI64o(otmp, $obj_quan, BigInt.asIntN(64, 1n + BigInt(rnd_at(__s_mklev_c, 1518, __s_mineralize, Math.imul(goldprob, 3)))));
+                        cptr.stI64o(otmp, $obj_quan, BigInt.asIntN(64, 1n + BigInt(rnd(Math.imul(goldprob, 3)))));
                         cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
-                        if (!rn2_at(__s_mklev_c, 1520, __s_mineralize, 3))
+                        if (!rn2(3))
                             (yield* add_to_buried(otmp));
                         else
                             (yield* place_object(otmp, x, y));
                     }
                 }
-                if (rn2_at(__s_mklev_c, 1526, __s_mineralize, 1000) < gemprob) {
-                    for (cnt = rnd_at(__s_mklev_c, 1527, __s_mineralize, (2 + ((dunlev(cptr.add(u, $you_uz)) / 3) | 0)) | 0); cnt > 0; cnt--)
+                if (rn2(1000) < gemprob) {
+                    for (cnt = rnd((2 + ((dunlev(cptr.add(u, $you_uz)) / 3) | 0)) | 0); cnt > 0; cnt--)
                         if ((otmp = (yield* mkobj(NHC.GEM_CLASS, 0))) !== null) {
                             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK) {
                                 (yield* dealloc_obj(otmp));  /* discard it */
                             } else {
                                 cptr.stI16o(otmp, $obj_ox, x), cptr.stI16o(otmp, $obj_oy, y);
-                                if (!rn2_at(__s_mklev_c, 1533, __s_mineralize, 3))
+                                if (!rn2(3))
                                     (yield* add_to_buried(otmp));
                                 else
                                     (yield* place_object(otmp, x, y));
@@ -1868,7 +1851,7 @@ export function okdoor(x, y) {
 /* do we want a secret door/corridor? */
 /** C ref: mklev.c:1793 — @param {CInt} chance @returns {CInt} */
 export function maybe_sdoor(chance) {
-    return schar(((depth(cptr.add(u, $you_uz)) > 2) && !rn2_at(__s_mklev_c, 1795, __s_maybe_sdoor, (2 > (chance) ? 2 : (chance))) ? 1 : 0));
+    return schar(((depth(cptr.add(u, $you_uz)) > 2) && !rn2((2 > (chance) ? 2 : (chance))) ? 1 : 0));
 }
 
 /* create a door at x,y in room aroom */
@@ -1926,7 +1909,7 @@ function* mktrap_victim(ttmp) {
     do {
         let poss_class = NHC.RANDOM_CLASS;  /* init => lint suppression */
 
-        switch (rn2_at(__s_mklev_c, 1857, __s_mktrap_victim, 4)) {
+        switch (rn2(4)) {
             case 0:
             poss_class = NHC.WEAPON_CLASS;
             break;
@@ -1957,10 +1940,10 @@ function* mktrap_victim(ttmp) {
         }
 
         /* 20% chance of placing an additional item, recursively */
-    } while (!rn2_at(__s_mklev_c, 1888, __s_mktrap_victim, 5));
+    } while (!rn2(5));
 
     /* Place a corpse. */
-    switch (rn2_at(__s_mklev_c, 1891, __s_mktrap_victim, 15)) {
+    switch (rn2(15)) {
         case 0:
         /* elf corpses are the rarest as they're the most useful */
         victim_mnum = NHC.PM_ELF;
@@ -1968,7 +1951,7 @@ function* mktrap_victim(ttmp) {
            generate elf corpses on sleeping gas traps unless a)
            we're on dlvl 2 (1 is impossible) and b) we pass a coin
            flip */
-        if (kind == NHC.SLP_GAS_TRAP && !(lvl <= 2 && rn2_at(__s_mklev_c, 1899, __s_mktrap_victim, 2)))
+        if (kind == NHC.SLP_GAS_TRAP && !(lvl <= 2 && rn2(2)))
             victim_mnum = NHC.PM_HUMAN;
         break;
         case 1:
@@ -1987,8 +1970,8 @@ function* mktrap_victim(ttmp) {
         /* more common as they could have come from the Mines */
         victim_mnum = NHC.PM_GNOME;
         /* 10% chance of a candle too */
-        if (!rn2_at(__s_mklev_c, 1912, __s_mktrap_victim, 10)) {
-            otmp = (yield* mksobj(rn2_at(__s_mklev_c, 1913, __s_mktrap_victim, 4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
+        if (!rn2(10)) {
+            otmp = (yield* mksobj(rn2(4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
             cptr.stI64o(otmp, $obj_quan, 1n);
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
             (yield* curse(otmp));
@@ -2005,8 +1988,8 @@ function* mktrap_victim(ttmp) {
     /* PM_HUMAN is a placeholder monster primarily used for zombie, mummy,
        and vampire corpses; usually change it into a fake player monster
        instead (always human); no role-specific equipment is provided */
-    if (victim_mnum == NHC.PM_HUMAN && rn2_at(__s_mklev_c, 1930, __s_mktrap_victim, 25))
-        victim_mnum = ((rn2_at(__s_mklev_c, 1931, __s_mktrap_victim, ((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
+    if (victim_mnum == NHC.PM_HUMAN && rn2(25))
+        victim_mnum = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     otmp = (yield* mkcorpstat(NHC.CORPSE, null, cptr.add(mons, victim_mnum, $sizeof_permonst), x, y, NHM.CORPSTAT_INIT));
     cptr.stI64o(otmp, $obj_age, cptr.ldI64o(otmp, $obj_age) - 51n);  /* died too long ago to safely eat */
 }
@@ -2015,7 +1998,7 @@ function* mktrap_victim(ttmp) {
 /** C ref: mklev.c:1938 — @param {CUInt} mktrapflags @returns {CInt} */
 function* traptype_rnd(mktrapflags) {
     let lvl = (yield* level_difficulty());
-    let kind = rnd_at(__s_mklev_c, 1941, __s_traptype_rnd, ((NHC.TRAPNUM - 1) | 0));
+    let kind = rnd(((NHC.TRAPNUM - 1) | 0));
 
     switch (kind) {
         case NHC.TRAPPED_DOOR:
@@ -2062,7 +2045,7 @@ function* traptype_rnd(mktrapflags) {
         break;
         case NHC.HOLE:
         /* make these much less often than other traps */
-        if (rn2_at(__s_mklev_c, 1993, __s_traptype_rnd, 7))
+        if (rn2(7))
             kind = NHC.NO_TRAP;
         break;
     }
@@ -2074,7 +2057,7 @@ function* traptype_rnd(mktrapflags) {
 function traptype_roguelvl() {
     let kind;
 
-    switch (rn2_at(__s_mklev_c, 2006, __s_traptype_roguelvl, 7)) {
+    switch (rn2(7)) {
         default:
         kind = NHC.BEAR_TRAP;
         break;  /* 0 */
@@ -2132,7 +2115,7 @@ export function* mktrap(num, mktrapflags, croom, tm) {
         kind = num;
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
         kind = traptype_roguelvl();
-    } else if (In_hell(cptr.add(u, $you_uz)) && !rn2_at(__s_mklev_c, 2070, __s_mktrap, 5)) {
+    } else if (In_hell(cptr.add(u, $you_uz)) && !rn2(5)) {
         /* bias the frequency of fire traps in Gehennom */
         kind = NHC.FIRE_TRAP;
     } else {
@@ -2196,7 +2179,7 @@ export function* mktrap(num, mktrapflags, croom, tm) {
        immediately lethal). Finally, pits are excluded because it's
        weird to see an item in a pit and yet not be able to identify
        that the pit is there. */
-    if (cptr.ld1so(gi, $instance_globals_i_in_mklev) && kind != NHC.NO_TRAP && !((mktrapflags & NHM.MKTRAP_NOVICTIM) >>> 0) && lvl <= rnd_at(__s_mklev_c, 2137, __s_mktrap, 4) >>> 0 && kind != NHC.SQKY_BOARD && kind != NHC.RUST_TRAP && !(kind == NHC.ROLLING_BOULDER_TRAP && cptr.ldI16o(t, $trap_launch) == cptr.ldI16o(t, $trap_tx) && cptr.ldI16o(t, $trap_launch + $nhcoord_y) == cptr.ldI16o(t, $trap_ty)) && !((kind) == NHC.PIT || (kind) == NHC.SPIKED_PIT) && (kind < NHC.HOLE || kind == NHC.MAGIC_TRAP)) {
+    if (cptr.ld1so(gi, $instance_globals_i_in_mklev) && kind != NHC.NO_TRAP && !((mktrapflags & NHM.MKTRAP_NOVICTIM) >>> 0) && lvl <= rnd(4) >>> 0 && kind != NHC.SQKY_BOARD && kind != NHC.RUST_TRAP && !(kind == NHC.ROLLING_BOULDER_TRAP && cptr.ldI16o(t, $trap_launch) == cptr.ldI16o(t, $trap_tx) && cptr.ldI16o(t, $trap_launch + $nhcoord_y) == cptr.ldI16o(t, $trap_ty)) && !((kind) == NHC.PIT || (kind) == NHC.SPIKED_PIT) && (kind < NHC.HOLE || kind == NHC.MAGIC_TRAP)) {
         if (kind == NHC.LANDMINE) {
             /* if victim was killed by a land mine, we won't scatter objects;
                treat it as exploded, converting it into an unconcealed pit */
@@ -2278,14 +2261,14 @@ function* generate_stairs_find_room() {
             if (generate_stairs_room_good(cptr.add(svr, i, $sizeof_mkroom), phase))
                 cptr.stI32o(rmarr, ai++, i, 4);
         if (ai > 0) {
-            i = cptr.ldI32o(rmarr, rn2_at(__s_mklev_c, 2236, __s_generate_stairs_find_room, ai), 4);
+            i = cptr.ldI32o(rmarr, rn2(ai), 4);
             cptr.free(rmarr);
             return cptr.add(svr, i, $sizeof_mkroom);
         }
     }
 
     cptr.free(rmarr);
-    croom = cptr.add(svr, rn2_at(__s_mklev_c, 2243, __s_generate_stairs_find_room, cptr.ldI32o(svn, $instance_globals_saved_n_nroom)), $sizeof_mkroom);
+    croom = cptr.add(svr, rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom)), $sizeof_mkroom);
     return croom;
 }
 
@@ -2334,7 +2317,7 @@ function* mkfount(croom) {
     if (!(yield* set_levltyp(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), NHC.FOUNTAIN)))
         return;
     /* Is it a "blessed" fountain? (affects drinking from fountain) */
-    if (!rn2_at(__s_mklev_c, 2296, __s_mkfount, 7))
+    if (!rn2(7))
         cptr.stI32o3(svl, cptr.ldI16(m), $sizeof_rm_x21, cptr.ldI16o(m, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 1);
 
     cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags));
@@ -2383,7 +2366,7 @@ function* mkaltar(croom) {
         return;
 
     /* -1 - A_CHAOTIC, 0 - A_NEUTRAL, 1 - A_LAWFUL */
-    al = schar(((rn2_at(__s_mklev_c, 2348, __s_mkaltar, 3) - 1) | 0));
+    al = schar(((rn2(3) - 1) | 0));
     cptr.stI32o3(svl, cptr.ldI16(m), $sizeof_rm_x21, cptr.ldI16o(m, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, Align2amask(al));
 }
 
@@ -2392,7 +2375,7 @@ function* mkgrave(croom) {
     let m = cptr.alloc(4);
     let tryct = 0;
     let otmp;
-    let dobell = schar((!rn2_at(__s_mklev_c, 2358, __s_mkgrave, 10)));
+    let dobell = schar((!rn2(10)));
 
     if (cptr.ld1so(croom, $mkroom_rtype) != NHC.OROOM)
         return;
@@ -2404,7 +2387,7 @@ function* mkgrave(croom) {
     (yield* make_grave(cptr.ldI16(m), cptr.ldI16o(m, $nhcoord_y), dobell ? __s_saved_by_the_bell : null));
 
     /* Possibly fill it with objects */
-    if (!rn2_at(__s_mklev_c, 2370, __s_mkgrave, 3)) {
+    if (!rn2(3)) {
         /* this used to use mkgold(), which puts a stack of gold on
            the ground (or merges it with an existing one there if
            present), and didn't bother burying it; now we create a
@@ -2412,12 +2395,12 @@ function* mkgrave(croom) {
            replicate mkgold()'s level-based formula for the amount */
         let gold = (yield* mksobj(NHC.GOLD_PIECE, 1, 0));
 
-        cptr.stI64o(gold, $obj_quan, BigInt(((rnd_at(__s_mklev_c, 2378, __s_mkgrave, 20) + Math.imul((yield* level_difficulty()), rnd_at(__s_mklev_c, 2378, __s_mkgrave, 5))) | 0)));
+        cptr.stI64o(gold, $obj_quan, BigInt(((rnd(20) + Math.imul((yield* level_difficulty()), rnd(5))) | 0)));
         cptr.stI32o(gold, $obj_owt, (yield* weight(gold)) >>> 0);
         cptr.stI16o(gold, $obj_ox, cptr.ldI16(m)), cptr.stI16o(gold, $obj_oy, cptr.ldI16o(m, $nhcoord_y));
         (yield* add_to_buried(gold));
     }
-    for (tryct = rn2_at(__s_mklev_c, 2383, __s_mkgrave, 5); tryct; tryct--) {
+    for (tryct = rn2(5); tryct; tryct--) {
         otmp = (yield* mkobj(NHC.RANDOM_CLASS, 1));
         if (!otmp)
             return;
@@ -2668,7 +2651,7 @@ function* mk_knox_portal(x, y) {
     }
 
     /* Already set or 2/3 chance of deferring until a later level. */
-    if (cptr.ldI16(source) < cptr.ldI32(svn) || (rn2_at(__s_mklev_c, 2644, __s_mk_knox_portal, 3) && !wizard()))
+    if (cptr.ldI16(source) < cptr.ldI32(svn) || (rn2(3) && !wizard()))
         return;
 
     if (!(cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology))) && !(yield* at_dgn_entrance(__s_the_quest)) && (u_depth = depth(cptr.add(u, $you_uz))) > 10 && u_depth < depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))))

@@ -9,11 +9,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ismnum, max } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { BBlinded, BClairvoyant, BlindedTimeout, Blindfolded_only, EBlinded, EFast, Fixed_abil, Fumbling, HBlinded, HBlnd_resist, HClairvoyant, HConfusion, HFast, HRegeneration, HStun, Half_gas_damage, Hallucination, Poison_resistance, Race_switch, Role_switch, Sick, Upolyd, Very_fast, Vomiting, Wounded_legs, wizard } from './nhprop.js';
 import { c_common_strings, disp, flags, gi, gm, gu, gy, iflags, program_state, svc, svd, svk, svm, u, uarmc, uarmf, uarmg, uarmh, ublindf, uwep } from './decl.js';
 import { You, You_feel, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { body_part, uasmon_maxStr } from './polyself.js';
+import { d, rn2, rnd } from './rnd.js';
 import { encumber_msg } from './pickup.js';
 import { losehp, near_capacity } from './hack.js';
 import { copynchars, sgn, strncmpi, strstri } from './hacklib.js';
@@ -116,8 +116,6 @@ const __s_hardy = cptr.lit("hardy");
 const __s_awake = cptr.lit("awake");
 const __s_tired = cptr.lit("tired");
 const __s_cap_constricts_briefly_then_relaxes = cptr.lit("cap constricts briefly, then relaxes again.");
-const __s_attrib_c = cptr.lit("attrib.c");
-const __s_adjattrib = cptr.lit("adjattrib");
 const __s_you_re_s_as_s_as_you_can_get = cptr.lit("You're %s as %s as you can get.");
 const __s_currently = cptr.lit("currently");
 const __s_already = cptr.lit("already");
@@ -126,9 +124,7 @@ const __s_improved = cptr.lit("improved");
 const __s_declined = cptr.lit("declined");
 const __s_s_s = cptr.lit("%s%s!");
 const __s_very = cptr.lit("very ");
-const __s_gainstr = cptr.lit("gainstr");
 const __s_losestr_d_d = cptr.lit("losestr: %d - %d");
-const __s_losestr = cptr.lit("losestr");
 const __s_terminal_frailty = cptr.lit("terminal frailty");
 const __s_weaker = cptr.lit("weaker");
 const __s_brain_is_on_fire = cptr.lit("brain is on fire");
@@ -149,11 +145,10 @@ const __s_poison_doesn_t_seem_to_affect_you = cptr.lit("poison doesn't seem to a
 const __s_the__2 = cptr.lit("the ");
 const __s_an = cptr.lit("an ");
 const __s_a_sp = cptr.lit("a ");
-const __s_poisoned = cptr.lit("poisoned");
 const __s_poison_was_deadly = cptr.lit("poison was deadly...");
 const __s_gas_cloud = cptr.lit("gas cloud");
+const __s_attrib_c = cptr.lit("attrib.c");
 const __s_exercise = cptr.lit("Exercise:");
-const __s_exercise__2 = cptr.lit("exercise");
 const __s_s_s_aexe_d = cptr.lit("%s, %s AEXE = %d");
 const __s_str = cptr.lit("Str");
 const __s_wis = cptr.lit("Wis");
@@ -178,16 +173,12 @@ const __s_exerchk_testing_s_d = cptr.lit("exerchk: testing %s (%d).");
 const __s_int = cptr.lit("Int?");
 const __s_cha = cptr.lit("Cha?");
 const __s_query3 = cptr.lit("???");
-const __s_exerchk = cptr.lit("exerchk");
 const __s_exerchk_changing_d = cptr.lit("exerchk: changing %d.");
 const __s_exerchk_changed_d = cptr.lit("exerchk: changed %d.");
 const __s_s_s__2 = cptr.lit("%s %s.");
 const __s_must_have_been = cptr.lit("must have been");
 const __s_haven_t_been = cptr.lit("haven't been");
 const __s_exerchk_next_check_at_ld = cptr.lit("exerchk: next check at %ld.");
-const __s_rnd_attr = cptr.lit("rnd_attr");
-const __s_redist_attr = cptr.lit("redist_attr");
-const __s_vary_init_attr = cptr.lit("vary_init_attr");
 const __s_from_birth = cptr.lit(" from birth");
 const __s_innately = cptr.lit(" innately");
 const __s_intrinsically = cptr.lit(" intrinsically");
@@ -201,7 +192,6 @@ const __s_pair_of = cptr.lit(" pair of ");
 const __s_of_strangulation = cptr.lit(" of strangulation");
 const __s_pct_s_bang = cptr.lit("%s!");
 const __s_less_s = cptr.lit("less %s!");
-const __s_newhp = cptr.lit("newhp");
 const __s_acurr = cptr.lit("acurr");
 const __s_chridx_0_chridx_a_max = cptr.lit("chridx >= 0 && chridx < A_MAX");
 const __s_permanently_converted_to_s = cptr.lit("permanently converted to %s");
@@ -210,7 +200,6 @@ const __s_sudden = cptr.lit("sudden ");
 const __s_mind_oscillates_s = cptr.lit("mind oscillates %s.");
 const __s_wildly = cptr.lit("wildly");
 const __s_briefly = cptr.lit("briefly");
-const __s_uchangealign = cptr.lit("uchangealign");
 const __s_used_a_helm_to_turn_s = cptr.lit("used a helm to turn %s");
 const __s_mind_is_s = cptr.lit("mind is %s.");
 const __s_much_of_a_muchness = cptr.lit("much of a muchness");
@@ -598,7 +587,7 @@ export function adjattrib(ndx, incr, msgflg) {
              *
              * decr = rn2(-(ABASE - ATTRMIN) + 1);
              */
-            decr = rn2_at(__s_attrib_c, 166, __s_adjattrib, ((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) - (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0);
+            decr = rn2(((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) - (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0);
             cptr.st1o2(u, ndx, 1, $you_acurr, schar((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin))));
             cptr.st1o2(u, ndx, 1, $you_amax, cptr.ld1so2(u, ndx, 1, $you_amax) - decr);
             if ((cptr.ld1so2(u, ndx, 1, $you_amax)) < (cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)))
@@ -638,9 +627,9 @@ export function gainstr(otmp, incr, givemsg) {
 
     if (!num) {
         if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < 18)
-            num = (rn2_at(__s_attrib_c, 209, __s_gainstr, 4) ? 1 : rnd_at(__s_attrib_c, 209, __s_gainstr, 6));
+            num = (rn2(4) ? 1 : rnd(6));
         else if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < 103)
-            num = rnd_at(__s_attrib_c, 211, __s_gainstr, 10);
+            num = rnd(10);
         else
             num = 1;
     }
@@ -665,7 +654,7 @@ export function losestr(num, knam, k_format) {
     while (ustr < (cptr.ldI16o2(gu, NHC.A_STR, 2, $instance_globals_u_urace + $Race_attrmin))) {
         ++ustr;
         --num;
-        amt = ((rn2_at(__s_attrib_c, 235, __s_losestr, 4) + 3) | 0);  /* (0..(4-1))+3 => 3..6; used to use flat 6 here */
+        amt = ((rn2(4) + 3) | 0);  /* (0..(4-1))+3 => 3..6; used to use flat 6 here */
         dmg = (dmg + amt) | 0;
     }
     if (dmg) {
@@ -779,10 +768,10 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
      *  this operates on u.uhp[max] even when hero is polymorphed....
      */
 
-    i = !fatal ? 1 : rn2_at(__s_attrib_c, 362, __s_poisoned, (fatal + (thrown_weapon ? 20 : 0)) | 0);
+    i = !fatal ? 1 : rn2((fatal + (thrown_weapon ? 20 : 0)) | 0);
     if (i == 0 && typ != NHC.A_CHA) {
         /* sometimes survivable instant kill */
-        loss = (6 + d_at(__s_attrib_c, 365, __s_poisoned, 4, 6)) | 0;  /* 6 + 4d6 => 10..34 */
+        loss = (6 + d(4, 6)) | 0;  /* 6 + 4d6 => 10..34 */
         if (cptr.ldI32o(u, $you_uhp) <= loss) {
             cptr.stI32o(u, $you_uhp, -1);
             cptr.st1(disp, 1);
@@ -805,14 +794,14 @@ export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         let cloud = schar((!strcmp(reason, __s_gas_cloud)));
 
         /* HP damage; more likely--but less severe--with missiles */
-        loss = thrown_weapon ? rnd_at(__s_attrib_c, 388, __s_poisoned, 6) : ((rn2_at(__s_attrib_c, 388, __s_poisoned, 10) + 6) | 0);
+        loss = thrown_weapon ? rnd(6) : ((rn2(10) + 6) | 0);
         if ((blast || cloud) && Half_gas_damage())
             loss = (((loss + 1) | 0) / 2) | 0;
         losehp(loss, pkiller, schar(kprefix));  /* poison damage */
     } else {
         /* attribute loss; if typ is A_STR, reduction in current and
            maximum HP will occur once strength has dropped down to 3 */
-        loss = (thrown_weapon || !fatal) ? 1 : d_at(__s_attrib_c, 395, __s_poisoned, 2, 2);  /* was rn1(3,3) */
+        loss = (thrown_weapon || !fatal) ? 1 : d(2, 2);  /* was rn1(3,3) */
         /* check that a stat change was made */
         if (adjattrib(typ, -loss, 1))
             poisontell(typ, 1);
@@ -926,7 +915,7 @@ export function exercise(i, inc_or_dec) {
          *
          *      Note: *YES* ACURR is the right one to use.
          */
-        cptr.st1o2(u, i, 1, $you_aexe, cptr.ld1so2(u, i, 1, $you_aexe) + ((inc_or_dec) ? (rn2_at(__s_attrib_c, 509, __s_exercise__2, 19) > (acurr(i))) : -rn2_at(__s_attrib_c, 509, __s_exercise__2, 2)));
+        cptr.st1o2(u, i, 1, $you_aexe, cptr.ld1so2(u, i, 1, $you_aexe) + ((inc_or_dec) ? (rn2(19) > (acurr(i))) : -rn2(2)));
         {
             if (debugcore(__s_attrib_c, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1107,7 +1096,7 @@ export function exerchk() {
                  *  You don't *always* gain by exercising.
                  *  [MRS 92/10/28 - Treat Wisdom specially for balance.]
                  */
-                if (rn2_at(__s_attrib_c, 655, __s_exerchk, 50) > ((i != NHC.A_WIS) ? ((Math.imul(Math.abs(ax), 2) / 3) | 0) : Math.abs(ax)))
+                if (rn2(50) > ((i != NHC.A_WIS) ? ((Math.imul(Math.abs(ax), 2) / 3) | 0) : Math.abs(ax)))
                     break __lbl_nextattrib;
                 {
                     if (debugcore(__s_attrib_c, 1)) {
@@ -1135,7 +1124,7 @@ export function exerchk() {
                platform-dependent rounding/truncation for negative vals */
             cptr.st1o2(u, i, 1, $you_aexe, schar(Math.imul(((Math.abs(ax) / 2) | 0), mod_val)));
         }
-        cptr.stI64o(svc, $context_info_next_attrib_check, cptr.ldI64o(svc, $context_info_next_attrib_check) + BigInt(((rn2_at(__s_attrib_c, 673, __s_exerchk, 200) + 800) | 0)));
+        cptr.stI64o(svc, $context_info_next_attrib_check, cptr.ldI64o(svc, $context_info_next_attrib_check) + BigInt(((rn2(200) + 800) | 0)));
         {
             if (debugcore(__s_attrib_c, 1)) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1151,7 +1140,7 @@ export function exerchk() {
 /** C ref: attrib.c:682 @returns {CInt} */
 function rnd_attr() {
     let i;
-    let x = rn2_at(__s_attrib_c, 684, __s_rnd_attr, 100);
+    let x = rn2(100);
 
     /* 5.0: the x -= ... calculation used to have an off by 1 error that
        resulted in the values being biased toward Str and away from Cha */
@@ -1212,7 +1201,7 @@ export function redist_attr() {
             continue;
         /* Polymorphing doesn't change your mind */
         tmp = (cptr.ld1so2(u, i, 1, $you_amax));
-        cptr.st1o2(u, i, 1, $you_amax, cptr.ld1so2(u, i, 1, $you_amax) + ((rn2_at(__s_attrib_c, 749, __s_redist_attr, 5) - 2) | 0));
+        cptr.st1o2(u, i, 1, $you_amax, cptr.ld1so2(u, i, 1, $you_amax) + ((rn2(5) - 2) | 0));
         if ((cptr.ld1so2(u, i, 1, $you_amax)) > ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax)))
             cptr.st1o2(u, i, 1, $you_amax, schar(((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax))));
         if ((cptr.ld1so2(u, i, 1, $you_amax)) < (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin)))
@@ -1231,8 +1220,8 @@ export function vary_init_attr() {
     let i;
 
     for (i = 0; i < NHC.A_MAX; i++)
-        if (!rn2_at(__s_attrib_c, 769, __s_vary_init_attr, 20)) {
-            let xd = (rn2_at(__s_attrib_c, 770, __s_vary_init_attr, 7) - 2) | 0;  /* biased variation */
+        if (!rn2(20)) {
+            let xd = (rn2(7) - 2) | 0;  /* biased variation */
 
             void adjattrib(i, xd, 1);
             if ((cptr.ld1so2(u, i, 1, $you_acurr)) < (cptr.ld1so2(u, i, 1, $you_amax)))
@@ -1493,9 +1482,9 @@ export function newhp() {
         /* Initialize hit points */
         hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd) > 0)
-            hp = (hp + rnd_at(__s_attrib_c, 1088, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd))) | 0;
+            hp = (hp + rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd) > 0)
-            hp = (hp + rnd_at(__s_attrib_c, 1090, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd))) | 0;
+            hp = (hp + rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 0n) {
             /* Initialize alignment stuff */
             cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value));
@@ -1506,15 +1495,15 @@ export function newhp() {
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lofix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lofix)) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd) > 0)
-                hp = (hp + rnd_at(__s_attrib_c, 1101, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd))) | 0;
+                hp = (hp + rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd))) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd) > 0)
-                hp = (hp + rnd_at(__s_attrib_c, 1103, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd))) | 0;
+                hp = (hp + rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd))) | 0;
         } else {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hifix)) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd) > 0)
-                hp = (hp + rnd_at(__s_attrib_c, 1107, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd))) | 0;
+                hp = (hp + rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd))) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd) > 0)
-                hp = (hp + rnd_at(__s_attrib_c, 1109, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd))) | 0;
+                hp = (hp + rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd))) | 0;
         }
         if ((acurr(NHC.A_CON)) <= 3)
             conplus = -2;
@@ -1738,8 +1727,8 @@ export function uchangealign(newalign, reason) {
         if (reason == NHC.A_CG_HELM_ON) {
             adjalign(-7);  /* for abuse -- record will be cleared shortly */
             Your(__s_mind_oscillates_s, Hallucination() ? __s_wildly : __s_briefly);
-            make_confused(BigInt(((rn2_at(__s_attrib_c, 1346, __s_uchangealign, 2) + 3) | 0)), 0);
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (rn2_at(__s_attrib_c, 1347, __s_uchangealign, 50) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
+            make_confused(BigInt(((rn2(2) + 3) | 0)), 0);
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (rn2(50) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
                 summon_furies((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 1);
             /* don't livelog taking it back off */
             livelog_printf(512n, __s_used_a_helm_to_turn_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, $sizeof_Align, $Align_adj));

@@ -12,9 +12,9 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Amphibious, Role_switch, Upolyd } from './nhprop.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
+import { rn2, rnd } from './rnd.js';
 import { acurr, adjabil, minuhpmax, newhp, setuhpmax } from './attrib.js';
 import { find_mac } from './worn.js';
 import { mons } from './monst.js';
@@ -52,13 +52,12 @@ const $Race_enadv = FLD.Race_enadv, $RoleAdvance_hifix = FLD.RoleAdvance_hifix,
     $you_uprops = FLD.you_uprops, $you_urexp = FLD.you_urexp;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_exper_c = cptr.lit("exper.c");
-const __s_newpw = cptr.lit("newpw");
 const __s_levelchange = cptr.lit("#levelchange");
 const __s_s_level_d = cptr.lit("%s level %d.");
 const __s_lost_experience_level_d = cptr.lit("lost experience level %d");
 const __s_lost_all_experience = cptr.lit("lost all experience");
 const __s_losexp = cptr.lit("losexp");
+const __s_exper_c = cptr.lit("exper.c");
 const __s_u_ulevel_0_u_ulevel_maxulev = cptr.lit("u.ulevel >= 0 && u.ulevel < MAXULEV");
 const __s_more_experienced = cptr.lit("more experienced.");
 const __s_welcome_sto_experience_level_d = cptr.lit("Welcome %sto experience level %d.");
@@ -66,7 +65,6 @@ const __s_empty = cptr.lit("");
 const __s_back = cptr.lit("back ");
 const __s_sgained_experience_level_d = cptr.lit("%sgained experience level %d");
 const __s_re = cptr.lit("re");
-const __s_rndexp = cptr.lit("rndexp");
 
 /** C ref: exper.c:14 — @param {CInt} lev @returns {CLongLong} */
 export function newuexp(lev) {
@@ -106,9 +104,9 @@ export function newpw() {
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + rnd_at(__s_exper_c, 52, __s_newpw, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) | 0;
+            en = (en + rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + rnd_at(__s_exper_c, 54, __s_newpw, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) | 0;
+            en = (en + rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) | 0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
@@ -118,7 +116,7 @@ export function newpw() {
             enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd)) | 0)) | 0;
             enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) | 0;
         }
-        en = enermod(((rn2_at(__s_exper_c, 64, __s_newpw, enrnd) + (enfix)) | 0));
+        en = enermod(((rn2(enrnd) + (enfix)) | 0));
     }
     if (en <= 0)
         en = 1;
@@ -432,7 +430,7 @@ export function rndexp(gaining) {
     /* make sure that `diff' is an argument which rn2() can handle */
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt(rn2_at(__s_exper_c, 388, __s_rndexp, Number(BigInt.asIntN(32, diff))))));
+    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt(rn2(Number(BigInt.asIntN(32, diff))))));
     /* 3.4.1:  if already at level 30, add to current experience
        points rather than to threshold needed to reach the current
        level; otherwise blessed potions of gain level can result

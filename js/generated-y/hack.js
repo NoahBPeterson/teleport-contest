@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_FURNITURE, IS_TREE, IS_WALL, canspotmon, ceiling_hider, glyph_is_cmap, glyph_is_monster, glyph_is_statue, glyph_is_warning, glyph_to_obj, grounded, has_mgivenname, helpless, is_blade, is_door_mappear, is_flimsy, is_floater, is_pick, is_pit, is_rider, is_weptool, is_whirly, likes_lava, m_next2u, mundisplaceable } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Amphibious, BFlying, BLevitation, Blind, Breathless, Cold_resistance, Conflict, Deaf, EFlying, ELevitation, EWounded_legs, Fire_resistance, Flying, Fumbling, HConfusion, HFlying, HFumbling, HLevitation, HStun, Half_physical_damage, Hallucination, Levitation, ParanoidSwim, ParanoidTrap, Passes_walls, Protection_from_shape_changers, Punished, Sokoban, Stealth, Swimming, U_AP_TYPE, Ugender, Unchanging, Underwater, Upolyd, Warning, nh_delay_output, raw_print, sokoban_dnum } from './nhprop.js';
 import { a11y, c_common_strings, cg, decl_globals_init, dirs_ord, disp, flags, ga, gb, gc, gd, gi, gk, gm, gn, gt, gu, gv, gw, gy, iflags, svc, svd, svi, svk, svl, svm, svp, svq, svr, u, uarmf, uarmh, uball, uleft, uright, uswapwep, uwep, xdir, ydir } from './decl.js';
 import { mons } from './monst.js';
@@ -33,6 +32,7 @@ import { In_mines, Invocation_lev, assign_level, ceiling, depth, get_level, has_
 import { cmd_from_func, cmdq_clear, cmdq_peek, confdir, directionname, do_reqmenu, ext_func_tab_from_func, isok, paranoid_query, reset_occupations, xytodir } from './cmd.js';
 import { dist2, distmin, highc, ing_suffix, nh_deterministic_qsort, nh_snprintf, s_suffix, sgn, strncmpi, upstart, visctrl } from './hacklib.js';
 import { accessible, can_fog, can_ooze, closed_door, dissolve_bars, m_postmove_effect, onscary } from './monmove.js';
+import { d, rn2, rnd } from './rnd.js';
 import { add_to_migration, obj_extract_self, obj_ice_effects, place_object, remove_object, splitobj } from './mkobj.js';
 import { buried_ball, buried_ball_to_punishment, bury_objs, dig_typ, use_pick_axe2, watch_dig } from './dig.js';
 import { block_point, recalc_block_point, vision_recalc } from './vision.js';
@@ -250,8 +250,6 @@ const __s_you = cptr.lit("you");
 const __s_s_s_cannot_move_s = cptr.lit("%s%s cannot move %s.");
 const __s_perhaps_that_s_why = cptr.lit("Perhaps that's why ");
 const __s_it = cptr.lit("it");
-const __s_hack_c = cptr.lit("hack.c");
-const __s_moverock_core = cptr.lit("moverock_core");
 const __s_s_s_s_land_mine = cptr.lit("%s!  %s %s land mine.");
 const __s_kaablamm = cptr.lit("KAABLAMM!!");
 const __s_gadzooks = cptr.lit("Gadzooks");
@@ -287,7 +285,6 @@ const __s_a_boulder = cptr.lit("a boulder");
 const __s_a_tree = cptr.lit("a tree");
 const __s_iron_bars = cptr.lit("iron bars");
 const __s_a_door = cptr.lit("a door");
-const __s_still_chewing = cptr.lit("still_chewing");
 const __s_eat_the_boulder = cptr.lit("eat the boulder.");
 const __s_damage = cptr.lit("damage");
 const __s_chew_a_hole_in_the_wall = cptr.lit("chew a hole in the wall.");
@@ -302,7 +299,6 @@ const __s_chew_a_passage_through_the_rock = cptr.lit("chew a passage through the
 const __s_wobble_unsteadily_for_a_moment = cptr.lit("wobble unsteadily for a moment.");
 const __s_gain_control_of_your_flight = cptr.lit("gain control of your flight.");
 const __s_crash_to_the_floor = cptr.lit("crash to the floor!");
-const __s_dosinkfall = cptr.lit("dosinkfall");
 const __s_falling_you = cptr.lit("Falling, you");
 const __s_fell_on_s = cptr.lit("fell on %s.");
 const __s_is_an_obstacle_there = cptr.lit("is an obstacle there.");
@@ -329,7 +325,6 @@ const __s_stop_unsure_which_way_to_go = cptr.lit("stop, unsure which way to go."
 const __s_caught_in_a_bear_trap = cptr.lit("caught in a bear trap");
 const __s_s_is_s = cptr.lit("%s is %s.");
 const __s_you_are_s = cptr.lit("You are %s.");
-const __s_trapmove = cptr.lit("trapmove");
 const __s_s_finally_s_free = cptr.lit("%s finally %s free.");
 const __s_lurches = cptr.lit("lurches");
 const __s_wrenches_the_ball = cptr.lit("wrenches the ball");
@@ -371,14 +366,14 @@ const __s_unknown_tip_in_handle_tip_i = cptr.lit("Unknown tip in handle_tip(%i)"
 const __s_avoid_s_into_the_s = cptr.lit("avoid %s into the %s.");
 const __s_pardon_me_s = cptr.lit("Pardon me, %s.");
 const __s_move_right_into_s = cptr.lit("move right into %s.");
-const __s_domove_attackmon_at = cptr.lit("domove_attackmon_at");
-const __s_domove_fight_web = cptr.lit("domove_fight_web");
 const __s_s_s_through_the_web = cptr.lit("%s %s through the web!");
 const __s_cuts = cptr.lit("cuts");
 const __s_burns = cptr.lit("burns");
 const __s_armor = cptr.lit("armor");
 const __s_food = cptr.lit("food");
 const __s_venom = cptr.lit("venom");
+const __s_domove_fight_web = cptr.lit("domove_fight_web");
+const __s_hack_c = cptr.lit("hack.c");
 const __s_uswapwep_null = cptr.lit("uswapwep != NULL");
 const __s_cut_a_web_with_s_s_s = cptr.lit("cut a web with %s%s%s!");
 const __s_or = cptr.lit(" or ");
@@ -409,14 +404,11 @@ const __s_harmlessly = cptr.lit("harmlessly ");
 const __s_futilely = cptr.lit("futilely ");
 const __s_explode_at = cptr.lit("explode at");
 const __s_attack = cptr.lit("attack");
-const __s_air_turbulence = cptr.lit("air_turbulence");
 const __s_tumble_in_place = cptr.lit("tumble in place.");
 const __s_control_your_movements_very_well = cptr.lit("control your movements very well.");
 const __s_it_s_hard_to_walk_in_thin_air = cptr.lit("It's hard to walk in thin air.");
 const __s_are_carrying_too_much_to_climb_out_of = cptr.lit("are carrying too much to climb out of the water.");
 const __s_snow_boots = cptr.lit("snow boots");
-const __s_slippery_ice_fumbling = cptr.lit("slippery_ice_fumbling");
-const __s_u_maybe_impaired = cptr.lit("u_maybe_impaired");
 const __s_stop_in_front_of_s = cptr.lit("stop in front of %s.");
 const __s_stop_at_the_edge_of_the_s = cptr.lit("stop at the edge of the %s.");
 const __s_water = cptr.lit("water");
@@ -431,12 +423,10 @@ const __s_have_already_gone_as_far_s_as_possible = cptr.lit("have already gone a
 const __s_don_t_have_enough_stamina_to_move = cptr.lit("don't have enough stamina to move.");
 const __s_collapse_under_your_load = cptr.lit("collapse under your load.");
 const __s_release_s = cptr.lit("release %s.");
-const __s_escape_from_sticky_mon = cptr.lit("escape_from_sticky_mon");
 const __s_cannot_escape_from_s = cptr.lit("cannot escape from %s!");
 const __s_pull_free_from_s = cptr.lit("pull free from %s.");
 const __s_s_swaps_places_with_you = cptr.lit("%s swaps places with you...");
 const __s_dragging_an_iron_ball = cptr.lit("dragging an iron ball");
-const __s_maybe_smudge_engr = cptr.lit("maybe_smudge_engr");
 const __s_pass_out_from_exertion = cptr.lit("pass out from exertion!");
 const __s_beneath_s = cptr.lit("beneath %s");
 const __s_beneath_you = cptr.lit("beneath you");
@@ -453,7 +443,6 @@ const __s_leave_the_s = cptr.lit("leave the %s...");
 const __s_pop_out_of_the_s_like_a_cork = cptr.lit("pop out of the %s like a cork!");
 const __s_fly_out_of_the_s = cptr.lit("fly out of the %s.");
 const __s_slowly_rise_above_the_surface = cptr.lit("slowly rise above the surface.");
-const __s_spoteffects = cptr.lit("spoteffects");
 const __s_s_suddenly_drops_from_the_s = cptr.lit("%s suddenly drops from the %s!");
 const __s_its_blow_glances_off_your_s = cptr.lit("Its blow glances off your %s.");
 const __s_are_almost_hit_by_s = cptr.lit("are almost hit by %s!");
@@ -484,7 +473,6 @@ const __s_enter_a_military_barracks = cptr.lit("enter a military barracks!");
 const __s_enter_an_abandoned_barracks = cptr.lit("enter an abandoned barracks.");
 const __s_you_re_in_delphi_s = cptr.lit("You're in Delphi, %s.");
 const __s_s_s_welcome_to_delphi = cptr.lit("%s, %s, welcome to Delphi!");
-const __s_check_special_room = cptr.lit("check_special_room");
 const __s_pick_up_s_tongue = cptr.lit("pick up %s tongue.");
 const __s_but_it_s_kind_of_slimy_so_you_drop_it = cptr.lit("But it's kind of slimy, so you drop it.");
 const __s_don_t_s_anything_in_here_to_pick_up = cptr.lit("don't %s anything in here to pick up.");
@@ -905,7 +893,7 @@ function* moverock_core(sx, sy) {
                    should advance to the vacated boulder position */
                 switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
                     case NHC.LANDMINE:
-                    if (rn2_at(__s_hack_c, 506, __s_moverock_core, 10)) {
+                    if (rn2(10)) {
                         (yield* obj_extract_self(otmp));
                         (yield* place_object(otmp, rx, ry));
                         (yield* newsym(sx, sy));
@@ -1067,7 +1055,7 @@ export function* still_chewing(x, y) {
     /* Okay, you've chewed through something */
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_food, cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n)) - (1n)))
         (yield* livelog_printf(32n, __s_ate_for_the_first_time_by_chewing, boulder ? __s_a_boulder : (IS_TREE(cptr.ld1so(lev, $rm_typ)) ? __s_a_tree : (((cptr.ld1so(lev, $rm_typ)) < NHC.POOL) ? __s_rock : ((cptr.ld1so(lev, $rm_typ) == NHC.IRONBARS) ? __s_iron_bars : __s_a_door)))));
-    cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + rnd_at(__s_hack_c, 730, __s_still_chewing, 20)) | 0);
+    cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + rnd(20)) | 0);
 
     if (boulder) {
         (yield* delobj(boulder));  /* boulder goes bye-bye */
@@ -1189,14 +1177,14 @@ function* dosinkfall() {
            are really still worn has no effect on bones data */
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops, cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n));
         (yield* You(__s_crash_to_the_floor));
-        dmg = ((rn2_at(__s_hack_c, 863, __s_dosinkfall, 8) + ((25 - (acurr(NHC.A_CON))) | 0)) | 0);
+        dmg = ((rn2(8) + ((25 - (acurr(NHC.A_CON))) | 0)) | 0);
         (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), cptr.decay(__static_dosinkfall_fell_on_sink), NHM.NO_KILLER_PREFIX));
         (yield* exercise(NHC.A_DEX, 0));
         (yield* selftouch(__s_falling_you));
         for (obj = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v))
             if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj)) {
                 (yield* You(__s_fell_on_s, (yield* doname(obj))));
-                (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_hack_c, 870, __s_dosinkfall, 3) + 1) | 0) / 2) | 0) : rnd_at(__s_hack_c, 870, __s_dosinkfall, 3)), cptr.decay(__static_dosinkfall_fell_on_sink), NHM.NO_KILLER_PREFIX));
+                (yield* losehp(((Half_physical_damage()) ? ((((rnd(3) + 1) | 0) / 2) | 0) : rnd(3)), cptr.decay(__static_dosinkfall_fell_on_sink), NHM.NO_KILLER_PREFIX));
                 (yield* exercise(NHC.A_CON, 0));
             }
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops, save_ELev);
@@ -1833,7 +1821,7 @@ function* trapmove(x, y, desttrap) {
                 (yield* Norep(__s_you_are_s, predicament));
         }
         /* [why does diagonal movement give quickest escape?] */
-        if ((cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy)) || !rn2_at(__s_hack_c, 1575, __s_trapmove, 5))
+        if ((cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy)) || !rn2(5))
             (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + -1)) - (-1);
         if (!cptr.ldI32o(u, $you_utrap))
             {
@@ -2180,7 +2168,7 @@ function* domove_attackmon_at(mtmp, x, y, displaceu) {
      */
     if (cptr.ld1so(svc, $context_info_forcefight) || !(cptr.ldI32o(mtmp, $monst_mundetected) & 1) || sensemon(mtmp) || ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL) && !is_safemon(mtmp))) {
         /* target monster might decide to switch places with you... */
-        cptr.st1(displaceu, schar((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_DISPLACER_BEAST, $sizeof_permonst)) && !rn2_at(__s_hack_c, 1972, __s_domove_attackmon_at, 2) && cptr.ldI16o(mtmp, $monst_mux) == cptr.ldI16o(u, $you_ux0) && cptr.ldI16o(mtmp, $monst_muy) == cptr.ldI16o(u, $you_uy0) && !helpless(mtmp) && !cptr.ldI32o(mtmp, $monst_meating) && !(cptr.ldI32o(mtmp, $monst_mtrapped) & 1) && !cptr.ldI32o(u, $you_utrap) && !cptr.ldPtro(u, $you_ustuck) && !cptr.ldPtro(u, $you_usteed) && !(cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && (((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) || (bad_rock(cptr.ldPtro(mtmp, $monst_data), x, cptr.ldI16o(u, $you_uy0)) && bad_rock(cptr.ldPtro(mtmp, $monst_data), cptr.ldI16o(u, $you_ux0), y)) || (bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ldI16o(u, $you_ux0), y) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), x, cptr.ldI16o(u, $you_uy0))))) && (yield* goodpos(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0), mtmp, NHM.GP_ALLOW_U)) ? 1 : 0)));
+        cptr.st1(displaceu, schar((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_DISPLACER_BEAST, $sizeof_permonst)) && !rn2(2) && cptr.ldI16o(mtmp, $monst_mux) == cptr.ldI16o(u, $you_ux0) && cptr.ldI16o(mtmp, $monst_muy) == cptr.ldI16o(u, $you_uy0) && !helpless(mtmp) && !cptr.ldI32o(mtmp, $monst_meating) && !(cptr.ldI32o(mtmp, $monst_mtrapped) & 1) && !cptr.ldI32o(u, $you_utrap) && !cptr.ldPtro(u, $you_ustuck) && !cptr.ldPtro(u, $you_usteed) && !(cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && (((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) || (bad_rock(cptr.ldPtro(mtmp, $monst_data), x, cptr.ldI16o(u, $you_uy0)) && bad_rock(cptr.ldPtro(mtmp, $monst_data), cptr.ldI16o(u, $you_ux0), y)) || (bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ldI16o(u, $you_ux0), y) && bad_rock(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), x, cptr.ldI16o(u, $you_uy0))))) && (yield* goodpos(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0), mtmp, NHM.GP_ALLOW_U)) ? 1 : 0)));
         /* if not displacing, try to attack; note that it might evade;
            also, we don't attack tame or peaceful when safemon() */
         if (!cptr.ld1s(displaceu)) {
@@ -2223,7 +2211,7 @@ function* domove_fight_web(x, y) {
     if (cptr.ld1so(svc, $context_info_forcefight) && trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.WEB && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0) {
         let wtype = uwep_skill_type();
         let wskill_minus_2 = ((((cptr.ldI16o2(u, wtype, $sizeof_skills, $you_weapon_skills))) > NHC.P_UNSKILLED ? ((cptr.ldI16o2(u, wtype, $sizeof_skills, $you_weapon_skills))) : NHC.P_UNSKILLED) - 2) | 0;
-        let roll = rn2_at(__s_hack_c, 2032, __s_domove_fight_web, uwep.v ? 20 : ((45 - Math.imul(5, wskill_minus_2)) | 0));
+        let roll = rn2(uwep.v ? 20 : ((45 - Math.imul(5, wskill_minus_2)) | 0));
 
         if (uwep.v && (is_art(uwep.v, NHC.ART_STING) || (cptr.ld1so(uwep.v, $obj_oartifact) && attacks(NHM.AD_FIRE, uwep.v)))) {
             /* guaranteed success */
@@ -2378,7 +2366,7 @@ function* domove_swap_with_pet(mtmp, x, y) {
              * [This has always been pretty iffy.  Why does your
              * patron deity care at all, let alone enough to get mad?]
              */
-            if (rn2_at(__s_hack_c, 2213, __s_domove_swap_with_pet, 4)) {
+            if (rn2(4)) {
                 (yield* You_feel(__s_guilty_about_losing_your_pet_like_this));
                 (cptr.stI32o(u, $you_ugangr, cptr.ldI32o(u, $you_ugangr) + 1)) - (1);
                 adjalign(-15);
@@ -2489,8 +2477,8 @@ function* domove_fight_empty(x, y) {
 /* does the plane of air disturb movement? */
 /** C ref: hack.c:2342 @returns {CInt} */
 function* air_turbulence() {
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && rn2_at(__s_hack_c, 2344, __s_air_turbulence, 4) && !Levitation() && !Flying()) {
-        switch (rn2_at(__s_hack_c, 2345, __s_air_turbulence, 3)) {
+    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && rn2(4) && !Levitation() && !Flying()) {
+        switch (rn2(3)) {
             case 0:
             (yield* You(__s_tumble_in_place));
             (yield* exercise(NHC.A_DEX, 0));
@@ -2546,7 +2534,7 @@ function* slippery_ice_fumbling() {
     if (recharged) {
         if ((uarmf.v && (yield* objdescr_is(uarmf.v, __s_snow_boots))) || (yield* Resists_Elem(iceskater, NHC.COLD_RES)) || Flying() || is_floater(cptr.ldPtro(iceskater, $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(iceskater, $monst_data)), $permonst_mflags1) & 16n) != 0n) || is_whirly(cptr.ldPtro(iceskater, $monst_data))) {
             recharged = 0;
-        } else if (!rn2_at(__s_hack_c, 2407, __s_slippery_ice_fumbling, Cold_resistance() ? 3 : 2)) {
+        } else if (!rn2(Cold_resistance() ? 3 : 2)) {
             cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
             cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-16777216n));
             cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) + 1n);  /* slip on next move */
@@ -2558,7 +2546,7 @@ function* slippery_ice_fumbling() {
 
 /** C ref: hack.c:2418 @returns {CInt} */
 export function u_maybe_impaired() {
-    return schar((HStun() || (HConfusion() && !rn2_at(__s_hack_c, 2420, __s_u_maybe_impaired, 5)) ? 1 : 0));
+    return schar((HStun() || (HConfusion() && !rn2(5)) ? 1 : 0));
 }
 
 /* change movement dir if impaired. return TRUE if can't move */
@@ -2657,7 +2645,7 @@ function* avoid_trap_andor_region(x, y) {
 
     /* maybe ask player for confirmation before walking into known trap */
     if (ParanoidTrap() && !HStun() && !HConfusion() && (!cptr.ld1so(svc, $context_info_nopick) || cptr.ldI32o(svc, $context_info_run)) && (trap = t_at(x, y)) !== null && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && (yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy)), NHM.TEST_MOVE)) && ((yield* immune_to_trap(cptr.add(gy, $instance_globals_y_youmonst), (cptr.ldI32o(trap, $trap_ttyp) & 31))) != NHC.TRAP_CLEARLY_IMMUNE || Hallucination())) {
-        let traptype = (Hallucination() ? rnd_at(__s_hack_c, 2565, __s_avoid_trap_andor_region, ((NHC.TRAPNUM - 1) | 0)) : (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0);
+        let traptype = (Hallucination() ? rnd(((NHC.TRAPNUM - 1) | 0)) : (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0);
         let into = into_vs_onto(traptype);
 
         nh_snprintf(__s_avoid_trap_andor_region, 2570, cptr.decay(qbuf), 128n, __s_really_s_s_that_s, u_locomotion(__s_step), into ? __s_into__2 : __s_onto, cptr.ldPtro2(defsyms, ((((NHC.S_arrow_trap + (traptype)) | 0) - 1) | 0), $sizeof_symdef, $symdef_explanation));
@@ -2747,7 +2735,7 @@ function* escape_from_sticky_mon(x, y) {
              * If holder is tame and there is no conflict,
              * guaranteed escape.
              */
-            switch (rn2_at(__s_hack_c, 2664, __s_escape_from_sticky_mon, !(cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove) & 1) ? 8 : 40)) {
+            switch (rn2(!(cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove) & 1) ? 8 : 40)) {
                 case 3:
                 if (!(cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_mcanmove) & 1)) {
                     /* it's free to move on next turn */
@@ -3095,9 +3083,9 @@ function* maybe_smudge_engr(x1, y1, x2, y2) {
 
     if (can_reach_floor(1)) {
         if ((ep = engr_at(x1, y1)) && cptr.ld1so(ep, $engr_engr_type) != NHM.HEADSTONE)
-            (yield* wipe_engr_at(x1, y1, i16(rnd_at(__s_hack_c, 3026, __s_maybe_smudge_engr, 5)), 0));
+            (yield* wipe_engr_at(x1, y1, i16(rnd(5)), 0));
         if ((x2 != x1 || y2 != y1) && (ep = engr_at(x2, y2)) && cptr.ld1so(ep, $engr_engr_type) != NHM.HEADSTONE)
-            (yield* wipe_engr_at(x2, y2, i16(rnd_at(__s_hack_c, 3029, __s_maybe_smudge_engr, 5)), 0));
+            (yield* wipe_engr_at(x2, y2, i16(rnd(5)), 0));
     }
 }
 
@@ -3398,7 +3386,7 @@ export function* spoteffects(pick) {
                that a trap here is being triggered twice, so adjust
                the timeout to prevent that */
             if (trap && (HLevitation() & 16777215n) == 1n && !(ELevitation() || (HLevitation() & -553648128n))) {
-                if (rn2_at(__s_hack_c, 3364, __s_spoteffects, 2)) {
+                if (rn2(2)) {
                     incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), 1);
                 } else {
                     if ((yield* float_down(553648127n, 0n))) {
@@ -3453,13 +3441,13 @@ export function* spoteffects(pick) {
                     ;
                 } else if (hard_helmet(uarmh.v)) {
                     (yield* pline(__s_its_blow_glances_off_your_s, helm_simple_name(uarmh.v)));
-                } else if (((cptr.ld1so(u, $you_uac) + 3) | 0) <= rnd_at(__s_hack_c, 3428, __s_spoteffects, 20)) {
+                } else if (((cptr.ld1so(u, $you_uac) + 3) | 0) <= rnd(20)) {
                     (yield* You(__s_are_almost_hit_by_s, (yield* x_monnam(mtmp, NHM.ARTICLE_A, __s_falling, 0, 1))));
                 } else {
                     let dmg;
 
                     (yield* You(__s_are_hit_by_s, (yield* x_monnam(mtmp, NHM.ARTICLE_A, __s_falling, 0, 1))));
-                    dmg = d_at(__s_hack_c, 3436, __s_spoteffects, 4, 6);
+                    dmg = d(4, 6);
                     if (Half_physical_damage())
                         dmg = (((dmg + 1) | 0) / 2) | 0;
                     (yield* mdamageu(mtmp, dmg));
@@ -3787,7 +3775,7 @@ export function* check_special_room(newlev) {
                         continue;
                     if (!isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) || roomno != ((cptr.ldI32o3(svl, cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mtmp, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0))
                         continue;
-                    if (!Stealth() && !rn2_at(__s_hack_c, 3772, __s_check_special_room, 3)) {
+                    if (!Stealth() && !rn2(3)) {
                         (yield* wake_msg(mtmp, 0));
                         cptr.stI32o(mtmp, $monst_msleeping, 0);
                     }

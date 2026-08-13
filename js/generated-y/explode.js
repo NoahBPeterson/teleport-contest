@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, completelyburns, explosion_to_glyph, is_vampshifter, nonliving } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, Antimagic, Cold_resistance, Deaf, Disint_resistance, Fire_resistance, Half_physical_damage, Hallucination, Invulnerable, Poison_resistance, Role_switch, Shock_resistance, Upolyd, nh_delay_output, sokoban_dnum } from './nhprop.js';
 import { disp, flags, gb, gi, gm, gt, gu, gv, gy, iflags, shield_static, svc, svd, svk, svl, u, uball, uchain, xdir, ydir } from './decl.js';
 import { mons } from './monst.js';
@@ -38,6 +37,7 @@ import { exercise } from './attrib.js';
 import { addtobill, costly_spot, credit_report, pay_for_damage, shop_keeper } from './shk.js';
 import { in_rooms, nomul } from './hack.js';
 import { unpunish } from './read.js';
+import { d, rn2, rnd } from './rnd.js';
 import { obj_extract_self, place_object, splitobj } from './mkobj.js';
 import { Tobjnam } from './objnam.js';
 import { sobj_at, stackobj } from './invent.js';
@@ -145,8 +145,6 @@ const __s_disintegrate = cptr.lit("disintegrate");
 const __s_destroy = cptr.lit("destroy");
 const __s_scattered_object_d_d_not_at_scatter = cptr.lit("scattered object <%d,%d> not at scatter site <%d,%d>");
 const __s_chain_shatters = cptr.lit("chain shatters!");
-const __s_explode_c = cptr.lit("explode.c");
-const __s_scatter = cptr.lit("scatter");
 const __s_s_apart = cptr.lit("%s apart.");
 const __s_break = cptr.lit("break");
 const __s_stone_breaking = cptr.lit("stone breaking.");
@@ -154,10 +152,8 @@ const __s_pct_s_dot = cptr.lit("%s.");
 const __s_crumble = cptr.lit("crumble");
 const __s_stone_crumbling = cptr.lit("stone crumbling.");
 const __s_land = cptr.lit("land");
-const __s_splatter_burning_oil = cptr.lit("splatter_burning_oil");
 const __s_exploding_unlit_oil = cptr.lit("exploding unlit oil");
 const __s_adtyp_to_expltype_bad_explosion_type_d = cptr.lit("adtyp_to_expltype: bad explosion type %d");
-const __s_mon_explodes = cptr.lit("mon_explodes");
 const __s_unknown_type_for_mon_explode_d = cptr.lit("unknown type for mon_explode %d");
 
 /* Note: Arrays are column first, while the screen is row first */
@@ -870,7 +866,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             qtmp = BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_quan) - 1n);
             if (qtmp > 32767n)
                 qtmp = 32767n;
-            qtmp = BigInt(rnd_at(__s_explode_c, 764, __s_scatter, Number(BigInt.asIntN(32, qtmp))));
+            qtmp = BigInt(rnd(Number(BigInt.asIntN(32, qtmp))));
             otmp = (yield* splitobj(otmp, qtmp));
         } else {
             obj = null;  /* all used */
@@ -879,7 +875,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
         used_up = 0;
 
         /* 9 in 10 chance of fracturing boulders or statues */
-        if (((scflags & NHM.MAY_FRACTURE) >>> 0) != 0 && (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) && rn2_at(__s_explode_c, 775, __s_scatter, 10)) {
+        if (((scflags & NHM.MAY_FRACTURE) >>> 0) != 0 && (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) && rn2(10)) {
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER) {
                 if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), sy, 8), sx) & NHM.IN_SIGHT) != 0)) {
                     (yield* pline(__s_s_apart, (yield* Tobjnam(otmp, __s_break))));
@@ -912,7 +908,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             used_up = 1;
 
             /* 1 in 10 chance of destruction of obj; glass, egg destruction */
-        } else if (((scflags & NHM.MAY_DESTROY) >>> 0) != 0 && (!rn2_at(__s_explode_c, 809, __s_scatter, 10) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
+        } else if (((scflags & NHM.MAY_DESTROY) >>> 0) != 0 && (!rn2(10) || (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
             if ((yield* breaks(otmp, sx, sy)))
                 used_up = 1;
         }
@@ -923,13 +919,13 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             cptr.stPtro(stmp, $scatter_chain_obj, otmp);
             cptr.stI16o(stmp, $scatter_chain_ox, sx);
             cptr.stI16o(stmp, $scatter_chain_oy, sy);
-            tmp = rn2_at(__s_explode_c, 821, __s_scatter, ((NHC.N_DIRS_Z - 2) | 0));  /* get the direction */
+            tmp = rn2(((NHC.N_DIRS_Z - 2) | 0));  /* get the direction */
             cptr.st1o(stmp, $scatter_chain_dx, cptr.ld1so(cptr.decay(xdir), tmp, 1));
             cptr.st1o(stmp, $scatter_chain_dy, cptr.ld1so(cptr.decay(ydir), tmp, 1));
             tmp = (((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt), 40))) >>> 0) | 0;
             if (tmp < 1)
                 tmp = 1;
-            cptr.stI32o(stmp, $scatter_chain_range, rnd_at(__s_explode_c, 827, __s_scatter, tmp));  /* anywhere up to that determ. by wt */
+            cptr.stI32o(stmp, $scatter_chain_range, rnd(tmp));  /* anywhere up to that determ. by wt */
             if (farthest < cptr.ldI32o(stmp, $scatter_chain_range))
                 farthest = cptr.ldI32o(stmp, $scatter_chain_range);
             cptr.st1o(stmp, $scatter_chain_stopped, 0);
@@ -1065,7 +1061,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
  */
 /** C ref: explode.c:962 — @param {CInt} x @param {CInt} y @param {CInt} diluted_oil */
 export function* splatter_burning_oil(x, y, diluted_oil) {
-    let dmg = d_at(__s_explode_c, 964, __s_splatter_burning_oil, (diluted_oil ? 3 : 4), 4);
+    let dmg = d((diluted_oil ? 3 : 4), 4);
     (yield* explode(x, y, 11, dmg, (schar(((NHC.MAXOCLASSES + 1) | 0))), NHC.EXPL_FIERY));
 }
 
@@ -1117,9 +1113,9 @@ export function* mon_explodes(mon, mattk) {
     let dmg;
     let type;
     if (cptr.ld1uo(mattk, $attack_damn)) {
-        dmg = d_at(__s_explode_c, 1026, __s_mon_explodes, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)));
+        dmg = d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)));
     } else if (cptr.ld1uo(mattk, $attack_damd)) {
-        dmg = d_at(__s_explode_c, 1029, __s_mon_explodes, ((cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlevel) + 1) | 0), (cptr.ld1uo(mattk, $attack_damd)));
+        dmg = d(((cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlevel) + 1) | 0), (cptr.ld1uo(mattk, $attack_damd)));
     } else {
         dmg = 0;
     }

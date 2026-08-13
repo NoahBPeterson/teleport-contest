@@ -13,9 +13,9 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { helpless, is_lminion, m_next2u, min } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Deaf, Protection_from_shape_changers } from './nhprop.js';
 import { c_color_names, gf, gm, gs, gv, svc, svd, svl, svm, u, uamul, uwep } from './decl.js';
+import { rn2, rnd } from './rnd.js';
 import { dist2, sgn } from './hacklib.js';
 import { You, You_feel, pline, verbalize } from './pline.js';
 import { Tobjnam, distant_name, doname } from './objnam.js';
@@ -85,32 +85,22 @@ const $context_info_made_amulet = FLD.context_info_made_amulet,
     $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_wizard_c = cptr.lit("wizard.c");
-const __s_amulet = cptr.lit("amulet");
 const __s_s_hot = cptr.lit("%s hot!");
 const __s_feel = cptr.lit("feel");
 const __s_s_very_warm = cptr.lit("%s very warm.");
 const __s_s_warm = cptr.lit("%s warm.");
 const __s_get_the_creepy_feeling_that_somebody = cptr.lit("get the creepy feeling that somebody noticed your taking the Amulet.");
-const __s_tactics = cptr.lit("tactics");
 const __s_s_picks_up_s = cptr.lit("%s picks up %s.");
-const __s_aggravate = cptr.lit("aggravate");
-const __s_clonewiz = cptr.lit("clonewiz");
-const __s_pick_nasty = cptr.lit("pick_nasty");
 const __s_baby = cptr.lit("baby ");
 const __s_hatchling = cptr.lit(" hatchling");
 const __s_pup = cptr.lit(" pup");
 const __s_cub = cptr.lit(" cub");
-const __s_nasty = cptr.lit("nasty");
 const __s_kill = cptr.lit("kill");
 const __s_elude = cptr.lit("elude");
-const __s_resurrect = cptr.lit("resurrect");
 const __s_a_voice_booms_out = cptr.lit("A voice booms out...");
 const __s_so_thou_thought_thou_couldst_s_me_fool = cptr.lit("So thou thought thou couldst %s me, fool.");
-const __s_intervene = cptr.lit("intervene");
 const __s_vaguely_nervous = cptr.lit("vaguely nervous.");
 const __s_notice_a_s_glow_surrounding_you = cptr.lit("notice a %s glow surrounding you.");
-const __s_wizdeadorgone = cptr.lit("wizdeadorgone");
 const __s_antic = cptr.lit("antic");
 const __s_blackguard = cptr.lit("blackguard");
 const __s_caitiff = cptr.lit("caitiff");
@@ -150,7 +140,6 @@ const __s_thou_art_as_a_flea_to_me = cptr.lit("Thou art as a flea to me,");
 const __s_thou_art_doomed = cptr.lit("Thou art doomed,");
 const __s_thy_fate_is_sealed = cptr.lit("Thy fate is sealed,");
 const __s_verily_thou_shalt_be_one_dead = cptr.lit("Verily, thou shalt be one dead");
-const __s_cuss = cptr.lit("cuss");
 const __s_s_laughs_fiendishly = cptr.lit("%s laughs fiendishly.");
 const __s_relinquish_the_amulet_s = cptr.lit("Relinquish the amulet, %s!");
 const __s_even_now_thy_life_force_ebbs_s = cptr.lit("Even now thy life force ebbs, %s!");
@@ -238,7 +227,7 @@ export function* amulet() {
     let mtmp;
     let ttmp;
     let amu;
-    if ((((amu = uamul.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR) || ((amu = uwep.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR)) && !rn2_at(__s_wizard_c, 73, __s_amulet, 15)) {
+    if ((((amu = uamul.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR) || ((amu = uwep.v) !== null && cptr.ldI16o(amu, $obj_otyp) == NHC.AMULET_OF_YENDOR)) && !rn2(15)) {
         for (ttmp = cptr.ldPtr(gf); ttmp; ttmp = cptr.ldPtr(ttmp)) {
             if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
                 let du = dist2((cptr.ldI16o(ttmp, $trap_tx)), (cptr.ldI16o(ttmp, $trap_ty)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
@@ -260,7 +249,7 @@ export function* amulet() {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && !rn2_at(__s_wizard_c, 95, __s_amulet, 40)) {
+        if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && !rn2(40)) {
             cptr.stI32o(mtmp, $monst_msleeping, 0);
             if (!m_next2u(mtmp))
                 (yield* You(__s_get_the_creepy_feeling_that_somebody));
@@ -513,7 +502,7 @@ export function* tactics(mtmp) {
         (yield* choose_stairs(sx, sy, schar((u32mod(cptr.ldI32o(mtmp, $monst_m_id), 2)))));
         cptr.stI32o(mtmp, $monst_mavenge, 1);  /* covetous monsters attack while fleeing */
         if ((yield* In_W_tower(mx, my, cptr.add(u, $you_uz))) || ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && !sx.v && !mon_has_amulet(mtmp))) {
-            if (!(yield* noteleport_level(mtmp)) && !rn2_at(__s_wizard_c, 390, __s_tactics, (3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0))
+            if (!(yield* noteleport_level(mtmp)) && !rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0))
                 void (yield* rloc(mtmp, NHM.RLOC_MSG));
         } else if (sx.v && (mx != sx.v || my != sy.v)) {
             if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, sx.v, sy.v, 1, NHM.RLOC_MSG))) {
@@ -528,13 +517,13 @@ export function* tactics(mtmp) {
         /* if you're not around, cast healing spells */
         if (dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 64)
             if (cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 8) | 0)) {
-                (yield* healmon(mtmp, rnd_at(__s_wizard_c, 406, __s_tactics, 8), 0));
+                (yield* healmon(mtmp, rnd(8), 0));
                 return 1;
             }
         // @FallThrough
         ;
         case 0n:
-        if (!(yield* noteleport_level(mtmp)) && !rn2_at(__s_wizard_c, 413, __s_tactics, !(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33))
+        if (!(yield* noteleport_level(mtmp)) && !rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33))
             (yield* mnexto(mtmp, NHM.RLOC_MSG));
         return 0;
         default:
@@ -572,7 +561,7 @@ export function* tactics(mtmp) {
                         return 0;
                 } else {
                     /* a monster is standing on it - cause some trouble */
-                    if (!rn2_at(__s_wizard_c, 453, __s_tactics, 5) && !(yield* noteleport_level(mtmp)))
+                    if (!rn2(5) && !(yield* noteleport_level(mtmp)))
                         (yield* mnexto(mtmp, NHM.RLOC_MSG));
                     return 0;
                 }
@@ -620,7 +609,7 @@ export function* aggravate() {
             continue;
         cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744071025197055n);
         cptr.stI32o(mtmp, $monst_msleeping, 0);
-        if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) && !rn2_at(__s_wizard_c, 506, __s_aggravate, 5)) {
+        if (!(cptr.ldI32o(mtmp, $monst_mcanmove) & 1) && !rn2(5)) {
             cptr.stI32o(mtmp, $monst_mfrozen, 0);
             cptr.stI32o(mtmp, $monst_mcanmove, 1);
         }
@@ -636,12 +625,12 @@ export function* clonewiz() {
 
     if ((mtmp2 = (yield* makemon(cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOWAIT))) !== null) {
         cptr.stI32o(mtmp2, $monst_msleeping, cptr.st1o(mtmp2, $monst_mtame, schar(cptr.stI32o(mtmp2, $monst_mpeaceful, 0))));
-        if (!(cptr.ldI32o(u, $you_uhave) & 1) && rn2_at(__s_wizard_c, 524, __s_clonewiz, 2)) {
+        if (!(cptr.ldI32o(u, $you_uhave) & 1) && rn2(2)) {
             void (yield* add_to_minv(mtmp2, (yield* mksobj(NHC.FAKE_AMULET_OF_YENDOR, 1, 0))));
         }
         if (!Protection_from_shape_changers()) {
             cptr.st1o(mtmp2, $monst_m_ap_type, NHC.M_AP_MONSTER);
-            cptr.stI32o(mtmp2, $monst_mappearance, cptr.ldI32o(wizapp, rn2_at(__s_wizard_c, 530, __s_clonewiz, 12), 4));
+            cptr.stI32o(mtmp2, $monst_mappearance, cptr.ldI32o(wizapp, rn2(12), 4));
         }
         (yield* newsym(cptr.ldI16o(mtmp2, $monst_mx), cptr.ldI16o(mtmp2, $monst_my)));
     }
@@ -651,7 +640,7 @@ export function* clonewiz() {
 /** C ref: wizard.c:538 — @param {CInt} difcap @returns {CInt} */
 export function pick_nasty(difcap) {
     let alt;
-    let res = cptr.ldI32o(nasties, rn2_at(__s_wizard_c, 541, __s_pick_nasty, 44), 4);
+    let res = cptr.ldI32o(nasties, rn2(44), 4);
 
     /* To do?  Possibly should filter for appropriate forms when
      * in the elemental planes or surrounded by water or lava.
@@ -660,7 +649,7 @@ export function pick_nasty(difcap) {
      * but we don't try very hard.
      */
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && !(65 <= (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym)) && (cptr.ld1so(def_monsyms, cptr.ld1so((cptr.add(mons, res, $sizeof_permonst)), $permonst_mlet), $sizeof_class_sym)) <= 90))
-        res = cptr.ldI32o(nasties, rn2_at(__s_wizard_c, 551, __s_pick_nasty, 44), 4);
+        res = cptr.ldI32o(nasties, rn2(44), 4);
 
     /* if genocided or too difficult or out of place, try a substitute
        when a suitable one exists
@@ -712,7 +701,7 @@ export function* nasty(summoner) {
        of non-null makemon() return is inadequate */
     census = monster_census(0);
 
-    if (!rn2_at(__s_wizard_c, 607, __s_nasty, 10) && In_hell(cptr.add(u, $you_uz))) {
+    if (!rn2(10) && In_hell(cptr.add(u, $you_uz))) {
         /* this might summon a demon prince or lord */
         count = (yield* msummon(null));  /* summons like WoY */
     } else {
@@ -725,7 +714,7 @@ export function* nasty(summoner) {
            otherwise they'll appear around spot summoner thinks she's at */
         cptr.stI16(bypos, cptr.ldI16(u));
         cptr.stI16o(bypos, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-        for (i = rnd_at(__s_wizard_c, 620, __s_nasty, tmp); i > 0 && count < 10; --i) {
+        for (i = rnd(tmp); i > 0 && count < 10; --i) {
             /* Of the 44 nasties[], 10 are lawful, 14 are chaotic,
              * and 20 are neutral.  [These numbers are up date for
              * 5.0.0; the ones in the next paragraph are not....]
@@ -770,7 +759,7 @@ export function* nasty(summoner) {
                            limit spellcasters to inhibit chain summoning */
                         if ((mtmp = (yield* makemon(null, cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), mmflags))) !== null) {
                             m_cls = cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet);
-                            if ((difcap > 0 && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_difficulty) >= difcap && rn2_at(__s_wizard_c, 673, __s_nasty, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON))
+                            if ((difcap > 0 && cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_difficulty) >= difcap && rn2((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 3 : 7) && attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_MAGC)) || (s_cls == NHC.S_DEMON && m_cls == NHC.S_ANGEL) || (s_cls == NHC.S_ANGEL && m_cls == NHC.S_DEMON))
                                 mtmp = (yield* unmakemon(mtmp, NHM.NO_MM_FLAGS));  /* Null */
                         }
                     }
@@ -787,7 +776,7 @@ export function* nasty(summoner) {
                                 difcap = tmp;  /* rest must be lower difficulty */
                         }
                         /* delay first use of spell or breath attack */
-                        cptr.stI32o(mtmp, $monst_mspec_used, rnd_at(__s_wizard_c, 695, __s_nasty, 4));
+                        cptr.stI32o(mtmp, $monst_mspec_used, rnd(4));
 
                         if (++count >= 10 || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp) == 0 || sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)) == castalign)
                             break;
@@ -829,7 +818,7 @@ export function* resurrect() {
                 if (elapsed >= 32767n)
                     elapsed = 32766n;
                 elapsed /= 50n;
-                if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && rn2_at(__s_wizard_c, 742, __s_resurrect, (Number(BigInt.asIntN(32, elapsed)) + 1) | 0))
+                if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 && rn2((Number(BigInt.asIntN(32, elapsed)) + 1) | 0))
                     cptr.stI32o(mtmp, $monst_msleeping, 0);
                 if (((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0) == 1)
                     cptr.stI32o(mtmp, $monst_mfrozen, 0), cptr.stI32o(mtmp, $monst_mcanmove, 1);
@@ -873,7 +862,7 @@ export function* resurrect() {
    managed to do in the Wizard. */
 /** C ref: wizard.c:785 */
 export function* intervene() {
-    let which = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? rnd_at(__s_wizard_c, 787, __s_intervene, 4) : rn2_at(__s_wizard_c, 787, __s_intervene, 6);
+    let which = (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? rnd(4) : rn2(6);
 
     /* cases 0 and 5 don't apply on the Astral level */
     switch (which) {
@@ -905,7 +894,7 @@ export function wizdeadorgone() {
     (cptr.stI32o(svc, $context_info_no_of_wizards, cptr.ldI32o(svc, $context_info_no_of_wizards) + -1)) - (-1);
     if (!(cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
-        cptr.stI32o(u, $you_udg_cnt, ((rn2_at(__s_wizard_c, 820, __s_wizdeadorgone, 250) + 50) | 0) >>> 0);
+        cptr.stI32o(u, $you_udg_cnt, ((rn2(250) + 50) | 0) >>> 0);
     }
 }
 
@@ -960,27 +949,27 @@ export function* cuss(mtmp) {
     if (Deaf())
         return;
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1)) {
-        if (!rn2_at(__s_wizard_c, 851, __s_cuss, 5)) {
+        if (!rn2(5)) {
             (yield* pline(__s_s_laughs_fiendishly, (yield* Monnam(mtmp))));
-        } else if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !rn2_at(__s_wizard_c, 853, __s_cuss, 28)) {
+        } else if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !rn2(28)) {
             ;
-            (yield* verbalize(__s_relinquish_the_amulet_s, cptr.ldPtro(random_insult, rn2_at(__s_wizard_c, 856, __s_cuss, 28), 8)));
-        } else if (cptr.ldI32o(u, $you_uhp) < 5 && !rn2_at(__s_wizard_c, 857, __s_cuss, 2)) {
+            (yield* verbalize(__s_relinquish_the_amulet_s, cptr.ldPtro(random_insult, rn2(28), 8)));
+        } else if (cptr.ldI32o(u, $you_uhp) < 5 && !rn2(2)) {
             ;
-            (yield* verbalize(rn2_at(__s_wizard_c, 859, __s_cuss, 2) ? __s_even_now_thy_life_force_ebbs_s : __s_savor_thy_breath_s_it_be_thy_last, cptr.ldPtro(random_insult, rn2_at(__s_wizard_c, 861, __s_cuss, 28), 8)));
-        } else if (cptr.ldI32o(mtmp, $monst_mhp) < 5 && !rn2_at(__s_wizard_c, 862, __s_cuss, 2)) {
+            (yield* verbalize(rn2(2) ? __s_even_now_thy_life_force_ebbs_s : __s_savor_thy_breath_s_it_be_thy_last, cptr.ldPtro(random_insult, rn2(28), 8)));
+        } else if (cptr.ldI32o(mtmp, $monst_mhp) < 5 && !rn2(2)) {
             ;
-            (yield* verbalize(rn2_at(__s_wizard_c, 864, __s_cuss, 2) ? __s_i_shall_return : __s_i_ll_be_back));
+            (yield* verbalize(rn2(2) ? __s_i_shall_return : __s_i_ll_be_back));
         } else {
             ;
-            (yield* verbalize(__s_s_s, cptr.ldPtro(random_malediction, rn2_at(__s_wizard_c, 868, __s_cuss, 11), 8), cptr.ldPtro(random_insult, rn2_at(__s_wizard_c, 869, __s_cuss, 28), 8)));
+            (yield* verbalize(__s_s_s, cptr.ldPtro(random_malediction, rn2(11), 8), cptr.ldPtro(random_insult, rn2(28), 8)));
         }
     } else if (is_lminion(mtmp) && !((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_renegade))) {
         (yield* com_pager(__s_angel_cuss));  /* TODO: the Hallucination msg */
         /*com_pager(rn2(QTN_ANGELIC - 1 + (Hallucination ? 1 : 0))
           + QT_ANGELIC);*/
     } else {
-        if (!rn2_at(__s_wizard_c, 877, __s_cuss, ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5))
+        if (!rn2(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 4096n) != 0n) ? 100 : 5))
             (yield* pline(__s_s_casts_aspersions_on_your_ancestry, (yield* Monnam(mtmp))));
         else
             (yield* com_pager(__s_demon_cuss));

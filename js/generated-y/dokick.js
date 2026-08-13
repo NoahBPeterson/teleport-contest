@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_DRAWBRIDGE, IS_TREE, Is_box, Is_container, Is_mbag, canspotmon, has_mgivenname, has_oname, is_floater, is_hole, is_pit, is_plural, is_watch, ismnum, touch_petrifies } from './nhmacrofn.js';
-import { rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Blind, Deaf, Fumbling, Half_physical_damage, Hallucination, Levitation, Luck, Passes_walls, Stone_resistance, Upolyd, Wounded_legs, display_nhwindow } from './nhprop.js';
 import { acurr, acurrstr, adjalign, change_luck, exercise } from './attrib.js';
 import { WIN_MESSAGE, c_color_names, c_common_strings, flags, gb, gg, gi, gk, gm, gn, gu, gv, gy, svc, svd, svk, svl, svm, svp, u, uarm, uarmf, uball, uchain, ynchars } from './decl.js';
@@ -25,7 +24,7 @@ import { angry_guards, get_iter_mons, get_iter_mons_xy, killed, maybe_mnexto, ma
 import { attack_checks, check_caitiff, damageum, find_roll_to_hit, missum, mon_maybe_unparalyze, passive } from './uhitm.js';
 import { abuse_dog } from './dog.js';
 import { closed_door, mon_yells, monflee, set_apparxy } from './monmove.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
 import { enexto, goodpos, noteleport_level, rloco } from './teleport.js';
 import { Monnam, a_monnam, christen_orc, free_oname, hcolor, hliquid, mon_nam } from './do_name.js';
 import { m_in_out_region } from './region.js';
@@ -140,7 +139,6 @@ const __s_pct_s_dot = cptr.lit("%s.");
 const __s_dokick_c = cptr.lit("dokick.c");
 const __s_kickdmg = cptr.lit("kickdmg");
 const __s_s_reels_from_the_blow = cptr.lit("%s reels from the blow.");
-const __s_kick_monster = cptr.lit("kick_monster");
 const __s_floating_in_the_air_you_miss_wildly = cptr.lit("Floating in the air, you miss wildly!");
 const __s_is_s_here = cptr.lit("is %s here.");
 const __s_something_hidden = cptr.lit("something hidden");
@@ -160,7 +158,6 @@ const __s_easily = cptr.lit("easily");
 const __s_nimbly = cptr.lit("nimbly");
 const __s_s_harmlessly_s_s = cptr.lit("%s harmlessly %s %s.");
 const __s_hit = cptr.lit("hit");
-const __s_ghitm = cptr.lit("ghitm");
 const __s_s_scatches_the_gold = cptr.lit("%s %scatches the gold.");
 const __s_awakens_and = cptr.lit("awakens and ");
 const __s_amount_scovers_s_recent_losses = cptr.lit("amount %scovers %s recent losses.");
@@ -179,7 +176,6 @@ const __s_thanks_for_the_tip_s = cptr.lit("Thanks for the tip, %s.");
 const __s_lady = cptr.lit("lady");
 const __s_buddy = cptr.lit("buddy");
 const __s_shatter = cptr.lit("shatter");
-const __s_container_impact_dmg = cptr.lit("container_impact_dmg");
 const __s_cracking = cptr.lit("cracking");
 const __s_a_muffled_s = cptr.lit("a muffled %s.");
 const __s_caused_ld_s_worth_of_damage = cptr.lit("caused %ld %s worth of damage!");
@@ -188,7 +184,6 @@ const __s_kick_s_that_s_in_a_s = cptr.lit("kick %s that's in a %s!");
 const __s_tizzy = cptr.lit("tizzy");
 const __s_web = cptr.lit("web");
 const __s_pit = cptr.lit("pit");
-const __s_really_kick_object = cptr.lit("really_kick_object");
 const __s_clumsy_kick_missed = cptr.lit("clumsy kick missed.");
 const __s_kick_s_with_your_bare_s = cptr.lit("kick %s with your bare %s.");
 const __s_kicking_s_barefoot = cptr.lit("kicking %s barefoot");
@@ -231,13 +226,11 @@ const __s_kicking = cptr.lit("kicking ");
 const __s_halt_thief_you_re_under_arrest = cptr.lit("Halt, thief!  You're under arrest!");
 const __s_halt_vandal_you_re_under_arrest = cptr.lit("Halt, vandal!  You're under arrest!");
 const __s_hey_stop_damaging_that_door = cptr.lit("Hey, stop damaging that door!");
-const __s_kick_dumb = cptr.lit("kick_dumb");
 const __s_kick_at_empty_space = cptr.lit("kick at empty space.");
 const __s_dumb_move_you_strain_a_muscle = cptr.lit("Dumb move!  You strain a muscle.");
 const __s_ouch_that_hurts = cptr.lit("Ouch!  That hurts!");
 const __s_drawbridge_is_unaffected = cptr.lit("drawbridge is unaffected.");
 const __s_kick_ouch = cptr.lit("kick_ouch");
-const __s_kick_door = cptr.lit("kick_door");
 const __s_kick_the_door = cptr.lit("kick the door.");
 const __s_door = cptr.lit("door");
 const __s_as_you_kick_the_door_it_shatters_to = cptr.lit("As you kick the door, it shatters to pieces!");
@@ -246,7 +239,6 @@ const __s_break = cptr.lit("break");
 const __s_pct_s_bang2 = cptr.lit("%s!!");
 const __s_thwack = cptr.lit("Thwack");
 const __s_whammm = cptr.lit("Whammm");
-const __s_kick_nondoor = cptr.lit("kick_nondoor");
 const __s_crash_s_a_secret_door = cptr.lit("Crash!  %s a secret door!");
 const __s_your_kick_uncovers = cptr.lit("Your kick uncovers");
 const __s_you_kick_open = cptr.lit("You kick open");
@@ -279,7 +271,6 @@ const __s_kick_your_steed = cptr.lit("Kick your steed?");
 const __s_kicking__2 = cptr.lit("kicking");
 const __s_load_is_too_heavy_to_balance_yourself = cptr.lit("load is too heavy to balance yourself for a kick.");
 const __s_legs_cannot_kick_effectively = cptr.lit("legs cannot kick effectively.");
-const __s_dokick = cptr.lit("dokick");
 const __s_slow_motion_kick_doesn_t_hit_anything = cptr.lit("slow motion kick doesn't hit anything.");
 const __s_there_s_not_enough_room_to_kick_down = cptr.lit("There's not enough room to kick down here.");
 const __s_move_your_s = cptr.lit("move your %s!");
@@ -291,7 +282,6 @@ const __s_have_nothing_to_brace_yourself_against = cptr.lit("have nothing to bra
 const __s_splash_some_s_around = cptr.lit("splash some %s around.");
 const __s_water = cptr.lit("water");
 const __s_lava = cptr.lit("lava");
-const __s_impact_drop = cptr.lit("impact_drop");
 const __s_object_falls = cptr.lit("object falls");
 const __s_objects_fall = cptr.lit("objects fall");
 const __s_from_the_impact_sother_s = cptr.lit("From the impact, %sother %s.");
@@ -308,11 +298,8 @@ const __s_s_is_infuriated = cptr.lit("%s is infuriated!");
 const __s_s_you_are_a_thief = cptr.lit("\"%s, you are a thief!\"");
 const __s_a_scream_thief = cptr.lit("a scream, \"Thief!\"");
 const __s_owe_s_ld_s_for_goods_lost = cptr.lit("owe %s %ld %s for goods lost.");
-const __s_ship_object = cptr.lit("ship_object");
 const __s_crash = cptr.lit("crash");
 const __s_splat = cptr.lit("splat");
-const __s_obj_delivery = cptr.lit("obj_delivery");
-const __s_deliver_obj_to_mon = cptr.lit("deliver_obj_to_mon");
 const __s_the_fence = cptr.lit(" the Fence");
 const __s_s_s_object_s = cptr.lit(" %s %s object%s");
 const __s_another = cptr.lit("another");
@@ -375,14 +362,14 @@ function* kickdmg(mon, clumsy) {
     if (cptr.ld1so(mon, $monst_mtame)) {
         (yield* abuse_dog(mon));
         if (cptr.ld1so(mon, $monst_mtame))
-            (yield* monflee(mon, (dmg ? rnd_at(__s_dokick_c, 74, __s_kickdmg, dmg) : 1), 0, 0));
+            (yield* monflee(mon, (dmg ? rnd(dmg) : 1), 0, 0));
         else
             cptr.stI32o(mon, $monst_mflee, 0);
     }
 
     if (dmg > 0) {
         /* convert potential damage to actual damage */
-        dmg = rnd_at(__s_dokick_c, 81, __s_kickdmg, dmg);
+        dmg = rnd(dmg);
         if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS))) {
             if (dmg > 1)
                 kick_skill = NHC.P_BARE_HANDED_COMBAT;
@@ -397,7 +384,7 @@ function* kickdmg(mon, clumsy) {
     dmg = (dmg + cptr.ld1so(u, $you_udaminc)) | 0;  /* add ring(s) of increase damage */
     if (dmg > 0)
         cptr.stI32o(mon, $monst_mhp, (cptr.ldI32o(mon, $monst_mhp) - dmg) | 0);
-    if (!(cptr.ldI32o((mon), $monst_mhp) < 1) && (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !(cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) && !rn2_at(__s_dokick_c, 96, __s_kickdmg, 3) && (cptr.ldI32o(mon, $monst_mcanmove) & 1) | 0 && !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) && !(cptr.ldI32o(mon, $monst_mtrapped) & 1)) {
+    if (!(cptr.ldI32o((mon), $monst_mhp) < 1) && (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !(cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) && !rn2(3) && (cptr.ldI32o(mon, $monst_mcanmove) & 1) | 0 && !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) && !(cptr.ldI32o(mon, $monst_mtrapped) & 1)) {
         /* see if the monster has a place to move into */
         mdx = (cptr.ldI16o(mon, $monst_mx) + cptr.ldI32o(u, $you_dx)) | 0;
         mdy = (cptr.ldI16o(mon, $monst_my) + cptr.ldI32o(u, $you_dy)) | 0;
@@ -454,7 +441,7 @@ function* kick_monster(mon, x, y) {
         /* anger target even if wild miss will occur */
         (yield* setmangry(mon, 1));
 
-        if (Levitation() && !rn2_at(__s_dokick_c, 154, __s_kick_monster, 3) && (cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) && !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 1n) != 0n)) {
+        if (Levitation() && !rn2(3) && (cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) && !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 1n) != 0n)) {
             (yield* pline(__s_floating_in_the_air_you_miss_wildly));
             (yield* exercise(NHC.A_DEX, 0));
             void (yield* passive(mon, uarmf.v, 0, 1, NHM.AT_KICK, 0));
@@ -501,7 +488,7 @@ function* kick_monster(mon, x, y) {
                 if (cptr.ld1u(uattk) != NHM.AT_KICK)
                     continue;
 
-                kickdieroll = rnd_at(__s_dokick_c, 202, __s_kick_monster, 20);
+                kickdieroll = rnd(20);
                 specialdmg = (yield* special_dmgval(cptr.add(gy, $instance_globals_y_youmonst), mon, 32n, null));
                 if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)) && !specialdmg) {
                     /* doesn't matter whether it would have hit or missed,
@@ -534,7 +521,7 @@ function* kick_monster(mon, x, y) {
          *            [90%-100%) |                 1/2 |                   1
          */
         if (i < (((Math.imul(j, 3)) / 10) | 0)) {
-            if (!rn2_at(__s_dokick_c, 237, __s_kick_monster, (i < ((j / 10) | 0)) ? 2 : ((i < ((j / 5) | 0)) ? 3 : 4))) {
+            if (!rn2((i < ((j / 10) | 0)) ? 2 : ((i < ((j / 5) | 0)) ? 3 : 4))) {
                 if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)))
                     break __lbl_doit;
                 (yield* Your(__s_clumsy_kick_does_no_damage));
@@ -543,18 +530,18 @@ function* kick_monster(mon, x, y) {
             }
             if (i < ((j / 10) | 0))
                 clumsy = 1;
-            else if (!rn2_at(__s_dokick_c, 246, __s_kick_monster, (i < ((j / 5) | 0)) ? 2 : 3))
+            else if (!rn2((i < ((j / 5) | 0)) ? 2 : 3))
                 clumsy = 1;
         }
 
         if (Fumbling())
             clumsy = 1;
-        else if (uarm.v && (cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), $sizeof_objclass, $objclass_oc_big) & 1) | 0 && (acurr(NHC.A_DEX)) < rnd_at(__s_dokick_c, 253, __s_kick_monster, 25))
+        else if (uarm.v && (cptr.ldI32o2(objects, cptr.ldI16o(uarm.v, $obj_otyp), $sizeof_objclass, $objclass_oc_big) & 1) | 0 && (acurr(NHC.A_DEX)) < rnd(25))
             clumsy = 1;
     }
     (yield* You(__s_kick_s, (yield* mon_nam(mon))));
-    if (!rn2_at(__s_dokick_c, 257, __s_kick_monster, clumsy ? 3 : 4) && (clumsy || !(cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) && (cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 && !(cptr.ldI32o(mon, $monst_mtrapped) & 1) && !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2097152n) != 0n) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) != NHC.S_EEL && ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mon, $monst_mcanmove) & 1) | 0 && !(cptr.ldI32o(mon, $monst_mstun) & 1) && !(cptr.ldI32o(mon, $monst_mconf) & 1) && !(cptr.ldI32o(mon, $monst_msleeping) & 1) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) >= 12) {
-        if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n) && !rn2_at(__s_dokick_c, 262, __s_kick_monster, (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 5 : 3)) {
+    if (!rn2(clumsy ? 3 : 4) && (clumsy || !(cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) && (cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 && !(cptr.ldI32o(mon, $monst_mtrapped) & 1) && !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2097152n) != 0n) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) != NHC.S_EEL && ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mon, $monst_mcanmove) & 1) | 0 && !(cptr.ldI32o(mon, $monst_mstun) & 1) && !(cptr.ldI32o(mon, $monst_mconf) & 1) && !(cptr.ldI32o(mon, $monst_msleeping) & 1) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) >= 12) {
+        if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n) && !rn2((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 5 : 3)) {
             (yield* pline(__s_s_blocks_your_skick, (yield* Monnam(mon)), clumsy ? __s_clumsy : __s_empty));
             void (yield* passive(mon, uarmf.v, 0, 1, NHM.AT_KICK, 0));
             return;
@@ -594,7 +581,7 @@ export function* ghitm(mtmp, gold) {
 
         cptr.stI32o(mtmp, $monst_msleeping, 0);
         (yield* finish_meating(mtmp));
-        if (!(cptr.ldI32o(mtmp, $monst_isgd) & 1) && !rn2_at(__s_dokick_c, 317, __s_ghitm, 4))
+        if (!(cptr.ldI32o(mtmp, $monst_isgd) & 1) && !rn2(4))
             (yield* setmangry(mtmp, 1));
         /* greedy monsters catch gold */
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0))
@@ -648,9 +635,9 @@ export function* ghitm(mtmp, gold) {
             else if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_CAPTAIN, $sizeof_permonst)))
                 goldreqd = 750n;
 
-            if (goldreqd && rn2_at(__s_dokick_c, 379, __s_ghitm, 3)) {
+            if (goldreqd && rn2(3)) {
                 umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
-                goldreqd += (BigInt.asIntN(64, umoney + BigInt(Math.imul(cptr.ldI32o(u, $you_ulevel), rn2_at(__s_dokick_c, 381, __s_ghitm, 5))))) / BigInt((acurr(NHC.A_CHA)));
+                goldreqd += (BigInt.asIntN(64, umoney + BigInt(Math.imul(cptr.ldI32o(u, $you_ulevel), rn2(5))))) / BigInt((acurr(NHC.A_CHA)));
                 if (value > goldreqd)
                     cptr.stI32o(mtmp, $monst_mpeaceful, 1);
             }
@@ -705,7 +692,7 @@ export function* container_impact_dmg(obj, x, y) {
         otmp2 = cptr.ldPtr(otmp);
         if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS && cptr.ld1so(otmp, $obj_oclass) != NHC.GEM_CLASS && !obj_resists(otmp, 33, 100)) {
             result = __s_shatter;
-        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && !rn2_at(__s_dokick_c, 440, __s_container_impact_dmg, 3)) {
+        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG && !rn2(3)) {
             result = __s_cracking;
         }
         if (result) {
@@ -802,7 +789,7 @@ function* really_kick_object(x, y) {
         }
     }
 
-    if (Fumbling() && !rn2_at(__s_dokick_c, 537, __s_really_kick_object, 3)) {
+    if (Fumbling() && !rn2(3)) {
         (yield* Your(__s_clumsy_kick_missed));
         return 1;
     }
@@ -839,19 +826,19 @@ function* really_kick_object(x, y) {
     }
 
     if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)))
-        range = (range + rnd_at(__s_dokick_c, 579, __s_really_kick_object, 3)) | 0;
+        range = (range + rnd(3)) | 0;
 
     if (is_pool(x, y)) {
         /* you're in the water too; significantly reduce range */
         range = (((range / 3) | 0) + 1) | 0;  /* {1,2}=>1, {3,4,5}=>2, {6,7,8}=>3 */
     } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
         /* you're in air, since is_pool did not match */
-        range = (range + rnd_at(__s_dokick_c, 586, __s_really_kick_object, 3)) | 0;
+        range = (range + rnd(3)) | 0;
     } else {
         if (is_ice(x, y))
-            range = (range + rnd_at(__s_dokick_c, 589, __s_really_kick_object, 3)) | 0, slide = 1;
+            range = (range + rnd(3)) | 0, slide = 1;
         if ((cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_greased) & 1))
-            range = (range + rnd_at(__s_dokick_c, 591, __s_really_kick_object, 3)) | 0, slide = 1;
+            range = (range + rnd(3)) | 0, slide = 1;
     }
 
     /* Mjollnir is magically too heavy to kick */
@@ -872,12 +859,12 @@ function* really_kick_object(x, y) {
     (yield* Norep(__s_you_kick_s, !isgold ? (yield* singular(cptr.ldPtro(gk, $instance_globals_k_kickedobj), doname)) : (yield* doname(cptr.ldPtro(gk, $instance_globals_k_kickedobj)))));
 
     if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(x, y)) {
-        if ((!(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && rn2_at(__s_dokick_c, 616, __s_really_kick_object, 20) > (acurr(NHC.A_DEX))) || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+        if ((!(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && rn2(20) > (acurr(NHC.A_DEX))) || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || closed_door(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             if (Blind())
                 (yield* pline(__s_it_doesn_t_come_loose));
             else
                 (yield* pline(__s_s_sn_t_come_loose, (yield* The((yield* distant_name(cptr.ldPtro(gk, $instance_globals_k_kickedobj), xname)))), (yield* otense(cptr.ldPtro(gk, $instance_globals_k_kickedobj), __s_do))));
-            return (!rn2_at(__s_dokick_c, 624, __s_really_kick_object, 3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
+            return (!rn2(3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
         }
         if (Blind())
             (yield* pline(__s_it_comes_loose));
@@ -908,7 +895,7 @@ function* really_kick_object(x, y) {
             (yield* pline(__s_thud));
         (yield* container_impact_dmg(cptr.ldPtro(gk, $instance_globals_k_kickedobj), x, y));
         if ((cptr.ldI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_olocked) & 1)) {
-            if (!rn2_at(__s_dokick_c, 657, __s_really_kick_object, 5) || ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !rn2_at(__s_dokick_c, 657, __s_really_kick_object, 2))) {
+            if (!rn2(5) || ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !rn2(2))) {
                 (yield* You(__s_break_open_the_lock));
                 (yield* breakchestlock(cptr.ldPtro(gk, $instance_globals_k_kickedobj), 0));
                 if (otrp)
@@ -916,7 +903,7 @@ function* really_kick_object(x, y) {
                 return 1;
             }
         } else {
-            if (!rn2_at(__s_dokick_c, 665, __s_really_kick_object, 3) || ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !rn2_at(__s_dokick_c, 665, __s_really_kick_object, 2))) {
+            if (!rn2(3) || ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) && !rn2(2))) {
                 (yield* pline_The(__s_lid_slams_open_then_falls_shut));
                 cptr.stI32o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_lknown, 1);
                 if (otrp)
@@ -940,25 +927,25 @@ function* really_kick_object(x, y) {
     if (range < 2) {
         if (!Is_box(cptr.ldPtro(gk, $instance_globals_k_kickedobj)))
             (yield* pline(__s_thump));
-        return (!rn2_at(__s_dokick_c, 689, __s_really_kick_object, 3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
+        return (!rn2(3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
     }
 
     if (cptr.ldI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan) > 1n) {
         if (!isgold) {
             cptr.stPtro(gk, $instance_globals_k_kickedobj, (yield* splitobj(cptr.ldPtro(gk, $instance_globals_k_kickedobj), 1n)));
         } else {
-            if (rn2_at(__s_dokick_c, 696, __s_really_kick_object, 20)) {
+            if (rn2(20)) {
 
                 if (!Deaf())
                     (yield* pline(__s_pct_s, __s_thwwpingg));
-                (yield* You(__s_pct_s_bang, cptr.ldPtro(__static_really_kick_object_flyingcoinmsg, rn2_at(__s_dokick_c, 704, __s_really_kick_object, 3), 8)));
-                void (yield* scatter(x, y, rnd_at(__s_dokick_c, 705, __s_really_kick_object, 3), 7, cptr.ldPtro(gk, $instance_globals_k_kickedobj)));
+                (yield* You(__s_pct_s_bang, cptr.ldPtro(__static_really_kick_object_flyingcoinmsg, rn2(3), 8)));
+                void (yield* scatter(x, y, rnd(3), 7, cptr.ldPtro(gk, $instance_globals_k_kickedobj)));
                 (yield* newsym(x, y));
                 return 1;
             }
             if (cptr.ldI64o(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_quan) > 300n) {
                 (yield* pline(__s_thump));
-                return (!rn2_at(__s_dokick_c, 712, __s_really_kick_object, 3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
+                return (!rn2(3) || (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 1 : 0);
             }
         }
     }
@@ -1085,16 +1072,16 @@ function* watchman_door_damage(mtmp, x, y) {
 /** C ref: dokick.c:864 — @param {CInt} x @param {CInt} y */
 function* kick_dumb(x, y) {
     (yield* exercise(NHC.A_DEX, 0));
-    if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) || (acurr(NHC.A_DEX)) >= 16 || rn2_at(__s_dokick_c, 867, __s_kick_dumb, 3)) {
+    if ((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) || (acurr(NHC.A_DEX)) >= 16 || rn2(3)) {
         (yield* You(__s_kick_at_empty_space));
         if (Blind())
             (yield* feel_location(x, y));
     } else {
         (yield* pline(__s_dumb_move_you_strain_a_muscle));
         (yield* exercise(NHC.A_STR, 0));
-        (yield* set_wounded_legs(262144n, (5 + rnd_at(__s_dokick_c, 874, __s_kick_dumb, 5)) | 0));
+        (yield* set_wounded_legs(262144n, (5 + rnd(5)) | 0));
     }
-    if (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation()) && rn2_at(__s_dokick_c, 876, __s_kick_dumb, 2))
+    if (((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation()) && rn2(2))
         (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1));
 }
 
@@ -1119,12 +1106,12 @@ function* kick_ouch(x, y, kickobjnam) {
         }
         (yield* wake_nearto(x.v, y.v, 25));
     }
-    if (!rn2_at(__s_dokick_c, 900, __s_kick_ouch, 3))
-        (yield* set_wounded_legs(262144n, (5 + rnd_at(__s_dokick_c, 901, __s_kick_ouch, 5)) | 0));
+    if (!rn2(3))
+        (yield* set_wounded_legs(262144n, (5 + rnd(5)) | 0));
     dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_dokick_c, 902, __s_kick_ouch), rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5)) : rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5));
     (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), kickstr(cptr.decay(buf), kickobjnam), NHM.KILLED_BY));
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || Levitation())
-        (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), ((rn2_at(__s_dokick_c, 905, __s_kick_ouch, 2) + 4) | 0), 1));  /* assume it's heavy */
+        (yield* hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), ((rn2(2) + 4) | 0), 1));  /* assume it's heavy */
 }
 
 /* kick a door */
@@ -1146,7 +1133,7 @@ function* kick_door(x, y, avrg_attrib) {
     (yield* exercise(NHC.A_DEX, 1));
     doorbuster = schar((Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 8192n) != 0n) ? 1 : 0));
     /* door is known to be CLOSED or LOCKED */
-    if (doorbuster || (rnl_at(__s_dokick_c, 930, __s_kick_door, 35) < ((avrg_attrib + (!(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 0 : (acurr(NHC.A_DEX)))) | 0))) {
+    if (doorbuster || (rnl(35) < ((avrg_attrib + (!(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (cptr.eq((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), cptr.add(mons, NHC.PM_SASQUATCH, $sizeof_permonst))) || (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)) ? 0 : (acurr(NHC.A_DEX)))) | 0))) {
         let shopdoor = schar((cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))) ? 1 : 0));
 
         /* break the door */
@@ -1156,7 +1143,7 @@ function* kick_door(x, y, avrg_attrib) {
             (yield* exercise(NHC.A_STR, 0));
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, NHM.D_NODOOR);
             (yield* b_trapped(__s_door, NHC.FOOT));
-        } else if ((acurr(NHC.A_STR)) > 18 && !rn2_at(__s_dokick_c, 940, __s_kick_door, 5) && !shopdoor) {
+        } else if ((acurr(NHC.A_STR)) > 18 && !rn2(5) && !shopdoor) {
             ;
             (yield* pline(__s_as_you_kick_the_door_it_shatters_to));
             (yield* exercise(NHC.A_STR, 1));
@@ -1182,7 +1169,7 @@ function* kick_door(x, y, avrg_attrib) {
         /* note: this used to be unconditional "WHAMMM!!!" but that has a
            fairly strong connotation of noise that a deaf hero shouldn't
            hear; we've kept the extra 'm's and one of the extra '!'s */
-        (yield* pline(__s_pct_s_bang2, (Deaf() || !rn2_at(__s_dokick_c, 966, __s_kick_door, 3)) ? __s_thwack : __s_whammm));
+        (yield* pline(__s_pct_s_bang2, (Deaf() || !rn2(3)) ? __s_thwack : __s_whammm));
         if (in_town(x, y))
             void (yield* get_iter_mons_xy(watchman_door_damage, x, y));
     }
@@ -1192,7 +1179,7 @@ function* kick_door(x, y, avrg_attrib) {
 /** C ref: dokick.c:974 — @param {CInt} x @param {CInt} y @param {CInt} avrg_attrib @returns {CInt} */
 function* kick_nondoor(x, y, avrg_attrib) {
     if (cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ) == NHC.SDOOR) {
-        if (!Levitation() && rn2_at(__s_dokick_c, 977, __s_kick_nondoor, 30) < avrg_attrib) {
+        if (!Levitation() && rn2(30) < avrg_attrib) {
             cvt_sdoor_to_door(cptr.ldPtro(gm, $instance_globals_m_maploc));  /* ->typ = DOOR */
             ;
             (yield* pline(__s_crash_s_a_secret_door, ((((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & 24) == NHM.D_LOCKED) ? __s_your_kick_uncovers : __s_you_kick_open));
@@ -1212,7 +1199,7 @@ function* kick_nondoor(x, y, avrg_attrib) {
         }
     }
     if (cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ) == NHC.SCORR) {
-        if (!Levitation() && rn2_at(__s_dokick_c, 1003, __s_kick_nondoor, 30) < avrg_attrib) {
+        if (!Levitation() && rn2(30) < avrg_attrib) {
             ;
             (yield* pline(__s_crash_you_kick_open_a_secret_passage));
             (yield* exercise(NHC.A_DEX, 1));
@@ -1231,10 +1218,10 @@ function* kick_nondoor(x, y, avrg_attrib) {
             (yield* kick_dumb(x, y));
             return NHM.ECMD_TIME;
         }
-        if ((Luck() < 0 || (cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) && !rn2_at(__s_dokick_c, 1022, __s_kick_nondoor, 3)) {
+        if ((Luck() < 0 || (cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) && !rn2(3)) {
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, 0);  /* don't leave loose ends.. */
             cptr.st1o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ, NHC.ROOM);
-            void (yield* mkgold(BigInt(rnd_at(__s_dokick_c, 1025, __s_kick_nondoor, 200)), x, y));
+            void (yield* mkgold(BigInt(rnd(200)), x, y));
             ;
             if (Blind())
                 (yield* pline(__s_crash_you_destroy_it));
@@ -1244,8 +1231,8 @@ function* kick_nondoor(x, y, avrg_attrib) {
             }
             (yield* exercise(NHC.A_DEX, 1));
             return NHM.ECMD_TIME;
-        } else if (Luck() > 0 && !rn2_at(__s_dokick_c, 1035, __s_kick_nondoor, 3) && !(cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31)) {
-            void (yield* mkgold(BigInt(((rn2_at(__s_dokick_c, 1036, __s_kick_nondoor, 201) + 300) | 0)), x, y));
+        } else if (Luck() > 0 && !rn2(3) && !(cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31)) {
+            void (yield* mkgold(BigInt(((rn2(201) + 300) | 0)), x, y));
             i = (Luck() + 1) | 0;
             if (i > 6)
                 i = 6;
@@ -1260,7 +1247,7 @@ function* kick_nondoor(x, y, avrg_attrib) {
             /* prevent endless milking */
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, NHM.T_LOOTED);
             return NHM.ECMD_TIME;
-        } else if (!rn2_at(__s_dokick_c, 1053, __s_kick_nondoor, 4)) {
+        } else if (!rn2(4)) {
             if (dunlev(cptr.add(u, $you_uz)) < dunlevs_in_dungeon(cptr.add(u, $you_uz))) {
                 (yield* fall_through(0, 0));
                 return NHM.ECMD_TIME;
@@ -1279,7 +1266,7 @@ function* kick_nondoor(x, y, avrg_attrib) {
         }
         (yield* You(__s_kick_s, (Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : __s_the_altar)));
         (yield* altar_wrath(x, y));
-        if (!rn2_at(__s_dokick_c, 1072, __s_kick_nondoor, 3)) {
+        if (!rn2(3)) {
             (yield* kick_ouch(x, y, __s_empty));
             return NHM.ECMD_TIME;
         }
@@ -1292,12 +1279,12 @@ function* kick_nondoor(x, y, avrg_attrib) {
             return NHM.ECMD_TIME;
         }
         (yield* You(__s_kick_s, (Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : __s_the_fountain)));
-        if (!rn2_at(__s_dokick_c, 1085, __s_kick_nondoor, 3)) {
+        if (!rn2(3)) {
             (yield* kick_ouch(x, y, __s_empty));
             return NHM.ECMD_TIME;
         }
         /* make metal boots rust */
-        if (uarmf.v && rn2_at(__s_dokick_c, 1090, __s_kick_nondoor, 3))
+        if (uarmf.v && rn2(3))
             if ((yield* water_damage(uarmf.v, __s_metal_boots, 1)) == NHM.ER_NOTHING) {
                 (yield* Your(__s_boots_get_wet));
                 /* could cause short-lived fumbling here */
@@ -1308,10 +1295,10 @@ function* kick_nondoor(x, y, avrg_attrib) {
     if (((cptr.ld1so(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_typ)) == NHC.GRAVE)) {
         if (Levitation()) {
             (yield* kick_dumb(x, y));
-        } else if (rn2_at(__s_dokick_c, 1101, __s_kick_nondoor, 4)) {
+        } else if (rn2(4)) {
             /* minor injury */
             (yield* kick_ouch(x, y, __s_empty));
-        } else if (!(cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_horizontal) & 1) && !rn2_at(__s_dokick_c, 1104, __s_kick_nondoor, 2)) {
+        } else if (!(cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_horizontal) & 1) && !rn2(2)) {
             /* disturb the grave: summon a ghoul (once only), same as
                when engraving */
             (yield* disturb_grave(x, y));
@@ -1345,14 +1332,14 @@ function* kick_nondoor(x, y, avrg_attrib) {
         let treefruit;
 
         /* nothing, fruit or trouble? 75:23.5:1.5% */
-        if (rn2_at(__s_dokick_c, 1139, __s_kick_nondoor, 3)) {
-            if (!rn2_at(__s_dokick_c, 1140, __s_kick_nondoor, 6) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
+        if (rn2(3)) {
+            if (!rn2(6) && !(cptr.ld1uo2(svm, NHC.PM_KILLER_BEE, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3))
                 (yield* You_hear(__s_a_low_buzzing));  /* a warning */
             (yield* kick_ouch(x, y, __s_empty));
             return NHM.ECMD_TIME;
         }
-        if (rn2_at(__s_dokick_c, 1145, __s_kick_nondoor, 15) && !(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.TREE_LOOTED) && (treefruit = (yield* rnd_treefruit_at(x, y)))) {
-            let nfruit = BigInt.asIntN(64, 8n - BigInt(rnl_at(__s_dokick_c, 1147, __s_kick_nondoor, 7)));
+        if (rn2(15) && !(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.TREE_LOOTED) && (treefruit = (yield* rnd_treefruit_at(x, y)))) {
+            let nfruit = BigInt.asIntN(64, 8n - BigInt(rnl(7)));
             let nfall;
             let frtype = cptr.ldI16o(treefruit, $obj_otyp);
 
@@ -1377,7 +1364,7 @@ function* kick_nondoor(x, y, avrg_attrib) {
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) | NHM.TREE_LOOTED);
             return NHM.ECMD_TIME;
         } else if (!(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.TREE_SWARM)) {
-            let cnt = (rnl_at(__s_dokick_c, 1172, __s_kick_nondoor, 4) + 2) | 0;
+            let cnt = (rnl(4) + 2) | 0;
             let made = 0;
             let mm = cptr.alloc(4);
 
@@ -1404,7 +1391,7 @@ function* kick_nondoor(x, y, avrg_attrib) {
             (yield* kick_dumb(x, y));
             return NHM.ECMD_TIME;
         }
-        if (rn2_at(__s_dokick_c, 1201, __s_kick_nondoor, 5)) {
+        if (rn2(5)) {
             ;
             if (!Deaf())
                 (yield* pline(__s_klunk_the_pipes_vibrate_noisily));
@@ -1412,7 +1399,7 @@ function* kick_nondoor(x, y, avrg_attrib) {
                 (yield* pline(__s_klunk));
             (yield* exercise(NHC.A_DEX, 1));
             return NHM.ECMD_TIME;
-        } else if (!(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.S_LPUDDING) && !rn2_at(__s_dokick_c, 1209, __s_kick_nondoor, 3) && !(cptr.ld1uo2(svm, NHC.PM_BLACK_PUDDING, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
+        } else if (!(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.S_LPUDDING) && !rn2(3) && !(cptr.ld1uo2(svm, NHC.PM_BLACK_PUDDING, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
             ;
             if (Blind()) {
                 if (!Deaf())
@@ -1425,15 +1412,15 @@ function* kick_nondoor(x, y, avrg_attrib) {
             (yield* newsym(x, y));
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) | NHM.S_LPUDDING);
             return NHM.ECMD_TIME;
-        } else if (!(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.S_LDWASHER) && !rn2_at(__s_dokick_c, 1224, __s_kick_nondoor, 3) && !(cptr.ld1uo2(svm, NHC.PM_AMOROUS_DEMON, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
+        } else if (!(((cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) & 31) | 0) & NHM.S_LDWASHER) && !rn2(3) && !(cptr.ld1uo2(svm, NHC.PM_AMOROUS_DEMON, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
             /* can't resist... */
             (yield* pline(__s_s_returns, (Blind() ? cptr.ldPtro(c_common_strings, $c_common_strings_c_Something) : __s_the_dish_washer)));
-            if ((yield* makemon(cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst), x, y, Number(BigInt.asUintN(32, (131072n | ((gend == 1 || (gend == 2 && rn2_at(__s_dokick_c, 1229, __s_kick_nondoor, 2))) ? 32768n : 65536n)))))))
+            if ((yield* makemon(cptr.add(mons, NHC.PM_AMOROUS_DEMON, $sizeof_permonst), x, y, Number(BigInt.asUintN(32, (131072n | ((gend == 1 || (gend == 2 && rn2(2))) ? 32768n : 65536n)))))))
                 (yield* newsym(x, y));
             cptr.stI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags, cptr.ldI32o(cptr.ldPtro(gm, $instance_globals_m_maploc), $rm_flags) | NHM.S_LDWASHER);
             (yield* exercise(NHC.A_DEX, 1));
             return NHM.ECMD_TIME;
-        } else if (!rn2_at(__s_dokick_c, 1235, __s_kick_nondoor, 3)) {
+        } else if (!rn2(3)) {
             (yield* sink_backs_up(x, y));
             return NHM.ECMD_TIME;
         }
@@ -1486,7 +1473,7 @@ export function* dokick() {
     } else if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_LIZARD) {
         (yield* Your(__s_legs_cannot_kick_effectively));
         no_kick = 1;
-    } else if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 && !rn2_at(__s_dokick_c, 1288, __s_dokick, 2)) {
+    } else if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 && !rn2(2)) {
         (yield* Your(__s_slow_motion_kick_doesn_t_hit_anything));
         no_kick = 1;
     } else if (cptr.ldI32o(u, $you_utrap)) {
@@ -1532,7 +1519,7 @@ export function* dokick() {
         avrg_attrib = ((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0;
 
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        switch (rn2_at(__s_dokick_c, 1334, __s_dokick, 3)) {
+        switch (rn2(3)) {
             case 0:
             (yield* You_cant(__s_move_your_s, (yield* body_part(NHC.LEG))));
             break;
@@ -1759,7 +1746,7 @@ export function* impact_drop(missile, x, y, dlev) {
         if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v))
             continue;
         /* boulders can fall too, but rarely & never due to rocks */
-        if ((isrock && cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER) || rn2_at(__s_dokick_c, 1569, __s_impact_drop, cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER ? 30 : 3))
+        if ((isrock && cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER) || rn2(cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER ? 30 : 3))
             continue;
         (yield* obj_extract_self(obj));
 
@@ -1844,7 +1831,7 @@ export function* ship_object(otmp, x, y, shop_floor_obj) {
 
     /* objects other than attached iron ball always fall down ladder,
        but have a chance of staying otherwise */
-    nodrop = schar(((cptr.eq(otmp, uball.v)) || (cptr.eq(otmp, uchain.v)) || (toloc != NHM.MIGR_LADDER_UP && rn2_at(__s_dokick_c, 1660, __s_ship_object, 3)) ? 1 : 0));
+    nodrop = schar(((cptr.eq(otmp, uball.v)) || (cptr.eq(otmp, uchain.v)) || (toloc != NHM.MIGR_LADDER_UP && rn2(3)) ? 1 : 0));
 
     container = schar((cptr.ldPtro((otmp), $obj_cobj) !== null));
     unpaid = is_unpaid(otmp);
@@ -2018,7 +2005,7 @@ export function* obj_delivery(near_hero) {
             }
             (yield* stackobj(otmp));
             if (!noscatter)
-                void (yield* scatter(i16(nx), i16(ny), rnd_at(__s_dokick_c, 1838, __s_obj_delivery, 2), 0, otmp));
+                void (yield* scatter(i16(nx), i16(ny), rnd(2), 0, otmp));
             else
                 (yield* newsym(i16(nx), i16(ny)));
         } else {
@@ -2042,7 +2029,7 @@ export function* deliver_obj_to_mon(mtmp, cnt, deliverflags) {
     let at_crime_scene = In_mines(cptr.add(u, $you_uz));
 
     if ((deliverflags & 1n) && cnt > 1)
-        maxobj = rnd_at(__s_dokick_c, 1861, __s_deliver_obj_to_mon, cnt);
+        maxobj = rnd(cnt);
     else if (deliverflags & 4n)
         maxobj = 0;
     else
@@ -2063,7 +2050,7 @@ export function* deliver_obj_to_mon(mtmp, cnt, deliverflags) {
             /* special treatment for orcs and their kind */
             if ((BigInt(cptr.ldI32o(otmp, $obj_corpsenm)) & 128n) != 0n && has_oname(otmp)) {
                 if (!has_mgivenname(mtmp)) {
-                    if (at_crime_scene || !rn2_at(__s_dokick_c, 1887, __s_deliver_obj_to_mon, 2))
+                    if (at_crime_scene || !rn2(2))
                         mtmp = (yield* christen_orc(mtmp, at_crime_scene ? (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))) : null, __s_the_fence));
                 }
                 free_oname(otmp);

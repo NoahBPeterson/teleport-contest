@@ -13,10 +13,9 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { helpless } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Deaf, HStun, Hallucination, Polymorph_control, Protection_from_shape_changers, Unchanging } from './nhprop.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { night } from './calendar.js';
 import { canseemon, newsym } from './display.js';
 import { You_feel, You_hear, impossible, pline } from './pline.js';
@@ -61,13 +60,10 @@ const __s_a_s_howling_at_the_moon = cptr.lit("a %s howling at the moon.");
 const __s_unknown_lycanthrope_s = cptr.lit("unknown lycanthrope %s.");
 const __s_s_changes_into_a_s = cptr.lit("%s changes into a %s.");
 const __s_human = cptr.lit("human");
-const __s_new_were = cptr.lit("new_were");
-const __s_were_summon = cptr.lit("were_summon");
 const __s_rat = cptr.lit("rat");
 const __s_do_you_want_to_change_into_s = cptr.lit("Do you want to change into %s?");
 const __s_purified = cptr.lit("purified.");
 const __s_remain_in_beast_form = cptr.lit("Remain in beast form?");
-const __s_you_unwere = cptr.lit("you_unwere");
 
 /** C ref: were.c:9 — @param {CPtr<struct monst>} mon */
 export function* were_change(mon) {
@@ -99,7 +95,7 @@ export function* were_change(mon) {
                 }
             }
         }
-    } else if (!rn2_at(__s_were_c, 41, __s_were_change, 30) || Protection_from_shape_changers()) {
+    } else if (!rn2(30) || Protection_from_shape_changers()) {
         (yield* new_were(mon));  /* change back into human form */
         (cptr.stI64o(gw, $instance_globals_w_were_changes, cptr.ldI64o(gw, $instance_globals_w_were_changes) + 1n)) - (1n);
     }
@@ -186,7 +182,7 @@ export function* new_were(mon) {
     /* vision capability isn't changing so we don't call set_apparxy() to
        update mon's idea of where hero is; peaceful check is redundant */
     if (cptr.ld1so(svc, $context_info_mon_moving) && !(cptr.ldI32o(mon, $monst_mpeaceful) & 1) && (yield* onscary(cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy), mon)) && monnear(mon, cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy)))
-        (yield* monflee(mon, ((rn2_at(__s_were_c, 137, __s_new_were, 9) + 2) | 0), 1, 1));  /* 2..10 turns */
+        (yield* monflee(mon, ((rn2(9) + 2) | 0), 1, 1));  /* 2..10 turns */
 }
 
 /* were-creature (even you) summons a horde */
@@ -201,23 +197,23 @@ export function* were_summon(ptr, yours, visible, genbuf) {
     cptr.stI32(visible, 0);
     if (Protection_from_shape_changers() && !yours)
         return 0;
-    for (i = rnd_at(__s_were_c, 155, __s_were_summon, 5); i > 0; i--) {
+    for (i = rnd(5); i > 0; i--) {
         switch (pm) {
             case NHC.PM_WERERAT:
             case NHC.PM_HUMAN_WERERAT:
-            typ = rn2_at(__s_were_c, 159, __s_were_summon, 3) ? NHC.PM_SEWER_RAT : (rn2_at(__s_were_c, 160, __s_were_summon, 3) ? NHC.PM_GIANT_RAT : NHC.PM_RABID_RAT);
+            typ = rn2(3) ? NHC.PM_SEWER_RAT : (rn2(3) ? NHC.PM_GIANT_RAT : NHC.PM_RABID_RAT);
             if (genbuf)
                 void cptr.strcpy(genbuf, __s_rat);
             break;
             case NHC.PM_WEREJACKAL:
             case NHC.PM_HUMAN_WEREJACKAL:
-            typ = rn2_at(__s_were_c, 166, __s_were_summon, 7) ? NHC.PM_JACKAL : (rn2_at(__s_were_c, 166, __s_were_summon, 3) ? NHC.PM_COYOTE : NHC.PM_FOX);
+            typ = rn2(7) ? NHC.PM_JACKAL : (rn2(3) ? NHC.PM_COYOTE : NHC.PM_FOX);
             if (genbuf)
                 void cptr.strcpy(genbuf, __s_jackal);
             break;
             case NHC.PM_WEREWOLF:
             case NHC.PM_HUMAN_WEREWOLF:
-            typ = rn2_at(__s_were_c, 172, __s_were_summon, 5) ? NHC.PM_WOLF : (rn2_at(__s_were_c, 172, __s_were_summon, 2) ? NHC.PM_WARG : NHC.PM_WINTER_WOLF);
+            typ = rn2(5) ? NHC.PM_WOLF : (rn2(2) ? NHC.PM_WARG : NHC.PM_WINTER_WOLF);
             if (genbuf)
                 void cptr.strcpy(genbuf, __s_wolf);
             break;
@@ -266,7 +262,7 @@ export function* you_unwere(purify) {
     if (!Unchanging() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n) && !(yield* monster_nearby()) && (!controllable_poly || !(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __s_remain_in_beast_form))))
         (yield* rehumanize());
     else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n) && !cptr.ldI32o(u, $you_mtimedone))
-        cptr.stI32o(u, $you_mtimedone, ((rn2_at(__s_were_c, 227, __s_you_unwere, 200) + 200) | 0));  /* 40% of initial were change */
+        cptr.stI32o(u, $you_mtimedone, ((rn2(200) + 200) | 0));  /* 40% of initial were change */
 }
 
 /* lycanthropy is being caught or cured, but no shape change is involved */

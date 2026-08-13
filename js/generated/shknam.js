@@ -9,12 +9,12 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { has_eshk, ismnum, vegetarian } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Hallucination, display_nhwindow, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
 import { WIN_MESSAGE, flags, gd, program_state, svb, svc, svd, svl, svr, u, ubirthday } from './decl.js';
 import { panic } from './end.js';
+import { rn2, rnd } from './rnd.js';
 import { mkobj_at, mksobj_at } from './mkobj.js';
 import { set_tin_variety } from './eat.js';
 import { In_mines, Is_special, assign_level, depth, ledger_no, on_level } from './dungeon.js';
@@ -443,12 +443,10 @@ const __s_vegetarian_food_shop = cptr.lit("vegetarian food shop");
 const __s_lighting_store = cptr.lit("lighting store");
 const __s_lighting_shop = cptr.lit("lighting shop");
 const __s_shkveg_no_veggy_objects = cptr.lit("shkveg no veggy objects");
-const __s_shknam_c = cptr.lit("shknam.c");
-const __s_shkveg = cptr.lit("shkveg");
 const __s_shkveg_probtype_error_oclass_d_i_d = cptr.lit("shkveg probtype error, oclass=%d i=%d");
-const __s_mkshobj_at = cptr.lit("mkshobj_at");
 const __s_izchak = cptr.lit("+Izchak");
 const __s_nameshk = cptr.lit("nameshk");
+const __s_shknam_c = cptr.lit("shknam.c");
 const __s_names_avail_0 = cptr.lit("names_avail > 0");
 const __s_lucrezia = cptr.lit("-Lucrezia");
 const __s_dirk = cptr.lit("+Dirk");
@@ -457,13 +455,9 @@ const __s_where_is_shopdoor = cptr.lit("Where is shopdoor?");
 const __s_room_at_d_d_d_d = cptr.lit("Room at (%d,%d),(%d,%d).");
 const __s_doormax_d_doorct_d_fdoor_d = cptr.lit("doormax=%d doorct=%d fdoor=%d");
 const __s_door_d_d = cptr.lit("door [%d,%d]");
-const __s_shkinit = cptr.lit("shkinit");
 const __s_closed_for_inventory = cptr.lit("Closed for inventory");
-const __s_stock_room = cptr.lit("stock_room");
-const __s_get_shop_item = cptr.lit("get_shop_item");
 const __s_shkname_s_is_not_a_shopkeeper = cptr.lit("shkname: \"%s\" is not a shopkeeper.");
 const __s_shkname_shopkeeper_s_lacks_eshk_data = cptr.lit("shkname: shopkeeper \"%s\" lacks 'eshk' data.");
-const __s_shkname = cptr.lit("shkname");
 const __s_izchak__2 = cptr.lit("Izchak");
 
 /*
@@ -1175,7 +1169,7 @@ function shkveg() {
     }
     if (maxprob < 1)
         panic(__s_shkveg_no_veggy_objects);
-    prob = rnd_at(__s_shknam_c, 427, __s_shkveg, maxprob);
+    prob = rnd(maxprob);
 
     j = 0;
     i = cptr.ldI32o(ok, 0, 4);
@@ -1215,7 +1209,7 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
         return;
     }
 
-    if (rn2_at(__s_shknam_c, 470, __s_mkshobj_at, 100) < depth(cptr.add(u, $you_uz)) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null && (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
+    if (rn2(100) < depth(cptr.add(u, $you_uz)) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null && (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
         /* nothing */
     } else {
         atype = get_shop_item(Number(BigInt.asIntN(32, (cptr.diff(shp, shtypes) / 112n))));
@@ -1262,11 +1256,11 @@ function nameshk(shk, nlp) {
 
         for (trycnt = 0; trycnt < 50; trycnt++) {
             if (cptr.eq(nlp, shktools)) {
-                shname = cptr.ldPtro(shktools, rn2_at(__s_shknam_c, 519, __s_nameshk, names_avail), 8);
+                shname = cptr.ldPtro(shktools, rn2(names_avail), 8);
                 cptr.stI32o(shk, $monst_female, 0);  /* reversed below for '_' prefix */
             } else if (name_wanted < names_avail) {
                 shname = cptr.ldPtro(nlp, name_wanted, 8);
-            } else if ((i = rn2_at(__s_shknam_c, 523, __s_nameshk, names_avail)) != 0) {
+            } else if ((i = rn2(names_avail)) != 0) {
                 shname = cptr.ldPtro(nlp, (i - 1) | 0, 8);
             } else if (!cptr.eq(nlp, shkgeneral)) {
                 nlp = shkgeneral;  /* try general names */
@@ -1414,10 +1408,10 @@ function shkinit(shp, sroom) {
     cptr.stI32o(eshkp, $eshk_billct, cptr.stI32o(eshkp, $eshk_visitct, 0));
     cptr.stPtro(eshkp, $eshk_bill_p, null);
     cptr.st1o2(eshkp, 0, 1, $eshk_customer, 0);
-    mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt(rnd_at(__s_shknam_c, 682, __s_shkinit, 100)))));  /* initial capital */
+    mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt(rnd(100)))));  /* initial capital */
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings))
         void mongets(shk, NHC.TOUCHSTONE);
-    if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && rn2_at(__s_shknam_c, 686, __s_shkinit, 2)) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && rn2_at(__s_shknam_c, 687, __s_shkinit, 5)))
+    if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && rn2(2)) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && rn2(5)))
         void mongets(shk, NHC.SCR_CHARGING);
     nameshk(shk, cptr.ldPtro(shp, $shclass_shknms));
 
@@ -1503,7 +1497,7 @@ export function stock_room(shp_indx, sroom) {
             for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++)
                 if (stock_room_goodpos(sroom, rmno, sh, sx, sy))
                     stockcount++;
-        specialspot = rnd_at(__s_shknam_c, 777, __s_stock_room, stockcount);
+        specialspot = rnd(stockcount);
         stockcount = 0;
     }
 
@@ -1558,7 +1552,7 @@ export function get_shop_item(type) {
     let j;
 
     /* select an appropriate object type at random */
-    for (j = rnd_at(__s_shknam_c, 835, __s_get_shop_item, 100), i = 0; (j = (j - cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs)) | 0) > 0; i++)
+    for (j = rnd(100), i = 0; (j = (j - cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs)) | 0) > 0; i++)
         continue;
 
     return cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype);
@@ -1605,11 +1599,11 @@ export function shkname(mtmp) {
                 if (cptr.ldI32o2(shtypes, num, $sizeof_shclass, $shclass_prob) == 0)
                     break;
             if (num > 0) {
-                nlp = cptr.ldPtro2(shtypes, rn2_at(__s_shknam_c, 884, __s_shkname, num), $sizeof_shclass, $shclass_shknms);
+                nlp = cptr.ldPtro2(shtypes, rn2(num), $sizeof_shclass, $shclass_shknms);
                 for (num = 0; cptr.ldPtro(nlp, num, 8); num++)
                     continue;
                 if (num > 0)
-                    shknm = cptr.ldPtro(nlp, rn2_at(__s_shknam_c, 888, __s_shkname, num), 8);
+                    shknm = cptr.ldPtro(nlp, rn2(num), 8);
             }
         }
         /* strip prefix if present */

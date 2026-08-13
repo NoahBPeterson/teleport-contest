@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_FURNITURE, IS_LAVA, IS_POOL, Is_box, Is_candle, Is_container, Is_mbag, SURFACE_AT, SchroedingersBox, age_is_relative, canspotmon, has_omonst, is_pick, is_pit, is_rider, min, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Blind, HConfusion, HFumbling, HStun, Half_physical_damage, Hallucination, ParanoidAutoAll, Stone_resistance, Underwater, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { Norep, There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The, urgent_pline, verbalize } from './pline.js';
 import { Doname2, The, Tobjnam, Yname2, Ysimple_name2, an, ansimpleoname, corpse_xname, doname, doname_with_price, killer_xname, makesingular, otense, safe_qbuf, the, thesimpleoname, vtense, xname, yname, ysimple_name } from './objnam.js';
@@ -35,7 +34,7 @@ import { hideunder } from './mon.js';
 import { regex_match } from './posixregex.js';
 import { Shk_Your, addtobill, check_unpaid_usage, costly_spot, obfree, pick_pick, remote_burglary, sellobj, sellobj_state, shop_keeper, stolen_value, subfrombill } from './shk.js';
 import { alloc } from './alloc.js';
-import { rn2_on_display_rng } from './rnd.js';
+import { d, rn2, rn2_on_display_rng, rnd } from './rnd.js';
 import { objects } from './objects.js';
 import { debugcore } from './files.js';
 import { container_contents, panic } from './end.js';
@@ -266,11 +265,9 @@ const __s_s_is_locked = cptr.lit("%s is locked.");
 const __s_hmmm_s_turns_out_to_be_locked = cptr.lit("Hmmm, %s turns out to be locked.");
 const __s_carefully_open_s = cptr.lit("carefully open %s...");
 const __s_it_develops_a_huge_set_of_teeth_and = cptr.lit("It develops a huge set of teeth and bites you!");
-const __s_do_loot_cont = cptr.lit("do_loot_cont");
 const __s_carnivorous_bag = cptr.lit("carnivorous bag");
 const __s_don_t_find_anything = cptr.lit("don't find anything");
 const __s_have_no_hands = cptr.lit("have no hands!");
-const __s_doloot_core = cptr.lit("doloot_core");
 const __s_being_confused_you_find_nothing_to_loot = cptr.lit("Being confused, you find nothing to loot.");
 const __s_loot_which_containers = cptr.lit("Loot which containers?");
 const __s_need_to_dig_up_the_grave_to_effectively = cptr.lit("need to dig up the grave to effectively loot it...");
@@ -284,7 +281,6 @@ const __s_s_s_shere_to_loot = cptr.lit("%s %s%shere to loot.");
 const __s_t = cptr.lit("t");
 const __s_s_s_to_loot = cptr.lit("%s %s to loot.");
 const __s_there = cptr.lit("there");
-const __s_reverse_loot = cptr.lit("reverse_loot");
 const __s_you_find_old_loot = cptr.lit("You find old loot:");
 const __s_ok_now_there_is_loot_here = cptr.lit("Ok, now there is loot here.");
 const __s_thank_you_for_your_contribution_to = cptr.lit("Thank you for your contribution to reduce the debt.");
@@ -295,9 +291,6 @@ const __s_do_that_without_limbs = cptr.lit("do that without limbs.");
 const __s_can_t_the_saddle_seems_to_be_stuck_to_s = cptr.lit("can't.  The saddle seems to be stuck to %s.");
 const __s_take_s_off_of_s = cptr.lit("take %s off of %s.");
 const __s_you_drop_s = cptr.lit("You drop %s!");
-const __s_loot_mon = cptr.lit("loot_mon");
-const __s_mbag_explodes = cptr.lit("mbag_explodes");
-const __s_is_boh_item_gone = cptr.lit("is_boh_item_gone");
 const __s_in_no_gc_current_container = cptr.lit("<in> no gc.current_container?");
 const __s_must_be_kidding = cptr.lit("must be kidding.");
 const __s_that_would_be_an_interesting = cptr.lit("That would be an interesting topological exercise.");
@@ -311,7 +304,6 @@ const __s_cannot_fit_s_into_s = cptr.lit("cannot fit %s into %s.");
 const __s_just_blew_up_s_bag_of_holding = cptr.lit("just blew up %s bag of holding");
 const __s_as_you_put_s_inside_you_are_blasted_by = cptr.lit("As you put %s inside, you are blasted by a magical explosion!");
 const __s_in_container_bag_not_found = cptr.lit("in_container:  bag not found.");
-const __s_in_container = cptr.lit("in_container");
 const __s_magical_explosion = cptr.lit("magical explosion");
 const __s_put_s_into_s = cptr.lit("put %s into %s.");
 const __s_out_no_gc_current_container = cptr.lit("<out> no gc.current_container?");
@@ -320,7 +312,6 @@ const __s_have = cptr.lit("have");
 const __s_s_s_disappear = cptr.lit("%s %s disappear!");
 const __s_notice = cptr.lit("notice");
 const __s_see = cptr.lit("see");
-const __s_observe_quantum_cat = cptr.lit("observe_quantum_cat");
 const __s_think_s_brushed_your_s = cptr.lit("think %s brushed your %s.");
 const __s_s_inside_the_box_is_still_alive = cptr.lit("%s inside the box is still alive!");
 const __s_s_inside_the_box_is_dead = cptr.lit("%s inside the box is dead!");
@@ -406,7 +397,6 @@ const __s_an_object_spills = cptr.lit("An object spills");
 const __s_just_blew_up_s_bag_of_holding_via = cptr.lit("just blew up %s bag of holding via tipping");
 const __s_as_s_s_inside_you_are_blasted_by_a = cptr.lit("As %s %s inside, you are blasted by a magical explosion!");
 const __s_tumble = cptr.lit("tumble");
-const __s_tipcontainer = cptr.lit("tipcontainer");
 const __s_s_s_to_the_s = cptr.lit("%s %s to the %s.");
 const __s_drop = cptr.lit("drop");
 const __s_s_c = cptr.lit("%s%c");
@@ -2354,7 +2344,7 @@ function do_loot_cont(cobjp, cindex, ccount) {
 
         You(__s_carefully_open_s, the(xname(cobj)));
         pline(__s_it_develops_a_huge_set_of_teeth_and);
-        tmp = rnd_at(__s_pickup_c, 2155, __s_do_loot_cont, 10);
+        tmp = rnd(10);
         losehp(((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp)), __s_carnivorous_bag, NHM.KILLED_BY_AN);
         discover_object(NHC.BAG_OF_TRICKS, 1, 1, 1);
         cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
@@ -2403,9 +2393,9 @@ function doloot_core() {
             return NHM.ECMD_OK;
         }
         if (HConfusion()) {
-            if (rn2_at(__s_pickup_c, 2203, __s_doloot_core, 6) && reverse_loot())
+            if (rn2(6) && reverse_loot())
                 return NHM.ECMD_TIME;
-            if (rn2_at(__s_pickup_c, 2205, __s_doloot_core, 2)) {
+            if (rn2(2)) {
                 pline(__s_being_confused_you_find_nothing_to_loot);
                 return NHM.ECMD_TIME;  /* costs a turn */
             }  /* else fallthrough to normal looting */
@@ -2574,10 +2564,10 @@ function reverse_loot() {
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
 
-    if (!rn2_at(__s_pickup_c, 2357, __s_reverse_loot, 3)) {
+    if (!rn2(3)) {
         /* n objects: 1/(n+1) chance per object, 1/(n+1) to fall off end */
         for (n = inv_cnt(1), otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; --n, otmp = cptr.ldPtr(otmp))
-            if (!rn2_at(__s_pickup_c, 2361, __s_reverse_loot, (n + 1) | 0)) {
+            if (!rn2((n + 1) | 0)) {
                 prinv(__s_you_find_old_loot, otmp, 0n);
                 return 1;
             }
@@ -2587,7 +2577,7 @@ function reverse_loot() {
     /* find a money object to mess with */
     for (goldob = cptr.ldPtro(gi, $instance_globals_i_invent); goldob; goldob = cptr.ldPtr(goldob))
         if (cptr.ld1so(goldob, $obj_oclass) == NHC.COIN_CLASS) {
-            contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(rnd_at(__s_pickup_c, 2371, __s_reverse_loot, 5)) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
+            contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(rnd(5)) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
             if (contribution < cptr.ldI64o(goldob, $obj_quan))
                 goldob = splitobj(goldob, contribution);
             break;
@@ -2632,7 +2622,7 @@ function reverse_loot() {
             freeinv(goldob);
             add_to_minv(mon, goldob);
             pline(__s_the_exchequer_accepts_your_contribution);
-            if (!rn2_at(__s_pickup_c, 2418, __s_reverse_loot, 10))
+            if (!rn2(10))
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.T_LOOTED);
         } else {
             You(__s_drop_s, doname(goldob));
@@ -2674,7 +2664,7 @@ export function loot_mon(mtmp, passed_info, prev_loot) {
                 You(__s_take_s_off_of_s, thesimpleoname(otmp), mon_nam(mtmp));
             otmp = hold_another_object(otmp, __s_you_drop_s, doname(otmp), null);
             (void (otmp));
-            timepassed = rnd_at(__s_pickup_c, 2467, __s_loot_mon, 3);
+            timepassed = rnd(3);
             if (prev_loot)
                 cptr.st1(prev_loot, 1);
         } else if (c == 113) {
@@ -2701,7 +2691,7 @@ function mbag_explodes(obj, depthin) {
         return 0;
 
     /* odds: 1/1, 2/2, 3/4, 4/8, 5/16, 6/32, 7/64, 8/128, 9/128, 10/128,... */
-    if ((Is_mbag(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && (rn2_at(__s_pickup_c, 2497, __s_mbag_explodes, 1 << (depthin > 7 ? 7 : depthin)) <= depthin))
+    if ((Is_mbag(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && (rn2(1 << (depthin > 7 ? 7 : depthin)) <= depthin))
         return 1;
     else if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         let otmp;
@@ -2715,7 +2705,7 @@ function mbag_explodes(obj, depthin) {
 
 /** C ref: pickup.c:2510 @returns {CInt} */
 function is_boh_item_gone() {
-    return schar((!rn2_at(__s_pickup_c, 2512, __s_is_boh_item_gone, 13)));
+    return schar((!rn2(13)));
 }
 
 /* Scatter most of Bag of holding contents around.  Some items will be
@@ -2885,7 +2875,7 @@ function in_container(obj) {
         else
             panic(__s_in_container_bag_not_found);
 
-        losehp(d_at(__s_pickup_c, 2692, __s_in_container, 6, 6), __s_magical_explosion, NHM.KILLED_BY_AN);
+        losehp(d(6, 6), __s_magical_explosion, NHM.KILLED_BY_AN);
         cptr.stPtro(gc, $instance_globals_c_current_container, null);  /* baggone = TRUE; */
     }
 
@@ -3019,7 +3009,7 @@ export function observe_quantum_cat(box, makecat, givemsg) {
     let livecat = null;
     let ox = cptr.box(0);
     let oy = cptr.box(0);
-    let itsalive = schar((!rn2_at(__s_pickup_c, 2832, __s_observe_quantum_cat, 2)));
+    let itsalive = schar((!rn2(2)));
 
     if (get_obj_location(box, ox, oy, 0))
         cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);  /* in case it's being carried */
@@ -3933,7 +3923,7 @@ function tipcontainer(box) {
                     targetbox = null;  /* it's gone */
                     nobj = null;  /* stop tipping; want loop to exit 'normally' */
 
-                    losehp(d_at(__s_pickup_c, 3803, __s_tipcontainer, 6, 6), __s_magical_explosion, NHM.KILLED_BY_AN);
+                    losehp(d(6, 6), __s_magical_explosion, NHM.KILLED_BY_AN);
                 } else {
                     void add_to_container(targetbox, otmp);
                 }

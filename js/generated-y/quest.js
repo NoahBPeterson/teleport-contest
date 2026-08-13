@@ -13,7 +13,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { helpless } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { Deaf, quest_dnum, wizard } from './nhprop.js';
 import { flags, gf, gi, svc, svd, svq, u } from './decl.js';
 import { com_pager, find_quest_artifact, is_quest_artifact, qt_pager } from './questpgr.js';
@@ -29,6 +28,7 @@ import { deltrap } from './trap.js';
 import { carrying, fully_identify_obj, update_inventory } from './invent.js';
 import { the, xname } from './objnam.js';
 import { Monnam, mon_nam, noit_mon_nam } from './do_name.js';
+import { rn2 } from './rnd.js';
 import { create_gas_cloud } from './region.js';
 import { mons } from './monst.js';
 import { canseemon } from './display.js';
@@ -101,8 +101,6 @@ const __s_nemesis_wantsit = cptr.lit("nemesis_wantsit");
 const __s_nemesis_first = cptr.lit("nemesis_first");
 const __s_nemesis_next = cptr.lit("nemesis_next");
 const __s_nemesis_other = cptr.lit("nemesis_other");
-const __s_quest_c = cptr.lit("quest.c");
-const __s_nemesis_speaks = cptr.lit("nemesis_speaks");
 const __s_guardtalk_after = cptr.lit("guardtalk_after");
 const __s_guardtalk_before = cptr.lit("guardtalk_before");
 const __s_s_speaks = cptr.lit("%s speaks:");
@@ -465,12 +463,12 @@ export function* nemesis_speaks() {
             (yield* qt_pager(__s_nemesis_next));
         else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
             (yield* qt_pager(__s_nemesis_other));
-        else if (!rn2_at(__s_quest_c, 414, __s_nemesis_speaks, 5))
+        else if (!rn2(5))
             (yield* qt_pager(__s_discourage));
         if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 7)
             (cptr.stI32o(svq, $q_score_made_goal, cptr.ldI32o(svq, $q_score_made_goal) + 1)) - (1);
         cptr.stI32o(svq, $q_score_met_nemesis, 1);
-    } else if (!rn2_at(__s_quest_c, 420, __s_nemesis_speaks, 5))
+    } else if (!rn2(5))
         (yield* qt_pager(__s_discourage));
 }
 

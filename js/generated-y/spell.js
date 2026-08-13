@@ -14,9 +14,9 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_TREE, canspotmon, eyecount, is_metallic, is_vampshifter, is_whirly } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Antimagic, BClairvoyant, Blind, BlindedTimeout, HConfusion, HStun, Half_physical_damage, Hallucination, Poison_resistance, Sick, Sleep_resistance, Slimed, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, nh_delay_output, start_menu, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
+import { d, rn2, rn2_on_display_rng, rnd, rnl } from './rnd.js';
 import { You, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { tele } from './teleport.js';
 import { aggravate } from './wizard.js';
@@ -54,7 +54,6 @@ import { more_experienced, newexplevel } from './exper.js';
 import { cmdq_add_key, cmdq_pop, getdir, isok, set_occupation, yn_function } from './cmd.js';
 import { Resists_Elem, can_chant, defended, dmgtype_fromattack } from './mondata.js';
 import { freehand } from './engrave.js';
-import { rn2_on_display_rng } from './rnd.js';
 import { find_ac } from './do_wear.js';
 import { morehungry } from './eat.js';
 import { genders } from './role.js';
@@ -147,8 +146,6 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum, $Role_spelarmr =
     $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_spell_c = cptr.lit("spell.c");
-const __s_cursed_book = cptr.lit("cursed_book");
 const __s_a_wrenching_sensation = cptr.lit("a wrenching sensation.");
 const __s_threatened = cptr.lit("threatened.");
 const __s_these_runes_were_just_too_much_to = cptr.lit("These runes were just too much to comprehend.");
@@ -158,7 +155,6 @@ const __s_contact_poisoned_spellbook = cptr.lit("contact-poisoned spellbook");
 const __s_book_s_but_you_are_unharmed = cptr.lit("book %s, but you are unharmed!");
 const __s_as_you_read_the_book_it_s_in_your_s = cptr.lit("As you read the book, it %s in your %s!");
 const __s_exploding_rune = cptr.lit("exploding rune");
-const __s_confused_book = cptr.lit("confused_book");
 const __s_being_confused_you_have_difficulties_in = cptr.lit("Being confused you have difficulties in controlling your actions.");
 const __s_accidentally_tear_the_spellbook_to = cptr.lit("accidentally tear the spellbook to pieces.");
 const __s_find_yourself_reading_the_s_line_over = cptr.lit("find yourself reading the %s line over and over again.");
@@ -173,7 +169,6 @@ const __s_a_faint_chime = cptr.lit("a faint chime...");
 const __s_vlad_s_doppelganger_is_amused = cptr.lit("Vlad's doppelganger is amused.");
 const __s_invocation_fails = cptr.lit("invocation fails!");
 const __s_at_least_one_of_your_relics_is_cursed = cptr.lit("At least one of your relics is cursed...");
-const __s_deadbook = cptr.lit("deadbook");
 const __s_have_a_feeling_that_s_is_amiss = cptr.lit("have a feeling that %s is amiss...");
 const __s_raised_the_dead = cptr.lit("raised the dead!");
 const __s_ancestors_are_annoyed_with_you = cptr.lit("ancestors are annoyed with you!");
@@ -181,7 +176,6 @@ const __s_headstones_in_the_cemetery_begin_to_move = cptr.lit("headstones in the
 const __s_oh_my_your_name_appears_in_the_book = cptr.lit("Oh my!  Your name appears in the book!");
 const __s_s_shut = cptr.lit("%s shut!");
 const __s_slam = cptr.lit("slam");
-const __s_learn = cptr.lit("learn");
 const __s_reading_a_book = cptr.lit("reading a book");
 const __s_quot_pct_s_quot = cptr.lit("\"%s\"");
 const __s_the_s_spell = cptr.lit("the \"%s\" spell");
@@ -194,7 +188,6 @@ const __s_this_spellbook_is_too_faint_to_read = cptr.lit("This spellbook is too 
 const __s_learn_s = cptr.lit("learn %s.");
 const __s_add_s_to_your_repertoire_as_c = cptr.lit("add %s to your repertoire, as '%c'.");
 const __s_dull = cptr.lit("dull");
-const __s_study_book = cptr.lit("study_book");
 const __s_this_book_is_so_dull_that_you_can_t = cptr.lit("This book is so dull that you can't keep your %s open.");
 const __s_continue_your_efforts_to_s = cptr.lit("continue your efforts to %s.");
 const __s_read_the_novel = cptr.lit("read the novel");
@@ -251,10 +244,8 @@ const __s_stone = cptr.lit("stone");
 const __s_air = cptr.lit("air");
 const __s_s_around_you_begins_to_shimmer_with_s = cptr.lit("%s around you begins to shimmer with %s haze.");
 const __s_skin_feels_warm_for_a_moment = cptr.lit("skin feels warm for a moment.");
-const __s_spell_backfire = cptr.lit("spell_backfire");
 const __s_knowledge_of_this_spell_is_twisted = cptr.lit("knowledge of this spell is twisted.");
 const __s_it_invokes_nightmarish_images_in_your = cptr.lit("It invokes nightmarish images in your mind...");
-const __s_spelleffects_check = cptr.lit("spelleffects_check");
 const __s_strain_to_recall_the_spell = cptr.lit("strain to recall the spell.");
 const __s_have_difficulty_remembering_the_spell = cptr.lit("have difficulty remembering the spell.");
 const __s_knowledge_of_this_spell_is_growing_faint = cptr.lit("knowledge of this spell is growing faint.");
@@ -267,7 +258,6 @@ const __s_don_t_have_enough_energy_to_cast_that = cptr.lit("don't have enough en
 const __s_yet = cptr.lit(" yet");
 const __s_anymore = cptr.lit(" anymore");
 const __s_fail_to_cast_the_spell_correctly = cptr.lit("fail to cast the spell correctly.");
-const __s_spelleffects = cptr.lit("spelleffects");
 const __s_zapped_sself_with_a_spell = cptr.lit("zapped %sself with a spell");
 const __s_magical_energy_is_released = cptr.lit("magical energy is released!");
 const __s_are_s_ill = cptr.lit("are %s ill.");
@@ -284,7 +274,6 @@ const __s_spell_dissipates_over_the_distance = cptr.lit("spell dissipates over t
 const __s_spell_is_cut_short = cptr.lit("spell is cut short!");
 const __s_mind_fails_to_lock_onto_that_location = cptr.lit("mind fails to lock onto that location!");
 const __s_tport_spell_spellbook_full = cptr.lit("tport_spell: spellbook full");
-const __s_losespells = cptr.lit("losespells");
 const __s_by_casting_letter = cptr.lit("by casting letter");
 const __s_alphabetically = cptr.lit("alphabetically");
 const __s_by_level_low_to_high = cptr.lit("by level, low to high");
@@ -341,7 +330,7 @@ function* cursed_book(bp) {
     let lev = cptr.ld1so2(objects, cptr.ldI16o(bp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2);
     let dmg = 0;
 
-    switch (rn2_at(__s_spell_c, 136, __s_cursed_book, lev)) {
+    switch (rn2(lev)) {
         case 0:
         (yield* You_feel(__s_a_wrenching_sensation));
         (yield* tele());  /* teleport him */
@@ -351,14 +340,14 @@ function* cursed_book(bp) {
         (yield* aggravate());
         break;
         case 2:
-        (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2_at(__s_spell_c, 146, __s_cursed_book, 100) + 250) | 0))), 1));
+        (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2(100) + 250) | 0))), 1));
         break;
         case 3:
         (yield* take_gold());
         break;
         case 4:
         (yield* pline(__s_these_runes_were_just_too_much_to));
-        (yield* make_confused(BigInt.asIntN(64, HConfusion() + BigInt(((rn2_at(__s_spell_c, 153, __s_cursed_book, 7) + 16) | 0))), 0));
+        (yield* make_confused(BigInt.asIntN(64, HConfusion() + BigInt(((rn2(7) + 16) | 0))), 0));
         break;
         case 5:
         (yield* pline_The(__s_book_was_coated_with_contact_poison));
@@ -369,7 +358,7 @@ function* cursed_book(bp) {
         /* temp disable in_use; death should not destroy the book */
         was_in_use = schar((cptr.ldI32o(bp, $obj_in_use) & 1));
         cptr.stI32o(bp, $obj_in_use, 0);
-        (yield* poison_strdmg(Poison_resistance() ? ((rn2_at(__s_spell_c, 164, __s_cursed_book, 2) + 1) | 0) : ((rn2_at(__s_spell_c, 164, __s_cursed_book, 4) + 3) | 0), rnd_at(__s_spell_c, 165, __s_cursed_book, Poison_resistance() ? 6 : 10), __s_contact_poisoned_spellbook, NHM.KILLED_BY_AN));
+        (yield* poison_strdmg(Poison_resistance() ? ((rn2(2) + 1) | 0) : ((rn2(4) + 3) | 0), rnd(Poison_resistance() ? 6 : 10), __s_contact_poisoned_spellbook, NHM.KILLED_BY_AN));
         cptr.stI32o(bp, $obj_in_use, was_in_use);
         break;
         case 6:
@@ -378,7 +367,7 @@ function* cursed_book(bp) {
             (yield* pline_The(__s_book_s_but_you_are_unharmed, cptr.decay(explodes)));
         } else {
             (yield* pline(__s_as_you_read_the_book_it_s_in_your_s, cptr.decay(explodes), (yield* body_part(NHC.FACE))));
-            dmg = (Math.imul(2, rnd_at(__s_spell_c, 176, __s_cursed_book, 10)) + 5) | 0;
+            dmg = (Math.imul(2, rnd(10)) + 5) | 0;
             (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_exploding_rune, NHM.KILLED_BY_AN));
         }
         return 1;
@@ -394,7 +383,7 @@ function* cursed_book(bp) {
 function* confused_book(spellbook) {
     let gone = 0;
 
-    if (!rn2_at(__s_spell_c, 193, __s_confused_book, 3) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
+    if (!rn2(3) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
         cptr.stI32o(spellbook, $obj_in_use, 1);  /* in case called from learn() */
         (yield* pline(__s_being_confused_you_have_difficulties_in));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
@@ -494,7 +483,7 @@ function* deadbook(book2) {
         __pc = 9; continue;
         }
         case 8: {
-        soon = d_at(__s_spell_c, 287, __s_deadbook, 2, 6) >>> 0;  /* time til next intervene() */
+        soon = d(2, 6) >>> 0;  /* time til next intervene() */
 
         /* successful invocation */
         (yield* mkinvokearea());
@@ -531,7 +520,7 @@ function* deadbook(book2) {
 
         (yield* You(__s_raised_the_dead));
         /* first maybe place a dangerous adversary */
-        if (!rn2_at(__s_spell_c, 311, __s_deadbook, 3) && ((mtmp = (yield* makemon(cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT))) !== null || (mtmp = (yield* makemon(cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT))) !== null)) {
+        if (!rn2(3) && ((mtmp = (yield* makemon(cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT))) !== null || (mtmp = (yield* makemon(cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT))) !== null)) {
             cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             set_malign(mtmp);
         }
@@ -548,7 +537,7 @@ function* deadbook(book2) {
         if ((cptr.ldI32o(book2, $obj_blessed) & 1)) {
             (yield* iter_mons(deadbook_pacify_undead));
         } else {
-            switch (rn2_at(__s_spell_c, 327, __s_deadbook, 3)) {
+            switch (rn2(3)) {
                 case 0:
                 (yield* Your(__s_ancestors_are_annoyed_with_you));
                 break;
@@ -590,7 +579,7 @@ function* learn() {
     let book = cptr.ldPtro(svc, $context_info_spbook);
 
     /* JDS: lenses give 50% faster reading; 33% smaller read time */
-    if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && rn2_at(__s_spell_c, 366, __s_learn, 2))
+    if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && rn2(2))
         cptr.postinc1(cptr.add(svc, $context_info_spbook + $book_info_delay));
     if (HConfusion()) {
         void (yield* confused_book(book));
@@ -628,7 +617,7 @@ function* learn() {
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
             /* reset spestudied as if polymorph had taken place */
-            cptr.stI32o(book, $obj_usecount, rn2_at(__s_spell_c, 406, __s_learn, cptr.ldI32o(book, $obj_usecount)));
+            cptr.stI32o(book, $obj_usecount, rn2(cptr.ldI32o(book, $obj_usecount)));
         } else {
             (yield* Your(__s_knowledge_of_s_is_s, cptr.decay(splname), cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) ? __s_keener : __s_restored));
             (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20001));
@@ -645,7 +634,7 @@ function* learn() {
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
             /* reset spestudied as if polymorph had taken place */
-            cptr.stI32o(book, $obj_usecount, rn2_at(__s_spell_c, 424, __s_learn, cptr.ldI32o(book, $obj_usecount)));
+            cptr.stI32o(book, $obj_usecount, rn2(cptr.ldI32o(book, $obj_usecount)));
         } else {
             cptr.stI16o(svs, i, booktype, $sizeof_spell);
             cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)));
@@ -695,18 +684,18 @@ export function* study_book(spellbook) {
     /* attempting to read dull book may make hero fall asleep */
     if (!confused && !Sleep_resistance() && (yield* objdescr_is(spellbook, __s_dull))) {
         let eyes;
-        let dullbook = (rnd_at(__s_spell_c, 478, __s_study_book, 25) - (acurr(NHC.A_WIS))) | 0;
+        let dullbook = (rnd(25) - (acurr(NHC.A_WIS))) | 0;
 
         /* adjust chance if hero stayed awake, got interrupted, retries */
         if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && cptr.eq(spellbook, cptr.ldPtro(svc, $context_info_spbook)))
-            dullbook = (dullbook - rnd_at(__s_spell_c, 482, __s_study_book, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0;
+            dullbook = (dullbook - rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0;
 
         if (dullbook > 0) {
             eyes = (yield* body_part(NHC.EYE));
             if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 1)
                 eyes = (yield* makeplural(eyes));
             (yield* pline(__s_this_book_is_so_dull_that_you_can_t, eyes));
-            dullbook = (dullbook + rnd_at(__s_spell_c, 490, __s_study_book, Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) | 0;
+            dullbook = (dullbook + rnd(Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) | 0;
             (yield* fall_asleep(-dullbook, 1));
             return 1;
         }
@@ -798,7 +787,7 @@ export function* study_book(spellbook) {
                     }
                 }
                 /* its up to random luck now */
-                if (rnd_at(__s_spell_c, 599, __s_study_book, 20) > read_ability) {
+                if (rnd(20) > read_ability) {
                     too_hard = 1;
                 }
             }
@@ -811,7 +800,7 @@ export function* study_book(spellbook) {
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_reading_a_book);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
             cptr.st1o(svc, $context_info_spbook + $book_info_delay, 0);
-            if (gone || !rn2_at(__s_spell_c, 612, __s_study_book, 3)) {
+            if (gone || !rn2(3)) {
                 if (!gone)
                     (yield* pline_The(__s_spellbook_crumbles_to_dust));
                 (yield* trycall(spellbook));
@@ -1331,7 +1320,7 @@ function* spell_backfire(spell) {
      * Stunned, so the potential increment to stun duration here is
      * just hypothetical.)
      */
-    switch (rn2_at(__s_spell_c, 1194, __s_spell_backfire, 10)) {
+    switch (rn2(10)) {
         case 0:
         case 1:
         case 2:
@@ -1391,7 +1380,7 @@ function* spelleffects_check(spell, res, energy) {
         (yield* Your(__s_knowledge_of_this_spell_is_twisted));
         (yield* pline(__s_it_invokes_nightmarish_images_in_your));
         (yield* spell_backfire(spell));
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd_at(__s_spell_c, 1255, __s_spelleffects_check, cptr.ldI32(energy))) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd(cptr.ldI32(energy))) | 0);
         if (cptr.ldI32o(u, $you_uen) < 0)
             cptr.stI32o(u, $you_uen, 0);
         cptr.st1(disp, 1);
@@ -1433,7 +1422,7 @@ function* spelleffects_check(spell, res, energy) {
            and player could just try again (and again and again...);
            now we drain some energy immediately, which has a
            side-effect of not increasing the hunger aspect of casting */
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd_at(__s_spell_c, 1298, __s_spelleffects_check, Math.imul(2, cptr.ldI32(energy)))) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd(Math.imul(2, cptr.ldI32(energy)))) | 0);
         if (cptr.ldI32o(u, $you_uen) < 0)
             cptr.stI32o(u, $you_uen, 0);
         cptr.st1(disp, 1);
@@ -1504,7 +1493,7 @@ function* spelleffects_check(spell, res, energy) {
     }
 
     chance = (yield* percent_success(spell));
-    if (confused || (rnd_at(__s_spell_c, 1372, __s_spelleffects_check, 100) > chance)) {
+    if (confused || (rnd(100) > chance)) {
         (yield* You(__s_fail_to_cast_the_spell_correctly));
         cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - ((cptr.ldI32(energy) / 2) | 0)) | 0);
         cptr.st1(disp, 1);
@@ -1555,7 +1544,7 @@ export function* spelleffects(spell_otyp, atme, force) {
             if ((yield* throwspell())) {
                 cptr.stI16(cc, i16(cptr.ldI32o(u, $you_dx)));
                 cptr.stI16o(cc, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
-                n = (rnd_at(__s_spell_c, 1425, __s_spelleffects, 8) + 1) | 0;
+                n = (rnd(8) + 1) | 0;
                 while (n--) {
                     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
                         if ((damage = (yield* zapyourself(pseudo, 1))) != 0) {
@@ -1566,8 +1555,8 @@ export function* spelleffects(spell_otyp, atme, force) {
                     } else {
                         (yield* explode(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy)), (((otyp - NHC.SPE_MAGIC_MISSILE) | 0) + 10) | 0, spell_damage_bonus((((cptr.ldI32o(u, $you_ulevel) / 2) | 0) + 1) | 0), 0, (otyp == NHC.SPE_CONE_OF_COLD) ? NHC.EXPL_FROSTY : NHC.EXPL_FIERY));
                     }
-                    cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + rnd_at(__s_spell_c, 1442, __s_spelleffects, 3)) | 0) - 2) | 0);
-                    cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + rnd_at(__s_spell_c, 1443, __s_spelleffects, 3)) | 0) - 2) | 0);
+                    cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + rnd(3)) | 0) - 2) | 0);
+                    cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + rnd(3)) | 0) - 2) | 0);
                     if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI32o(u, $you_dy), 8), cptr.ldI32o(u, $you_dx)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1so3(svl, cptr.ldI32o(u, $you_dx), $sizeof_rm_x21, cptr.ldI32o(u, $you_dy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                         /* Spell is reflected back to center */
                         cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
@@ -1882,15 +1871,15 @@ export function* losespells() {
 
     /* lose anywhere from zero to all known spells;
        if confused, use the worse of two die rolls */
-    nzap = rn2_at(__s_spell_c, 1777, __s_losespells, (n + 1) | 0);
+    nzap = rn2((n + 1) | 0);
     if (HConfusion()) {
-        i = rn2_at(__s_spell_c, 1779, __s_losespells, (n + 1) | 0);
+        i = rn2((n + 1) | 0);
         if (i > nzap)
             nzap = i;
     }
     /* good Luck might ameliorate spell loss */
-    if (nzap > 1 && !rnl_at(__s_spell_c, 1784, __s_losespells, 7))
-        nzap = rnd_at(__s_spell_c, 1785, __s_losespells, nzap);
+    if (nzap > 1 && !rnl(7))
+        nzap = rnd(nzap);
 
     /*
      * Forget 'nzap' out of 'n' known spells by setting their memory
@@ -1919,7 +1908,7 @@ export function* losespells() {
            the chance to lose spell [i] is small; as the number of
            remaining candidates shrinks, the chance per candidate
            gets bigger; overall, exactly nzap entries are affected */
-        if (rn2_at(__s_spell_c, 1814, __s_losespells, (n - i) | 0) < nzap) {
+        if (rn2((n - i) | 0) < nzap) {
             /* lose access to spell [i] */
             cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 0);
             /* and abuse wisdom */

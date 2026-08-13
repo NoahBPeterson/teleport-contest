@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { m_next2u } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { Blind, Blind_telepat, Deaf, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { nh_getenv } from './options.js';
 import { alloc, dupstr } from './alloc.js';
@@ -25,6 +24,7 @@ import { enexto } from './teleport.js';
 import { dist2 } from './hacklib.js';
 import { isok } from './cmd.js';
 import { accessible } from './monmove.js';
+import { rn2 } from './rnd.js';
 import { mons } from './monst.js';
 import { flush_screen, newsym } from './display.js';
 import { place_monster } from './steed.js';
@@ -69,12 +69,10 @@ const __s_usr_mail = cptr.lit("/usr/mail/");
 const __s_mail_c = cptr.lit("mail.c");
 const __s_mailbox_c_s_c = cptr.lit("mailbox=%c%s%c");
 const __s_null = cptr.lit("null");
-const __s_md_stop = cptr.lit("md_stop");
 const __s_gangway = cptr.lit("Gangway!");
 const __s_look_out = cptr.lit("Look out!");
 const __s_pardon_me = cptr.lit("Pardon me!");
 const __s_pct_s = cptr.lit("%s");
-const __s_md_rush = cptr.lit("md_rush");
 const __s_excuse_me = cptr.lit("Excuse me.");
 const __s_this_place_s_too_crowded_i_m_outta_here = cptr.lit("This place's too crowded.  I'm outta here.");
 const __s_pct_s_dot = cptr.lit("%s.");
@@ -243,7 +241,7 @@ function* md_stop(stopp, startp) {
 
             if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
-                if (min_distance < 0 || distance < min_distance || (distance == min_distance && rn2_at(__s_mail_c, 261, __s_md_stop, 2))) {
+                if (min_distance < 0 || distance < min_distance || (distance == min_distance && rn2(2))) {
                     cptr.stI16(stopp, x);
                     cptr.stI16o(stopp, $coord_y, y);
                     min_distance = distance;
@@ -325,7 +323,7 @@ function* md_rush(md, tx, ty) {
         if (!Deaf()) {
             ;
             if (mon)
-                (yield* verbalize(__s_pct_s, (cptr.ldPtro(mail_text, rn2_at(__s_mail_c, 340, __s_md_rush, 3), 8))));
+                (yield* verbalize(__s_pct_s, (cptr.ldPtro(mail_text, rn2(3), 8))));
             else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, $you_uy)))
                 (yield* verbalize(__s_excuse_me));
         }

@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { SET__IS_VALUE_VALID } from './nhmacrofn.js';
-import { rnd_at } from './nhrng.js';
 import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
@@ -46,7 +45,7 @@ import { reassign, update_inventory } from './invent.js';
 import { vision_recalc } from './vision.js';
 import { Strlen_, strbuf_append, strbuf_init } from './strutil.js';
 import { sf_init } from './sfbase.js';
-import { init_random, rn2, rn2_on_display_rng } from './rnd.js';
+import { init_random, rn2, rn2_on_display_rng, rnd } from './rnd.js';
 import { regex_compile, regex_error_desc, regex_free, regex_init, regex_match } from './posixregex.js';
 import { name_to_mon } from './mondata.js';
 import { reset_customsymbols } from './utf8map.js';
@@ -1175,8 +1174,6 @@ const __s_glob = cptr.lit("glob");
 const __s_corpse = cptr.lit(" corpse");
 const __s_egg = cptr.lit(" egg");
 const __s_candied = cptr.lit("candied ");
-const __s_options_c = cptr.lit("options.c");
-const __s_fruitadd = cptr.lit("fruitadd");
 const __s_longest_option_name = cptr.lit("longest_option_name");
 const __s_us_s = cptr.lit("%%-%us [%%s]");
 const __s_use_command_optionsfull_to_get_the = cptr.lit("Use command '#optionsfull' to get the complete options list.");
@@ -1204,6 +1201,7 @@ const __s_other_settings = cptr.lit("Other settings:");
 const __s_set_what_options = cptr.lit("Set what options?");
 const __s_optmenu = cptr.lit("optmenu");
 const __s_doset = cptr.lit("doset");
+const __s_options_c = cptr.lit("options.c");
 const __s_indexok_opt_indx_allopt = cptr.lit("IndexOk(opt_indx, allopt)");
 const __s_for_a_brief_explanation_of_how_this = cptr.lit("For a brief explanation of how this works, type '?' to select");
 const __s_the_next_menu_choice_then_press_enter = cptr.lit("the next menu choice, then press <enter> or <return>.");
@@ -12805,7 +12803,7 @@ export function* fruitadd(str, replace_fruit) {
            use a random fruit instead... we've got a lot to choose from.
            current_fruit remains as is. */
         if (highest_fruit_id.v >= 127)
-            return rnd_at(__s_options_c, 8273, __s_fruitadd, 127);
+            return rnd(127);
 
         f = (yield* alloc(48));
         void __builtin___memset_chk(f, 0, 48n, __builtin_object_size(f, 0));

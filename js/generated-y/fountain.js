@@ -14,11 +14,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, glyph_is_cmap, is_watch, min } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Deaf, Fire_resistance, Glib, Hallucination, Invisible, Levitation, Poison_resistance, Unchanging, display_nhwindow, wizard } from './nhprop.js';
 import { WIN_MESSAGE, c_common_strings, disp, flags, gi, gu, gv, gy, hands_obj, svl, svm, u, uarmg, ynchars } from './decl.js';
 import { dunlev, dunlevs_in_dungeon, level_difficulty, surface } from './dungeon.js';
 import { You, You_feel, You_hear, You_see, Your, livelog_printf, pline, pline_The, verbalize } from './pline.js';
+import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { fruitname, makeplural, rnd_class, the, xname } from './objnam.js';
 import { Amonnam, a_monnam, hcolor, hliquid, oname, rndmonnam } from './do_name.js';
 import { makemon } from './makemon.js';
@@ -53,7 +53,6 @@ import { fingers_or_gloves } from './do_wear.js';
 import { obfree } from './shk.js';
 import { observe_object } from './o_init.js';
 import { more_experienced, newexplevel } from './exper.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { create_gas_cloud } from './region.js';
 import { polymorph_sink, trycall } from './do.js';
 
@@ -94,15 +93,12 @@ const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FL
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_are_floating_high_above_the_s = cptr.lit("are floating high above the %s.");
 const __s_are_trapped_in_the_s = cptr.lit("are trapped in the %s.");
-const __s_fountain_c = cptr.lit("fountain.c");
-const __s_dowatersnakes = cptr.lit("dowatersnakes");
 const __s_an_endless_stream_of_s_pours_forth = cptr.lit("An endless stream of %s pours forth!");
 const __s_snakes = cptr.lit("snakes");
 const __s_s_hissing = cptr.lit("%s hissing!");
 const __s_fountain_bubbles_furiously_for_a_moment = cptr.lit("fountain bubbles furiously for a moment, then calms.");
 const __s_unleash_s = cptr.lit("unleash %s!");
 const __s_the_presence_of_evil = cptr.lit("the presence of evil.");
-const __s_dowaterdemon = cptr.lit("dowaterdemon");
 const __s_grateful_for_s_release_s_grants_you_a = cptr.lit("Grateful for %s release, %s grants you a wish!");
 const __s_attract_s = cptr.lit("attract %s!");
 const __s_a_seductive_voice = cptr.lit("a seductive voice.");
@@ -110,7 +106,6 @@ const __s_a_large_bubble_rises_to_the_surface_and = cptr.lit("A large bubble ris
 const __s_a_loud_pop = cptr.lit("a loud pop.");
 const __s_thirst_is_quenched = cptr.lit("thirst is quenched.");
 const __s_water_sprays_all_over_you = cptr.lit("Water sprays all over you.");
-const __s_gush = cptr.lit("gush");
 const __s_water_gushes_forth_from_the_overflowing = cptr.lit("Water gushes forth from the overflowing fountain!");
 const __s_spot_a_gem_in_the_sparkling_waters = cptr.lit("spot a gem in the sparkling waters!");
 const __s_a_gem_here = cptr.lit("a gem here!");
@@ -119,11 +114,9 @@ const __s_hey_stop_using_that_fountain = cptr.lit("Hey, stop using that fountain
 const __s_s_earnestly_s_s_s = cptr.lit("%s earnestly %s %s %s!");
 const __s_shakes = cptr.lit("shakes");
 const __s_waves = cptr.lit("waves");
-const __s_dryup = cptr.lit("dryup");
 const __s_flow_reduces_to_a_trickle = cptr.lit("flow reduces to a trickle.");
 const __s_dry_up_fountain = cptr.lit("Dry up fountain?");
 const __s_fountain_dries_up = cptr.lit("fountain dries up!");
-const __s_drinkfountain = cptr.lit("drinkfountain");
 const __s_fountain = cptr.lit("fountain");
 const __s_wow_this_makes_you_feel_great = cptr.lit("Wow!  This makes you feel great!");
 const __s_a_wisp_of_vapor_escapes_the_fountain = cptr.lit("A wisp of vapor escapes the fountain...");
@@ -145,7 +138,6 @@ const __s_s_tastes_like_nothing = cptr.lit("%s tastes like nothing.");
 const __s_water = cptr.lit("water");
 const __s_this_s_gives_you_bad_breath = cptr.lit("This %s gives you bad breath!");
 const __s_this_tepid_s_is_tasteless = cptr.lit("This tepid %s is tasteless.");
-const __s_dipfountain = cptr.lit("dipfountain");
 const __s_a_freezing_mist_rises_from_the_s_and = cptr.lit("A freezing mist rises from the %s and envelopes the sword.");
 const __s_fountain_disappears = cptr.lit("fountain disappears!");
 const __s_was_denied_s_the_s_has_deemed_s_unworthy = cptr.lit("was denied %s!  The %s has deemed %s unworthy");
@@ -166,7 +158,6 @@ const __s_empty = cptr.lit("");
 const __s_s_are_no_longer_slippery = cptr.lit("%s are no longer slippery.");
 const __s_pipes_break_water_spurts_out = cptr.lit("pipes break!  Water spurts out!");
 const __s_sink = cptr.lit("sink");
-const __s_drinksink = cptr.lit("drinksink");
 const __s_take_a_sip_of_very_cold_s = cptr.lit("take a sip of very cold %s.");
 const __s_take_a_sip_of_very_warm_s = cptr.lit("take a sip of very warm %s.");
 const __s_take_a_sip_of_scalding_hot_s = cptr.lit("take a sip of scalding hot %s.");
@@ -183,6 +174,8 @@ const __s_s_moves_as_though_of_its_own_will = cptr.lit("%s moves as though of it
 const __s_but_it_quiets_down = cptr.lit("But it quiets down.");
 const __s_yuk_this_s_tastes_awful = cptr.lit("Yuk, this %s tastes awful.");
 const __s_gaggg_this_tastes_like_sewage_you_vomit = cptr.lit("Gaggg... this tastes like sewage!  You vomit.");
+const __s_fountain_c = cptr.lit("fountain.c");
+const __s_drinksink = cptr.lit("drinksink");
 const __s_this_s_contains_toxic_wastes = cptr.lit("This %s contains toxic wastes!");
 const __s_undergo_a_freakish_metamorphosis = cptr.lit("undergo a freakish metamorphosis!");
 const __s_clanking_from_the_pipes = cptr.lit("clanking from the pipes...");
@@ -193,7 +186,6 @@ const __s_take_a_sip_of_s_s = cptr.lit("take a sip of %s %s.");
 const __s_cold = cptr.lit("cold");
 const __s_warm = cptr.lit("warm");
 const __s_hot = cptr.lit("hot");
-const __s_dipsink = cptr.lit("dipsink");
 const __s_s_are_still_slippery = cptr.lit("%s are still slippery.");
 const __s_hold_s_under_the_tap = cptr.lit("hold %s under the tap.");
 const __s_pour_s_s_down_the_drain = cptr.lit("pour %s%s down the drain.");
@@ -228,7 +220,7 @@ export function* floating_above(what) {
 /* Fountain of snakes! */
 /** C ref: fountain.c:38 */
 function* dowatersnakes() {
-    let num = ((rn2_at(__s_fountain_c, 40, __s_dowatersnakes, 5) + 2) | 0);
+    let num = ((rn2(5) + 2) | 0);
     let mtmp;
 
     if (!(cptr.ld1uo2(svm, NHC.PM_WATER_MOCCASIN, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
@@ -261,7 +253,7 @@ function* dowaterdemon() {
 
             /* Give those on low levels a (slightly) better chance of survival
              */
-            if (rnd_at(__s_fountain_c, 78, __s_dowaterdemon, 100) > ((80 + (yield* level_difficulty())) | 0)) {
+            if (rnd(100) > ((80 + (yield* level_difficulty())) | 0)) {
                 (yield* pline(__s_grateful_for_s_release_s_grants_you_a, (cptr.ldPtro2(genders, pronoun_gender(mtmp.v, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), (cptr.ldPtro2(genders, pronoun_gender(mtmp.v, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he))));
                 /* give a wish and discard the monster (mtmp set to null) */
                 (yield* mongrantswish(mtmp));
@@ -316,7 +308,7 @@ function* gush(x, y, poolcnt) {
     let mtmp;
     let ttmp;
 
-    if ((((x + y) | 0) % 2) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || rn2_at(__s_fountain_c, 140, __s_gush, (1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) || (sobj_at(NHC.BOULDER, x, y)) || nexttodoor(x, y))
+    if ((((x + y) | 0) % 2) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) || (sobj_at(NHC.BOULDER, x, y)) || nexttodoor(x, y))
         return;
 
     if ((ttmp = t_at(x, y)) !== null && !(yield* delfloortrap(ttmp)))
@@ -368,7 +360,7 @@ function* watchman_warn_fountain(mtmp) {
 
 /** C ref: fountain.c:201 — @param {CInt} x @param {CInt} y @param {CInt} isyou */
 export function* dryup(x, y, isyou) {
-    if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && (!rn2_at(__s_fountain_c, 204, __s_dryup, 3) || (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))) {
+    if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && (!rn2(3) || (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))) {
         if (isyou && in_town(x, y) && !(((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED)) {
             let mtmp;
 
@@ -411,7 +403,7 @@ export function* dryup(x, y, isyou) {
 export function* drinkfountain() {
     /* What happens when you drink from a fountain? */
     let mgkftn = schar((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal) & 1) | 0) == 1));
-    let fate = rnd_at(__s_fountain_c, 247, __s_drinkfountain, 30);
+    let fate = rnd(30);
 
     if (Levitation()) {
         (yield* floating_above(__s_fountain));
@@ -431,7 +423,7 @@ export function* drinkfountain() {
                 cptr.st1(disp, 1);
             }
         /* gain ability, blessed if "natural" luck is high */
-        i = rn2_at(__s_fountain_c, 265, __s_drinkfountain, NHC.A_MAX);  /* start at a random attribute */
+        i = rn2(NHC.A_MAX);  /* start at a random attribute */
         for (ii = 0; ii < NHC.A_MAX; ii++) {
             if ((yield* adjattrib(i, 1, littleluck ? -1 : 0)) && littleluck)
                 break;
@@ -447,7 +439,7 @@ export function* drinkfountain() {
 
     if (fate < 10) {
         (yield* pline_The(__s_cool_draught_refreshes_you));
-        cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + rnd_at(__s_fountain_c, 281, __s_drinkfountain, 10)) | 0);  /* don't choke on water */
+        cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + rnd(10)) | 0);  /* don't choke on water */
         (yield* newuhs(0));
         if (mgkftn)
             return;
@@ -462,17 +454,17 @@ export function* drinkfountain() {
             break;
             case 20:
             (yield* pline_The(__s_water_is_foul_you_gag_and_vomit));
-            (yield* morehungry(((rn2_at(__s_fountain_c, 296, __s_drinkfountain, 20) + 11) | 0)));
+            (yield* morehungry(((rn2(20) + 11) | 0)));
             (yield* vomit());
             break;
             case 21:
             (yield* pline_The(__s_water_is_contaminated));
             if (Poison_resistance()) {
                 (yield* pline(__s_perhaps_it_is_runoff_from_the_nearby_s, (yield* fruitname(0))));
-                (yield* losehp(rnd_at(__s_fountain_c, 304, __s_drinkfountain, 4), __s_unrefrigerated_sip_of_juice, NHM.KILLED_BY_AN));
+                (yield* losehp(rnd(4), __s_unrefrigerated_sip_of_juice, NHM.KILLED_BY_AN));
                 break;
             }
-            (yield* poison_strdmg(((rn2_at(__s_fountain_c, 307, __s_drinkfountain, 4) + 3) | 0), rnd_at(__s_fountain_c, 307, __s_drinkfountain, 10), __s_contaminated_water, NHM.KILLED_BY));
+            (yield* poison_strdmg(((rn2(4) + 3) | 0), rnd(10), __s_contaminated_water, NHM.KILLED_BY));
             (yield* exercise(NHC.A_CON, 0));
             break;
             case 22:
@@ -488,12 +480,12 @@ export function* drinkfountain() {
                 let buc_changed = 0;
 
                 (yield* pline(__s_this_water_s_no_good));
-                (yield* morehungry(((rn2_at(__s_fountain_c, 322, __s_drinkfountain, 20) + 11) | 0)));
+                (yield* morehungry(((rn2(20) + 11) | 0)));
                 (yield* exercise(NHC.A_CON, 0));
                 /* this is more severe than rndcurse() */
                 for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nextobj) {
                     nextobj = cptr.ldPtr(obj);
-                    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && !(cptr.ldI32o(obj, $obj_cursed) & 1) && !rn2_at(__s_fountain_c, 327, __s_drinkfountain, 5)) {
+                    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && !(cptr.ldI32o(obj, $obj_cursed) & 1) && !rn2(5)) {
                         (yield* curse(obj));
                         ++buc_changed;
                     }
@@ -569,14 +561,14 @@ export function* dipfountain(obj) {
         return;
     }
 
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LONG_SWORD && cptr.ldI32o(u, $you_ulevel) >= 5 && !rn2_at(__s_fountain_c, 405, __s_dipfountain, (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) ? 6 : 30) && cptr.ldI64o(obj, $obj_quan) == 1n && !cptr.ld1so(obj, $obj_oartifact) && !exist_artifact(NHC.LONG_SWORD, artiname(NHC.ART_EXCALIBUR))) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LONG_SWORD && cptr.ldI32o(u, $you_ulevel) >= 5 && !rn2((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) ? 6 : 30) && cptr.ldI64o(obj, $obj_quan) == 1n && !cptr.ld1so(obj, $obj_oartifact) && !exist_artifact(NHC.LONG_SWORD, artiname(NHC.ART_EXCALIBUR))) {
 
         if (cptr.ld1so(u, $you_ualign) != NHM.A_LAWFUL) {
             /* Ha!  Trying to cheat her. */
             (yield* pline(__s_a_freezing_mist_rises_from_the_s_and, hliquid(__s_water)));
             (yield* pline_The(__s_fountain_disappears));
             (yield* curse(obj));
-            if (cptr.ld1so(obj, $obj_spe) > -6 && !rn2_at(__s_fountain_c, 418, __s_dipfountain, 3))
+            if (cptr.ld1so(obj, $obj_spe) > -6 && !rn2(3))
                 (cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + -1)) - (-1);
             cptr.stI32o(obj, $obj_oerodeproof, 0);
             (yield* exercise(NHC.A_WIS, 0));
@@ -607,11 +599,11 @@ export function* dipfountain(obj) {
         er = (yield* water_damage(obj, null, 1));
     }
 
-    if (er == NHM.ER_DESTROYED || (er != NHM.ER_NOTHING && !rn2_at(__s_fountain_c, 454, __s_dipfountain, 2))) {
+    if (er == NHM.ER_DESTROYED || (er != NHM.ER_NOTHING && !rn2(2))) {
         return;  /* no further effect */
     }
 
-    switch (rnd_at(__s_fountain_c, 458, __s_dipfountain, 30)) {
+    switch (rnd(30)) {
         case 16:
         if (!is_hands && cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
             (yield* curse(obj));
@@ -693,7 +685,7 @@ export function* dipfountain(obj) {
             break;
         cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.F_LOOTED);
         ;
-        void (yield* mkgold(BigInt(((rnd_at(__s_fountain_c, 539, __s_dipfountain, Math.imul(((((dunlevs_in_dungeon(cptr.add(u, $you_uz)) - dunlev(cptr.add(u, $you_uz))) | 0) + 1) | 0), 2)) + 5) | 0)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+        void (yield* mkgold(BigInt(((rnd(Math.imul(((((dunlevs_in_dungeon(cptr.add(u, $you_uz)) - dunlev(cptr.add(u, $you_uz))) | 0) + 1) | 0), 2)) + 5) | 0)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         if (!Blind())
             (yield* pline(__s_far_below_you_you_see_coins_glistening, hliquid(__s_water)));
         (yield* exercise(NHC.A_WIS, 1));
@@ -753,7 +745,7 @@ export function* drinksink() {
         (yield* floating_above(__s_sink));
         return;
     }
-    switch (rn2_at(__s_fountain_c, 604, __s_drinksink, 20)) {
+    switch (rn2(20)) {
         case 0:
         (yield* You(__s_take_a_sip_of_very_cold_s, hliquid(__s_water)));
         break;
@@ -766,7 +758,7 @@ export function* drinksink() {
             (yield* pline(__s_it_seems_quite_tasty));
             monstseesu(2n);
         } else {
-            (yield* losehp(rnd_at(__s_fountain_c, 617, __s_drinksink, 6), __s_sipping_boiling_water, NHM.KILLED_BY));
+            (yield* losehp(rnd(6), __s_sipping_boiling_water, NHM.KILLED_BY));
             monstunseesu(2n);
         }
         /* boiling water burns considered fire damage */
@@ -852,7 +844,7 @@ export function* drinksink() {
         // @FallThrough
         ;
         default:
-        (yield* You(__s_take_a_sip_of_s_s, rn2_at(__s_fountain_c, 709, __s_drinksink, 3) ? (rn2_at(__s_fountain_c, 709, __s_drinksink, 2) ? __s_cold : __s_warm) : __s_hot, hliquid(__s_water)));
+        (yield* You(__s_take_a_sip_of_s_s, rn2(3) ? (rn2(2) ? __s_cold : __s_warm) : __s_hot, hliquid(__s_water)));
     }
 }
 
@@ -863,7 +855,7 @@ export function* dipsink(obj) {
     let not_looted_yet = schar(((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING) == 0));
     let is_hands = schar((cptr.eq(obj, hands_obj) || (uarmg.v && cptr.eq(obj, uarmg.v)) ? 1 : 0));
 
-    if (!rn2_at(__s_fountain_c, 722, __s_dipsink, not_looted_yet ? 25 : 15)) {
+    if (!rn2(not_looted_yet ? 25 : 15)) {
         /* can't rely on using sink for unlimited scroll blanking; however,
            since sink will be converted into a fountain, hero can dip again */
         (yield* breaksink(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* "The pipes break!  Water spurts out!" */

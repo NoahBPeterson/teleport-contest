@@ -14,11 +14,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, has_mcorpsenm, max } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Hallucination } from './nhprop.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
 import { canseemon, newsym, sensemon, show_glyph } from './display.js';
+import { d, rn2, rn2_on_display_rng, rnd } from './rnd.js';
 import { mcalcmove } from './mon.js';
 import { You, impossible, pline } from './pline.js';
 import { mons } from './monst.js';
@@ -26,7 +26,6 @@ import { dist2, distmin, s_suffix } from './hacklib.js';
 import { mattacku } from './mhitu.js';
 import { clone_mon } from './makemon.js';
 import { Monnam, mon_nam } from './do_name.js';
-import { rn2_on_display_rng } from './rnd.js';
 import { sfi_int, sfi_int16, sfi_long, sfo_int, sfo_int16, sfo_long } from './sfbase.js';
 import { isok } from './cmd.js';
 import { rnd_nextto_goodpos } from './trap.js';
@@ -47,11 +46,7 @@ const $NHFILE_mode = FLD.NHFILE_mode, $context_info_mon_moving = FLD.context_inf
     $you_uprops = FLD.you_uprops, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_worm_c = cptr.lit("worm.c");
-const __s_worm_move = cptr.lit("worm_move");
-const __s_worm_nomove = cptr.lit("worm_nomove");
 const __s_wormgone_wormno_is_0 = cptr.lit("wormgone: wormno is 0");
-const __s_cutworm = cptr.lit("cutworm");
 const __s_cutworm_no_segment_at_d_d = cptr.lit("cutworm: no segment at (%d,%d)");
 const __s_part_of_s_tail_has_been_cut_off = cptr.lit("Part of %s tail has been cut off.");
 const __s_cut_part_of_the_tail_off_of_s = cptr.lit("cut part of the tail off of %s.");
@@ -279,10 +274,10 @@ export function* worm_move(worm) {
         /* first set up for the next time to grow */
         if (!cptr.ldI64o(wgrowtime, wnum, 8)) {
             /* new worm; usually grow a tail segment on its next turn */
-            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnd_at(__s_worm_c, 224, __s_worm_move, 5))), 8);
+            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnd(5))), 8);
         } else {
             let mmove = mcalcmove(worm, 0);
-            let incr = ((rn2_at(__s_worm_c, 233, __s_worm_move, 10) + 2) | 0);
+            let incr = ((rn2(10) + 2) | 0);
 
             incr = ((Math.imul(incr, NHM.NORMAL_SPEED)) / ((mmove) > 1 ? (mmove) : 1)) | 0;
             cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(incr)), 8);
@@ -305,7 +300,7 @@ export function* worm_move(worm) {
             whplimit = NHM.MHPMAX;
 
         prev_mhp = cptr.ldI32o(worm, $monst_mhp);
-        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + d_at(__s_worm_c, 257, __s_worm_move, 2, 2)) | 0);  /* 2..4, average 3 */
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + d(2, 2)) | 0);  /* 2..4, average 3 */
         whpcap = max(whplimit, cptr.ldI32o(worm, $monst_mhpmax));
         if (cptr.ldI32o(worm, $monst_mhp) < whpcap) {
             /* can't exceed segment-derived limit unless level increase after
@@ -340,7 +335,7 @@ export function* worm_nomove(worm) {
     (yield* shrink_worm((cptr.ldI32o(worm, $monst_wormno) & 31) | 0));  /* shrink */
 
     if (cptr.ldI32o(worm, $monst_mhp) > count_wsegs(worm)) {
-        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - d_at(__s_worm_c, 293, __s_worm_nomove, 2, 2)) | 0);  /* 2..4, average 3; note: mhpmax not changed! */
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - d(2, 2)) | 0);  /* 2..4, average 3; note: mhpmax not changed! */
         if (cptr.ldI32o(worm, $monst_mhp) < 1)
             cptr.stI32o(worm, $monst_mhp, 1);
     }
@@ -433,7 +428,7 @@ export function* cutworm(worm, x, y, cuttier) {
         return;  /* hit on head */
 
     /* cutting goes best with a cuttier weapon */
-    cut_chance = rnd_at(__s_worm_c, 388, __s_cutworm, 20);  /* Normally     1-16 does not cut, 17-20 does, */
+    cut_chance = rnd(20);  /* Normally     1-16 does not cut, 17-20 does, */
     if (cuttier)
         cut_chance = (cut_chance + 10) | 0;  /* with a blade 1- 6 does not cut,  7-20 does. */
 
@@ -472,7 +467,7 @@ export function* cutworm(worm, x, y, cuttier) {
      *  must be at least level 3 in order to produce a new worm.
      */
     new_worm = null;
-    new_wnum = (cptr.ld1uo(worm, $monst_m_lev) >= 3 && !rn2_at(__s_worm_c, 427, __s_cutworm, 3)) ? get_wormno() : 0;
+    new_wnum = (cptr.ld1uo(worm, $monst_m_lev) >= 3 && !rn2(3)) ? get_wormno() : 0;
     if (new_wnum) {
         cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);  /* clone_mon puts new head here */
         /* clone_mon() will fail if enough long worms have been
@@ -505,8 +500,8 @@ export function* cutworm(worm, x, y, cuttier) {
 
     /* Calculate the lower-level mhp; use <N>d8 for long worms.
        Can't use newmonhp() here because it would reset m_lev. */
-    cptr.stI32o(new_worm, $monst_mhpmax, cptr.stI32o(new_worm, $monst_mhp, d_at(__s_worm_c, 461, __s_cutworm, (cptr.ld1uo(new_worm, $monst_m_lev)), 8)));
-    cptr.stI32o(worm, $monst_mhpmax, d_at(__s_worm_c, 462, __s_cutworm, (cptr.ld1uo(worm, $monst_m_lev)), 8));  /* new maxHP for old worm */
+    cptr.stI32o(new_worm, $monst_mhpmax, cptr.stI32o(new_worm, $monst_mhp, d((cptr.ld1uo(new_worm, $monst_m_lev)), 8)));
+    cptr.stI32o(worm, $monst_mhpmax, d((cptr.ld1uo(worm, $monst_m_lev)), 8));  /* new maxHP for old worm */
     if (cptr.ldI32o(worm, $monst_mhpmax) < cptr.ldI32o(worm, $monst_mhp))
         cptr.stI32o(worm, $monst_mhp, cptr.ldI32o(worm, $monst_mhpmax));
 

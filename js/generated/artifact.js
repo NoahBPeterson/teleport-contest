@@ -9,13 +9,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_container, Is_dragon_armor, Is_dragon_mail, canspotmon, glyph_is_trap, is_dlord, is_dprince, is_mplayer, ismnum, nonliving } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at, rnz_at } from './nhrng.js';
 import { Antimagic, BInvis, Blind, BlindedTimeout, Cold_resistance, Drain_resistance, ELevitation, Fire_resistance, HBlinded, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Poison_resistance, Role_switch, Shock_resistance, Sick, Slimed, Stone_resistance, Upolyd, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu, tutorial_dnum } from './nhprop.js';
 import { aligns } from './role.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gm, gn, gs, gu, gv, gw, gy, iflags, program_state, svb, svc, svd, svl, svm, svn, svq, u, uarmg, uleft, uright, uswapwep, uwep } from './decl.js';
 import { sfi_arti_info, sfi_short, sfo_arti_info, sfo_xint16 } from './sfbase.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
+import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller, rnz } from './rnd.js';
 import { bcsign, mksobj, obj_extract_self, uncurse, weight } from './mkobj.js';
 import { Monnam, hcolor, mon_nam, oname } from './do_name.js';
 import { inside_shop, obfree } from './shk.js';
@@ -35,7 +35,6 @@ import { align_str, enlightenment } from './insight.js';
 import { cancel_monst, destroy_items, flashburn, lightdamage, probe_monster, resist } from './zap.js';
 import { healmon, migrate_mon, set_ustuck, wake_nearto } from './mon.js';
 import { monflee } from './monmove.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { float_down, float_up, ignite_items, selftouch, t_at, untrap } from './trap.js';
 import { burn_away_slime } from './timeout.js';
 import { body_part, mbodypart } from './polyself.js';
@@ -181,8 +180,8 @@ const __s_the_orb_of_fate = cptr.lit("The Orb of Fate");
 const __s_the_eye_of_the_aethiopica = cptr.lit("The Eye of the Aethiopica");
 const __s_artiexist = cptr.lit("artiexist");
 const __s_artidisco = cptr.lit("artidisco");
-const __s_artifact_c = cptr.lit("artifact.c");
 const __s_mk_artifact = cptr.lit("mk_artifact");
+const __s_artifact_c = cptr.lit("artifact.c");
 const __s_otmp_0 = cptr.lit("otmp != 0");
 const __s_the = cptr.lit("the ");
 const __s_sp_dash = cptr.lit(" -");
@@ -194,17 +193,13 @@ const __s_in_a_container = cptr.lit(" in a container");
 const __s_carried_by_a_monster = cptr.lit(" carried by a monster");
 const __s_found_s_s = cptr.lit("found %s%s");
 const __s_invalid_artifact_origin_4o = cptr.lit("invalid artifact origin: %4o");
-const __s_touch_artifact = cptr.lit("touch_artifact");
 const __s_are_blasted_by_s_power = cptr.lit("are blasted by %s power!");
 const __s_touching_s = cptr.lit("touching %s");
 const __s_s_your_grasp = cptr.lit("%s your grasp!");
 const __s_evade = cptr.lit("evade");
 const __s_s_beyond_your_control = cptr.lit("%s beyond your control!");
 const __s_are = cptr.lit("are");
-const __s_spec_applies = cptr.lit("spec_applies");
 const __s_weird_weapon_special_attack = cptr.lit("Weird weapon special attack.");
-const __s_spec_abon = cptr.lit("spec_abon");
-const __s_spec_dbon = cptr.lit("spec_dbon");
 const __s_couldn_t_discover_artifact_d = cptr.lit("couldn't discover artifact (%d)");
 const __s_artifacts = cptr.lit("Artifacts");
 const __s_unaligned = cptr.lit("unaligned");
@@ -230,12 +225,12 @@ const __s_prod = cptr.lit("prod");
 const __s_amaze = cptr.lit("amaze");
 const __s_tickle = cptr.lit("tickle");
 const __s_purge = cptr.lit("purge");
-const __s_mb_hit = cptr.lit("Mb_hit");
 const __s_magic_absorbing_blade_s_s = cptr.lit("magic-absorbing blade %s %s!");
 const __s_lose_magical_energy = cptr.lit("lose magical energy!");
 const __s_absorb_magical_energy = cptr.lit("absorb magical energy!");
 const __s_being_scared_stiff = cptr.lit("being scared stiff");
 const __s_release_s = cptr.lit("release %s!");
+const __s_mb_hit = cptr.lit("Mb_hit");
 const __s_s_is_insightful = cptr.lit("%s is insightful.");
 const __s_s_s = cptr.lit("%s %s!");
 const __s_resist = cptr.lit("resist");
@@ -248,7 +243,6 @@ const __s_fiery_blade_s_s_c = cptr.lit("fiery blade %s %s%c");
 const __s_hits = cptr.lit("hits");
 const __s_vaporizes_part_of = cptr.lit("vaporizes part of");
 const __s_burns = cptr.lit("burns");
-const __s_artifact_hit = cptr.lit("artifact_hit");
 const __s_ice_cold_blade_s_s_c = cptr.lit("ice-cold blade %s %s%c");
 const __s_freezes = cptr.lit("freezes");
 const __s_massive_hammer_hits_s_s_c = cptr.lit("massive hammer hits%s %s%c");
@@ -273,6 +267,7 @@ const __s_animating_force = cptr.lit("animating force");
 const __s_life = cptr.lit("life");
 const __s_s_blade_draws_the_s_from_s = cptr.lit("%s blade draws the %s from %s!");
 const __s_s_draws_the_s_from_s = cptr.lit("%s draws the %s from %s!");
+const __s_artifact_hit = cptr.lit("artifact_hit");
 const __s_magr_0 = cptr.lit("magr != 0");
 const __s_an_s_drain_your_s = cptr.lit("an %s drain your %s!");
 const __s_unholy_blade = cptr.lit("unholy blade");
@@ -293,25 +288,19 @@ const __s_open_a_portal_to_which_dungeon = cptr.lit("Open a portal to which dung
 const __s_very_disoriented_for_a_moment = cptr.lit("very disoriented for a moment.");
 const __s_are_surrounded_by_a_shimmering_sphere = cptr.lit("are surrounded by a shimmering sphere!");
 const __s_weightless_for_a_moment = cptr.lit("weightless for a moment.");
-const __s_invoke_create_ammo = cptr.lit("invoke_create_ammo");
 const __s_suddenly_s_out = cptr.lit("Suddenly %s out.");
 const __s_fall = cptr.lit("fall");
-const __s_invoke_banish = cptr.lit("invoke_banish");
 const __s_s_s_s_in_a_cloud_of_brimstone = cptr.lit("%s %s %s in a cloud of brimstone!");
 const __s_most_of_the = cptr.lit("Most of the");
 const __s_some_of_the = cptr.lit("Some of the");
 const __s_the__2 = cptr.lit("The");
 const __s_disappear = cptr.lit("disappear");
-const __s_invoke_fling_poison = cptr.lit("invoke_fling_poison");
 const __s_pct_s = cptr.lit("%s");
 const __s_it_is_lit_here_now = cptr.lit("It is lit here now.");
-const __s_invoke_blinding_ray = cptr.lit("invoke_blinding_ray");
 const __s_that_s_s_ignoring_you = cptr.lit("that %s %s ignoring you.");
-const __s_arti_invoke_cost = cptr.lit("arti_invoke_cost");
 const __s_drained = cptr.lit("drained...");
 const __s_arti_invoke_without_obj = cptr.lit("arti_invoke without obj");
 const __s_unknown_invoke_power_d = cptr.lit("Unknown invoke power %d.");
-const __s_arti_invoke = cptr.lit("arti_invoke");
 const __s_like_a_rabble_rouser = cptr.lit("like a rabble-rouser.");
 const __s_the_tension_decrease_around_you = cptr.lit("the tension decrease around you.");
 const __s_body_takes_on_a_s_transparency = cptr.lit("body takes on a %s transparency...");
@@ -333,7 +322,6 @@ const __s_handle_s_s = cptr.lit("handle %s%s!");
 const __s_anymore = cptr.lit(" anymore");
 const __s_a_silver_ring = cptr.lit("a silver ring");
 const __s_a_silver_wand = cptr.lit("a silver wand");
-const __s_retouch_object = cptr.lit("retouch_object");
 const __s_handling_s = cptr.lit("handling %s");
 const __s_s_to_the_s = cptr.lit("%s to the %s.");
 const __s_after_losing_your_gloves_you = cptr.lit("After losing your gloves, you");
@@ -1366,7 +1354,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
             }
 
             /* found something to consider for random selection */
-            if ((cptr.ld1so(a, $artifact_alignment) != -128 || cptr.ldI32o(u, $you_ugifts) > 0 || !rn2_at(__s_artifact_c, 230, __s_mk_artifact, 3)) && (!rn2_at(__s_artifact_c, 231, __s_mk_artifact, 4) || skill_compatibility >= NHC.P_SKILLED || (skill_compatibility >= NHC.P_BASIC && rn2_at(__s_artifact_c, 232, __s_mk_artifact, 2)))) {
+            if ((cptr.ld1so(a, $artifact_alignment) != -128 || cptr.ldI32o(u, $you_ugifts) > 0 || !rn2(3)) && (!rn2(4) || skill_compatibility >= NHC.P_SKILLED || (skill_compatibility >= NHC.P_BASIC && rn2(2)))) {
                 /* right alignment, or non-aligned with at least 1
                    previous gift bestowed, makes this one viable;
                    unaligned artifacts are possible even as the first
@@ -1393,7 +1381,7 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
 
     if (n) {
         /* found at least one candidate; pick one at random */
-        m = cptr.ldI16o(eligible, rn2_at(__s_artifact_c, 259, __s_mk_artifact, n), 2);  /* [0..n-1] */
+        m = cptr.ldI16o(eligible, rn2(n), 2);  /* [0..n-1] */
         a = cptr.add(artilist, m, $sizeof_artifact);
 
         /* make an appropriate object if necessary, then christen it */
@@ -2026,7 +2014,7 @@ export function touch_artifact(obj, mon) {
     if (!badalign)
         badalign = bane_applies(oart, mon);
 
-    if (((badclass || badalign) && self_willed) || (badalign && (!yours || !rn2_at(__s_artifact_c, 945, __s_touch_artifact, 4)))) {
+    if (((badclass || badalign) && self_willed) || (badalign && (!yours || !rn2(4)))) {
         let dmg;
         let tmp;
         let buf = new Uint8Array(256);
@@ -2035,10 +2023,10 @@ export function touch_artifact(obj, mon) {
             return 0;
         You(__s_are_blasted_by_s_power, s_suffix(the(xname(obj))));
         touch_blasted = 1;
-        dmg = d_at(__s_artifact_c, 953, __s_touch_artifact, ((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)));
+        dmg = d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)));
         /* add half (maybe quarter) of the usual silver damage bonus */
         if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-            tmp = rnd_at(__s_artifact_c, 956, __s_touch_artifact, 10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
+            tmp = rnd(10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
         void cptr.sprintf(cptr.decay(buf), __s_touching_s, cptr.ldPtro(oart, $artifact_name));
         losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);  /* magic damage, not physical */
         exercise(NHC.A_WIS, 0);
@@ -2119,7 +2107,7 @@ function spec_applies(weap, mtmp) {
             return !(yours ? Shock_resistance() : Resists_Elem(mtmp, NHC.SHOCK_RES));
             case NHM.AD_MAGM:
             case NHM.AD_STUN:
-            return !(yours ? Antimagic() : (rn2_at(__s_artifact_c, 1048, __s_spec_applies, 100) < cptr.ld1so(ptr, $permonst_mr)));
+            return !(yours ? Antimagic() : (rn2(100) < cptr.ld1so(ptr, $permonst_mr)));
             case NHM.AD_DRST:
             return !(yours ? Poison_resistance() : Resists_Elem(mtmp, NHC.POISON_RES));
             case NHM.AD_DRLI:
@@ -2153,7 +2141,7 @@ export function spec_abon(otmp, mon) {
        always return 0 for any artifact which has that attribute */
 
     if (!cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && cptr.ld1uo(weap, $artifact_attk + $attack_damn) && spec_applies(weap, mon))
-        return rnd_at(__s_artifact_c, 1085, __s_spec_abon, cptr.ld1uo(weap, $artifact_attk + $attack_damn));
+        return rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damn));
     return 0;
 }
 
@@ -2172,7 +2160,7 @@ export function spec_dbon(otmp, mon, tmp) {
         cptr.stI32(gs, spec_applies(weap, mon));
 
     if (cptr.ldI32(gs))
-        return cptr.ld1uo(weap, $artifact_attk + $attack_damd) ? rnd_at(__s_artifact_c, 1107, __s_spec_dbon, cptr.ld1uo(weap, $artifact_attk + $attack_damd)) : ((tmp) > 1 ? (tmp) : 1);
+        return cptr.ld1uo(weap, $artifact_attk + $attack_damd) ? rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd)) : ((tmp) > 1 ? (tmp) : 1);
     return 0;
 }
 
@@ -2322,7 +2310,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
        in that case it will only happen if the other effect fails;
        extra damage will apply regardless; 3.4.1: sometimes might
        just probe even when it hasn't been enchanted */
-    do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) < rn2_at(__s_artifact_c, 1277, __s_mb_hit, cptr.ldI32(gs) ? 11 : 7)));
+    do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) < rn2(cptr.ldI32(gs) ? 11 : 7)));
 
     /* the special effects also boost physical damage; increments are
        generally cumulative, but since the stun effect is based on a
@@ -2332,18 +2320,18 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
        [note that a successful save against AD_STUN doesn't actually
        prevent the target from ending up stunned] */
     attack_indx = NHC.MB_INDEX_PROBE;
-    cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1287, __s_mb_hit, 4)) | 0);  /* (2..3)d4 */
+    cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd(4)) | 0);  /* (2..3)d4 */
     if (do_stun) {
         attack_indx = NHC.MB_INDEX_STUN;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1290, __s_mb_hit, 4)) | 0);  /* (3..4)d4 */
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd(4)) | 0);  /* (3..4)d4 */
     }
     if (dieroll <= scare_dieroll) {
         attack_indx = NHC.MB_INDEX_SCARE;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1294, __s_mb_hit, 4)) | 0);  /* (3..5)d4 */
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd(4)) | 0);  /* (3..5)d4 */
     }
     if (dieroll <= ((scare_dieroll / 2) | 0)) {
         attack_indx = NHC.MB_INDEX_CANCEL;
-        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd_at(__s_artifact_c, 1298, __s_mb_hit, 4)) | 0);  /* (4..6)d4 */
+        cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + rnd(4)) | 0);  /* (4..6)d4 */
     }
 
     /* give the hit message prior to inflicting the effects */
@@ -2411,7 +2399,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                 }
             }
         } else {
-            if (rn2_at(__s_artifact_c, 1368, __s_mb_hit, 2) && resist(mdef, NHC.WEAPON_CLASS, 0, NHM.NOTELL))
+            if (rn2(2) && resist(mdef, NHC.WEAPON_CLASS, 0, NHM.NOTELL))
                 resisted = 1;
             else
                 monflee(mdef, 3, 0, schar((cptr.ldI32o(mdef, $monst_mhp) > cptr.ldI32(dmgptr))));
@@ -2441,7 +2429,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
             do_stun = 0;
     }
     /* lastly, all this magic can be confusing... */
-    do_confuse = schar((!rn2_at(__s_artifact_c, 1400, __s_mb_hit, 12)));
+    do_confuse = schar((!rn2(12)));
     if (do_confuse) {
         if (youdefend)
             make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + 4n), 0);
@@ -2516,7 +2504,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     if (attacks(NHM.AD_FIRE, otmp)) {
         if (realizes_damage)
             pline_The(__s_fiery_blade_s_s_c, !cptr.ldI32(gs) ? __s_hits : ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_WATER_ELEMENTAL, $sizeof_permonst))) ? __s_vaporizes_part_of : __s_burns), cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
-        if (!rn2_at(__s_artifact_c, 1491, __s_artifact_hit, 4)) {
+        if (!rn2(4)) {
             let itemdmg = destroy_items(mdef, NHM.AD_FIRE, cptr.ldI32(dmgptr));
             if (!youdefend)
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);  /* item destruction dmg */
@@ -2529,7 +2517,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     if (attacks(NHM.AD_COLD, otmp)) {
         if (realizes_damage)
             pline_The(__s_ice_cold_blade_s_s_c, !cptr.ldI32(gs) ? __s_hits : __s_freezes, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
-        if (!rn2_at(__s_artifact_c, 1506, __s_artifact_hit, 4)) {
+        if (!rn2(4)) {
             let itemdmg = destroy_items(mdef, NHM.AD_COLD, cptr.ldI32(dmgptr));
             if (!youdefend)
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);  /* item destruction dmg */
@@ -2541,7 +2529,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             pline_The(__s_massive_hammer_hits_s_s_c, !cptr.ldI32(gs) ? __s_empty : __s_lightning_strikes, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
         if (cptr.ldI32(gs))
             wake_nearto(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my), 16);
-        if (!rn2_at(__s_artifact_c, 1520, __s_artifact_hit, 5)) {
+        if (!rn2(5)) {
             let itemdmg = destroy_items(mdef, NHM.AD_ELEC, cptr.ldI32(dmgptr));
             if (!youdefend)
                 cptr.stI32(dmgptr, (cptr.ldI32(dmgptr) + itemdmg) | 0);  /* item destruction dmg */
@@ -2629,7 +2617,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
-                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2_at(__s_artifact_c, 1618, __s_artifact_hit, 2), 8), wepdesc, mon_nam(mdef));
+                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2(2), 8), wepdesc, mon_nam(mdef));
                 if (Hallucination() && !cptr.ld1so(flags, $flag_female))
                     pline(__s_good_job_henry_but_that_wasn_t_anne);
                 observe_object(otmp);
@@ -2645,7 +2633,7 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
-                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2_at(__s_artifact_c, 1638, __s_artifact_hit, 2), 8), wepdesc, __s_you);
+                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2(2), 8), wepdesc, __s_you);
                 observe_object(otmp);
                 /* Should amulets fall off? */
                 return 1;
@@ -2927,12 +2915,12 @@ function invoke_create_ammo(obj) {
     if ((cptr.ldI32o(obj, $obj_blessed) & 1)) {
         if (cptr.ld1so(otmp, $obj_spe) < 0)
             cptr.st1o(otmp, $obj_spe, 0);
-        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rnd_at(__s_artifact_c, 1949, __s_invoke_create_ammo, 10)));
+        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rnd(10)));
     } else if ((cptr.ldI32o(obj, $obj_cursed) & 1)) {
         if (cptr.ld1so(otmp, $obj_spe) > 0)
             cptr.st1o(otmp, $obj_spe, 0);
     } else
-        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rnd_at(__s_artifact_c, 1954, __s_invoke_create_ammo, 5)));
+        cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rnd(5)));
     cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
     otmp = hold_another_object(otmp, __s_suddenly_s_out, aobjnam(otmp, __s_fall), null);
     (void (otmp));
@@ -2970,11 +2958,11 @@ function invoke_banish(obj) {
             chance++;
 
         cptr.stI32o(mtmp, $monst_msleeping, cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0))));
-        if (chance <= 1 || !rn2_at(__s_artifact_c, 1992, __s_invoke_banish, chance)) {
+        if (chance <= 1 || !rn2(chance)) {
             if (!In_hell(cptr.add(u, $you_uz))) {
                 nvanished++;
                 /* banish to a random level in Gehennom */
-                cptr.stI16o(dest, $d_level_dlevel, i16(rn2_at(__s_artifact_c, 1996, __s_invoke_banish, dunlevs_in_dungeon(dest))));
+                cptr.stI16o(dest, $d_level_dlevel, i16(rn2(dunlevs_in_dungeon(dest))));
                 migrate_mon(mtmp, ledger_no(dest), NHM.MIGR_RANDOM);
             } else {
                 u_teleport_mon(mtmp, 0);
@@ -2997,7 +2985,7 @@ function invoke_banish(obj) {
 /** C ref: artifact.c:2022 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_fling_poison(obj) {
     if (getdir(null)) {
-        let venom = rn2_at(__s_artifact_c, 2025, __s_invoke_fling_poison, 2) ? NHC.BLINDING_VENOM : NHC.ACID_VENOM;
+        let venom = rn2(2) ? NHC.BLINDING_VENOM : NHC.ACID_VENOM;
         let otmp = mksobj(venom, 1, 0);
 
         cptr.st1o(otmp, $obj_spe, 1);  /* the poison is yours */
@@ -3042,7 +3030,7 @@ function invoke_blinding_ray(obj) {
             if (vulnerable)
                 void lightdamage(obj, 1, Math.imul(2, damg));
 
-            if (!flashburn(BigInt(((damg + rnd_at(__s_artifact_c, 2075, __s_invoke_blinding_ray, damg)) | 0)), 0) && !vulnerable)
+            if (!flashburn(BigInt(((damg + rnd(damg)) | 0)), 0) && !vulnerable)
                 pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
         }
     } else {
@@ -3078,7 +3066,7 @@ function arti_invoke_cost(obj) {
             /* the artifact is tired :-) */
             You_feel(__s_that_s_s_ignoring_you, the(xname(obj)), otense(obj, __s_are));
             /* and just got more so; patience is essential... */
-            cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt(d_at(__s_artifact_c, 2116, __s_arti_invoke_cost, 3, 10)));
+            cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt(d(3, 10)));
             return 0;
         } else {
             /* you pay invoke cost with your own magic */
@@ -3087,7 +3075,7 @@ function arti_invoke_cost(obj) {
             cptr.st1(disp, 1);
         }
     } else {
-        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz_at(__s_artifact_c, 2125, __s_arti_invoke_cost, 100))));
+        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz(100))));
     }
     return 1;
 }
@@ -3175,12 +3163,12 @@ function arti_invoke(obj) {
             cptr.stI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops, cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^ 8192n);
             You_feel(__s_that_s_s_ignoring_you, the(xname(obj.v)), otense(obj.v, __s_are));
             /* can't just keep repeatedly trying */
-            cptr.stI64o(obj.v, $obj_age, cptr.ldI64o(obj.v, $obj_age) + BigInt(d_at(__s_artifact_c, 2189, __s_arti_invoke, 3, 10)));
+            cptr.stI64o(obj.v, $obj_age, cptr.ldI64o(obj.v, $obj_age) + BigInt(d(3, 10)));
             return NHM.ECMD_TIME;
         } else if (!on) {
             /* when turning off property, determine downtime */
             /* arbitrary for now until we can tune this -dlc */
-            cptr.stI64o(obj.v, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz_at(__s_artifact_c, 2194, __s_arti_invoke, 100))));
+            cptr.stI64o(obj.v, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz(100))));
         }
 
         if ((eprop & -8193n) || iprop) {
@@ -3499,9 +3487,9 @@ export function retouch_object(objp, loseit) {
             /* damage is somewhat arbitrary; half the usual 1d20 physical
                for silver, 1d10 magical for <foo>bane, potentially both */
             if (ag)
-                tmp = rnd_at(__s_artifact_c, 2552, __s_retouch_object, 10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
+                tmp = rnd(10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
             if (bane)
-                dmg = (dmg + rnd_at(__s_artifact_c, 2554, __s_retouch_object, 10)) | 0;
+                dmg = (dmg + rnd(10)) | 0;
             void cptr.sprintf(cptr.decay(buf), __s_handling_s, what);
             losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);
             exercise(NHC.A_CON, 0);

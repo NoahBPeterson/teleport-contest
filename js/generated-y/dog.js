@@ -13,7 +13,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, emits_light, flesh_petrifies, has_edog, has_oname, helpless, is_metallic, is_rider, is_vampshifter, ismnum, likes_fire, max, ofood, slimeproof, vegan } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Aggravate_monster, Conflict, Hallucination, Upolyd } from './nhprop.js';
 import { makemon, mbirth_limit, newmextra, rndmonst_adj, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -23,6 +22,7 @@ import { There, You, impossible, livelog_printf, pline, pline_The, pline_mon } f
 import { genders } from './role.js';
 import { Tobjnam, an, the, xname } from './objnam.js';
 import { Monnam, christen_monst, mon_pmname } from './do_name.js';
+import { rn2, rnd } from './rnd.js';
 import { mons } from './monst.js';
 import { spell_skilltype } from './spell.js';
 import { free_emin } from './minion.js';
@@ -134,14 +134,12 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum, $Role_petnum = F
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_obtained_s_first_pet_s = cptr.lit("obtained %s first pet (%s)");
-const __s_dog_c = cptr.lit("dog.c");
-const __s_pet_type = cptr.lit("pet_type");
 const __s_pick_familiar_pm = cptr.lit("pick_familiar_pm");
+const __s_dog_c = cptr.lit("dog.c");
 const __s_ismnum_mndx = cptr.lit("ismnum(mndx)");
 const __s_into_a_pile_of_dust = cptr.lit("... into a pile of dust.");
 const __s_seems_to_be_nothing_available_for_a = cptr.lit("seems to be nothing available for a familiar.");
 const __s_figurine_writhes_and_then_shatters_into = cptr.lit("figurine writhes and then shatters into pieces!");
-const __s_make_familiar = cptr.lit("make_familiar");
 const __s_get_a_bad_feeling_about_this = cptr.lit("get a bad feeling about this.");
 const __s_empty = cptr.lit("");
 const __s_slasher = cptr.lit("Slasher");
@@ -149,11 +147,9 @@ const __s_hachi = cptr.lit("Hachi");
 const __s_idefix = cptr.lit("Idefix");
 const __s_sirius = cptr.lit("Sirius");
 const __s_makedog_when_startingpet_mid_is_already = cptr.lit("makedog() when startingpet_mid is already non-zero?");
-const __s_mon_arrive = cptr.lit("mon_arrive");
 const __s_mon_arrive_no_corresponding_portal = cptr.lit("mon_arrive: no corresponding portal?");
 const __s_catchup_from_future_time = cptr.lit("catchup from future time?");
 const __s_catchup_from_now = cptr.lit("catchup from now?");
-const __s_mon_catchup_elapsed_time = cptr.lit("mon_catchup_elapsed_time");
 const __s_catching_up_for_leashed_monster = cptr.lit("catching up for leashed monster?");
 const __s_s_is_still_s = cptr.lit("%s is still %s.");
 const __s_eating = cptr.lit("eating");
@@ -168,7 +164,6 @@ const __s_s_leash_goes_slack = cptr.lit("%s leash goes slack.");
 const __s_s_seems_s = cptr.lit("%s seems %s.");
 const __s_really_chill = cptr.lit("really chill");
 const __s_more_amiable = cptr.lit("more amiable");
-const __s_tamedog = cptr.lit("tamedog");
 const __s_s_catches_s_s = cptr.lit("%s catches %s%s");
 const __s_dot = cptr.lit(".");
 const __s_or_vice_versa = cptr.lit(", or vice versa!");
@@ -177,7 +172,6 @@ const __s_stop = cptr.lit("stop");
 const __s_s_seems_quite_s = cptr.lit("%s seems quite %s.");
 const __s_approachable = cptr.lit("approachable");
 const __s_friendly = cptr.lit("friendly");
-const __s_wary_dog = cptr.lit("wary_dog");
 const __s_s_s_to_look_you_in_the_s = cptr.lit("%s %s to look you in the %s.");
 const __s_seems_unable = cptr.lit("seems unable");
 const __s_refuses = cptr.lit("refuses");
@@ -185,7 +179,6 @@ const __s_s_avoids_your_gaze = cptr.lit("%s avoids your gaze.");
 const __s_s_s = cptr.lit("%s %s.");
 const __s_is_no_longer_tame = cptr.lit("is no longer tame");
 const __s_has_become_feral = cptr.lit("has become feral");
-const __s_abuse_dog = cptr.lit("abuse_dog");
 
 /** C ref: dog.c:14 — enum */
 export const Before_you = 0;
@@ -266,7 +259,7 @@ function pet_type() {
     else if (cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 100)
         return NHC.PM_LITTLE_DOG;
     else
-        return rn2_at(__s_dog_c, 100, __s_pet_type, 2) ? NHC.PM_KITTEN : NHC.PM_LITTLE_DOG;
+        return rn2(2) ? NHC.PM_KITTEN : NHC.PM_LITTLE_DOG;
 }
 
 /** C ref: dog.c:104 — @param {CPtr<struct obj>} otmp @param {CInt} quietly @returns {CPtr<struct permonst>} */
@@ -288,7 +281,7 @@ function* pick_familiar_pm(otmp, quietly) {
                 (yield* pline(__s_into_a_pile_of_dust));
             return null;
         }
-    } else if (!rn2_at(__s_dog_c, 124, __s_pick_familiar_pm, 3)) {
+    } else if (!rn2(3)) {
         pm = cptr.add(mons, pet_type(), $sizeof_permonst);
     } else {
         let skill = spell_skilltype(NHC.SPE_CREATE_FAMILIAR);
@@ -348,7 +341,7 @@ export function* make_familiar(otmp, x, y, quietly) {
         return null;
 
     if (otmp) {
-        chance = rn2_at(__s_dog_c, 186, __s_make_familiar, 10);  /* 0==tame, 1==peaceful, 2==hostile */
+        chance = rn2(10);  /* 0==tame, 1==peaceful, 2==hostile */
         if (chance > 2)
             chance = (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 0 : (!(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 1 : 2);
         /* 0,1,2:  b=80%,10,10; nc=10%,80,10; c=10%,10,80 */
@@ -632,7 +625,7 @@ export function* mon_arrive(mtmp, when) {
            that spot.  This code doesn't control the final outcome;
            goto_level(do.c) decides who ends up at your target spot
            when there is a monster there too. */
-        if (!(cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !rn2_at(__s_dog_c, 475, __s_mon_arrive, cptr.ld1so(mtmp, $monst_mtame) ? 10 : ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? 5 : 2)))
+        if (!(cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !rn2(cptr.ld1so(mtmp, $monst_mtame) ? 10 : ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? 5 : 2)))
             (yield* rloc_to(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         else
             (yield* mnexto(mtmp, NHM.RLOC_NOMSG));
@@ -705,8 +698,8 @@ export function* mon_arrive(mtmp, when) {
                that we know that the current endgame levels always
                build upwards and never have any exclusion subregion
                inside their TELEPORT_REGION settings. */
-            xlocale = i16(((rn2_at(__s_dog_c, 548, __s_mon_arrive, (((cptr.ldI16o(svu, $dest_area_hx) - cptr.ldI16(svu)) | 0) + 1) | 0) + (cptr.ldI16(svu))) | 0));
-            ylocale = i16(((rn2_at(__s_dog_c, 549, __s_mon_arrive, (((cptr.ldI16o(svu, $dest_area_hy) - cptr.ldI16o(svu, $dest_area_ly)) | 0) + 1) | 0) + (cptr.ldI16o(svu, $dest_area_ly))) | 0));
+            xlocale = i16(((rn2((((cptr.ldI16o(svu, $dest_area_hx) - cptr.ldI16(svu)) | 0) + 1) | 0) + (cptr.ldI16(svu))) | 0));
+            ylocale = i16(((rn2((((cptr.ldI16o(svu, $dest_area_hy) - cptr.ldI16o(svu, $dest_area_ly)) | 0) + 1) | 0) + (cptr.ldI16o(svu, $dest_area_ly))) | 0));
             break;
         }
         /* find the arrival portal */
@@ -756,10 +749,10 @@ export function* mon_arrive(mtmp, when) {
 
             i = (1 > ((xlocale - wander) | 0) ? 1 : ((xlocale - wander) | 0));
             j = (79 < ((xlocale + wander) | 0) ? 79 : ((xlocale + wander) | 0));
-            xlocale = i16(((rn2_at(__s_dog_c, 600, __s_mon_arrive, (j - i) | 0) + (i)) | 0));
+            xlocale = i16(((rn2((j - i) | 0) + (i)) | 0));
             i = (0 > ((ylocale - wander) | 0) ? 0 : ((ylocale - wander) | 0));
             j = (20 < ((ylocale + wander) | 0) ? 20 : ((ylocale + wander) | 0));
-            ylocale = i16(((rn2_at(__s_dog_c, 603, __s_mon_arrive, (j - i) | 0) + (i)) | 0));
+            ylocale = i16(((rn2((j - i) | 0) + (i)) | 0));
         }
     }  /* moved a bit */
 
@@ -819,11 +812,11 @@ export function* mon_catchup_elapsed_time(mtmp, nmv) {
     }
 
     /* might recover from temporary trouble */
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && rn2_at(__s_dog_c, 670, __s_mon_catchup_elapsed_time, (imv + 1) | 0) > 20)
+    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && rn2((imv + 1) | 0) > 20)
         cptr.stI32o(mtmp, $monst_mtrapped, 0);
-    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && rn2_at(__s_dog_c, 672, __s_mon_catchup_elapsed_time, (imv + 1) | 0) > 25)
+    if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 && rn2((imv + 1) | 0) > 25)
         cptr.stI32o(mtmp, $monst_mconf, 0);
-    if ((cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 && rn2_at(__s_dog_c, 674, __s_mon_catchup_elapsed_time, (imv + 1) | 0) > 5)
+    if ((cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 && rn2((imv + 1) | 0) > 5)
         cptr.stI32o(mtmp, $monst_mstun, 0);
 
     /* might finish eating or be able to use special ability again */
@@ -843,7 +836,7 @@ export function* mon_catchup_elapsed_time(mtmp, nmv) {
         let wilder = (((imv + 75) | 0) / 150) | 0;
         if (cptr.ld1so(mtmp, $monst_mtame) > wilder)
             cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) - wilder);  /* less tame */
-        else if (cptr.ld1so(mtmp, $monst_mtame) > rn2_at(__s_dog_c, 694, __s_mon_catchup_elapsed_time, wilder))
+        else if (cptr.ld1so(mtmp, $monst_mtame) > rn2(wilder))
             cptr.st1o(mtmp, $monst_mtame, 0);  /* untame */
         else
             cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)));  /* hostile! */
@@ -1265,7 +1258,7 @@ export function* tamedog(mtmp, obj, givemsg) {
     }
     cptr.stI32o(mtmp, $monst_mpeaceful, 1);
     set_malign(mtmp);
-    if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && (yield* night()) && rn2_at(__s_dog_c, 1176, __s_tamedog, 6) && obj && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_DOG)
+    if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && (yield* night()) && rn2(6) && obj && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_DOG)
         return 0;
 
     /* If we cannot tame it, at least it's no longer afraid. */
@@ -1306,7 +1299,7 @@ export function* tamedog(mtmp, obj, givemsg) {
        less than 10, taming magic might make it become tamer; blessed scroll
        or skilled spell raises low tameness by 2 or 3, uncursed by 0 or 1 */
     if (cptr.ld1so(mtmp, $monst_mtame) && cptr.ld1so(mtmp, $monst_mtame) < 10) {
-        if (cptr.ld1so(mtmp, $monst_mtame) < rnd_at(__s_dog_c, 1225, __s_tamedog, 10))
+        if (cptr.ld1so(mtmp, $monst_mtame) < rnd(10))
             cptr.postinc1(cptr.add(mtmp, $monst_mtame));
         if (blessed_scroll) {
             cptr.st1o(mtmp, $monst_mtame, cptr.ld1so(mtmp, $monst_mtame) + 2);
@@ -1385,7 +1378,7 @@ export function* wary_dog(mtmp, was_dead) {
     if (edog && (((cptr.ldI32o(edog, $edog_killed_by_u) & 1) | 0) == 1 || cptr.ldI32o(edog, $edog_abuse) > 2)) {
         cptr.stI32o(mtmp, $monst_mpeaceful, cptr.st1o(mtmp, $monst_mtame, 0));
         if (cptr.ldI32o(edog, $edog_abuse) >= 0 && cptr.ldI32o(edog, $edog_abuse) < 10)
-            if (!rn2_at(__s_dog_c, 1313, __s_wary_dog, (cptr.ldI32o(edog, $edog_abuse) + 1) | 0))
+            if (!rn2((cptr.ldI32o(edog, $edog_abuse) + 1) | 0))
                 cptr.stI32o(mtmp, $monst_mpeaceful, 1);
         if (!quietly && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
             if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n)) {
@@ -1397,9 +1390,9 @@ export function* wary_dog(mtmp, was_dead) {
         }
     } else {
         /* chance it goes wild anyway - Pet Sematary */
-        cptr.st1o(mtmp, $monst_mtame, schar(rn2_at(__s_dog_c, 1328, __s_wary_dog, (cptr.ld1so(mtmp, $monst_mtame) + 1) | 0)));
+        cptr.st1o(mtmp, $monst_mtame, schar(rn2((cptr.ld1so(mtmp, $monst_mtame) + 1) | 0)));
         if (!cptr.ld1so(mtmp, $monst_mtame))
-            cptr.stI32o(mtmp, $monst_mpeaceful, rn2_at(__s_dog_c, 1330, __s_wary_dog, 2) >>> 0);
+            cptr.stI32o(mtmp, $monst_mpeaceful, rn2(2) >>> 0);
     }
 
     if (!cptr.ld1so(mtmp, $monst_mtame)) {
@@ -1448,7 +1441,7 @@ export function* abuse_dog(mtmp) {
     /* don't make a sound if pet is in the middle of leaving the level */
     /* newsym isn't necessary in this case either */
     if (cptr.ldI16o(mtmp, $monst_mx) != 0) {
-        if (cptr.ld1so(mtmp, $monst_mtame) && rn2_at(__s_dog_c, 1381, __s_abuse_dog, cptr.ld1so(mtmp, $monst_mtame)))
+        if (cptr.ld1so(mtmp, $monst_mtame) && rn2(cptr.ld1so(mtmp, $monst_mtame)))
             (yield* yelp(mtmp));
         else
             (yield* growl(mtmp));  /* give them a moment's worry */

@@ -9,13 +9,12 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, has_emin, helpless, is_rider, m_next2u } from './nhmacrofn.js';
-import { d_at, rn2_at } from './nhrng.js';
 import { Conflict, Deaf, Displaced, HProtection, Hallucination, Invis, Underwater } from './nhprop.js';
 import { makemon, mongets, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
 import { mfndpos, mon_allowflags, mongone, monnear, setmangry, wakeup } from './mon.js';
 import { flags, gb, gc, gi, gm, gn, gt, gv, program_state, svd, svl, svm, svr, u, xdir, ydir } from './decl.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { dist2, online2, s_suffix, sgn, strncmpi } from './hacklib.js';
 import { m_break_boulder, m_move_aggress } from './monmove.js';
 import { place_monster } from './steed.js';
@@ -94,9 +93,7 @@ const $Gender_his = FLD.Gender_his, $align_record = FLD.align_record, $d_level_d
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_priest_c = cptr.lit("priest.c");
 const __s_move_special = cptr.lit("move_special");
-const __s_pri_move = cptr.lit("pri_move");
 const __s_displaced_image_doesn_t_fool_s = cptr.lit("displaced image doesn't fool %s!");
-const __s_priestini = cptr.lit("priestini");
 const __s_poohbah = cptr.lit("poohbah");
 const __s_priestess = cptr.lit("priestess");
 const __s_priest = cptr.lit("priest");
@@ -112,7 +109,6 @@ const __s_guardian = cptr.lit("guardian ");
 const __s_of = cptr.lit(" of ");
 const __s_s_intones = cptr.lit("%s intones:");
 const __s_a_nearby_voice = cptr.lit("A nearby voice");
-const __s_intemple = cptr.lit("intemple");
 const __s_infidel_you_have_entered_moloch_s = cptr.lit("Infidel, you have entered Moloch's Sanctum!");
 const __s_be_gone = cptr.lit("Be gone!");
 const __s_you_desecrate_this_place_by_your = cptr.lit("You desecrate this place by your presence!");
@@ -139,7 +135,6 @@ const __s_attempting_to_manipulate_shrine_data = cptr.lit("attempting to manipul
 const __s_rejected_atheism_by_consulting_with_s = cptr.lit("rejected atheism by consulting with %s");
 const __s_s_doesn_t_want_anything_to_do_with_you = cptr.lit("%s doesn't want anything to do with you!");
 const __s_s_breaks_out_of_s_reverie = cptr.lit("%s breaks out of %s reverie!");
-const __s_priest_talk = cptr.lit("priest_talk");
 const __s_begone_thou_desecratest_this_holy_place = cptr.lit("Begone!  Thou desecratest this holy place with thy presence.");
 const __s_bit = cptr.lit("bit");
 const __s_bits = cptr.lit("bits");
@@ -161,7 +156,6 @@ const __s_thy_selfless_generosity_is_deeply = cptr.lit("Thy selfless generosity 
 const __s_thou_wouldst_have_words_eh_i_ll_give = cptr.lit("Thou wouldst have words, eh?  I'll give thee a word or two!");
 const __s_talk_here_is_what_i_have_to_say = cptr.lit("Talk?  Here is what I have to say!");
 const __s_pilgrim_i_would_speak_no_longer_with = cptr.lit("Pilgrim, I would speak no longer with thee.");
-const __s_ghod_hitsu = cptr.lit("ghod_hitsu");
 const __s_s_roars_in_anger_thou_shalt_suffer = cptr.lit("%s roars in anger:  \"Thou shalt suffer!\"");
 const __s_s_voice_booms_how_darest_thou_harm_my = cptr.lit("%s voice booms:  \"How darest thou harm my servant!\"");
 const __s_s_roars_thou_dost_profane_my_shrine = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
@@ -327,8 +321,8 @@ export function pri_move(priest) {
     ggx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos);
     ggy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y);
 
-    ggx = i16(ggx + ((rn2_at(__s_priest_c, 194, __s_pri_move, 3) + -1) | 0));  /* mill around the altar */
-    ggy = i16(ggy + ((rn2_at(__s_priest_c, 195, __s_pri_move, 3) + -1) | 0));
+    ggx = i16(ggx + ((rn2(3) + -1) | 0));  /* mill around the altar */
+    ggy = i16(ggy + ((rn2(3) + -1) | 0));
 
     if (!(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || (Conflict() && !resist_conflict(priest))) {
         if (monnear(priest, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -359,7 +353,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     let px = 0;
     let py = 0;
     let i;
-    let si = rn2_at(__s_priest_c, 229, __s_priestini, ((NHC.N_DIRS_Z - 2) | 0));
+    let si = rn2(((NHC.N_DIRS_Z - 2) | 0));
     let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, $sizeof_permonst);
 
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
@@ -393,11 +387,11 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
             void mongets(priest, NHC.AMULET_OF_YENDOR);
         }
         /* 2 to 4 spellbooks */
-        for (cnt = ((rn2_at(__s_priest_c, 265, __s_priestini, 3) + 2) | 0); cnt > 0; --cnt) {
+        for (cnt = ((rn2(3) + 2) | 0); cnt > 0; --cnt) {
             void mpickobj(priest, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
         /* robe [via makemon()] */
-        if (rn2_at(__s_priest_c, 269, __s_priestini, 2) && (otmp = which_armor(priest, 2n)) !== null) {
+        if (rn2(2) && (otmp = which_armor(priest, 2n)) !== null) {
             if (p_coaligned(priest))
                 uncurse(otmp);
             else
@@ -556,7 +550,7 @@ export function intemple(roomno) {
                 cptr.stI32o(priest, $monst_ispriest, 0);
             pline(__s_s_intones, canseemon(priest) ? Monnam(priest) : __s_a_nearby_voice);
             cptr.stI32o(priest, $monst_ispriest, save_priest);
-            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 443, __s_intemple, 10, 500))));  /* ~2505 */
+            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d(10, 500))));  /* ~2505 */
             /* make sure that we don't suppress entry message when
                we've just given its "priest intones" introduction */
             cptr.stI64o(epri_p, $epri_enter_time, 0n);
@@ -583,7 +577,7 @@ export function intemple(roomno) {
             verbalize(__s_pct_s, msg1);
             if (msg2)
                 verbalize(__s_pct_s, msg2);
-            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 471, __s_intemple, 10, 100))));  /* ~505 */
+            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d(10, 100))));  /* ~505 */
         }
         if (!sanctum) {
             if (!shrined || !p_coaligned(priest) || cptr.ldI32o(u, $you_ualign + $align_record) <= -4) {
@@ -602,7 +596,7 @@ export function intemple(roomno) {
                forbidding to sense-of-peace or vice versa */
             if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64(this_time) || cptr.ldI64(other_time) >= cptr.ldI64(this_time)) {
                 You(msg1, msg2);
-                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 491, __s_intemple, 10, 20))));  /* ~55 */
+                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d(10, 20))));  /* ~55 */
                 /* avoid being tricked by the RNG:  switch might have just
                    happened and previous random threshold could be larger */
                 if (cptr.ldI64(this_time) <= cptr.ldI64(other_time))
@@ -615,7 +609,7 @@ export function intemple(roomno) {
     } else {
         /* untended */
 
-        switch (rn2_at(__s_priest_c, 504, __s_intemple, 4)) {
+        switch (rn2(4)) {
             case 0:
             You(__s_have_an_eerie_feeling);
             break;
@@ -628,7 +622,7 @@ export function intemple(roomno) {
             default:
             break;
         }
-        if (!rn2_at(__s_priest_c, 519, __s_intemple, 5) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+        if (!rn2(5) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
             let ngen = cptr.ld1uo2(svm, NHC.PM_GHOST, $sizeof_mvitals, $instance_globals_saved_m_mvitals);
             if (canspotmon(mtmp))
                 pline(__s_a_s_ghost_appears_next_to_you_c, ngen < 5 ? __s_n_enormous : __s_empty, ngen < 10 ? 33 : 46);
@@ -697,7 +691,7 @@ export function priest_talk(priest) {
         }
         cptr.stI32o(priest, $monst_mpeaceful, 0);
         ;
-        verbalize(__s_pct_s, cptr.ldPtro(__static_priest_talk_cranky_msg, rn2_at(__s_priest_c, 599, __s_priest_talk, 3), 8));
+        verbalize(__s_pct_s, cptr.ldPtro(__static_priest_talk_cranky_msg, rn2(3), 8));
         return;
     }
 
@@ -731,7 +725,7 @@ export function priest_talk(priest) {
            cheapskate out to rerandomize the donation amounts they will be
            higher next time */
         let offer;
-        let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, (((rn2_at(__s_priest_c, 638, __s_priest_talk, 101) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
+        let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, (((rn2(101) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
         let quan = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) / (BigInt.asIntN(64, suggested * 3n));
         let buf = new Uint8Array(256);
 
@@ -771,7 +765,7 @@ export function priest_talk(priest) {
                     adjalign(1);
             }
             verbalize(__s_i_bestow_upon_thee_a_blessing);
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt(rn2_at(__s_priest_c, 680, __s_priest_talk, Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt(rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, $you_ublessed);
 
@@ -786,8 +780,8 @@ export function priest_talk(priest) {
 
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
                 if (!cptr.ldI32o(u, $you_ublessed))
-                    cptr.stI32o(u, $you_ublessed, ((rn2_at(__s_priest_c, 695, __s_priest_talk, 3) + 2) | 0));
-                else if (cptr.ldI32o(u, $you_ublessed) < 20 && (cptr.ldI32o(u, $you_ublessed) < 9 || !rn2_at(__s_priest_c, 697, __s_priest_talk, cptr.ldI32o(u, $you_ublessed))))
+                    cptr.stI32o(u, $you_ublessed, ((rn2(3) + 2) | 0));
+                else if (cptr.ldI32o(u, $you_ublessed) < 20 && (cptr.ldI32o(u, $you_ublessed) < 9 || !rn2(cptr.ldI32o(u, $you_ublessed))))
                     (cptr.stI32o(u, $you_ublessed, cptr.ldI32o(u, $you_ublessed) + 1)) - (1);
             }
             ;
@@ -905,7 +899,7 @@ export function ghod_hitsu(priest) {
                 y = cptr.ldI16o(troom, $mkroom_ly);
             }
         } else {
-            switch (rn2_at(__s_priest_c, 827, __s_ghod_hitsu, 4)) {
+            switch (rn2(4)) {
                 case 0:
                 x = cptr.ldI16(u);
                 y = cptr.ldI16o(troom, $mkroom_ly);
@@ -928,7 +922,7 @@ export function ghod_hitsu(priest) {
             return;
     }
 
-    switch (rn2_at(__s_priest_c, 850, __s_ghod_hitsu, 3)) {
+    switch (rn2(3)) {
         case 0:
         pline(__s_s_roars_in_anger_thou_shalt_suffer, a_gname_at(ax, ay));
         break;

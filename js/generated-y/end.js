@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_container, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min } from './nhmacrofn.js';
-import { d_at, rn2_at } from './nhrng.js';
 import { Blind, Hallucination, Lifesaved, Sick, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, exit_nhwindows, mark_synch, outrip, putstr, raw_print, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, disclosure_options, disp, flags, ga, gb, gd, gg, gh, gi, gk, gm, gn, gt, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, u, uamul, uchain, urealtime, ynchars, ynqchars } from './decl.js';
 import { dump_close_log, dump_forward_putstr, dump_open_log, windowprocs } from './windows.js';
@@ -52,6 +51,7 @@ import { lift_covet_and_placebc } from './ball.js';
 import { arti_cost, artiname } from './artifact.js';
 import { discover_object } from './o_init.js';
 import { obj_descr, objects } from './objects.js';
+import { d, rn2 } from './rnd.js';
 import { finish_paybill, obfree, paybill } from './shk.js';
 import { wiz_makemap } from './wizcmds.js';
 import { bot } from './botl.js';
@@ -250,8 +250,6 @@ const __s_release_s = cptr.lit("release %s.");
 const __s_s_releases_you = cptr.lit("%s releases you.");
 const __s_s_s_worth_ld_s_and_ld_points = cptr.lit("%s%s (worth %ld %s and %ld points)");
 const __s_the__2 = cptr.lit("The ");
-const __s_end_c = cptr.lit("end.c");
-const __s_fuzzer_savelife = cptr.lit("fuzzer_savelife");
 const __s_but_wait = cptr.lit("But wait...");
 const __s_medallion_s = cptr.lit("medallion %s!");
 const __s_begins_to_glow = cptr.lit("begins to glow");
@@ -302,6 +300,7 @@ const __s_contents_of_s = cptr.lit("Contents of %s:");
 const __s_schroedinger_s_cat = cptr.lit("Schroedinger's cat!");
 const __s_s_is_empty = cptr.lit("%s is empty.");
 const __s_dealloc_killer_d_not_on_list = cptr.lit("dealloc_killer (#%d) not on list");
+const __s_end_c = cptr.lit("end.c");
 const __s_freed_delayed_killer_d = cptr.lit("freed delayed killer #%d");
 const __s_kinfo = cptr.lit("kinfo");
 const __s_no_words_in_list = cptr.lit("no words in list");
@@ -987,7 +986,7 @@ function* fuzzer_savelife(how) {
            levels or cure lycanthropy or both; those conditions make the
            hero vulnerable to repeat deaths (often by becoming surrounded
            while being too encumbered to do anything) */
-        if (!rn2_at(__s_end_c, 959, __s_fuzzer_savelife, (cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10)) {
+        if (!rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10)) {
             let potion;
             let propidx;
             let proptim;
@@ -995,30 +994,30 @@ function* fuzzer_savelife(how) {
 
             /* get rid of temporary potion with obfree() rather than useup()
                because it doesn't get entered into inventory */
-            if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !rn2_at(__s_end_c, 965, __s_fuzzer_savelife, 3)) {
+            if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !rn2(3)) {
                 potion = (yield* mksobj(NHC.POT_WATER, 1, 0));
                 (yield* bless(potion));
                 void (yield* peffects(potion));
                 (yield* obfree(potion, null));
                 ++remedies;
             }
-            if (!remedies || rn2_at(__s_end_c, 972, __s_fuzzer_savelife, 3)) {
+            if (!remedies || rn2(3)) {
                 potion = (yield* mksobj(NHC.POT_RESTORE_ABILITY, 1, 0));
                 (yield* bless(potion));
                 void (yield* peffects(potion));
                 (yield* obfree(potion, null));
                 ++remedies;
             }
-            if (!rn2_at(__s_end_c, 979, __s_fuzzer_savelife, (3 + Math.imul(3, remedies)) | 0)) {
+            if (!rn2((3 + Math.imul(3, remedies)) | 0)) {
                 /* confer temporary resistances for first 8 properties:
                    fire, cold, sleep, disint, shock, poison, acid, stone */
                 for (propidx = 1; propidx <= 8; ++propidx) {
-                    if (!cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops) && (proptim = rn2_at(__s_end_c, 985, __s_fuzzer_savelife, 3)) > 0)
+                    if (!cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops) && (proptim = rn2(3)) > 0)
                         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop), $prop_intrinsic), BigInt(((Math.imul(2, proptim) + 1) | 0)));  /* 3 or 5 */
                 }
                 ++remedies;
             }
-            if (!rn2_at(__s_end_c, 991, __s_fuzzer_savelife, (5 + Math.imul(5, remedies)) | 0)) {
+            if (!rn2((5 + Math.imul(5, remedies)) | 0)) {
                 ;
             }
         }
@@ -1447,7 +1446,7 @@ function* really_done(how) {
                 let mhp;
                 let m_lev = (yield* adj_lev(cptr.add(mons, NHC.PM_HOUSECAT, $sizeof_permonst)));
 
-                mhp = d_at(__s_end_c, 1468, __s_really_done, (m_lev), 8);
+                mhp = d((m_lev), 8);
                 cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((mhp)))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((mhp)))) : 9223372036854775807n));
                 void cptr.strcat(eos(cptr.decay(pbuf)), __s_and_schroedinger_s_cat);
             }

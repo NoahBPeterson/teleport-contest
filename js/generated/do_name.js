@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, glyph_is_object, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, is_mplayer, is_plural, is_rider, ismnum, m_next2u } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { Blind, Deaf, EHalluc_resistance, Hallucination, Role_switch, See_invisible, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
@@ -30,7 +29,7 @@ import { shkname } from './shknam.js';
 import { The, Ysimple_name2, an, ansimpleoname, bare_artifactname, just_an, makeplural, safe_qbuf, simpleonames, vtense, xname } from './objnam.js';
 import { artifact_exists, artifact_name, exist_artifact, restrict_name, set_artifact_intrinsic, undiscovered_artifact } from './artifact.js';
 import { wipeout_text } from './engrave.js';
-import { rn2_on_display_rng, rnd_on_display_rng } from './rnd.js';
+import { rn2, rn2_on_display_rng, rnd_on_display_rng } from './rnd.js';
 import { body_part } from './polyself.js';
 import { untwoweapon } from './wield.js';
 import { alter_cost } from './shk.js';
@@ -195,9 +194,7 @@ const __s_stephan = cptr.lit("Stephan");
 const __s_lance_braccus = cptr.lit("Lance Braccus");
 const __s_shadowhawk = cptr.lit("Shadowhawk");
 const __s_murphy = cptr.lit("Murphy");
-const __s_rndghostname = cptr.lit("rndghostname");
 const __s_you = cptr.lit("you");
-const __s_x_monnam = cptr.lit("x_monnam");
 const __s_someone = cptr.lit("someone");
 const __s_something = cptr.lit("something");
 const __s_sp = cptr.lit(" ");
@@ -228,7 +225,6 @@ const __s_bogon = cptr.lit("bogon");
 const __s_dash_plus_eq = cptr.lit("-+=");
 const __s_rogueopts = cptr.lit("ROGUEOPTS");
 const __s_name__2 = cptr.lit("name=");
-const __s_roguename = cptr.lit("roguename");
 const __s_michael_toy = cptr.lit("Michael Toy");
 const __s_kenneth_arnold = cptr.lit("Kenneth Arnold");
 const __s_glenn_wichman = cptr.lit("Glenn Wichman");
@@ -306,7 +302,6 @@ const __s_ecru = cptr.lit("ecru");
 const __s_fulvous = cptr.lit("fulvous");
 const __s_tekhelet = cptr.lit("tekhelet");
 const __s_selective_yellow = cptr.lit("selective yellow");
-const __s_rndcolor = cptr.lit("rndcolor");
 const __s_yoghurt = cptr.lit("yoghurt");
 const __s_oobleck = cptr.lit("oobleck");
 const __s_clotted_blood = cptr.lit("clotted blood");
@@ -370,7 +365,6 @@ const __s_grotesques_appetitus = cptr.lit("Grotesques Appetitus");
 const __s_nemesis_ridiculii = cptr.lit("Nemesis Ridiculii");
 const __s_canis_latrans = cptr.lit("Canis latrans");
 const __s_s_s = cptr.lit("%s - %s");
-const __s_rndorcname = cptr.lit("rndorcname");
 const __s_s_s__2 = cptr.lit("%s%s");
 const __s_dash = cptr.lit("-");
 const __s_a = cptr.lit("a");
@@ -430,7 +424,6 @@ const __s_i_shall_wear_midnight = cptr.lit("I Shall Wear Midnight");
 const __s_snuff = cptr.lit("Snuff");
 const __s_raising_steam = cptr.lit("Raising Steam");
 const __s_the_shepherd_s_crown = cptr.lit("The Shepherd's Crown");
-const __s_noveltitle = cptr.lit("noveltitle");
 const __s_the_color_of_magic = cptr.lit("The Color of Magic");
 const __s_sorcery = cptr.lit("Sorcery");
 const __s_masquerade = cptr.lit("Masquerade");
@@ -1126,7 +1119,7 @@ cptr.stPtro(ghostnames, 264, __s_murphy);
 /* ghost names formerly set by x_monnam(), now by makemon() instead */
 /** C ref: do_name.c:772 @returns {CPtr<char>} */
 export function rndghostname() {
-    return rn2_at(__s_do_name_c, 774, __s_rndghostname, 7) ? cptr.ldPtro(ghostnames, rn2_at(__s_do_name_c, 774, __s_rndghostname, 34), 8) : svp;
+    return rn2(7) ? cptr.ldPtro(ghostnames, rn2(34), 8) : svp;
 }
 
 /*
@@ -1232,7 +1225,7 @@ export function x_monnam(mtmp, article, adjective, suppress, called) {
         /* !is_animal excludes all Y; !mindless excludes Z, M, \' */
         let s_one = schar((((cptr.ldU64o((mdat), $permonst_mflags1) & 131072n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 262144n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n) ? 1 : 0));
 
-        void cptr.strcpy(buf, !augment_it ? __s_it : ((!do_hallu ? s_one : !rn2_at(__s_do_name_c, 881, __s_x_monnam, 2)) ? __s_someone : __s_something));
+        void cptr.strcpy(buf, !augment_it ? __s_it : ((!do_hallu ? s_one : !rn2(2)) ? __s_someone : __s_something));
         return buf;
     }
 
@@ -1704,7 +1697,7 @@ export function roguename() {
                 return cptr.add(i, 5);
             }
     }
-    return rn2_at(__s_do_name_c, 1437, __s_roguename, 3) ? (rn2_at(__s_do_name_c, 1437, __s_roguename, 2) ? __s_michael_toy : __s_kenneth_arnold) : __s_glenn_wichman;
+    return rn2(3) ? (rn2(2) ? __s_michael_toy : __s_kenneth_arnold) : __s_glenn_wichman;
 }
 
 /** C ref: do_name.c:1441 — char *[74] */
@@ -1792,7 +1785,7 @@ export function hcolor(colorpref) {
 /* return a random real color unless hallucinating */
 /** C ref: do_name.c:1470 @returns {CPtr<char>} */
 export function rndcolor() {
-    let k = rn2_at(__s_do_name_c, 1472, __s_rndcolor, NHM.CLR_MAX);
+    let k = rn2(NHM.CLR_MAX);
 
     return Hallucination() ? hcolor(null) : ((k == NHM.NO_COLOR) ? __s_colorless : cptr.ldPtro(c_obj_colors, k, 8));
 }
@@ -1916,14 +1909,14 @@ cptr.stPtro(__static_rndorcname_snd, 80, __s_hai); /** C ref: do_name.c:1541 —
 /** C ref: do_name.c:1538 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function rndorcname(s) {
     let i;
-    let iend = ((rn2_at(__s_do_name_c, 1543, __s_rndorcname, 2) + 3) | 0);
-    let vstart = rn2_at(__s_do_name_c, 1543, __s_rndorcname, 2);
+    let iend = ((rn2(2) + 3) | 0);
+    let vstart = rn2(2);
 
     if (s) {
         cptr.st1(s, 0);
         for (i = 0; i < iend; ++i) {
             vstart = (1 - vstart) | 0;  /* 0 -> 1, 1 -> 0 */
-            void cptr.sprintf(eos(s), __s_s_s__2, (i > 0 && !rn2_at(__s_do_name_c, 1549, __s_rndorcname, 30)) ? __s_dash : __s_empty, vstart ? cptr.ldPtro(__static_rndorcname_v, rn2_at(__s_do_name_c, 1550, __s_rndorcname, 4), 8) : cptr.ldPtro(__static_rndorcname_snd, rn2_at(__s_do_name_c, 1550, __s_rndorcname, 11), 8));
+            void cptr.sprintf(eos(s), __s_s_s__2, (i > 0 && !rn2(30)) ? __s_dash : __s_empty, vstart ? cptr.ldPtro(__static_rndorcname_v, rn2(4), 8) : cptr.ldPtro(__static_rndorcname_snd, rn2(11), 8));
         }
     }
     return s;
@@ -2013,7 +2006,7 @@ export function noveltitle(novidx) {
     let j;
     let k = 41;
 
-    j = rn2_at(__s_do_name_c, 1615, __s_noveltitle, k);
+    j = rn2(k);
     if (novidx) {
         if (cptr.ldI32(novidx) == -1)
             cptr.stI32(novidx, j);

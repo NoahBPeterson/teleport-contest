@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ARM_BONUS, Is_dragon_mail, Is_dragon_scales, WrappingAllowed, cantweararm, has_mcorpsenm, is_boots, is_cloak, is_elven_armor, is_flimsy, is_gloves, is_helmet, is_shield, is_shirt, is_suit, is_weptool, is_whirly, touch_petrifies } from './nhmacrofn.js';
-import { rnl_at } from './nhrng.js';
 import { ETelepat, See_invisible, Stone_resistance } from './nhprop.js';
 import { c_color_names, c_common_strings, disp, flags, gb, gi, gm, go, gu, gv, gy, iflags, svc, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { objects } from './objects.js';
@@ -36,6 +35,7 @@ import { discover_object } from './o_init.js';
 import { genders } from './role.js';
 import { m_useup } from './mthrowu.js';
 import { surface } from './dungeon.js';
+import { rnl } from './rnd.js';
 import { instapetrify } from './trap.js';
 import { check_gear_next_turn } from './mon.js';
 import { obj_no_longer_held } from './do.js';
@@ -152,8 +152,6 @@ const __s_slide = cptr.lit("slide");
 const __s_are_pushed = cptr.lit("are pushed");
 const __s_s_saddle_falls_off = cptr.lit("%s saddle falls off.");
 const __s_can_no_longer_ride_s = cptr.lit("can no longer ride %s.");
-const __s_worn_c = cptr.lit("worn.c");
-const __s_mon_break_armor = cptr.lit("mon_break_armor");
 const __s_touch_s = cptr.lit("touch %s.");
 const __s_falling_off_s = cptr.lit("falling off %s");
 const __s_extract_from_minvent_called_on_object = cptr.lit("extract_from_minvent called on object not in minvent");
@@ -1335,7 +1333,7 @@ export function mon_break_armor(mon, polyspot) {
     }
     if (noride || (cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) && !can_ride(mon))) {
         You(__s_can_no_longer_ride_s, mon_nam(mon));
-        if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && rnl_at(__s_worn_c, 1324, __s_mon_break_armor, 3)) {
+        if (touch_petrifies(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)) && !Stone_resistance() && rnl(3)) {
             let buf = new Uint8Array(256);
 
             You(__s_touch_s, mon_nam(cptr.ldPtro(u, $you_usteed)));

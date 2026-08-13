@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { age_is_relative, has_omid, has_omonst, is_unicorn, ismnum } from './nhmacrofn.js';
-import { rnd_at } from './nhrng.js';
 import { Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
 import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
@@ -66,6 +65,7 @@ import { place_wsegs, rest_worm } from './worm.js';
 import { rest_engravings } from './engrave.js';
 import { place_monster } from './steed.js';
 import { eos, sgn } from './hacklib.js';
+import { rnd } from './rnd.js';
 import { rest_regions } from './region.js';
 import { rest_track } from './track.js';
 import { mazexy, restore_waterlevel } from './mkmaze.js';
@@ -257,7 +257,6 @@ const __s_lev_level_flags = cptr.lit("lev-level_flags");
 const __s_lev_doors_alloc = cptr.lit("lev-doors_alloc");
 const __s_lev_doors = cptr.lit("lev-doors");
 const __s_trap = cptr.lit("trap");
-const __s_getlev = cptr.lit("getlev");
 const __s_getlev_need_portal_but_none_found = cptr.lit("getlev: need portal but none found");
 const __s_plname_size = cptr.lit("plname-size");
 const __s_plname = cptr.lit("plname");
@@ -1293,7 +1292,7 @@ export function* getlev(nhfp, pid, lev) {
            them is different now than when the level was saved */
         (yield* restore_cham(mtmp));
         /* give hiders a chance to hide before their next move */
-        if (ghostly || (elapsed > 0n && elapsed > BigInt(rnd_at(__s_restore_c, 1219, __s_getlev, 10))))
+        if (ghostly || (elapsed > 0n && elapsed > BigInt(rnd(10))))
             (yield* hide_monst(mtmp));
     }
 

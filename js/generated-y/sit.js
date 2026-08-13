@@ -13,13 +13,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_box, eggs_in_water, eyecount, likes_lava } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, Antimagic, Blind, Blind_telepat, BlindedTimeout, Cold_resistance, Deaf, Drain_resistance, Fire_resistance, Flying, HAggravate_monster, HCold_resistance, HConfusion, HFast, HFire_resistance, HInvis, HPoison_resistance, HProtection, HSee_invisible, HStealth, HTelepat, HTeleportation, Half_physical_damage, Half_spell_damage, Hallucination, Levitation, Luck, See_invisible, Shock_resistance, Slimed, Underwater, Upolyd, wizard } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gv, gy, iflags, svd, svl, u, uarm, uarmf, uwep, ynchars } from './decl.js';
 import { remove_worn_item } from './steal.js';
 import { delobj, identify_pack, stackobj, update_inventory, useupf } from './invent.js';
 import { There, You, You_cant, You_feel, Your, impossible, pline, pline_The, verbalize } from './pline.js';
 import { In_V_tower, find_hell, on_level, surface } from './dungeon.js';
+import { d, rn2, rnd } from './rnd.js';
 import { getlin } from './windows.js';
 import { adjattrib, change_luck, exercise } from './attrib.js';
 import { losehp, money_cnt } from './hack.js';
@@ -95,8 +95,6 @@ const $Gender_his = FLD.Gender_his, $c_common_strings_c_Never_mind = FLD.c_commo
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_a_strange_sensation = cptr.lit("a strange sensation.");
 const __s_notice_you_have_no_gold = cptr.lit("notice you have no gold!");
-const __s_sit_c = cptr.lit("sit.c");
-const __s_throne_sit_effect = cptr.lit("throne_sit_effect");
 const __s_throne_sit_effect_1_13_0_random = cptr.lit("Throne sit effect (1..13) [0=random]");
 const __s_pct_s = cptr.lit("%s");
 const __s_cursed_throne = cptr.lit("cursed throne");
@@ -133,7 +131,6 @@ const __s_throne_disintegrates_having_spent_its = cptr.lit("throne disintegrates
 const __s_sitting_on_the_throne_was_a_terrible = cptr.lit("Sitting on the throne was a terrible experience.");
 const __s_a_bad_experience_sitting_on_a_throne = cptr.lit("a bad experience sitting on a throne");
 const __s_a_greasy_liquid_sprays_all_over_you = cptr.lit("A greasy liquid sprays all over you!");
-const __s_special_throne_effect = cptr.lit("special_throne_effect");
 const __s_throne_somehow_seems_to_be_amused = cptr.lit("throne somehow seems to be amused.");
 const __s_extremely_disoriented_for_a_moment = cptr.lit("extremely disoriented for a moment.");
 const __s_you_feel_extremely_out_of_place = cptr.lit("You feel extremely out of place.");
@@ -170,7 +167,6 @@ const __s_squelch = cptr.lit("Squelch!");
 const __s_it_s_not_very_comfortable = cptr.lit("It's not very comfortable...");
 const __s_sit_down_with_your_s_in_the_bear_trap = cptr.lit("sit down with your %s in the bear trap.");
 const __s_sit_down_on_a_spike_ouch = cptr.lit("sit down on a spike.  Ouch!");
-const __s_dosit = cptr.lit("dosit");
 const __s_sitting_on_an_iron_spike = cptr.lit("sitting on an iron spike");
 const __s_sit_down_in_the_pit = cptr.lit("sit down in the pit.");
 const __s_sit_in_the_spider_web_and_get_entangled = cptr.lit("sit in the spider web and get entangled further!");
@@ -197,7 +193,6 @@ const __s_having_fun_sitting_on_the_s = cptr.lit("Having fun sitting on the %s?"
 const __s_sit_in_the_s__2 = cptr.lit("sit in the %s.");
 const __s_water = cptr.lit("water");
 const __s_armor = cptr.lit("armor");
-const __s_rndcurse = cptr.lit("rndcurse");
 const __s_the_magic_absorbing_blade = cptr.lit("the magic-absorbing blade");
 const __s_you = cptr.lit("you");
 const __s_pct_s_bang = cptr.lit("%s!");
@@ -205,7 +200,6 @@ const __s_resist = cptr.lit("resist");
 const __s_s_s__2 = cptr.lit("%s %s.");
 const __s_glow = cptr.lit("glow");
 const __s_brown = cptr.lit("brown");
-const __s_attrcurse = cptr.lit("attrcurse");
 const __s_warmer = cptr.lit("warmer.");
 const __s_less_jumpy = cptr.lit("less jumpy.");
 const __s_a_little_sick = cptr.lit("a little sick!");
@@ -250,8 +244,8 @@ function* throne_sit_effect() {
 
     let special_throne = schar((!!In_V_tower(cptr.add(u, $you_uz))));
 
-    if (rnd_at(__s_sit_c, 45, __s_throne_sit_effect, 6) > 4) {
-        let effect = rnd_at(__s_sit_c, 46, __s_throne_sit_effect, 13);
+    if (rnd(6) > 4) {
+        let effect = rnd(13);
 
         if (wizard() && !cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             let buf = new Uint8Array(256);
@@ -275,15 +269,15 @@ function* throne_sit_effect() {
 
         switch (effect) {
             case 1:
-            void (yield* adjattrib(rn2_at(__s_sit_c, 70, __s_throne_sit_effect, NHC.A_MAX), -((rn2_at(__s_sit_c, 70, __s_throne_sit_effect, 4) + 3) | 0), 0));
-            (yield* losehp(rnd_at(__s_sit_c, 71, __s_throne_sit_effect, 10), __s_cursed_throne, NHM.KILLED_BY_AN));
+            void (yield* adjattrib(rn2(NHC.A_MAX), -((rn2(4) + 3) | 0), 0));
+            (yield* losehp(rnd(10), __s_cursed_throne, NHM.KILLED_BY_AN));
             break;
             case 2:
-            void (yield* adjattrib(rn2_at(__s_sit_c, 74, __s_throne_sit_effect, NHC.A_MAX), 1, 0));
+            void (yield* adjattrib(rn2(NHC.A_MAX), 1, 0));
             break;
             case 3:
             (yield* pline(__s_a_s_electric_shock_shoots_through_your, (Shock_resistance()) ? __s_n : __s_massive));
-            (yield* losehp(Shock_resistance() ? rnd_at(__s_sit_c, 79, __s_throne_sit_effect, 6) : rnd_at(__s_sit_c, 79, __s_throne_sit_effect, 30), __s_electric_chair, NHM.KILLED_BY_AN));
+            (yield* losehp(Shock_resistance() ? rnd(6) : rnd(30), __s_electric_chair, NHM.KILLED_BY_AN));
             (yield* exercise(NHC.A_CON, 0));
             break;
             case 4:
@@ -309,7 +303,7 @@ function* throne_sit_effect() {
             (yield* take_gold());
             break;
             case 6:
-            if (((cptr.ld1so(u, $you_uluck) + rn2_at(__s_sit_c, 106, __s_throne_sit_effect, 5)) | 0) < 0) {
+            if (((cptr.ld1so(u, $you_uluck) + rn2(5)) | 0) < 0) {
                 (yield* You_feel(__s_your_luck_is_changing));
                 change_luck(1);
             } else
@@ -317,7 +311,7 @@ function* throne_sit_effect() {
             break;
             case 7:
             {
-                let cnt = rnd_at(__s_sit_c, 114, __s_throne_sit_effect, 10);
+                let cnt = rnd(10);
 
                 /* Magical voice not affected by deafness */
                 (yield* pline(__s_a_voice_echoes));
@@ -340,8 +334,8 @@ function* throne_sit_effect() {
             ;
             (yield* verbalize(__s_a_curse_upon_thee_for_sitting_upon_this));
             if (Luck() > 0) {
-                (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2_at(__s_sit_c, 140, __s_throne_sit_effect, 100) + 250) | 0))), 1));
-                change_luck(schar(((Luck() > 1) ? -rnd_at(__s_sit_c, 141, __s_throne_sit_effect, 2) : -1)));
+                (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2(100) + 250) | 0))), 1));
+                change_luck(schar(((Luck() > 1) ? -rnd(2) : -1)));
             } else
                 (yield* rndcurse());
             break;
@@ -349,7 +343,7 @@ function* throne_sit_effect() {
             if (Luck() < 0 || (HSee_invisible() & 117440512n)) {
                 if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap) & 1)) {
                     (yield* pline(__s_a_terrible_drone_fills_your_head));
-                    (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd_at(__s_sit_c, 149, __s_throne_sit_effect, 30))), 0));
+                    (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd(30))), 0));
                 } else {
                     (yield* pline(__s_an_image_forms_in_your_mind));
                     (yield* do_mapping());
@@ -396,12 +390,12 @@ function* throne_sit_effect() {
             (yield* You(__s_are_granted_an_insight));
             if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
                 /* rn2(5) agrees w/seffects() */
-                (yield* identify_pack(rn2_at(__s_sit_c, 198, __s_throne_sit_effect, 5), 0));
+                (yield* identify_pack(rn2(5), 0));
             }
             break;
             case 13:
             (yield* Your(__s_mind_turns_into_a_pretzel));
-            (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(((rn2_at(__s_sit_c, 203, __s_throne_sit_effect, 7) + 16) | 0))), 0));
+            (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(((rn2(7) + 16) | 0))), 0));
             break;
             default:
             (yield* impossible(__s_throne_effect));
@@ -421,7 +415,7 @@ function* throne_sit_effect() {
        only happened when teleporting back to the same point where hero
        started from.]  "Analyzing a throne" doesn't really make any sense
        but if the answer is yes than it will vanish in a puff of logic. */
-    if (!special_throne && !rn2_at(__s_sit_c, 225, __s_throne_sit_effect, 3) && (!wizard() || (yield* yn_function(__s_analyze_throne, cptr.decay(ynchars), 110, 1)) == 121)) {
+    if (!special_throne && !rn2(3) && (!wizard() || (yield* yn_function(__s_analyze_throne, cptr.decay(ynchars), 110, 1)) == 121)) {
         cptr.st1o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         (yield* map_background(tx, ty, 0));
         (yield* newsym_force(tx, ty));
@@ -473,7 +467,7 @@ function* special_throne_effect(effect) {
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
                     cptr.stI32o(otmp, $obj_greased, 1);
-            (yield* make_glib(((rn2_at(__s_sit_c, 277, __s_special_throne_effect, 101) + 100) | 0)));
+            (yield* make_glib(((rn2(101) + 100) | 0)));
             (yield* update_inventory());
             break;
         }
@@ -533,7 +527,7 @@ function* special_throne_effect(effect) {
         case 12:
         /* acid damage */
         (yield* pline(__s_the_throne_is_covered_in_acid));
-        (yield* losehp(Acid_resistance() ? rnd_at(__s_sit_c, 339, __s_special_throne_effect, 16) : rnd_at(__s_sit_c, 339, __s_special_throne_effect, 80), __s_acidic_chair, NHM.KILLED_BY_AN));
+        (yield* losehp(Acid_resistance() ? rnd(16) : rnd(80), __s_acidic_chair, NHM.KILLED_BY_AN));
         (yield* exercise(NHC.A_CON, 0));
         break;
         case 13:
@@ -542,7 +536,7 @@ function* special_throne_effect(effect) {
             let ability;
             (yield* pline(__s_as_you_sit_on_the_throne_your_body_and));
             for (ability = 0; ability < NHC.A_MAX; ++ability) {
-                (yield* adjattrib(ability, (rn2_at(__s_sit_c, 349, __s_special_throne_effect, 5) - 2) | 0, -1));
+                (yield* adjattrib(ability, (rn2(5) - 2) | 0, -1));
             }
             break;
         }
@@ -657,21 +651,21 @@ export function* dosit() {
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                     if (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) {
                         (yield* You(__s_sit_down_on_a_spike_ouch));
-                        (yield* losehp(Half_physical_damage() ? rn2_at(__s_sit_c, 476, __s_dosit, 2) : 1, __s_sitting_on_an_iron_spike, NHM.KILLED_BY));
+                        (yield* losehp(Half_physical_damage() ? rn2(2) : 1, __s_sitting_on_an_iron_spike, NHM.KILLED_BY));
                         (yield* exercise(NHC.A_STR, 0));
                     } else
                         (yield* You(__s_sit_down_in_the_pit));
-                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rn2_at(__s_sit_c, 481, __s_dosit, 5) >>> 0)) | 0);
+                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rn2(5) >>> 0)) | 0);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
                     (yield* You(__s_sit_in_the_spider_web_and_get_entangled));
-                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (((rn2_at(__s_sit_c, 484, __s_dosit, 10) + 5) | 0) >>> 0)) | 0);
+                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (((rn2(10) + 5) | 0) >>> 0)) | 0);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
                     /* Must have fire resistance or they'd be dead already */
                     (yield* You(__s_sit_in_the_s, hliquid(__s_lava)));
                     if (Slimed())
                         (yield* burn_away_slime());
-                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rnd_at(__s_sit_c, 490, __s_dosit, 4) >>> 0)) | 0);
-                    (yield* losehp(d_at(__s_sit_c, 491, __s_dosit, 2, 10), __s_sitting_in_lava, NHM.KILLED_BY));  /* lava damage */
+                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rnd(4) >>> 0)) | 0);
+                    (yield* losehp(d(2, 10), __s_sitting_in_lava, NHM.KILLED_BY));  /* lava damage */
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
                     (yield* You_cant(__s_maneuver_to_sit));
                     (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + 1)) - (1);
@@ -711,7 +705,7 @@ export function* dosit() {
                 return NHM.ECMD_TIME;
             }
             (yield* pline_The(__s_s_burns_you, hliquid(__s_lava)));
-            (yield* losehp(d_at(__s_sit_c, 548, __s_dosit, ((Fire_resistance() ? 2 : 10)), 10), __s_sitting_on_lava, NHM.KILLED_BY));
+            (yield* losehp(d(((Fire_resistance() ? 2 : 10)), 10), __s_sitting_on_lava, NHM.KILLED_BY));
         } else if (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             (yield* You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_ice, $sizeof_symdef, $symdef_explanation)));
             if (!Cold_resistance())
@@ -736,9 +730,9 @@ export function* dosit() {
             }
             /* splitting--or failing to do so--protects gear from the water */
         } else {
-            if (!rn2_at(__s_sit_c, 521, __s_dosit, 10) && uarm.v)
+            if (!rn2(10) && uarm.v)
                 void (yield* water_damage(uarm.v, __s_armor, 1));
-            if (!rn2_at(__s_sit_c, 523, __s_dosit, 10) && uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) != NHC.WATER_WALKING_BOOTS)
+            if (!rn2(10) && uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) != NHC.WATER_WALKING_BOOTS)
                 void (yield* water_damage(uarm.v, __s_armor, 1));
         }
     }
@@ -755,7 +749,7 @@ export function* rndcurse() {
     let onum;
     let otmp;
 
-    if (is_art(uwep.v, NHC.ART_MAGICBANE) && rn2_at(__s_sit_c, 576, __s_rndcurse, 20)) {
+    if (is_art(uwep.v, NHC.ART_MAGICBANE) && rn2(20)) {
         (yield* You(cptr.decay(__static_rndcurse_mal_aura), __s_the_magic_absorbing_blade));
         return;
     }
@@ -772,10 +766,10 @@ export function* rndcurse() {
             continue;
         nobj++;
     }
-    cnt = rnd_at(__s_sit_c, 593, __s_rndcurse, (6 / (((((!!Antimagic()) + (!!Half_spell_damage())) | 0) + 1) | 0)) | 0);
+    cnt = rnd((6 / (((((!!Antimagic()) + (!!Half_spell_damage())) | 0) + 1) | 0)) | 0);
     if (nobj) {
         for (; cnt > 0; cnt--) {
-            onum = rnd_at(__s_sit_c, 596, __s_rndcurse, nobj);
+            onum = rnd(nobj);
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
                 /* as above */
                 if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
@@ -788,7 +782,7 @@ export function* rndcurse() {
             if (!otmp || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
                 continue;  /* next target */
 
-            if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && rn2_at(__s_sit_c, 610, __s_rndcurse, 10) < 8) {
+            if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && rn2(10) < 8) {
                 (yield* pline(__s_pct_s_bang, (yield* Tobjnam(otmp, __s_resist))));
                 continue;
             }
@@ -802,7 +796,7 @@ export function* rndcurse() {
     }
 
     /* treat steed's saddle as extended part of hero's inventory */
-    if (cptr.ldPtro(u, $you_usteed) && !rn2_at(__s_sit_c, 624, __s_rndcurse, 4) && (otmp = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) !== null && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
+    if (cptr.ldPtro(u, $you_usteed) && !rn2(4) && (otmp = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) !== null && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
             (yield* unbless(otmp));
         else
@@ -823,7 +817,7 @@ export function* rndcurse() {
 export function* attrcurse() {
     let ret = 0;
 
-    switch (rnd_at(__s_sit_c, 648, __s_attrcurse, 11)) {
+    switch (rnd(11)) {
         case 1:
         if (HFire_resistance() & 117440512n) {
             cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));

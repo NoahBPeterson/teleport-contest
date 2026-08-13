@@ -940,13 +940,42 @@ function scanTrivia(src) {
 // twice, once per arm, and exactly one arm runs.
 //
 // C2JS_RNGFOLD=0 restores the inline ternary (the A/B baseline).
+//
+// THE CALLER ANNOTATION IS NOT SCORED, AND BY DEFAULT IS NOT EMITTED.
+// -------------------------------------------------------------------
+// `frozen/ps_test_runner.mjs` is the scorer, and its normalizeRng() reads
+//
+//     entry.replace(/\s*@\s.*$/, '').replace(/^\d+\s+/, '').trim()
+//
+// so the `@ caller(file:line)` suffix and the call number are discarded before
+// the C's log line and ours are compared. What is scored is the draw text
+// (`rn2(20) = 5`) and the NUMBER OF ENTRIES. Neither depends on the caller: the
+// entry is written by `rng_log_write()` inside `rn2` itself, and
+// `rng_log_set_caller` only decides which of that function's two fprintf arms
+// prints. With the caller never set, `rng_caller_file` stays null and every
+// entry takes the plain arm — the same count, the same text, no suffix.
+//
+// So the shipped tree emits the draw the C wrote:
+//
+//     rn2(20)                                    (default, C2JS_RNGCALLER unset)
+//     rn2_at(__s_detect_c, 146, __s_trapped_chest_at, 20)   (C2JS_RNGCALLER=1)
+//
+// which also drops the two string literals per site — the `__FILE__` and
+// `__func__` arguments — wherever nothing else in the module interns them.
+//
+// C2JS_RNGCALLER=1 restores the annotated form and MUST KEEP WORKING: it is
+// how a divergence is localized against the C recorder's own log, which is
+// what the Phase 1 grind did and what a Phase 2 5.1 merge will have to do
+// again. The two modes differ only in the spelling of the call site; the
+// helper module, the arity table and the audits below are shared.
 const RNG_LOG_FOLD = process.env.C2JS_RNGFOLD !== '0';
+const RNG_CALLER = process.env.C2JS_RNGCALLER === '1';
 const RNG_LOG_MACROS = new Set(['rn2', 'rnd', 'rnl', 'rne', 'rnz', 'd']);
 const RNG_HELPER_SUFFIX = '_at';
 export const RNG_MODULE = './nhrng.js';
 /** macro name -> arity, for every helper any emitter folded to */
 export const RNG_HELPERS = new Map();
-const RNG_STATS = { seen: 0, folded: 0, refusedArg: 0, refusedArms: 0, refusedArity: 0 };
+const RNG_STATS = { seen: 0, folded: 0, bare: 0, refusedArg: 0, refusedArms: 0, refusedArity: 0 };
 
 // ------------------------------------- named element sizes and strides ----
 //
@@ -1219,7 +1248,7 @@ if (process.env.C2JS_READ_STATS) {
     + `string names:  ${STRING_STATS.named} literals named by their content, ${STRING_STATS.collided} needed a collision suffix\n`
     + `element sizes: ${SIZE_STATS.named} named, ${SIZE_STATS.stride} composed strides; ${SIZE_STATS.machine} are a pointer/scalar/enum width and get no name by design, `
     + `${SIZE_STATS.refused} record sizes refused by the equality audit\n`
-    + `rng-log fold:  ${RNG_STATS.folded} of ${RNG_STATS.seen} instrumented draws folded into ${RNG_HELPERS.size} helpers; refused `
+    + `rng-log fold:  ${RNG_STATS.folded} of ${RNG_STATS.seen} instrumented draws folded (${RNG_STATS.bare} to a bare draw, ${RNG_STATS.folded - RNG_STATS.bare} to one of ${RNG_HELPERS.size} annotated helpers); refused `
     + `${RNG_STATS.refusedArg} on an argument that writes or draws, ${RNG_STATS.refusedArms} because the two arms emitted differently, ${RNG_STATS.refusedArity} on arity\n`
     + `C trivia:      ${TRIVIA_STATS.comments} comments carried (${TRIVIA_STATS.trailing} of them trailing a statement) and ${TRIVIA_STATS.blanks} blank lines; `
     + `${TRIVIA_STATS.deduped} lines already spent by an earlier copy of a spliced region, `
@@ -2406,7 +2435,12 @@ export class Emitter {
     }
     // Emitted in the C's own order so the string table interns exactly what it
     // interned before: the set_caller arguments, then the call's.
-    const setArgs = set.inner.slice(1).map((a) => this.emitExpr(a).code);
+    //
+    // With the annotation off the set_caller arguments are NOT emitted at all,
+    // which is the point: `__FILE__` and `__func__` are string literals, and an
+    // emission would intern them into the module's string table whether or not
+    // the body ever mentions them again.
+    const setArgs = RNG_CALLER ? set.inner.slice(1).map((a) => this.emitExpr(a).code) : null;
     const hotArgs = args.map((a) => this.emitExpr(a).code);
     const coldArgs = cold.inner.slice(1).map((a) => this.emitExpr(a).code);
     // The audit: the two arms have to BE the same call. C's macro spells the
@@ -2417,6 +2451,16 @@ export class Emitter {
     if (prev !== undefined && prev !== args.length) { RNG_STATS.refusedArity++; return null; }
     RNG_HELPERS.set(name, args.length);
     RNG_STATS.folded++;
+    if (!RNG_CALLER) {
+      // The draw the C wrote, and nothing else. The callee is emitted through
+      // the normal path so the module gets its `import { rn2 } from './rnd.js'`
+      // exactly as any other call would; the arms' own emission (audited equal
+      // above) supplies the arguments.
+      RNG_STATS.bare++;
+      const callee = this.emitExpr(cold.inner[0]);
+      return { code: `${this.group(callee, PREC.atom)}(${hotArgs.join(', ')})`,
+        prec: PREC.atom, rep: 'val', rngAt: true };
+    }
     this.rngRefs.add(name + RNG_HELPER_SUFFIX);
     return { code: `${name}${RNG_HELPER_SUFFIX}(${[...setArgs, ...hotArgs].join(', ')})`,
       prec: PREC.atom, rep: 'val', rngAt: true };

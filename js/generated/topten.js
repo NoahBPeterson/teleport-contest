@@ -8,7 +8,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Role_switch, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, putstr, raw_print, raw_print_bold, wizard } from './nhprop.js';
 import { flags, gh, gi, gm, gt, gu, iflags, program_state, svd, svk, svm, svp, u, ubirthday, urealtime } from './decl.js';
 import { impossible, raw_printf } from './pline.js';
@@ -28,6 +27,7 @@ import { alloc } from './alloc.js';
 import { yyyymmdd } from './calendar.js';
 import { fopen_datafile, lock_file, unlock_file } from './files.js';
 import { free_dungeons } from './save.js';
+import { rn2, rnd } from './rnd.js';
 import { set_corpsenm } from './mkobj.js';
 import { christen_monst, oname } from './do_name.js';
 import { canseemon } from './display.js';
@@ -254,9 +254,6 @@ const __s_usage_s_s_v_playertypes_maxrank = cptr.lit("Usage: %s -s [-v] <playert
 const __s_player_types_are_p_role_r_race = cptr.lit("Player types are: [-p role] [-r race]");
 const __s_e = cptr.lit("E");
 const __s_what_weird_role_is_this_s = cptr.lit("What weird role is this? (%s)");
-const __s_topten_c = cptr.lit("topten.c");
-const __s_get_rnd_toptenentry = cptr.lit("get_rnd_toptenentry");
-const __s_tt_doppel = cptr.lit("tt_doppel");
 
 /** C ref: topten.c:38 — struct toptenentry { tt_next, points, deathdnum, deathlev, maxlvl, hp, maxhp, deaths, ver_major, ver_minor, patchlevel, deathdate, birthdate, uid, plrole, plrace, plgend, plalign, name, death } (memory model v0.5) */
 
@@ -1365,7 +1362,7 @@ export function get_rnd_toptenentry() {
     }
 
     tt = __static_get_rnd_toptenentry_tt_buf;
-    rank = rnd_at(__s_topten_c, 1395, __s_get_rnd_toptenentry, cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank));
+    rank = rnd(cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank));
     __lbl_pickentry: while (true) {
         for (i = rank; i; i--) {
             readentry(rfile, tt);
@@ -1415,11 +1412,11 @@ export function tt_oname(otmp) {
 /* Randomly select a topten entry to mimic */
 /** C ref: topten.c:1445 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tt_doppel(mon) {
-    let tt = rn2_at(__s_topten_c, 1446, __s_tt_doppel, 13) ? get_rnd_toptenentry() : null;
+    let tt = rn2(13) ? get_rnd_toptenentry() : null;
     let ret;
 
     if (!tt)
-        ret = ((rn2_at(__s_topten_c, 1450, __s_tt_doppel, ((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
+        ret = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
             cptr.stI32o(mon, $monst_female, 1);

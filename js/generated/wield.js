@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_elven_weapon, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, pair_of, touch_petrifies } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Glib, Hallucination, Stone_resistance, URIGHTY, Upolyd } from './nhprop.js';
 import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
 import { setworn } from './worn.js';
@@ -32,6 +31,7 @@ import { inv_cnt } from './hack.js';
 import { yn_function } from './cmd.js';
 import { strstri } from './hacklib.js';
 import { dropx } from './do.js';
+import { rn2, rnd } from './rnd.js';
 import { acurr, exercise } from './attrib.js';
 import { hcolor } from './do_name.js';
 import { strange_feeling } from './potion.js';
@@ -163,8 +163,6 @@ const __s_drop = cptr.lit("drop");
 const __s_s_spasms_and_drops_s = cptr.lit("%s spasms and drops %s!");
 const __s_switch_to_your_primary_weapon = cptr.lit("switch to your primary weapon.");
 const __s_begin_two_weapon_combat = cptr.lit("begin two-weapon combat.");
-const __s_wield_c = cptr.lit("wield.c");
-const __s_dotwoweapon = cptr.lit("dotwoweapon");
 const __s_s_with_s_aura = cptr.lit("%s with %s aura.");
 const __s_glow = cptr.lit("glow");
 const __s_your_right_s_tingles = cptr.lit("Your right %s tingles.");
@@ -177,7 +175,6 @@ const __s_is = cptr.lit("is");
 const __s_s_s_much_duller_now = cptr.lit("%s %s much duller now.");
 const __s_s_s = cptr.lit("%s %s.");
 const __s_faintly_glow = cptr.lit("faintly glow");
-const __s_chwepon = cptr.lit("chwepon");
 const __s_s_s_for_a_while_and_then_s = cptr.lit("%s %s for a while and then %s.");
 const __s_violently_glow = cptr.lit("violently glow");
 const __s_evaporate = cptr.lit("evaporate");
@@ -885,7 +882,7 @@ export function dotwoweapon() {
         You(__s_begin_two_weapon_combat);
         set_twoweap(1);  /* u.twoweap = TRUE */
         update_inventory();
-        return (rnd_at(__s_wield_c, 861, __s_dotwoweapon, 20) > (acurr(NHC.A_DEX))) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+        return (rnd(20) > (acurr(NHC.A_DEX))) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
     return NHM.ECMD_OK;
 }
@@ -1015,7 +1012,7 @@ export function chwepon(otmp, amount) {
         return 1;
     }
     /* there is a (soft) upper and lower limit to uwep->spe */
-    if (((cptr.ld1so(uwep.v, $obj_spe) > 5 && amount >= 0) || (cptr.ld1so(uwep.v, $obj_spe) < -5 && amount < 0)) && rn2_at(__s_wield_c, 1000, __s_chwepon, 3)) {
+    if (((cptr.ld1so(uwep.v, $obj_spe) > 5 && amount >= 0) || (cptr.ld1so(uwep.v, $obj_spe) < -5 && amount < 0)) && rn2(3)) {
         if (!Blind())
             pline(__s_s_s_for_a_while_and_then_s, Yobjnam2(uwep.v, __s_violently_glow), color, otense(uwep.v, __s_evaporate));
         else
@@ -1052,7 +1049,7 @@ export function chwepon(otmp, amount) {
 
     /* an elven magic clue, cookie@keebler */
     /* elven weapons vibrate warningly when enchanted beyond a limit */
-    if ((cptr.ld1so(uwep.v, $obj_spe) > 5) && (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !rn2_at(__s_wield_c, 1044, __s_chwepon, 7)))
+    if ((cptr.ld1so(uwep.v, $obj_spe) > 5) && (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !rn2(7)))
         pline(__s_s_unexpectedly, Yobjnam2(uwep.v, __s_suddenly_vibrate));
 
     return 1;

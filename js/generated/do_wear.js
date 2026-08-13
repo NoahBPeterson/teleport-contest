@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ARM_BONUS, WrappingAllowed, bimanual, cant_drown, cantweararm, is_boots, is_cloak, is_corrodeable, is_crackable, is_damageable, is_flimsy, is_gloves, is_helmet, is_metallic, is_shield, is_shirt, is_suit, is_sword, touch_petrifies } from './nhmacrofn.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { BInvis, BLevitation, BStealth, Blind, Blind_telepat, Breathless, Detect_monsters, EInvis, ESleepy, EStealth, Fast, Flying, Glib, HFast, HFumbling, HInvis, HLevitation, HProtection, HSee_invisible, HSleepy, HStealth, Hallucination, Invis, Invisible, Levitation, ParanoidRemove, Protection_from_shape_changers, Punished, See_invisible, Slimed, Stone_resistance, Strangled, Swimming, ULEFTY, URIGHTY, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, ga, gi, gm, gn, gu, gw, gy, iflags, program_state, rightleftchars, svc, svd, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { Tobjnam, Yname2, an, ansimpleoname, boots_simple_name, cloak_simple_name, corpse_xname, doname, erosion_matters, gloves_simple_name, helm_simple_name, killer_xname, makeplural, makesingular, obj_is_pname, otense, safe_typename, shield_simple_name, shirt_simple_name, simpleonames, suit_simple_name, the, thesimpleoname, vtense, xname, yname } from './objnam.js';
@@ -21,6 +20,7 @@ import { objects } from './objects.js';
 import { hcolor, hliquid, obj_pmname, x_monnam } from './do_name.js';
 import { nomul, spoteffects, unmul } from './hack.js';
 import { incr_itimeout, make_glib, make_hallucinated, make_slimed, self_invis_message, toggle_blindness } from './potion.js';
+import { rn2, rnd } from './rnd.js';
 import { drown, erode_obj, float_down, float_up, instapetrify, selftouch } from './trap.js';
 import { racial_exception, setnotworn, setworn, which_armor } from './worn.js';
 import { is_lava, is_pool, is_pool_or_lava } from './dbridge.js';
@@ -113,8 +113,6 @@ const __s_that_monsters_s_have_difficulty = cptr.lit("that monsters%s have diffi
 const __s_no_longer = cptr.lit(" no longer");
 const __s_yourself_speed_up_s = cptr.lit("yourself speed up%s.");
 const __s_a_bit_more = cptr.lit(" a bit more");
-const __s_do_wear_c = cptr.lit("do_wear.c");
-const __s_boots_on = cptr.lit("Boots_on");
 const __s_yourself_slow_down_s = cptr.lit("yourself slow down%s.");
 const __s_a_bit = cptr.lit(" a bit");
 const __s_can_s = cptr.lit("can %s!");
@@ -136,7 +134,6 @@ const __s_my_brain_hurts = cptr.lit("My brain hurts!");
 const __s_pct_s_dot = cptr.lit("%s.");
 const __s_like_sitting_in_a_corner = cptr.lit("like sitting in a corner");
 const __s_giddy = cptr.lit("giddy");
-const __s_gloves_on = cptr.lit("Gloves_on");
 const __s_s_s_in_your_bare_s = cptr.lit("%s %s in your bare %s.");
 const __s_now_wield = cptr.lit("now wield");
 const __s_are_wielding = cptr.lit("are wielding");
@@ -160,7 +157,6 @@ const __s_masculine = cptr.lit("masculine");
 const __s_don_t_feel_like_yourself = cptr.lit("don't feel like yourself.");
 const __s_amulet_disintegrates = cptr.lit("amulet disintegrates!");
 const __s_it_constricts_your_throat = cptr.lit("It constricts your throat!");
-const __s_amulet_on = cptr.lit("Amulet_on");
 const __s_are_now_in_flight = cptr.lit("are now in flight.");
 const __s_suddenly_inhale_an_unhealthy_amount_of_s = cptr.lit("suddenly inhale an unhealthy amount of %s!");
 const __s_water = cptr.lit("water");
@@ -267,7 +263,6 @@ const __s_corpse = cptr.lit("corpse");
 const __s_the = cptr.lit("The");
 const __s_your = cptr.lit("Your");
 const __s_other = cptr.lit("other ");
-const __s_some_armor__2 = cptr.lit("some_armor");
 const __s_stuck_ring_neither_left_nor_right = cptr.lit("stuck_ring: neither left nor right?");
 const __s_ring_is_stuck = cptr.lit("ring is stuck.");
 const __s_free_a_weapon_s = cptr.lit("free a weapon %s");
@@ -310,7 +305,6 @@ const __s_your_s_vanish = cptr.lit("Your %s vanish!");
 const __s_your_s_disintegrate = cptr.lit("Your %s disintegrate!");
 const __s_your_s_crumbles_away = cptr.lit("Your %s crumbles away!");
 const __s_you = cptr.lit("You");
-const __s_destroy_arm = cptr.lit("destroy_arm");
 
 /** C ref: do_wear.c:8 — char[13] */
 const see_yourself = cptr.bytes("see yourself");
@@ -506,7 +500,7 @@ export function Boots_on() {
         break;
         case NHC.FUMBLE_BOOTS:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_do_wear_c, 233, __s_boots_on, 20));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd(20));
         break;
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
@@ -826,7 +820,7 @@ function Gloves_on() {
         break;
         case NHC.GAUNTLETS_OF_FUMBLING:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_do_wear_c, 586, __s_gloves_on, 20));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd(20));
         break;
         case NHC.GAUNTLETS_OF_POWER:
         discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1);
@@ -1262,7 +1256,7 @@ function Amulet_on(amul) {
         break;
         case NHC.AMULET_OF_RESTFUL_SLEEP:
         {
-            let newnap = BigInt.asIntN(64, BigInt(rnd_at(__s_do_wear_c, 1048, __s_amulet_on, 98)) + 2n);
+            let newnap = BigInt.asIntN(64, BigInt(rnd(98)) + 2n);
             let oldnap = (HSleepy() & 16777215n);
 
             if (newnap < oldnap || oldnap == 0n)
@@ -2795,16 +2789,16 @@ export function some_armor(victim) {
         otmph = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmu.v : which_armor(victim, 64n);
 
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmh.v : which_armor(victim, 4n);
-    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2641, __s_some_armor__2, 4)))
+    if (otmp && (!otmph || !rn2(4)))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmg.v : which_armor(victim, 16n);
-    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2644, __s_some_armor__2, 4)))
+    if (otmp && (!otmph || !rn2(4)))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmf.v : which_armor(victim, 32n);
-    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2647, __s_some_armor__2, 4)))
+    if (otmp && (!otmph || !rn2(4)))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarms.v : which_armor(victim, 8n);
-    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2650, __s_some_armor__2, 4)))
+    if (otmp && (!otmph || !rn2(4)))
         otmph = otmp;
     return otmph;
 }
@@ -3380,7 +3374,7 @@ export function destroy_arm() {
     let otmp;
     let i;
     let idx = 0;
-    let hits = (rn2_at(__s_do_wear_c, 3282, __s_destroy_arm, 4) + 1) | 0;
+    let hits = (rn2(4) + 1) | 0;
     let ret = 0;
     if (uarm.v)
 
@@ -3402,7 +3396,7 @@ export function destroy_arm() {
         return 0;
 
     for (i = 0; i < hits; i++) {
-        otmp = cptr.ldPtro(armors, rn2_at(__s_do_wear_c, 3297, __s_destroy_arm, idx), 8);
+        otmp = cptr.ldPtro(armors, rn2(idx), 8);
 
         if (erosion_matters(otmp) && is_damageable(otmp) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
             let erosion = obj_erode_type(otmp);

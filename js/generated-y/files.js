@@ -13,7 +13,6 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at } from './nhrng.js';
 import { clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, mark_synch, putmsghistory, putstr, raw_print, wait_synch, wizard } from './nhprop.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
@@ -44,6 +43,7 @@ import { freedynamicdata } from './save.js';
 import { l_nhcore_done } from './nhlua.js';
 import { after_opt_showpaths } from './earlyarg.js';
 import { pmatch } from './strutil.js';
+import { rn2 } from './rnd.js';
 import { aligns, genders } from './role.js';
 import { timet_to_seconds } from './allmain.js';
 
@@ -198,10 +198,9 @@ const __s_not_supported = cptr.lit("not supported");
 const __s_your_personal_configuration_file_s = cptr.lit("Your personal configuration file%s:");
 const __s_library_preferences_nethack_defaults = cptr.lit("Library/Preferences/NetHack Defaults");
 const __s_txt = cptr.lit(".txt");
-const __s_files_c = cptr.lit("files.c");
-const __s_choose_passage = cptr.lit("choose_passage");
 const __s_an_incomprehensible_foreign_translation = cptr.lit("an incomprehensible foreign translation");
 const __s_it_s_s_of_s = cptr.lit("It's %s of \"%s\"!");
+const __s_files_c = cptr.lit("files.c");
 const __s_read_tribute_s_s_d = cptr.lit("read_tribute %s, %s, %d.");
 const __s_tribute = cptr.lit("tribute");
 const __s_too_overwhelmed_to_continue = cptr.lit("too overwhelmed to continue!");
@@ -1871,14 +1870,14 @@ function choose_passage(passagecnt, oid) {
             /* collect MAXPASSAGES of the N indices */
             cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
-                if (range > 0 && rn2_at(__s_files_c, 3456, __s_choose_passage, range) < limit) {
+                if (range > 0 && rn2(range) < limit) {
                     cptr.st1o2(svc, idx++, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((i + 1) | 0))));
                     --limit;
                 }
         }
     }
 
-    idx = rn2_at(__s_files_c, 3463, __s_choose_passage, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count));
+    idx = rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count));
     res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
     /* move the last slot's passage index into the slot just used
        and reduce the number of passages available */

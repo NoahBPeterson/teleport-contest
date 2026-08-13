@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_POOL, IS_WALL, canspotmon } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { Blind, Deaf, Invis, Punished, Strangled, U_AP_TYPE, Underwater, Upolyd } from './nhprop.js';
 import { makemon, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -30,6 +29,7 @@ import { mon_track_clear } from './monmove.js';
 import { in_rooms, money_cnt, nomul, unmul } from './hack.js';
 import { um_dist } from './apply.js';
 import { Mgender, Monnam, Some_Monnam, noit_Monnam, noit_mon_nam, pmname, x_monnam } from './do_name.js';
+import { rn2 } from './rnd.js';
 import { mons } from './monst.js';
 import { is_fainted, reset_faint } from './eat.js';
 import { currency, freeinv, g_at, sobj_at, stackobj } from './invent.js';
@@ -101,8 +101,6 @@ const __s_are_encased_in_rock = cptr.lit("are encased in rock.");
 const __s_escaping_vault_without_guard = cptr.lit("escaping vault without guard?");
 const __s_s_becomes_irate = cptr.lit("%s becomes irate.");
 const __s_not_a_single_corridor_on_this_level = cptr.lit("Not a single corridor on this level?");
-const __s_vault_c = cptr.lit("vault.c");
-const __s_invault = cptr.lit("invault");
 const __s_s_shatter = cptr.lit("%s shatter.");
 const __s_suddenly_one_of_the_vault_s_s_enters = cptr.lit("Suddenly one of the Vault's %s enters!");
 const __s_someone_else_has_entered_the_vault = cptr.lit("Someone else has entered the Vault.");
@@ -134,7 +132,6 @@ const __s_you_have_hidden_gold = cptr.lit("You have hidden gold.");
 const __s_s_holds_out_s_palm_and_beckons_with_s = cptr.lit("%s holds out %s palm and beckons with %s other hand.");
 const __s_most_likely_all_your_gold_was_stolen = cptr.lit("Most likely all your gold was stolen from this vault.");
 const __s_please_drop_that_gold_and_follow_me = cptr.lit("Please drop that gold and follow me.");
-const __s_move_gold = cptr.lit("move_gold");
 const __s_s_whispers_an_incantation = cptr.lit("%s whispers an incantation.");
 const __s_a_distant_chant = cptr.lit("a distant chant.");
 const __s_a_mysterious_force_moves_the_gold_into = cptr.lit("A mysterious force moves the gold into the vault.");
@@ -144,6 +141,7 @@ const __s_vault_guard_no_gold_at_hero_s_feet = cptr.lit("vault guard: no gold at
 const __s_s_s_picks_up_the_gold_s = cptr.lit("%s%s picks up the gold%s.");
 const __s_calms_down_and = cptr.lit(" calms down and");
 const __s_from_beneath_you = cptr.lit(" from beneath you");
+const __s_vault_c = cptr.lit("vault.c");
 const __s_gd_move_cleanup_scleanup_s = cptr.lit("gd_move_cleanup: %scleanup%s");
 const __s_final = cptr.lit("final ");
 const __s_attempt = cptr.lit(" attempt");
@@ -172,13 +170,11 @@ const __s_s_holds_out_s_palm_demandingly = cptr.lit("%s holds out %s palm demand
 const __s_drop_all_your_gold_scoundrel = cptr.lit("Drop all your gold, scoundrel!");
 const __s_s_rubs_s_hands_with_enraged_delight = cptr.lit("%s rubs %s hands with enraged delight!");
 const __s_so_be_it_rogue = cptr.lit("So be it, rogue!");
-const __s_gd_move = cptr.lit("gd_move");
 const __s_move_along = cptr.lit("Move along!");
 const __s_fakecorr_overflow = cptr.lit("fakecorr overflow");
 const __s_s_picks_up_some_gold = cptr.lit("%s picks up some gold.");
 const __s_ld_s_goes_into_the_magic_memory_vault = cptr.lit("%ld %s goes into the Magic Memory Vault.");
 const __s_s_remits_your_gold_to_the_vault = cptr.lit("%s remits your gold to the vault.");
-const __s_paygd = cptr.lit("paygd");
 const __s_to_croesus_here_s_the_gold_recovered = cptr.lit("To Croesus: here's the gold recovered from %s the %s.");
 
 /** C ref: vault.c:23 — @param {CPtr<struct monst>} mtmp */
@@ -480,7 +476,7 @@ export function invault() {
        the vault, future guards become more reluctant to turn up (even
        if summoned via whistle) */
     vgdeathcount = cptr.ld1uo2(svm, NHC.PM_GUARD, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
-    if (vgdeathcount < 2 || (vgdeathcount < 50 && !rn2_at(__s_vault_c, 334, __s_invault, Math.imul(vgdeathcount, vgdeathcount))))
+    if (vgdeathcount < 2 || (vgdeathcount < 50 && !rn2(Math.imul(vgdeathcount, vgdeathcount))))
         cptr.stI32o(u, $you_uinvault, cptr.ldI32o(u, $you_uinvault) + 1);
     if (cptr.ldI32o(u, $you_uinvault) < NHM.VAULT_GUARD_TIME || (cptr.ldI32o(u, $you_uinvault) % 15) != 0)
         return;
@@ -770,8 +766,8 @@ function move_gold(gold, vroom) {
 
     remove_object(gold);
     newsym(cptr.ldI16o(gold, $obj_ox), cptr.ldI16o(gold, $obj_oy));
-    nx = i16(((cptr.ldI16o(svr, vroom, $sizeof_mkroom) + rn2_at(__s_vault_c, 638, __s_move_gold, 2)) | 0));
-    ny = i16(((cptr.ldI16o2(svr, vroom, $sizeof_mkroom, $mkroom_ly) + rn2_at(__s_vault_c, 639, __s_move_gold, 2)) | 0));
+    nx = i16(((cptr.ldI16o(svr, vroom, $sizeof_mkroom) + rn2(2)) | 0));
+    ny = i16(((cptr.ldI16o2(svr, vroom, $sizeof_mkroom, $mkroom_ly) + rn2(2)) | 0));
     place_object(gold, nx, ny);
     stackobj(gold);
     newsym(nx, ny);
@@ -1182,7 +1178,7 @@ export function gd_move(grd) {
             return 0;
         }
         if (um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1) || (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
-            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) && !rn2_at(__s_vault_c, 1067, __s_gd_move, 10) && !Deaf() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !(cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) && !rn2(10) && !Deaf() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !(cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                 ;
                 verbalize(__s_move_along);
             }
@@ -1455,8 +1451,8 @@ export function paygd(silently) {
             mnexto(grd, NHM.RLOC_NOMSG);
             if (!silently)
                 pline(__s_s_remits_your_gold_to_the_vault, Monnam(grd));
-            gdx = (cptr.ldI16o(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom) + rn2_at(__s_vault_c, 1229, __s_paygd, 2)) | 0;
-            gdy = (cptr.ldI16o2(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom, $mkroom_ly) + rn2_at(__s_vault_c, 1230, __s_paygd, 2)) | 0;
+            gdx = (cptr.ldI16o(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom) + rn2(2)) | 0;
+            gdy = (cptr.ldI16o2(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom, $mkroom_ly) + rn2(2)) | 0;
             void cptr.sprintf(cptr.decay(buf), __s_to_croesus_here_s_the_gold_recovered, svp, pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonster), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
             make_grave(i16(gdx), i16(gdy), cptr.decay(buf));
         }

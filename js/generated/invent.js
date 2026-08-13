@@ -9,7 +9,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_candle, Is_container, Is_pudding, SURFACE_AT, ammo_and_launcher, greatest_erosion, has_omailcmd, has_omid, has_omonst, has_oname, is_ammo, is_gloves, is_missile, is_pit, is_plural, is_pole, is_reviver, is_wet_towel, obj_is_generic, pair_of, touch_petrifies } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { Blind, Fumbling, Hallucination, Stone_resistance, ULEFTY, URIGHTY, Underwater, Upolyd, clear_nhwindow, create_nhwindow, ctrl_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, message_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MESSAGE, c_common_strings, cg, disp, flags, gc, gd, gi, gl, go, gp, gs, gt, gu, gy, hands_obj, iflags, program_state, quitchars, svc, svd, svl, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep, ynNaqchars, yn_number, ynaqchars, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
@@ -41,12 +40,12 @@ import { can_reach_floor, read_engr_at } from './engrave.js';
 import { unpunish } from './read.js';
 import { get_obj_location, obj_resists } from './zap.js';
 import { docrt, map_glyphinfo, newsym, nul_glyphinfo, suppress_map_output } from './display.js';
+import { rn2, rn2_on_display_rng } from './rnd.js';
 import { fingers_or_gloves } from './do_wear.js';
 import { body_part, mbodypart } from './polyself.js';
 import { cmdq_add_int, cmdq_add_key, cmdq_clear, cmdq_pop, get_count, readchar, yn_function } from './cmd.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, select_menu, windowprocs, zerowri } from './windows.js';
 import { def_char_to_objclass, def_oc_syms, defsyms } from './drawing.js';
-import { rn2_on_display_rng } from './rnd.js';
 import { get_strength_str } from './botl.js';
 import { itemactions } from './iactions.js';
 import { stairs_description, stairway_at } from './stairs.js';
@@ -228,8 +227,6 @@ const __s_sporebuck = cptr.lit("sporebuck");
 const __s_triganic_pu = cptr.lit("Triganic Pu");
 const __s_woolong = cptr.lit("woolong");
 const __s_zorkmid = cptr.lit("zorkmid");
-const __s_invent_c = cptr.lit("invent.c");
-const __s_currency = cptr.lit("currency");
 const __s_take_off = cptr.lit("take off");
 const __s_remove = cptr.lit("remove");
 const __s_on_the = cptr.lit(" on the ");
@@ -238,7 +235,6 @@ const __s_on = cptr.lit(" on");
 const __s_dip = cptr.lit("dip ");
 const __s_into = cptr.lit(" into");
 const __s_or = cptr.lit(" or ");
-const __s_mime_action = cptr.lit("mime_action");
 const __s_mime_s_s_s_something_s_s = cptr.lit("mime %s%s%s something%s%s.");
 const __s_sp = cptr.lit(" ");
 const __s_grease = cptr.lit("grease");
@@ -310,6 +306,7 @@ const __s_ld_in_total = cptr.lit(" (%ld in total).");
 const __s_s_s_s_s = cptr.lit("%s%s%s%s");
 const __s_c_s_s = cptr.lit("%c - %.*s%s");
 const __s_xprname = cptr.lit("xprname");
+const __s_invent_c = cptr.lit("invent.c");
 const __s_obj_null = cptr.lit("obj != NULL");
 const __s_c_6ld_50s = cptr.lit("%c%6ld %.50s");
 const __s_c_45_s_s = cptr.lit("%c - %-45.*s%s");
@@ -1922,7 +1919,7 @@ cptr.stPtro(currencies, 160, __s_zorkmid);
 export function currency(amount) {
     let res;
 
-    res = Hallucination() ? cptr.ldPtro(currencies, rn2_at(__s_invent_c, 1550, __s_currency, 21), 8) : __s_zorkmid;
+    res = Hallucination() ? cptr.ldPtro(currencies, rn2(21), 8) : __s_zorkmid;
     if (amount != 1n)
         res = makeplural(res);
     return res;
@@ -2065,7 +2062,7 @@ function mime_action(word) {
     }
     if ((bp = cptr.strstr(cptr.decay(buf), __s_or)) !== null) {
         cptr.st1(bp, 0);
-        bp = (rn2_at(__s_invent_c, 1700, __s_mime_action, 2) ? cptr.decay(buf) : (cptr.add(bp, 4)));
+        bp = (rn2(2) ? cptr.decay(buf) : (cptr.add(bp, 4)));
     } else
         bp = cptr.decay(buf);
 

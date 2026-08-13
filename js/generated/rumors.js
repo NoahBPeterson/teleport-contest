@@ -8,12 +8,11 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, wizard } from './nhprop.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
+import { rn2, rnd } from './rnd.js';
 import { There, You, impossible, nhassert_failed, pline, verbalize } from './pline.js';
-import { rn2 } from './rnd.js';
 import { exercise } from './attrib.js';
 import { windowprocs } from './windows.js';
 import { alloc, dupstr } from './alloc.js';
@@ -59,8 +58,6 @@ const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
 const __s_rumors = cptr.lit("rumors");
 const __s_r = cptr.lit("r");
 const __s_error_reading_80s = cptr.lit("Error reading \"%.80s\".");
-const __s_rumors_c = cptr.lit("rumors.c");
-const __s_getrumor = cptr.lit("getrumor");
 const __s_strange_truth_value_for_rumor = cptr.lit("strange truth value for rumor");
 const __s_oops = cptr.lit("Oops...");
 const __s_can_t_find_non_cookie_rumor = cptr.lit("Can't find non-cookie rumor?");
@@ -89,10 +86,10 @@ const __s_no_second_entry = cptr.lit("(no second entry)");
 const __s_only_two_entries = cptr.lit("(only two entries)");
 const __s_sp_dot3 = cptr.lit(" ...");
 const __s_filechunksize_int_max = cptr.lit("filechunksize <= INT_MAX");
+const __s_rumors_c = cptr.lit("rumors.c");
 const __s_what_a_pity_that_you_cannot_read_it = cptr.lit("What a pity that you cannot read it!");
 const __s_nethack_rumors_file_closed_for = cptr.lit("NetHack rumors file closed for renovation.");
 const __s_true_to_her_word_the_oracle_ssays = cptr.lit("True to her word, the Oracle %ssays: ");
-const __s_outrumor = cptr.lit("outrumor");
 const __s_offhandedly = cptr.lit("offhandedly ");
 const __s_casually = cptr.lit("casually ");
 const __s_nonchalantly = cptr.lit("nonchalantly ");
@@ -103,7 +100,6 @@ const __s_5lx = cptr.lit("%5lx\n");
 const __s_oracle_oracle_cnt = cptr.lit("oracle-oracle_cnt");
 const __s_oracle_oracle_loc = cptr.lit("oracle-oracle_loc");
 const __s_oracles = cptr.lit("oracles");
-const __s_outoracle = cptr.lit("outoracle");
 const __s_the_oracle_scornfully_takes_all_your = cptr.lit("The Oracle scornfully takes all your gold and says:");
 const __s_the_oracle_meditates_for_a_moment_and = cptr.lit("The Oracle meditates for a moment and then intones:");
 const __s_the_message_reads = cptr.lit("The message reads:");
@@ -212,7 +208,7 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
              *   rn2 \ +1  2=T  1=T  0=F
              *   adj./ +0  1=T  0=F -1=F
              */
-            switch (adjtruth = (truth + rn2_at(__s_rumors_c, 151, __s_getrumor, 2)) | 0) {
+            switch (adjtruth = (truth + rn2(2)) | 0) {
                 case 2:
                 case 1:
                 beginning = BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start));
@@ -586,7 +582,7 @@ export function outrumor(truth, mechanism) {
     switch (mechanism) {
         case NHM.BY_ORACLE:
         /* Oracle delivers the rumor */
-        pline(__s_true_to_her_word_the_oracle_ssays, (!rn2_at(__s_rumors_c, 558, __s_outrumor, 4) ? __s_offhandedly : (!rn2_at(__s_rumors_c, 559, __s_outrumor, 3) ? __s_casually : (rn2_at(__s_rumors_c, 560, __s_outrumor, 2) ? __s_nonchalantly : __s_empty))));
+        pline(__s_true_to_her_word_the_oracle_ssays, (!rn2(4) ? __s_offhandedly : (!rn2(3) ? __s_casually : (rn2(2) ? __s_nonchalantly : __s_empty))));
         ;
         verbalize(__s_pct_s, line);
         /* [WIS exercised by getrumor()] */
@@ -690,7 +686,7 @@ export function outoracle(special, delphi) {
                oracle_loc[1..oracle_cnt-1] are normal ones */
             if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;  /*(shouldn't happen)*/
-            oracle_idx = special ? 0 : rnd_at(__s_rumors_c, 665, __s_outoracle, ((cptr.ldI32(svo) | 0) - 1) | 0);
+            oracle_idx = special ? 0 : rnd(((cptr.ldI32(svo) | 0) - 1) | 0);
             void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
             if (!special)
                 cptr.stU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);

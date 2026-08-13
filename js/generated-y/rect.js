@@ -11,9 +11,9 @@ import { i16 } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
 import { max, min } from './nhmacrofn.js';
-import { rn2_at } from './nhrng.js';
 import { alloc } from './alloc.js';
 import { panic } from './end.js';
+import { rn2 } from './rnd.js';
 import { impossible } from './pline.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
@@ -24,8 +24,6 @@ const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.N
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_could_not_alloc_rect = cptr.lit("Could not alloc rect");
-const __s_rect_c = cptr.lit("rect.c");
-const __s_rnd_rect = cptr.lit("rnd_rect");
 const __s_n_rects_may_be_too_small = cptr.lit("n_rects may be too small.");
 
 /** C ref: rect.c:19 — NhRect * */
@@ -118,7 +116,7 @@ export function get_rect(r) {
 
 /** C ref: rect.c:104 @returns {CPtr<NhRect>} */
 export function rnd_rect() {
-    return rect_cnt > 0 ? cptr.add(rect, rn2_at(__s_rect_c, 106, __s_rnd_rect, rect_cnt), $sizeof_NhRect) : null;
+    return rect_cnt > 0 ? cptr.add(rect, rn2(rect_cnt), $sizeof_NhRect) : null;
 }
 
 /*

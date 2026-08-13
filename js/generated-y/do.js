@@ -14,7 +14,6 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask, bimanual, canspotmon, ceiling_hider, has_omid, has_omonst, is_hole, is_pick, is_pit, is_plural, is_reviver, is_rider, is_vampshifter, is_whirly, nonliving, ofood, touch_petrifies } from './nhmacrofn.js';
-import { d_at, rn2_at, rnd_at, rnz_at } from './nhrng.js';
 import { BLevitation, Blind, BlindedTimeout, Deaf, ELevitation, EWounded_legs, Fire_resistance, Flying, Fumbling, HBlinded, HLevitation, HWounded_legs, Half_physical_damage, Hallucination, Levitation, Luck, Passes_walls, Punished, Sick, Slimed, Stoned, Strangled, Underwater, Upolyd, Wounded_legs, mark_synch, sokoban_dnum, tutorial_dnum, wizard } from './nhprop.js';
 import { a11y, c_color_names, c_common_strings, disp, flags, ga, gb, gd, gf, gi, gl, gm, gu, gv, gy, iflags, nhcb_counts, nhcb_name, program_state, svc, svd, svh, svl, svm, svn, svp, svq, svu, u, uball, uchain, uquiver, uswapwep, uwep, ynchars } from './decl.js';
 import { fix_shop_damage, is_unpaid, obfree, sellobj, sellobj_state, stolen_value } from './shk.js';
@@ -23,6 +22,7 @@ import { cmd_from_func, do_reqmenu, paranoid_ynq, reset_occupations, set_move_cm
 import { Norep, There, You, You_cant, You_feel, You_hear, You_see, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { is_lava, is_pool, is_pool_or_lava } from './dbridge.js';
 import { waterbody_name } from './pager.js';
+import { d, reseed_random, rn2, rn2_on_display_rng, rnd, rnz } from './rnd.js';
 import { Can_fall_thru, In_W_tower, In_hell, In_mines, In_quest, On_W_tower_level, assign_level, assign_rnd_level, at_dgn_entrance, builds_up, depth, dunlev, dunlevs_in_dungeon, goto_hell, ledger_no, ledger_to_dnum, level_difficulty, maxledgerno, next_level, on_level, prev_level, print_level_annotation, recalc_mapseen, recbranch_mapseen, remdun_mapseen, surface, u_on_newpos, u_on_rndspot } from './dungeon.js';
 import { clamp_hole_destination, climb_pit, delfloortrap, deltrap, dotrap, fill_pit, float_down, lava_damage, maketrap, minstapetrify, reset_utrap, seetrap, selftouch, t_at, uescaped_shaft, uteetering_at_seen_pit, water_damage } from './trap.js';
 import { recalc_block_point, vision_recalc, vision_reset } from './vision.js';
@@ -76,7 +76,6 @@ import { assign_graphics } from './symbols.js';
 import { check_gold_symbol, describe_level } from './botl.js';
 import { bones_include_name } from './bones.js';
 import { error } from './unixtty.js';
-import { reseed_random, rn2, rn2_on_display_rng } from './rnd.js';
 import { getlev } from './restore.js';
 import { oinit } from './o_init.js';
 import { com_pager, deliver_splev_message } from './questpgr.js';
@@ -191,8 +190,6 @@ const $NHFILE_mode = FLD.NHFILE_mode, $NHFILE_structlevel = FLD.NHFILE_structlev
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_drop = cptr.lit("drop");
 const __s_not_a_boulder = cptr.lit("Not a boulder?");
-const __s_do_c = cptr.lit("do.c");
-const __s_boulder_hits_pool = cptr.lit("boulder_hits_pool");
 const __s_you = cptr.lit("you");
 const __s_s_s_s_into_the_s = cptr.lit("%s %s %s into the %s.");
 const __s_push = cptr.lit("push");
@@ -216,7 +213,6 @@ const __s_with_you = cptr.lit(" with you");
 const __s_s_is_s = cptr.lit("%s is %s!");
 const __s_destroyed = cptr.lit("destroyed");
 const __s_killed = cptr.lit("killed");
-const __s_flooreffects = cptr.lit("flooreffects");
 const __s_squished_under_a_boulder = cptr.lit("squished under a boulder");
 const __s_a_crash_beneath_you = cptr.lit("a CRASH! beneath you.");
 const __s_boulder_s_s = cptr.lit("boulder %s%s.");
@@ -243,10 +239,8 @@ const __s_is_s_flash_as_s_s_the_altar = cptr.lit("is %s flash as %s %s the altar
 const __s_hit = cptr.lit("hit");
 const __s_s_s_on_the_altar = cptr.lit("%s %s on the altar.");
 const __s_land = cptr.lit("land");
-const __s_polymorph_sink = cptr.lit("polymorph_sink");
 const __s_sink_transforms_into_s = cptr.lit("sink transforms into %s!");
 const __s_sink_vanishes = cptr.lit("sink vanishes.");
-const __s_teleport_sink = cptr.lit("teleport_sink");
 const __s_drop_s_down_the_drain = cptr.lit("drop %s down the drain.");
 const __s_thought_s_got_lost_in_the_sink_but = cptr.lit("thought %s got lost in the sink, but there it is!");
 const __s_ring_is_regurgitated = cptr.lit("ring is regurgitated!");
@@ -288,7 +282,6 @@ const __s_sink_glows_s_for_a_moment = cptr.lit("sink glows %s for a moment.");
 const __s_sink_looks_like_it_is_being_beamed = cptr.lit("sink looks like it is being beamed aboard somewhere.");
 const __s_sink_momentarily_looks_like_a_regularly = cptr.lit("sink momentarily looks like a regularly erupting geyser.");
 const __s_the_ring_bouncing_down_the_drainpipe = cptr.lit("the ring bouncing down the drainpipe.");
-const __s_dosinkring = cptr.lit("dosinkring");
 const __s_sink_backs_up_leaving_s = cptr.lit("sink backs up, leaving %s.");
 const __s_you_cannot_s_s_you_are_wearing = cptr.lit("You cannot %s %s you are wearing.");
 const __s_you_cannot_s_s_welded_to_your_s = cptr.lit("You cannot %s %s welded to your %s.");
@@ -303,7 +296,6 @@ const __s_drop_s_into_s = cptr.lit("drop %s into %s.");
 const __s_drop_s = cptr.lit("drop %s.");
 const __s_s_instantly_digested = cptr.lit("%s instantly digested!");
 const __s_are = cptr.lit("are");
-const __s_obj_no_longer_held = cptr.lit("obj_no_longer_held");
 const __s_have_nothing_to_drop = cptr.lit("have nothing to drop.");
 const __s_better_not_try_to_drop_that = cptr.lit("better_not_try_to_drop_that");
 const __s_drop_the_s_corpse_without_s_protection = cptr.lit("Drop the %s corpse without %s protection on?");
@@ -314,7 +306,6 @@ const __s_being_held = cptr.lit("being held");
 const __s_swallowed = cptr.lit("swallowed");
 const __s_engulfed = cptr.lit("engulfed");
 const __s_release_s = cptr.lit("release %s.");
-const __s_dodown = cptr.lit("dodown");
 const __s_latent_levitation_ceases = cptr.lit("latent levitation ceases.");
 const __s_are_floating_in_the_s = cptr.lit("are floating in the %s.");
 const __s_are_floating_in_s = cptr.lit("are floating in %s.");
@@ -351,9 +342,7 @@ const __s_level_arrival_collision_s = cptr.lit("level arrival collision: %s?");
 const __s_no_monster = cptr.lit("no monster");
 const __s_steed_is_on_map = cptr.lit("steed is on map");
 const __s_monster_not_co_located = cptr.lit("monster not co-located");
-const __s_u_collide_m = cptr.lit("u_collide_m");
 const __s_monster_in_hero_s_way = cptr.lit("(monster in hero's way)");
-const __s_familiar_level_msg = cptr.lit("familiar_level_msg");
 const __s_looks = cptr.lit("looks");
 const __s_seems = cptr.lit("seems");
 const __s_you_have_a_sense_of_deja_vu = cptr.lit("You have a sense of deja vu.");
@@ -362,10 +351,10 @@ const __s_this_place_s_familiar = cptr.lit("This place %s familiar...");
 const __s_whoa_everything_s_different = cptr.lit("Whoa!  Everything %s different.");
 const __s_you_are_surrounded_by_twisty_little = cptr.lit("You are surrounded by twisty little passages, all alike.");
 const __s_gee_this_s_like_uncle_conan_s_place = cptr.lit("Gee, this %s like uncle Conan's place...");
-const __s_goto_level = cptr.lit("goto_level");
 const __s_a_mysterious_force_momentarily = cptr.lit("A mysterious force momentarily surrounds you...");
 const __s_a_mysterious_force_prevents_you_from = cptr.lit("A mysterious force prevents you from descending.");
 const __s_nh_callback_run = cptr.lit("nh_callback_run");
+const __s_goto_level = cptr.lit("goto_level");
 const __s_goto_level_returning_to_discarded_level = cptr.lit("goto_level: returning to discarded level?");
 const __s_cannot_continue_this_game = cptr.lit("Cannot continue this game.");
 const __s_goto_level_no_corresponding_portal = cptr.lit("goto_level: no corresponding portal!");
@@ -408,7 +397,6 @@ const __s_and_smoke_are = cptr.lit("and smoke are");
 const __s_is = cptr.lit("is");
 const __s_are_out_of_the_cold = cptr.lit("are out of the cold.");
 const __s_you_materialize = cptr.lit("You materialize");
-const __s_final_level = cptr.lit("final_level");
 const __s_bite_covered = cptr.lit("bite-covered");
 const __s_s_writhes_out_of_your_grasp = cptr.lit("%s writhes out of your grasp!");
 const __s_squirming_in_your_backpack = cptr.lit("squirming in your backpack!");
@@ -432,7 +420,6 @@ const __s_revive_corpse_lost_corpse_d = cptr.lit("revive_corpse: lost corpse @ %
 const __s_s_vanishes = cptr.lit("%s vanishes.");
 const __s_s_appears = cptr.lit("%s appears.");
 const __s_s_teleports = cptr.lit("%s teleports.");
-const __s_revive_mon = cptr.lit("revive_mon");
 const __s_sless_hassled = cptr.lit("%sless hassled.");
 const __s_much = cptr.lit("much ");
 const __s_use_s_prefix_to_force_s = cptr.lit("  Use '%s' prefix to force %s.");
@@ -483,7 +470,7 @@ export function* boulder_hits_pool(otmp, rx, ry, pushing) {
         let fills_up;
         let what = waterbody_name(rx, ry);
         let ltyp = cptr.ld1so3(svl, rx, $sizeof_rm_x21, ry, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
-        let chance = rn2_at(__s_do_c, 61, __s_boulder_hits_pool, 10);  /* water: 90%; lava: 10% */
+        let chance = rn2(10);  /* water: 90%; lava: 10% */
         let mtmp;
 
         /* chance for boulder to fill pool:  Plane of Water==0%,
@@ -553,7 +540,7 @@ export function* boulder_hits_pool(otmp, rx, ry, pushing) {
 
                 (yield* You(__s_are_hit_by_molten_s_c, hliquid(__s_lava), Fire_resistance() ? 46 : 33));
                 (yield* burn_away_slime());
-                dmg = d_at(__s_do_c, 138, __s_boulder_hits_pool, ((Fire_resistance() ? 1 : 3)), 6);
+                dmg = d(((Fire_resistance() ? 1 : 3)), 6);
                 (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_molten_lava, NHM.KILLED_BY));
             } else if (!fills_up && cptr.ld1so(flags, $flag_verbose) && (pushing ? !Blind() : ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ry, 8), rx) & NHM.IN_SIGHT) != 0))) {
                 (yield* pline(__s_it_sinks_without_a_trace));
@@ -636,7 +623,7 @@ export function* flooreffects(obj, x, y, verb) {
                     cptr.stI32o(mtmp, $monst_mtrapped, 0);
                 } else {
                     if (!Passes_walls() && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n)) {
-                        (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_do_c, 232, __s_flooreffects, 15) + 1) | 0) / 2) | 0) : rnd_at(__s_do_c, 232, __s_flooreffects, 15)), __s_squished_under_a_boulder, NHM.NO_KILLER_PREFIX));
+                        (yield* losehp(((Half_physical_damage()) ? ((((rnd(15) + 1) | 0) / 2) | 0) : rnd(15)), __s_squished_under_a_boulder, NHM.NO_KILLER_PREFIX));
                         break __lbl_deletedwithboulder;
                     } else
                         (yield* reset_utrap(1));
@@ -797,7 +784,7 @@ export function* polymorph_sink() {
     sinklooted = schar((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) != 0));
     /* svl.level.flags.nsinks--; // set_levltyp() will update this */
     cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
-    switch (rn2_at(__s_do_c, 416, __s_polymorph_sink, 4)) {
+    switch (rn2(4)) {
         default:
         case 0:
         sym = NHC.S_fountain;
@@ -818,8 +805,8 @@ export function* polymorph_sink() {
         (yield* set_levltyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.ALTAR));
         /* 3.6.3: this used to pass 'rn2(A_LAWFUL + 2) - 1' to
            Align2amask() but that evaluates its argument more than once */
-        algn = (rn2_at(__s_do_c, 436, __s_polymorph_sink, 3) - 1) | 0;  /* -1 (A_Cha) or 0 (A_Neu) or +1 (A_Law) */
-        cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, ((In_hell(cptr.add(u, $you_uz)) && rn2_at(__s_do_c, 437, __s_polymorph_sink, 3)) ? NHM.AM_NONE : Align2amask(algn)));
+        algn = (rn2(3) - 1) | 0;  /* -1 (A_Cha) or 0 (A_Neu) or +1 (A_Law) */
+        cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, ((In_hell(cptr.add(u, $you_uz)) && rn2(3)) ? NHM.AM_NONE : Align2amask(algn)));
         break;
         case 3:
         sym = NHC.S_room;
@@ -848,8 +835,8 @@ function* teleport_sink() {
     let trycnt = 0;
 
     do {
-        cx = i16(((1 + rnd_at(__s_do_c, 472, __s_teleport_sink, 77)) | 0));  /* 2..COLNO-2 */
-        cy = i16(((1 + rn2_at(__s_do_c, 473, __s_teleport_sink, 19)) | 0));  /* 1..ROWNO-2 */
+        cx = i16(((1 + rnd(77)) | 0));  /* 2..COLNO-2 */
+        cy = i16(((1 + rn2(19)) | 0));  /* 1..ROWNO-2 */
         if (cptr.ld1so3(svl, cx, $sizeof_rm_x21, cy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM && !t_at(cx, cy) && !engr_at(cx, cy) && (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8), cx) & NHM.IN_SIGHT) != 0) || dist2((cx), (cy), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 9)) {
             /* this ends up having set_levltyp() count all sinks and
                fountains on the level twice but that is not a problem */
@@ -1011,11 +998,11 @@ function* dosinkring(obj) {
         ;
         (yield* You_hear(__s_the_ring_bouncing_down_the_drainpipe));
     }
-    if (!rn2_at(__s_do_c, 649, __s_dosinkring, 20) && !nosink) {
+    if (!rn2(20) && !nosink) {
         (yield* pline_The(__s_sink_backs_up_leaving_s, (yield* doname(obj))));
         cptr.stI32o(obj, $obj_in_use, 0);
         (yield* dropx(obj));
-    } else if (!rn2_at(__s_do_c, 653, __s_dosinkring, 5)) {
+    } else if (!rn2(5)) {
         (yield* freeinv(obj));
         cptr.stI32o(obj, $obj_in_use, 0);
         cptr.stI16o(obj, $obj_ox, cptr.ldI16(u));
@@ -1262,7 +1249,7 @@ export function* obj_no_longer_held(obj) {
          * to give each individual crysknife its own separate 10% chance,
          * but we aren't in any position to handle stack splitting here.
          */
-        if (!(cptr.ldI32o(obj, $obj_oerodeproof) & 1) || !rn2_at(__s_do_c, 911, __s_obj_no_longer_held, 10)) {
+        if (!(cptr.ldI32o(obj, $obj_oerodeproof) & 1) || !rn2(10)) {
             /* if monsters aren't moving, assume player is responsible */
             if (!cptr.ld1so(svc, $context_info_mon_moving) && !cptr.ldI32(program_state))
                 (yield* costly_alteration(obj, NHC.COST_DEGRD));
@@ -1500,7 +1487,7 @@ export function* dodown() {
                     if (cptr.ld1so(obj, $obj_oartifact) && artifact_has_invprop(obj, NHC.LEVITATION)) {
                         if (cptr.ldI64o(obj, $obj_age) < cptr.ldI64o(svm, $instance_globals_saved_m_moves))
                             cptr.stI64o(obj, $obj_age, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
-                        cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt(rnz_at(__s_do_c, 1165, __s_dodown, 100)));
+                        cptr.stI64o(obj, $obj_age, cptr.ldI64o(obj, $obj_age) + BigInt(rnz(100)));
                     }
                 }
             }
@@ -1594,9 +1581,9 @@ export function* dodown() {
             (yield* You(__s_don_t_fit_s_easily, down_or_thru));
             void cptr.sprintf(cptr.decay(qbuf), __s_try_to_squeeze_s, down_or_thru);
             if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) == 121) {
-                if (!rn2_at(__s_do_c, 1266, __s_dodown, 3)) {
+                if (!rn2(3)) {
                     actn = __s_manage_to_squeeze;
-                    (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_do_c, 1268, __s_dodown, 4) + 1) | 0) / 2) | 0) : rnd_at(__s_do_c, 1268, __s_dodown, 4)), __s_contusion_from_a_small_passage, NHM.KILLED_BY));
+                    (yield* losehp(((Half_physical_damage()) ? ((((rnd(4) + 1) | 0) / 2) | 0) : rnd(4)), __s_contusion_from_a_small_passage, NHM.KILLED_BY));
                 } else {
                     (yield* You(__s_were_unable_to_fit_s, down_or_thru));
                     return NHM.ECMD_OK;
@@ -1745,7 +1732,7 @@ export function* u_collide_m(mtmp) {
        it was already here.  Randomly move you to an adjacent spot
        or else the monster to any nearby location.  Prior to 3.3.0
        the latter was done unconditionally. */
-    if (!rn2_at(__s_do_c, 1429, __s_u_collide_m, 2) && (yield* enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) && (dist2(((cptr.ldI16(cc))), ((cptr.ldI16o(cc, $nhcoord_y))), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+    if (!rn2(2) && (yield* enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) && (dist2(((cptr.ldI16(cc))), ((cptr.ldI16o(cc, $nhcoord_y))), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
         (yield* u_on_newpos(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));  /*[maybe give message here?]*/
     else
         (yield* mnexto(mtmp, NHM.RLOC_NOMSG));
@@ -1777,7 +1764,7 @@ cptr.stPtro(__static_familiar_level_msg_halu_fam_msgs, 24, null); /** C ref: do.
 function* familiar_level_msg() {
     let mesg;
     let buf = new Uint8Array(256);
-    let which = rn2_at(__s_do_c, 1462, __s_familiar_level_msg, 4);
+    let which = rn2(4);
 
     if (Hallucination())
         mesg = cptr.ldPtro(__static_familiar_level_msg_halu_fam_msgs, which, 8);
@@ -1852,9 +1839,9 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
      * sent down farther so benefits lawfuls more than chaotics this time.
      */
     if (In_hell(cptr.add(u, $you_uz)) && up && (cptr.ldI32o(u, $you_uhave) & 1) | 0 && !newdungeon && !portal && (dunlev(cptr.add(u, $you_uz)) < ((dunlevs_in_dungeon(cptr.add(u, $you_uz)) - 3) | 0))) {
-        if (!rn2_at(__s_do_c, 1543, __s_goto_level, (4 + cptr.ldI32o(svc, $context_info_mysteryforce)) | 0)) {
+        if (!rn2((4 + cptr.ldI32o(svc, $context_info_mysteryforce)) | 0)) {
             let odds = (3 + cptr.ld1so(u, $you_ualign)) | 0;
-            let diff = (odds <= 1) ? 0 : rn2_at(__s_do_c, 1545, __s_goto_level, odds);  /* paranoia */
+            let diff = (odds <= 1) ? 0 : rn2(odds);  /* paranoia */
 
             if (diff != 0) {
                 assign_rnd_level(newlevel, cptr.add(u, $you_uz), diff);
@@ -1872,7 +1859,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
                that drops faster, on average, when being sent down farther so
                while the impact is reduced for everybody compared to earlier
                versions, it is reduced least for chaotics, most for lawfuls */
-            cptr.stI32o(svc, $context_info_mysteryforce, (cptr.ldI32o(svc, $context_info_mysteryforce) + rn2_at(__s_do_c, 1563, __s_goto_level, (diff + 2) | 0)) | 0);  /* L:0-4,N:0-3,C:0-2 */
+            cptr.stI32o(svc, $context_info_mysteryforce, (cptr.ldI32o(svc, $context_info_mysteryforce) + rn2((diff + 2) | 0)) | 0);  /* L:0-4,N:0-3,C:0-2 */
 
             if (on_level(newlevel, cptr.add(u, $you_uz))) {
                 void (yield* safe_teleds(NHM.TELEDS_NO_FLAGS));
@@ -2093,7 +2080,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
                 if (cptr.ldPtro(u, $you_usteed))
                     (yield* dismount_steed(NHC.DISMOUNT_FELL));
                 else
-                    (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_do_c, 1792, __s_goto_level, 3) + 1) | 0) / 2) | 0) : rnd_at(__s_do_c, 1792, __s_goto_level, 3)), cptr.ld1so(ga, $instance_globals_a_at_ladder) ? __s_falling_off_a_ladder : __s_tumbling_down_a_flight_of_stairs, NHM.KILLED_BY));
+                    (yield* losehp(((Half_physical_damage()) ? ((((rnd(3) + 1) | 0) / 2) | 0) : rnd(3)), cptr.ld1so(ga, $instance_globals_a_at_ladder) ? __s_falling_off_a_ladder : __s_tumbling_down_a_flight_of_stairs, NHM.KILLED_BY));
                 (yield* selftouch(__s_falling_you));
             } else {
                 if (cptr.ld1so(flags, $flag_verbose))
@@ -2285,7 +2272,7 @@ export function* goto_level(newlevel, at_stairs, falling, portal) {
 
     /* fall damage? */
     if (do_fall_dmg) {
-        let dmg = d_at(__s_do_c, 1990, __s_goto_level, (((dist) > 1 ? (dist) : 1)), 6);
+        let dmg = d((((dist) > 1 ? (dist) : 1)), 6);
 
         dmg = ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg));
         (yield* losehp(dmg, __s_falling_down_a_mine_shaft, NHM.KILLED_BY));
@@ -2335,7 +2322,7 @@ function* final_level() {
     (yield* iter_mons(reset_hostility));
 
     /* create some player-monsters */
-    (yield* create_mplayers(((rn2_at(__s_do_c, 2049, __s_final_level, 4) + 3) | 0), 1));
+    (yield* create_mplayers(((rn2(4) + 3) | 0), 1));
 
     /* create a guardian angel next to player, if worthy */
     (yield* gain_guardian_angel());
@@ -2545,14 +2532,14 @@ export function* revive_mon(arg, timeout) {
         let when;
         let action;
 
-        if (is_rider(mptr) && rn2_at(__s_do_c, 2281, __s_revive_mon, 99)) {
+        if (is_rider(mptr) && rn2(99)) {
             action = NHC.REVIVE_MON;
             when = rider_revival_time(body, 1);
         } else {
             if (!obj_has_timer(body, NHC.ROT_CORPSE))
                 (yield* You_feel(__s_sless_hassled, is_rider(mptr) ? __s_much : __s_empty));
             action = NHC.ROT_CORPSE;
-            when = BigInt.asIntN(64, BigInt(d_at(__s_do_c, 2288, __s_revive_mon, 5, 50)) - (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(body, $obj_age))));
+            when = BigInt.asIntN(64, BigInt(d(5, 50)) - (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(body, $obj_age))));
             if (when < 1n)
                 when = 1n;
         }

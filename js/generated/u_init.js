@@ -9,12 +9,12 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_container, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet, is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool } from './nhmacrofn.js';
-import { rn2_at, rnd_at, rne_at } from './nhrng.js';
 import { Race_switch, Role_switch, discover } from './nhprop.js';
 import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
 import { discover_object } from './o_init.js';
 import { obj_descr, objects } from './objects.js';
 import { is_art } from './artifact.js';
+import { rn2, rnd, rne } from './rnd.js';
 import { Japanese_item_name } from './objnam.js';
 import { inv_weight } from './hack.js';
 import { adjabil, adjattrib, init_attr, newhp, vary_init_attr } from './attrib.js';
@@ -86,16 +86,11 @@ const $Align_value = FLD.Align_value, $Race_mnum = FLD.Race_mnum, $Role_mnum = F
     $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_u_init_c = cptr.lit("u_init.c");
-const __s_u_init_role = cptr.lit("u_init_role");
-const __s_u_init_race = cptr.lit("u_init_race");
-const __s_u_init_misc = cptr.lit("u_init_misc");
 const __s_no_skills_found_for_role = cptr.lit("No skills found for role");
-const __s_trquan = cptr.lit("trquan");
+const __s_u_init_c = cptr.lit("u_init.c");
 const __s_ini_inv_substituting_s_for_s_s = cptr.lit("ini_inv: substituting %s for %s%s");
 const __s_random = cptr.lit("random ");
 const __s_empty = cptr.lit("");
-const __s_ini_inv_adjust_obj = cptr.lit("ini_inv_adjust_obj");
 
 /** C ref: u_init.c:8 — struct trobj { trotyp, trspe, trclass, trquan_min, trquan_max, trbless } (memory model v0.5) */
 
@@ -1741,22 +1736,22 @@ function u_init_role() {
     switch (Role_switch()) {
         case NHC.PM_ARCHEOLOGIST:
         ini_inv(Archeologist);
-        if (!rn2_at(__s_u_init_c, 654, __s_u_init_role, 10))
+        if (!rn2(10))
             ini_inv(Tinopener);
-        else if (!rn2_at(__s_u_init_c, 656, __s_u_init_role, 4))
+        else if (!rn2(4))
             ini_inv(Lamp);
-        else if (!rn2_at(__s_u_init_c, 658, __s_u_init_role, 5))
+        else if (!rn2(5))
             ini_inv(Magicmarker);
         knows_object(NHC.SACK, 0);
         knows_object(NHC.TOUCHSTONE, 0);
         break;
         case NHC.PM_BARBARIAN:
-        if (rn2_at(__s_u_init_c, 666, __s_u_init_role, 100) >= 50) {
+        if (rn2(100) >= 50) {
             ini_inv(Barbarian_0);
         } else {
             ini_inv(Barbarian_1);
         }
-        if (!rn2_at(__s_u_init_c, 671, __s_u_init_role, 6))
+        if (!rn2(6))
             ini_inv(Lamp);
         knows_class(NHC.WEAPON_CLASS);  /* excluding polearms */
         knows_class(NHC.ARMOR_CLASS);
@@ -1765,9 +1760,9 @@ function u_init_role() {
         ini_inv(Cave_man);
         break;
         case NHC.PM_HEALER:
-        cptr.stI64o(u, $you_umoney0, BigInt(((rn2_at(__s_u_init_c, 680, __s_u_init_role, 1000) + 1001) | 0)));
+        cptr.stI64o(u, $you_umoney0, BigInt(((rn2(1000) + 1001) | 0)));
         ini_inv(Healer);
-        if (!rn2_at(__s_u_init_c, 682, __s_u_init_role, 25))
+        if (!rn2(25))
             ini_inv(Lamp);
         knows_object(NHC.POT_FULL_HEALING, 0);
         break;
@@ -1782,10 +1777,10 @@ function u_init_role() {
         {
 
             ini_inv(Monk);
-            ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2_at(__s_u_init_c, 699, __s_u_init_role, 90) / 30) | 0, 8));  /* [0..2] */
-            if (!rn2_at(__s_u_init_c, 700, __s_u_init_role, 4))
+            ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2(90) / 30) | 0, 8));  /* [0..2] */
+            if (!rn2(4))
                 ini_inv(Magicmarker);
-            else if (!rn2_at(__s_u_init_c, 702, __s_u_init_role, 10))
+            else if (!rn2(10))
                 ini_inv(Lamp);
             knows_class(NHC.ARMOR_CLASS);
             /* sufficiently martial-arts oriented item to ignore language issue */
@@ -1794,9 +1789,9 @@ function u_init_role() {
         }
         case NHC.PM_CLERIC:
         ini_inv(Priest);
-        if (!rn2_at(__s_u_init_c, 711, __s_u_init_role, 5))
+        if (!rn2(5))
             ini_inv(Magicmarker);
-        else if (!rn2_at(__s_u_init_c, 713, __s_u_init_role, 10))
+        else if (!rn2(10))
             ini_inv(Lamp);
         knows_object(NHC.POT_WATER, 1);  /* override pauper */
         /* KMH, conduct --
@@ -1814,14 +1809,14 @@ function u_init_role() {
         case NHC.PM_ROGUE:
         cptr.stI64o(u, $you_umoney0, 0n);
         ini_inv(Rogue);
-        if (!rn2_at(__s_u_init_c, 731, __s_u_init_role, 5))
+        if (!rn2(5))
             ini_inv(Blindfold);
         knows_object(NHC.SACK, 0);
         knows_class(NHC.WEAPON_CLASS);  /* daggers only */
         break;
         case NHC.PM_SAMURAI:
         ini_inv(Samurai);
-        if (!rn2_at(__s_u_init_c, 740, __s_u_init_role, 5))
+        if (!rn2(5))
             ini_inv(Blindfold);
         knows_class(NHC.WEAPON_CLASS);  /* all weapons */
         knows_class(NHC.ARMOR_CLASS);
@@ -1837,27 +1832,27 @@ function u_init_role() {
         }
         break;
         case NHC.PM_TOURIST:
-        cptr.stI64o(u, $you_umoney0, BigInt(rnd_at(__s_u_init_c, 756, __s_u_init_role, 1000)));
+        cptr.stI64o(u, $you_umoney0, BigInt(rnd(1000)));
         ini_inv(Tourist);
-        if (!rn2_at(__s_u_init_c, 758, __s_u_init_role, 25))
+        if (!rn2(25))
             ini_inv(Tinopener);
-        else if (!rn2_at(__s_u_init_c, 760, __s_u_init_role, 25))
+        else if (!rn2(25))
             ini_inv(Leash);
-        else if (!rn2_at(__s_u_init_c, 762, __s_u_init_role, 25))
+        else if (!rn2(25))
             ini_inv(Towel);
-        else if (!rn2_at(__s_u_init_c, 764, __s_u_init_role, 20))
+        else if (!rn2(20))
             ini_inv(Magicmarker);
         break;
         case NHC.PM_VALKYRIE:
         ini_inv(Valkyrie);
-        if (!rn2_at(__s_u_init_c, 769, __s_u_init_role, 6))
+        if (!rn2(6))
             ini_inv(Lamp);
         knows_class(NHC.WEAPON_CLASS);  /* excludes polearms */
         knows_class(NHC.ARMOR_CLASS);
         break;
         case NHC.PM_WIZARD:
         ini_inv(Wizard);
-        if (!rn2_at(__s_u_init_c, 776, __s_u_init_role, 5))
+        if (!rn2(5))
             ini_inv(Blindfold);
         break;
         default:
@@ -1892,7 +1887,7 @@ function u_init_race() {
          * get only non-magic instruments.
          */
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
-            let Instrument = cptr.alloc(2 * $sizeof_trobj); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2_at(__s_u_init_c, 810, __s_u_init_race, 6), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
+            let Instrument = cptr.alloc(2 * $sizeof_trobj); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2(6), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
             ini_inv(Instrument);
         }
 
@@ -2080,7 +2075,7 @@ export function u_init_misc() {
         cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);  /* set PermaBlind */
 
     /* roughly based on distribution in human population */
-    cptr.stI32o(u, $you_uhandedness, (rn2_at(__s_u_init_c, 1028, __s_u_init_misc, 10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
+    cptr.stI32o(u, $you_uhandedness, (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
 
     max_rank_sz();  /* set max str size for class ranks */
 
@@ -2159,7 +2154,7 @@ function restricted_spell_discipline(otyp) {
 function trquan(trop) {
     if (!cptr.ld1so(trop, $trobj_trquan_min))
         return 1n;
-    return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) + rn2_at(__s_u_init_c, 1110, __s_trquan, (((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) | 0));
+    return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) + rn2((((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) | 0));
 }
 
 /* create random object of certain class, filtering out too powerful items */
@@ -2256,11 +2251,11 @@ function ini_inv_adjust_obj(trop, obj) {
         if (cptr.ld1so(trop, $trobj_trspe) != 127) {
             cptr.st1o(obj, $obj_spe, cptr.ld1so(trop, $trobj_trspe));
             if (cptr.ldI16(trop) == NHC.MAGIC_MARKER && cptr.ld1so(obj, $obj_spe) < 96)
-                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + rn2_at(__s_u_init_c, 1233, __s_ini_inv_adjust_obj, 4));
+                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + rn2(4));
         } else {
             /* Don't start with +0 or negative rings */
             if (cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_class) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) | 0 && cptr.ld1so(obj, $obj_spe) <= 0)
-                cptr.st1o(obj, $obj_spe, schar(rne_at(__s_u_init_c, 1238, __s_ini_inv_adjust_obj, 3)));
+                cptr.st1o(obj, $obj_spe, schar(rne(3)));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
             cptr.stI32o(obj, $obj_blessed, cptr.ld1so(trop, $trobj_trbless));

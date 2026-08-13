@@ -13,13 +13,13 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { rn2_at } from './nhrng.js';
 import { Hallucination, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { ledger_no, maxledgerno } from './dungeon.js';
 import { WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
 import { You, impossible, pline, raw_printf } from './pline.js';
 import { add_menu, add_menu_heading, add_menu_str, select_menu, windowprocs } from './windows.js';
+import { rn2 } from './rnd.js';
 import { panic } from './end.js';
 import { sfi_char, sfi_int, sfi_objclass, sfi_short, sfi_unsigned, sfo_char, sfo_int, sfo_objclass, sfo_short, sfo_unsigned } from './sfbase.js';
 import { Strlen_ } from './strutil.js';
@@ -75,9 +75,6 @@ const $NHFILE_mode = FLD.NHFILE_mode, $Role_mnum = FLD.Role_mnum,
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_not_enough_gems_first_d_j_d_last_gem_d = cptr.lit("Not enough gems? - first=%d j=%d LAST_GEM=%d");
-const __s_o_init_c = cptr.lit("o_init.c");
-const __s_randomize_gem_colors = cptr.lit("randomize_gem_colors");
-const __s_shuffle = cptr.lit("shuffle");
 const __s_init_objects_class_for_generic_object_d = cptr.lit("init_objects: class for generic object #%d doesn't match (%d)");
 const __s_objects_d_class_d_not_in_order = cptr.lit("objects[%d] class #%d not in order!");
 const __s_obj_d_s_name_is_s_despite_s_alternate = cptr.lit("obj #%d (%s) name is %s despite%s alternate description");
@@ -85,7 +82,6 @@ const __s_pre_known = cptr.lit("pre-known");
 const __s_not_known = cptr.lit("not known");
 const __s_empty = cptr.lit("");
 const __s_no = cptr.lit(" no");
-const __s_init_objects = cptr.lit("init_objects");
 const __s_s_d_probability_total_for_oclass_d = cptr.lit("%s (%d) probability total for oclass %d");
 const __s_zero = cptr.lit("zero");
 const __s_negative = cptr.lit("negative");
@@ -115,6 +111,7 @@ const __s_sp_lbrack_pct_s_rbrack = cptr.lit(" [%s]");
 const __s_sp2_pct_s = cptr.lit("  %s");
 const __s_spellbook = cptr.lit(" spellbook");
 const __s_disco_output_sorted = cptr.lit("disco_output_sorted");
+const __s_o_init_c = cptr.lit("o_init.c");
 const __s_p_null = cptr.lit("p != NULL");
 const __s_discoveries_s = cptr.lit("Discoveries, %s");
 const __s_unique_items_or_relics = cptr.lit("Unique items or Relics");
@@ -169,13 +166,13 @@ function* setgemprobs(dlev) {
 /* some gems can have different colors */
 /** C ref: o_init.c:85 */
 function randomize_gem_colors() {
-    if (rn2_at(__s_o_init_c, 89, __s_randomize_gem_colors, 2)) {
+    if (rn2(2)) {
         cptr.stI16o2(objects, NHC.TURQUOISE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.TURQUOISE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
     }
-    if (rn2_at(__s_o_init_c, 92, __s_randomize_gem_colors, 2)) {
+    if (rn2(2)) {
         cptr.stI16o2(objects, NHC.AQUAMARINE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.AQUAMARINE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
     }
-    switch (rn2_at(__s_o_init_c, 95, __s_randomize_gem_colors, 4)) {
+    switch (rn2(4)) {
         case 0:
         break;
         case 1:
@@ -209,7 +206,7 @@ function shuffle(o_low, o_high, domaterial) {
         if ((cptr.ldI32o2(objects, j, $sizeof_objclass, $objclass_oc_name_known) & 1))
             continue;
         do
-            i = (j + rn2_at(__s_o_init_c, 129, __s_shuffle, (((o_high - j) | 0) + 1) | 0)) | 0;
+            i = (j + rn2((((o_high - j) | 0) + 1) | 0)) | 0;
         while ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1));
         sw = cptr.ldI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx);
         cptr.stI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx));
@@ -307,7 +304,7 @@ export function* init_objects() {
 
     /* shuffle descriptions */
     shuffle_all();
-    cptr.stI32o2(objects, NHC.WAN_NOTHING, $sizeof_objclass, $objclass_oc_dir, (rn2_at(__s_o_init_c, 234, __s_init_objects, 2) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0);
+    cptr.stI32o2(objects, NHC.WAN_NOTHING, $sizeof_objclass, $objclass_oc_dir, (rn2(2) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0);
 }
 
 /* Compute the total probability of each object class.
