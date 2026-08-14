@@ -2371,3 +2371,616 @@ The one refusal worth revisiting later is `key:u32->i32` (49 sites): a compound
 assignment to an `unsigned int` masks its result with `| 0` rather than
 `>>> 0` — pre-existing, orthogonal to this leg, and sound either way, but it is
 why an unsigned chain will not fold into one.
+
+---
+
+## 36. The 599 refusals, revisited
+
+§30's ledger refused 599 sites. The reason they are worth re-reading is that
+the fold's guards were written to be *safe*, not to be *tight*, and three of
+them turned out to be describing a stricter condition than the identity needs.
+
+| the guard, as leg 5 wrote it | what the identity actually needs |
+|---|---|
+| the operand's mask and the consumer's must be the **same mask** | they must be reductions of the same **width** |
+| the consumer must be `+`, `-` or `*` | the consumer must be a **reduction** |
+| a `?:` offers nothing | a `?:` selects a value and does nothing to it |
+
+### the pair rule
+
+`| 0` and `>>> 0` are the same reduction — both compute x mod 2^32 — and differ
+only in which representative of the residue class they *name*: −1 or
+4,294,967,295. Leg 5 refused to mix them (`key:u32->i32`, 49 sites), and the
+worry behind that refusal is real but misplaced. The two masks disagree about
+the *intermediate*; they cannot disagree about the *result*, because the
+consumer's own mask is what picks the representative that survives. So:
+
+> a mask is redundant iff the thing that consumes it is a reduction of the
+> **same width**, with nothing between the two.
+
+"Nothing between the two" is not a check. An offer is attached by exactly one
+producer, `coerceArith` (and now `convert`), and is taken by exactly one
+consumer — the operator it was emitted for. There is no path by which a
+comparison, a division, a `cptr.add` or a call could sit between an offer and
+its taker, because such an operator would be the consumer and would refuse.
+That was already the leg-5 argument for the barrier list, and it is what makes
+the pair rule a relaxation of the *key* test rather than of the *barrier*.
+
+The rule's own motivating example is a cast rather than a ring operator.
+`cfgfiles.c:421`
+
+```c
+num = num * 10 + (*bufp - '0');
+```
+
+has `num` unsigned and `*bufp - '0'` int, so the usual arithmetic conversions
+put a `>>> 0` between them, and `convert()` writes it. That `>>> 0` is a
+reduction mod 2^32 exactly as a root mask is:
+
+```js
+- num = ((Math.imul(num, 10) >>> 0) + (((cptr.ld1s(bufp) - 48) | 0) >>> 0)) >>> 0;
++ num = ((Math.imul(num, 10) >>> 0) + ((cptr.ld1s(bufp) - 48) >>> 0)) >>> 0;
+```
+
+Two conversions qualify and no others: 32→32 (`| 0` / `>>> 0`) and 64→64
+(`asIntN`/`asUintN(64, …)`). Everything else `convert()` emits fails the same
+width test the ring path uses — `BigInt(x)` *widens* and needs the exact int32,
+`Number(BigInt.asIntN(32, x))` and `schar(x)` reduce at a different width.
+
+A same-signedness cast is never emitted at all (`sameClass` returns early), so
+every cast candidate is a signedness change: this extension folds **nothing**
+without the pair rule and 125 masks with it.
+
+### bitwise and shift consumers, and the 32-versus-64 asymmetry
+
+This is the one place in the leg where the two widths behave differently, and
+the difference is not a matter of degree.
+
+**At 32 bits a bitwise or shift operator is itself a reduction.** JS applies
+ToInt32 (or ToUint32) to both operands of `&`, `|`, `^`, `<<` and `>>`, and
+masks the shift count with `& 31`. Every one of those is a function of the
+operand's residue mod 2^32 alone, so an operand's own `| 0` is doing work the
+operator is about to redo:
+
+```js
+-        ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7)
++        ? (((glyph) - NHC.GLYPH_SWALLOW_OFF) & 7)
+```
+
+**The parentheses stay.** This is the one place the fold has to *add* something
+back. `+` binds tighter than `>>` and `&`, so simply deleting the mask from
+`rn2(((Luck() + 6) | 0) >> 1)` leaves `rn2(Luck() + 6 >> 1)` — the same
+expression, and exactly the shape every C style guide tells you to parenthesize.
+`pray.c:1167` writes `rn2((Luck + 6) >> 1)`, so an operand folded into a bitwise
+or shift consumer keeps a paren pair where the mask used to supply one:
+
+```js
+-        switch (rn2(((Luck() + 6) | 0) >> 1)) {
++        switch (rn2((Luck() + 6) >> 1)) {
+```
+
+The ring path needs no such rule and does not get one: `a + b + c` reading as
+`a + b + c` is the entire point of the fold, and a ring operand sits at its
+consumer's own precedence anyway.
+
+**At 64 bits it is not a reduction at all.** BigInt's bitwise operators are
+arbitrary-precision two's complement: they do not truncate to 64 bits, they do
+not truncate to anything. `BigInt.asUintN(64, a + b) & m` and `(a + b) & m` are
+different numbers the moment `a + b` leaves the 64-bit range, and for a
+*negative* intermediate they differ in infinitely many bits. There the mask is
+the semantics. The emitter's own gate is one clause —
+
+```js
+const bit = WRAPFOLD2 && WRAP_BITOPS.has(op);
+const key = ring || bit ? wrapKey(t) : null;
+if (!WRAPFOLD || !key || (bit && !wrapIs32(key))) { … refuse … }
+```
+
+— and the refusals it produces are named `op:&:64` / `op:>>:64` so that the
+census says *why* rather than merely *that*.
+
+The split, measured: leg 5's census had **61** bitwise/shift refusals (29 `&`,
+19 `<<`, 9 `|`, 4 `>>`). **51 of them are 32-bit** and fold, removing 53 masks
+(two sites carried a masked operand on each side). **10 are 64-bit** and stay
+refused — 9 `op:&:64` and 1 `op:>>:64`.
+
+### `?:` arms
+
+`cond ? m(a + b) : m(c + d)` under an outer `m` of the same width hoists both
+arms, because a conditional selects a value and does nothing to it: whichever
+arm runs, the outer mask is a same-width reduction of that arm's residue.
+`mplayer.c:139` is the shape, and it comes back onto one line:
+
+```js
+-                (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) +
+-                    (special ? ((30 + rnd(30)) | 0) : 30)) | 0
++                (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) + (special ? 30 + rnd(30) : 30)) | 0
+```
+
+The offer is a **selection** node rather than a binary one, and the differential
+treats it as such — see §39. The fold is per-arm: an arm that offers nothing
+stays as it is, and one arm alone is enough to be worth taking.
+
+---
+
+## 37. What it did
+
+The emitter's ledger, in the order the rules were added. (As in §30 this is an
+upper bound on the shipped tree rather than a count of it: the function-like
+macro tier emits and folds 16,723 expansions and throws most of them away.)
+
+| | ring-operation masks removed | Δ |
+|---|---|---|
+| leg 5 (`main`) | 3,440 | — |
+| + the pair rule | 3,489 | **+49** |
+| + 32-bit bitwise/shift consumers | 3,542 | **+53** |
+| + same-width casts | 3,667 | **+125** |
+| + `?:` arms | 3,718 | **+51** |
+
+**+278 in total, and 501 refusals left where there were 599.** Maximal chains
+collapsed: 2,498 → 2,657. Longest chain: still 11 terms.
+
+The four rules are not independent, and the report says so rather than pretending
+otherwise. Each one alone, against the same baseline: pair **+49**, bitwise
+**+53**, `?:` **+14**, cast **+0**. The cast rule is worth 125 only *with* the
+pair rule (every cast candidate is a signedness change), and the `?:` rule is
+worth 51 rather than 14 only once casts are consuming its offers.
+
+By category, over the whole build: **152** masks taken by a same-width cast,
+**54** by a 32-bit bitwise/shift consumer, **210** where the operand's mask and
+the consumer's differ in signedness, **85** `?:` arms hoisted over 1,703 offers.
+
+Counted over the shipped tree instead — the honest number, since it counts text
+rather than decisions:
+
+| mask | `js/generated` at `main` | after | Δ |
+|---|---|---|---|
+| `… \| 0` | 10,037 | 9,377 | **−660** |
+| `… >>> 0` | 3,337 | 3,156 | **−181** |
+| `BigInt.asUintN(64, …)` | 866 | 841 | −25 |
+| `BigInt.asIntN(64, …)` | 527 | 526 | −1 |
+| `Math.imul(…)` | 517 | 517 | 0 |
+| **total** | | | **−867** |
+
+### the refusal census, and two refusals that are new
+
+| reason | leg 5 | now |
+|---|---|---|
+| `op:/` | 373 | **375** |
+| `op:%` | 116 | 116 |
+| `key:u32->i32` | 49 | 0 |
+| `op:&` | 29 | 0 |
+| `op:<<` | 19 | 0 |
+| `op:\|` | 9 | 0 |
+| `op:>>` | 4 | 0 |
+| `op:&:64` | — | **9** |
+| `op:>>:64` | — | **1** |
+| **total** | **599** | **501** |
+
+`op:/` went **up** by two, and that is the ledger working rather than a
+regression: a `?:` now *offers* where it previously offered nothing, so two
+conditionals that sit under a division are counted as refusals for the first
+time. (The `?:` rule measured alone shows the same effect on `op:<<`, 19 → 20.)
+A refusal that exists because an offer exists is strictly more information than
+no offer at all.
+
+---
+
+## 38. What stays refused, and why it is not value left on the table
+
+### division (375) and modulo (116) — correct chain terminations
+
+Reduction mod 2^w is a ring homomorphism over `+`, `-` and `*` and over nothing
+else. It is **not** one over `/` or `%`:
+
+    (7 mod 4) / 2  =  3 / 2  =  1        7 / 2  =  3,  3 mod 4 = 3
+
+so a masked operand under a division has to *stay* masked — the mask is what
+makes the numerator the number C divides. These 491 sites are the fold
+terminating where the algebra ends, which is the transform being correct rather
+than the transform being timid, and nothing about them is recoverable without
+changing what the program computes.
+
+### unary minus (17) — the split, confirmed
+
+`js/generated` at `main` holds **24** `-(<masked>)` sites. They are not one
+bucket:
+
+| | count | what it is |
+|---|---|---|
+| the mask is a `/` root | 3 | `-((cptr.ldI32(mf) / 2) \| 0)` — never a ring mask |
+| a `/` sits between the mask and the nearest reduction | 2 | `(-((… - 20) \| 0)) / 8) \| 0` |
+| a same-width reduction **is** the parent | 2 | `Math.imul(-((… - 1) \| 0), …)`; and one `\| 0` reached through a `?:` |
+| **no mask above at all** | **17** | 11 call arguments, 4 assignments to a local, 1 comparison, 1 subscript |
+
+The 17 are §29's 17, and they are the ones that cannot move. With no parent
+reduction there is no root mask to fold *into*, so the only available rewrite is
+to hoist the mask outward — `-((r + 1) | 0)` to `(-(r + 1)) | 0` — and that is a
+different transform and a wrong one. At `r + 1 == -2147483648` the first is
+`2147483648` (JS unary `-` does not wrap) and the second is `-2147483648`.
+Proving `r + 1 != INT_MIN` at each site is range analysis, which this leg is not
+doing.
+
+The two sites where a reduction *is* the parent would be recoverable with a
+parent-gated unary offer, exactly as §29 said. Two sites still do not earn the
+machinery, and the machinery would need the range argument anyway to be worth
+generalizing.
+
+### reassociation — still out of scope
+
+`a + 1 + 2` is left as it stands. The fold moves masks; it does not move
+operands.
+
+### the pair rule's own boundary
+
+A **narrowing** reduction is a sound consumer too — `schar(asIntN(32, y))` and
+`schar(y)` agree, because reduction mod 2^8 factors through reduction mod
+2^32 — and it is refused anyway. The rule as stated is *same width*, the width
+test is one comparison, and widening (`BigInt(x)`) must be refused for real. A
+rule that says "same width" and means it is worth more than a rule that says
+"same width or narrower" and has to explain which narrowings.
+
+---
+
+## 39. Verification: the same two checks, over more shapes
+
+### the static differential (`C2JS_WRAPFOLD_VERIFY=1`)
+
+Unchanged in structure and extended in three places, because the fold now
+produces three tree shapes leg 5's evaluator could not describe.
+
+**Bitwise nodes** evaluate through JS's own semantics in *both* arms of the
+differential — ToInt32 of each operand, `& 31` on the shift count, `>>> 0` on
+an unsigned result — so the check is against what the emitter prints rather than
+against an idealization of it.
+
+**Cast nodes** are unary and always mask, in both arms: a cast is a chain root
+because nothing offers onward from one.
+
+**Selection nodes** (`?:`) are *expanded*. A tree carrying hoisted arms is
+turned into one sel-free tree per arm combination and every one of them is
+checked, because a chain that runs through an arm is exactly the chain the
+program runs; a fold whose expansion exceeds 64 variants is refused rather than
+sampled.
+
+The fourth change is the one that answers the question the old key rule was
+really asking. A tree may now mix mask kinds, so its boundary vectors are the
+**union over every kind it names**. A chain that mixes `| 0` and `>>> 0` is
+therefore tested at `4294967295`, `4294967294` and `0xCCCCCCCC` as well as at
+`-2147483648` and `-1` — the values whose two readings are furthest apart, one
+reading negative and the other ~4.29e9 — and the assertion is on the chain's
+**final** value, which is what the program keeps.
+
+> **3,660 fold decisions, 493,954 differential cases, 0 refusals** — and the
+> `C2JS_WRAPFOLD_VERIFY=1` build is **byte-identical** to the shipped build,
+> which is the same statement checked by hashing rather than by reading a
+> counter.
+
+Zero differential-forced refusals is the result here, and it is worth saying
+what the alternative would have meant: a differential-forced refusal is a
+**success**. It is the check doing the job it exists for — declining a fold the
+static argument admits but the arithmetic does not — and it would have been
+reported as one.
+
+### the dynamic completeness check (`C2JS_WRAPFOLD_CHECK=1`)
+
+Unchanged, and it still covers the one precondition the static argument has:
+that every deferred 32-bit intermediate is an exactly-represented integer.
+
+| | |
+|---|---|
+| corpus on the check tree | **69/69**, zero `wfchk` throws |
+| `wfchk` calls, `seed4500-knight-coverage` | **449,734**, all exact |
+| `wfchk` calls, `gen9996-marathon-dlvl10` | **432,181**, all exact |
+| liveness probe — `wfchk` throwing on its first call | `seed8000` **FAILs** with `RNG 0/3130, Screen 0/23`, message surfaced in the runner's JSON |
+
+The last row is again the row that makes the other three mean anything.
+
+---
+
+## 40. Two shapes that had nothing to do with masks
+
+Both were found by reading `js/generated/botl.js`, both are pre-existing, and
+both are the kind of thing a reader trips over on every screen.
+
+### a case label opens an indentation level (`C2JS_CASEINDENT`)
+
+`emitSwitchItem` wrote the statements a case governs at the label's own column:
+
+```js
+    switch (anytype) {
+        case NHC.ANY_INT:
+        result = (cptr.ldI32(a1) < cptr.ldI32(a2))
+                ? 1
+                : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
+        break;
+        case NHC.ANY_IPTR:
+```
+
+NetHack's own C indents them — `botl.c:1841` has `case ANY_INT:` at column 4 and
+`result = …` at 8 — and so does every JS style guide with an opinion. This is
+the emitter and not the formatter: the same shape is in the tree at `1fab203`,
+before `jsfmt` existed.
+
+```js
+    switch (anytype) {
+        case NHC.ANY_INT:
+            result = (cptr.ldI32(a1) < cptr.ldI32(a2))
+                    ? 1
+                    : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
+            break;
+        case NHC.ANY_IPTR:
+```
+
+Two shapes must not each open a level, and do not:
+
+* a **fallthrough group** — `case A: case B: stmt` — is one label position
+  written on several lines. clang nests the chained label inside the first, so
+  `emitSwitchItem` keeps a *label* child at its parent's column and moves only a
+  *statement* child in. `mon.js` keeps `case NHC.S_HUMAN:` and `case NHC.S_KOP:`
+  in the same column with the body one level under both.
+* the goto lowering's **`__pc` dispatcher** writes `case N: { … }`, an
+  explicitly braced state body, which takes its level from the brace instead —
+  `sm.ind` moves from 8 to 12, which is the same rule applied at the same place.
+
+Which items a label governs is decided over the switch body's item list up
+front, not by a running flag inside the emit callback, because the label
+lowerings may emit an item from a nested position: an item's level is a property
+of where it sits in the switch, not of when the emitter reaches it.
+
+### the formatter no longer strands a trivial tail (`C2JS_FMT_TAILCOST`)
+
+dart_style does not take the first split it can reach; it takes the one whose
+layout costs least, and a split that buys a whole line for two characters of
+remainder costs more than the over-budget line it was avoiding. §20's splitter
+took the first available operator:
+
+```js
+            result = (u32div(
+                (Math.imul(100, uval) >>> 0),
+                (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))
+            )) |
+                    0;
+```
+
+It had already split inside the argument list, then split again at the `|` and
+stranded `0;` on a line of its own at a *deeper* indent. There **was** a guard
+against this — "a split whose right operand is one tiny token buys nothing" —
+and it never fired, because the statement's `;` is inside the token range, so
+the right operand was two tokens rather than one.
+
+The replacement measures the text the continuation line would actually carry,
+`;` and all, against a stated budget: **TAIL_MIN = 8 characters**, which is
+shorter than every field, enum and helper name the vocabulary tiers produce
+(`$obj_otyp` is 10, `NHC.ROOM` is 8), so the rule can only ever fire on
+punctuation and single short operands. Two short shapes are exempt because they
+are not stranded: a ternary arm (`? 1`, `: 0`), which is marked as one branch of
+a decision, and a line ending in an operator, comma or open bracket, which is
+visibly unfinished.
+
+When the rule empties a precedence level the splitter moves **outward** to the
+next strategy, and `lay()` asks for the bracket split before it will accept a
+split the cost rule would rather not take — so a line that can only be split
+badly is still split, and a line with a better split one strategy over gets that
+one:
+
+```js
+            result = (u32div(
+                (Math.imul(100, uval) >>> 0),
+                (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))
+            )) | 0;
+```
+
+**The sweep.** Counting every continuation line whose whole content is a short
+operand after a binary-operator split (comment lines and lines that open an
+unclosed group excluded, since neither is a tail):
+
+| | before | after |
+|---|---|---|
+| `js/generated` | **471** | **0** |
+| `js/generated-y` | **942** | **0** |
+
+The price is 10 more lines over budget with no break point (1,045 → 1,055) out
+of 241,503 — and the token audit still passes with **0 failures**, which is the
+gate that matters: every reformatted line is re-tokenized and compared value for
+value against the unwrapped original. The C author's comments are still never
+reflowed; only the emitter's own `C ref:` marker is, at the same 1,821 sites as
+before.
+
+---
+
+## 41. Gates
+
+Run on the shipped tree, built with `C2JS_YIELD=1 C2JS_RESET=1 node
+tools/c2js/build.mjs --all --force`.
+
+| gate | result |
+|---|---|
+| batch build | 169 transpiled, 1 failed (isaac64, expected), 2 skipped; **0 parse failures**; 10,513/10,627 decls, 6,508/6,586 functions |
+| **flags-off reproduces `main`** | `C2JS_WRAPFOLD2=0 C2JS_CASEINDENT=0 C2JS_FMT_TAILCOST=0` — **byte-identical** over `js/generated`, `js/generated-y`, `js/boot` |
+| full rebuild reproduces the committed trees | **byte-identical** |
+| `C2JS_WRAPFOLD_VERIFY=1`, as its own build | **3,660 folds, 493,954 differential cases, 0 refusals**; tree byte-identical to the shipped build |
+| `C2JS_WRAPFOLD_CHECK=1`, corpus on the check tree | **69/69**, 0 non-exact intermediates; its fold set is a superset of the shipped one (3,849 over 2,720 chains against 3,718 over 2,657), which is the direction that matters |
+| `C2JS_FOLD_VERIFY=1`, as its own build | **320,612 folds, 0 mismatched, 0 unevaluable**; the 12 files it perturbs are the *same 12* with this leg's flags off, i.e. `verifyFold`'s own pre-existing re-emission |
+| jsfmt token audit | **0 failures** over 19,704 wrapped lines; C-author comments untouched |
+| no-absolute-path assertion | **362 emitted modules, 0 hits** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `assertPreloadPaths()` | all 4 exist |
+| `reset-census` | 180 modules, 46,231 declarations, plan **1,416**, **0 unclassified** |
+| corpus (`sessions/` + `sessions-extra/`), reset path, Lua ports live, **twice** | **69/69** and **69/69** (810+0.56/turn R²=0.855; 833+0.64/turn R²=0.932) |
+| yield + bundle corpus (`yieldtest/ps_test_runner.mjs`) | **69/69** (1050+1.03/turn) |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `tools/c2js/test-rnd.mjs` | PASS (3,130/3,130 and 2,983/2,983 RNG calls) |
+| `tools/c2js/test-hacklib.mjs` | PASS — 870 cases, 0 failures |
+| `test-setjmp.mjs` / `test-union.mjs` | PASS; both regenerate their fixture **byte-identically** |
+| `node --test test/*.test.mjs` | **6/6** |
+| `tools/c2js/purity-audit.mjs` | 15 functions `nhmacrofn.js` calls, **0 disagree** |
+| `tools/strict-score.mjs` | 344 files reachable from 2 roots, **0 violations**; sandbox parity OK on 3 sessions |
+| `judge-sim/run.mjs seed8000` / `seed0013` | both **PASS**, 0 segment mismatches, 0 out-of-scope (340 requests each) |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 352 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 496 ms |
+
+---
+
+## 42. Size
+
+The leg spends bytes, and it spends them on exactly the thing it was asked to
+buy: indentation. Every number below is `js/generated`, against `main`.
+
+| | `main` | shipped | Δ |
+|---|---|---|---|
+| `js/generated` | 20,420,595 | 20,673,376 | **+252,781 (+1.24%)** |
+| `js/generated-y` | 40,451,052 | 40,955,410 | +504,358 (+1.25%) |
+| `js/generated-y/__bundle.js` | 19,648,637 | 19,900,214 | +251,577 (+1.28%) |
+| …gzip −9 | 3,510,622 | 3,527,116 | **+16,494 (+0.47%)** |
+| `js/generated` lines | 488,956 | 491,644 | +2,688 |
+
+Attributed by turning one flag off at a time, all else on:
+
+| flag | its own contribution |
+|---|---|
+| `C2JS_WRAPFOLD2` (the fold recovery) | **−6,859** |
+| `C2JS_CASEINDENT` (case bodies indented) | **+221,524** |
+| `C2JS_FMT_TAILCOST` (no stranded tails) | **+37,376** |
+| sum | +252,041 (against +252,781 measured; the +740 is the interaction) |
+
+**88% of the growth is leading spaces on the statements inside a `switch`.** It
+compresses to nothing — the gzipped bundle moves +0.47% against the raw +1.28%,
+because run-length-ish redundancy is exactly what a compressor eats — and V8
+discards it at parse. The fold pays a little of it back.
+
+---
+
+## 43. Perf — measured twice; the second attempt resolves, and it is a small cost
+
+Two full ABBA A/B batteries, `js/generated` and `js/generated-y` both swapped
+before every corpus run, order `A B B A / B A A B` so a monotonic drift in the
+box cancels within each round.
+
+* (A) `main` `d0c767b`
+* (B) `wrapmask-2` — **shipped**
+
+**All sixteen runs passed 69/69.**
+
+### attempt 1 — unresolved, and said so
+
+| run | tree | corpus engine total | fit intercept | slope |
+|---|---|---|---|---|
+| 1 | A | 88,247 ms | 775.5 | 0.5612 |
+| 2 | B | 97,891 ms | 853.9 | 0.6297 |
+| 3 | B | 95,024 ms | 800.7 | 0.6427 |
+| 4 | A | 96,123 ms | 805.6 | 0.6549 |
+| 5 | A | 92,289 ms | 806.1 | 0.5924 |
+| 6 | B | 95,804 ms | 778.3 | 0.6802 |
+| 7 | B | 91,059 ms | 779.1 | 0.6027 |
+| 8 | A | 94,628 ms | 793.1 | 0.6448 |
+
+The four A-tree runs — same tree, same 69 sessions, same machine — span 88.2 s
+to 96.1 s, an **8.9% spread inside one arm**, and it is not monotone, so the
+ABBA cancellation has nothing to cancel. The rounds duly disagree (+4.63% and
+−0.03% on corpus engine total). The box was carrying a load average of 22 to 44
+throughout, mostly a second user's editor language servers. **Discarded as
+unresolved** rather than reported as a result.
+
+### attempt 2 — the same design on a box drifting cleanly
+
+| run | tree | corpus engine total | fit intercept | slope |
+|---|---|---|---|---|
+| 1 | A | 86,945 ms | 769.6 | 0.5468 |
+| 2 | B | 88,141 ms | 770.1 | 0.5656 |
+| 3 | B | 88,955 ms | 781.7 | 0.5657 |
+| 4 | A | 89,666 ms | 778.0 | 0.5814 |
+| 5 | A | 90,275 ms | 795.0 | 0.5723 |
+| 6 | B | 92,832 ms | 806.0 | 0.6013 |
+| 7 | B | 94,839 ms | 811.2 | 0.6279 |
+| 8 | A | 96,783 ms | 830.5 | 0.6378 |
+
+The box drifts **monotonically** here — 86.9 s to 96.8 s for the same work,
++11.3% across the battery — which is precisely the shape ABBA is built for:
+within a round, `(B2+B3)/2` against `(A1+A4)/2` cancels a linear drift term.
+
+| statistic | round 1 | round 2 | mean | median over the 4+4 |
+|---|---|---|---|---|
+| **corpus engine total** | +0.27% | +0.33% | **+0.30%** | +1.03% |
+| fit intercept | +0.27% | −0.51% | −0.12% | +0.93% |
+| slope | +0.27% | +1.58% | +0.93% | +1.15% |
+
+**Corpus engine total moves +0.30% against B, and the two rounds agree in sign
+and to within six hundredths of a percent.** That is a cost, it is small, and it
+is reported as a cost.
+
+The shape is the one to expect. The leg does two things to the engine's input
+and they pull opposite ways: it removes **867 masks** from the shipped text
+(§33 measured leg 5's fold at −0.39% with a quiet box) and it adds **252 KB**
+of leading spaces, which V8 must still read past even though it keeps none of
+them. +0.3% says the whitespace wins slightly, which is what 1.24% more source
+against 867 fewer operations should look like. The fit intercept — the
+startup-dominated term where a parse cost would show up first — straddles zero
+across rounds and should be read as unresolved on its own.
+
+Two honest caveats. Both batteries ran on a machine that was not quiet, and the
+median-over-8 column disagrees with the round means (+1.03% against +0.30%),
+which is what a monotone drift does to an unpaired statistic — it is reported
+rather than dropped. The measurement worth trusting is the paired one, and it
+says a fraction of a percent.
+
+## 44. Commits
+
+On `wrapmask-2`, off `main` at `d0c767b`. Nothing pushed, nothing merged.
+
+* `emit: recover three wrap-mask refusals (C2JS_WRAPFOLD2)` — the pair rule,
+  32-bit bitwise/shift consumers, `?:` arms, and the differential extensions
+  that verify all three.
+* `emit: a case label opens an indentation level (C2JS_CASEINDENT)`.
+* `jsfmt: don't strand a trivial tail (C2JS_FMT_TAILCOST)`.
+* the regenerated trees.
+* `emit: a same-width cast is a reduction too — take the pair rule there` —
+  the rule's own motivating example, `cfgfiles.c:421`.
+* the regenerated trees.
+* `emit: keep the parentheses when folding into a bitwise/shift consumer` —
+  correctness was never in question; `a + b >> 1` was.
+* the regenerated trees.
+* a comment fix, and the docs commit that carries this section.
+
+## 45. Merge readiness
+
+**Ready**, with the perf measurement reported as a small cost rather than as a
+win: **+0.30%** on corpus engine total, the same sign in both ABBA rounds.
+
+The fold half is the same identity as leg 5 with three of its guards tightened
+to what the identity actually needs, and it is verified the same two ways —
+493,954 static differential cases with the boundary vectors widened to cover
+exactly the mixed-signedness case the old rule was afraid of, and a `wfchk`
+corpus run that says every deferred 32-bit intermediate the corpus executed was
+an exact integer. Four things a reviewer should check rather than take on trust:
+
+1. **Flags off reproduces `main` byte-for-byte.** `C2JS_WRAPFOLD2=0
+   C2JS_CASEINDENT=0 C2JS_FMT_TAILCOST=0` and the whole leg is three flags away
+   from not existing.
+2. **The `C2JS_WRAPFOLD_VERIFY=1` tree hashes equal to the shipped tree**, so
+   the 493,954 cases forced zero refusals — checked by hashing rather than by
+   reading a counter. A differential-forced refusal would have been a success
+   and would have been reported as one; there were none.
+3. **The 64-bit bitwise refusals are deliberate and named.** `op:&:64` (9) and
+   `op:>>:64` (1) are in the census because BigInt bitwise does not truncate.
+   That asymmetry is the one place in this leg where a rule that is sound at 32
+   bits is *wrong* at 64, and the gate for it is a single `wrapIs32(key)`.
+4. **The jsfmt token audit is still 0 failures** over 19,704 wrapped lines, and
+   the C author's comments are still never reflowed.
+
+The size grows 1.24%, 88% of it leading spaces inside `switch` bodies, 0.47%
+after gzip, and the engine pays **+0.30%** for it (§43) — a fraction of a
+percent, measured with a paired design, the same sign in both rounds. That is
+the price of the indentation the leg was asked to fix, and it is stated rather
+than buried.
+
+What is left, and why:
+
+* **division (375) and modulo (116)** — reduction is not a homomorphism over
+  either. Correct chain terminations, not missed value.
+* **unary minus** — 17 of the 24 sites have no reduction above them at all, so
+  there is nothing to fold into; 2 do, and would need a parent-gated unary offer
+  that two sites do not earn. The outward hoist is a different transform and is
+  wrong at `INT_MIN`.
+* **narrowing casts** — sound, refused anyway, because "same width" is a rule
+  you can state in one clause and check in one comparison.
+* **reassociation** — still out of scope. The fold moves masks, not operands.
