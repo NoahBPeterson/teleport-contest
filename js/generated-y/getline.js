@@ -83,8 +83,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
         ttyDisplay,
         $DisplayDesc_inread,
         cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1
-    )) -
-            (1);
+    )) - (1);
 
     /*
      * Issue the prompt.
@@ -129,8 +128,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
                 ttyDisplay,
                 $DisplayDesc_intr,
                 cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + -1
-            )) -
-                    (-1);
+            )) - (-1);
             cptr.st1(bufp, 0);
         }
         if (c == 16) {
@@ -219,8 +217,7 @@ function* hooked_tty_getlin(query, bufp, hook) {
         ttyDisplay,
         $DisplayDesc_inread,
         cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1
-    )) -
-            (-1);
+    )) - (-1);
     (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));  /* clean up after ourselves */
 
     if (suppress_history) {

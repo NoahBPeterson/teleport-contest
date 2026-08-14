@@ -529,8 +529,11 @@ function chat_with_nemesis() {
     /*  The nemesis will do most of the talking, but... */
     qt_pager(__s_discourage);
     if (!((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
-        ((cptr.stI32o(svq, $q_score_met_nemesis, cptr.ldI32o(svq, $q_score_met_nemesis) + 1)) -
-                (1));
+        ((cptr.stI32o(
+            svq,
+            $q_score_met_nemesis,
+            cptr.ldI32o(svq, $q_score_met_nemesis) + 1
+        )) - (1));
 }
 
 /** C ref: quest.c:403 */
@@ -618,13 +621,13 @@ export function quest_chat(mtmp) {
     }
     switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
         case NHC.MS_NEMESIS:
-        chat_with_nemesis();
-        break;
+            chat_with_nemesis();
+            break;
         case NHC.MS_GUARDIAN:
-        chat_with_guardian();
-        break;
+            chat_with_guardian();
+            break;
         default:
-        impossible(__s_quest_chat_unknown_quest_character_s, mon_nam(mtmp));
+            impossible(__s_quest_chat_unknown_quest_character_s, mon_nam(mtmp));
     }
 }
 
@@ -636,13 +639,13 @@ export function quest_talk(mtmp) {
     }
     switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
         case NHC.MS_NEMESIS:
-        nemesis_speaks();
-        break;
+            nemesis_speaks();
+            break;
         case NHC.MS_DJINNI:
-        prisoner_speaks(mtmp);
-        break;
+            prisoner_speaks(mtmp);
+            break;
         default:
-        break;
+            break;
     }
 }
 

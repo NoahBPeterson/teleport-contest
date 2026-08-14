@@ -172,18 +172,18 @@ export function del_light_source(type, id) {
        (in particular: chameleon vs prot. from shape changers) */
     switch (type) {
         case NHC.LS_NONE:
-        impossible(__s_del_light_source_type_none);
-        cptr.stI32(tmp_id, 0);
-        break;
+            impossible(__s_del_light_source_type_none);
+            cptr.stI32(tmp_id, 0);
+            break;
         case NHC.LS_OBJECT:
-        cptr.stI32(tmp_id, cptr.ldPtr(id) ? cptr.ldI32o(cptr.ldPtr(id), $obj_o_id) : 0);
-        break;
+            cptr.stI32(tmp_id, cptr.ldPtr(id) ? cptr.ldI32o(cptr.ldPtr(id), $obj_o_id) : 0);
+            break;
         case NHC.LS_MONSTER:
-        cptr.stI32(tmp_id, cptr.ldI32o(cptr.ldPtr(id), $monst_m_id));
-        break;
+            cptr.stI32(tmp_id, cptr.ldI32o(cptr.ldPtr(id), $monst_m_id));
+            break;
         default:
-        cptr.stI32(tmp_id, 0);
-        break;
+            cptr.stI32(tmp_id, 0);
+            break;
     }
 
     /* find the light source from its id */
@@ -303,11 +303,13 @@ export function do_light_sources(cs_rows) {
                 2
             ));
             if ((max_y = i16(((cptr.ldI16o(ls, $light_source_y) +
-                cptr.ldI16o(ls, $light_source_range)) | 0))) >=
+                cptr.ldI16o(ls, $light_source_range)) |
+                0))) >=
                     NHM.ROWNO)
                 max_y = 20;
             if ((y = i16(((cptr.ldI16o(ls, $light_source_y) -
-                    cptr.ldI16o(ls, $light_source_range)) | 0))) < 0)
+                cptr.ldI16o(ls, $light_source_range)) |
+                    0))) < 0)
                 y = 0;
             for (; y <= max_y; y++) {
                 row = cptr.ldPtro(cs_rows, y, 8);
@@ -597,22 +599,22 @@ export function save_light_sources(nhfp, range) {
             } else
                 switch (cptr.ldI16o(curr, $light_source_type)) {
                     case NHC.LS_OBJECT:
-                    is_global = !obj_is_local(cptr.ldPtro(curr, $light_source_id));
-                    break;
+                        is_global = !obj_is_local(cptr.ldPtro(curr, $light_source_id));
+                        break;
                     case NHC.LS_MONSTER:
-                    is_global = !(cptr.ldI16o(
-                        (cptr.ldPtro(curr, $light_source_id)),
-                        $monst_mx
-                    ) > 0);
-                    break;
+                        is_global = !(cptr.ldI16o(
+                            (cptr.ldPtro(curr, $light_source_id)),
+                            $monst_mx
+                        ) > 0);
+                        break;
                     default:
-                    is_global = 0;
-                    impossible(
-                        __s_save_light_sources_bad_type_d_range_d,
-                        cptr.ldI16o(curr, $light_source_type),
-                        range
-                    );
-                    break;
+                        is_global = 0;
+                        impossible(
+                            __s_save_light_sources_bad_type_d_range_d,
+                            cptr.ldI16o(curr, $light_source_type),
+                            range
+                        );
+                        break;
                 }
             /* if global and not doing local, or vice versa, remove it */
             if (is_global ^ (range == NHM.RANGE_LEVEL)) {
@@ -739,19 +741,19 @@ function maybe_write_ls(nhfp, range, write_it) {
         }
         switch (cptr.ldI16o(ls, $light_source_type)) {
             case NHC.LS_OBJECT:
-            is_global = !obj_is_local(cptr.ldPtro(ls, $light_source_id));
-            break;
+                is_global = !obj_is_local(cptr.ldPtro(ls, $light_source_id));
+                break;
             case NHC.LS_MONSTER:
-            is_global = !(cptr.ldI16o((cptr.ldPtro(ls, $light_source_id)), $monst_mx) > 0);
-            break;
+                is_global = !(cptr.ldI16o((cptr.ldPtro(ls, $light_source_id)), $monst_mx) > 0);
+                break;
             default:
-            is_global = 0;
-            impossible(
-                __s_maybe_write_ls_bad_type_d_range_d,
-                cptr.ldI16o(ls, $light_source_type),
-                range
-            );
-            break;
+                is_global = 0;
+                impossible(
+                    __s_maybe_write_ls_bad_type_d_range_d,
+                    cptr.ldI16o(ls, $light_source_type),
+                    range
+                );
+                break;
         }
         /* if global and not doing local, or vice versa, count it */
         if (is_global ^ (range == NHM.RANGE_LEVEL)) {
@@ -1091,15 +1093,15 @@ export function arti_light_radius(obj) {
 export function arti_light_description(obj) {
     switch (arti_light_radius(obj)) {
         case 4:
-        return __s_radiantly;  /* blessed gold dragon scale mail */
+            return __s_radiantly;  /* blessed gold dragon scale mail */
         case 3:
-        return __s_brilliantly;  /* blessed artifact, uncursed gold DSM */
+            return __s_brilliantly;  /* blessed artifact, uncursed gold DSM */
         case 2:
-        return __s_brightly;  /* uncursed artifact, cursed gold DSM */
+            return __s_brightly;  /* uncursed artifact, cursed gold DSM */
         case 1:
-        return __s_dimly;  /* cursed artifact, embedded scales */
+            return __s_dimly;  /* cursed artifact, embedded scales */
         default:
-        break;
+            break;
     }
     return __s_strangely;
 }

@@ -82,21 +82,20 @@ export function* were_change(mon) {
                 gw,
                 $instance_globals_w_were_changes,
                 cptr.ldI64o(gw, $instance_globals_w_were_changes) + 1n
-            )) -
-                    (1n);
+            )) - (1n);
             if (!Deaf() && !canseemon(mon)) {
                 let howler;
 
                 switch ((cptr.ldI32o((cptr.ldPtro(mon, $monst_data)), $permonst_pmidx))) {
                     case NHC.PM_WEREWOLF:
-                    howler = __s_wolf;
-                    break;
+                        howler = __s_wolf;
+                        break;
                     case NHC.PM_WEREJACKAL:
-                    howler = __s_jackal;
-                    break;
+                        howler = __s_jackal;
+                        break;
                     default:
-                    howler = null;
-                    break;
+                        howler = null;
+                        break;
                 }
                 if (howler) {
                     ;
@@ -111,8 +110,7 @@ export function* were_change(mon) {
             gw,
             $instance_globals_w_were_changes,
             cptr.ldI64o(gw, $instance_globals_w_were_changes) + 1n
-        )) -
-                (1n);
+        )) - (1n);
     }
 }
 
@@ -120,19 +118,19 @@ export function* were_change(mon) {
 export function counter_were(pm) {
     switch (pm) {
         case NHC.PM_WEREWOLF:
-        return NHC.PM_HUMAN_WEREWOLF;
+            return NHC.PM_HUMAN_WEREWOLF;
         case NHC.PM_HUMAN_WEREWOLF:
-        return NHC.PM_WEREWOLF;
+            return NHC.PM_WEREWOLF;
         case NHC.PM_WEREJACKAL:
-        return NHC.PM_HUMAN_WEREJACKAL;
+            return NHC.PM_HUMAN_WEREJACKAL;
         case NHC.PM_HUMAN_WEREJACKAL:
-        return NHC.PM_WEREJACKAL;
+            return NHC.PM_WEREJACKAL;
         case NHC.PM_WERERAT:
-        return NHC.PM_HUMAN_WERERAT;
+            return NHC.PM_HUMAN_WERERAT;
         case NHC.PM_HUMAN_WERERAT:
-        return NHC.PM_WERERAT;
+            return NHC.PM_WERERAT;
         default:
-        return NHC.NON_PM;
+            return NHC.NON_PM;
     }
 }
 
@@ -144,20 +142,20 @@ export function were_beastie(pm) {
         case NHC.PM_SEWER_RAT:
         case NHC.PM_GIANT_RAT:
         case NHC.PM_RABID_RAT:
-        return NHC.PM_WERERAT;
+            return NHC.PM_WERERAT;
         case NHC.PM_WEREJACKAL:
         case NHC.PM_JACKAL:
         case NHC.PM_FOX:
         case NHC.PM_COYOTE:
-        return NHC.PM_WEREJACKAL;
+            return NHC.PM_WEREJACKAL;
         case NHC.PM_WEREWOLF:
         case NHC.PM_WOLF:
         case NHC.PM_WARG:
         case NHC.PM_WINTER_WOLF:
         case NHC.PM_WINTER_WOLF_CUB:
-        return NHC.PM_WEREWOLF;
+            return NHC.PM_WEREWOLF;
         default:
-        break;
+            break;
     }
     return NHC.NON_PM;
 }
@@ -240,24 +238,24 @@ export function* were_summon(ptr, yours, visible, genbuf) {
         switch (pm) {
             case NHC.PM_WERERAT:
             case NHC.PM_HUMAN_WERERAT:
-            typ = rn2(3) ? NHC.PM_SEWER_RAT : (rn2(3) ? NHC.PM_GIANT_RAT : NHC.PM_RABID_RAT);
-            if (genbuf)
-                void cptr.strcpy(genbuf, __s_rat);
-            break;
+                typ = rn2(3) ? NHC.PM_SEWER_RAT : (rn2(3) ? NHC.PM_GIANT_RAT : NHC.PM_RABID_RAT);
+                if (genbuf)
+                    void cptr.strcpy(genbuf, __s_rat);
+                break;
             case NHC.PM_WEREJACKAL:
             case NHC.PM_HUMAN_WEREJACKAL:
-            typ = rn2(7) ? NHC.PM_JACKAL : (rn2(3) ? NHC.PM_COYOTE : NHC.PM_FOX);
-            if (genbuf)
-                void cptr.strcpy(genbuf, __s_jackal);
-            break;
+                typ = rn2(7) ? NHC.PM_JACKAL : (rn2(3) ? NHC.PM_COYOTE : NHC.PM_FOX);
+                if (genbuf)
+                    void cptr.strcpy(genbuf, __s_jackal);
+                break;
             case NHC.PM_WEREWOLF:
             case NHC.PM_HUMAN_WEREWOLF:
-            typ = rn2(5) ? NHC.PM_WOLF : (rn2(2) ? NHC.PM_WARG : NHC.PM_WINTER_WOLF);
-            if (genbuf)
-                void cptr.strcpy(genbuf, __s_wolf);
-            break;
+                typ = rn2(5) ? NHC.PM_WOLF : (rn2(2) ? NHC.PM_WARG : NHC.PM_WINTER_WOLF);
+                if (genbuf)
+                    void cptr.strcpy(genbuf, __s_wolf);
+                break;
             default:
-            continue;
+                continue;
         }
         mtmp = (yield* makemon(
             cptr.add(mons, typ, $sizeof_permonst),
@@ -298,8 +296,8 @@ export function* you_were() {
             )))
         );
         if (!(yield* paranoid_query(
-            schar((((cptr.ldI32o(flags, $flag_paranoia_bits) &
-                NHM.PARANOID_WERECHANGE) >>> 0) != 0)),
+            schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) !=
+                0)),
             cptr.decay(qbuf)
         )))
             return;
@@ -310,8 +308,7 @@ export function* you_were() {
         gw,
         $instance_globals_w_were_changes,
         cptr.ldI64o(gw, $instance_globals_w_were_changes) + 1n
-    )) -
-            (1n);
+    )) - (1n);
     void (yield* polymon(cptr.ldI32o(u, $you_ulycn)));
 }
 
@@ -331,19 +328,24 @@ export function* you_unwere(purify) {
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags2
-            ) & 4n) != 0n) &&
+            ) &
+                4n) !=
+                0n) &&
             !(yield* monster_nearby()) &&
             (!controllable_poly ||
                 !(yield* paranoid_query(
-                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) &
-                        NHM.PARANOID_WERECHANGE) >>> 0) != 0)),
+                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>>
+                        0) !=
+                        0)),
                     __s_remain_in_beast_form
                 ))))
         (yield* rehumanize());
     else if (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags2
-    ) & 4n) != 0n) &&
+    ) &
+        4n) !=
+        0n) &&
             !cptr.ldI32o(u, $you_mtimedone))
         cptr.stI32o(u, $you_mtimedone, ((rn2(200) + 200) | 0));  /* 40% of initial were change */
 }

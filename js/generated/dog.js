@@ -297,8 +297,7 @@ export function initedog(mtmp, everything) {
         u,
         $you_uconduct + $u_conduct_pets,
         cptr.ldI64o(u, $you_uconduct + $u_conduct_pets) + 1n
-    )) -
-            (1n);
+    )) - (1n);
 }
 
 /** C ref: dog.c:91 @returns {CInt} */
@@ -768,7 +767,8 @@ export function mon_arrive(mtmp, when) {
             cptr.ldI16o(u, $you_uy),
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ) !== null) &&
+        ) !==
+            null) &&
                 !rn2(cptr.ld1so(mtmp, $monst_mtame)
                     ? 10
                     : ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? 5 : 2)))
@@ -792,7 +792,8 @@ export function mon_arrive(mtmp, when) {
         /* heal monster for time spent in limbo */
         let nmv = BigInt.asIntN(
             64,
-            cptr.ldI64o(svm, $instance_globals_saved_m_moves) - 1n -
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                1n -
                 cptr.ldI64o(mtmp, $monst_mlstmv)
         );
 
@@ -805,94 +806,78 @@ export function mon_arrive(mtmp, when) {
 
     switch (xyloc) {
         case NHM.MIGR_APPROX_XY:
-        break;
+            break;
         case NHM.MIGR_EXACT_XY:
-        wander = 0;
-        break;
+            wander = 0;
+            break;
         case NHM.MIGR_WITH_HERO:
-        xlocale = cptr.ldI16(u), ylocale = cptr.ldI16o(u, $you_uy);
-        break;
+            xlocale = cptr.ldI16(u), ylocale = cptr.ldI16o(u, $you_uy);
+            break;
         case NHM.MIGR_STAIRS_UP:
-        if ((stway = stairway_find_from(fromdlev, 0)) !== null) {
-            xlocale = cptr.ldI16(stway);
-            ylocale = cptr.ldI16o(stway, $stairway_sy);
-        }
-        break;
+            if ((stway = stairway_find_from(fromdlev, 0)) !== null) {
+                xlocale = cptr.ldI16(stway);
+                ylocale = cptr.ldI16o(stway, $stairway_sy);
+            }
+            break;
         case NHM.MIGR_STAIRS_DOWN:
-        if ((stway = stairway_find_from(fromdlev, 0)) !== null) {
-            xlocale = cptr.ldI16(stway);
-            ylocale = cptr.ldI16o(stway, $stairway_sy);
-        }
-        break;
+            if ((stway = stairway_find_from(fromdlev, 0)) !== null) {
+                xlocale = cptr.ldI16(stway);
+                ylocale = cptr.ldI16o(stway, $stairway_sy);
+            }
+            break;
         case NHM.MIGR_LADDER_UP:
-        if ((stway = stairway_find_from(fromdlev, 1)) !== null) {
-            xlocale = cptr.ldI16(stway);
-            ylocale = cptr.ldI16o(stway, $stairway_sy);
-        }
-        break;
+            if ((stway = stairway_find_from(fromdlev, 1)) !== null) {
+                xlocale = cptr.ldI16(stway);
+                ylocale = cptr.ldI16o(stway, $stairway_sy);
+            }
+            break;
         case NHM.MIGR_LADDER_DOWN:
-        if ((stway = stairway_find_from(fromdlev, 1)) !== null) {
-            xlocale = cptr.ldI16(stway);
-            ylocale = cptr.ldI16o(stway, $stairway_sy);
-        }
-        break;
+            if ((stway = stairway_find_from(fromdlev, 1)) !== null) {
+                xlocale = cptr.ldI16(stway);
+                ylocale = cptr.ldI16o(stway, $stairway_sy);
+            }
+            break;
         case NHM.MIGR_SSTAIRS:
-        if ((stway = stairway_find(fromdlev)) !== null) {
-            xlocale = cptr.ldI16(stway);
-            ylocale = cptr.ldI16o(stway, $stairway_sy);
-        }
-        break;
+            if ((stway = stairway_find(fromdlev)) !== null) {
+                xlocale = cptr.ldI16(stway);
+                ylocale = cptr.ldI16o(stway, $stairway_sy);
+            }
+            break;
         case NHM.MIGR_PORTAL:
-        if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-                ))))) {
-            /* there is no arrival portal for endgame levels */
-            /* BUG[?]: for simplicity, this code relies on the fact
-               that we know that the current endgame levels always
-               build upwards and never have any exclusion subregion
-               inside their TELEPORT_REGION settings. */
-            xlocale = i16(((rn2((cptr.ldI16o(svu, $dest_area_hx) - cptr.ldI16(svu) + 1) | 0) +
-                    (cptr.ldI16(svu))) | 0));
-            ylocale = i16(((rn2((cptr.ldI16o(svu, $dest_area_hy) -
-                cptr.ldI16o(svu, $dest_area_ly) + 1) | 0) +
-                    (cptr.ldI16o(svu, $dest_area_ly))) | 0));
-            break;
-        }
-        /* find the arrival portal */
-        for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
-            if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
-                break;
-        if (t) {
-            xlocale = cptr.ldI16o(t, $trap_tx), ylocale = cptr.ldI16o(t, $trap_ty);
-            break;
-        } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) &&
-                (stway = stairway_find_dir(schar((!builds_up(cptr.add(u, $you_uz)))))) !== null) {
-            /* debugfuzzer returns from or enters another branch */
-            xlocale = cptr.ldI16(stway), ylocale = cptr.ldI16o(stway, $stairway_sy);
-            break;
-        } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 &&
-                ((((cptr.ldI16o(
-                    (cptr.add(
-                        svd,
-                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
-                    )),
-                    $d_level_dlevel
-                ) ||
+            if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
                     cptr.ldI16((cptr.add(
                         svd,
-                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
-                    )))) &&
-                    on_level(
-                        cptr.add(u, $you_uz0),
-                        cptr.add(
-                            svd,
-                            $instance_globals_saved_d_dungeon_topology +
-                                $dgn_topology_d_qstart_level
-                        )
-                    ))) ||
-                    (((cptr.ldI16o(
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    ))))) {
+                /* there is no arrival portal for endgame levels */
+                /* BUG[?]: for simplicity, this code relies on the fact
+                   that we know that the current endgame levels always
+                   build upwards and never have any exclusion subregion
+                   inside their TELEPORT_REGION settings. */
+                xlocale = i16(((rn2((cptr.ldI16o(svu, $dest_area_hx) - cptr.ldI16(svu) + 1) | 0) +
+                        (cptr.ldI16(svu))) | 0));
+                ylocale = i16(((rn2((cptr.ldI16o(svu, $dest_area_hy) -
+                    cptr.ldI16o(svu, $dest_area_ly) +
+                    1) |
+                    0) +
+                        (cptr.ldI16o(svu, $dest_area_ly))) | 0));
+                break;
+            }
+            /* find the arrival portal */
+            for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
+                if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
+                    break;
+            if (t) {
+                xlocale = cptr.ldI16o(t, $trap_tx), ylocale = cptr.ldI16o(t, $trap_ty);
+                break;
+            } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) &&
+                    (stway = stairway_find_dir(schar((!builds_up(cptr.add(u, $you_uz)))))) !==
+                        null) {
+                /* debugfuzzer returns from or enters another branch */
+                xlocale = cptr.ldI16(stway), ylocale = cptr.ldI16o(stway, $stairway_sy);
+                break;
+            } else if (!((cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 &&
+                    ((((cptr.ldI16o(
                         (cptr.add(
                             svd,
                             $instance_globals_saved_d_dungeon_topology +
@@ -906,21 +891,42 @@ export function mon_arrive(mtmp, when) {
                                 $dgn_topology_d_qstart_level
                         )))) &&
                         on_level(
-                            cptr.add(u, $you_uz),
+                            cptr.add(u, $you_uz0),
                             cptr.add(
                                 svd,
                                 $instance_globals_saved_d_dungeon_topology +
                                     $dgn_topology_d_qstart_level
                             )
-                        )))))) {
-            impossible(__s_mon_arrive_no_corresponding_portal);
-        }
-        // @FallThrough
-        ;
+                        ))) ||
+                        (((cptr.ldI16o(
+                            (cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_qstart_level
+                            )),
+                            $d_level_dlevel
+                        ) ||
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_qstart_level
+                            )))) &&
+                            on_level(
+                                cptr.add(u, $you_uz),
+                                cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_qstart_level
+                                )
+                            )))))) {
+                impossible(__s_mon_arrive_no_corresponding_portal);
+            }
+            // @FallThrough
+            ;
         default:
         case NHM.MIGR_RANDOM:
-        xlocale = (ylocale = 0);
-        break;
+            xlocale = (ylocale = 0);
+            break;
     }
 
     if ((cptr.ldI64o(mtmp, $monst_migflags) & 8192n) != 0n) {
@@ -1045,10 +1051,10 @@ export function mon_catchup_elapsed_time(mtmp, nmv) {
      */
     if (cptr.ld1so(mtmp, $monst_mtame) &&
             !(cptr.ldI32o(mtmp, $monst_isminion) & 1) &&
-            (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                536870912n) != 0n) ||
-                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    1073741824n) != 0n))) {
+            (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) !=
+                0n) ||
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1073741824n) !=
+                    0n))) {
         let edog = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog));
 
         if ((cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
@@ -1416,198 +1422,209 @@ export function dogfood(mon, obj) {
 
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.FOOD_CLASS:
-        fx = (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.TIN ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
-                ? cptr.ldI32o(obj, $obj_corpsenm)
-                : NHC.NON_PM;
-        /* mons[NUMMONS] is a valid array entry, though not a valid monster;
-         * predicate tests against it will fail */
-        fptr = cptr.add(mons, (ismnum(fx)) ? fx : NHC.NUMMONS, $sizeof_permonst);
+            fx = (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.TIN ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
+                    ? cptr.ldI32o(obj, $obj_corpsenm)
+                    : NHC.NON_PM;
+            /* mons[NUMMONS] is a valid array entry, though not a valid monster;
+             * predicate tests against it will fail */
+            fptr = cptr.add(mons, (ismnum(fx)) ? fx : NHC.NUMMONS, $sizeof_permonst);
 
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(fptr))
-            return NHC.TABU;
-        if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) &&
-                flesh_petrifies(fptr) &&
-                !Resists_Elem(mon, NHC.STONE_RES))
-            return NHC.POISON;
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.LUMP_OF_ROYAL_JELLY &&
-                cptr.eq(
-                    cptr.ldPtro(mon, $monst_data),
-                    cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)
-                )) {
-            let mtmp = find_pmmonst(NHC.PM_QUEEN_BEE);
-
-            /* if there's a queen bee on the level, don't eat royal jelly;
-               if there isn't, do eat it and grow into a queen */
-            return !mtmp ? NHC.DOGFOOD : NHC.TABU;
-        }
-        if (!carni && !herbi)
-            return (cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? NHC.UNDEF : NHC.APPORT;
-
-        /* a starving pet will eat almost anything */
-        starving = schar((cptr.ld1so(mon, $monst_mtame) &&
-            !(cptr.ldI32o(mon, $monst_isminion) & 1) &&
-            cptr.ldI32o(
-                (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_edog)),
-                $edog_mhpmax_penalty
-            )
-                ? 1
-                : 0));
-        /* even carnivores will eat carrots if they're temporarily blind */
-        mblind = schar((!(cptr.ldI32o(mon, $monst_mcansee) & 1) &&
-            ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n)
-                ? 1
-                : 0));
-
-        /* ghouls prefer old corpses and unhatchable eggs, yum!
-           they'll eat fresh non-veggy corpses and hatchable eggs
-           when starving; they never eat stone-to-flesh'd meat */
-        if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOUL, $sizeof_permonst))) {
-            if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE)
-                return (BigInt.asIntN(64, peek_at_iced_corpse_age(obj) + 50n) <=
-                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) &&
-                    !(fx == NHC.PM_LIZARD || fx == NHC.PM_LICHEN))
-                        ? NHC.DOGFOOD
-                        : ((starving && !vegan(fptr)) ? NHC.ACCFOOD : NHC.POISON);
-            if (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
-                return ((BigInt.asIntN(
-                    64,
-                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o((obj), $obj_age)
-                )) > 400n)
-                        ? NHC.CADAVER
-                        : (starving ? NHC.ACCFOOD : NHC.POISON);
-            return NHC.TABU;
-        }
-
-        switch (cptr.ldI16o(obj, $obj_otyp)) {
-            case NHC.TRIPE_RATION:
-            case NHC.MEATBALL:
-            case NHC.MEAT_RING:
-            case NHC.MEAT_STICK:
-            case NHC.ENORMOUS_MEATBALL:
-            return carni ? NHC.DOGFOOD : NHC.MANFOOD;
-            case NHC.EGG:
-            if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK && !likes_fire(mptr))
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(fptr))
+                return NHC.TABU;
+            if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) &&
+                    flesh_petrifies(fptr) &&
+                    !Resists_Elem(mon, NHC.STONE_RES))
                 return NHC.POISON;
-            return carni ? NHC.CADAVER : NHC.MANFOOD;
-            case NHC.CORPSE:
-            if ((BigInt.asIntN(64, peek_at_iced_corpse_age(obj) + 50n) <=
-                cptr.ldI64o(svm, $instance_globals_saved_m_moves) &&
-                !(fx == NHC.PM_LIZARD || fx == NHC.PM_LICHEN) &&
-                cptr.ld1so(mptr, $permonst_mlet) != NHC.S_FUNGUS) ||
-                    (((cptr.ldU64o((fptr), $permonst_mflags1) & 134217728n) != 0n) &&
-                        !Resists_Elem(mon, NHC.ACID_RES)) ||
-                    (((cptr.ldU64o((fptr), $permonst_mflags1) & 268435456n) != 0n) &&
-                        !Resists_Elem(mon, NHC.POISON_RES)))
-                return NHC.POISON;
-            else if ((ofood(obj) &&
-                cptr.ldI32o((obj), $obj_corpsenm) >= NHC.LOW_PM &&
-                (pm_to_cham(cptr.ldI32o((obj), $obj_corpsenm)) != NHC.NON_PM ||
-                    dmgtype(
-                        cptr.add(mons, cptr.ldI32o((obj), $obj_corpsenm), $sizeof_permonst),
-                        NHM.AD_POLY
-                    ))) &&
-                    cptr.ld1so(mon, $monst_mtame) > 1 &&
-                    !starving)
-                return NHC.MANFOOD;
-            else if (vegan(fptr))
-                return herbi ? NHC.CADAVER : NHC.MANFOOD;
-            else if (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) &&
-                    same_race(mptr, fptr) &&
-                    (!((cptr.ldU64o((mptr), $permonst_mflags2) & 2n) != 0n) &&
-                        cptr.ld1so(fptr, $permonst_mlet) != NHC.S_KOBOLD &&
-                        cptr.ld1so(fptr, $permonst_mlet) != NHC.S_ORC &&
-                        cptr.ld1so(fptr, $permonst_mlet) != NHC.S_OGRE))
-                return (starving &&
-                    carni &&
-                    !((cptr.ldU64o((mptr), $permonst_mflags2) & 16n) != 0n))
-                        ? NHC.ACCFOOD
-                        : NHC.TABU;
-            else
-                return carni ? NHC.CADAVER : NHC.MANFOOD;
-            case NHC.GLOB_OF_GREEN_SLIME:
-            /* turning into slime is preferable to starvation */
-            return (starving || slimeproof(cptr.ldPtro(mon, $monst_data)))
-                    ? NHC.ACCFOOD
-                    : NHC.POISON;
-            case NHC.CLOVE_OF_GARLIC:
-            return (((cptr.ldU64o((mptr), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mon))
-                    ? NHC.TABU
-                    : ((herbi || starving) ? NHC.ACCFOOD : NHC.MANFOOD);
-            case NHC.TIN:
-            return ((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n)
-                    ? NHC.ACCFOOD
-                    : NHC.MANFOOD;
-            case NHC.APPLE:
-            return herbi ? NHC.DOGFOOD : (starving ? NHC.ACCFOOD : NHC.MANFOOD);
-            case NHC.CARROT:
-            return (herbi || mblind) ? NHC.DOGFOOD : (starving ? NHC.ACCFOOD : NHC.MANFOOD);
-            case NHC.BANANA:
-            /* monkeys and apes (tamable) plus sasquatch prefer these,
-               yetis will only will only eat them if starving */
-            return (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_YETI && herbi)
-                    ? NHC.DOGFOOD
-                    : ((herbi || starving) ? NHC.ACCFOOD : NHC.MANFOOD);
-            default:
-            if (starving)
-                return NHC.ACCFOOD;
-            return (cptr.ldI16o(obj, $obj_otyp) > NHC.SLIME_MOLD)
-                    ? (carni ? NHC.ACCFOOD : NHC.MANFOOD)
-                    : (herbi ? NHC.ACCFOOD : NHC.MANFOOD);
-        }
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.LUMP_OF_ROYAL_JELLY &&
+                    cptr.eq(
+                        cptr.ldPtro(mon, $monst_data),
+                        cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)
+                    )) {
+                let mtmp = find_pmmonst(NHC.PM_QUEEN_BEE);
+
+                /* if there's a queen bee on the level, don't eat royal jelly;
+                   if there isn't, do eat it and grow into a queen */
+                return !mtmp ? NHC.DOGFOOD : NHC.TABU;
+            }
+            if (!carni && !herbi)
+                return (cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? NHC.UNDEF : NHC.APPORT;
+
+            /* a starving pet will eat almost anything */
+            starving = schar((cptr.ld1so(mon, $monst_mtame) &&
+                !(cptr.ldI32o(mon, $monst_isminion) & 1) &&
+                cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_edog)),
+                    $edog_mhpmax_penalty
+                )
+                    ? 1
+                    : 0));
+            /* even carnivores will eat carrots if they're temporarily blind */
+            mblind = schar((!(cptr.ldI32o(mon, $monst_mcansee) & 1) &&
+                ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n)
+                    ? 1
+                    : 0));
+
+            /* ghouls prefer old corpses and unhatchable eggs, yum!
+               they'll eat fresh non-veggy corpses and hatchable eggs
+               when starving; they never eat stone-to-flesh'd meat */
+            if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOUL, $sizeof_permonst))) {
+                if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE)
+                    return (BigInt.asIntN(64, peek_at_iced_corpse_age(obj) + 50n) <=
+                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) &&
+                        !(fx == NHC.PM_LIZARD || fx == NHC.PM_LICHEN))
+                            ? NHC.DOGFOOD
+                            : ((starving && !vegan(fptr)) ? NHC.ACCFOOD : NHC.POISON);
+                if (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
+                    return ((BigInt.asIntN(
+                        64,
+                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                            cptr.ldI64o((obj), $obj_age)
+                    )) > 400n)
+                            ? NHC.CADAVER
+                            : (starving ? NHC.ACCFOOD : NHC.POISON);
+                return NHC.TABU;
+            }
+
+            switch (cptr.ldI16o(obj, $obj_otyp)) {
+                case NHC.TRIPE_RATION:
+                case NHC.MEATBALL:
+                case NHC.MEAT_RING:
+                case NHC.MEAT_STICK:
+                case NHC.ENORMOUS_MEATBALL:
+                    return carni ? NHC.DOGFOOD : NHC.MANFOOD;
+                case NHC.EGG:
+                    if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK && !likes_fire(mptr))
+                        return NHC.POISON;
+                    return carni ? NHC.CADAVER : NHC.MANFOOD;
+                case NHC.CORPSE:
+                    if ((BigInt.asIntN(64, peek_at_iced_corpse_age(obj) + 50n) <=
+                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) &&
+                        !(fx == NHC.PM_LIZARD || fx == NHC.PM_LICHEN) &&
+                        cptr.ld1so(mptr, $permonst_mlet) != NHC.S_FUNGUS) ||
+                            (((cptr.ldU64o((fptr), $permonst_mflags1) & 134217728n) != 0n) &&
+                                !Resists_Elem(mon, NHC.ACID_RES)) ||
+                            (((cptr.ldU64o((fptr), $permonst_mflags1) & 268435456n) != 0n) &&
+                                !Resists_Elem(mon, NHC.POISON_RES)))
+                        return NHC.POISON;
+                    else if ((ofood(obj) &&
+                        cptr.ldI32o((obj), $obj_corpsenm) >= NHC.LOW_PM &&
+                        (pm_to_cham(cptr.ldI32o((obj), $obj_corpsenm)) != NHC.NON_PM ||
+                            dmgtype(
+                                cptr.add(mons, cptr.ldI32o((obj), $obj_corpsenm), $sizeof_permonst),
+                                NHM.AD_POLY
+                            ))) &&
+                            cptr.ld1so(mon, $monst_mtame) > 1 &&
+                            !starving)
+                        return NHC.MANFOOD;
+                    else if (vegan(fptr))
+                        return herbi ? NHC.CADAVER : NHC.MANFOOD;
+                    else if (((cptr.ldU64o((mptr), $permonst_mflags1) & 131072n) != 0n) &&
+                            same_race(mptr, fptr) &&
+                            (!((cptr.ldU64o((mptr), $permonst_mflags2) & 2n) != 0n) &&
+                                cptr.ld1so(fptr, $permonst_mlet) != NHC.S_KOBOLD &&
+                                cptr.ld1so(fptr, $permonst_mlet) != NHC.S_ORC &&
+                                cptr.ld1so(fptr, $permonst_mlet) != NHC.S_OGRE))
+                        return (starving &&
+                            carni &&
+                            !((cptr.ldU64o((mptr), $permonst_mflags2) & 16n) != 0n))
+                                ? NHC.ACCFOOD
+                                : NHC.TABU;
+                    else
+                        return carni ? NHC.CADAVER : NHC.MANFOOD;
+                case NHC.GLOB_OF_GREEN_SLIME:
+                    /* turning into slime is preferable to starvation */
+                    return (starving || slimeproof(cptr.ldPtro(mon, $monst_data)))
+                            ? NHC.ACCFOOD
+                            : NHC.POISON;
+                case NHC.CLOVE_OF_GARLIC:
+                    return (((cptr.ldU64o((mptr), $permonst_mflags2) & 2n) != 0n) ||
+                        is_vampshifter(mon))
+                            ? NHC.TABU
+                            : ((herbi || starving) ? NHC.ACCFOOD : NHC.MANFOOD);
+                case NHC.TIN:
+                    return ((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n)
+                            ? NHC.ACCFOOD
+                            : NHC.MANFOOD;
+                case NHC.APPLE:
+                    return herbi ? NHC.DOGFOOD : (starving ? NHC.ACCFOOD : NHC.MANFOOD);
+                case NHC.CARROT:
+                    return (herbi || mblind) ? NHC.DOGFOOD : (starving ? NHC.ACCFOOD : NHC.MANFOOD);
+                case NHC.BANANA:
+                    /* monkeys and apes (tamable) plus sasquatch prefer these,
+                       yetis will only will only eat them if starving */
+                    return (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_YETI && herbi)
+                            ? NHC.DOGFOOD
+                            : ((herbi || starving) ? NHC.ACCFOOD : NHC.MANFOOD);
+                default:
+                    if (starving)
+                        return NHC.ACCFOOD;
+                    return (cptr.ldI16o(obj, $obj_otyp) > NHC.SLIME_MOLD)
+                            ? (carni ? NHC.ACCFOOD : NHC.MANFOOD)
+                            : (herbi ? NHC.ACCFOOD : NHC.MANFOOD);
+            }
         default:
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_STRANGULATION ||
-                cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SLOW_DIGESTION)
-            return NHC.TABU;
-        if (mon_hates_silver(mon) &&
-                ((cptr.ldI32o2(
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_STRANGULATION ||
+                    cptr.ldI16o(obj, $obj_otyp) == NHC.RIN_SLOW_DIGESTION)
+                return NHC.TABU;
+            if (mon_hates_silver(mon) &&
+                    ((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
+                        0) ==
+                        NHC.SILVER)
+                return NHC.TABU;
+            if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) &&
+                    (((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
+                        0) <=
+                        NHC.WOOD))
+                return NHC.ACCFOOD;
+            if (((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n) &&
+                    is_metallic(obj) &&
+                    ((((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
+                        0) ==
+                        NHC.IRON) ||
+                        !cptr.eq(mptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)))) {
+                /* Non-rustproofed ferrous-based metals are preferred. */
+                return ((((cptr.ldI32o2(
                     objects,
                     cptr.ldI16o(obj, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_material
-                ) & 31) | 0) ==
-                    NHC.SILVER)
-            return NHC.TABU;
-        if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GELATINOUS_CUBE, $sizeof_permonst)) &&
-                (((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) & 31) | 0) <=
-                    NHC.WOOD))
-            return NHC.ACCFOOD;
-        if (((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n) &&
-                is_metallic(obj) &&
-                ((((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) & 31) | 0) ==
-                    NHC.IRON) ||
-                    !cptr.eq(mptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)))) {
-            /* Non-rustproofed ferrous-based metals are preferred. */
-            return ((((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) & 31) | 0) ==
-                NHC.IRON) &&
-                !(cptr.ldI32o(obj, $obj_oerodeproof) & 1))
-                    ? NHC.DOGFOOD
-                    : NHC.ACCFOOD;
-        }
-        if (!(cptr.ldI32o(obj, $obj_cursed) & 1) &&
-                cptr.ld1so(obj, $obj_oclass) != NHC.BALL_CLASS &&
-                cptr.ld1so(obj, $obj_oclass) != NHC.CHAIN_CLASS)
-            return NHC.APPORT;
-        // @FallThrough
-        ;
+                ) &
+                    31) |
+                    0) ==
+                    NHC.IRON) &&
+                    !(cptr.ldI32o(obj, $obj_oerodeproof) & 1))
+                        ? NHC.DOGFOOD
+                        : NHC.ACCFOOD;
+            }
+            if (!(cptr.ldI32o(obj, $obj_cursed) & 1) &&
+                    cptr.ld1so(obj, $obj_oclass) != NHC.BALL_CLASS &&
+                    cptr.ld1so(obj, $obj_oclass) != NHC.CHAIN_CLASS)
+                return NHC.APPORT;
+            // @FallThrough
+            ;
         case NHC.ROCK_CLASS:
-        return NHC.UNDEF;
+            return NHC.UNDEF;
     }
 }
 
@@ -1669,7 +1686,8 @@ export function tamedog(mtmp, obj, givemsg) {
     set_malign(mtmp);
     if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON &&
             night() &&
-            rn2(6) && obj &&
+            rn2(6) &&
+            obj &&
             cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_DOG)
         return 0;
 
@@ -1771,7 +1789,9 @@ export function tamedog(mtmp, obj, givemsg) {
                 !((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags2
-                ) & 256n) != 0n)) ||
+                ) &
+                    256n) !=
+                    0n)) ||
             (obj && dogfood(mtmp, obj) >= NHC.MANFOOD))
         return 0;
 
@@ -1864,12 +1884,14 @@ export function wary_dog(mtmp, was_dead) {
                     ),
                     cptr.ldI16o(mtmp, $monst_mx)
                 ) &
-                    NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                    0)) {
             if (((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                    4096n) == 0n)) {
+                4096n) ==
+                    0n)) {
                 if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                         4096n) == 0n))
                     pline_mon(
@@ -1950,8 +1972,7 @@ export function abuse_dog(mtmp) {
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
                 $edog_abuse
             ) + 1
-        )) -
-                (1);
+        )) - (1);
 
     if (!cptr.ld1so(mtmp, $monst_mtame) && (cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0)
         m_unleash(mtmp, 1);

@@ -1550,131 +1550,135 @@ export function early_options(argc_p, argv_p, hackdir_p) {
 
         switch (cptr.ld1so(arg, 1)) {
             case 98:
-            // --bidshow
-            if (argcheck(argc.v, argv.v, NHC.ARG_BIDSHOW) == 2) {
-                opt_terminate();
-                /*NOTREACHED*/
-            }
-            break;
+                // --bidshow
+                if (argcheck(argc.v, argv.v, NHC.ARG_BIDSHOW) == 2) {
+                    opt_terminate();
+                    /*NOTREACHED*/
+                }
+                break;
             case 100:
-            if (argcheck(argc.v, argv.v, NHC.ARG_DEBUG) == 1) {
-                consume_arg(ndx, argc_p, argv_p), consumed = 1;
-            } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPENUMS) == 2) {
-                opt_terminate();
-            } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPMONGEN) == 2) {
-                opt_terminate();
-                /*NOTREACHED*/
-            } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPWEIGHTS) == 2) {
-                opt_terminate();
-                /*NOTREACHED*/
-            } else {
+                if (argcheck(argc.v, argv.v, NHC.ARG_DEBUG) == 1) {
+                    consume_arg(ndx, argc_p, argv_p), consumed = 1;
+                } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPENUMS) == 2) {
+                    opt_terminate();
+                } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPMONGEN) == 2) {
+                    opt_terminate();
+                    /*NOTREACHED*/
+                } else if (argcheck(argc.v, argv.v, NHC.ARG_DUMPWEIGHTS) == 2) {
+                    opt_terminate();
+                    /*NOTREACHED*/
+                } else {
+                    oldargc = argc.v;
+                    arg = lopt(
+                        arg,
+                        (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent),
+                        __s_directory,
+                        origarg,
+                        argc,
+                        argv
+                    );
+                    if (!arg)
+                        error(__s_flag_d_must_be_followed_by_a_directory);
+                    if (cptr.ld1s(arg) != 101) {
+                        cptr.stPtr(hackdir_p, arg);
+                        if (oldargc == argc.v)
+                            consume_arg(ndx, argc_p, argv_p), consumed = 1;
+                        else
+                            consume_two_args(ndx, argc_p, argv_p), consumed = 2;
+                    }
+                }
+                break;
+            case 104:
+            case 63:
+                if (lopt(arg, NHC.ArgValDisallowed, __s_help, origarg, argc, argv) ||
+                        lopt(
+                            arg,
+                            (NHC.ArgValDisallowed | NHC.ArgNamOneLetter),
+                            __s_dash_query,
+                            origarg,
+                            argc,
+                            argv
+                        ))
+                    opt_usage(cptr.ldPtr(hackdir_p));  /* doesn't return */
+                break;
+            case 110:
                 oldargc = argc.v;
-                arg = lopt(
-                    arg,
-                    (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent),
-                    __s_directory,
-                    origarg,
-                    argc,
-                    argv
-                );
-                if (!arg)
-                    error(__s_flag_d_must_be_followed_by_a_directory);
-                if (cptr.ld1s(arg) != 101) {
-                    cptr.stPtr(hackdir_p, arg);
+                if (!strcmp(arg, __s_no_nethackrc))
+                    arg = (__s_dev_null);
+                else
+                    arg = lopt(
+                        arg,
+                        (NHC.ArgValRequired | NHC.ArgErrComplain),
+                        __s_nethackrc,
+                        origarg,
+                        argc,
+                        argv
+                    );
+                if (arg) {
+                    cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, dupstr(arg));
                     if (oldargc == argc.v)
                         consume_arg(ndx, argc_p, argv_p), consumed = 1;
                     else
                         consume_two_args(ndx, argc_p, argv_p), consumed = 2;
                 }
-            }
-            break;
-            case 104:
-            case 63:
-            if (lopt(arg, NHC.ArgValDisallowed, __s_help, origarg, argc, argv) ||
-                    lopt(
-                        arg,
-                        (NHC.ArgValDisallowed | NHC.ArgNamOneLetter),
-                        __s_dash_query,
-                        origarg,
-                        argc,
-                        argv
-                    ))
-                opt_usage(cptr.ldPtr(hackdir_p));  /* doesn't return */
-            break;
-            case 110:
-            oldargc = argc.v;
-            if (!strcmp(arg, __s_no_nethackrc))
-                arg = (__s_dev_null);
-            else
+                break;
+            case 115:
+                if (argcheck(argc.v, argv.v, NHC.ARG_SHOWPATHS) == 2) {
+                    cptr.st1o(gd, $instance_globals_d_deferred_showpaths, 1);
+                    cptr.stPtro(
+                        gd,
+                        $instance_globals_d_deferred_showpaths_dir,
+                        cptr.ldPtr(hackdir_p)
+                    );
+                    config_error_done();
+                    return;
+                }
+                /* check for "-s" request to show scores */
+                if (lopt(
+                    arg,
+                    ((NHC.ArgValDisallowed | NHC.ArgErrComplain) |
+                        ((cptr.ld1so(origarg, 1) != 45) ? NHC.ArgNamOneLetter : 0)),
+                    __s_scores,
+                    origarg,
+                    argc,
+                    argv
+                )) {
+                    /* at this point, argv[0] contains "-scores" or a leading
+                       substring of it; prscore() (via scores_only()) expects
+                       that to be in argv[1] so we adjust the pointer to make
+                       that be the case; if there are any non-early args waiting
+                       to be passed along to process_options(), the resulting
+                       argv[0] will be one of those rather than the program
+                       name but prscore() doesn't care */
+                    scores_only((argc.v + 1) | 0, cptr.add(argv.v, -(1), 8), cptr.ldPtr(hackdir_p));
+                    /*NOTREACHED*/
+                }
+                break;
+            case 117:
+                if (lopt(arg, NHC.ArgValDisallowed, __s_usage, origarg, argc, argv))
+                    opt_usage(cptr.ldPtr(hackdir_p));
+                break;
+            case 118:
+                if (argcheck(argc.v, argv.v, NHC.ARG_VERSION) == 2) {
+                    opt_terminate();
+                    /*NOTREACHED*/
+                }
+                break;
+            case 119:
                 arg = lopt(
                     arg,
-                    (NHC.ArgValRequired | NHC.ArgErrComplain),
-                    __s_nethackrc,
+                    (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrComplain),
+                    __s_windowtype,
                     origarg,
                     argc,
                     argv
                 );
-            if (arg) {
-                cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, dupstr(arg));
-                if (oldargc == argc.v)
-                    consume_arg(ndx, argc_p, argv_p), consumed = 1;
-                else
-                    consume_two_args(ndx, argc_p, argv_p), consumed = 2;
-            }
-            break;
-            case 115:
-            if (argcheck(argc.v, argv.v, NHC.ARG_SHOWPATHS) == 2) {
-                cptr.st1o(gd, $instance_globals_d_deferred_showpaths, 1);
-                cptr.stPtro(gd, $instance_globals_d_deferred_showpaths_dir, cptr.ldPtr(hackdir_p));
-                config_error_done();
-                return;
-            }
-            /* check for "-s" request to show scores */
-            if (lopt(
-                arg,
-                ((NHC.ArgValDisallowed | NHC.ArgErrComplain) |
-                    ((cptr.ld1so(origarg, 1) != 45) ? NHC.ArgNamOneLetter : 0)),
-                __s_scores,
-                origarg,
-                argc,
-                argv
-            )) {
-                /* at this point, argv[0] contains "-scores" or a leading
-                   substring of it; prscore() (via scores_only()) expects
-                   that to be in argv[1] so we adjust the pointer to make
-                   that be the case; if there are any non-early args waiting
-                   to be passed along to process_options(), the resulting
-                   argv[0] will be one of those rather than the program
-                   name but prscore() doesn't care */
-                scores_only((argc.v + 1) | 0, cptr.add(argv.v, -(1), 8), cptr.ldPtr(hackdir_p));
-                /*NOTREACHED*/
-            }
-            break;
-            case 117:
-            if (lopt(arg, NHC.ArgValDisallowed, __s_usage, origarg, argc, argv))
-                opt_usage(cptr.ldPtr(hackdir_p));
-            break;
-            case 118:
-            if (argcheck(argc.v, argv.v, NHC.ARG_VERSION) == 2) {
-                opt_terminate();
-                /*NOTREACHED*/
-            }
-            break;
-            case 119:
-            arg = lopt(
-                arg,
-                (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrComplain),
-                __s_windowtype,
-                origarg,
-                argc,
-                argv
-            );
-            if (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys))
-                cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys));
-            cptr.stPtro(gc, $instance_globals_c_cmdline_windowsys, arg ? dupstr(arg) : null);
-            break;
+                if (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys))
+                    cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys));
+                cptr.stPtro(gc, $instance_globals_c_cmdline_windowsys, arg ? dupstr(arg) : null);
+                break;
             default:
-            break;
+                break;
         }
     }
     /* empty or "N errors on command line" */
@@ -1787,61 +1791,61 @@ export function argcheck(argc, argv, e_arg) {
             extended_opt = cptr.strchr(userea, 61);
         switch (e_arg) {
             case NHC.ARG_DEBUG:
-            if (extended_opt) {
-                let cpy_extended_opt;
-
-                cpy_extended_opt = dupstr(extended_opt);
-                debug_fields(cptr.add(cpy_extended_opt, 1));
-                cptr.free(cpy_extended_opt);
-            }
-            return 1;
-            case NHC.ARG_VERSION:
-            {
-                let insert_into_pastebuf = 0;
-
                 if (extended_opt) {
-                    extended_opt = cptr.add(extended_opt, 1);
-                    /* Deprecated in favor of "copy" - remove no later
-                       than  next major version */
-                    if (match_optname(extended_opt, __s_paste, 5, 0)) {
-                        insert_into_pastebuf = 1;
-                    } else if (match_optname(extended_opt, __s_copy, 4, 0)) {
-                        insert_into_pastebuf = 1;
-                    } else if (match_optname(extended_opt, __s_dump, 4, 0)) {
-                        /* version number plus enabled features and sanity
-                           values that the program compares against the same
-                           thing recorded in save and bones files to check
-                           whether they're being used compatibly */
-                        dump_version_info();
-                        return 2;  /* done */
-                    } else if (!match_optname(extended_opt, __s_show, 4, 0)) {
-                        raw_printf(__s_sversion_can_only_be_extended_with, dashdash, dashdash);
-                        /* exit after we've reported bad command line argument */
-                        return 2;
-                    }
+                    let cpy_extended_opt;
+
+                    cpy_extended_opt = dupstr(extended_opt);
+                    debug_fields(cptr.add(cpy_extended_opt, 1));
+                    cptr.free(cpy_extended_opt);
                 }
-                early_version_info(insert_into_pastebuf);
-                return 2;
-            }
+                return 1;
+            case NHC.ARG_VERSION:
+                {
+                    let insert_into_pastebuf = 0;
+
+                    if (extended_opt) {
+                        extended_opt = cptr.add(extended_opt, 1);
+                        /* Deprecated in favor of "copy" - remove no later
+                           than  next major version */
+                        if (match_optname(extended_opt, __s_paste, 5, 0)) {
+                            insert_into_pastebuf = 1;
+                        } else if (match_optname(extended_opt, __s_copy, 4, 0)) {
+                            insert_into_pastebuf = 1;
+                        } else if (match_optname(extended_opt, __s_dump, 4, 0)) {
+                            /* version number plus enabled features and sanity
+                               values that the program compares against the same
+                               thing recorded in save and bones files to check
+                               whether they're being used compatibly */
+                            dump_version_info();
+                            return 2;  /* done */
+                        } else if (!match_optname(extended_opt, __s_show, 4, 0)) {
+                            raw_printf(__s_sversion_can_only_be_extended_with, dashdash, dashdash);
+                            /* exit after we've reported bad command line argument */
+                            return 2;
+                        }
+                    }
+                    early_version_info(insert_into_pastebuf);
+                    return 2;
+                }
             case NHC.ARG_SHOWPATHS:
-            return 2;
+                return 2;
             case NHC.ARG_DUMPENUMS:
-            dump_enums();
-            return 2;
+                dump_enums();
+                return 2;
             case NHC.ARG_DUMPGLYPHIDS:
-            dump_glyphids();
-            return 2;
+                dump_glyphids();
+                return 2;
             case NHC.ARG_DUMPMONGEN:
-            dump_mongen();
-            return 2;
+                dump_mongen();
+                return 2;
             case NHC.ARG_DUMPWEIGHTS:
-            dump_weights();
-            return 2;
+                dump_weights();
+                return 2;
             case NHC.ARG_BIDSHOW:
-            crashreport_bidshow();
-            return 2;
+                crashreport_bidshow();
+                return 2;
             default:
-            break;
+                break;
         }
     }
     ;
@@ -4489,23 +4493,16 @@ function dump_enums() {
                     ? __s_empty
                     : cptr.ldPtro2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_pfx);  /* "" or "PM_" */
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;  /* 27 or 24 */
-            if (cptr.ldI32o2(
-                __static_dump_enums_edmp,
-                i,
-                $sizeof_de_params,
-                $de_params_dumpflgs
-            ) > 0) {
+            if (cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_dumpflgs) >
+                    0) {
                 nh_snprintf(
                     __s_dump_enums,
                     788,
                     cptr.decay(comment),
                     256n,
                     __s_sp4_slash_star_sp_apos_pct_c_apos_sp,
-                    (cptr.ldI32o(
-                        cptr.ldPtro(__static_dump_enums_ed, i, 8),
-                        j,
-                        $sizeof_enum_dump
-                    ) >= 32 &&
+                    (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) >=
+                        32 &&
                         cptr.ldI32o(
                             cptr.ldPtro(__static_dump_enums_ed, i, 8),
                             j,

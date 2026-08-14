@@ -250,7 +250,8 @@ function* io_popen(L) {
         BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119) &&
             cptr.ld1so(mode, 1) == 0
             ? 1
-            : 0)) != 0)),
+            : 0)) !=
+            0)),
         1n
     )) ||
         (yield* luaL_argerror(L, 2, (__s_invalid_mode)))
@@ -621,20 +622,20 @@ function* g_read(L, f, first) {
                     p = cptr.add(p, 1);  /* skip optional '*' (for compatibility) */
                 switch (cptr.ld1s(p)) {
                     case 110:
-                    success = (yield* read_number(L, f));
-                    break;
+                        success = (yield* read_number(L, f));
+                        break;
                     case 108:
-                    success = (yield* read_line(L, f, 1));
-                    break;
+                        success = (yield* read_line(L, f, 1));
+                        break;
                     case 76:
-                    success = (yield* read_line(L, f, 0));
-                    break;
+                        success = (yield* read_line(L, f, 0));
+                        break;
                     case 97:
-                    (yield* read_all(L, f));  /* read entire file */
-                    success = 1;  /* always success */
-                    break;
+                        (yield* read_all(L, f));  /* read entire file */
+                        success = 1;  /* always success */
+                        break;
                     default:
-                    return (yield* luaL_argerror(L, n, __s_invalid_format));
+                        return (yield* luaL_argerror(L, n, __s_invalid_format));
                 }
             }
         }

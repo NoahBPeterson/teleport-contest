@@ -259,12 +259,12 @@ export function msummon(mon) {
         if (!rn2(6)) {
             switch (atyp) {
                 case NHM.A_NEUTRAL:
-                dtype = cptr.ldI32o(elementals, rn2(4), 4);
-                break;
+                    dtype = cptr.ldI32o(elementals, rn2(4), 4);
+                    break;
                 case -1:
                 case -128:
-                dtype = ndemon(atyp);
-                break;
+                    dtype = ndemon(atyp);
+                    break;
             }
         } else {
             dtype = NHC.PM_ANGEL;
@@ -292,7 +292,9 @@ export function msummon(mon) {
         dtype,
         $sizeof_mvitals,
         $instance_globals_saved_m_mvitals + $mvitals_mvflags
-    ) & 3) != 0) {
+    ) &
+        3) !=
+            0) {
         dtype = ndemon(atyp);
         if (dtype == NHC.NON_PM)
             return 0;
@@ -376,19 +378,19 @@ export function summon_minion(alignment, talk) {
 
     switch (alignment) {
         case NHM.A_LAWFUL:
-        mnum = lminion();
-        break;
+            mnum = lminion();
+            break;
         case NHM.A_NEUTRAL:
-        mnum = cptr.ldI32o(elementals, rn2(4), 4);
-        break;
+            mnum = cptr.ldI32o(elementals, rn2(4), 4);
+            break;
         case -1:
         case -128:
-        mnum = ndemon(alignment);
-        break;
+            mnum = ndemon(alignment);
+            break;
         default:
-        impossible(__s_unaligned_player);
-        mnum = ndemon(-128);
-        break;
+            impossible(__s_unaligned_player);
+            mnum = ndemon(-128);
+            break;
     }
     if (mnum == NHC.NON_PM) {
         mon = null;
@@ -646,7 +648,8 @@ export function dprince(atyp) {
             pm,
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) & 3) &&
+        ) &
+            3) &&
                 (atyp == -128 ||
                     sgn(cptr.ld1so2(mons, pm, $sizeof_permonst, $permonst_maligntyp)) == sgn(atyp)))
             return pm;
@@ -676,7 +679,8 @@ export function dlord(atyp) {
             pm,
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) & 3) &&
+        ) &
+            3) &&
                 (atyp == -128 ||
                     sgn(cptr.ld1so2(mons, pm, $sizeof_permonst, $permonst_maligntyp)) == sgn(atyp)))
             return pm;
@@ -795,7 +799,8 @@ export function gain_guardian_angel() {
                     cptr.ldI16(mm),
                     cptr.ldI16o(mm, $nhcoord_y),
                     1
-                )) !== null) {
+                )) !==
+                    null) {
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
@@ -815,8 +820,7 @@ export function gain_guardian_angel() {
                     u,
                     $you_uconduct + $u_conduct_pets,
                     cptr.ldI64o(u, $you_uconduct + $u_conduct_pets) + 1n
-                )) -
-                        (1n);
+                )) - (1n);
             }
             /* for 'hilite_pet'; after making tame, before next message */
             newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));

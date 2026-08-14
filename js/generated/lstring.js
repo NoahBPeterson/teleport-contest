@@ -88,9 +88,8 @@ function tablerehash(vect, osize, nsize) {
         cptr.stPtro(vect, i, null, 8);
         while (p) {
             let hnext = cptr.ldPtro(p, $TString_u);  /* save next */
-            let h = ((((((((cptr.ldI32o(p, $TString_hash)) &
-                (((nsize) - 1) | 0) >>> 0) >>> 0)) | 0)))) >>>
-                    0;  /* new position */
+            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) |
+                    0)))) >>> 0;  /* new position */
             cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));  /* chain it into array */
             cptr.stPtro(vect, h, p, 8);
             p = hnext;
@@ -234,7 +233,9 @@ export function luaS_remove(L, ts) {
     let p = cptr.add(
         cptr.ldPtr(tb),
         ((((((((cptr.ldI32o(ts, $TString_hash)) &
-            (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))),
+            (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>>
+            0)) |
+            0)))),
         8
     );
     while (!cptr.eq(cptr.ldPtr(p), ts))
@@ -277,11 +278,8 @@ function internshrstr(L, str, l) {
     (void 0);  /* otherwise 'memcmp'/'memcpy' are undefined */
     for (ts = cptr.ldPtr(list); !cptr.eq(ts, (null)); ts = cptr.ldPtro(ts, $TString_u)) {
         if (l == BigInt(cptr.ld1uo(ts, $TString_shrlen) >>> 0) &&
-                (memcmp(
-                    str,
-                    (cptr.add((ts), $TString_contents)),
-                    BigInt.asUintN(64, l * 1n)
-                ) == 0)) {
+                (memcmp(str, (cptr.add((ts), $TString_contents)), BigInt.asUintN(64, l * 1n)) ==
+                    0)) {
             /* found! */
             if (((cptr.ld1uo((ts), $TString_marked)) &
                     ((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))
@@ -377,10 +375,9 @@ export function luaS_newudata(L, s, nuvalue) {
             BigInt.asUintN(
                 64,
                 9223372036854775807n -
-                    ((nuvalue) == 0
-                        ? 32n
-                        : BigInt.asUintN(64, 40n + 16n * BigInt.asUintN(64, BigInt((nuvalue)))))
-            )) != 0)),
+                    ((nuvalue) == 0 ? 32n : 40n + 16n * BigInt.asUintN(64, BigInt((nuvalue))))
+            )) !=
+            0)),
         0n
     )))
         luaM_toobig(L);
@@ -389,10 +386,7 @@ export function luaS_newudata(L, s, nuvalue) {
         7,
         (BigInt.asUintN(
             64,
-            ((nuvalue) == 0
-                ? 32n
-                : BigInt.asUintN(64, 40n + 16n * BigInt.asUintN(64, BigInt((nuvalue))))) +
-                (s)
+            ((nuvalue) == 0 ? 32n : 40n + 16n * BigInt.asUintN(64, BigInt((nuvalue)))) + (s)
         ))
     );
     u = (((((o)))));

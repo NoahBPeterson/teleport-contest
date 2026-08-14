@@ -354,61 +354,61 @@ function cursed_book(bp) {
 
     switch (rn2(lev)) {
         case 0:
-        You_feel(__s_a_wrenching_sensation);
-        tele();  /* teleport him */
-        break;
-        case 1:
-        You_feel(__s_threatened);
-        aggravate();
-        break;
-        case 2:
-        make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2(100) + 250) | 0))), 1);
-        break;
-        case 3:
-        take_gold();
-        break;
-        case 4:
-        pline(__s_these_runes_were_just_too_much_to);
-        make_confused(BigInt.asIntN(64, HConfusion() + BigInt(((rn2(7) + 16) | 0))), 0);
-        break;
-        case 5:
-        pline_The(__s_book_was_coated_with_contact_poison);
-        if (uarmg.v) {
-            erode_obj(uarmg.v, __s_gloves, NHM.ERODE_CORRODE, 5);
+            You_feel(__s_a_wrenching_sensation);
+            tele();  /* teleport him */
             break;
-        }
-        /* temp disable in_use; death should not destroy the book */
-        was_in_use = schar((cptr.ldI32o(bp, $obj_in_use) & 1));
-        cptr.stI32o(bp, $obj_in_use, 0);
-        poison_strdmg(
-            Poison_resistance() ? ((rn2(2) + 1) | 0) : ((rn2(4) + 3) | 0),
-            rnd(Poison_resistance() ? 6 : 10),
-            __s_contact_poisoned_spellbook,
-            NHM.KILLED_BY_AN
-        );
-        cptr.stI32o(bp, $obj_in_use, was_in_use);
-        break;
-        case 6:
-        if (Antimagic()) {
-            shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-            pline_The(__s_book_s_but_you_are_unharmed, cptr.decay(explodes));
-        } else {
-            pline(
-                __s_as_you_read_the_book_it_s_in_your_s,
-                cptr.decay(explodes),
-                body_part(NHC.FACE)
-            );
-            dmg = (Math.imul(2, rnd(10)) + 5) | 0;
-            losehp(
-                ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
-                __s_exploding_rune,
+        case 1:
+            You_feel(__s_threatened);
+            aggravate();
+            break;
+        case 2:
+            make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2(100) + 250) | 0))), 1);
+            break;
+        case 3:
+            take_gold();
+            break;
+        case 4:
+            pline(__s_these_runes_were_just_too_much_to);
+            make_confused(BigInt.asIntN(64, HConfusion() + BigInt(((rn2(7) + 16) | 0))), 0);
+            break;
+        case 5:
+            pline_The(__s_book_was_coated_with_contact_poison);
+            if (uarmg.v) {
+                erode_obj(uarmg.v, __s_gloves, NHM.ERODE_CORRODE, 5);
+                break;
+            }
+            /* temp disable in_use; death should not destroy the book */
+            was_in_use = schar((cptr.ldI32o(bp, $obj_in_use) & 1));
+            cptr.stI32o(bp, $obj_in_use, 0);
+            poison_strdmg(
+                Poison_resistance() ? ((rn2(2) + 1) | 0) : ((rn2(4) + 3) | 0),
+                rnd(Poison_resistance() ? 6 : 10),
+                __s_contact_poisoned_spellbook,
                 NHM.KILLED_BY_AN
             );
-        }
-        return 1;
+            cptr.stI32o(bp, $obj_in_use, was_in_use);
+            break;
+        case 6:
+            if (Antimagic()) {
+                shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                pline_The(__s_book_s_but_you_are_unharmed, cptr.decay(explodes));
+            } else {
+                pline(
+                    __s_as_you_read_the_book_it_s_in_your_s,
+                    cptr.decay(explodes),
+                    body_part(NHC.FACE)
+                );
+                dmg = (Math.imul(2, rnd(10)) + 5) | 0;
+                losehp(
+                    ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
+                    __s_exploding_rune,
+                    NHM.KILLED_BY_AN
+                );
+            }
+            return 1;
         default:
-        rndcurse();
-        break;
+            rndcurse();
+            break;
     }
     return 0;
 }
@@ -448,7 +448,8 @@ function deadbook_pacify_undead(mtmp) {
                 ),
                 cptr.ldI16o(mtmp, $monst_mx)
             ) &
-                NHM.IN_SIGHT) != 0)) {
+                NHM.IN_SIGHT) !=
+                0)) {
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
         if (sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)) ==
             sgn(cptr.ld1so(u, $you_ualign)) &&
@@ -477,166 +478,173 @@ function deadbook(book2) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        mm = cptr.alloc(4);
+            mm = cptr.alloc(4);
 
-        You(__s_turn_the_pages_of_the_book_of_the_dead);
-        discover_object(NHC.SPE_BOOK_OF_THE_DEAD, 1, 1, 1);
-        observe_object(book2);  /* in case blind now and hasn't been seen yet */
-        /* KMH -- Need ->known to avoid "_a_ Book of the Dead" */
-        cptr.stI32o(book2, $obj_known, 1);
-        if (invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
-                !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) { __pc = 3; continue; }
-        __pc = 2; continue;
+            You(__s_turn_the_pages_of_the_book_of_the_dead);
+            discover_object(NHC.SPE_BOOK_OF_THE_DEAD, 1, 1, 1);
+            observe_object(book2);  /* in case blind now and hasn't been seen yet */
+            /* KMH -- Need ->known to avoid "_a_ Book of the Dead" */
+            cptr.stI32o(book2, $obj_known, 1);
+            if (invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
+                    !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) { __pc = 3; continue; }
+            __pc = 2; continue;
         }
         case 3: {
-        arti1_primed = 0;
-        arti2_primed = 0;
-        arti_cursed = 0;
+            arti1_primed = 0;
+            arti2_primed = 0;
+            arti_cursed = 0;
 
-        if ((cptr.ldI32o(book2, $obj_cursed) & 1)) {
-            pline_The(
-                __s_pct_s_bang,
-                Blind()
-                    ? __s_book_seems_to_be_ignoring_you
-                    : __s_runes_appear_scrambled_you_can_t_read
-            );
-            return;
-        }
+            if ((cptr.ldI32o(book2, $obj_cursed) & 1)) {
+                pline_The(
+                    __s_pct_s_bang,
+                    Blind()
+                        ? __s_book_seems_to_be_ignoring_you
+                        : __s_runes_appear_scrambled_you_can_t_read
+                );
+                return;
+            }
 
-        if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) ||
-                !(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
-            pline(__s_a_chill_runs_down_your_s, body_part(NHC.SPINE));
-            if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1)) {
-                ;
-                You_hear(__s_a_faint_chime);
+            if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) ||
+                    !(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1)) {
+                pline(__s_a_chill_runs_down_your_s, body_part(NHC.SPINE));
+                if (!(cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1)) {
+                    ;
+                    You_hear(__s_a_faint_chime);
+                }
+                if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
+                    pline(__s_vlad_s_doppelganger_is_amused);
+                return;
             }
-            if (!(cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1))
-                pline(__s_vlad_s_doppelganger_is_amused);
-            return;
-        }
 
-        for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
-            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION &&
-                    cptr.ld1so(otmp, $obj_spe) == 7 &&
-                    (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0) {
-                if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
-                    arti1_primed = 1;
-                else
-                    arti_cursed = 1;
+            for (
+                otmp = cptr.ldPtro(gi, $instance_globals_i_invent);
+                otmp;
+                otmp = cptr.ldPtr(otmp)
+            ) {
+                if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION &&
+                        cptr.ld1so(otmp, $obj_spe) == 7 &&
+                        (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0) {
+                    if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
+                        arti1_primed = 1;
+                    else
+                        arti_cursed = 1;
+                }
+                if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING &&
+                        (BigInt.asIntN(
+                            64,
+                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                                cptr.ldI64o(otmp, $obj_age)
+                        )) <
+                            5n) {
+                    if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
+                        arti2_primed = 1;
+                    else
+                        arti_cursed = 1;
+                }
             }
-            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING &&
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                            cptr.ldI64o(otmp, $obj_age)
-                    )) < 5n) {
-                if (!(cptr.ldI32o(otmp, $obj_cursed) & 1))
-                    arti2_primed = 1;
-                else
-                    arti_cursed = 1;
-            }
-        }
-        if (arti_cursed) { __pc = 5; continue; }
-        __pc = 6; continue;
+            if (arti_cursed) { __pc = 5; continue; }
+            __pc = 6; continue;
         }
         case 5: {
-        pline_The(__s_invocation_fails);
-        /* this used to say "your artifacts" but the invocation tools
-           are not artifacts */
-        pline(__s_at_least_one_of_your_relics_is_cursed);
-        __pc = 4;
-        continue;
+            pline_The(__s_invocation_fails);
+            /* this used to say "your artifacts" but the invocation tools
+               are not artifacts */
+            pline(__s_at_least_one_of_your_relics_is_cursed);
+            __pc = 4;
+            continue;
         }
         case 6: {
-        if (arti1_primed && arti2_primed) { __pc = 8; continue; }
-        __pc = 9; continue;
+            if (arti1_primed && arti2_primed) { __pc = 8; continue; }
+            __pc = 9; continue;
         }
         case 8: {
-        soon = d(2, 6) >>> 0;  /* time til next intervene() */
+            soon = d(2, 6) >>> 0;  /* time til next intervene() */
 
-        /* successful invocation */
-        mkinvokearea();
-        cptr.stI32o(u, $you_uevent + $u_event_invoked, 1);
-        record_achievement(NHC.ACH_INVK);
-        /* in case you haven't killed the Wizard yet, behave as if
-           you just did */
-        cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);  /* wizdeadorgone() */
-        if (!cptr.ldI32o(u, $you_udg_cnt) || cptr.ldI32o(u, $you_udg_cnt) > soon)
-            cptr.stI32o(u, $you_udg_cnt, soon);
-        __pc = 7;
-        continue;
+            /* successful invocation */
+            mkinvokearea();
+            cptr.stI32o(u, $you_uevent + $u_event_invoked, 1);
+            record_achievement(NHC.ACH_INVK);
+            /* in case you haven't killed the Wizard yet, behave as if
+               you just did */
+            cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);  /* wizdeadorgone() */
+            if (!cptr.ldI32o(u, $you_udg_cnt) || cptr.ldI32o(u, $you_udg_cnt) > soon)
+                cptr.stI32o(u, $you_udg_cnt, soon);
+            __pc = 7;
+            continue;
         }
         case 9: {
-        You(
-            __s_have_a_feeling_that_s_is_amiss,
-            cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
-        );
-        { __pc = 1; continue; }
+            You(
+                __s_have_a_feeling_that_s_is_amiss,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
+            );
+            { __pc = 1; continue; }
         }
         case 7: {
-        __pc = 4;
-        continue;
+            __pc = 4;
+            continue;
         }
         case 4: {
-        return;
+            return;
         }
         case 2: {
-        if ((cptr.ldI32o(book2, $obj_cursed) & 1)) { __pc = 11; continue; }
-        __pc = 12; continue;
+            if ((cptr.ldI32o(book2, $obj_cursed) & 1)) { __pc = 11; continue; }
+            __pc = 12; continue;
         }
         case 11: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* raise_dead: */: {
 
-        You(__s_raised_the_dead);
-        /* first maybe place a dangerous adversary */
-        if (!rn2(3) &&
-                ((mtmp = makemon(
-                    cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst),
-                    cptr.ldI16(u),
-                    cptr.ldI16o(u, $you_uy),
-                    NHM.NO_MINVENT
-                )) !== null ||
-                    (mtmp = makemon(
-                        cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst),
+            You(__s_raised_the_dead);
+            /* first maybe place a dangerous adversary */
+            if (!rn2(3) &&
+                    ((mtmp = makemon(
+                        cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst),
                         cptr.ldI16(u),
                         cptr.ldI16o(u, $you_uy),
                         NHM.NO_MINVENT
-                    )) !== null)) {
-            cptr.stI32o(mtmp, $monst_mpeaceful, 0);
-            set_malign(mtmp);
-        }
-        /* next handle the affect on things you're carrying */
-        void unturn_dead(cptr.add(gy, $instance_globals_y_youmonst));
-        /* last place some monsters around you */
-        cptr.stI16(mm, cptr.ldI16(u));
-        cptr.stI16o(mm, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-        mkundead(mm, 1, NHM.NO_MINVENT);
-        __pc = 10;
-        continue;
+                    )) !==
+                        null ||
+                        (mtmp = makemon(
+                            cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst),
+                            cptr.ldI16(u),
+                            cptr.ldI16o(u, $you_uy),
+                            NHM.NO_MINVENT
+                        )) !==
+                            null)) {
+                cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+                set_malign(mtmp);
+            }
+            /* next handle the affect on things you're carrying */
+            void unturn_dead(cptr.add(gy, $instance_globals_y_youmonst));
+            /* last place some monsters around you */
+            cptr.stI16(mm, cptr.ldI16(u));
+            cptr.stI16o(mm, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+            mkundead(mm, 1, NHM.NO_MINVENT);
+            __pc = 10;
+            continue;
         }
         case 12: {
-        if ((cptr.ldI32o(book2, $obj_blessed) & 1)) {
-            iter_mons(deadbook_pacify_undead);
-        } else {
-            switch (rn2(3)) {
-                case 0:
-                Your(__s_ancestors_are_annoyed_with_you);
-                break;
-                case 1:
-                pline_The(__s_headstones_in_the_cemetery_begin_to_move);
-                break;
-                default:
-                pline(__s_oh_my_your_name_appears_in_the_book);
+            if ((cptr.ldI32o(book2, $obj_blessed) & 1)) {
+                iter_mons(deadbook_pacify_undead);
+            } else {
+                switch (rn2(3)) {
+                    case 0:
+                        Your(__s_ancestors_are_annoyed_with_you);
+                        break;
+                    case 1:
+                        pline_The(__s_headstones_in_the_cemetery_begin_to_move);
+                        break;
+                    default:
+                        pline(__s_oh_my_your_name_appears_in_the_book);
+                }
             }
-        }
-        __pc = 10;
-        continue;
+            __pc = 10;
+            continue;
         }
         case 10: {
-        return;
+            return;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -668,8 +676,7 @@ function learn() {
     /* JDS: lenses give 50% faster reading; 33% smaller read time */
     if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) &&
             ublindf.v &&
-            cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES &&
-            rn2(2))
+            cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && rn2(2))
         cptr.postinc1(cptr.add(svc, $context_info_spbook + $book_info_delay));
     if (HConfusion()) {
         void confused_book(book);
@@ -805,8 +812,7 @@ export function study_book(spellbook) {
         if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) &&
                 cptr.eq(spellbook, cptr.ldPtro(svc, $context_info_spbook)))
             dullbook = (dullbook -
-                rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) |
-                    0;
+                    rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0;
 
         if (dullbook > 0) {
             eyes = body_part(NHC.EYE);
@@ -814,11 +820,10 @@ export function study_book(spellbook) {
                 eyes = makeplural(eyes);
             pline(__s_this_book_is_so_dull_that_you_can_t, eyes);
             dullbook = (dullbook +
-                rnd(Math.imul(
-                    2,
-                    cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)
-                ))) |
-                    0;
+                    rnd(Math.imul(
+                        2,
+                        cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)
+                    ))) | 0;
             fall_asleep(-dullbook, 1);
             return 1;
         }
@@ -850,8 +855,7 @@ export function study_book(spellbook) {
                     u,
                     $you_uconduct + $u_conduct_literate,
                     cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
-                )) -
-                        (1n)))
+                )) - (1n)))
                     livelog_printf(32n, __s_became_literate_by_reading_s, tribtitle);
 
                 check_unpaid(spellbook);
@@ -870,51 +874,52 @@ export function study_book(spellbook) {
         switch (cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)) {
             case 1:
             case 2:
-            cptr.st1o(
-                svc,
-                $context_info_spbook + $book_info_delay,
-                schar((-cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)))
-            );
-            break;
+                cptr.st1o(
+                    svc,
+                    $context_info_spbook + $book_info_delay,
+                    schar((-cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)))
+                );
+                break;
             case 3:
             case 4:
-            cptr.st1o(
-                svc,
-                $context_info_spbook + $book_info_delay,
-                schar(Math.imul(
-                    -((cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2) - 1) | 0),
-                    cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)
-                ))
-            );
-            break;
+                cptr.st1o(
+                    svc,
+                    $context_info_spbook + $book_info_delay,
+                    schar(Math.imul(
+                        -((cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2) - 1) |
+                            0),
+                        cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)
+                    ))
+                );
+                break;
             case 5:
             case 6:
-            cptr.st1o(
-                svc,
-                $context_info_spbook + $book_info_delay,
-                schar(Math.imul(
-                    -cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2),
-                    cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)
-                ))
-            );
-            break;
+                cptr.st1o(
+                    svc,
+                    $context_info_spbook + $book_info_delay,
+                    schar(Math.imul(
+                        -cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2),
+                        cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)
+                    ))
+                );
+                break;
             case 7:
-            cptr.st1o(
-                svc,
-                $context_info_spbook + $book_info_delay,
-                schar(Math.imul(
-                    -8,
-                    cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)
-                ))
-            );
-            break;
+                cptr.st1o(
+                    svc,
+                    $context_info_spbook + $book_info_delay,
+                    schar(Math.imul(
+                        -8,
+                        cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_delay)
+                    ))
+                );
+                break;
             default:
-            impossible(
-                __s_unknown_spellbook_level_d_book_d,
-                cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2),
-                booktype
-            );
-            return 0;
+                impossible(
+                    __s_unknown_spellbook_level_d_book_d,
+                    cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2),
+                    booktype
+                );
+                return 0;
         }
 
         /* check to see if we already know it and want to refresh our memory */
@@ -947,14 +952,16 @@ export function study_book(spellbook) {
                 too_hard = 1;
             } else {
                 /* uncursed - chance to fail */
-                let read_ability = ((acurr(NHC.A_INT)) + 4 +
-                    ((cptr.ldI32o(u, $you_ulevel) / 2) | 0) -
-                    Math.imul(
-                        2,
-                        cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)
-                    ) +
-                    ((ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? 2 : 0)) |
-                        0;
+                let read_ability = ((acurr(NHC.A_INT)) +
+                        4 +
+                        ((cptr.ldI32o(u, $you_ulevel) / 2) | 0) -
+                        Math.imul(
+                            2,
+                            cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)
+                        ) +
+                        ((ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES)
+                            ? 2
+                            : 0)) | 0;
 
                 /* only wizards know if a spell is too difficult */
                 if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
@@ -1069,8 +1076,7 @@ export function age_spells() {
                 $sizeof_spell,
                 $spell_sp_know,
                 cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) + -1
-            )) -
-                    (-1);
+            )) - (-1);
     return;
 }
 
@@ -1247,22 +1253,22 @@ export function docast() {
 function spelltypemnemonic(skill) {
     switch (skill) {
         case NHC.P_ATTACK_SPELL:
-        return __s_attack;
+            return __s_attack;
         case NHC.P_HEALING_SPELL:
-        return __s_healing;
+            return __s_healing;
         case NHC.P_DIVINATION_SPELL:
-        return __s_divination;
+            return __s_divination;
         case NHC.P_ENCHANTMENT_SPELL:
-        return __s_enchantment;
+            return __s_enchantment;
         case NHC.P_CLERIC_SPELL:
-        return __s_clerical;
+            return __s_clerical;
         case NHC.P_ESCAPE_SPELL:
-        return __s_escape;
+            return __s_escape;
         case NHC.P_MATTER_SPELL:
-        return __s_matter;
+            return __s_matter;
         default:
-        impossible(__s_unknown_spell_skill_d, skill);
-        return __s_empty;
+            impossible(__s_unknown_spell_skill_d, skill);
+            return __s_empty;
     }
 }
 
@@ -1294,22 +1300,22 @@ export function skill_based_spellbook_id() {
 
         switch ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills))) {
             case NHC.P_BASIC:
-            known_up_to_level = 3;
-            break;
+                known_up_to_level = 3;
+                break;
             case NHC.P_SKILLED:
-            known_up_to_level = 5;
-            break;
+                known_up_to_level = 5;
+                break;
             case NHC.P_EXPERT:
             case NHC.P_MASTER:
             case NHC.P_GRAND_MASTER:
-            known_up_to_level = 7;
-            break;
+                known_up_to_level = 7;
+                break;
             case NHC.P_UNSKILLED:
             default:
-            /* paupers need more skill than this to ID books, but most wizards
-               know the basics */
-            known_up_to_level = cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper) ? 0 : 1;
-            break;
+                /* paupers need more skill than this to ID books, but most wizards
+                   know the basics */
+                known_up_to_level = cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper) ? 0 : 1;
+                break;
         }
 
         if (cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2) <= known_up_to_level)
@@ -1415,7 +1421,9 @@ function propagate_chain_lightning(clq, zap) {
                         cptr.ldI16o(zap, $chain_lightning_zap_y),
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_flags
-                    ) & 31) | 0) & 12)))))
+                    ) &
+                        31) |
+                        0) & 12)))))
         return;  /* zap can't go to this square */
 
     mon = (cptr.ldPtro3(
@@ -1596,8 +1604,7 @@ function cast_chain_lightning() {
                         svc,
                         $context_info_forcefight,
                         cptr.ld1so(svc, $context_info_forcefight) + -1
-                    )) -
-                            (-1);
+                    )) - (-1);
                 }
             }
 
@@ -1612,8 +1619,7 @@ function cast_chain_lightning() {
                 zap,
                 $chain_lightning_zap_strength,
                 cptr.ld1so(zap, $chain_lightning_zap_strength) + -1
-            )) -
-                    (-1);
+            )) - (-1);
 
             propagate_chain_lightning(clq, zap);
 
@@ -1674,8 +1680,7 @@ function cast_protection() {
      */
     natac = (((10 - natac) | 0) / 10) | 0;  /* convert to positive and scale down */
     gain = (loglev -
-        ((cptr.ld1uo(u, $you_uspellprot) / ((4 - (3 < (natac) ? 3 : (natac))) | 0)) | 0)) |
-            0;
+            ((cptr.ld1uo(u, $you_uspellprot) / ((4 - (3 < (natac) ? 3 : (natac))) | 0)) | 0)) | 0;
 
     if (gain > 0) {
         if (!Blind()) {
@@ -1763,22 +1768,22 @@ function spell_backfire(spell) {
         case 1:
         case 2:
         case 3:
-        make_confused(BigInt.asIntN(64, old_conf + duration), 0);  /* 40% */
-        break;
+            make_confused(BigInt.asIntN(64, old_conf + duration), 0);  /* 40% */
+            break;
         case 4:
         case 5:
         case 6:
-        make_confused(BigInt.asIntN(64, old_conf + BigInt.asIntN(64, 2n * duration) / 3n), 0);  /* 30% */
-        make_stunned(BigInt.asIntN(64, old_stun + duration / 3n), 0);
-        break;
+            make_confused(BigInt.asIntN(64, old_conf + BigInt.asIntN(64, 2n * duration) / 3n), 0);  /* 30% */
+            make_stunned(BigInt.asIntN(64, old_stun + duration / 3n), 0);
+            break;
         case 7:
         case 8:
-        make_stunned(BigInt.asIntN(64, old_stun + BigInt.asIntN(64, 2n * duration) / 3n), 0);  /* 20% */
-        make_confused(BigInt.asIntN(64, old_conf + duration / 3n), 0);
-        break;
+            make_stunned(BigInt.asIntN(64, old_stun + BigInt.asIntN(64, 2n * duration) / 3n), 0);  /* 20% */
+            make_confused(BigInt.asIntN(64, old_conf + duration / 3n), 0);
+            break;
         case 9:
-        make_stunned(BigInt.asIntN(64, old_stun + duration), 0);  /* 10% */
-        break;
+            make_stunned(BigInt.asIntN(64, old_stun + duration), 0);  /* 10% */
+            break;
     }
     return;
 }
@@ -1926,14 +1931,14 @@ function spelleffects_check(spell, res, energy) {
                 case 19:
                 case 18:
                 case 17:
-                hungr = 0;
-                break;
+                    hungr = 0;
+                    break;
                 case 16:
-                hungr = (hungr / 4) | 0;
-                break;
+                    hungr = (hungr / 4) | 0;
+                    break;
                 case 15:
-                hungr = (hungr / 2) | 0;
-                break;
+                    hungr = (hungr / 2) | 0;
+                    break;
             }
             /* don't put player (quite) into fainting from
              * casting a spell, particularly since they might
@@ -2001,75 +2006,77 @@ export function spelleffects(spell_otyp, atme, force) {
     switch (otyp) {
         case NHC.SPE_FIREBALL:
         case NHC.SPE_CONE_OF_COLD:
-        if (role_skill >= NHC.P_SKILLED) {
-            if (throwspell()) {
-                cptr.stI16(cc, i16(cptr.ldI32o(u, $you_dx)));
-                cptr.stI16o(cc, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
-                n = (rnd(8) + 1) | 0;
-                while (n--) {
-                    if (!cptr.ldI32o(u, $you_dx) &&
-                            !cptr.ldI32o(u, $you_dy) &&
-                            !cptr.ldI32o(u, $you_dz)) {
-                        if ((damage = zapyourself(pseudo, 1)) != 0) {
-                            let buf = new Uint8Array(256);
-                            void cptr.sprintf(
-                                cptr.decay(buf),
-                                __s_zapped_sself_with_a_spell,
-                                (cptr.ldPtro2(
-                                    genders,
-                                    cptr.ld1so(flags, $flag_female) ? 1 : 0,
-                                    $sizeof_Gender,
-                                    $Gender_him
-                                ))
+            if (role_skill >= NHC.P_SKILLED) {
+                if (throwspell()) {
+                    cptr.stI16(cc, i16(cptr.ldI32o(u, $you_dx)));
+                    cptr.stI16o(cc, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
+                    n = (rnd(8) + 1) | 0;
+                    while (n--) {
+                        if (!cptr.ldI32o(u, $you_dx) &&
+                                !cptr.ldI32o(u, $you_dy) &&
+                                !cptr.ldI32o(u, $you_dz)) {
+                            if ((damage = zapyourself(pseudo, 1)) != 0) {
+                                let buf = new Uint8Array(256);
+                                void cptr.sprintf(
+                                    cptr.decay(buf),
+                                    __s_zapped_sself_with_a_spell,
+                                    (cptr.ldPtro2(
+                                        genders,
+                                        cptr.ld1so(flags, $flag_female) ? 1 : 0,
+                                        $sizeof_Gender,
+                                        $Gender_him
+                                    ))
+                                );
+                                losehp(damage, cptr.decay(buf), NHM.NO_KILLER_PREFIX);
+                            }
+                        } else {
+                            explode(
+                                i16(cptr.ldI32o(u, $you_dx)),
+                                i16(cptr.ldI32o(u, $you_dy)),
+                                (otyp - NHC.SPE_MAGIC_MISSILE + 10) | 0,
+                                spell_damage_bonus((((cptr.ldI32o(u, $you_ulevel) / 2) | 0) + 1) |
+                                    0),
+                                0,
+                                (otyp == NHC.SPE_CONE_OF_COLD) ? NHC.EXPL_FROSTY : NHC.EXPL_FIERY
                             );
-                            losehp(damage, cptr.decay(buf), NHM.NO_KILLER_PREFIX);
                         }
-                    } else {
-                        explode(
-                            i16(cptr.ldI32o(u, $you_dx)),
-                            i16(cptr.ldI32o(u, $you_dy)),
-                            (otyp - NHC.SPE_MAGIC_MISSILE + 10) | 0,
-                            spell_damage_bonus((((cptr.ldI32o(u, $you_ulevel) / 2) | 0) + 1) | 0),
-                            0,
-                            (otyp == NHC.SPE_CONE_OF_COLD) ? NHC.EXPL_FROSTY : NHC.EXPL_FIERY
-                        );
-                    }
-                    cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) + rnd(3) - 2) | 0);
-                    cptr.stI32o(u, $you_dy, (cptr.ldI16o(cc, $nhcoord_y) + rnd(3) - 2) | 0);
-                    if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) ||
-                            !((cptr.ld1uo(
-                                cptr.ldPtro(
-                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                        cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) + rnd(3) - 2) | 0);
+                        cptr.stI32o(u, $you_dy, (cptr.ldI16o(cc, $nhcoord_y) + rnd(3) - 2) | 0);
+                        if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) ||
+                                !((cptr.ld1uo(
+                                    cptr.ldPtro(
+                                        cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                        cptr.ldI32o(u, $you_dy),
+                                        8
+                                    ),
+                                    cptr.ldI32o(u, $you_dx)
+                                ) &
+                                    NHM.IN_SIGHT) !=
+                                    0) ||
+                                ((cptr.ld1so3(
+                                    svl,
+                                    cptr.ldI32o(u, $you_dx),
+                                    $sizeof_rm_x21,
                                     cptr.ldI32o(u, $you_dy),
-                                    8
-                                ),
-                                cptr.ldI32o(u, $you_dx)
-                            ) &
-                                NHM.IN_SIGHT) != 0) ||
-                            ((cptr.ld1so3(
-                                svl,
-                                cptr.ldI32o(u, $you_dx),
-                                $sizeof_rm_x21,
-                                cptr.ldI32o(u, $you_dy),
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_typ
-                            )) <=
-                                NHC.DBWALL) ||
-                            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
-                        /* Spell is reflected back to center */
-                        cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
-                        cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) <=
+                                    NHC.DBWALL) ||
+                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                            /* Spell is reflected back to center */
+                            cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
+                            cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
+                        }
                     }
                 }
-            }
-            break;
-        }  /* else */
-        // @FallThrough
-        ;
+                break;
+            }  /* else */
+            // @FallThrough
+            ;
         case NHC.SPE_FORCE_BOLT:
-        physical_damage = 1;
-        // @FallThrough
-        ;
+            physical_damage = 1;
+            // @FallThrough
+            ;
         case NHC.SPE_SLEEP:
         case NHC.SPE_MAGIC_MISSILE:
         case NHC.SPE_KNOCK:
@@ -2087,130 +2094,132 @@ export function spelleffects(spell_otyp, atme, force) {
         case NHC.SPE_EXTRA_HEALING:
         case NHC.SPE_DRAIN_LIFE:
         case NHC.SPE_STONE_TO_FLESH:
-        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) !=
-                NHM.NODIR) {
-            if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
-                /* healing and extra healing are actually potion effects,
-                   but they've been extended to take a direction like wands */
-                if (role_skill >= NHC.P_SKILLED)
-                    cptr.stI32o(pseudo, $obj_blessed, 1);
-            }
-            if (atme) {
-                cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
-            } else if (!getdir(null)) {
-                /* getdir cancelled, re-use previous direction */
-                /*
-                 * FIXME:  reusing previous direction only makes sense
-                 * if there is an actual previous direction.  When there
-                 * isn't one, the spell gets cast at self which is rarely
-                 * what the player intended.  Unfortunately, the way
-                 * spelleffects() is organized means that aborting with
-                 * "nevermind" is not an option.
-                 */
-                pline_The(__s_magical_energy_is_released);
-            }
-            if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
-                if ((damage = zapyourself(pseudo, 1)) != 0) {
-                    let buf = new Uint8Array(256);
-
-                    void cptr.sprintf(
-                        cptr.decay(buf),
-                        __s_zapped_sself_with_a_spell,
-                        (cptr.ldPtro2(
-                            genders,
-                            cptr.ld1so(flags, $flag_female) ? 1 : 0,
-                            $sizeof_Gender,
-                            $Gender_him
-                        ))
-                    );
-                    if (physical_damage)
-                        damage = ((Half_physical_damage())
-                                ? (((((damage) + 1) | 0) / 2) | 0)
-                                : (damage));
-                    losehp(damage, cptr.decay(buf), NHM.NO_KILLER_PREFIX);
+            if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_dir) & 7) | 0) !=
+                    NHM.NODIR) {
+                if (otyp == NHC.SPE_HEALING || otyp == NHC.SPE_EXTRA_HEALING) {
+                    /* healing and extra healing are actually potion effects,
+                       but they've been extended to take a direction like wands */
+                    if (role_skill >= NHC.P_SKILLED)
+                        cptr.stI32o(pseudo, $obj_blessed, 1);
                 }
+                if (atme) {
+                    cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
+                } else if (!getdir(null)) {
+                    /* getdir cancelled, re-use previous direction */
+                    /*
+                     * FIXME:  reusing previous direction only makes sense
+                     * if there is an actual previous direction.  When there
+                     * isn't one, the spell gets cast at self which is rarely
+                     * what the player intended.  Unfortunately, the way
+                     * spelleffects() is organized means that aborting with
+                     * "nevermind" is not an option.
+                     */
+                    pline_The(__s_magical_energy_is_released);
+                }
+                if (!cptr.ldI32o(u, $you_dx) &&
+                        !cptr.ldI32o(u, $you_dy) &&
+                        !cptr.ldI32o(u, $you_dz)) {
+                    if ((damage = zapyourself(pseudo, 1)) != 0) {
+                        let buf = new Uint8Array(256);
+
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            __s_zapped_sself_with_a_spell,
+                            (cptr.ldPtro2(
+                                genders,
+                                cptr.ld1so(flags, $flag_female) ? 1 : 0,
+                                $sizeof_Gender,
+                                $Gender_him
+                            ))
+                        );
+                        if (physical_damage)
+                            damage = ((Half_physical_damage())
+                                    ? (((((damage) + 1) | 0) / 2) | 0)
+                                    : (damage));
+                        losehp(damage, cptr.decay(buf), NHM.NO_KILLER_PREFIX);
+                    }
+                } else
+                    weffects(pseudo);
             } else
                 weffects(pseudo);
-        } else
-            weffects(pseudo);
-        update_inventory();  /* spell may modify inventory */
-        break;
+            update_inventory();  /* spell may modify inventory */
+            break;
         case NHC.SPE_REMOVE_CURSE:
         case NHC.SPE_CONFUSE_MONSTER:
         case NHC.SPE_DETECT_FOOD:
         case NHC.SPE_CAUSE_FEAR:
         case NHC.SPE_IDENTIFY:
         case NHC.SPE_CHARM_MONSTER:
-        /* high skill yields effect equivalent to blessed scroll */
-        if (role_skill >= NHC.P_SKILLED)
-            cptr.stI32o(pseudo, $obj_blessed, 1);
-        // @FallThrough
-        ;
+            /* high skill yields effect equivalent to blessed scroll */
+            if (role_skill >= NHC.P_SKILLED)
+                cptr.stI32o(pseudo, $obj_blessed, 1);
+            // @FallThrough
+            ;
         case NHC.SPE_MAGIC_MAPPING:
         case NHC.SPE_CREATE_MONSTER:
-        void seffects(pseudo);
-        break;
+            void seffects(pseudo);
+            break;
         case NHC.SPE_HASTE_SELF:
         case NHC.SPE_DETECT_TREASURE:
         case NHC.SPE_DETECT_MONSTERS:
         case NHC.SPE_LEVITATION:
         case NHC.SPE_RESTORE_ABILITY:
-        /* high skill yields effect equivalent to blessed potion */
-        if (role_skill >= NHC.P_SKILLED)
-            cptr.stI32o(pseudo, $obj_blessed, 1);
-        // @FallThrough
-        ;
-        case NHC.SPE_INVISIBILITY:
-        void peffects(pseudo);
-        break;
-        case NHC.SPE_CURE_BLINDNESS:
-        healup(0, 0, 0, 1);
-        break;
-        case NHC.SPE_CURE_SICKNESS:
-        {
-            let was_sick = schar((!!Sick()));
-            let was_slimed = schar((!!Slimed()));
-
-            /* cure conditions (which updates status) before feedback */
-            healup(0, 0, 1, 0);
-            /*
-             *  Sick + !Slimed -- You are no longer ill.
-             * !Sick + !Slimed -- You are not ill.
-             * !Sick +  Slimed -- The slime disappears.
-             *  Sick +  Slimed -- You are no longer ill.  The slime disappears.
-             */
-            if (was_sick || !was_slimed)
-                You(__s_are_s_ill, was_sick ? __s_no_longer : __s_not);
-            if (was_slimed)
-                make_slimed(0n, __s_the_slime_disappears);
-            break;
-        }
-        case NHC.SPE_CREATE_FAMILIAR:
-        void make_familiar(null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0);
-        break;
-        case NHC.SPE_CLAIRVOYANCE:
-        if (!BClairvoyant()) {
+            /* high skill yields effect equivalent to blessed potion */
             if (role_skill >= NHC.P_SKILLED)
-                cptr.stI32o(pseudo, $obj_blessed, 1);  /* detect monsters as well as map */
-            do_vicinity_map(pseudo);
-            /* at present, only one thing blocks clairvoyance */
-        } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.CORNUTHAUM)
-            You(__s_sense_a_pointy_hat_on_top_of_your_s, body_part(NHC.HEAD));
-        break;
+                cptr.stI32o(pseudo, $obj_blessed, 1);
+            // @FallThrough
+            ;
+        case NHC.SPE_INVISIBILITY:
+            void peffects(pseudo);
+            break;
+        case NHC.SPE_CURE_BLINDNESS:
+            healup(0, 0, 0, 1);
+            break;
+        case NHC.SPE_CURE_SICKNESS:
+            {
+                let was_sick = schar((!!Sick()));
+                let was_slimed = schar((!!Slimed()));
+
+                /* cure conditions (which updates status) before feedback */
+                healup(0, 0, 1, 0);
+                /*
+                 *  Sick + !Slimed -- You are no longer ill.
+                 * !Sick + !Slimed -- You are not ill.
+                 * !Sick +  Slimed -- The slime disappears.
+                 *  Sick +  Slimed -- You are no longer ill.  The slime disappears.
+                 */
+                if (was_sick || !was_slimed)
+                    You(__s_are_s_ill, was_sick ? __s_no_longer : __s_not);
+                if (was_slimed)
+                    make_slimed(0n, __s_the_slime_disappears);
+                break;
+            }
+        case NHC.SPE_CREATE_FAMILIAR:
+            void make_familiar(null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0);
+            break;
+        case NHC.SPE_CLAIRVOYANCE:
+            if (!BClairvoyant()) {
+                if (role_skill >= NHC.P_SKILLED)
+                    cptr.stI32o(pseudo, $obj_blessed, 1);  /* detect monsters as well as map */
+                do_vicinity_map(pseudo);
+                /* at present, only one thing blocks clairvoyance */
+            } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.CORNUTHAUM)
+                You(__s_sense_a_pointy_hat_on_top_of_your_s, body_part(NHC.HEAD));
+            break;
         case NHC.SPE_PROTECTION:
-        cast_protection();
-        break;
+            cast_protection();
+            break;
         case NHC.SPE_JUMPING:
-        if (!(jump(((role_skill) > 1 ? (role_skill) : 1)) & NHM.ECMD_TIME))
-            pline(__s_pct_s, cptr.ldPtr(c_common_strings));
-        break;
+            if (!(jump(((role_skill) > 1 ? (role_skill) : 1)) & NHM.ECMD_TIME))
+                pline(__s_pct_s, cptr.ldPtr(c_common_strings));
+            break;
         case NHC.SPE_CHAIN_LIGHTNING:
-        cast_chain_lightning();
-        break;
+            cast_chain_lightning();
+            break;
         default:
-        impossible(__s_unknown_spell_d_attempted, spell);
-        obfree(pseudo, null);
-        return NHM.ECMD_OK;
+            impossible(__s_unknown_spell_d_attempted, spell);
+            obfree(pseudo, null);
+            return NHM.ECMD_OK;
     }
 
     /* gain skill for successful cast */
@@ -2251,7 +2260,9 @@ function spell_aim_step(arg, x, y) {
                     y,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.D_ISOPEN)))
         return 0;
     return 1;
@@ -2264,7 +2275,8 @@ function can_center_spell_location(x, y) {
         return 0;
     return schar((isok(x, y) &&
         ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
         !(((cptr.ld1so3(
             svl,
             x,
@@ -2350,7 +2362,8 @@ function throwspell() {
         cptr.ldI16o(u, $you_uy),
         cptr.ldI16(cc),
         cptr.ldI16o(cc, $nhcoord_y)
-    ) > 10) {
+    ) >
+            10) {
         pline_The(__s_spell_dissipates_over_the_distance);
         return 0;
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -2369,7 +2382,8 @@ function throwspell() {
             ),
             cptr.ldI16(cc)
         ) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
         (!(mtmp = (cptr.ldPtro3(
             svl,
             cptr.ldI16(cc),
@@ -2588,36 +2602,36 @@ function spell_cmp(vptr1, vptr2) {
 
     switch (cptr.ldI32o(gs, $instance_globals_s_spl_sortmode)) {
         case NHC.SORTBY_LETTER:
-        return (indx1 - indx2) | 0;
+            return (indx1 - indx2) | 0;
         case NHC.SORTBY_ALPHA:
-        break;
+            break;
         case NHC.SORTBY_LVL_LO:
-        if (levl1 != levl2)
-            return (levl1 - levl2) | 0;
-        break;
+            if (levl1 != levl2)
+                return (levl1 - levl2) | 0;
+            break;
         case NHC.SORTBY_LVL_HI:
-        if (levl1 != levl2)
-            return (levl2 - levl1) | 0;
-        break;
+            if (levl1 != levl2)
+                return (levl2 - levl1) | 0;
+            break;
         case NHC.SORTBY_SKL_AL:
-        if (skil1 != skil2)
-            return (skil1 - skil2) | 0;
-        break;
+            if (skil1 != skil2)
+                return (skil1 - skil2) | 0;
+            break;
         case NHC.SORTBY_SKL_LO:
-        if (skil1 != skil2)
-            return (skil1 - skil2) | 0;
-        if (levl1 != levl2)
-            return (levl1 - levl2) | 0;
-        break;
+            if (skil1 != skil2)
+                return (skil1 - skil2) | 0;
+            if (levl1 != levl2)
+                return (levl1 - levl2) | 0;
+            break;
         case NHC.SORTBY_SKL_HI:
-        if (skil1 != skil2)
-            return (skil1 - skil2) | 0;
-        if (levl1 != levl2)
-            return (levl2 - levl1) | 0;
-        break;
+            if (skil1 != skil2)
+                return (skil1 - skil2) | 0;
+            if (levl1 != levl2)
+                return (levl2 - levl1) | 0;
+            break;
         case NHC.SORTBY_CURRENT:
         default:
-        return (cptr.cmp(vptr1, vptr2) < 0) ? -1 : (cptr.cmp(vptr1, vptr2) > 0);  /* keep current order */
+            return (cptr.cmp(vptr1, vptr2) < 0) ? -1 : (cptr.cmp(vptr1, vptr2) > 0);  /* keep current order */
     }
     /* tie-breaker for most sorts--alphabetical by spell name */
     return strncmpi(
@@ -2975,10 +2989,9 @@ function percent_success(spell) {
 
     if (uarm.v && is_metallic(uarm.v) && !paladin_bonus)
         splcaster = (splcaster +
-            ((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE)
-                ? (cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr) / 2) | 0
-                : cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr))) |
-                0;
+                ((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE)
+                    ? (cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr) / 2) | 0
+                    : cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr))) | 0;
     else if (uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ROBE)
         splcaster = (splcaster - cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)) | 0;
     if (uarms.v)
@@ -3027,8 +3040,7 @@ function percent_success(spell) {
     skill = (cptr.ldI16o2(u, skilltype, $sizeof_skills, $you_weapon_skills));
     skill = (((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED) - 1) | 0;  /* unskilled => 0 */
     difficulty = (Math.imul(cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) - 1, 4) -
-        ((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0) + 1)) |
-            0;
+            ((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0) + 1)) | 0;
 
     if (difficulty > 0) {
         /* Player is too low level or unskilled. */
@@ -3040,8 +3052,7 @@ function percent_success(spell) {
          * no advantage for raising level.
          */
         let learning = (Math.imul(15, -difficulty) /
-            cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)) |
-                0;
+                cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev)) | 0;
         chance = (chance + (learning > 20 ? 20 : learning)) | 0;
     }
 
@@ -3061,12 +3072,8 @@ function percent_success(spell) {
      */
     if (uarms.v &&
             weight(uarms.v) >
-                (cptr.ldI32o2(
-                    objects,
-                    NHC.SMALL_SHIELD,
-                    $sizeof_objclass,
-                    $objclass_oc_weight
-                ) | 0)) {
+                (cptr.ldI32o2(objects, NHC.SMALL_SHIELD, $sizeof_objclass, $objclass_oc_weight) |
+                    0)) {
         if (cptr.ldI16o(svs, spell, $sizeof_spell) ==
                 cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelspec)) {
             chance = (chance / 2) | 0;

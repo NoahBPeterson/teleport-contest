@@ -222,8 +222,8 @@ export function lua_absindex(L, idx) {
                     cptr.ldPtro(L, $lua_State_top),
                     cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci))
                 ) / 16n))
-            ))) + idx) |
-                0;
+            ))) +
+                idx) | 0;
 }
 
 /** C ref: lapi.c:176 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -251,8 +251,7 @@ export function* lua_settop(L, idx) {
         diff = cptr.diff(
             (cptr.add((cptr.add(func, 1, 16)), idx, 16)),
             cptr.ldPtro(L, $lua_State_top)
-        ) /
-                16n;
+        ) / 16n;
         for (; diff > 0n; diff--)
             (cptr.st1o(
                 (((cptr.postinc(
@@ -370,7 +369,8 @@ export function lua_copy(L, fromidx, toidx) {
                 ? ((((cptr.ld1uo(
                     (((((((cptr.ldPtr(((((cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)))))))))))))),
                     $CClosure_marked
-                )) & 32) &&
+                )) &
+                    32) &&
                     ((cptr.ld1uo(((cptr.ldPtr(((fr))))), $GCObject_marked)) & 24))
                     ? luaC_barrier_(
                         L,
@@ -552,16 +552,16 @@ export function* lua_compare(L, index1, index2, op) {
                 !cptr.eq(o2, cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue)))) {
         switch (op) {
             case 0:
-            i = (yield* luaV_equalobj(L, o1, o2));
-            break;
+                i = (yield* luaV_equalobj(L, o1, o2));
+                break;
             case 1:
-            i = (yield* luaV_lessthan(L, o1, o2));
-            break;
+                i = (yield* luaV_lessthan(L, o1, o2));
+                break;
             case 2:
-            i = (yield* luaV_lessequal(L, o1, o2));
-            break;
+                i = (yield* luaV_lessequal(L, o1, o2));
+                break;
             default:
-            (void L, (void 0));
+                (void L, (void 0));
         }
     }
     (void 0);
@@ -673,15 +673,15 @@ export function lua_rawlen(L, idx) {
     let o = index2value(L, idx);
     switch ((((cptr.ld1uo((o), $TValue_tt_))) & 63)) {
         case 4:
-        return BigInt(cptr.ld1uo(((((((cptr.ldPtr(((o))))))))), $TString_shrlen) >>> 0);
+            return BigInt(cptr.ld1uo(((((((cptr.ldPtr(((o))))))))), $TString_shrlen) >>> 0);
         case 20:
-        return cptr.ldU64o(((((((cptr.ldPtr(((o))))))))), $TString_u);
+            return cptr.ldU64o(((((((cptr.ldPtr(((o))))))))), $TString_u);
         case 7:
-        return cptr.ldU64o(((((((cptr.ldPtr(((o))))))))), $Udata_len);
+            return cptr.ldU64o(((((((cptr.ldPtr(((o))))))))), $Udata_len);
         case 5:
-        return luaH_getn(((((((cptr.ldPtr(((o))))))))));
+            return luaH_getn(((((((cptr.ldPtr(((o))))))))));
         default:
-        return 0n;
+            return 0n;
     }
 }
 
@@ -700,24 +700,24 @@ export function lua_tocfunction(L, idx) {
 function touserdata(o) {
     switch (((((cptr.ld1uo((o), $TValue_tt_))) & 15))) {
         case 7:
-        return (cptr.add(
-            (((((((((cptr.ldPtr(((o)))))))))))),
-            ((cptr.ldU16o((((((((cptr.ldPtr(((o)))))))))), $Udata_nuvalue)) == 0
-                ? 32n
-                : BigInt.asUintN(
-                    64,
-                    40n +
-                        16n *
-                            BigInt((cptr.ldU16o(
-                                (((((((cptr.ldPtr(((o)))))))))),
-                                $Udata_nuvalue
-                            )) >>> 0)
-                ))
-        ));
+            return (cptr.add(
+                (((((((((cptr.ldPtr(((o)))))))))))),
+                ((cptr.ldU16o((((((((cptr.ldPtr(((o)))))))))), $Udata_nuvalue)) == 0
+                    ? 32n
+                    : BigInt.asUintN(
+                        64,
+                        40n +
+                            16n *
+                                BigInt((cptr.ldU16o(
+                                    (((((((cptr.ldPtr(((o)))))))))),
+                                    $Udata_nuvalue
+                                )) >>> 0)
+                    ))
+            ));
         case 2:
-        return (cptr.ldPtr(((o))));
+            return (cptr.ldPtr(((o))));
         default:
-        return (null);
+            return (null);
     }
 }
 
@@ -745,17 +745,17 @@ export function lua_topointer(L, idx) {
     let o = index2value(L, idx);
     switch ((((cptr.ld1uo((o), $TValue_tt_))) & 63)) {
         case 22:
-        return ((((cptr.addr((((cptr.ldPtr(((o)))))))))));
+            return ((((cptr.addr((((cptr.ldPtr(((o)))))))))));
         case 7:
         case 2:
-        return touserdata(o);
+            return touserdata(o);
         default:
-        {
-            if (((cptr.ld1uo((o), $TValue_tt_)) & 64))
-                return (cptr.ldPtr(((o))));
-            else
-                return null;
-        }
+            {
+                if (((cptr.ld1uo((o), $TValue_tt_)) & 64))
+                    return (cptr.ldPtr(((o))));
+                else
+                    return null;
+            }
     }
 }
 
@@ -1423,19 +1423,19 @@ export function* lua_getmetatable(L, objindex) {
     obj = index2value(L, objindex);
     switch (((((cptr.ld1uo((obj), $TValue_tt_))) & 15))) {
         case 5:
-        mt = cptr.ldPtro(((((((cptr.ldPtr(((obj))))))))), $Table_metatable);
-        break;
+            mt = cptr.ldPtro(((((((cptr.ldPtr(((obj))))))))), $Table_metatable);
+            break;
         case 7:
-        mt = cptr.ldPtro(((((((cptr.ldPtr(((obj))))))))), $Udata_metatable);
-        break;
+            mt = cptr.ldPtro(((((((cptr.ldPtr(((obj))))))))), $Udata_metatable);
+            break;
         default:
-        mt = cptr.ldPtro2(
-            (cptr.ldPtro(L, $lua_State_l_G)),
-            ((((cptr.ld1uo((obj), $TValue_tt_))) & 15)),
-            8,
-            $global_State_mt
-        );
-        break;
+            mt = cptr.ldPtro2(
+                (cptr.ldPtro(L, $lua_State_l_G)),
+                ((((cptr.ld1uo((obj), $TValue_tt_))) & 15)),
+                8,
+                $global_State_mt
+            );
+            break;
     }
     if (!cptr.eq(mt, (null))) {
         {
@@ -1812,10 +1812,8 @@ export function* lua_setmetatable(L, objindex) {
     (void 0);
     (void L, (void 0));
     obj = index2value(L, objindex);
-    if ((((((cptr.ld1uo(
-        ((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))),
-        $TValue_tt_
-    ))) & 15)) == 0))
+    if ((((((cptr.ld1uo(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))), $TValue_tt_))) &
+            15)) == 0))
         mt = null;
     else {
         (void L, (void 0));
@@ -1823,40 +1821,40 @@ export function* lua_setmetatable(L, objindex) {
     }
     switch (((((cptr.ld1uo((obj), $TValue_tt_))) & 15))) {
         case 5:
-        {
-            cptr.stPtro(((((((cptr.ldPtr(((obj))))))))), $Table_metatable, mt);
-            if (mt) {
-                ((((cptr.ld1uo(((cptr.ldPtr(((obj))))), $GCObject_marked)) & 32) &&
-                    ((cptr.ld1uo((mt), $Table_marked)) & 24))
-                        ? luaC_barrier_(L, (((((cptr.ldPtr(((obj)))))))), ((((mt)))))
-                        : (void 0));
-                (yield* luaC_checkfinalizer(L, (cptr.ldPtr(((obj)))), mt));
+            {
+                cptr.stPtro(((((((cptr.ldPtr(((obj))))))))), $Table_metatable, mt);
+                if (mt) {
+                    ((((cptr.ld1uo(((cptr.ldPtr(((obj))))), $GCObject_marked)) & 32) &&
+                        ((cptr.ld1uo((mt), $Table_marked)) & 24))
+                            ? luaC_barrier_(L, (((((cptr.ldPtr(((obj)))))))), ((((mt)))))
+                            : (void 0));
+                    (yield* luaC_checkfinalizer(L, (cptr.ldPtr(((obj)))), mt));
+                }
+                break;
             }
-            break;
-        }
         case 7:
-        {
-            cptr.stPtro(((((((cptr.ldPtr(((obj))))))))), $Udata_metatable, mt);
-            if (mt) {
-                ((((cptr.ld1uo((((((((cptr.ldPtr(((obj)))))))))), $Udata_marked)) & 32) &&
-                    ((cptr.ld1uo((mt), $Table_marked)) & 24))
-                        ? luaC_barrier_(L, ((((((((((cptr.ldPtr(((obj))))))))))))), ((((mt)))))
-                        : (void 0));
-                (yield* luaC_checkfinalizer(L, (cptr.ldPtr(((obj)))), mt));
+            {
+                cptr.stPtro(((((((cptr.ldPtr(((obj))))))))), $Udata_metatable, mt);
+                if (mt) {
+                    ((((cptr.ld1uo((((((((cptr.ldPtr(((obj)))))))))), $Udata_marked)) & 32) &&
+                        ((cptr.ld1uo((mt), $Table_marked)) & 24))
+                            ? luaC_barrier_(L, ((((((((((cptr.ldPtr(((obj))))))))))))), ((((mt)))))
+                            : (void 0));
+                    (yield* luaC_checkfinalizer(L, (cptr.ldPtr(((obj)))), mt));
+                }
+                break;
             }
-            break;
-        }
         default:
-        {
-            cptr.stPtro2(
-                (cptr.ldPtro(L, $lua_State_l_G)),
-                ((((cptr.ld1uo((obj), $TValue_tt_))) & 15)),
-                8,
-                $global_State_mt,
-                mt
-            );
-            break;
-        }
+            {
+                cptr.stPtro2(
+                    (cptr.ldPtro(L, $lua_State_l_G)),
+                    ((((cptr.ld1uo((obj), $TValue_tt_))) & 15)),
+                    8,
+                    $global_State_mt,
+                    mt
+                );
+                break;
+            }
     }
     cptr.postdec(
         () => cptr.ldPtro(L, $lua_State_top),
@@ -2090,10 +2088,8 @@ export function* lua_load(L, reader, data, chunkname, mode) {
             }
             ;
             (((cptr.ld1uo((gt), $TValue_tt_)) & 64)
-                    ? ((((cptr.ld1uo(
-                        (cptr.ldPtro2(f, 0, 8, $LClosure_upvals)),
-                        $UpVal_marked
-                    )) & 32) &&
+                    ? ((((cptr.ld1uo((cptr.ldPtro2(f, 0, 8, $LClosure_upvals)), $UpVal_marked)) &
+                        32) &&
                         ((cptr.ld1uo(((cptr.ldPtr(((gt))))), $GCObject_marked)) & 24))
                         ? luaC_barrier_(
                             L,
@@ -2155,138 +2151,138 @@ export function* lua_gc(L, what, ...__va) {
     argp = cptr.vaList(__va);
     switch (what) {
         case 0:
-        {
-            cptr.st1o(g, $global_State_gcstp, 1);  /* stopped by the user */
-            break;
-        }
+            {
+                cptr.st1o(g, $global_State_gcstp, 1);  /* stopped by the user */
+                break;
+            }
         case 1:
-        {
-            luaE_setdebt(g, 0n);
-            cptr.st1o(g, $global_State_gcstp, 0);  /* (GCSTPGC must be already zero here) */
-            break;
-        }
+            {
+                luaE_setdebt(g, 0n);
+                cptr.st1o(g, $global_State_gcstp, 0);  /* (GCSTPGC must be already zero here) */
+                break;
+            }
         case 2:
-        {
-            (yield* luaC_fullgc(L, 0));
-            break;
-        }
+            {
+                (yield* luaC_fullgc(L, 0));
+                break;
+            }
         case 3:
-        {
-            /* GC values are expressed in Kbytes: #bytes/2^10 */
-            res = (Number(BigInt.asIntN(
-                32,
-                (((BigInt.asUintN(
-                    64,
-                    (BigInt.asIntN(
+            {
+                /* GC values are expressed in Kbytes: #bytes/2^10 */
+                res = (Number(BigInt.asIntN(
+                    32,
+                    (((BigInt.asUintN(
                         64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
-                )) >> 10n))
-            )));
-            break;
-        }
+                        (BigInt.asIntN(
+                            64,
+                            cptr.ldI64o((g), $global_State_totalbytes) +
+                                cptr.ldI64o((g), $global_State_GCdebt)
+                        ))
+                    )) >> 10n))
+                )));
+                break;
+            }
         case 4:
-        {
-            res = (Number(BigInt.asIntN(
-                32,
-                (((BigInt.asUintN(
-                    64,
-                    (BigInt.asIntN(
+            {
+                res = (Number(BigInt.asIntN(
+                    32,
+                    (((BigInt.asUintN(
                         64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
-                )) &
-                    1023n))
-            )));
-            break;
-        }
+                        (BigInt.asIntN(
+                            64,
+                            cptr.ldI64o((g), $global_State_totalbytes) +
+                                cptr.ldI64o((g), $global_State_GCdebt)
+                        ))
+                    )) & 1023n))
+                )));
+                break;
+            }
         case 5:
-        {
-            let data = cptr.vaArg(argp, 'i32');
-            let debt = 1n;  /* =1 to signal that it did an actual step */
-            let oldstp = cptr.ld1uo(g, $global_State_gcstp);
-            cptr.st1o(g, $global_State_gcstp, 0);  /* allow GC to run (GCSTPGC must be zero here) */
-            if (data == 0) {
-                luaE_setdebt(g, 0n);  /* do a basic step */
-                (yield* luaC_step(L));
-            } else {
-                debt = BigInt.asIntN(
-                    64,
-                    (BigInt((data))) * 1024n + cptr.ldI64o(g, $global_State_GCdebt)
-                );
-                luaE_setdebt(g, debt);
-                {
-                    if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
-                        void 0;
-                        (yield* luaC_step(L));
-                        void 0;
+            {
+                let data = cptr.vaArg(argp, 'i32');
+                let debt = 1n;  /* =1 to signal that it did an actual step */
+                let oldstp = cptr.ld1uo(g, $global_State_gcstp);
+                cptr.st1o(g, $global_State_gcstp, 0);  /* allow GC to run (GCSTPGC must be zero here) */
+                if (data == 0) {
+                    luaE_setdebt(g, 0n);  /* do a basic step */
+                    (yield* luaC_step(L));
+                } else {
+                    debt = BigInt.asIntN(
+                        64,
+                        (BigInt((data))) * 1024n + cptr.ldI64o(g, $global_State_GCdebt)
+                    );
+                    luaE_setdebt(g, debt);
+                    {
+                        if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) >
+                                0n) {
+                            void 0;
+                            (yield* luaC_step(L));
+                            void 0;
+                        }
+                        ;
+                        (void 0);
                     }
                     ;
-                    (void 0);
                 }
-                ;
+                cptr.st1o(g, $global_State_gcstp, oldstp);  /* restore previous state */
+                if (debt > 0n && cptr.ld1uo(g, $global_State_gcstate) == 8)
+                    res = 1;  /* signal it */
+                break;
             }
-            cptr.st1o(g, $global_State_gcstp, oldstp);  /* restore previous state */
-            if (debt > 0n && cptr.ld1uo(g, $global_State_gcstate) == 8)
-                res = 1;  /* signal it */
-            break;
-        }
         case 6:
-        {
-            let data = cptr.vaArg(argp, 'i32');
-            res = (Math.imul((cptr.ld1uo(g, $global_State_gcpause)), 4));
-            (cptr.st1o(g, $global_State_gcpause, uchar((((data) / 4) | 0))));
-            break;
-        }
+            {
+                let data = cptr.vaArg(argp, 'i32');
+                res = (Math.imul((cptr.ld1uo(g, $global_State_gcpause)), 4));
+                (cptr.st1o(g, $global_State_gcpause, uchar((((data) / 4) | 0))));
+                break;
+            }
         case 7:
-        {
-            let data = cptr.vaArg(argp, 'i32');
-            res = (Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4));
-            (cptr.st1o(g, $global_State_gcstepmul, uchar((((data) / 4) | 0))));
-            break;
-        }
+            {
+                let data = cptr.vaArg(argp, 'i32');
+                res = (Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4));
+                (cptr.st1o(g, $global_State_gcstepmul, uchar((((data) / 4) | 0))));
+                break;
+            }
         case 9:
-        {
-            res = (cptr.ld1uo((g), $global_State_gcstp) == 0);
-            break;
-        }
+            {
+                res = (cptr.ld1uo((g), $global_State_gcstp) == 0);
+                break;
+            }
         case 10:
-        {
-            let minormul = cptr.vaArg(argp, 'i32');
-            let majormul = cptr.vaArg(argp, 'i32');
-            res = (cptr.ld1uo(g, $global_State_gckind) == 1 ||
-                cptr.ldU64o(g, $global_State_lastatomic) != 0n)
-                    ? 10
-                    : 11;
-            if (minormul != 0)
-                cptr.st1o(g, $global_State_genminormul, uchar(minormul));
-            if (majormul != 0)
-                (cptr.st1o(g, $global_State_genmajormul, uchar((((majormul) / 4) | 0))));
-            (yield* luaC_changemode(L, 1));
-            break;
-        }
+            {
+                let minormul = cptr.vaArg(argp, 'i32');
+                let majormul = cptr.vaArg(argp, 'i32');
+                res = (cptr.ld1uo(g, $global_State_gckind) == 1 ||
+                    cptr.ldU64o(g, $global_State_lastatomic) != 0n)
+                        ? 10
+                        : 11;
+                if (minormul != 0)
+                    cptr.st1o(g, $global_State_genminormul, uchar(minormul));
+                if (majormul != 0)
+                    (cptr.st1o(g, $global_State_genmajormul, uchar((((majormul) / 4) | 0))));
+                (yield* luaC_changemode(L, 1));
+                break;
+            }
         case 11:
-        {
-            let pause = cptr.vaArg(argp, 'i32');
-            let stepmul = cptr.vaArg(argp, 'i32');
-            let stepsize = cptr.vaArg(argp, 'i32');
-            res = (cptr.ld1uo(g, $global_State_gckind) == 1 ||
-                cptr.ldU64o(g, $global_State_lastatomic) != 0n)
-                    ? 10
-                    : 11;
-            if (pause != 0)
-                (cptr.st1o(g, $global_State_gcpause, uchar((((pause) / 4) | 0))));
-            if (stepmul != 0)
-                (cptr.st1o(g, $global_State_gcstepmul, uchar((((stepmul) / 4) | 0))));
-            if (stepsize != 0)
-                cptr.st1o(g, $global_State_gcstepsize, uchar(stepsize));
-            (yield* luaC_changemode(L, 0));
-            break;
-        }
+            {
+                let pause = cptr.vaArg(argp, 'i32');
+                let stepmul = cptr.vaArg(argp, 'i32');
+                let stepsize = cptr.vaArg(argp, 'i32');
+                res = (cptr.ld1uo(g, $global_State_gckind) == 1 ||
+                    cptr.ldU64o(g, $global_State_lastatomic) != 0n)
+                        ? 10
+                        : 11;
+                if (pause != 0)
+                    (cptr.st1o(g, $global_State_gcpause, uchar((((pause) / 4) | 0))));
+                if (stepmul != 0)
+                    (cptr.st1o(g, $global_State_gcstepmul, uchar((((stepmul) / 4) | 0))));
+                if (stepsize != 0)
+                    cptr.st1o(g, $global_State_gcstepsize, uchar(stepsize));
+                (yield* luaC_changemode(L, 0));
+                break;
+            }
         default:
-        res = -1;  /* invalid option */
+            res = -1;  /* invalid option */
     }
     argp = null;
     (void 0);
@@ -2508,33 +2504,38 @@ export function* lua_newuserdatauv(L, size, nuvalue) {
 function aux_upvalue(fi, n, val, owner) {
     switch ((((cptr.ld1uo((fi), $TValue_tt_))) & 63)) {
         case 38:
-        {
-            let f = ((((((cptr.ldPtr(((fi)))))))));
-            if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ld1uo(f, $CClosure_nupvalues))))))
-                return null;  /* 'n' not in [1, f->nupvalues] */
-            cptr.stPtr(val, cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue));
-            if (owner)
-                cptr.stPtr(owner, ((((f)))));
-            return __s_empty;
-        }
+            {
+                let f = ((((((cptr.ldPtr(((fi)))))))));
+                if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ld1uo(f, $CClosure_nupvalues))))))
+                    return null;  /* 'n' not in [1, f->nupvalues] */
+                cptr.stPtr(
+                    val,
+                    cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue)
+                );
+                if (owner)
+                    cptr.stPtr(owner, ((((f)))));
+                return __s_empty;
+            }
         case 6:
-        {
-            let f = ((((((cptr.ldPtr(((fi)))))))));
-            let name;
-            let p = cptr.ldPtro(f, $LClosure_p);
-            if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldI32o(p, $Proto_sizeupvalues))) >>> 0)))
-                return null;  /* 'n' not in [1, p->sizeupvalues] */
-            cptr.stPtr(
-                val,
-                cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v)
-            );
-            if (owner)
-                cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
-            name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, $sizeof_Upvaldesc);
-            return (cptr.eq(name, (null))) ? __s_no_name : (cptr.add((name), $TString_contents));
-        }
+            {
+                let f = ((((((cptr.ldPtr(((fi)))))))));
+                let name;
+                let p = cptr.ldPtro(f, $LClosure_p);
+                if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldI32o(p, $Proto_sizeupvalues))) >>> 0)))
+                    return null;  /* 'n' not in [1, p->sizeupvalues] */
+                cptr.stPtr(
+                    val,
+                    cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v)
+                );
+                if (owner)
+                    cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
+                name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, $sizeof_Upvaldesc);
+                return (cptr.eq(name, (null)))
+                        ? __s_no_name
+                        : (cptr.add((name), $TString_contents));
+            }
         default:
-        return null;  /* not a closure */
+            return null;  /* not a closure */
     }
 }
 
@@ -2650,23 +2651,23 @@ export function lua_upvalueid(L, fidx, n) {
     let fi = index2value(L, fidx);
     switch ((((cptr.ld1uo((fi), $TValue_tt_))) & 63)) {
         case 6:
-        {
-            return cptr.ldPtr(getupvalref(L, fidx, n, null));
-        }
+            {
+                return cptr.ldPtr(getupvalref(L, fidx, n, null));
+            }
         case 38:
-        {
-            let f = ((((((cptr.ldPtr(((fi)))))))));
-            if (1 <= n && n <= cptr.ld1uo(f, $CClosure_nupvalues))
-                return cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue);
-            /* else */
-        }  /* FALLTHROUGH */
+            {
+                let f = ((((((cptr.ldPtr(((fi)))))))));
+                if (1 <= n && n <= cptr.ld1uo(f, $CClosure_nupvalues))
+                    return cptr.add(cptr.add(f, $CClosure_upvalue), (n - 1) | 0, $sizeof_TValue);
+                /* else */
+            }  /* FALLTHROUGH */
         case 22:
-        return (null);  /* light C functions have no upvalues */
+            return (null);  /* light C functions have no upvalues */
         default:
-        {
-            (void L, (void 0));
-            return (null);
-        }
+            {
+                (void L, (void 0));
+                return (null);
+            }
     }
 }
 

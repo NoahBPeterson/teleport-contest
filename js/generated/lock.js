@@ -352,14 +352,14 @@ function picklock() {
         }
         switch ((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
-            pline(__s_this_doorway_has_no_door);
-            return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
+                pline(__s_this_doorway_has_no_door);
+                return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
             case NHM.D_ISOPEN:
-            You(__s_cannot_lock_an_open_door);
-            return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
+                You(__s_cannot_lock_an_open_door);
+                return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
             case NHM.D_BROKEN:
-            pline(__s_this_door_is_broken);
-            return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
+                pline(__s_this_door_is_broken);
+                return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
         }
     }
 
@@ -368,12 +368,14 @@ function picklock() {
         $instance_globals_x_xlock + $xlock_s_usedtime,
         cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1
     )) -
-        (1) >= 50 ||
+        (1) >=
+        50 ||
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                8192n) != 0n)) {
+                8192n) !=
+                0n)) {
         You(__s_give_up_your_attempt_at_s, lock_action());
         exercise(NHC.A_DEX, 1);  /* even if you don't succeed */
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
@@ -391,7 +393,8 @@ function picklock() {
             $obj_otrapped
         ) & 1) | 0
         : (((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) &
-            NHM.D_TRAPPED) != 0) &&
+            NHM.D_TRAPPED) !=
+            0) &&
             cptr.ld1so(gx, $instance_globals_x_xlock + $xlock_s_magic_key)) {
         cptr.stI32o(
             gx,
@@ -421,7 +424,9 @@ function picklock() {
                 alreadyunlocked = schar((!(((cptr.ldI32o(
                     cptr.ldPtro(gx, $instance_globals_x_xlock),
                     $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                         NHM.D_LOCKED)));
             } else {
                 cptr.stI32o(
@@ -495,7 +500,8 @@ function picklock() {
             (!(cptr.ldI32o(
                 cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box),
                 $obj_olocked
-            ) & 1)) >>> 0
+            ) &
+                1)) >>> 0
         );
         cptr.stI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_lknown, 1);
         if ((cptr.ldI32o(
@@ -595,13 +601,15 @@ function forcelock() {
         $instance_globals_x_xlock + $xlock_s_usedtime,
         cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) + 1
     )) -
-        (1) >= 50 ||
+        (1) >=
+        50 ||
             !uwep.v ||
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                8192n) != 0n)) {
+                8192n) !=
+                0n)) {
         You(__s_give_up_your_attempt_to_force_the_lock);
         if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime) >= 50)
             exercise(
@@ -717,36 +725,36 @@ export function autokey(opening) {
                 !is_quest_artifact(o)) {
             switch (cptr.ldI16o(o, $obj_otyp)) {
                 case NHC.SKELETON_KEY:
-                if (!akey)
-                    akey = o;
-                break;
+                    if (!akey)
+                        akey = o;
+                    break;
                 case NHC.LOCK_PICK:
-                if (!apick)
-                    apick = o;
-                break;
+                    if (!apick)
+                        apick = o;
+                    break;
                 case NHC.CREDIT_CARD:
-                if (!acard)
-                    acard = o;
-                break;
+                    if (!acard)
+                        acard = o;
+                    break;
                 default:
-                break;
+                    break;
             }
         } else {
             switch (cptr.ldI16o(o, $obj_otyp)) {
                 case NHC.SKELETON_KEY:
-                if (!key || is_magic_key(cptr.add(gy, $instance_globals_y_youmonst), o))
-                    key = o;
-                break;
+                    if (!key || is_magic_key(cptr.add(gy, $instance_globals_y_youmonst), o))
+                        key = o;
+                    break;
                 case NHC.LOCK_PICK:
-                if (!pick)
-                    pick = o;
-                break;
+                    if (!pick)
+                        pick = o;
+                    break;
                 case NHC.CREDIT_CARD:
-                if (!card)
-                    card = o;
-                break;
+                    if (!card)
+                        card = o;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
     }
@@ -799,7 +807,8 @@ export function pick_lock(pick, rx, ry, container) {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-                8192n) != 0n)) {
+            8192n) !=
+                0n)) {
             let what = (picktyp == NHC.LOCK_PICK) ? __s_pick : __s_key;
 
             if (picktyp == NHC.CREDIT_CARD)
@@ -831,7 +840,8 @@ export function pick_lock(pick, rx, ry, container) {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         You_cant(__s_hold_s_you_have_no_hands, doname(pick));
         return 0;
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -918,8 +928,8 @@ export function pick_lock(pick, rx, ry, container) {
                     verb = __s_pick;
 
                 if (autounlock &&
-                        ((cptr.ldI32o(flags, $flag_autounlock) &
-                            NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 &&
+                        ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) !=
+                            0 &&
                         could_untrap(0, 1) &&
                         (c = (cptr.ldI32o(otmp, $obj_tknown) & 1) | 0
                             ? ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 ? 121 : 110)
@@ -936,15 +946,16 @@ export function pick_lock(pick, rx, ry, container) {
                                 cptr.decay(ynqchars),
                                 113,
                                 1
-                            )) != 110) {
+                            )) !=
+                            110) {
                     if (c == 113)
                         return 0;  /* c == 'q' */
                     /* c == 'y' */
                     untrap(0, 0, 0, otmp);
                     return 1;  /* even if no trap found */
                 } else if (autounlock &&
-                        ((cptr.ldI32o(flags, $flag_autounlock) &
-                            NHM.AUTOUNLOCK_APPLY_KEY) >>> 0) != 0) {
+                        ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0) !=
+                            0) {
                     c = 113;
                     if (!cptr.eq(pick, dummypick)) {
                         void cptr.sprintf(cptr.decay(qbuf), __s_unlock_it_with_s, yname(pick));
@@ -992,28 +1003,26 @@ export function pick_lock(pick, rx, ry, container) {
                 }
                 switch (picktyp) {
                     case NHC.CREDIT_CARD:
-                    ch = ((acurr(NHC.A_DEX)) +
-                        Math.imul(
-                            20,
-                            (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
-                                NHC.PM_ROGUE)
-                        )) |
-                            0;
-                    break;
+                        ch = ((acurr(NHC.A_DEX)) +
+                                Math.imul(
+                                    20,
+                                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                                        NHC.PM_ROGUE)
+                                )) | 0;
+                        break;
                     case NHC.LOCK_PICK:
-                    ch = (Math.imul(4, (acurr(NHC.A_DEX))) +
-                        Math.imul(
-                            25,
-                            (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
-                                NHC.PM_ROGUE)
-                        )) |
-                            0;
-                    break;
+                        ch = (Math.imul(4, (acurr(NHC.A_DEX))) +
+                                Math.imul(
+                                    25,
+                                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                                        NHC.PM_ROGUE)
+                                )) | 0;
+                        break;
                     case NHC.SKELETON_KEY:
-                    ch = (75 + (acurr(NHC.A_DEX))) | 0;
-                    break;
+                        ch = (75 + (acurr(NHC.A_DEX))) | 0;
+                        break;
                     default:
-                    ch = 0;
+                        ch = 0;
                 }
                 if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
                     ch = (ch / 2) | 0;
@@ -1103,78 +1112,79 @@ export function pick_lock(pick, rx, ry, container) {
         }
         switch ((cptr.ldI32o(door, $rm_flags) & 31) | 0) {
             case NHM.D_NODOOR:
-            pline(__s_this_doorway_has_no_door);
-            return -1;
-            case NHM.D_ISOPEN:
-            You(__s_cannot_lock_an_open_door);
-            return -1;
-            case NHM.D_BROKEN:
-            pline(__s_this_door_is_broken);
-            return -1;
-            default:
-            if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 &&
-                    could_untrap(0, 0) &&
-                    (c = yn_function(
-                        __s_check_this_door_for_a_trap,
-                        cptr.decay(ynqchars),
-                        113,
-                        1
-                    )) != 110) {
-                if (c == 113)
-                    return 0;
-                /* c == 'y' */
-                untrap(0, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), null);
-                return 1;  /* even if no trap found */
-            }
-            /* credit cards are only good for unlocking */
-            if (picktyp == NHC.CREDIT_CARD &&
-                    !(((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED)) {
-                You_cant(__s_lock_a_door_with_a_credit_card);
+                pline(__s_this_doorway_has_no_door);
                 return -1;
-            }
+            case NHM.D_ISOPEN:
+                You(__s_cannot_lock_an_open_door);
+                return -1;
+            case NHM.D_BROKEN:
+                pline(__s_this_door_is_broken);
+                return -1;
+            default:
+                if (((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0) != 0 &&
+                        could_untrap(0, 0) &&
+                        (c = yn_function(
+                            __s_check_this_door_for_a_trap,
+                            cptr.decay(ynqchars),
+                            113,
+                            1
+                        )) !=
+                            110) {
+                    if (c == 113)
+                        return 0;
+                    /* c == 'y' */
+                    untrap(0, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), null);
+                    return 1;  /* even if no trap found */
+                }
+                /* credit cards are only good for unlocking */
+                if (picktyp == NHC.CREDIT_CARD &&
+                        !(((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED)) {
+                    You_cant(__s_lock_a_door_with_a_credit_card);
+                    return -1;
+                }
 
-            void cptr.sprintf(
-                cptr.decay(qbuf),
-                __s_s_it_s_s,
-                (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED)
-                    ? __s_unlock__2
-                    : __s_lock__2,
-                autounlock ? __s_with : __s_empty,
-                autounlock ? yname(pick) : __s_empty
-            );
-            c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1);
-            if (c != 121)
-                return 0;
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_s_it_s_s,
+                    (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED)
+                        ? __s_unlock__2
+                        : __s_lock__2,
+                    autounlock ? __s_with : __s_empty,
+                    autounlock ? yname(pick) : __s_empty
+                );
+                c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1);
+                if (c != 121)
+                    return 0;
 
-            /* note: for !autounlock, 'apply' already did touch check */
-            if (autounlock && !touch_artifact(pick, cptr.add(gy, $instance_globals_y_youmonst)))
-                return 1;
+                /* note: for !autounlock, 'apply' already did touch check */
+                if (autounlock && !touch_artifact(pick, cptr.add(gy, $instance_globals_y_youmonst)))
+                    return 1;
 
-            switch (picktyp) {
-                case NHC.CREDIT_CARD:
-                ch = (Math.imul(2, (acurr(NHC.A_DEX))) +
-                    Math.imul(
-                        20,
-                        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE)
-                    )) |
-                        0;
-                break;
-                case NHC.LOCK_PICK:
-                ch = (Math.imul(3, (acurr(NHC.A_DEX))) +
-                    Math.imul(
-                        30,
-                        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE)
-                    )) |
-                        0;
-                break;
-                case NHC.SKELETON_KEY:
-                ch = (70 + (acurr(NHC.A_DEX))) | 0;
-                break;
-                default:
-                ch = 0;
-            }
-            cptr.stPtro(gx, $instance_globals_x_xlock, door);
-            cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, null);
+                switch (picktyp) {
+                    case NHC.CREDIT_CARD:
+                        ch = (Math.imul(2, (acurr(NHC.A_DEX))) +
+                                Math.imul(
+                                    20,
+                                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                                        NHC.PM_ROGUE)
+                                )) | 0;
+                        break;
+                    case NHC.LOCK_PICK:
+                        ch = (Math.imul(3, (acurr(NHC.A_DEX))) +
+                                Math.imul(
+                                    30,
+                                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                                        NHC.PM_ROGUE)
+                                )) | 0;
+                        break;
+                    case NHC.SKELETON_KEY:
+                        ch = (70 + (acurr(NHC.A_DEX))) | 0;
+                        break;
+                    default:
+                        ch = 0;
+                }
+                cptr.stPtro(gx, $instance_globals_x_xlock, door);
+                cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, null);
         }
     }
     cptr.st1o(svc, $context_info_move, 0);
@@ -1385,7 +1395,8 @@ export function doopen_indir(x, y) {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         You_cant(__s_open_anything_you_have_no_hands);
         return NHM.ECMD_OK;
     }
@@ -1467,18 +1478,18 @@ export function doopen_indir(x, y) {
 
         switch ((cptr.ldI32o(door, $rm_flags) & 31) | 0) {
             case NHM.D_BROKEN:
-            mesg = __s_is_broken;
-            break;
+                mesg = __s_is_broken;
+                break;
             case NHM.D_NODOOR:
-            mesg = __s_way_has_no_door;
-            break;
+                mesg = __s_way_has_no_door;
+                break;
             case NHM.D_ISOPEN:
-            mesg = __s_is_already_open;
-            break;
+                mesg = __s_is_already_open;
+                break;
             default:
-            mesg = __s_is_locked;
-            locked = 1;
-            break;
+                mesg = __s_is_locked;
+                locked = 1;
+                break;
         }
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
         pline(__s_this_door_s, mesg);
@@ -1575,14 +1586,8 @@ function obstructed(x, y, quietly) {
             map_invisible(x, y);
         return 1;
     }
-    if ((cptr.ldPtro3(
-        svl,
-        x,
-        168,
-        y,
-        8,
-        $instance_globals_saved_l_level + $dlevel_t_objects
-    ) !== null)) {
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !==
+            null)) {
         if (!quietly)
             pline(__s_s_s_in_the_way, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something));
         return 1;
@@ -1603,7 +1608,8 @@ export function doclose() {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         You_cant(__s_close_anything_you_have_no_hands);
         return NHM.ECMD_OK;
     }
@@ -1717,39 +1723,39 @@ export function boxlock(obj, otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.WAN_LOCKING:
         case NHC.SPE_WIZARD_LOCK:
-        if (!(cptr.ldI32o(obj, $obj_olocked) & 1)) {
-            ;
-            pline(__s_klunk);
-            cptr.stI32o(obj, $obj_olocked, 1);
-            cptr.stI32o(obj, $obj_obroken, 0);
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
-                cptr.stI32o(obj, $obj_lknown, 1);
-            else
-                cptr.stI32o(obj, $obj_lknown, 0);
-            res = 1;
-        }  /* else already closed and locked */
-        break;
+            if (!(cptr.ldI32o(obj, $obj_olocked) & 1)) {
+                ;
+                pline(__s_klunk);
+                cptr.stI32o(obj, $obj_olocked, 1);
+                cptr.stI32o(obj, $obj_obroken, 0);
+                if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
+                    cptr.stI32o(obj, $obj_lknown, 1);
+                else
+                    cptr.stI32o(obj, $obj_lknown, 0);
+                res = 1;
+            }  /* else already closed and locked */
+            break;
         case NHC.WAN_OPENING:
         case NHC.SPE_KNOCK:
-        if ((cptr.ldI32o(obj, $obj_olocked) & 1)) {
-            ;
-            pline(__s_klick);
-            cptr.stI32o(obj, $obj_olocked, 0);
-            res = 1;
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
-                cptr.stI32o(obj, $obj_lknown, 1);
-            else
-                cptr.stI32o(obj, $obj_lknown, 0);
-        } else
-            cptr.stI32o(obj, $obj_obroken, 0);
-        break;
+            if ((cptr.ldI32o(obj, $obj_olocked) & 1)) {
+                ;
+                pline(__s_klick);
+                cptr.stI32o(obj, $obj_olocked, 0);
+                res = 1;
+                if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
+                    cptr.stI32o(obj, $obj_lknown, 1);
+                else
+                    cptr.stI32o(obj, $obj_lknown, 0);
+            } else
+                cptr.stI32o(obj, $obj_obroken, 0);
+            break;
         case NHC.WAN_POLYMORPH:
         case NHC.SPE_POLYMORPH:
-        /* maybe start unlocking chest, get interrupted, then zap it;
-           we must avoid any attempt to resume unlocking it */
-        if (cptr.eq(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), obj))
-            reset_pick();
-        break;
+            /* maybe start unlocking chest, get interrupted, then zap it;
+               we must avoid any attempt to resume unlocking it */
+            if (cptr.eq(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), obj))
+                reset_pick();
+            break;
     }
     return res;
 }
@@ -1785,211 +1791,216 @@ export function doorlock(otmp, x, y) {
             case NHC.SPE_KNOCK:
             case NHC.WAN_STRIKING:
             case NHC.SPE_FORCE_BOLT:
-            cptr.st1o(door, $rm_typ, NHC.DOOR);
-            cptr.stI32o(
-                door,
-                $rm_flags,
-                (NHM.D_CLOSED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0
-            );
-            newsym(x, y);
-            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-                    NHM.IN_SIGHT) != 0))
-                pline(__s_a_door_appears_in_the_wall);
-            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_OPENING ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_KNOCK)
-                return 1;
-            break;  /* striking: continue door handling below */
+                cptr.st1o(door, $rm_typ, NHC.DOOR);
+                cptr.stI32o(
+                    door,
+                    $rm_flags,
+                    (NHM.D_CLOSED |
+                        (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0
+                );
+                newsym(x, y);
+                if (((cptr.ld1uo(
+                    cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                    x
+                ) &
+                        NHM.IN_SIGHT) != 0))
+                    pline(__s_a_door_appears_in_the_wall);
+                if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_OPENING ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_KNOCK)
+                    return 1;
+                break;  /* striking: continue door handling below */
             case NHC.WAN_LOCKING:
             case NHC.SPE_WIZARD_LOCK:
             default:
-            return 0;
+                return 0;
         }
     }
 
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.WAN_LOCKING:
         case NHC.SPE_WIZARD_LOCK:
-        if ((((cptr.ldI16o(
-            (cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
-            )),
-            $d_level_dlevel
-        ) ||
-            cptr.ldI16((cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
-            )))) &&
-                on_level(
-                    cptr.add(u, $you_uz),
-                    cptr.add(
-                        svd,
-                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
-                    )
-                )))) {
-            let vis = schar(((cptr.ld1uo(
-                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
-                x
-            ) &
-                    NHM.IN_SIGHT) != 0));
+            if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                        )
+                    )))) {
+                let vis = schar(((cptr.ld1uo(
+                    cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                    x
+                ) &
+                        NHM.IN_SIGHT) != 0));
 
-            /* Can't have real locking in Rogue, so just hide doorway */
-            if (vis) {
-                pline(__s_s_springs_up_in_the_older_more, dustcloud);
-            } else {
-                ;
-                You_hear(__s_a_swoosh);
-            }
-            if (obstructed(x, y, mysterywand)) {
+                /* Can't have real locking in Rogue, so just hide doorway */
+                if (vis) {
+                    pline(__s_s_springs_up_in_the_older_more, dustcloud);
+                } else {
+                    ;
+                    You_hear(__s_a_swoosh);
+                }
+                if (obstructed(x, y, mysterywand)) {
+                    if (vis)
+                        pline_The(__s_cloud_s, quickly_dissipates);
+                    return 0;
+                }
+                block_point(x, y);
+                cptr.st1o(door, $rm_typ, NHC.SDOOR), cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
                 if (vis)
-                    pline_The(__s_cloud_s, quickly_dissipates);
+                    pline_The(__s_doorway_vanishes);
+                newsym(x, y);
+                return 1;
+            }
+            if (obstructed(x, y, mysterywand))
+                return 0;
+            /* Don't allow doors to close over traps.  This is for pits */
+            /* & trap doors, but is it ever OK for anything else? */
+            if (t_at(x, y)) {
+                /* maketrap() clears doormask, so it should be NODOOR */
+                pline(__s_s_springs_up_in_the_doorway_but_s, dustcloud, quickly_dissipates);
                 return 0;
             }
-            block_point(x, y);
-            cptr.st1o(door, $rm_typ, NHC.SDOOR), cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
-            if (vis)
-                pline_The(__s_doorway_vanishes);
-            newsym(x, y);
-            return 1;
-        }
-        if (obstructed(x, y, mysterywand))
-            return 0;
-        /* Don't allow doors to close over traps.  This is for pits */
-        /* & trap doors, but is it ever OK for anything else? */
-        if (t_at(x, y)) {
-            /* maketrap() clears doormask, so it should be NODOOR */
-            pline(__s_s_springs_up_in_the_doorway_but_s, dustcloud, quickly_dissipates);
-            return 0;
-        }
 
-        switch (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & -17) {
-            case NHM.D_CLOSED:
-            msg = __s_the_door_locks;
-            break;
-            case NHM.D_ISOPEN:
-            msg = __s_the_door_swings_shut_and_locks;
-            break;
-            case NHM.D_BROKEN:
-            msg = __s_the_broken_door_reassembles_and_locks;
-            break;
-            case NHM.D_NODOOR:
-            msg = __s_a_cloud_of_dust_springs_up_and;
-            break;
-            default:
-            res = 0;
-            break;
-        }
-        block_point(x, y);
-        cptr.stI32o(
-            door,
-            $rm_flags,
-            (NHM.D_LOCKED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0
-        );
-        newsym(x, y);
-        break;
-        case NHC.WAN_OPENING:
-        case NHC.SPE_KNOCK:
-        if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
-            msg = __s_the_door_unlocks;
+            switch (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & -17) {
+                case NHM.D_CLOSED:
+                    msg = __s_the_door_locks;
+                    break;
+                case NHM.D_ISOPEN:
+                    msg = __s_the_door_swings_shut_and_locks;
+                    break;
+                case NHM.D_BROKEN:
+                    msg = __s_the_broken_door_reassembles_and_locks;
+                    break;
+                case NHM.D_NODOOR:
+                    msg = __s_a_cloud_of_dust_springs_up_and;
+                    break;
+                default:
+                    res = 0;
+                    break;
+            }
+            block_point(x, y);
             cptr.stI32o(
                 door,
                 $rm_flags,
-                (NHM.D_CLOSED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0
+                (NHM.D_LOCKED | (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0
             );
-        } else
-            res = 0;
-        break;
+            newsym(x, y);
+            break;
+        case NHC.WAN_OPENING:
+        case NHC.SPE_KNOCK:
+            if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
+                msg = __s_the_door_unlocks;
+                cptr.stI32o(
+                    door,
+                    $rm_flags,
+                    (NHM.D_CLOSED |
+                        (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED)) >>> 0
+                );
+            } else
+                res = 0;
+            break;
         case NHC.WAN_STRIKING:
         case NHC.SPE_FORCE_BOLT:
-        if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & 12) {
-            /* sawit: closed door location is more visible than open */
-            let sawit;
-            let seeit;
+            if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & 12) {
+                /* sawit: closed door location is more visible than open */
+                let sawit;
+                let seeit;
 
-            if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
-                let mtmp = (cptr.ldPtro3(
-                    svl,
-                    x,
-                    168,
-                    y,
-                    8,
-                    $instance_globals_saved_l_level + $dlevel_t_monsters
-                ));
+                if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
+                    let mtmp = (cptr.ldPtro3(
+                        svl,
+                        x,
+                        168,
+                        y,
+                        8,
+                        $instance_globals_saved_l_level + $dlevel_t_monsters
+                    ));
 
-                sawit = schar((mtmp
-                        ? canseemon(mtmp)
-                        : ((cptr.ld1uo(
-                            cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
-                            x
-                        ) &
-                            NHM.IN_SIGHT) != 0)));
-                cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
-                unblock_point(x, y);
-                newsym(x, y);
-                seeit = schar((mtmp
-                        ? canseemon(mtmp)
-                        : ((cptr.ld1uo(
-                            cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
-                            x
-                        ) &
-                            NHM.IN_SIGHT) != 0)));
-                if (mtmp) {
-                    void mb_trapped(mtmp, schar((sawit || seeit ? 1 : 0)));
-                } else {
-                    /* for mtmp, mb_trapped() does is own wake_nearto() */
-                    loudness = 40;
-                    if (cptr.ld1so(flags, $flag_verbose)) {
-                        ;
-                        if ((sawit || seeit) &&
-                                !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
-                                    (unconscious() || is_fainted()))) {
-                            pline(__s_kaboom_you_see_a_door_explode);
-                        } else if (!Deaf()) {
+                    sawit = schar((mtmp
+                            ? canseemon(mtmp)
+                            : ((cptr.ld1uo(
+                                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                                x
+                            ) &
+                                NHM.IN_SIGHT) != 0)));
+                    cptr.stI32o(door, $rm_flags, NHM.D_NODOOR);
+                    unblock_point(x, y);
+                    newsym(x, y);
+                    seeit = schar((mtmp
+                            ? canseemon(mtmp)
+                            : ((cptr.ld1uo(
+                                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                                x
+                            ) &
+                                NHM.IN_SIGHT) != 0)));
+                    if (mtmp) {
+                        void mb_trapped(mtmp, schar((sawit || seeit ? 1 : 0)));
+                    } else {
+                        /* for mtmp, mb_trapped() does is own wake_nearto() */
+                        loudness = 40;
+                        if (cptr.ld1so(flags, $flag_verbose)) {
                             ;
-                            You_hear(
-                                __s_a_s_explosion,
-                                (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 49)
-                                    ? __s_distant
-                                    : __s_nearby
-                            );
+                            if ((sawit || seeit) &&
+                                    !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
+                                        (unconscious() || is_fainted()))) {
+                                pline(__s_kaboom_you_see_a_door_explode);
+                            } else if (!Deaf()) {
+                                ;
+                                You_hear(
+                                    __s_a_s_explosion,
+                                    (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 49)
+                                        ? __s_distant
+                                        : __s_nearby
+                                );
+                            }
                         }
                     }
+                    break;
                 }
-                break;
-            }
-            sawit = schar(((cptr.ld1uo(
-                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
-                x
-            ) &
-                    NHM.IN_SIGHT) != 0));
-            cptr.stI32o(door, $rm_flags, NHM.D_BROKEN);
-            recalc_block_point(x, y);
-            seeit = schar(((cptr.ld1uo(
-                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
-                x
-            ) &
-                    NHM.IN_SIGHT) != 0));
-            newsym(x, y);
-            if (cptr.ld1so(flags, $flag_verbose)) {
-                if ((sawit || seeit) &&
-                        !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
-                            (unconscious() || is_fainted()))) {
-                    pline_The(__s_door_crashes_open);
-                } else if (!Deaf()) {
-                    ;
-                    You_hear(__s_a_crashing_sound);
+                sawit = schar(((cptr.ld1uo(
+                    cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                    x
+                ) &
+                        NHM.IN_SIGHT) != 0));
+                cptr.stI32o(door, $rm_flags, NHM.D_BROKEN);
+                recalc_block_point(x, y);
+                seeit = schar(((cptr.ld1uo(
+                    cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                    x
+                ) &
+                        NHM.IN_SIGHT) != 0));
+                newsym(x, y);
+                if (cptr.ld1so(flags, $flag_verbose)) {
+                    if ((sawit || seeit) &&
+                            !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
+                                (unconscious() || is_fainted()))) {
+                        pline_The(__s_door_crashes_open);
+                    } else if (!Deaf()) {
+                        ;
+                        You_hear(__s_a_crashing_sound);
+                    }
                 }
-            }
-            /* force vision recalc before printing more messages */
-            if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
-                vision_recalc(0);
-            loudness = 20;
-        } else
-            res = 0;
-        break;
+                /* force vision recalc before printing more messages */
+                if (cptr.ld1so(gv, $instance_globals_v_vision_full_recalc))
+                    vision_recalc(0);
+                loudness = 20;
+            } else
+                res = 0;
+            break;
         default:
-        impossible(__s_magic_d_attempted_on_door, cptr.ldI16o(otmp, $obj_otyp));
-        break;
+            impossible(__s_magic_d_attempted_on_door, cptr.ldI16o(otmp, $obj_otyp));
+            break;
     }
     if (msg &&
             ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
@@ -2023,7 +2034,8 @@ function chest_shatter_msg(otmp) {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-            1024n) != 0n) ||
+            1024n) !=
+            0n) ||
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
@@ -2045,28 +2057,30 @@ function chest_shatter_msg(otmp) {
         cptr.ldI16o(otmp, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) {
+    ) &
+        31) |
+            0) {
         case NHC.PAPER:
-        disposition = __s_is_torn_to_shreds;
-        break;
+            disposition = __s_is_torn_to_shreds;
+            break;
         case NHC.WAX:
-        disposition = __s_is_crushed;
-        break;
+            disposition = __s_is_crushed;
+            break;
         case NHC.VEGGY:
-        disposition = __s_is_pulped;
-        break;
+            disposition = __s_is_pulped;
+            break;
         case NHC.FLESH:
-        disposition = __s_is_mashed;
-        break;
+            disposition = __s_is_mashed;
+            break;
         case NHC.GLASS:
-        disposition = __s_shatters;
-        break;
+            disposition = __s_shatters;
+            break;
         case NHC.WOOD:
-        disposition = __s_splinters_to_fragments;
-        break;
+            disposition = __s_splinters_to_fragments;
+            break;
         default:
-        disposition = __s_is_destroyed;
-        break;
+            disposition = __s_is_destroyed;
+            break;
     }
     pline(__s_s_s, An(thing), disposition);
 }

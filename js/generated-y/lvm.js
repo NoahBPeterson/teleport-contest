@@ -286,21 +286,24 @@ function* forprep(L, ra) {
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((plimit)), $TValue_tt_)) == 19)
                 ? (cptr.stF64((limit), (cptr.ldF64(((plimit))))), 1)
-                : (yield* luaV_tonumber_(plimit, limit)))) != 0)),
+                : (yield* luaV_tonumber_(plimit, limit)))) !=
+                0)),
             0n
         )))
             (yield* luaG_forerror(L, plimit, __s_limit));
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((pstep)), $TValue_tt_)) == 19)
                 ? (cptr.stF64((step), (cptr.ldF64(((pstep))))), 1)
-                : (yield* luaV_tonumber_(pstep, step)))) != 0)),
+                : (yield* luaV_tonumber_(pstep, step)))) !=
+                0)),
             0n
         )))
             (yield* luaG_forerror(L, pstep, __s_step));
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((pinit)), $TValue_tt_)) == 19)
                 ? (cptr.stF64((init), (cptr.ldF64(((pinit))))), 1)
-                : (yield* luaV_tonumber_(pinit, init)))) != 0)),
+                : (yield* luaV_tonumber_(pinit, init)))) !=
+                0)),
             0n
         )))
             (yield* luaG_forerror(L, pinit, __s_initial_value));
@@ -830,57 +833,38 @@ export function* luaV_equalobj(L, t1, t2) {
         case 0:
         case 1:
         case 17:
-        return 1;
+            return 1;
         case 3:
-        return ((cptr.ldI64(((t1)))) == (cptr.ldI64(((t2)))));
+            return ((cptr.ldI64(((t1)))) == (cptr.ldI64(((t2)))));
         case 19:
-        return (((cptr.ldF64(((t1))))) == ((cptr.ldF64(((t2))))));
+            return (((cptr.ldF64(((t1))))) == ((cptr.ldF64(((t2))))));
         case 2:
-        return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
+            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
         case 22:
-        return (cptr.ldPtr(((t1)))) === (cptr.ldPtr(((t2))));
+            return (cptr.ldPtr(((t1)))) === (cptr.ldPtr(((t2))));
         case 4:
-        return (cptr.eq((((((((cptr.ldPtr(((t1)))))))))), (((((((cptr.ldPtr(((t2))))))))))));
+            return (cptr.eq((((((((cptr.ldPtr(((t1)))))))))), (((((((cptr.ldPtr(((t2))))))))))));
         case 20:
-        return luaS_eqlngstr(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2))))))))));
+            return luaS_eqlngstr(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2))))))))));
         case 7:
-        {
-            if (cptr.eq(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2)))))))))))
-                return 1;
-            else if (cptr.eq(L, (null)))
-                return 0;
-            tm = (cptr.eq((cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Udata_metatable)), (null))
-                    ? null
-                    : (((cptr.ld1uo(
-                        (cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Udata_metatable)),
-                        $Table_flags
-                    ) &
-                        ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0)
-                        ? null
-                        : luaT_gettm(
-                            cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Udata_metatable),
-                            NHC.TM_EQ,
-                            cptr.ldPtro2(
-                                ((cptr.ldPtro(L, $lua_State_l_G))),
-                                NHC.TM_EQ,
-                                8,
-                                $global_State_tmname
-                            )
-                        )));
-            if (cptr.eq(tm, (null)))
+            {
+                if (cptr.eq(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2)))))))))))
+                    return 1;
+                else if (cptr.eq(L, (null)))
+                    return 0;
                 tm = (cptr.eq(
-                    (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Udata_metatable)),
+                    (cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Udata_metatable)),
                     (null)
                 )
                         ? null
                         : (((cptr.ld1uo(
-                            (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Udata_metatable)),
+                            (cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Udata_metatable)),
                             $Table_flags
                         ) &
                             ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0)
                             ? null
                             : luaT_gettm(
-                                cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Udata_metatable),
+                                cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Udata_metatable),
                                 NHC.TM_EQ,
                                 cptr.ldPtro2(
                                     ((cptr.ldPtro(L, $lua_State_l_G))),
@@ -889,46 +873,49 @@ export function* luaV_equalobj(L, t1, t2) {
                                     $global_State_tmname
                                 )
                             )));
-            break;  /* will try TM */
-        }
+                if (cptr.eq(tm, (null)))
+                    tm = (cptr.eq(
+                        (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Udata_metatable)),
+                        (null)
+                    )
+                            ? null
+                            : (((cptr.ld1uo(
+                                (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Udata_metatable)),
+                                $Table_flags
+                            ) &
+                                ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0)
+                                ? null
+                                : luaT_gettm(
+                                    cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Udata_metatable),
+                                    NHC.TM_EQ,
+                                    cptr.ldPtro2(
+                                        ((cptr.ldPtro(L, $lua_State_l_G))),
+                                        NHC.TM_EQ,
+                                        8,
+                                        $global_State_tmname
+                                    )
+                                )));
+                break;  /* will try TM */
+            }
         case 5:
-        {
-            if (cptr.eq(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2)))))))))))
-                return 1;
-            else if (cptr.eq(L, (null)))
-                return 0;
-            tm = (cptr.eq((cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Table_metatable)), (null))
-                    ? null
-                    : (((cptr.ld1uo(
-                        (cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Table_metatable)),
-                        $Table_flags
-                    ) &
-                        ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0)
-                        ? null
-                        : luaT_gettm(
-                            cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Table_metatable),
-                            NHC.TM_EQ,
-                            cptr.ldPtro2(
-                                ((cptr.ldPtro(L, $lua_State_l_G))),
-                                NHC.TM_EQ,
-                                8,
-                                $global_State_tmname
-                            )
-                        )));
-            if (cptr.eq(tm, (null)))
+            {
+                if (cptr.eq(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2)))))))))))
+                    return 1;
+                else if (cptr.eq(L, (null)))
+                    return 0;
                 tm = (cptr.eq(
-                    (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Table_metatable)),
+                    (cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Table_metatable)),
                     (null)
                 )
                         ? null
                         : (((cptr.ld1uo(
-                            (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Table_metatable)),
+                            (cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Table_metatable)),
                             $Table_flags
                         ) &
                             ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0)
                             ? null
                             : luaT_gettm(
-                                cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Table_metatable),
+                                cptr.ldPtro(((((((cptr.ldPtr(((t1))))))))), $Table_metatable),
                                 NHC.TM_EQ,
                                 cptr.ldPtro2(
                                     ((cptr.ldPtro(L, $lua_State_l_G))),
@@ -937,20 +924,40 @@ export function* luaV_equalobj(L, t1, t2) {
                                     $global_State_tmname
                                 )
                             )));
-            break;  /* will try TM */
-        }
+                if (cptr.eq(tm, (null)))
+                    tm = (cptr.eq(
+                        (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Table_metatable)),
+                        (null)
+                    )
+                            ? null
+                            : (((cptr.ld1uo(
+                                (cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Table_metatable)),
+                                $Table_flags
+                            ) &
+                                ((1 << (NHC.TM_EQ)) >>> 0)) >>> 0)
+                                ? null
+                                : luaT_gettm(
+                                    cptr.ldPtro(((((((cptr.ldPtr(((t2))))))))), $Table_metatable),
+                                    NHC.TM_EQ,
+                                    cptr.ldPtro2(
+                                        ((cptr.ldPtro(L, $lua_State_l_G))),
+                                        NHC.TM_EQ,
+                                        8,
+                                        $global_State_tmname
+                                    )
+                                )));
+                break;  /* will try TM */
+            }
         default:
-        return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
+            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
     }
     if (cptr.eq(tm, (null)))
         return 0;  /* objects are different */
     else {
         (yield* luaT_callTMres(L, tm, t1, t2, cptr.ldPtro(L, $lua_State_top)));  /* call TM */
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(
-                    ((((cptr.ldPtro(L, $lua_State_top))))),
-                    $TValue_tt_
-                ))) & 15)) == 0));
+                (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) &
+                    15)) == 0));
     }
 }
 
@@ -1003,7 +1010,8 @@ export function* luaV_concat(L, total) {
                 cptr.ld1uo(
                     ((((((cptr.ldPtr(((((cptr.add(top, -(2), 16)))))))))))),
                     $TString_shrlen
-                ) == 0)) {
+                ) ==
+                    0)) {
             {
                 let io1 = (((cptr.add(top, -(2), 16))));  /* result is second op. */
                 let io2 = (((cptr.add(top, -(1), 16))));
@@ -1035,11 +1043,15 @@ export function* luaV_concat(L, total) {
                     ((((((cptr.ld1uo(
                         ((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))),
                         $TValue_tt_
-                    ))) & 15)) == 4) ||
+                    ))) &
+                        15)) ==
+                        4) ||
                         ((((((cptr.ld1uo(
                             ((((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))),
                             $TValue_tt_
-                        ))) & 15)) == 3) &&
+                        ))) &
+                            15)) ==
+                            3) &&
                             (
                                 (yield* luaO_tostring(L, ((cptr.add(cptr.add(top, -(n), 16), -(1), 16))))),
                                 1
@@ -1105,69 +1117,69 @@ export function* luaV_objlen(L, ra, rb) {
     let tm;
     switch ((((cptr.ld1uo((rb), $TValue_tt_))) & 63)) {
         case 5:
-        {
-            let h = ((((((cptr.ldPtr(((rb)))))))));
-            tm = (cptr.eq((cptr.ldPtro(h, $Table_metatable)), (null))
-                    ? null
-                    : (((cptr.ld1uo((cptr.ldPtro(h, $Table_metatable)), $Table_flags) &
-                        ((1 << (NHC.TM_LEN)) >>> 0)) >>> 0)
+            {
+                let h = ((((((cptr.ldPtr(((rb)))))))));
+                tm = (cptr.eq((cptr.ldPtro(h, $Table_metatable)), (null))
                         ? null
-                        : luaT_gettm(
-                            cptr.ldPtro(h, $Table_metatable),
-                            NHC.TM_LEN,
-                            cptr.ldPtro2(
-                                ((cptr.ldPtro(L, $lua_State_l_G))),
+                        : (((cptr.ld1uo((cptr.ldPtro(h, $Table_metatable)), $Table_flags) &
+                            ((1 << (NHC.TM_LEN)) >>> 0)) >>> 0)
+                            ? null
+                            : luaT_gettm(
+                                cptr.ldPtro(h, $Table_metatable),
                                 NHC.TM_LEN,
-                                8,
-                                $global_State_tmname
-                            )
-                        )));
-            if (tm)
-                break;  /* metamethod? break switch to call it */
-            {
-                let io = (((ra)));  /* else primitive len */
-                cptr.stI64(((io)), BigInt.asIntN(64, (luaH_getn(h))));
-                (cptr.st1o((io), $TValue_tt_, 3));
+                                cptr.ldPtro2(
+                                    ((cptr.ldPtro(L, $lua_State_l_G))),
+                                    NHC.TM_LEN,
+                                    8,
+                                    $global_State_tmname
+                                )
+                            )));
+                if (tm)
+                    break;  /* metamethod? break switch to call it */
+                {
+                    let io = (((ra)));  /* else primitive len */
+                    cptr.stI64(((io)), BigInt.asIntN(64, (luaH_getn(h))));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+                return;
             }
-            ;
-            return;
-        }
         case 4:
-        {
             {
-                let io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    BigInt((cptr.ld1uo(((((((cptr.ldPtr(((rb))))))))), $TString_shrlen)) >>> 0)
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+                {
+                    let io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        BigInt((cptr.ld1uo(((((((cptr.ldPtr(((rb))))))))), $TString_shrlen)) >>> 0)
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+                return;
             }
-            ;
-            return;
-        }
         case 20:
-        {
             {
-                let io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    BigInt.asIntN(64, (cptr.ldU64o(((((((cptr.ldPtr(((rb))))))))), $TString_u)))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+                {
+                    let io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        BigInt.asIntN(64, (cptr.ldU64o(((((((cptr.ldPtr(((rb))))))))), $TString_u)))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+                return;
             }
-            ;
-            return;
-        }
         default:
-        {
-            tm = luaT_gettmbyobj(L, rb, NHC.TM_LEN);
-            if ((__builtin_expect(
-                BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)),
-                0n
-            )))
-                (yield* luaG_typeerror(L, rb, __s_get_length_of));
-            break;
-        }
+            {
+                tm = luaT_gettmbyobj(L, rb, NHC.TM_LEN);
+                if ((__builtin_expect(
+                    BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)),
+                    0n
+                )))
+                    (yield* luaG_typeerror(L, rb, __s_get_length_of));
+                break;
+            }
     }
     (yield* luaT_callTMres(L, tm, rb, rb, ra));
 }
@@ -1335,27 +1347,30 @@ export function* luaV_finishOp(L) {
         case NHC.OP_MMBIN:
         case NHC.OP_MMBINI:
         case NHC.OP_MMBINK:
-        {
             {
-                let io1 = (((cptr.add(
-                    base,
-                    (((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(2), 4)))) >>> 7) &
-                        (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                    16
-                ))));
-                let io2 = (((cptr.predec(
-                    () => cptr.ldPtro(L, $lua_State_top),
-                    (v) => { cptr.stPtro(L, $lua_State_top, v); },
-                    16
-                ))));
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                {
+                    let io1 = (((cptr.add(
+                        base,
+                        (((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(2), 4)))) >>>
+                            7) &
+                            (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            0)) |
+                            0)),
+                        16
+                    ))));
+                    let io2 = (((cptr.predec(
+                        () => cptr.ldPtro(L, $lua_State_top),
+                        (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                        16
+                    ))));
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+                break;
             }
-            ;
-            break;
-        }
         case NHC.OP_UNM:
         case NHC.OP_BNOT:
         case NHC.OP_LEN:
@@ -1364,26 +1379,26 @@ export function* luaV_finishOp(L) {
         case NHC.OP_GETI:
         case NHC.OP_GETFIELD:
         case NHC.OP_SELF:
-        {
             {
-                let io1 = (((cptr.add(
-                    base,
-                    (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                    16
-                ))));
-                let io2 = (((cptr.predec(
-                    () => cptr.ldPtro(L, $lua_State_top),
-                    (v) => { cptr.stPtro(L, $lua_State_top, v); },
-                    16
-                ))));
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                {
+                    let io1 = (((cptr.add(
+                        base,
+                        (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                        16
+                    ))));
+                    let io2 = (((cptr.predec(
+                        () => cptr.ldPtro(L, $lua_State_top),
+                        (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                        16
+                    ))));
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+                break;
             }
-            ;
-            break;
-        }
         case NHC.OP_LT:
         case NHC.OP_LE:
         case NHC.OP_LTI:
@@ -1391,84 +1406,87 @@ export function* luaV_finishOp(L) {
         case NHC.OP_GTI:
         case NHC.OP_GEI:
         case NHC.OP_EQ:
-        {
-            let res = !(((cptr.ld1uo(
-                ((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))),
-                $TValue_tt_
-            )) == 1) ||
-                    (((((cptr.ld1uo(
-                        ((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))),
-                        $TValue_tt_
-                    ))) & 15)) == 0));
-            cptr.postdec(
-                () => cptr.ldPtro(L, $lua_State_top),
-                (v) => { cptr.stPtro(L, $lua_State_top, v); },
-                16
-            );
-            (void 0);
-            if (res !=
-                    ((((((((inst) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-                cptr.postinc(
+            {
+                let res = !(((cptr.ld1uo(
+                    ((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))),
+                    $TValue_tt_
+                )) ==
+                    1) ||
+                        (((((cptr.ld1uo(
+                            ((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))),
+                            $TValue_tt_
+                        ))) &
+                            15)) == 0));
+                cptr.postdec(
+                    () => cptr.ldPtro(L, $lua_State_top),
+                    (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                    16
+                );
+                (void 0);
+                if (res !=
+                        ((((((((inst) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>>
+                            0)) | 0))))
+                    cptr.postinc(
+                        () => cptr.ldPtro(ci, $CallInfo_u),
+                        (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
+                        4
+                    );  /* skip jump instruction */
+                break;
+            }
+        case NHC.OP_CONCAT:
+            {
+                let top = cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16);  /* top when 'luaT_tryconcatTM' was called */
+                let a = (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));  /* first element to concatenate */
+                let total = (Number(BigInt.asIntN(
+                    32,
+                    ((cptr.diff(cptr.add(top, -(1), 16), (cptr.add(base, a, 16))) / 16n))
+                )));  /* yet to concatenate */
+                {
+                    let io1 = (((cptr.add(top, -(2), 16))));  /* put TM result in proper position */
+                    let io2 = (((top)));
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+                cptr.stPtro(L, $lua_State_top, cptr.add(top, -(1), 16));  /* top is one after last element (at top-2) */
+                (yield* luaV_concat(L, total));  /* concat them (may yield again) */
+                break;
+            }
+        case NHC.OP_CLOSE:
+            {
+                cptr.postdec(
                     () => cptr.ldPtro(ci, $CallInfo_u),
                     (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
                     4
-                );  /* skip jump instruction */
-            break;
-        }
-        case NHC.OP_CONCAT:
-        {
-            let top = cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16);  /* top when 'luaT_tryconcatTM' was called */
-            let a = (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));  /* first element to concatenate */
-            let total = (Number(BigInt.asIntN(
-                32,
-                ((cptr.diff(cptr.add(top, -(1), 16), (cptr.add(base, a, 16))) / 16n))
-            )));  /* yet to concatenate */
-            {
-                let io1 = (((cptr.add(top, -(2), 16))));  /* put TM result in proper position */
-                let io2 = (((top)));
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                );  /* repeat instruction to close other vars. */
+                break;
             }
-            ;
-            cptr.stPtro(L, $lua_State_top, cptr.add(top, -(1), 16));  /* top is one after last element (at top-2) */
-            (yield* luaV_concat(L, total));  /* concat them (may yield again) */
-            break;
-        }
-        case NHC.OP_CLOSE:
-        {
-            cptr.postdec(
-                () => cptr.ldPtro(ci, $CallInfo_u),
-                (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
-                4
-            );  /* repeat instruction to close other vars. */
-            break;
-        }
         case NHC.OP_RETURN:
-        {
-            let ra = cptr.add(
-                base,
-                (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                16
-            );
-            /* adjust top to signal correct number of returns, in case the
-               return is "up to top" ('isIT') */
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, cptr.ldI32o(ci, $CallInfo_u2), 16));
-            /* repeat instruction to close other vars. and complete the return */
-            cptr.postdec(
-                () => cptr.ldPtro(ci, $CallInfo_u),
-                (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
-                4
-            );
-            break;
-        }
+            {
+                let ra = cptr.add(
+                    base,
+                    (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    16
+                );
+                /* adjust top to signal correct number of returns, in case the
+                   return is "up to top" ('isIT') */
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, cptr.ldI32o(ci, $CallInfo_u2), 16));
+                /* repeat instruction to close other vars. and complete the return */
+                cptr.postdec(
+                    () => cptr.ldPtro(ci, $CallInfo_u),
+                    (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
+                    4
+                );
+                break;
+            }
         default:
-        {
-            /* only these other opcodes can yield */
-            (void 0);
-            break;
-        }
+            {
+                /* only these other opcodes can yield */
+                (void 0);
+                break;
+            }
     }
 }
 
@@ -1709,2399 +1727,2294 @@ export function* luaV_execute(L, ci) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* startfunc: */: {
-        trap = cptr.ldI32o(L, $lua_State_hookmask);
-        __pc = 2;
-        continue;
+            trap = cptr.ldI32o(L, $lua_State_hookmask);
+            __pc = 2;
+            continue;
         }
         case 2 /* returning: */: {
-        cl = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
-        k = cptr.ldPtro(cptr.ldPtro(cl, $LClosure_p), $Proto_k);
-        pc = cptr.ldPtro(ci, $CallInfo_u);
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n)))
-            trap = (yield* luaG_tracecall(L));
-        base = cptr.add(cptr.ldPtr(ci), 1, 16);
-        __pc = 90; continue;
+            cl = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
+            k = cptr.ldPtro(cptr.ldPtro(cl, $LClosure_p), $Proto_k);
+            pc = cptr.ldPtro(ci, $CallInfo_u);
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n)))
+                trap = (yield* luaG_tracecall(L));
+            base = cptr.add(cptr.ldPtr(ci), 1, 16);
+            __pc = 90; continue;
         }
         case 90: {
-        __pc = 91; continue;
+            __pc = 91; continue;
         }
         case 91: {
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        (void 0);
-        (void 0);
-        /* invalidate top for instructions not expecting it */
-        (void 0);
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            (void 0);
+            (void 0);
+            /* invalidate top for instructions not expecting it */
+            (void 0);
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
         }
         case 3 /* L_OP_MOVE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        io1 = (((ra)));
-        io2 = ((((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        )))));
-        cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-        (void L, (void 0));
-        (void 0);
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            io1 = (((ra)));
+            io2 = ((((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            )))));
+            cptr.memcpy(io1, io2, 8);
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+            (void L, (void 0));
+            (void 0);
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 4;
             continue;
-        }
-        ;
-        ;
-        __pc = 4;
-        continue;
         }
         case 4 /* L_OP_LOADI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = BigInt((((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                65535) | 0));
-        io = (((ra)));
-        cptr.stI64(((io)), (b));
-        (cptr.st1o((io), $TValue_tt_, 3));
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = BigInt((((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                    65535) | 0));
+            io = (((ra)));
+            cptr.stI64(((io)), (b));
+            (cptr.st1o((io), $TValue_tt_, 3));
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 5;
             continue;
-        }
-        ;
-        ;
-        __pc = 5;
-        continue;
         }
         case 5 /* L_OP_LOADF: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = (((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                65535) | 0);
-        io = (((ra)));
-        cptr.stF64(((io)), ((((b)))));
-        (cptr.st1o((io), $TValue_tt_, 19));
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = (((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                    65535) | 0);
+            io = (((ra)));
+            cptr.stF64(((io)), ((((b)))));
+            (cptr.st1o((io), $TValue_tt_, 19));
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 6;
             continue;
-        }
-        ;
-        ;
-        __pc = 6;
-        continue;
         }
         case 6 /* L_OP_LOADK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = cptr.add(
-            k,
-            ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        );
-        io1 = (((ra)));
-        io2 = (rb);
-        cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-        (void L, (void 0));
-        (void 0);
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = cptr.add(
+                k,
+                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            );
+            io1 = (((ra)));
+            io2 = (rb);
+            cptr.memcpy(io1, io2, 8);
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+            (void L, (void 0));
+            (void 0);
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 7;
             continue;
-        }
-        ;
-        ;
-        __pc = 7;
-        continue;
         }
         case 7 /* L_OP_LOADKX: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = cptr.add(
-            k,
-            ((((((((cptr.ldI32(pc)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        );
-        pc = cptr.add(pc, 1, 4);
-        io1 = (((ra)));
-        io2 = (rb);
-        cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-        (void L, (void 0));
-        (void 0);
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = cptr.add(
+                k,
+                ((((((((cptr.ldI32(pc)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                    0))),
+                16
+            );
+            pc = cptr.add(pc, 1, 4);
+            io1 = (((ra)));
+            io2 = (rb);
+            cptr.memcpy(io1, io2, 8);
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+            (void L, (void 0));
+            (void 0);
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 8;
             continue;
-        }
-        ;
-        ;
-        __pc = 8;
-        continue;
         }
         case 8 /* L_OP_LOADFALSE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (cptr.st1o((((ra))), $TValue_tt_, 1));
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            (cptr.st1o((((ra))), $TValue_tt_, 1));
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 9;
             continue;
-        }
-        ;
-        ;
-        __pc = 9;
-        continue;
         }
         case 9 /* L_OP_LFALSESKIP: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (cptr.st1o((((ra))), $TValue_tt_, 1));
-        pc = cptr.add(pc, 1, 4);  /* skip next instruction */
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            (cptr.st1o((((ra))), $TValue_tt_, 1));
+            pc = cptr.add(pc, 1, 4);  /* skip next instruction */
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 10;
             continue;
-        }
-        ;
-        ;
-        __pc = 10;
-        continue;
         }
         case 10 /* L_OP_LOADTRUE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (cptr.st1o((((ra))), $TValue_tt_, 17));
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            (cptr.st1o((((ra))), $TValue_tt_, 17));
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 11;
             continue;
-        }
-        ;
-        ;
-        __pc = 11;
-        continue;
         }
         case 11 /* L_OP_LOADNIL: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        do {
-            (cptr.st1o((((cptr.postinc(() => ra, (v) => { ra = v; }, 16)))), $TValue_tt_, 0));
-        } while (b--);
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            do {
+                (cptr.st1o((((cptr.postinc(() => ra, (v) => { ra = v; }, 16)))), $TValue_tt_, 0));
+            } while (b--);
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 12;
             continue;
-        }
-        ;
-        ;
-        __pc = 12;
-        continue;
         }
         case 12 /* L_OP_GETUPVAL: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        io1 = (((ra)));
-        io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b, 8, $LClosure_upvals), $UpVal_v));
-        cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-        (void L, (void 0));
-        (void 0);
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            io1 = (((ra)));
+            io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b, 8, $LClosure_upvals), $UpVal_v));
+            cptr.memcpy(io1, io2, 8);
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+            (void L, (void 0));
+            (void 0);
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 13;
             continue;
-        }
-        ;
-        ;
-        __pc = 13;
-        continue;
         }
         case 13 /* L_OP_SETUPVAL: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        uv = cptr.ldPtro2(
-            cl,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            8,
-            $LClosure_upvals
-        );
-        io1 = (cptr.ldPtro(uv, $UpVal_v));
-        io2 = (((ra)));
-        cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-        (void L, (void 0));
-        (void 0);
-        ;
-        (((cptr.ld1uo((((ra))), $TValue_tt_)) & 64)
-                ? ((((cptr.ld1uo((uv), $UpVal_marked)) & 32) &&
-                    ((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 24))
-                    ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((((ra)))))))))))
-                    : (void 0))
-                : (void 0));
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 14;
-        continue;
-        }
-        case 14 /* L_OP_GETTABUP: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        upval = cptr.ldPtro(
-            cptr.ldPtro2(
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            uv = cptr.ldPtro2(
                 cl,
                 ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
                 8,
                 $LClosure_upvals
-            ),
-            $UpVal_v
-        );
-        rc = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a short string */
-        if ((!((cptr.ld1uo(((upval)), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = luaH_getshortstr(((((((cptr.ldPtr(((upval))))))))), key),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
+            );
+            io1 = (cptr.ldPtro(uv, $UpVal_v));
+            io2 = (((ra)));
+            cptr.memcpy(io1, io2, 8);
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+            (void L, (void 0));
+            (void 0);
+            ;
+            (((cptr.ld1uo((((ra))), $TValue_tt_)) & 64)
+                    ? ((((cptr.ld1uo((uv), $UpVal_marked)) & 32) &&
+                        ((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 24))
+                        ? luaC_barrier_(L, ((((uv)))), (((((cptr.ldPtr(((((ra)))))))))))
+                        : (void 0))
+                    : (void 0));
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io1 = (((ra)));
-                io2 = (slot);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishget(L, upval, rc, ra, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 14;
             continue;
         }
-        ;
-        ;
-        __pc = 15;
-        continue;
+        case 14 /* L_OP_GETTABUP: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            upval = cptr.ldPtro(
+                cptr.ldPtro2(
+                    cl,
+                    ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                    8,
+                    $LClosure_upvals
+                ),
+                $UpVal_v
+            );
+            rc = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a short string */
+            if ((!((cptr.ld1uo(((upval)), $TValue_tt_)) == 69)
+                    ? (slot = null, 0)
+                    : (
+                        slot = luaH_getshortstr(((((((cptr.ldPtr(((upval))))))))), key),
+                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                    ))) {
+                {
+                    io1 = (((ra)));
+                    io2 = (slot);
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishget(L, upval, rc, ra, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 15;
+            continue;
         }
         case 15 /* L_OP_GETTABLE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        rc = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((cptr.ld1uo(((rc)), $TValue_tt_)) == 3)
-                ? (
-                    (void ((n = BigInt.asUintN(64, (cptr.ldI64(((rc)))))))),
-                    (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            rc = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((cptr.ld1uo(((rc)), $TValue_tt_)) == 3)
+                    ? (
+                        (void ((n = BigInt.asUintN(64, (cptr.ldI64(((rc)))))))),
+                        (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
+                            ? (slot = null, 0)
+                            : (
+                                slot = (BigInt.asUintN(64, ((n)) - 1n) <
+                                    BigInt(cptr.ldI32o(
+                                        ((((((cptr.ldPtr(((rb))))))))),
+                                        $Table_alimit
+                                    ) >>> 0))
+                                    ? cptr.add(
+                                        cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array),
+                                        BigInt.asUintN(64, n - 1n),
+                                        $sizeof_TValue
+                                    )
+                                    : luaH_getint(
+                                        ((((((cptr.ldPtr(((rb))))))))),
+                                        BigInt.asIntN(64, n)
+                                    ),
+                                !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                            ))
+                    )
+                    : (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
                         ? (slot = null, 0)
                         : (
-                            slot = (BigInt.asUintN(64, ((n)) - 1n) <
-                                BigInt(cptr.ldI32o(
-                                    ((((((cptr.ldPtr(((rb))))))))),
-                                    $Table_alimit
-                                ) >>> 0))
-                                ? cptr.add(
-                                    cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array),
-                                    BigInt.asUintN(64, n - 1n),
-                                    $sizeof_TValue
-                                )
-                                : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt.asIntN(64, n)),
+                            slot = luaH_get(((((((cptr.ldPtr(((rb))))))))), rc),
                             !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                        ))
-                )
-                : (!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
-                    ? (slot = null, 0)
-                    : (
-                        slot = luaH_get(((((((cptr.ldPtr(((rb))))))))), rc),
-                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                    ))) {
+                        ))) {
+                {
+                    io1 = (((ra)));
+                    io2 = (slot);
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishget(L, rb, rc, ra, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io1 = (((ra)));
-                io2 = (slot);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishget(L, rb, rc, ra, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 16;
             continue;
-        }
-        ;
-        ;
-        __pc = 16;
-        continue;
         }
         case 16 /* L_OP_GETI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) <
-                        BigInt(cptr.ldI32o(((((((cptr.ldPtr(((rb))))))))), $Table_alimit) >>> 0))
-                        ? cptr.add(
-                            cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array),
-                            (c - 1) | 0,
-                            $sizeof_TValue
-                        )
-                        : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt(c)),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
-            {
-                io1 = (((ra)));
-                io2 = (slot);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
-            }
-            ;
-        } else {
-            key = cptr.alloc(16);
-            {
-                io = (key);
-                cptr.stI64(((io)), BigInt((c)));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishget(L, rb, key, ra, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 17;
-        continue;
-        }
-        case 17 /* L_OP_GETFIELD: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        rc = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a short string */
-        if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = luaH_getshortstr(((((((cptr.ldPtr(((rb))))))))), key),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
-            {
-                io1 = (((ra)));
-                io2 = (slot);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
-            }
-            ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishget(L, rb, rc, ra, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 18;
-        continue;
-        }
-        case 18 /* L_OP_SETTABUP: */: {
-        upval = cptr.ldPtro(
-            cptr.ldPtro2(
-                cl,
+            ra = (cptr.add(
+                base,
                 (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                8,
-                $LClosure_upvals
-            ),
-            $UpVal_v
-        );
-        rb = (cptr.add(
-            k,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        rc = ((((((((((i) & 32768) >>> 0))) | 0))))
-                ? cptr.add(
-                    k,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                )
-                : ((cptr.add(
-                    base,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                ))));
-        key = ((((((cptr.ldPtr(((rb)))))))));  /* key must be a short string */
-        if ((!((cptr.ld1uo(((upval)), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = luaH_getshortstr(((((((cptr.ldPtr(((upval))))))))), key),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
-            {
-                {
-                    io1 = (((slot)));
-                    io2 = (rc);
-                    cptr.memcpy(io1, io2, 8);
-                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                    (void L, (void 0));
-                    (void 0);
-                }
-                ;
-                (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
-                        ? ((((cptr.ld1uo(((cptr.ldPtr(((upval))))), $GCObject_marked)) & 32) &&
-                            ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
-                            ? luaC_barrierback_(L, (cptr.ldPtr(((upval)))))
-                            : (void 0))
-                        : (void 0));
-            }
-            ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishset(L, upval, rb, rc, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 19;
-        continue;
-        }
-        case 19 /* L_OP_SETTABLE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));  /* key (table is in 'ra') */
-        rc = ((((((((((i) & 32768) >>> 0))) | 0))))
-                ? cptr.add(
-                    k,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                )
-                : ((cptr.add(
-                    base,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                ))));  /* value */
-        if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)
-                ? (
-                    (void ((n = BigInt.asUintN(64, (cptr.ldI64(((rb)))))))),
-                    (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
-                        ? (slot = null, 0)
-                        : (
-                            slot = (BigInt.asUintN(64, ((n)) - 1n) <
-                                BigInt(cptr.ldI32o(
-                                    ((((((cptr.ldPtr(((((ra))))))))))),
-                                    $Table_alimit
-                                ) >>> 0))
-                                ? cptr.add(
-                                    cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array),
-                                    BigInt.asUintN(64, n - 1n),
-                                    $sizeof_TValue
-                                )
-                                : luaH_getint(
-                                    ((((((cptr.ldPtr(((((ra))))))))))),
-                                    BigInt.asIntN(64, n)
-                                ),
-                            !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                        ))
-                )
-                : (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
                     ? (slot = null, 0)
                     : (
-                        slot = luaH_get(((((((cptr.ldPtr(((((ra))))))))))), rb),
+                        slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) <
+                            BigInt(cptr.ldI32o(
+                                ((((((cptr.ldPtr(((rb))))))))),
+                                $Table_alimit
+                            ) >>> 0))
+                            ? cptr.add(
+                                cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array),
+                                (c - 1) | 0,
+                                $sizeof_TValue
+                            )
+                            : luaH_getint(((((((cptr.ldPtr(((rb))))))))), BigInt(c)),
                         !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
                     ))) {
-            {
                 {
-                    io1 = (((slot)));
-                    io2 = (rc);
+                    io1 = (((ra)));
+                    io2 = (slot);
                     cptr.memcpy(io1, io2, 8);
                     (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
                     (void L, (void 0));
                     (void 0);
                 }
                 ;
-                (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
-                        ? ((((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 32) &&
-                            ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
-                            ? luaC_barrierback_(L, (cptr.ldPtr(((((ra)))))))
-                            : (void 0))
-                        : (void 0));
+            } else {
+                key = cptr.alloc(16);
+                {
+                    io = (key);
+                    cptr.stI64(((io)), BigInt((c)));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishget(L, rb, key, ra, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishset(L, ((ra)), rb, rc, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 17;
             continue;
         }
-        ;
-        ;
-        __pc = 20;
-        continue;
+        case 17 /* L_OP_GETFIELD: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            rc = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a short string */
+            if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
+                    ? (slot = null, 0)
+                    : (
+                        slot = luaH_getshortstr(((((((cptr.ldPtr(((rb))))))))), key),
+                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                    ))) {
+                {
+                    io1 = (((ra)));
+                    io2 = (slot);
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishget(L, rb, rc, ra, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 18;
+            continue;
+        }
+        case 18 /* L_OP_SETTABUP: */: {
+            upval = cptr.ldPtro(
+                cptr.ldPtro2(
+                    cl,
+                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    8,
+                    $LClosure_upvals
+                ),
+                $UpVal_v
+            );
+            rb = (cptr.add(
+                k,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            rc = ((((((((((i) & 32768) >>> 0))) | 0))))
+                    ? cptr.add(
+                        k,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    )
+                    : ((cptr.add(
+                        base,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    ))));
+            key = ((((((cptr.ldPtr(((rb)))))))));  /* key must be a short string */
+            if ((!((cptr.ld1uo(((upval)), $TValue_tt_)) == 69)
+                    ? (slot = null, 0)
+                    : (
+                        slot = luaH_getshortstr(((((((cptr.ldPtr(((upval))))))))), key),
+                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                    ))) {
+                {
+                    {
+                        io1 = (((slot)));
+                        io2 = (rc);
+                        cptr.memcpy(io1, io2, 8);
+                        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                        (void L, (void 0));
+                        (void 0);
+                    }
+                    ;
+                    (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
+                            ? ((((cptr.ld1uo(((cptr.ldPtr(((upval))))), $GCObject_marked)) & 32) &&
+                                ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
+                                ? luaC_barrierback_(L, (cptr.ldPtr(((upval)))))
+                                : (void 0))
+                            : (void 0));
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishset(L, upval, rb, rc, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 19;
+            continue;
+        }
+        case 19 /* L_OP_SETTABLE: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));  /* key (table is in 'ra') */
+            rc = ((((((((((i) & 32768) >>> 0))) | 0))))
+                    ? cptr.add(
+                        k,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    )
+                    : ((cptr.add(
+                        base,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    ))));  /* value */
+            if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)
+                    ? (
+                        (void ((n = BigInt.asUintN(64, (cptr.ldI64(((rb)))))))),
+                        (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
+                            ? (slot = null, 0)
+                            : (
+                                slot = (BigInt.asUintN(64, ((n)) - 1n) <
+                                    BigInt(cptr.ldI32o(
+                                        ((((((cptr.ldPtr(((((ra))))))))))),
+                                        $Table_alimit
+                                    ) >>> 0))
+                                    ? cptr.add(
+                                        cptr.ldPtro(
+                                            ((((((cptr.ldPtr(((((ra))))))))))),
+                                            $Table_array
+                                        ),
+                                        BigInt.asUintN(64, n - 1n),
+                                        $sizeof_TValue
+                                    )
+                                    : luaH_getint(
+                                        ((((((cptr.ldPtr(((((ra))))))))))),
+                                        BigInt.asIntN(64, n)
+                                    ),
+                                !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                            ))
+                    )
+                    : (!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
+                        ? (slot = null, 0)
+                        : (
+                            slot = luaH_get(((((((cptr.ldPtr(((((ra))))))))))), rb),
+                            !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                        ))) {
+                {
+                    {
+                        io1 = (((slot)));
+                        io2 = (rc);
+                        cptr.memcpy(io1, io2, 8);
+                        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                        (void L, (void 0));
+                        (void 0);
+                    }
+                    ;
+                    (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
+                            ? ((((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 32) &&
+                                ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
+                                ? luaC_barrierback_(L, (cptr.ldPtr(((((ra)))))))
+                                : (void 0))
+                            : (void 0));
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishset(L, ((ra)), rb, rc, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 20;
+            continue;
         }
         case 20 /* L_OP_SETI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        c = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        rc = ((((((((((i) & 32768) >>> 0))) | 0))))
-                ? cptr.add(
-                    k,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                )
-                : ((cptr.add(
-                    base,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                ))));
-        if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) <
-                        BigInt(cptr.ldI32o(
-                            ((((((cptr.ldPtr(((((ra))))))))))),
-                            $Table_alimit
-                        ) >>> 0))
-                        ? cptr.add(
-                            cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array),
-                            (c - 1) | 0,
-                            $sizeof_TValue
-                        )
-                        : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt(c)),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
-            {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            c = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            rc = ((((((((((i) & 32768) >>> 0))) | 0))))
+                    ? cptr.add(
+                        k,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    )
+                    : ((cptr.add(
+                        base,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    ))));
+            if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
+                    ? (slot = null, 0)
+                    : (
+                        slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) <
+                            BigInt(cptr.ldI32o(
+                                ((((((cptr.ldPtr(((((ra))))))))))),
+                                $Table_alimit
+                            ) >>> 0))
+                            ? cptr.add(
+                                cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array),
+                                (c - 1) | 0,
+                                $sizeof_TValue
+                            )
+                            : luaH_getint(((((((cptr.ldPtr(((((ra))))))))))), BigInt(c)),
+                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                    ))) {
                 {
-                    io1 = (((slot)));
-                    io2 = (rc);
-                    cptr.memcpy(io1, io2, 8);
-                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                    (void L, (void 0));
-                    (void 0);
+                    {
+                        io1 = (((slot)));
+                        io2 = (rc);
+                        cptr.memcpy(io1, io2, 8);
+                        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                        (void L, (void 0));
+                        (void 0);
+                    }
+                    ;
+                    (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
+                            ? ((((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 32) &&
+                                ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
+                                ? luaC_barrierback_(L, (cptr.ldPtr(((((ra)))))))
+                                : (void 0))
+                            : (void 0));
                 }
                 ;
-                (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
-                        ? ((((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 32) &&
-                            ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
-                            ? luaC_barrierback_(L, (cptr.ldPtr(((((ra)))))))
-                            : (void 0))
-                        : (void 0));
-            }
-            ;
-        } else {
-            key = cptr.alloc(16);
-            {
-                io = (key);
-                cptr.stI64(((io)), BigInt((c)));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-            (
+            } else {
+                key = cptr.alloc(16);
+                {
+                    io = (key);
+                    cptr.stI64(((io)), BigInt((c)));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
                 (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishset(L, ((ra)), key, rc, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishset(L, ((ra)), key, rc, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 21;
             continue;
-        }
-        ;
-        ;
-        __pc = 21;
-        continue;
         }
         case 21 /* L_OP_SETFIELD: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (cptr.add(
-            k,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        rc = ((((((((((i) & 32768) >>> 0))) | 0))))
-                ? cptr.add(
-                    k,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                )
-                : ((cptr.add(
-                    base,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                ))));
-        key = ((((((cptr.ldPtr(((rb)))))))));  /* key must be a short string */
-        if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = luaH_getshortstr(((((((cptr.ldPtr(((((ra))))))))))), key),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
-            {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (cptr.add(
+                k,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            rc = ((((((((((i) & 32768) >>> 0))) | 0))))
+                    ? cptr.add(
+                        k,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    )
+                    : ((cptr.add(
+                        base,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    ))));
+            key = ((((((cptr.ldPtr(((rb)))))))));  /* key must be a short string */
+            if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
+                    ? (slot = null, 0)
+                    : (
+                        slot = luaH_getshortstr(((((((cptr.ldPtr(((((ra))))))))))), key),
+                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                    ))) {
                 {
-                    io1 = (((slot)));
-                    io2 = (rc);
+                    {
+                        io1 = (((slot)));
+                        io2 = (rc);
+                        cptr.memcpy(io1, io2, 8);
+                        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                        (void L, (void 0));
+                        (void 0);
+                    }
+                    ;
+                    (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
+                            ? ((((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 32) &&
+                                ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
+                                ? luaC_barrierback_(L, (cptr.ldPtr(((((ra)))))))
+                                : (void 0))
+                            : (void 0));
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishset(L, ((ra)), rb, rc, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 22;
+            continue;
+        }
+        case 22 /* L_OP_NEWTABLE: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* log2(hash size) + 1 */
+            c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* array size */
+            if (b > 0)
+                b = 1 << b - 1;  /* size is 2^(b - 1) */
+            (void 0);
+            if (((((((((i) & 32768) >>> 0))) | 0))))
+                c = (c +
+                        Math.imul(
+                            ((((((((cptr.ldI32(pc)) >>> 7) &
+                                (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
+                                0)) |
+                                0))),
+                            256
+                        )) | 0;  /* add it to size */
+            pc = cptr.add(pc, 1, 4);  /* skip extra argument */
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, 1, 16));  /* correct top in case of emergency GC */
+            t = (yield* luaH_new(L));  /* memory allocation */
+            io = (((ra)));
+            x_ = (t);
+            cptr.stPtr(((io)), ((((x_)))));
+            (cptr.st1o((io), $TValue_tt_, 69));
+            (void L, (void 0));
+            ;
+            if (b != 0 || c != 0)
+                (yield* luaH_resize(L, t, c >>> 0, b >>> 0));  /* idem */
+            if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, (cptr.add(ra, 1, 16)))
+                );
+                (yield* luaC_step(L));
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+            }
+            ;
+            (void 0);
+            ;
+            (void 0);
+            (void 0);
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 23;
+            continue;
+        }
+        case 23 /* L_OP_SELF: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            rc = ((((((((((i) & 32768) >>> 0))) | 0))))
+                    ? cptr.add(
+                        k,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    )
+                    : ((cptr.add(
+                        base,
+                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    ))));
+            key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a string */
+            io1 = (((cptr.add(ra, 1, 16))));
+            io2 = (rb);
+            cptr.memcpy(io1, io2, 8);
+            (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+            (void L, (void 0));
+            (void 0);
+            ;
+            if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
+                    ? (slot = null, 0)
+                    : (
+                        slot = luaH_getstr(((((((cptr.ldPtr(((rb))))))))), key),
+                        !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
+                    ))) {
+                {
+                    io1 = (((ra)));
+                    io2 = (slot);
                     cptr.memcpy(io1, io2, 8);
                     (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
                     (void L, (void 0));
                     (void 0);
                 }
                 ;
-                (((cptr.ld1uo((rc), $TValue_tt_)) & 64)
-                        ? ((((cptr.ld1uo(((cptr.ldPtr(((((ra))))))), $GCObject_marked)) & 32) &&
-                            ((cptr.ld1uo(((cptr.ldPtr(((rc))))), $GCObject_marked)) & 24))
-                            ? luaC_barrierback_(L, (cptr.ldPtr(((((ra)))))))
-                            : (void 0))
-                        : (void 0));
-            }
-            ;
-        } else
-            (
+            } else
                 (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishset(L, ((ra)), rb, rc, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 22;
-        continue;
-        }
-        case 22 /* L_OP_NEWTABLE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* log2(hash size) + 1 */
-        c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* array size */
-        if (b > 0)
-            b = 1 << ((b - 1) | 0);  /* size is 2^(b - 1) */
-        (void 0);
-        if (((((((((i) & 32768) >>> 0))) | 0))))
-            c = (c +
-                Math.imul(
-                    ((((((((cptr.ldI32(pc)) >>> 7) &
-                        (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    256
-                )) |
-                    0;  /* add it to size */
-        pc = cptr.add(pc, 1, 4);  /* skip extra argument */
-        cptr.stPtro(L, $lua_State_top, cptr.add(ra, 1, 16));  /* correct top in case of emergency GC */
-        t = (yield* luaH_new(L));  /* memory allocation */
-        io = (((ra)));
-        x_ = (t);
-        cptr.stPtr(((io)), ((((x_)))));
-        (cptr.st1o((io), $TValue_tt_, 69));
-        (void L, (void 0));
-        ;
-        if (b != 0 || c != 0)
-            (yield* luaH_resize(L, t, c >>> 0, b >>> 0));  /* idem */
-        if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
-            (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, (cptr.add(ra, 1, 16)))
-            );
-            (yield* luaC_step(L));
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-        }
-        ;
-        (void 0);
-        ;
-        (void 0);
-        (void 0);
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 23;
-        continue;
-        }
-        case 23 /* L_OP_SELF: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        rc = ((((((((((i) & 32768) >>> 0))) | 0))))
-                ? cptr.add(
-                    k,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                )
-                : ((cptr.add(
-                    base,
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                ))));
-        key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a string */
-        io1 = (((cptr.add(ra, 1, 16))));
-        io2 = (rb);
-        cptr.memcpy(io1, io2, 8);
-        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-        (void L, (void 0));
-        (void 0);
-        ;
-        if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
-                ? (slot = null, 0)
-                : (
-                    slot = luaH_getstr(((((((cptr.ldPtr(((rb))))))))), key),
-                    !(((((cptr.ld1uo(((slot)), $TValue_tt_))) & 15)) == 0)
-                ))) {
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaV_finishget(L, rb, rc, ra, slot))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io1 = (((ra)));
-                io2 = (slot);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaV_finishget(L, rb, rc, ra, slot))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 24;
             continue;
-        }
-        ;
-        ;
-        __pc = 24;
-        continue;
         }
         case 24 /* L_OP_ADDI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        imm = (((((((((((i) >>> 24) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) {
-            iv1 = (cptr.ldI64(((v1))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            imm = (((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) {
+                iv1 = (cptr.ldI64(((v1))));
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm))))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm))))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+            } else if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)) {
+                nb = (cptr.ldF64(((v1))));
+                fimm = (((imm)));
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stF64(((io)), (((nb) + (fimm))));
+                    (cptr.st1o((io), $TValue_tt_, 19));
+                }
+                ;
             }
             ;
-        } else if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)) {
-            nb = (cptr.ldF64(((v1))));
-            fimm = (((imm)));
-            pc = cptr.add(pc, 1, 4);
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io = (((ra)));
-                cptr.stF64(((io)), (((nb) + (fimm))));
-                (cptr.st1o((io), $TValue_tt_, 19));
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 25;
             continue;
-        }
-        ;
-        ;
-        __pc = 25;
-        continue;
         }
         case 25 /* L_OP_ADDK: */: {
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (((n1) + (n2))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (((n1) + (n2))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 26;
             continue;
-        }
-        ;
-        ;
-        __pc = 26;
-        continue;
         }
         case 26 /* L_OP_SUBK: */: {
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (((n1) - (n2))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (((n1) - (n2))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 27;
             continue;
-        }
-        ;
-        ;
-        __pc = 27;
-        continue;
         }
         case 27 /* L_OP_MULK: */: {
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (((n1) * (n2))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (((n1) * (n2))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 28;
             continue;
-        }
-        ;
-        ;
-        __pc = 28;
-        continue;
         }
         case 28 /* L_OP_MODK: */: {
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-        );  /* in case of division by 0 */
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(((io)), ((yield* luaV_mod(L, i1.v, i2.v))));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+            );  /* in case of division by 0 */
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (luaV_modf(L, n1, n2)));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(((io)), ((yield* luaV_mod(L, i1.v, i2.v))));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (luaV_modf(L, n1, n2)));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 29;
             continue;
-        }
-        ;
-        ;
-        __pc = 29;
-        continue;
         }
         case 29 /* L_OP_POWK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-            ? (n1 = (cptr.ldF64(((v1)))), 1)
-            : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                : 0)) &&
-                (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                    ? (n2 = (cptr.ldF64(((v2)))), 1)
-                    : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                        ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                        : 0))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stF64(((io)), ((void L, (n2 == 2) ? (n1) * (n1) : pow(n1, n2))));
-                (cptr.st1o((io), $TValue_tt_, 19));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                ? (n1 = (cptr.ldF64(((v1)))), 1)
+                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                    : 0)) &&
+                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                        ? (n2 = (cptr.ldF64(((v2)))), 1)
+                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                            : 0))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stF64(((io)), ((void L, (n2 == 2) ? (n1) * (n1) : pow(n1, n2))));
+                    (cptr.st1o((io), $TValue_tt_, 19));
+                }
+                ;
             }
             ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 30;
             continue;
-        }
-        ;
-        ;
-        __pc = 30;
-        continue;
         }
         case 30 /* L_OP_DIVK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-            ? (n1 = (cptr.ldF64(((v1)))), 1)
-            : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                : 0)) &&
-                (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                    ? (n2 = (cptr.ldF64(((v2)))), 1)
-                    : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                        ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                        : 0))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stF64(((io)), (((n1) / (n2))));
-                (cptr.st1o((io), $TValue_tt_, 19));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                ? (n1 = (cptr.ldF64(((v1)))), 1)
+                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                    : 0)) &&
+                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                        ? (n2 = (cptr.ldF64(((v2)))), 1)
+                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                            : 0))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stF64(((io)), (((n1) / (n2))));
+                    (cptr.st1o((io), $TValue_tt_, 19));
+                }
+                ;
             }
             ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 31;
             continue;
-        }
-        ;
-        ;
-        __pc = 31;
-        continue;
         }
         case 31 /* L_OP_IDIVK: */: {
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-        );  /* in case of division by 0 */
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        (void 0);
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(((io)), ((yield* luaV_idiv(L, i1.v, i2.v))));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+            );  /* in case of division by 0 */
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            (void 0);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), ((void L, (floor(((n1) / (n2)))))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(((io)), ((yield* luaV_idiv(L, i1.v, i2.v))));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), ((void L, (floor(((n1) / (n2)))))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 32;
             continue;
-        }
-        ;
-        ;
-        __pc = 32;
-        continue;
         }
         case 32 /* L_OP_BANDK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        i2.v = (cptr.ldI64(((v2))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-                : luaV_tointegerns(v1, i1, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        ((BigInt.asUintN(64, (i1.v))) & (BigInt.asUintN(64, (i2.v))))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            i2.v = (cptr.ldI64(((v2))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                    ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                    : luaV_tointegerns(v1, i1, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            ((BigInt.asUintN(64, (i1.v))) & (BigInt.asUintN(64, (i2.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 33;
             continue;
-        }
-        ;
-        ;
-        __pc = 33;
-        continue;
         }
         case 33 /* L_OP_BORK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        i2.v = (cptr.ldI64(((v2))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-                : luaV_tointegerns(v1, i1, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        ((BigInt.asUintN(64, (i1.v))) | (BigInt.asUintN(64, (i2.v))))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            i2.v = (cptr.ldI64(((v2))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                    ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                    : luaV_tointegerns(v1, i1, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            ((BigInt.asUintN(64, (i1.v))) | (BigInt.asUintN(64, (i2.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 34;
             continue;
-        }
-        ;
-        ;
-        __pc = 34;
-        continue;
         }
         case 34 /* L_OP_BXORK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (cptr.add(
-            k,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        i2.v = (cptr.ldI64(((v2))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-                : luaV_tointegerns(v1, i1, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        ((BigInt.asUintN(64, (i1.v))) ^ (BigInt.asUintN(64, (i2.v))))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (cptr.add(
+                k,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            i2.v = (cptr.ldI64(((v2))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                    ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                    : luaV_tointegerns(v1, i1, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            ((BigInt.asUintN(64, (i1.v))) ^ (BigInt.asUintN(64, (i2.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 35;
             continue;
-        }
-        ;
-        ;
-        __pc = 35;
-        continue;
         }
         case 35 /* L_OP_SHRI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ic = (((((((((((i) >>> 24) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
-                : luaV_tointegerns(rb, ib, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ic = (((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
+                    ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
+                    : luaV_tointegerns(rb, ib, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(((io)), (luaV_shiftl(ib.v, BigInt((-ic)))));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+            }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io = (((ra)));
-                cptr.stI64(((io)), (luaV_shiftl(ib.v, BigInt((-ic)))));
-                (cptr.st1o((io), $TValue_tt_, 3));
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 36;
             continue;
-        }
-        ;
-        ;
-        __pc = 36;
-        continue;
         }
         case 36 /* L_OP_SHLI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ic = (((((((((((i) >>> 24) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
-                : luaV_tointegerns(rb, ib, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ic = (((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
+                    ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
+                    : luaV_tointegerns(rb, ib, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(((io)), (luaV_shiftl(BigInt(ic), ib.v)));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+            }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io = (((ra)));
-                cptr.stI64(((io)), (luaV_shiftl(BigInt(ic), ib.v)));
-                (cptr.st1o((io), $TValue_tt_, 3));
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 37;
             continue;
-        }
-        ;
-        ;
-        __pc = 37;
-        continue;
         }
         case 37 /* L_OP_ADD: */: {
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (((n1) + (n2))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (((n1) + (n2))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 38;
             continue;
-        }
-        ;
-        ;
-        __pc = 38;
-        continue;
         }
         case 38 /* L_OP_SUB: */: {
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (((n1) - (n2))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (((n1) - (n2))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 39;
             continue;
-        }
-        ;
-        ;
-        __pc = 39;
-        continue;
         }
         case 39 /* L_OP_MUL: */: {
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
-                        ))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (((n1) * (n2))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
+                            ))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (((n1) * (n2))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 40;
             continue;
-        }
-        ;
-        ;
-        __pc = 40;
-        continue;
         }
         case 40 /* L_OP_MOD: */: {
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-        );  /* in case of division by 0 */
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(((io)), ((yield* luaV_mod(L, i1.v, i2.v))));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
-            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((v1)))), 1)
-                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((v2)))), 1)
-                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                            : 0))) {
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+            );  /* in case of division by 0 */
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), (luaV_modf(L, n1, n2)));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    cptr.stI64(((io)), ((yield* luaV_mod(L, i1.v, i2.v))));
+                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), (luaV_modf(L, n1, n2)));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 41;
             continue;
-        }
-        ;
-        ;
-        __pc = 41;
-        continue;
         }
         case 41 /* L_OP_POW: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-            ? (n1 = (cptr.ldF64(((v1)))), 1)
-            : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                : 0)) &&
-                (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                    ? (n2 = (cptr.ldF64(((v2)))), 1)
-                    : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                        ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                        : 0))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stF64(((io)), ((void L, (n2 == 2) ? (n1) * (n1) : pow(n1, n2))));
-                (cptr.st1o((io), $TValue_tt_, 19));
-            }
-            ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 42;
-        continue;
-        }
-        case 42 /* L_OP_DIV: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
-            ? (n1 = (cptr.ldF64(((v1)))), 1)
-            : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
-                ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
-                : 0)) &&
-                (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
-                    ? (n2 = (cptr.ldF64(((v2)))), 1)
-                    : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                        ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
-                        : 0))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stF64(((io)), (((n1) / (n2))));
-                (cptr.st1o((io), $TValue_tt_, 19));
-            }
-            ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 43;
-        continue;
-        }
-        case 43 /* L_OP_IDIV: */: {
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-        );  /* in case of division by 0 */
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) && ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
-            i1.v = (cptr.ldI64(((v1))));
-            i2.v = (cptr.ldI64(((v2))));
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(((io)), ((yield* luaV_idiv(L, i1.v, i2.v))));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
             if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
                 ? (n1 = (cptr.ldF64(((v1)))), 1)
                 : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
@@ -4115,1382 +4028,954 @@ export function* luaV_execute(L, ci) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stF64(((io)), ((void L, (floor(((n1) / (n2)))))));
+                    cptr.stF64(((io)), ((void L, (n2 == 2) ? (n1) * (n1) : pow(n1, n2))));
                     (cptr.st1o((io), $TValue_tt_, 19));
                 }
                 ;
             }
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 42;
             continue;
         }
-        ;
-        ;
-        __pc = 44;
-        continue;
+        case 42 /* L_OP_DIV: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                ? (n1 = (cptr.ldF64(((v1)))), 1)
+                : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                    ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                    : 0)) &&
+                    (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                        ? (n2 = (cptr.ldF64(((v2)))), 1)
+                        : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                            ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                            : 0))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stF64(((io)), (((n1) / (n2))));
+                    (cptr.st1o((io), $TValue_tt_, 19));
+                }
+                ;
+            }
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 43;
+            continue;
+        }
+        case 43 /* L_OP_IDIV: */: {
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+            );  /* in case of division by 0 */
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) {
+                i1.v = (cptr.ldI64(((v1))));
+                i2.v = (cptr.ldI64(((v2))));
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(((io)), ((yield* luaV_idiv(L, i1.v, i2.v))));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+            } else {
+                if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((v1)))), 1)
+                    : (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((v1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((v2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((v2)))), 1)
+                            : (((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((v2)))))))), 1)
+                                : 0))) {
+                    pc = cptr.add(pc, 1, 4);
+                    {
+                        io = (((ra)));
+                        cptr.stF64(((io)), ((void L, (floor(((n1) / (n2)))))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                }
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 44;
+            continue;
         }
         case 44 /* L_OP_BAND: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-            ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-            : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
-                ((__builtin_expect(BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)), 1n))
-                    ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
-                    : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        ((BigInt.asUintN(64, (i1.v))) & (BigInt.asUintN(64, (i2.v))))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
+                    ((__builtin_expect(
+                        BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)),
+                        1n
+                    ))
+                        ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
+                        : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            ((BigInt.asUintN(64, (i1.v))) & (BigInt.asUintN(64, (i2.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 45;
             continue;
-        }
-        ;
-        ;
-        __pc = 45;
-        continue;
         }
         case 45 /* L_OP_BOR: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-            ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-            : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
-                ((__builtin_expect(BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)), 1n))
-                    ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
-                    : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        ((BigInt.asUintN(64, (i1.v))) | (BigInt.asUintN(64, (i2.v))))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
+                    ((__builtin_expect(
+                        BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)),
+                        1n
+                    ))
+                        ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
+                        : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            ((BigInt.asUintN(64, (i1.v))) | (BigInt.asUintN(64, (i2.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 46;
             continue;
-        }
-        ;
-        ;
-        __pc = 46;
-        continue;
         }
         case 46 /* L_OP_BXOR: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-            ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-            : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
-                ((__builtin_expect(BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)), 1n))
-                    ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
-                    : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(
-                        64,
-                        ((BigInt.asUintN(64, (i1.v))) ^ (BigInt.asUintN(64, (i2.v))))
-                    )))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
+                    ((__builtin_expect(
+                        BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)),
+                        1n
+                    ))
+                        ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
+                        : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            ((BigInt.asUintN(64, (i1.v))) ^ (BigInt.asUintN(64, (i2.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 47;
             continue;
-        }
-        ;
-        ;
-        __pc = 47;
-        continue;
         }
         case 47 /* L_OP_SHR: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-            ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-            : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
-                ((__builtin_expect(BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)), 1n))
-                    ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
-                    : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    (luaV_shiftl(
-                        i1.v,
-                        (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (i2.v)))))))
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
+                    ((__builtin_expect(
+                        BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)),
+                        1n
                     ))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
+                        ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
+                        : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        (luaV_shiftl(
+                            i1.v,
+                            (BigInt.asIntN(
+                                64,
+                                (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (i2.v)))))
+                            ))
+                        ))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 48;
             continue;
-        }
-        ;
-        ;
-        __pc = 48;
-        continue;
         }
         case 48 /* L_OP_SHL: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        v1 = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        v2 = (((cptr.add(
-            base,
-            ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
-            ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
-            : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
-                ((__builtin_expect(BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)), 1n))
-                    ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
-                    : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
-            pc = cptr.add(pc, 1, 4);
-            {
-                io = (((ra)));
-                cptr.stI64(((io)), (luaV_shiftl(i1.v, i2.v)));
-                (cptr.st1o((io), $TValue_tt_, 3));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            v1 = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            v2 = (((cptr.add(
+                base,
+                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
+                ? (cptr.stI64((i1), (cptr.ldI64(((v1))))), 1)
+                : luaV_tointegerns(v1, i1, NHC.F2Ieq)) &&
+                    ((__builtin_expect(
+                        BigInt(((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)) != 0)),
+                        1n
+                    ))
+                        ? (cptr.stI64((i2), (cptr.ldI64(((v2))))), 1)
+                        : luaV_tointegerns(v2, i2, NHC.F2Ieq))) {
+                pc = cptr.add(pc, 1, 4);
+                {
+                    io = (((ra)));
+                    cptr.stI64(((io)), (luaV_shiftl(i1.v, i2.v)));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
             }
             ;
-        }
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 49;
             continue;
-        }
-        ;
-        ;
-        __pc = 49;
-        continue;
         }
         case 49 /* L_OP_MMBIN: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        result = (cptr.add(
-            base,
-            (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (void 0);
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            result = (cptr.add(
+                base,
+                (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            (void 0);
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaT_trybinTM(L, ((ra)), rb, result, tm))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaT_trybinTM(L, ((ra)), rb, result, tm))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 50;
             continue;
-        }
-        ;
-        ;
-        __pc = 50;
-        continue;
         }
         case 50 /* L_OP_MMBINI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
-        imm = (((((((((((i) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        flip = ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        result = (cptr.add(
-            base,
-            (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
+            imm = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            flip = ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            result = (cptr.add(
+                base,
+                (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaT_trybiniTM(L, ((ra)), BigInt(imm), flip, result, tm))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaT_trybiniTM(L, ((ra)), BigInt(imm), flip, result, tm))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 51;
             continue;
-        }
-        ;
-        ;
-        __pc = 51;
-        continue;
         }
         case 51 /* L_OP_MMBINK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
-        imm = (cptr.add(
-            k,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        flip = ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        result = (cptr.add(
-            base,
-            (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
+            imm = (cptr.add(
+                k,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            flip = ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            result = (cptr.add(
+                base,
+                (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaT_trybinassocTM(L, ((ra)), imm, flip, result, tm))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaT_trybinassocTM(L, ((ra)), imm, flip, result, tm))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 52;
             continue;
-        }
-        ;
-        ;
-        __pc = 52;
-        continue;
         }
         case 52 /* L_OP_UNM: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
-            ib.v = (cptr.ldI64(((rb))));
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (ib.v))))))))
-                );
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-        } else if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 19)
-                ? (nb = (cptr.ldF64(((rb)))), 1)
-                : (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)
-                    ? (nb = (Number((((cptr.ldI64(((rb)))))))), 1)
-                    : 0))) {
-            {
-                io = (((ra)));
-                cptr.stF64(((io)), ((-(nb))));
-                (cptr.st1o((io), $TValue_tt_, 19));
-            }
-            ;
-        } else
-            (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
+                ib.v = (cptr.ldI64(((rb))));
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (ib.v)))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+            } else if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 19)
+                    ? (nb = (cptr.ldF64(((rb)))), 1)
+                    : (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)
+                        ? (nb = (Number((((cptr.ldI64(((rb)))))))), 1)
+                        : 0))) {
+                {
+                    io = (((ra)));
+                    cptr.stF64(((io)), ((-(nb))));
+                    (cptr.st1o((io), $TValue_tt_, 19));
+                }
+                ;
+            } else
                 (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaT_trybinTM(L, rb, rb, ra, NHC.TM_UNM))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaT_trybinTM(L, rb, rb, ra, NHC.TM_UNM))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 53;
             continue;
-        }
-        ;
-        ;
-        __pc = 53;
-        continue;
         }
         case 53 /* L_OP_BNOT: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
-                : luaV_tointegerns(rb, ib, NHC.F2Ieq))) {
-            {
-                io = (((ra)));
-                cptr.stI64(
-                    ((io)),
-                    ((BigInt.asIntN(64, (18446744073709551615n ^ (BigInt.asUintN(64, (ib.v)))))))
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
+                    ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
+                    : luaV_tointegerns(rb, ib, NHC.F2Ieq))) {
+                {
+                    io = (((ra)));
+                    cptr.stI64(
+                        ((io)),
+                        ((BigInt.asIntN(
+                            64,
+                            (18446744073709551615n ^ (BigInt.asUintN(64, (ib.v))))
+                        )))
+                    );
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+            } else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    ((yield* luaT_trybinTM(L, rb, rb, ra, NHC.TM_BNOT))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
-                (cptr.st1o((io), $TValue_tt_, 3));
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-        } else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                ((yield* luaT_trybinTM(L, rb, rb, ra, NHC.TM_BNOT))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ;
+            __pc = 54;
             continue;
-        }
-        ;
-        ;
-        __pc = 54;
-        continue;
         }
         case 54 /* L_OP_NOT: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 0)))
-            (cptr.st1o((((ra))), $TValue_tt_, 17));
-        else
-            (cptr.st1o((((ra))), $TValue_tt_, 1));
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 1) ||
+                    (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 0)))
+                (cptr.st1o((((ra))), $TValue_tt_, 17));
+            else
+                (cptr.st1o((((ra))), $TValue_tt_, 1));
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 55;
             continue;
-        }
-        ;
-        ;
-        __pc = 55;
-        continue;
         }
         case 55 /* L_OP_LEN: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaV_objlen(
-                L,
-                ra,
-                (((cptr.add(
-                    base,
-                    ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    16
-                ))))
-            ))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaV_objlen(
+                    L,
+                    ra,
+                    (((cptr.add(
+                        base,
+                        ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        16
+                    ))))
+                ))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 56;
             continue;
-        }
-        ;
-        ;
-        __pc = 56;
-        continue;
         }
         case 56 /* L_OP_CONCAT: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        n = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* number of elements to concatenate */
-        cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* mark the end of concat operands */
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            ((yield* luaV_concat(L, n))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            n = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* number of elements to concatenate */
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* mark the end of concat operands */
             (
                 (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, (cptr.ldPtro(L, $lua_State_top)))
-            );  /* 'luaV_concat' ensures correct top */
-            (yield* luaC_step(L));
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-        }
-        ;
-        (void 0);
-        ;
-        (void 0);
-        (void 0);
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                ((yield* luaV_concat(L, n))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, (cptr.ldPtro(L, $lua_State_top)))
+                );  /* 'luaV_concat' ensures correct top */
+                (yield* luaC_step(L));
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+            }
+            ;
+            (void 0);
+            ;
+            (void 0);
+            (void 0);
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 57;
             continue;
-        }
-        ;
-        ;
-        __pc = 57;
-        continue;
         }
         case 57 /* L_OP_CLOSE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaF_close(L, ra, 0, 1))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaF_close(L, ra, 0, 1))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 58;
             continue;
-        }
-        ;
-        ;
-        __pc = 58;
-        continue;
         }
         case 58 /* L_OP_TBC: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        /* create new to-be-closed upvalue */
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            /* create new to-be-closed upvalue */
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaF_newtbcupval(L, ra)))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaF_newtbcupval(L, ra)))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 59;
             continue;
-        }
-        ;
-        ;
-        __pc = 59;
-        continue;
         }
         case 59 /* L_OP_JMP: */: {
-        pc = cptr.add(
-            pc,
-            ((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                16777215 + 0) | 0,
-            4
-        );
-        (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            pc = cptr.add(
+                pc,
+                ((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                    16777215 +
+                    0) |
+                    0,
+                4
+            );
+            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 60;
             continue;
-        }
-        ;
-        ;
-        __pc = 60;
-        continue;
         }
         case 60 /* L_OP_EQ: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        (
-            (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            (cond = (yield* luaV_equalobj(L, ((ra)), rb))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 61;
-        continue;
-        }
-        case 61 /* L_OP_LT: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3) &&
-                ((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
-            ia = (cptr.ldI64(((((ra))))));
-            ib.v = (cptr.ldI64(((rb))));
-            cond = (ia < ib.v);
-        } else if ((((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 3) &&
-                (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 3))
-            cond = LTnum(((ra)), rb);
-        else
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
             (
                 (
                     (cptr.stPtro(ci, $CallInfo_u, pc)),
                     cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
                 ),
-                (cond = (yield* lessthanothers(L, ((ra)), rb))),
+                (cond = (yield* luaV_equalobj(L, ((ra)), rb))),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 62;
-        continue;
-        }
-        case 62 /* L_OP_LE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3) &&
-                ((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
-            ia = (cptr.ldI64(((((ra))))));
-            ib.v = (cptr.ldI64(((rb))));
-            cond = (ia <= ib.v);
-        } else if ((((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 3) &&
-                (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 3))
-            cond = LEnum(((ra)), rb);
-        else
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                (cond = (yield* lessequalothers(L, ((ra)), rb))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 63;
-        continue;
-        }
-        case 63 /* L_OP_EQK: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (cptr.add(
-            k,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ));
-        /* basic types do not use '__eq'; we can use raw equality */
-        cond = (yield* luaV_equalobj(null, ((ra)), rb));
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 64;
-        continue;
-        }
-        case 64 /* L_OP_EQI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        im = (((((((((((i) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
-            cond = ((cptr.ldI64(((((ra)))))) == BigInt(im));
-        else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19))
-            cond = (((cptr.ldF64(((((ra))))))) == ((((im)))));
-        else
-            cond = 0;  /* other types cannot be equal to a number */
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 65;
-        continue;
-        }
-        case 65 /* L_OP_LTI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        im = (((((((((((i) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
-            cond = ((cptr.ldI64(((((ra)))))) < BigInt(im));
-        else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
-            fa = (cptr.ldF64(((((ra))))));
-            fim = (((im)));
-            cond = ((fa) < (fim));
-        } else {
-            isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 0, isf, NHC.TM_LT))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        }
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 66;
-        continue;
-        }
-        case 66 /* L_OP_LEI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        im = (((((((((((i) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
-            cond = ((cptr.ldI64(((((ra)))))) <= BigInt(im));
-        else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
-            fa = (cptr.ldF64(((((ra))))));
-            fim = (((im)));
-            cond = ((fa) <= (fim));
-        } else {
-            isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 0, isf, NHC.TM_LE))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        }
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 67;
-        continue;
-        }
-        case 67 /* L_OP_GTI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        im = (((((((((((i) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
-            cond = ((cptr.ldI64(((((ra)))))) > BigInt(im));
-        else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
-            fa = (cptr.ldF64(((((ra))))));
-            fim = (((im)));
-            cond = ((fa) > (fim));
-        } else {
-            isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 1, isf, NHC.TM_LT))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        }
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 68;
-        continue;
-        }
-        case 68 /* L_OP_GEI: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        im = (((((((((((i) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) - 127) | 0);
-        if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
-            cond = ((cptr.ldI64(((((ra)))))) >= BigInt(im));
-        else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
-            fa = (cptr.ldF64(((((ra))))));
-            fim = (((im)));
-            cond = ((fa) >= (fim));
-        } else {
-            isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            (
-                (
-                    (cptr.stPtro(ci, $CallInfo_u, pc)),
-                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-                ),
-                (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 1, isf, NHC.TM_LE))),
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-            );
-        }
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 69;
-        continue;
-        }
-        case 69 /* L_OP_TEST: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        cond = !(((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 0));
-        if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            ni = cptr.ldI32(pc);
-            {
-                pc = cptr.add(
-                    pc,
-                    ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215 + 1) | 0,
-                    4
-                );
-                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-            }
-            ;
-        }
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 70;
-        continue;
-        }
-        case 70 /* L_OP_TESTSET: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        rb = (((cptr.add(
-            base,
-            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            16
-        ))));
-        if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 1) ||
-            (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 0)
-            ? 1
-            : 0) ==
-                ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
-            pc = cptr.add(pc, 1, 4);
-        else {
-            {
-                io1 = (((ra)));
-                io2 = (rb);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
-            }
-            ;
-            {
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
                 ni = cptr.ldI32(pc);
                 {
                     pc = cptr.add(
                         pc,
                         ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                            16777215 + 1) | 0,
+                            16777215 +
+                            1) |
+                            0,
                         4
                     );
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
@@ -5498,217 +4983,775 @@ export function* luaV_execute(L, ci) {
                 ;
             }
             ;
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 71;
-        continue;
-        }
-        case 71 /* L_OP_CALL: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        nresults = (((((((((i) >>> 24) &
-            (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) - 1) |
-                0;
-        if (b != 0)
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));  /* top signals number of arguments */
-        /* else previous instruction set top */
-        (cptr.stPtro(ci, $CallInfo_u, pc));  /* in case of errors */
-        if (cptr.eq((newci = (yield* luaD_precall(L, ra, nresults))), (null))) { __pc = 94; continue; }
-        __pc = 95; continue;
-        }
-        case 94: {
-        (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* C call; nothing else to be done */
-        __pc = 93;
-        continue;
-        }
-        case 95: {
-        ci = newci;
-        { __pc = 1; continue; }
-        }
-        case 93: {
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 72;
-        continue;
-        }
-        case 72 /* L_OP_TAILCALL: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* number of arguments + 1 (function) */
-        nparams1 = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        /* delta is virtual 'func' - real 'func' (vararg functions) */
-        delta = (nparams1) ? (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0 : 0;
-        if (b != 0)
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));
-        else
-            b = (Number(BigInt.asIntN(
-                32,
-                ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
-            )));
-        (cptr.stPtro(ci, $CallInfo_u, pc));  /* several calls here can raise errors */
-        if (((((((((i) & 32768) >>> 0))) | 0)))) {
-            luaF_closeupval(L, base);  /* close upvalues from current call */
-            (void 0);  /* no pending tbc variables */
-            (void 0);
-        }
-        if ((n = (yield* luaD_pretailcall(L, ci, ra, b, delta))) < 0) { __pc = 97; continue; }
-        __pc = 98; continue;
-        }
-        case 97: {
-        { __pc = 1; continue; }
-        }
-        case 98: {
-        cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));  /* restore 'func' (if vararg) */
-        (yield* luaD_poscall(L, ci, n));  /* finish caller */
-        (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
-        { __pc = 76; continue; }
-        }
-        case 96: {
-        __pc = 73;
-        continue;
-        }
-        case 73 /* L_OP_RETURN: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        n = (((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) - 1) | 0;  /* number of results */
-        nparams1 = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        if (n < 0)
-            n = (Number(BigInt.asIntN(
-                32,
-                ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
-            )));  /* get what is available */
-        (cptr.stPtro(ci, $CallInfo_u, pc));
-        if (((((((((i) & 32768) >>> 0))) | 0)))) {
-            cptr.stI32o(ci, $CallInfo_u2, n);  /* save number of returns */
-            if (cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));
-            (yield* luaF_close(L, base, -1, 1));
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-                    (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-                    ra = (cptr.add(
-                        base,
-                        (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                        16
-                    ));
-                }
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
+            ;
+            __pc = 61;
+            continue;
         }
-        if (nparams1)
-            cptr.stPtr(
-                ci,
-                cptr.sub(cptr.ldPtr(ci), (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0, 16)
-            );
-        cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* set call for 'luaD_poscall' */
-        (yield* luaD_poscall(L, ci, n));
-        (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
-        { __pc = 76; continue; }
-        }
-        case 74 /* L_OP_RETURN0: */: {
-        if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
+        case 61 /* L_OP_LT: */: {
             ra = (cptr.add(
                 base,
                 (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            cptr.stPtro(L, $lua_State_top, ra);
-            (cptr.stPtro(ci, $CallInfo_u, pc));
-            (yield* luaD_poscall(L, ci, 0));  /* no hurry... */
-            trap = 1;
-        } else {
-            cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));  /* back to caller */
-            cptr.stPtro(L, $lua_State_top, cptr.add(base, -(1), 16));
-            for (
-                nres = cptr.ldI16o(ci, $CallInfo_nresults);
-                (__builtin_expect(BigInt(((nres > 0) != 0)), 0n));
-                nres--
-            )
-                (cptr.st1o(
-                    (((cptr.postinc(
-                        () => cptr.ldPtro(L, $lua_State_top),
-                        (v) => { cptr.stPtro(L, $lua_State_top, v); },
-                        16
-                    )))),
-                    $TValue_tt_,
-                    0
-                ));  /* all results are nil */
-        }
-        { __pc = 76; continue; }
-        }
-        case 75 /* L_OP_RETURN1: */: {
-        if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
-            ra = (cptr.add(
+            rb = (((cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
                 16
-            ));
-            cptr.stPtro(L, $lua_State_top, cptr.add(ra, 1, 16));
-            (cptr.stPtro(ci, $CallInfo_u, pc));
-            (yield* luaD_poscall(L, ci, 1));  /* no hurry... */
-            trap = 1;
-        } else {
-            nres = cptr.ldI16o(ci, $CallInfo_nresults);
-            cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));  /* back to caller */
-            if (nres == 0)
-                cptr.stPtro(L, $lua_State_top, cptr.add(base, -(1), 16));  /* asked for no results */
+            ))));
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
+                ia = (cptr.ldI64(((((ra))))));
+                ib.v = (cptr.ldI64(((rb))));
+                cond = (ia < ib.v);
+            } else if ((((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 3) &&
+                    (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 3))
+                cond = LTnum(((ra)), rb);
+            else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    (cond = (yield* lessthanothers(L, ((ra)), rb))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
             else {
-                ra = (cptr.add(
-                    base,
-                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                    16
-                ));
+                ni = cptr.ldI32(pc);
                 {
-                    io1 = (((cptr.add(base, -(1), 16))));  /* at least this result */
-                    io2 = (((ra)));
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 62;
+            continue;
+        }
+        case 62 /* L_OP_LE: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3) &&
+                    ((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
+                ia = (cptr.ldI64(((((ra))))));
+                ib.v = (cptr.ldI64(((rb))));
+                cond = (ia <= ib.v);
+            } else if ((((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 3) &&
+                    (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 3))
+                cond = LEnum(((ra)), rb);
+            else
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    (cond = (yield* lessequalothers(L, ((ra)), rb))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 63;
+            continue;
+        }
+        case 63 /* L_OP_EQK: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (cptr.add(
+                k,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ));
+            /* basic types do not use '__eq'; we can use raw equality */
+            cond = (yield* luaV_equalobj(null, ((ra)), rb));
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 64;
+            continue;
+        }
+        case 64 /* L_OP_EQI: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
+                cond = ((cptr.ldI64(((((ra)))))) == BigInt(im));
+            else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19))
+                cond = (((cptr.ldF64(((((ra))))))) == ((((im)))));
+            else
+                cond = 0;  /* other types cannot be equal to a number */
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 65;
+            continue;
+        }
+        case 65 /* L_OP_LTI: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
+                cond = ((cptr.ldI64(((((ra)))))) < BigInt(im));
+            else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
+                fa = (cptr.ldF64(((((ra))))));
+                fim = (((im)));
+                cond = ((fa) < (fim));
+            } else {
+                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 0, isf, NHC.TM_LT))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            }
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 66;
+            continue;
+        }
+        case 66 /* L_OP_LEI: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
+                cond = ((cptr.ldI64(((((ra)))))) <= BigInt(im));
+            else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
+                fa = (cptr.ldF64(((((ra))))));
+                fim = (((im)));
+                cond = ((fa) <= (fim));
+            } else {
+                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 0, isf, NHC.TM_LE))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            }
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 67;
+            continue;
+        }
+        case 67 /* L_OP_GTI: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
+                cond = ((cptr.ldI64(((((ra)))))) > BigInt(im));
+            else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
+                fa = (cptr.ldF64(((((ra))))));
+                fim = (((im)));
+                cond = ((fa) > (fim));
+            } else {
+                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 1, isf, NHC.TM_LT))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            }
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 68;
+            continue;
+        }
+        case 68 /* L_OP_GEI: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+                    127) | 0);
+            if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
+                cond = ((cptr.ldI64(((((ra)))))) >= BigInt(im));
+            else if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 19)) {
+                fa = (cptr.ldF64(((((ra))))));
+                fim = (((im)));
+                cond = ((fa) >= (fim));
+            } else {
+                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                (
+                    (
+                        (cptr.stPtro(ci, $CallInfo_u, pc)),
+                        cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                    ),
+                    (cond = (yield* luaT_callorderiTM(L, ((ra)), im, 1, isf, NHC.TM_LE))),
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+                );
+            }
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 69;
+            continue;
+        }
+        case 69 /* L_OP_TEST: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            cond = !(((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 1) ||
+                    (((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 0));
+            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                ni = cptr.ldI32(pc);
+                {
+                    pc = cptr.add(
+                        pc,
+                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                            16777215 +
+                            1) |
+                            0,
+                        4
+                    );
+                    (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                }
+                ;
+            }
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 70;
+            continue;
+        }
+        case 70 /* L_OP_TESTSET: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            rb = (((cptr.add(
+                base,
+                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                16
+            ))));
+            if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 1) ||
+                (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 0)
+                ? 1
+                : 0) ==
+                    ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                pc = cptr.add(pc, 1, 4);
+            else {
+                {
+                    io1 = (((ra)));
+                    io2 = (rb);
                     cptr.memcpy(io1, io2, 8);
                     (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
                     (void L, (void 0));
                     (void 0);
                 }
                 ;
-                cptr.stPtro(L, $lua_State_top, base);
-                for (; (__builtin_expect(BigInt(((nres > 1) != 0)), 0n)); nres--)
+                {
+                    ni = cptr.ldI32(pc);
+                    {
+                        pc = cptr.add(
+                            pc,
+                            ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                                0)) -
+                                16777215 +
+                                1) |
+                                0,
+                            4
+                        );
+                        (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                    }
+                    ;
+                }
+                ;
+            }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 71;
+            continue;
+        }
+        case 71 /* L_OP_CALL: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            nresults = (((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                    0))) - 1) | 0;
+            if (b != 0)
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));  /* top signals number of arguments */
+            /* else previous instruction set top */
+            (cptr.stPtro(ci, $CallInfo_u, pc));  /* in case of errors */
+            if (cptr.eq((newci = (yield* luaD_precall(L, ra, nresults))), (null))) { __pc = 94; continue; }
+            __pc = 95; continue;
+        }
+        case 94: {
+            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* C call; nothing else to be done */
+            __pc = 93;
+            continue;
+        }
+        case 95: {
+            ci = newci;
+            { __pc = 1; continue; }
+        }
+        case 93: {
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 72;
+            continue;
+        }
+        case 72 /* L_OP_TAILCALL: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* number of arguments + 1 (function) */
+            nparams1 = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            /* delta is virtual 'func' - real 'func' (vararg functions) */
+            delta = (nparams1) ? (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0 : 0;
+            if (b != 0)
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));
+            else
+                b = (Number(BigInt.asIntN(
+                    32,
+                    ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
+                )));
+            (cptr.stPtro(ci, $CallInfo_u, pc));  /* several calls here can raise errors */
+            if (((((((((i) & 32768) >>> 0))) | 0)))) {
+                luaF_closeupval(L, base);  /* close upvalues from current call */
+                (void 0);  /* no pending tbc variables */
+                (void 0);
+            }
+            if ((n = (yield* luaD_pretailcall(L, ci, ra, b, delta))) < 0) { __pc = 97; continue; }
+            __pc = 98; continue;
+        }
+        case 97: {
+            { __pc = 1; continue; }
+        }
+        case 98: {
+            cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));  /* restore 'func' (if vararg) */
+            (yield* luaD_poscall(L, ci, n));  /* finish caller */
+            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
+            { __pc = 76; continue; }
+        }
+        case 96: {
+            __pc = 73;
+            continue;
+        }
+        case 73 /* L_OP_RETURN: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            n = (((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                    0))) - 1) | 0;  /* number of results */
+            nparams1 = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            if (n < 0)
+                n = (Number(BigInt.asIntN(
+                    32,
+                    ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
+                )));  /* get what is available */
+            (cptr.stPtro(ci, $CallInfo_u, pc));
+            if (((((((((i) & 32768) >>> 0))) | 0)))) {
+                cptr.stI32o(ci, $CallInfo_u2, n);  /* save number of returns */
+                if (cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));
+                (yield* luaF_close(L, base, -1, 1));
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+                {
+                    if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                        (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+                        ra = (cptr.add(
+                            base,
+                            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                            16
+                        ));
+                    }
+                }
+                ;
+            }
+            if (nparams1)
+                cptr.stPtr(
+                    ci,
+                    cptr.sub(cptr.ldPtr(ci), (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0, 16)
+                );
+            cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* set call for 'luaD_poscall' */
+            (yield* luaD_poscall(L, ci, n));
+            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* 'luaD_poscall' can change hooks */
+            { __pc = 76; continue; }
+        }
+        case 74 /* L_OP_RETURN0: */: {
+            if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
+                ra = (cptr.add(
+                    base,
+                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    16
+                ));
+                cptr.stPtro(L, $lua_State_top, ra);
+                (cptr.stPtro(ci, $CallInfo_u, pc));
+                (yield* luaD_poscall(L, ci, 0));  /* no hurry... */
+                trap = 1;
+            } else {
+                cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));  /* back to caller */
+                cptr.stPtro(L, $lua_State_top, cptr.add(base, -(1), 16));
+                for (
+                    nres = cptr.ldI16o(ci, $CallInfo_nresults);
+                    (__builtin_expect(BigInt(((nres > 0) != 0)), 0n));
+                    nres--
+                )
                     (cptr.st1o(
                         (((cptr.postinc(
                             () => cptr.ldPtro(L, $lua_State_top),
@@ -5717,58 +5760,258 @@ export function* luaV_execute(L, ci) {
                         )))),
                         $TValue_tt_,
                         0
-                    ));  /* complete missing results */
+                    ));  /* all results are nil */
             }
+            { __pc = 76; continue; }
         }
-        __pc = 76;
-        continue;
+        case 75 /* L_OP_RETURN1: */: {
+            if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
+                ra = (cptr.add(
+                    base,
+                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    16
+                ));
+                cptr.stPtro(L, $lua_State_top, cptr.add(ra, 1, 16));
+                (cptr.stPtro(ci, $CallInfo_u, pc));
+                (yield* luaD_poscall(L, ci, 1));  /* no hurry... */
+                trap = 1;
+            } else {
+                nres = cptr.ldI16o(ci, $CallInfo_nresults);
+                cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));  /* back to caller */
+                if (nres == 0)
+                    cptr.stPtro(L, $lua_State_top, cptr.add(base, -(1), 16));  /* asked for no results */
+                else {
+                    ra = (cptr.add(
+                        base,
+                        (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                        16
+                    ));
+                    {
+                        io1 = (((cptr.add(base, -(1), 16))));  /* at least this result */
+                        io2 = (((ra)));
+                        cptr.memcpy(io1, io2, 8);
+                        (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                        (void L, (void 0));
+                        (void 0);
+                    }
+                    ;
+                    cptr.stPtro(L, $lua_State_top, base);
+                    for (; (__builtin_expect(BigInt(((nres > 1) != 0)), 0n)); nres--)
+                        (cptr.st1o(
+                            (((cptr.postinc(
+                                () => cptr.ldPtro(L, $lua_State_top),
+                                (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                                16
+                            )))),
+                            $TValue_tt_,
+                            0
+                        ));  /* complete missing results */
+                }
+            }
+            __pc = 76;
+            continue;
         }
         case 76 /* ret: */: {
-        if (cptr.ldU16o(ci, $CallInfo_callstatus) & 4) { __pc = 100; continue; }
-        __pc = 101; continue;
+            if (cptr.ldU16o(ci, $CallInfo_callstatus) & 4) { __pc = 100; continue; }
+            __pc = 101; continue;
         }
         case 100: {
-        return;  /* end this frame */
+            return;  /* end this frame */
         }
         case 101: {
-        ci = cptr.ldPtro(ci, $CallInfo_previous);
-        { __pc = 2; continue; }
+            ci = cptr.ldPtro(ci, $CallInfo_previous);
+            { __pc = 2; continue; }
         }
         case 99: {
-        __pc = 77;
-        continue;
+            __pc = 77;
+            continue;
         }
         case 77 /* L_OP_FORLOOP: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (((cptr.ld1uo(((((cptr.add(ra, 2, 16))))), $TValue_tt_)) == 3)) {
-            count = (BigInt.asUintN(64, ((cptr.ldI64(((((cptr.add(ra, 1, 16))))))))));
-            if (count > 0n) {
-                step = (cptr.ldI64(((((cptr.add(ra, 2, 16)))))));
-                idx = (cptr.ldI64(((((ra))))));  /* internal index */
-                {
-                    io = (((cptr.add(ra, 1, 16))));  /* update counter */
-                    (void 0);
-                    cptr.stI64(((io)), BigInt.asIntN(64, (BigInt.asUintN(64, count - 1n))));
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (((cptr.ld1uo(((((cptr.add(ra, 2, 16))))), $TValue_tt_)) == 3)) {
+                count = (BigInt.asUintN(64, ((cptr.ldI64(((((cptr.add(ra, 1, 16))))))))));
+                if (count > 0n) {
+                    step = (cptr.ldI64(((((cptr.add(ra, 2, 16)))))));
+                    idx = (cptr.ldI64(((((ra))))));  /* internal index */
+                    {
+                        io = (((cptr.add(ra, 1, 16))));  /* update counter */
+                        (void 0);
+                        cptr.stI64(((io)), BigInt.asIntN(64, (BigInt.asUintN(64, count - 1n))));
+                    }
+                    ;
+                    idx = (BigInt.asIntN(
+                        64,
+                        (BigInt.asUintN(
+                            64,
+                            (BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step)))
+                        ))
+                    ));  /* add step to index */
+                    {
+                        io = (((ra)));  /* update internal index */
+                        (void 0);
+                        cptr.stI64(((io)), (idx));
+                    }
+                    ;
+                    {
+                        io = (((cptr.add(ra, 3, 16))));  /* and control variable */
+                        cptr.stI64(((io)), (idx));
+                        (cptr.st1o((io), $TValue_tt_, 3));
+                    }
+                    ;
+                    pc = cptr.sub(
+                        pc,
+                        ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        4
+                    );  /* jump back */
                 }
-                ;
-                idx = (BigInt.asIntN(
-                    64,
-                    (BigInt.asUintN(64, (BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step)))))
-                ));  /* add step to index */
+            } else if (floatforloop(ra))
+                pc = cptr.sub(
+                    pc,
+                    ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                    4
+                );  /* jump back */
+            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* allows a signal to break the loop */
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 78;
+            continue;
+        }
+        case 78 /* L_OP_FORPREP: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+            );  /* in case of errors */
+            if ((yield* forprep(L, ra)))
+                pc = cptr.add(
+                    pc,
+                    (((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) +
+                        1) |
+                        0,
+                    4
+                );  /* skip the loop */
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 79;
+            continue;
+        }
+        case 79 /* L_OP_TFORPREP: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            /* create to-be-closed upvalue (if needed) */
+            (
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaF_newtbcupval(L, cptr.add(ra, 3, 16))))
+            );
+            pc = cptr.add(
+                pc,
+                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                4
+            );
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));  /* go to next instruction */
+            (void 0);
+            { __pc = 81; continue; }
+        }
+        case 80 /* L_OP_TFORCALL: */: {
+            __pc = 81;
+            continue;
+        }
+        case 81 /* l_tforcall: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            /* 'ra' has the iterator function, 'ra + 1' has the state,
+               'ra + 2' has the control variable, and 'ra + 3' has the
+               to-be-closed variable. The call will use the stack after
+               these values (starting at 'ra + 4')
+            */
+            /* push function, state, and control variable */
+            cptr.memcpy(cptr.add(ra, 4, 16), ra, 48n);
+            cptr.stPtro(L, $lua_State_top, cptr.add(cptr.add(ra, 4, 16), 3, 16));
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                ((yield* luaD_call(
+                    L,
+                    cptr.add(ra, 4, 16),
+                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
+                ))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );  /* do the call */
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));  /* stack may have changed */
+                ra = (cptr.add(
+                    base,
+                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    16
+                ));
+            }
+            ;
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));  /* go to next instruction */
+            (void 0);
+            { __pc = 83; continue; }
+        }
+        case 82 /* L_OP_TFORLOOP: */: {
+            __pc = 83;
+            continue;
+        }
+        case 83 /* l_tforloop: */: {
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            if (!(((((cptr.ld1uo(((((cptr.add(ra, 4, 16))))), $TValue_tt_))) & 15)) == 0)) {
                 {
-                    io = (((ra)));  /* update internal index */
+                    io1 = (((cptr.add(ra, 2, 16))));  /* save control variable */
+                    io2 = (((cptr.add(ra, 4, 16))));
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
                     (void 0);
-                    cptr.stI64(((io)), (idx));
-                }
-                ;
-                {
-                    io = (((cptr.add(ra, 3, 16))));  /* and control variable */
-                    cptr.stI64(((io)), (idx));
-                    (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
                 pc = cptr.sub(
@@ -5777,393 +6020,248 @@ export function* luaV_execute(L, ci) {
                     4
                 );  /* jump back */
             }
-        } else if (floatforloop(ra))
-            pc = cptr.sub(
-                pc,
-                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                4
-            );  /* jump back */
-        (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* allows a signal to break the loop */
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 84;
             continue;
         }
-        ;
-        ;
-        __pc = 78;
-        continue;
-        }
-        case 78 /* L_OP_FORPREP: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-        );  /* in case of errors */
-        if ((yield* forprep(L, ra)))
-            pc = cptr.add(
-                pc,
-                (((((((((i) >>> 15) &
-                    (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) + 1) | 0,
-                4
-            );  /* skip the loop */
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 79;
-        continue;
-        }
-        case 79 /* L_OP_TFORPREP: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        /* create to-be-closed upvalue (if needed) */
-        (
-            (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaF_newtbcupval(L, cptr.add(ra, 3, 16))))
-        );
-        pc = cptr.add(
-            pc,
-            ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            4
-        );
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));  /* go to next instruction */
-        (void 0);
-        { __pc = 81; continue; }
-        }
-        case 80 /* L_OP_TFORCALL: */: {
-        __pc = 81;
-        continue;
-        }
-        case 81 /* l_tforcall: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        /* 'ra' has the iterator function, 'ra + 1' has the state,
-           'ra + 2' has the control variable, and 'ra + 3' has the
-           to-be-closed variable. The call will use the stack after
-           these values (starting at 'ra + 4')
-        */
-        /* push function, state, and control variable */
-        cptr.memcpy(cptr.add(ra, 4, 16), ra, 48n);
-        cptr.stPtro(L, $lua_State_top, cptr.add(cptr.add(ra, 4, 16), 3, 16));
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            ((yield* luaD_call(
-                L,
-                cptr.add(ra, 4, 16),
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
-            ))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );  /* do the call */
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));  /* stack may have changed */
+        case 84 /* L_OP_SETLIST: */: {
             ra = (cptr.add(
                 base,
                 (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-        }
-        ;
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));  /* go to next instruction */
-        (void 0);
-        { __pc = 83; continue; }
-        }
-        case 82 /* L_OP_TFORLOOP: */: {
-        __pc = 83;
-        continue;
-        }
-        case 83 /* l_tforloop: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        if (!(((((cptr.ld1uo(((((cptr.add(ra, 4, 16))))), $TValue_tt_))) & 15)) == 0)) {
+            n = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            last = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) >>> 0;
+            h = ((((((cptr.ldPtr(((((ra)))))))))));
+            if (n == 0)
+                n = ((Number(BigInt.asIntN(
+                    32,
+                    ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
+                ))) - 1) | 0;  /* get up to the top */
+            else
+                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top in case of emergency GC */
+            last = (last + (n >>> 0)) | 0;
+            if (((((((((i) & 32768) >>> 0))) | 0)))) {
+                last = (last +
+                        (Math.imul(
+                            ((((((((cptr.ldI32(pc)) >>> 7) &
+                                (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
+                                0)) |
+                                0))),
+                            256
+                        ) >>>
+                            0)) | 0;
+                pc = cptr.add(pc, 1, 4);
+            }
+            if (last > luaH_realasize(h))
+                (yield* luaH_resizearray(L, h, last));  /* preallocate it at once */
+            for (; n > 0; n--) {
+                val = ((cptr.add(ra, n, 16)));
+                {
+                    io1 = (cptr.add(
+                        cptr.ldPtro(h, $Table_array),
+                        (last - 1) >>> 0,
+                        $sizeof_TValue
+                    ));
+                    io2 = (val);
+                    cptr.memcpy(io1, io2, 8);
+                    (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
+                    (void L, (void 0));
+                    (void 0);
+                }
+                ;
+                last--;
+                (((cptr.ld1uo((val), $TValue_tt_)) & 64)
+                        ? ((((cptr.ld1uo((((((h))))), $GCObject_marked)) & 32) &&
+                            ((cptr.ld1uo(((cptr.ldPtr(((val))))), $GCObject_marked)) & 24))
+                            ? luaC_barrierback_(L, ((((h)))))
+                            : (void 0))
+                        : (void 0));
+            }
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
             {
-                io1 = (((cptr.add(ra, 2, 16))));  /* save control variable */
-                io2 = (((cptr.add(ra, 4, 16))));
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
             }
             ;
-            pc = cptr.sub(
-                pc,
-                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                4
-            );  /* jump back */
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
-            continue;
-        }
-        ;
-        ;
-        __pc = 84;
-        continue;
-        }
-        case 84 /* L_OP_SETLIST: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        n = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-        last = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) >>> 0;
-        h = ((((((cptr.ldPtr(((((ra)))))))))));
-        if (n == 0)
-            n = ((Number(BigInt.asIntN(
-                32,
-                ((cptr.diff(cptr.ldPtro(L, $lua_State_top), ra) / 16n))
-            ))) - 1) |
-                    0;  /* get up to the top */
-        else
-            cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top in case of emergency GC */
-        last = (last + (n >>> 0)) | 0;
-        if (((((((((i) & 32768) >>> 0))) | 0)))) {
-            last = (last +
-                (Math.imul(
-                    ((((((((cptr.ldI32(pc)) >>> 7) &
-                        (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                    256
-                ) >>> 0)) |
-                    0;
-            pc = cptr.add(pc, 1, 4);
-        }
-        if (last > luaH_realasize(h))
-            (yield* luaH_resizearray(L, h, last));  /* preallocate it at once */
-        for (; n > 0; n--) {
-            val = ((cptr.add(ra, n, 16)));
-            {
-                io1 = (cptr.add(cptr.ldPtro(h, $Table_array), (last - 1) >>> 0, $sizeof_TValue));
-                io2 = (val);
-                cptr.memcpy(io1, io2, 8);
-                (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
-                (void L, (void 0));
-                (void 0);
-            }
             ;
-            last--;
-            (((cptr.ld1uo((val), $TValue_tt_)) & 64)
-                    ? ((((cptr.ld1uo((((((h))))), $GCObject_marked)) & 32) &&
-                        ((cptr.ld1uo(((cptr.ldPtr(((val))))), $GCObject_marked)) & 24))
-                        ? luaC_barrierback_(L, ((((h)))))
-                        : (void 0))
-                    : (void 0));
-        }
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            __pc = 85;
             continue;
-        }
-        ;
-        ;
-        __pc = 85;
-        continue;
         }
         case 85 /* L_OP_CLOSURE: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        p = cptr.ldPtro(
-            cptr.ldPtro(cptr.ldPtro(cl, $LClosure_p), $Proto_p),
-            ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-            8
-        );
-        (
-            (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* pushclosure(L, p, cptr.add(cl, $LClosure_upvals), base, ra)))
-        );
-        if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
-            (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, (cptr.add(ra, 1, 16)))
-            );
-            (yield* luaC_step(L));
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
-        }
-        ;
-        (void 0);
-        ;
-        (void 0);
-        (void 0);
-        ;
-        ;
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            p = cptr.ldPtro(
+                cptr.ldPtro(cptr.ldPtro(cl, $LClosure_p), $Proto_p),
+                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
                 8
-            )];
+            );
+            (
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* pushclosure(L, p, cptr.add(cl, $LClosure_upvals), base, ra)))
+            );
+            if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, (cptr.add(ra, 1, 16)))
+                );
+                (yield* luaC_step(L));
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8));
+            }
+            ;
+            (void 0);
+            ;
+            (void 0);
+            (void 0);
+            ;
+            ;
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 86;
             continue;
-        }
-        ;
-        ;
-        __pc = 86;
-        continue;
         }
         case 86 /* L_OP_VARARG: */: {
-        ra = (cptr.add(
-            base,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            16
-        ));
-        n = (((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) - 1) | 0;  /* required results */
-        (
+            ra = (cptr.add(
+                base,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                16
+            ));
+            n = (((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                    0))) - 1) | 0;  /* required results */
             (
-                (cptr.stPtro(ci, $CallInfo_u, pc)),
-                cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
-            ),
-            ((yield* luaT_getvarargs(L, ci, ra, n))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+                (
+                    (cptr.stPtro(ci, $CallInfo_u, pc)),
+                    cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top))
+                ),
+                ((yield* luaT_getvarargs(L, ci, ra, n))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 87;
             continue;
-        }
-        ;
-        ;
-        __pc = 87;
-        continue;
         }
         case 87 /* L_OP_VARARGPREP: */: {
-        (
-            (cptr.stPtro(ci, $CallInfo_u, pc)),
-            ((yield* luaT_adjustvarargs(
-                L,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-                ci,
-                cptr.ldPtro(cl, $LClosure_p)
-            ))),
-            (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
-        );
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            (yield* luaD_hookcall(L, ci));
-            cptr.stI32o(L, $lua_State_oldpc, 1);  /* next opcode will be seen as a "new" line */
-        }
-        (base = cptr.add(cptr.ldPtr(ci), 1, 16));  /* function has new base after adjustment */
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            (
+                (cptr.stPtro(ci, $CallInfo_u, pc)),
+                ((yield* luaT_adjustvarargs(
+                    L,
+                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    ci,
+                    cptr.ldPtro(cl, $LClosure_p)
+                ))),
+                (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
+            );
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                (yield* luaD_hookcall(L, ci));
+                cptr.stI32o(L, $lua_State_oldpc, 1);  /* next opcode will be seen as a "new" line */
+            }
+            (base = cptr.add(cptr.ldPtr(ci), 1, 16));  /* function has new base after adjustment */
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 88;
             continue;
-        }
-        ;
-        ;
-        __pc = 88;
-        continue;
         }
         case 88 /* L_OP_EXTRAARG: */: {
-        (void 0);
-        if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
-            trap = (yield* luaG_traceexec(L, pc));
-            (base = cptr.add(cptr.ldPtr(ci), 1, 16));
-        }
-        i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
-        ;
-        {
-            __pc = __smNums[cptr.ldPtro(
-                __static_luaV_execute_disptab,
-                ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
-                8
-            )];
+            (void 0);
+            if ((__builtin_expect(BigInt(((trap) != 0)), 0n))) {
+                trap = (yield* luaG_traceexec(L, pc));
+                (base = cptr.add(cptr.ldPtr(ci), 1, 16));
+            }
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            ;
+            {
+                __pc = __smNums[cptr.ldPtro(
+                    __static_luaV_execute_disptab,
+                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    8
+                )];
+                continue;
+            }
+            ;
+            ;
+            __pc = 92;
             continue;
         }
-        ;
-        ;
-        __pc = 92;
-        continue;
-        }
         case 92: {
-        __pc = 90;
-        continue;
+            __pc = 90;
+            continue;
         }
         case 89: {
-        __pc = -1;
-        continue;
+            __pc = -1;
+            continue;
         }
         }
         if (__pc === -1) break __dispatch;

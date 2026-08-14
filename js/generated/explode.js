@@ -213,94 +213,91 @@ function explosionmask(m, adtyp, olet) {
     if (cptr.eq(m, cptr.add(gy, $instance_globals_y_youmonst))) {
         switch (adtyp) {
             case NHM.AD_PHYS:
-            /* leave 'res' with EXPL_NONE */
-            break;
+                /* leave 'res' with EXPL_NONE */
+                break;
             case NHM.AD_MAGM:
-            if (Antimagic())
-                res = NHC.EXPL_HERO;
-            break;
+                if (Antimagic())
+                    res = NHC.EXPL_HERO;
+                break;
             case NHM.AD_FIRE:
-            if (Fire_resistance())
-                res = NHC.EXPL_HERO;
-            break;
+                if (Fire_resistance())
+                    res = NHC.EXPL_HERO;
+                break;
             case NHM.AD_COLD:
-            if (Cold_resistance())
-                res = NHC.EXPL_HERO;
-            break;
+                if (Cold_resistance())
+                    res = NHC.EXPL_HERO;
+                break;
             case NHM.AD_DISN:
-            if ((olet == NHC.WAND_CLASS)
-                    ? (nonliving(cptr.ldPtro(m, $monst_data)) ||
-                        ((cptr.ldU64o(
-                            (cptr.ldPtro(m, $monst_data)),
-                            $permonst_mflags2
-                        ) & 256n) != 0n)
-                        ? 1
-                        : 0)
-                    : Disint_resistance())
-                res = NHC.EXPL_HERO;
-            break;
+                if ((olet == NHC.WAND_CLASS)
+                        ? (nonliving(cptr.ldPtro(m, $monst_data)) ||
+                            ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) &
+                                256n) != 0n)
+                            ? 1
+                            : 0)
+                        : Disint_resistance())
+                    res = NHC.EXPL_HERO;
+                break;
             case NHM.AD_ELEC:
-            if (Shock_resistance())
-                res = NHC.EXPL_HERO;
-            break;
+                if (Shock_resistance())
+                    res = NHC.EXPL_HERO;
+                break;
             case NHM.AD_DRST:
-            if (Poison_resistance())
-                res = NHC.EXPL_HERO;
-            break;
+                if (Poison_resistance())
+                    res = NHC.EXPL_HERO;
+                break;
             case NHM.AD_ACID:
-            if (Acid_resistance())
-                res = NHC.EXPL_HERO;
-            break;
+                if (Acid_resistance())
+                    res = NHC.EXPL_HERO;
+                break;
             default:
-            impossible(__s_explosion_type_d, adtyp);
-            break;
+                impossible(__s_explosion_type_d, adtyp);
+                break;
         }
 
     } else {
         /* 'm' is a monster */
         switch (adtyp) {
             case NHM.AD_PHYS:
-            break;
+                break;
             case NHM.AD_MAGM:
-            if (resists_magm(m))
-                res = NHC.EXPL_MON;
-            break;
+                if (resists_magm(m))
+                    res = NHC.EXPL_MON;
+                break;
             case NHM.AD_FIRE:
-            if (Resists_Elem(m, NHC.FIRE_RES))
-                res = NHC.EXPL_MON;
-            break;
+                if (Resists_Elem(m, NHC.FIRE_RES))
+                    res = NHC.EXPL_MON;
+                break;
             case NHM.AD_COLD:
-            if (Resists_Elem(m, NHC.COLD_RES))
-                res = NHC.EXPL_MON;
-            break;
+                if (Resists_Elem(m, NHC.COLD_RES))
+                    res = NHC.EXPL_MON;
+                break;
             case NHM.AD_DISN:
-            if ((olet == NHC.WAND_CLASS)
-                    ? (nonliving(cptr.ldPtro(m, $monst_data)) ||
-                        ((cptr.ldU64o(
-                            (cptr.ldPtro(m, $monst_data)),
-                            $permonst_mflags2
-                        ) & 256n) != 0n) ||
-                        is_vampshifter(m)
-                        ? 1
-                        : 0)
-                    : !!Resists_Elem(m, NHC.DISINT_RES))
-                res = NHC.EXPL_MON;
-            break;
+                if ((olet == NHC.WAND_CLASS)
+                        ? (nonliving(cptr.ldPtro(m, $monst_data)) ||
+                            ((cptr.ldU64o((cptr.ldPtro(m, $monst_data)), $permonst_mflags2) &
+                                256n) !=
+                                0n) ||
+                            is_vampshifter(m)
+                            ? 1
+                            : 0)
+                        : !!Resists_Elem(m, NHC.DISINT_RES))
+                    res = NHC.EXPL_MON;
+                break;
             case NHM.AD_ELEC:
-            if (Resists_Elem(m, NHC.SHOCK_RES))
-                res = NHC.EXPL_MON;
-            break;
+                if (Resists_Elem(m, NHC.SHOCK_RES))
+                    res = NHC.EXPL_MON;
+                break;
             case NHM.AD_DRST:
-            if (Resists_Elem(m, NHC.POISON_RES))
-                res = NHC.EXPL_MON;
-            break;
+                if (Resists_Elem(m, NHC.POISON_RES))
+                    res = NHC.EXPL_MON;
+                break;
             case NHM.AD_ACID:
-            if (Resists_Elem(m, NHC.ACID_RES))
-                res = NHC.EXPL_MON;
-            break;
+                if (Resists_Elem(m, NHC.ACID_RES))
+                    res = NHC.EXPL_MON;
+                break;
             default:
-            impossible(__s_explosion_type_d, adtyp);
-            break;
+                impossible(__s_explosion_type_d, adtyp);
+                break;
         }
     }
     return res;
@@ -314,60 +311,61 @@ function engulfer_explosion_msg(adtyp, olet) {
         (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
         NHM.AD_DGST,
         NHM.AT_ENGL
-    ) !== null)) {
+    ) !==
+            null)) {
         switch (adtyp) {
             case NHM.AD_FIRE:
-            adj = __s_heartburn;
-            break;
+                adj = __s_heartburn;
+                break;
             case NHM.AD_COLD:
-            adj = __s_chilly;
-            break;
+                adj = __s_chilly;
+                break;
             case NHM.AD_DISN:
-            if (olet == NHC.WAND_CLASS)
-                adj = __s_irradiated_by_pure_energy;
-            else
-                adj = __s_perforated;
-            break;
+                if (olet == NHC.WAND_CLASS)
+                    adj = __s_irradiated_by_pure_energy;
+                else
+                    adj = __s_perforated;
+                break;
             case NHM.AD_ELEC:
-            adj = __s_shocked;
-            break;
+                adj = __s_shocked;
+                break;
             case NHM.AD_DRST:
-            adj = __s_poisoned;
-            break;
+                adj = __s_poisoned;
+                break;
             case NHM.AD_ACID:
-            adj = __s_an_upset_stomach;
-            break;
+                adj = __s_an_upset_stomach;
+                break;
             default:
-            adj = __s_fried;
-            break;
+                adj = __s_fried;
+                break;
         }
         pline(__s_s_gets_s, Monnam(cptr.ldPtro(u, $you_ustuck)), adj);
     } else {
         switch (adtyp) {
             case NHM.AD_FIRE:
-            adj = __s_toasted;
-            break;
+                adj = __s_toasted;
+                break;
             case NHM.AD_COLD:
-            adj = __s_chilly;
-            break;
+                adj = __s_chilly;
+                break;
             case NHM.AD_DISN:
-            if (olet == NHC.WAND_CLASS)
-                adj = __s_overwhelmed_by_pure_energy;
-            else
-                adj = __s_perforated;
-            break;
+                if (olet == NHC.WAND_CLASS)
+                    adj = __s_overwhelmed_by_pure_energy;
+                else
+                    adj = __s_perforated;
+                break;
             case NHM.AD_ELEC:
-            adj = __s_shocked;
-            break;
+                adj = __s_shocked;
+                break;
             case NHM.AD_DRST:
-            adj = __s_intoxicated;
-            break;
+                adj = __s_intoxicated;
+                break;
             case NHM.AD_ACID:
-            adj = __s_burned;
-            break;
+                adj = __s_burned;
+                break;
             default:
-            adj = __s_fried;
-            break;
+                adj = __s_fried;
+                break;
         }
         pline(__s_s_gets_slightly_s, Monnam(cptr.ldPtro(u, $you_ustuck)), adj);
     }
@@ -458,14 +456,14 @@ export function explode(x, y, type, dam, olet, expltype) {
             case NHC.PM_CLERIC:
             case NHC.PM_MONK:
             case NHC.PM_WIZARD:
-            damu = (damu / 5) | 0;
-            break;
+                damu = (damu / 5) | 0;
+                break;
             case NHC.PM_HEALER:
             case NHC.PM_KNIGHT:
-            damu = (damu / 2) | 0;
-            break;
+                damu = (damu / 2) | 0;
+                break;
             default:
-            break;
+                break;
         }
     } else if (olet == ((NHC.MAXOCLASSES + 1) | 0)) {
         /* used to provide extra information to zap_over_floor() */
@@ -536,39 +534,39 @@ export function explode(x, y, type, dam, olet, expltype) {
 
         switch (Math.abs(type) % 10) {
             case 0:
-            adstr = __s_magical_blast;
-            adtyp = NHM.AD_MAGM;
-            break;
+                adstr = __s_magical_blast;
+                adtyp = NHM.AD_MAGM;
+                break;
             case 1:
-            adstr = (olet == ((NHC.MAXOCLASSES + 1) | 0))
-                    ? __s_burning_oil
-                    : ((olet == NHC.SCROLL_CLASS) ? __s_tower_of_flame : __s_fireball);
-            /* fire damage, not physical damage */
-            adtyp = NHM.AD_FIRE;
-            break;
+                adstr = (olet == ((NHC.MAXOCLASSES + 1) | 0))
+                        ? __s_burning_oil
+                        : ((olet == NHC.SCROLL_CLASS) ? __s_tower_of_flame : __s_fireball);
+                /* fire damage, not physical damage */
+                adtyp = NHM.AD_FIRE;
+                break;
             case 2:
-            adstr = __s_ball_of_cold;
-            adtyp = NHM.AD_COLD;
-            break;
+                adstr = __s_ball_of_cold;
+                adtyp = NHM.AD_COLD;
+                break;
             case 4:
-            adstr = (olet == NHC.WAND_CLASS) ? __s_death_field : __s_disintegration_field;
-            adtyp = NHM.AD_DISN;
-            break;
+                adstr = (olet == NHC.WAND_CLASS) ? __s_death_field : __s_disintegration_field;
+                adtyp = NHM.AD_DISN;
+                break;
             case 5:
-            adstr = __s_ball_of_lightning;
-            adtyp = NHM.AD_ELEC;
-            break;
+                adstr = __s_ball_of_lightning;
+                adtyp = NHM.AD_ELEC;
+                break;
             case 6:
-            adstr = __s_poison_gas_cloud;
-            adtyp = NHM.AD_DRST;
-            break;
+                adstr = __s_poison_gas_cloud;
+                adtyp = NHM.AD_DRST;
+                break;
             case 7:
-            adstr = __s_splash_of_acid;
-            adtyp = NHM.AD_ACID;
-            break;
+                adstr = __s_splash_of_acid;
+                adtyp = NHM.AD_ACID;
+                break;
             default:
-            impossible(__s_explosion_base_type_d, type);
-            return;
+                impossible(__s_explosion_base_type_d, type);
+                return;
         }
         if (!str)
             str = adstr;
@@ -620,7 +618,8 @@ export function explode(x, y, type, dam, olet, expltype) {
                         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), yy, 8),
                         xx
                     ) &
-                        NHM.IN_SIGHT) != 0) &&
+                        NHM.IN_SIGHT) !=
+                        0) &&
                     !canspotmon(mtmp))
                 map_invisible(xx, yy);
             else if (!mtmp)
@@ -833,7 +832,8 @@ export function explode(x, y, type, dam, olet, expltype) {
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), yy, 8),
                     xx
                 ) &
-                        NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                        0)) {
                     if (cptr.ld1uo(mtmp, $monst_m_ap_type))
                         seemimic(mtmp);
                     pline(__s_s_is_caught_in_the_s, Monnam(mtmp), str);
@@ -868,7 +868,8 @@ export function explode(x, y, type, dam, olet, expltype) {
                             cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), yy, 8),
                             xx
                         ) &
-                            NHM.IN_SIGHT) != 0) ||
+                            NHM.IN_SIGHT) !=
+                            0) ||
                                 inside_engulfer)
                             pline(__s_s_resists_the_s, Monnam(mtmp), str);
                         mdam = (((dam + 1) | 0) / 2) | 0;
@@ -919,7 +920,8 @@ export function explode(x, y, type, dam, olet, expltype) {
                             ),
                             cptr.ldI16o(mtmp, $monst_mx)
                         ) &
-                            NHM.IN_SIGHT) != 0) ||
+                            NHM.IN_SIGHT) !=
+                            0) ||
                                 canspotmon(mtmp))
                             pline(
                                 __s_s_is_s,
@@ -1153,15 +1155,16 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
         credit_report(shkp, 0, 1);  /* establish baseline, without msgs */
 
     while ((otmp = (individual_object
-            ? obj
-            : cptr.ldPtro3(
-                svl,
-                sx,
-                168,
-                sy,
-                8,
-                $instance_globals_saved_l_level + $dlevel_t_objects
-            ))) !== null) {
+        ? obj
+        : cptr.ldPtro3(
+            svl,
+            sx,
+            168,
+            sy,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_objects
+        ))) !==
+            null) {
         if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v)) {
             let waschain = schar((cptr.eq(otmp, uchain.v)));
 
@@ -1193,7 +1196,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), sy, 8),
                     sx
                 ) &
-                        NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                        0)) {
                     pline(__s_s_apart, Tobjnam(otmp, __s_break));
                 } else {
                     ;
@@ -1216,7 +1220,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), sy, 8),
                     sx
                 ) &
-                        NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                        0)) {
                     pline(__s_pct_s_dot, Tobjnam(otmp, __s_crumble));
                 } else {
                     ;
@@ -1236,7 +1241,9 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                         cptr.ldI16o(otmp, $obj_otyp),
                         $sizeof_objclass,
                         $objclass_oc_material
-                    ) & 31) | 0) ==
+                    ) &
+                        31) |
+                        0) ==
                         NHC.GLASS ||
                         cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG))) {
             if (breaks(otmp, sx, sy))
@@ -1274,7 +1281,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                 $scatter_chain_range,
                 cptr.ldI32o(stmp, $scatter_chain_range) + -1
             )) -
-                (-1) > 0) &&
+                (-1) >
+                0) &&
                     (!cptr.ld1so(stmp, $scatter_chain_stopped))) {
                 cptr.stPtro(
                     gt,
@@ -1349,14 +1357,14 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                     cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y),
                     8,
                     $instance_globals_saved_l_level + $dlevel_t_monsters
-                ))) !== null) {
+                ))) !==
+                        null) {
                     if ((scflags & NHM.MAY_HITMON) >>> 0) {
                         (cptr.stI32o(
                             stmp,
                             $scatter_chain_range,
                             cptr.ldI32o(stmp, $scatter_chain_range) + -1
-                        )) -
-                                (-1);
+                        )) - (-1);
                         if (ohitmon(mtmp, cptr.ldPtro(stmp, $scatter_chain_obj), 1, 0)) {
                             cptr.stPtro(stmp, $scatter_chain_obj, null);
                             cptr.st1o(stmp, $scatter_chain_stopped, 1);
@@ -1377,8 +1385,7 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
                             cptr.add(gy, $instance_globals_y_youmonst)
                         );
                         hitvalu = (8 +
-                            cptr.ld1so(cptr.ldPtro(stmp, $scatter_chain_obj), $obj_spe)) |
-                                0;
+                                cptr.ld1so(cptr.ldPtro(stmp, $scatter_chain_obj), $obj_spe)) | 0;
                         if ((cptr.ld1uo(
                             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                             $permonst_msize
@@ -1482,7 +1489,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
-            ) & 128n) != 0n))
+            ) &
+                128n) != 0n))
         void hideunder(cptr.add(gy, $instance_globals_y_youmonst));
     if (((mtmp = (cptr.ldPtro3(
         svl,
@@ -1491,7 +1499,8 @@ export function scatter(sx, sy, blastforce, scflags, obj) {
         sy,
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null) &&
+    ))) !==
+        null) &&
             (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
         cptr.stI32o(mtmp, $monst_mtrapped, 0);
     maybe_unhide_at(sx, sy);
@@ -1539,21 +1548,21 @@ export function adtyp_to_expltype(adtyp) {
         case NHM.AD_SPEL:
         case NHM.AD_DREN:
         case NHM.AD_ENCH:
-        return NHC.EXPL_MAGICAL;
+            return NHC.EXPL_MAGICAL;
         case NHM.AD_FIRE:
-        return NHC.EXPL_FIERY;
+            return NHC.EXPL_FIERY;
         case NHM.AD_COLD:
-        return NHC.EXPL_FROSTY;
+            return NHC.EXPL_FROSTY;
         case NHM.AD_DRST:
         case NHM.AD_DRDX:
         case NHM.AD_DRCO:
         case NHM.AD_DISE:
         case NHM.AD_PEST:
         case NHM.AD_PHYS:
-        return NHC.EXPL_NOXIOUS;
+            return NHC.EXPL_NOXIOUS;
         default:
-        impossible(__s_adtyp_to_expltype_bad_explosion_type_d, adtyp);
-        return NHC.EXPL_FIERY;
+            impossible(__s_adtyp_to_expltype_bad_explosion_type_d, adtyp);
+            return NHC.EXPL_FIERY;
     }
 }
 

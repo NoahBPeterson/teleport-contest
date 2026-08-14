@@ -224,91 +224,91 @@ export function is_home_elemental(ptr) {
     if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_ELEMENTAL) {
         switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
             case NHC.PM_AIR_ELEMENTAL:
-            return schar((((cptr.ldI16o(
-                (cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
-                )),
-                $d_level_dlevel
-            ) ||
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
-                )))) &&
-                on_level(
-                    cptr.add(u, $you_uz),
-                    cptr.add(
+                return schar((((cptr.ldI16o(
+                    (cptr.add(
                         svd,
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                        )
                     )
-                )
-                    ? 1
-                    : 0)));
+                        ? 1
+                        : 0)));
             case NHC.PM_FIRE_ELEMENTAL:
-            return schar((((cptr.ldI16o(
-                (cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
-                )),
-                $d_level_dlevel
-            ) ||
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
-                )))) &&
-                on_level(
-                    cptr.add(u, $you_uz),
-                    cptr.add(
+                return schar((((cptr.ldI16o(
+                    (cptr.add(
                         svd,
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                        )
                     )
-                )
-                    ? 1
-                    : 0)));
+                        ? 1
+                        : 0)));
             case NHC.PM_EARTH_ELEMENTAL:
-            return schar((((cptr.ldI16o(
-                (cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
-                )),
-                $d_level_dlevel
-            ) ||
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
-                )))) &&
-                on_level(
-                    cptr.add(u, $you_uz),
-                    cptr.add(
+                return schar((((cptr.ldI16o(
+                    (cptr.add(
                         svd,
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                        )
                     )
-                )
-                    ? 1
-                    : 0)));
+                        ? 1
+                        : 0)));
             case NHC.PM_WATER_ELEMENTAL:
-            return schar((((cptr.ldI16o(
-                (cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
-                )),
-                $d_level_dlevel
-            ) ||
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
-                )))) &&
-                on_level(
-                    cptr.add(u, $you_uz),
-                    cptr.add(
+                return schar((((cptr.ldI16o(
+                    (cptr.add(
                         svd,
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
                     )
-                )
-                    ? 1
-                    : 0)));
+                        ? 1
+                        : 0)));
             default:
-            break;
+                break;
         }
     }
     return 0;
@@ -413,8 +413,9 @@ function* m_initgrp(mtmp, x, y, n, mmflags) {
     let mon;
     /* Tuning: cut down on swarming at low character levels [mrs] */
     cnt = (cnt /
-        ((cptr.ldI32o(u, $you_ulevel) < 3) ? 4 : ((cptr.ldI32o(u, $you_ulevel) < 5) ? 2 : 1))) |
-            0;
+            ((cptr.ldI32o(u, $you_ulevel) < 3)
+                ? 4
+                : ((cptr.ldI32o(u, $you_ulevel) < 5) ? 2 : 1))) | 0;
     if (!cnt)
         cnt++;
 
@@ -507,425 +508,432 @@ function* m_initweap(mtmp) {
      */
     switch (cptr.ld1so(ptr, $permonst_mlet)) {
         case NHC.S_GIANT:
-        if (rn2(2))
-            void (yield* mongets(mtmp, (mm != NHC.PM_ETTIN) ? NHC.BOULDER : NHC.CLUB));
-        if ((mm != NHC.PM_ETTIN) && !rn2(5))
-            void (yield* mongets(mtmp, rn2(2) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
-        break;
+            if (rn2(2))
+                void (yield* mongets(mtmp, (mm != NHC.PM_ETTIN) ? NHC.BOULDER : NHC.CLUB));
+            if ((mm != NHC.PM_ETTIN) && !rn2(5))
+                void (yield* mongets(mtmp, rn2(2) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
+            break;
         case NHC.S_HUMAN:
-        if (((cptr.ldU64o((ptr), $permonst_mflags2) & 512n) != 0n)) {
-            w1 = (w2 = 0);
-            switch (mm) {
-                case NHC.PM_WATCHMAN:
-                case NHC.PM_SOLDIER:
-                if (!rn2(3)) {
-                    /* lance and dwarvish mattock used to be in midst of
-                       the polearms but use different skills from polearms
-                       and aren't appropriates choices for human soldiers */
-                    do {
-                        w1 = ((rn2(((NHC.BEC_DE_CORBIN - NHC.PARTISAN + 1) | 0)) +
-                                NHC.PARTISAN) | 0);
-                    } while (cptr.ld1so2(objects, w1, $sizeof_objclass, $objclass_oc_subtyp) !=
-                            NHC.P_POLEARMS);
-                    w2 = rn2(2) ? NHC.DAGGER : NHC.KNIFE;
-                } else
-                    w1 = rn2(2) ? NHC.SPEAR : NHC.SHORT_SWORD;
-                break;
-                case NHC.PM_SERGEANT:
-                w1 = rn2(2) ? NHC.FLAIL : NHC.MACE;
-                break;
-                case NHC.PM_LIEUTENANT:
-                w1 = rn2(2) ? NHC.BROADSWORD : NHC.LONG_SWORD;
-                break;
-                case NHC.PM_CAPTAIN:
-                case NHC.PM_WATCH_CAPTAIN:
-                w1 = rn2(2) ? NHC.LONG_SWORD : NHC.SILVER_SABER;
-                break;
-                default:
-                if (!rn2(4))
-                    w1 = NHC.DAGGER;
-                if (!rn2(7))
-                    w2 = NHC.SPEAR;
-                break;
-            }
-            if (w1)
-                void (yield* mongets(mtmp, w1));
-            if (!w2 && w1 != NHC.DAGGER && !rn2(4))
-                w2 = NHC.KNIFE;
-            if (w2)
-                void (yield* mongets(mtmp, w2));
-        } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n)) {
-            if (rn2(2))
-                void (yield* mongets(mtmp, rn2(2) ? NHC.ELVEN_MITHRIL_COAT : NHC.ELVEN_CLOAK));
-            if (rn2(2))
-                void (yield* mongets(mtmp, NHC.ELVEN_LEATHER_HELM));
-            else if (!rn2(4))
-                void (yield* mongets(mtmp, NHC.ELVEN_BOOTS));
-            if (rn2(2))
-                void (yield* mongets(mtmp, NHC.ELVEN_DAGGER));
-            switch (rn2(3)) {
-                case 0:
-                if (!rn2(4))
-                    void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
-                if (rn2(3))
-                    void (yield* mongets(mtmp, NHC.ELVEN_SHORT_SWORD));
-                void (yield* mongets(mtmp, NHC.ELVEN_BOW));
-                (yield* m_initthrow(mtmp, NHC.ELVEN_ARROW, 12));
-                break;
-                case 1:
-                void (yield* mongets(mtmp, NHC.ELVEN_BROADSWORD));
-                if (rn2(2))
-                    void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
-                break;
-                case 2:
-                if (rn2(2)) {
-                    void (yield* mongets(mtmp, NHC.ELVEN_SPEAR));
-                    void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
+            if (((cptr.ldU64o((ptr), $permonst_mflags2) & 512n) != 0n)) {
+                w1 = (w2 = 0);
+                switch (mm) {
+                    case NHC.PM_WATCHMAN:
+                    case NHC.PM_SOLDIER:
+                        if (!rn2(3)) {
+                            /* lance and dwarvish mattock used to be in midst of
+                               the polearms but use different skills from polearms
+                               and aren't appropriates choices for human soldiers */
+                            do {
+                                w1 = ((rn2(((NHC.BEC_DE_CORBIN - NHC.PARTISAN + 1) | 0)) +
+                                        NHC.PARTISAN) | 0);
+                            } while (cptr.ld1so2(
+                                objects,
+                                w1,
+                                $sizeof_objclass,
+                                $objclass_oc_subtyp
+                            ) !=
+                                    NHC.P_POLEARMS);
+                            w2 = rn2(2) ? NHC.DAGGER : NHC.KNIFE;
+                        } else
+                            w1 = rn2(2) ? NHC.SPEAR : NHC.SHORT_SWORD;
+                        break;
+                    case NHC.PM_SERGEANT:
+                        w1 = rn2(2) ? NHC.FLAIL : NHC.MACE;
+                        break;
+                    case NHC.PM_LIEUTENANT:
+                        w1 = rn2(2) ? NHC.BROADSWORD : NHC.LONG_SWORD;
+                        break;
+                    case NHC.PM_CAPTAIN:
+                    case NHC.PM_WATCH_CAPTAIN:
+                        w1 = rn2(2) ? NHC.LONG_SWORD : NHC.SILVER_SABER;
+                        break;
+                    default:
+                        if (!rn2(4))
+                            w1 = NHC.DAGGER;
+                        if (!rn2(7))
+                            w2 = NHC.SPEAR;
+                        break;
                 }
-                break;
-            }
-            if (mm == NHC.PM_ELVEN_MONARCH) {
-                if (rn2(3) ||
-                        (cptr.ld1so(gi, $instance_globals_i_in_mklev) &&
-                            (((cptr.ldI16o(
-                                (cptr.add(
-                                    svd,
-                                    $instance_globals_saved_d_dungeon_topology +
-                                        $dgn_topology_d_earth_level
-                                )),
-                                $d_level_dlevel
-                            ) ||
-                                cptr.ldI16((cptr.add(
-                                    svd,
-                                    $instance_globals_saved_d_dungeon_topology +
-                                        $dgn_topology_d_earth_level
-                                )))) &&
-                                on_level(
-                                    cptr.add(u, $you_uz),
-                                    cptr.add(
+                if (w1)
+                    void (yield* mongets(mtmp, w1));
+                if (!w2 && w1 != NHC.DAGGER && !rn2(4))
+                    w2 = NHC.KNIFE;
+                if (w2)
+                    void (yield* mongets(mtmp, w2));
+            } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n)) {
+                if (rn2(2))
+                    void (yield* mongets(mtmp, rn2(2) ? NHC.ELVEN_MITHRIL_COAT : NHC.ELVEN_CLOAK));
+                if (rn2(2))
+                    void (yield* mongets(mtmp, NHC.ELVEN_LEATHER_HELM));
+                else if (!rn2(4))
+                    void (yield* mongets(mtmp, NHC.ELVEN_BOOTS));
+                if (rn2(2))
+                    void (yield* mongets(mtmp, NHC.ELVEN_DAGGER));
+                switch (rn2(3)) {
+                    case 0:
+                        if (!rn2(4))
+                            void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
+                        if (rn2(3))
+                            void (yield* mongets(mtmp, NHC.ELVEN_SHORT_SWORD));
+                        void (yield* mongets(mtmp, NHC.ELVEN_BOW));
+                        (yield* m_initthrow(mtmp, NHC.ELVEN_ARROW, 12));
+                        break;
+                    case 1:
+                        void (yield* mongets(mtmp, NHC.ELVEN_BROADSWORD));
+                        if (rn2(2))
+                            void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
+                        break;
+                    case 2:
+                        if (rn2(2)) {
+                            void (yield* mongets(mtmp, NHC.ELVEN_SPEAR));
+                            void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
+                        }
+                        break;
+                }
+                if (mm == NHC.PM_ELVEN_MONARCH) {
+                    if (rn2(3) ||
+                            (cptr.ld1so(gi, $instance_globals_i_in_mklev) &&
+                                (((cptr.ldI16o(
+                                    (cptr.add(
                                         svd,
                                         $instance_globals_saved_d_dungeon_topology +
                                             $dgn_topology_d_earth_level
-                                    )
-                                )))))
-                    void (yield* mongets(mtmp, NHC.PICK_AXE));
-                if (!rn2(50))
-                    void (yield* mongets(mtmp, NHC.CRYSTAL_BALL));
-            }
-        } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_PRIEST ||
-                (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN &&
-                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
-                    (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER ||
-                        cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
-            otmp = (yield* mksobj(NHC.MACE, 0, 0));
-            cptr.st1o(otmp, $obj_spe, schar(rnd(3)));
-            if (!rn2(2))
-                (yield* curse(otmp));
-            void (yield* mpickobj(mtmp, otmp));
-        } else if (mm == NHC.PM_NINJA) {
-            void (yield* mongets(mtmp, rn2(4) ? NHC.SHURIKEN : NHC.DART));
-            void (yield* mongets(mtmp, rn2(4) ? NHC.SHORT_SWORD : NHC.AXE));
-        } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_GUARDIAN) {
-            /* quest "guardians" */
-            switch (mm) {
-                case NHC.PM_STUDENT:
-                case NHC.PM_ATTENDANT:
-                case NHC.PM_ABBOT:
-                case NHC.PM_ACOLYTE:
-                case NHC.PM_GUIDE:
-                case NHC.PM_APPRENTICE:
-                if (rn2(2))
-                    void (yield* mongets(mtmp, rn2(3) ? NHC.DAGGER : NHC.KNIFE));
-                if (rn2(5))
-                    void (yield* mongets(mtmp, rn2(3) ? NHC.LEATHER_JACKET : NHC.LEATHER_CLOAK));
-                if (rn2(3))
-                    void (yield* mongets(mtmp, rn2(3) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
-                if (rn2(3))
-                    void (yield* mongets(mtmp, NHC.POT_HEALING));
-                break;
-                case NHC.PM_CHIEFTAIN:
-                case NHC.PM_PAGE:
-                case NHC.PM_ROSHI:
-                case NHC.PM_WARRIOR:
-                void (yield* mongets(mtmp, rn2(3) ? NHC.LONG_SWORD : NHC.SHORT_SWORD));
-                void (yield* mongets(mtmp, rn2(3) ? NHC.CHAIN_MAIL : NHC.LEATHER_ARMOR));
-                if (rn2(2))
-                    void (yield* mongets(mtmp, rn2(2) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
-                if (!rn2(3))
-                    void (yield* mongets(mtmp, NHC.LEATHER_CLOAK));
-                if (!rn2(3)) {
-                    void (yield* mongets(mtmp, NHC.BOW));
-                    (yield* m_initthrow(mtmp, NHC.ARROW, 12));
+                                    )),
+                                    $d_level_dlevel
+                                ) ||
+                                    cptr.ldI16((cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_earth_level
+                                    )))) &&
+                                    on_level(
+                                        cptr.add(u, $you_uz),
+                                        cptr.add(
+                                            svd,
+                                            $instance_globals_saved_d_dungeon_topology +
+                                                $dgn_topology_d_earth_level
+                                        )
+                                    )))))
+                        void (yield* mongets(mtmp, NHC.PICK_AXE));
+                    if (!rn2(50))
+                        void (yield* mongets(mtmp, NHC.CRYSTAL_BALL));
                 }
-                break;
-                case NHC.PM_HUNTER:
-                void (yield* mongets(mtmp, rn2(3) ? NHC.SHORT_SWORD : NHC.DAGGER));
-                if (rn2(2))
-                    void (yield* mongets(mtmp, rn2(2) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
-                void (yield* mongets(mtmp, NHC.BOW));
-                (yield* m_initthrow(mtmp, NHC.ARROW, 12));
-                break;
-                case NHC.PM_THUG:
-                void (yield* mongets(mtmp, NHC.CLUB));
-                void (yield* mongets(mtmp, rn2(3) ? NHC.DAGGER : NHC.KNIFE));
-                if (rn2(2))
-                    void (yield* mongets(mtmp, NHC.LEATHER_GLOVES));
-                void (yield* mongets(mtmp, rn2(2) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
-                break;
-                case NHC.PM_NEANDERTHAL:
-                void (yield* mongets(mtmp, NHC.CLUB));
-                void (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
-                break;
+            } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_PRIEST ||
+                    (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN &&
+                        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                            NHC.PM_CLERIC) &&
+                        (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER ||
+                            cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
+                otmp = (yield* mksobj(NHC.MACE, 0, 0));
+                cptr.st1o(otmp, $obj_spe, schar(rnd(3)));
+                if (!rn2(2))
+                    (yield* curse(otmp));
+                void (yield* mpickobj(mtmp, otmp));
+            } else if (mm == NHC.PM_NINJA) {
+                void (yield* mongets(mtmp, rn2(4) ? NHC.SHURIKEN : NHC.DART));
+                void (yield* mongets(mtmp, rn2(4) ? NHC.SHORT_SWORD : NHC.AXE));
+            } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_GUARDIAN) {
+                /* quest "guardians" */
+                switch (mm) {
+                    case NHC.PM_STUDENT:
+                    case NHC.PM_ATTENDANT:
+                    case NHC.PM_ABBOT:
+                    case NHC.PM_ACOLYTE:
+                    case NHC.PM_GUIDE:
+                    case NHC.PM_APPRENTICE:
+                        if (rn2(2))
+                            void (yield* mongets(mtmp, rn2(3) ? NHC.DAGGER : NHC.KNIFE));
+                        if (rn2(5))
+                            void (yield* mongets(mtmp, rn2(3) ? NHC.LEATHER_JACKET : NHC.LEATHER_CLOAK));
+                        if (rn2(3))
+                            void (yield* mongets(mtmp, rn2(3) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
+                        if (rn2(3))
+                            void (yield* mongets(mtmp, NHC.POT_HEALING));
+                        break;
+                    case NHC.PM_CHIEFTAIN:
+                    case NHC.PM_PAGE:
+                    case NHC.PM_ROSHI:
+                    case NHC.PM_WARRIOR:
+                        void (yield* mongets(mtmp, rn2(3) ? NHC.LONG_SWORD : NHC.SHORT_SWORD));
+                        void (yield* mongets(mtmp, rn2(3) ? NHC.CHAIN_MAIL : NHC.LEATHER_ARMOR));
+                        if (rn2(2))
+                            void (yield* mongets(mtmp, rn2(2) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
+                        if (!rn2(3))
+                            void (yield* mongets(mtmp, NHC.LEATHER_CLOAK));
+                        if (!rn2(3)) {
+                            void (yield* mongets(mtmp, NHC.BOW));
+                            (yield* m_initthrow(mtmp, NHC.ARROW, 12));
+                        }
+                        break;
+                    case NHC.PM_HUNTER:
+                        void (yield* mongets(mtmp, rn2(3) ? NHC.SHORT_SWORD : NHC.DAGGER));
+                        if (rn2(2))
+                            void (yield* mongets(mtmp, rn2(2) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
+                        void (yield* mongets(mtmp, NHC.BOW));
+                        (yield* m_initthrow(mtmp, NHC.ARROW, 12));
+                        break;
+                    case NHC.PM_THUG:
+                        void (yield* mongets(mtmp, NHC.CLUB));
+                        void (yield* mongets(mtmp, rn2(3) ? NHC.DAGGER : NHC.KNIFE));
+                        if (rn2(2))
+                            void (yield* mongets(mtmp, NHC.LEATHER_GLOVES));
+                        void (yield* mongets(mtmp, rn2(2) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
+                        break;
+                    case NHC.PM_NEANDERTHAL:
+                        void (yield* mongets(mtmp, NHC.CLUB));
+                        void (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
+                        break;
+                }
             }
-        }
-        break;
+            break;
         case NHC.S_ANGEL:
-        if (((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n)) {
-            /* create minion stuff; bypass mongets */
-            let typ = rn2(3) ? NHC.LONG_SWORD : NHC.SILVER_MACE;
-            let nam = (typ == NHC.LONG_SWORD) ? __s_sunsword : __s_demonbane;
+            if (((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n)) {
+                /* create minion stuff; bypass mongets */
+                let typ = rn2(3) ? NHC.LONG_SWORD : NHC.SILVER_MACE;
+                let nam = (typ == NHC.LONG_SWORD) ? __s_sunsword : __s_demonbane;
 
-            otmp = (yield* mksobj(typ, 0, 0));
-            /* maybe promote weapon to an artifact */
-            if ((!rn2(20) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n)) &&
-                    sgn((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0
-                        ? cptr.ld1so(
-                            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
-                            $emin_min_align
-                        )
-                        : cptr.ld1so(ptr, $permonst_maligntyp)) ==
-                        NHM.A_LAWFUL)
-                otmp = (yield* oname(otmp, nam, NHM.ONAME_RANDOM));  /* randomly created */
-            /* enhance the weapon */
-            (yield* bless(otmp));
-            cptr.stI32o(otmp, $obj_oerodeproof, 1);
-            /* make long sword be +0 to +3, mace be +3 to +6 to compensate
-               for being significantly weaker against large opponents */
-            cptr.st1o(otmp, $obj_spe, schar(rn2(4)));
-            if (typ == NHC.SILVER_MACE)
-                cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + 3);
-            void (yield* mpickobj(mtmp, otmp));
+                otmp = (yield* mksobj(typ, 0, 0));
+                /* maybe promote weapon to an artifact */
+                if ((!rn2(20) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n)) &&
+                        sgn((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0
+                            ? cptr.ld1so(
+                                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
+                                $emin_min_align
+                            )
+                            : cptr.ld1so(ptr, $permonst_maligntyp)) ==
+                            NHM.A_LAWFUL)
+                    otmp = (yield* oname(otmp, nam, NHM.ONAME_RANDOM));  /* randomly created */
+                /* enhance the weapon */
+                (yield* bless(otmp));
+                cptr.stI32o(otmp, $obj_oerodeproof, 1);
+                /* make long sword be +0 to +3, mace be +3 to +6 to compensate
+                   for being significantly weaker against large opponents */
+                cptr.st1o(otmp, $obj_spe, schar(rn2(4)));
+                if (typ == NHC.SILVER_MACE)
+                    cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + 3);
+                void (yield* mpickobj(mtmp, otmp));
 
-            otmp = (yield* mksobj(
-                !rn2(4) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n)
-                    ? NHC.SHIELD_OF_REFLECTION
-                    : NHC.LARGE_SHIELD,
-                0,
-                0
-            ));
-            /* uncurse(otmp); -- mksobj(,FALSE,) item is always uncursed */
-            cptr.stI32o(otmp, $obj_oerodeproof, 1);
-            cptr.st1o(otmp, $obj_spe, 0);
-            void (yield* mpickobj(mtmp, otmp));
-        }
-        break;
-        case NHC.S_HUMANOID:
-        if (mm == NHC.PM_HOBBIT) {
-            switch (rn2(3)) {
-                case 0:
-                void (yield* mongets(mtmp, NHC.DAGGER));
-                break;
-                case 1:
-                void (yield* mongets(mtmp, NHC.ELVEN_DAGGER));
-                break;
-                case 2:
-                void (yield* mongets(mtmp, NHC.SLING));
-                (yield* m_initthrow(mtmp, !rn2(4) ? NHC.FLINT : NHC.ROCK, 6));
-                break;
-            }
-            if (!rn2(10))
-                void (yield* mongets(mtmp, NHC.ELVEN_MITHRIL_COAT));
-            if (!rn2(10))
-                void (yield* mongets(mtmp, NHC.DWARVISH_CLOAK));
-        } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n)) {
-            if (rn2(7))
-                void (yield* mongets(mtmp, NHC.DWARVISH_CLOAK));
-            if (rn2(7))
-                void (yield* mongets(mtmp, NHC.IRON_SHOES));
-            if (!rn2(4)) {
-                void (yield* mongets(mtmp, NHC.DWARVISH_SHORT_SWORD));
-                /* note: you can't use a mattock with a shield */
-                if (rn2(2))
-                    void (yield* mongets(mtmp, NHC.DWARVISH_MATTOCK));
-                else {
-                    void (yield* mongets(mtmp, rn2(2) ? NHC.AXE : NHC.DWARVISH_SPEAR));
-                    void (yield* mongets(mtmp, NHC.DWARVISH_ROUNDSHIELD));
-                }
-                void (yield* mongets(mtmp, NHC.DWARVISH_IRON_HELM));
-                if (!rn2(3))
-                    void (yield* mongets(mtmp, NHC.DWARVISH_MITHRIL_COAT));
-            } else {
-                void (yield* mongets(mtmp, !rn2(3) ? NHC.PICK_AXE : NHC.DAGGER));
-            }
-        }
-        break;
-        case NHC.S_KOP:
-        /* create Keystone Kops with cream pies to
-           throw. As suggested by KAA.     [MRS] */
-        if (!rn2(4))
-            (yield* m_initthrow(mtmp, NHC.CREAM_PIE, 2));
-        if (!rn2(3))
-            void (yield* mongets(mtmp, rn2(2) ? NHC.CLUB : NHC.RUBBER_HOSE));
-        break;
-        case NHC.S_ORC:
-        if (rn2(2))
-            void (yield* mongets(mtmp, NHC.ORCISH_HELM));
-        switch ((mm != NHC.PM_ORC_CAPTAIN) ? mm : (rn2(2) ? NHC.PM_MORDOR_ORC : NHC.PM_URUK_HAI)) {
-            case NHC.PM_MORDOR_ORC:
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.SCIMITAR));
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.ORCISH_SHIELD));
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.KNIFE));
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.ORCISH_CHAIN_MAIL));
-            break;
-            case NHC.PM_URUK_HAI:
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.ORCISH_CLOAK));
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.ORCISH_SHORT_SWORD));
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.IRON_SHOES));
-            if (!rn2(3)) {
-                void (yield* mongets(mtmp, NHC.ORCISH_BOW));
-                (yield* m_initthrow(mtmp, NHC.ORCISH_ARROW, 12));
-            }
-            if (!rn2(3))
-                void (yield* mongets(mtmp, NHC.URUK_HAI_SHIELD));
-            break;
-            default:
-            if (mm != NHC.PM_ORC_SHAMAN && rn2(2))
-                void (yield* mongets(
-                    mtmp,
-                    (mm == NHC.PM_GOBLIN || rn2(2) == 0) ? NHC.ORCISH_DAGGER : NHC.SCIMITAR
+                otmp = (yield* mksobj(
+                    !rn2(4) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n)
+                        ? NHC.SHIELD_OF_REFLECTION
+                        : NHC.LARGE_SHIELD,
+                    0,
+                    0
                 ));
-        }
-        break;
+                /* uncurse(otmp); -- mksobj(,FALSE,) item is always uncursed */
+                cptr.stI32o(otmp, $obj_oerodeproof, 1);
+                cptr.st1o(otmp, $obj_spe, 0);
+                void (yield* mpickobj(mtmp, otmp));
+            }
+            break;
+        case NHC.S_HUMANOID:
+            if (mm == NHC.PM_HOBBIT) {
+                switch (rn2(3)) {
+                    case 0:
+                        void (yield* mongets(mtmp, NHC.DAGGER));
+                        break;
+                    case 1:
+                        void (yield* mongets(mtmp, NHC.ELVEN_DAGGER));
+                        break;
+                    case 2:
+                        void (yield* mongets(mtmp, NHC.SLING));
+                        (yield* m_initthrow(mtmp, !rn2(4) ? NHC.FLINT : NHC.ROCK, 6));
+                        break;
+                }
+                if (!rn2(10))
+                    void (yield* mongets(mtmp, NHC.ELVEN_MITHRIL_COAT));
+                if (!rn2(10))
+                    void (yield* mongets(mtmp, NHC.DWARVISH_CLOAK));
+            } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n)) {
+                if (rn2(7))
+                    void (yield* mongets(mtmp, NHC.DWARVISH_CLOAK));
+                if (rn2(7))
+                    void (yield* mongets(mtmp, NHC.IRON_SHOES));
+                if (!rn2(4)) {
+                    void (yield* mongets(mtmp, NHC.DWARVISH_SHORT_SWORD));
+                    /* note: you can't use a mattock with a shield */
+                    if (rn2(2))
+                        void (yield* mongets(mtmp, NHC.DWARVISH_MATTOCK));
+                    else {
+                        void (yield* mongets(mtmp, rn2(2) ? NHC.AXE : NHC.DWARVISH_SPEAR));
+                        void (yield* mongets(mtmp, NHC.DWARVISH_ROUNDSHIELD));
+                    }
+                    void (yield* mongets(mtmp, NHC.DWARVISH_IRON_HELM));
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.DWARVISH_MITHRIL_COAT));
+                } else {
+                    void (yield* mongets(mtmp, !rn2(3) ? NHC.PICK_AXE : NHC.DAGGER));
+                }
+            }
+            break;
+        case NHC.S_KOP:
+            /* create Keystone Kops with cream pies to
+               throw. As suggested by KAA.     [MRS] */
+            if (!rn2(4))
+                (yield* m_initthrow(mtmp, NHC.CREAM_PIE, 2));
+            if (!rn2(3))
+                void (yield* mongets(mtmp, rn2(2) ? NHC.CLUB : NHC.RUBBER_HOSE));
+            break;
+        case NHC.S_ORC:
+            if (rn2(2))
+                void (yield* mongets(mtmp, NHC.ORCISH_HELM));
+            switch ((mm != NHC.PM_ORC_CAPTAIN)
+                    ? mm
+                    : (rn2(2) ? NHC.PM_MORDOR_ORC : NHC.PM_URUK_HAI)) {
+                case NHC.PM_MORDOR_ORC:
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.SCIMITAR));
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.ORCISH_SHIELD));
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.KNIFE));
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.ORCISH_CHAIN_MAIL));
+                    break;
+                case NHC.PM_URUK_HAI:
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.ORCISH_CLOAK));
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.ORCISH_SHORT_SWORD));
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.IRON_SHOES));
+                    if (!rn2(3)) {
+                        void (yield* mongets(mtmp, NHC.ORCISH_BOW));
+                        (yield* m_initthrow(mtmp, NHC.ORCISH_ARROW, 12));
+                    }
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.URUK_HAI_SHIELD));
+                    break;
+                default:
+                    if (mm != NHC.PM_ORC_SHAMAN && rn2(2))
+                        void (yield* mongets(
+                            mtmp,
+                            (mm == NHC.PM_GOBLIN || rn2(2) == 0) ? NHC.ORCISH_DAGGER : NHC.SCIMITAR
+                        ));
+            }
+            break;
         case NHC.S_OGRE:
-        if (!rn2(mm == NHC.PM_OGRE_TYRANT ? 3 : (mm == NHC.PM_OGRE_LEADER ? 6 : 12)))
-            void (yield* mongets(mtmp, NHC.BATTLE_AXE));
-        else
-            void (yield* mongets(mtmp, NHC.CLUB));
-        break;
-        case NHC.S_TROLL:
-        if (!rn2(2))
-            switch (rn2(4)) {
-                case 0:
-                void (yield* mongets(mtmp, NHC.RANSEUR));
-                break;
-                case 1:
-                void (yield* mongets(mtmp, NHC.PARTISAN));
-                break;
-                case 2:
-                void (yield* mongets(mtmp, NHC.GLAIVE));
-                break;
-                case 3:
-                void (yield* mongets(mtmp, NHC.SPETUM));
-                break;
-            }
-        break;
-        case NHC.S_KOBOLD:
-        if (!rn2(4))
-            (yield* m_initthrow(mtmp, NHC.DART, 12));
-        break;
-        case NHC.S_CENTAUR:
-        if (rn2(2)) {
-            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_FOREST_CENTAUR, $sizeof_permonst))) {
-                void (yield* mongets(mtmp, NHC.BOW));
-                (yield* m_initthrow(mtmp, NHC.ARROW, 12));
-            } else {
-                void (yield* mongets(mtmp, NHC.CROSSBOW));
-                (yield* m_initthrow(mtmp, NHC.CROSSBOW_BOLT, 12));
-            }
-        }
-        break;
-        case NHC.S_WRAITH:
-        void (yield* mongets(mtmp, NHC.KNIFE));
-        void (yield* mongets(mtmp, NHC.LONG_SWORD));
-        break;
-        case NHC.S_ZOMBIE:
-        if (!rn2(4))
-            void (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
-        if (!rn2(4))
-            void (yield* mongets(mtmp, (rn2(3) ? NHC.KNIFE : NHC.SHORT_SWORD)));
-        break;
-        case NHC.S_LIZARD:
-        if (mm == NHC.PM_SALAMANDER)
-            void (yield* mongets(mtmp, (rn2(7) ? NHC.SPEAR : (rn2(3) ? NHC.TRIDENT : NHC.STILETTO))));
-        break;
-        case NHC.S_DEMON:
-        switch (mm) {
-            case NHC.PM_BALROG:
-            void (yield* mongets(mtmp, NHC.BULLWHIP));
-            void (yield* mongets(mtmp, NHC.BROADSWORD));
-            break;
-            case NHC.PM_ORCUS:
-            void (yield* mongets(mtmp, NHC.WAN_DEATH));  /* the Wand of Orcus */
-            break;
-            case NHC.PM_HORNED_DEVIL:
-            void (yield* mongets(mtmp, rn2(4) ? NHC.TRIDENT : NHC.BULLWHIP));
-            break;
-            case NHC.PM_DISPATER:
-            void (yield* mongets(mtmp, NHC.WAN_STRIKING));
-            break;
-            case NHC.PM_YEENOGHU:
-            void (yield* mongets(mtmp, NHC.FLAIL));
-            break;
-        }
-        /* prevent djinn and mail daemons from leaving objects when
-         * they vanish
-         */
-        if (!((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n))
-            break;
-        // @FallThrough
-        ;
-        default:
-        /*
-         * Now the general case, some chance of getting some type
-         * of weapon for "normal" monsters.  Certain special types
-         * of monsters will get a bonus chance or different selections.
-         */
-        bias = (((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) +
-            Math.imul(((cptr.ldU64o((ptr), $permonst_mflags2) & 2048n) != 0n), 2) +
-            ((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n)) |
-                0;
-        switch (rnd((14 - (Math.imul(2, bias))) | 0)) {
-            case 1:
-            if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
+            if (!rn2(mm == NHC.PM_OGRE_TYRANT ? 3 : (mm == NHC.PM_OGRE_LEADER ? 6 : 12)))
                 void (yield* mongets(mtmp, NHC.BATTLE_AXE));
             else
+                void (yield* mongets(mtmp, NHC.CLUB));
+            break;
+        case NHC.S_TROLL:
+            if (!rn2(2))
+                switch (rn2(4)) {
+                    case 0:
+                        void (yield* mongets(mtmp, NHC.RANSEUR));
+                        break;
+                    case 1:
+                        void (yield* mongets(mtmp, NHC.PARTISAN));
+                        break;
+                    case 2:
+                        void (yield* mongets(mtmp, NHC.GLAIVE));
+                        break;
+                    case 3:
+                        void (yield* mongets(mtmp, NHC.SPETUM));
+                        break;
+                }
+            break;
+        case NHC.S_KOBOLD:
+            if (!rn2(4))
                 (yield* m_initthrow(mtmp, NHC.DART, 12));
             break;
-            case 2:
-            if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
-                void (yield* mongets(mtmp, NHC.TWO_HANDED_SWORD));
-            else {
-                void (yield* mongets(mtmp, NHC.CROSSBOW));
-                (yield* m_initthrow(mtmp, NHC.CROSSBOW_BOLT, 12));
+        case NHC.S_CENTAUR:
+            if (rn2(2)) {
+                if (cptr.eq(ptr, cptr.add(mons, NHC.PM_FOREST_CENTAUR, $sizeof_permonst))) {
+                    void (yield* mongets(mtmp, NHC.BOW));
+                    (yield* m_initthrow(mtmp, NHC.ARROW, 12));
+                } else {
+                    void (yield* mongets(mtmp, NHC.CROSSBOW));
+                    (yield* m_initthrow(mtmp, NHC.CROSSBOW_BOLT, 12));
+                }
             }
             break;
-            case 3:
-            void (yield* mongets(mtmp, NHC.BOW));
-            (yield* m_initthrow(mtmp, NHC.ARROW, 12));
+        case NHC.S_WRAITH:
+            void (yield* mongets(mtmp, NHC.KNIFE));
+            void (yield* mongets(mtmp, NHC.LONG_SWORD));
             break;
-            case 4:
-            if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
-                void (yield* mongets(mtmp, NHC.LONG_SWORD));
-            else
-                (yield* m_initthrow(mtmp, NHC.DAGGER, 3));
+        case NHC.S_ZOMBIE:
+            if (!rn2(4))
+                void (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
+            if (!rn2(4))
+                void (yield* mongets(mtmp, (rn2(3) ? NHC.KNIFE : NHC.SHORT_SWORD)));
             break;
-            case 5:
-            if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
-                void (yield* mongets(mtmp, NHC.LUCERN_HAMMER));
-            else
-                void (yield* mongets(mtmp, NHC.AKLYS));
+        case NHC.S_LIZARD:
+            if (mm == NHC.PM_SALAMANDER)
+                void (yield* mongets(mtmp, (rn2(7) ? NHC.SPEAR : (rn2(3) ? NHC.TRIDENT : NHC.STILETTO))));
             break;
-            default:
+        case NHC.S_DEMON:
+            switch (mm) {
+                case NHC.PM_BALROG:
+                    void (yield* mongets(mtmp, NHC.BULLWHIP));
+                    void (yield* mongets(mtmp, NHC.BROADSWORD));
+                    break;
+                case NHC.PM_ORCUS:
+                    void (yield* mongets(mtmp, NHC.WAN_DEATH));  /* the Wand of Orcus */
+                    break;
+                case NHC.PM_HORNED_DEVIL:
+                    void (yield* mongets(mtmp, rn2(4) ? NHC.TRIDENT : NHC.BULLWHIP));
+                    break;
+                case NHC.PM_DISPATER:
+                    void (yield* mongets(mtmp, NHC.WAN_STRIKING));
+                    break;
+                case NHC.PM_YEENOGHU:
+                    void (yield* mongets(mtmp, NHC.FLAIL));
+                    break;
+            }
+            /* prevent djinn and mail daemons from leaving objects when
+             * they vanish
+             */
+            if (!((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n))
+                break;
+            // @FallThrough
+            ;
+        default:
+            /*
+             * Now the general case, some chance of getting some type
+             * of weapon for "normal" monsters.  Certain special types
+             * of monsters will get a bonus chance or different selections.
+             */
+            bias = (((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) +
+                    Math.imul(((cptr.ldU64o((ptr), $permonst_mflags2) & 2048n) != 0n), 2) +
+                    ((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n)) | 0;
+            switch (rnd((14 - (Math.imul(2, bias))) | 0)) {
+                case 1:
+                    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
+                        void (yield* mongets(mtmp, NHC.BATTLE_AXE));
+                    else
+                        (yield* m_initthrow(mtmp, NHC.DART, 12));
+                    break;
+                case 2:
+                    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
+                        void (yield* mongets(mtmp, NHC.TWO_HANDED_SWORD));
+                    else {
+                        void (yield* mongets(mtmp, NHC.CROSSBOW));
+                        (yield* m_initthrow(mtmp, NHC.CROSSBOW_BOLT, 12));
+                    }
+                    break;
+                case 3:
+                    void (yield* mongets(mtmp, NHC.BOW));
+                    (yield* m_initthrow(mtmp, NHC.ARROW, 12));
+                    break;
+                case 4:
+                    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
+                        void (yield* mongets(mtmp, NHC.LONG_SWORD));
+                    else
+                        (yield* m_initthrow(mtmp, NHC.DAGGER, 3));
+                    break;
+                case 5:
+                    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
+                        void (yield* mongets(mtmp, NHC.LUCERN_HAMMER));
+                    else
+                        void (yield* mongets(mtmp, NHC.AKLYS));
+                    break;
+                default:
+                    break;
+            }
             break;
-        }
-        break;
     }
 
     if (cptr.ld1uo(mtmp, $monst_m_lev) > rn2(75))
@@ -973,273 +981,280 @@ function* m_initinv(mtmp) {
      */
     switch (cptr.ld1so(ptr, $permonst_mlet)) {
         case NHC.S_HUMAN:
-        if (((cptr.ldU64o((ptr), $permonst_mflags2) & 512n) != 0n)) {
-            let mac;
+            if (((cptr.ldU64o((ptr), $permonst_mflags2) & 512n) != 0n)) {
+                let mac;
 
-            switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
-                case NHC.PM_GUARD:
-                mac = -1;
-                break;
-                case NHC.PM_SOLDIER:
-                mac = 3;
-                break;
-                case NHC.PM_SERGEANT:
-                mac = 0;
-                break;
-                case NHC.PM_LIEUTENANT:
-                mac = -2;
-                break;
-                case NHC.PM_CAPTAIN:
-                mac = -3;
-                break;
-                case NHC.PM_WATCHMAN:
-                mac = 3;
-                break;
-                case NHC.PM_WATCH_CAPTAIN:
-                mac = -2;
-                break;
-                default:
-                (yield* impossible(__s_odd_mercenary_d, (cptr.ldI32o((ptr), $permonst_pmidx))));
-                mac = 0;
-                break;
-            }
+                switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
+                    case NHC.PM_GUARD:
+                        mac = -1;
+                        break;
+                    case NHC.PM_SOLDIER:
+                        mac = 3;
+                        break;
+                    case NHC.PM_SERGEANT:
+                        mac = 0;
+                        break;
+                    case NHC.PM_LIEUTENANT:
+                        mac = -2;
+                        break;
+                    case NHC.PM_CAPTAIN:
+                        mac = -3;
+                        break;
+                    case NHC.PM_WATCHMAN:
+                        mac = 3;
+                        break;
+                    case NHC.PM_WATCH_CAPTAIN:
+                        mac = -2;
+                        break;
+                    default:
+                        (yield* impossible(__s_odd_mercenary_d, (cptr.ldI32o((ptr), $permonst_pmidx))));
+                        mac = 0;
+                        break;
+                }
 
-            /* round 1: give them body armor */
-            if (mac < -1 && rn2(5))
-                otmp = (yield* mongets(mtmp, rn2(5) ? NHC.PLATE_MAIL : NHC.CRYSTAL_PLATE_MAIL));
-            else if (mac < 3 && rn2(5))
-                otmp = (yield* mongets(mtmp, rn2(3) ? NHC.SPLINT_MAIL : NHC.BANDED_MAIL));
-            else if (rn2(5))
-                otmp = (yield* mongets(mtmp, rn2(3) ? NHC.RING_MAIL : NHC.STUDDED_LEATHER_ARMOR));
-            else
-                otmp = (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
-            if (otmp) {
-                mac = (mac + ARM_BONUS(otmp)) | 0;
-            }
-            otmp = null;
-            ;
-
-            /* round 2: helmets */
-            if (mac < 10 && rn2(3))
-                otmp = (yield* mongets(mtmp, NHC.HELMET));
-            else if (mac < 10 && rn2(2))
-                otmp = (yield* mongets(mtmp, NHC.DENTED_POT));
-            if (otmp) {
-                mac = (mac + ARM_BONUS(otmp)) | 0;
-            }
-            otmp = null;
-            ;
-
-            /* round 3: shields */
-            if (mac < 10 && rn2(3))
-                otmp = (yield* mongets(mtmp, NHC.SMALL_SHIELD));
-            else if (mac < 10 && rn2(2))
-                otmp = (yield* mongets(mtmp, NHC.LARGE_SHIELD));
-            if (otmp) {
-                mac = (mac + ARM_BONUS(otmp)) | 0;
-            }
-            otmp = null;
-            ;
-
-            /* round 4: boots */
-            if (mac < 10 && rn2(3))
-                otmp = (yield* mongets(mtmp, NHC.LOW_BOOTS));
-            else if (mac < 10 && rn2(2))
-                otmp = (yield* mongets(mtmp, NHC.HIGH_BOOTS));
-            if (otmp) {
-                mac = (mac + ARM_BONUS(otmp)) | 0;
-            }
-            otmp = null;
-            ;
-
-            /* round 5: gloves + cloak */
-            if (mac < 10 && rn2(3))
-                otmp = (yield* mongets(mtmp, NHC.LEATHER_GLOVES));
-            else if (mac < 10 && rn2(2))
-                otmp = (yield* mongets(mtmp, NHC.LEATHER_CLOAK));
-            if (otmp) {
-                mac = (mac + ARM_BONUS(otmp)) | 0;  /* not technically needed */
-            }
-            otmp = null;
-            ;
-            (void (mac));  /* suppress 'dead increment' from static analyzer */
-
-            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATCH_CAPTAIN, $sizeof_permonst))) {
-                ;  /* better weapon rather than extra gear here */
-            } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATCHMAN, $sizeof_permonst))) {
-                if (rn2(3))
-                    void (yield* mongets(mtmp, NHC.TIN_WHISTLE));
-            } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst))) {
-                /* if hero teleports out of a vault while being confronted
-                   by the vault's guard, there is a shrill whistling sound,
-                   so guard evidently carries a cursed whistle */
-                otmp = (yield* mksobj(NHC.TIN_WHISTLE, 1, 0));
-                (yield* curse(otmp));
-                void (yield* mpickobj(mtmp, otmp));
-            } else {
-                if (!rn2(3))
-                    void (yield* mongets(mtmp, NHC.K_RATION));
-                if (!rn2(2))
-                    void (yield* mongets(mtmp, NHC.C_RATION));
-                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)) && !rn2(3))
-                    void (yield* mongets(mtmp, NHC.BUGLE));
-            }
-        } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_SHOPKEEPER, $sizeof_permonst))) {
-            void (yield* mongets(mtmp, NHC.SKELETON_KEY));
-            switch (rn2(4)) {
-                case 0:
-                void (yield* mongets(mtmp, NHC.WAN_MAGIC_MISSILE));
-                // @FallThrough
+                /* round 1: give them body armor */
+                if (mac < -1 && rn2(5))
+                    otmp = (yield* mongets(mtmp, rn2(5) ? NHC.PLATE_MAIL : NHC.CRYSTAL_PLATE_MAIL));
+                else if (mac < 3 && rn2(5))
+                    otmp = (yield* mongets(mtmp, rn2(3) ? NHC.SPLINT_MAIL : NHC.BANDED_MAIL));
+                else if (rn2(5))
+                    otmp = (yield* mongets(mtmp, rn2(3) ? NHC.RING_MAIL : NHC.STUDDED_LEATHER_ARMOR));
+                else
+                    otmp = (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
+                if (otmp) {
+                    mac = (mac + ARM_BONUS(otmp)) | 0;
+                }
+                otmp = null;
                 ;
-                case 1:
-                void (yield* mongets(mtmp, NHC.POT_EXTRA_HEALING));
-                // @FallThrough
+
+                /* round 2: helmets */
+                if (mac < 10 && rn2(3))
+                    otmp = (yield* mongets(mtmp, NHC.HELMET));
+                else if (mac < 10 && rn2(2))
+                    otmp = (yield* mongets(mtmp, NHC.DENTED_POT));
+                if (otmp) {
+                    mac = (mac + ARM_BONUS(otmp)) | 0;
+                }
+                otmp = null;
                 ;
-                case 2:
-                void (yield* mongets(mtmp, NHC.POT_HEALING));
-                // @FallThrough
+
+                /* round 3: shields */
+                if (mac < 10 && rn2(3))
+                    otmp = (yield* mongets(mtmp, NHC.SMALL_SHIELD));
+                else if (mac < 10 && rn2(2))
+                    otmp = (yield* mongets(mtmp, NHC.LARGE_SHIELD));
+                if (otmp) {
+                    mac = (mac + ARM_BONUS(otmp)) | 0;
+                }
+                otmp = null;
                 ;
-                case 3:
-                void (yield* mongets(mtmp, NHC.WAN_STRIKING));
-            }
-        } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_PRIEST ||
-                (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN &&
-                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
+
+                /* round 4: boots */
+                if (mac < 10 && rn2(3))
+                    otmp = (yield* mongets(mtmp, NHC.LOW_BOOTS));
+                else if (mac < 10 && rn2(2))
+                    otmp = (yield* mongets(mtmp, NHC.HIGH_BOOTS));
+                if (otmp) {
+                    mac = (mac + ARM_BONUS(otmp)) | 0;
+                }
+                otmp = null;
+                ;
+
+                /* round 5: gloves + cloak */
+                if (mac < 10 && rn2(3))
+                    otmp = (yield* mongets(mtmp, NHC.LEATHER_GLOVES));
+                else if (mac < 10 && rn2(2))
+                    otmp = (yield* mongets(mtmp, NHC.LEATHER_CLOAK));
+                if (otmp) {
+                    mac = (mac + ARM_BONUS(otmp)) | 0;  /* not technically needed */
+                }
+                otmp = null;
+                ;
+                (void (mac));  /* suppress 'dead increment' from static analyzer */
+
+                if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATCH_CAPTAIN, $sizeof_permonst))) {
+                    ;  /* better weapon rather than extra gear here */
+                } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATCHMAN, $sizeof_permonst))) {
+                    if (rn2(3))
+                        void (yield* mongets(mtmp, NHC.TIN_WHISTLE));
+                } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst))) {
+                    /* if hero teleports out of a vault while being confronted
+                       by the vault's guard, there is a shrill whistling sound,
+                       so guard evidently carries a cursed whistle */
+                    otmp = (yield* mksobj(NHC.TIN_WHISTLE, 1, 0));
+                    (yield* curse(otmp));
+                    void (yield* mpickobj(mtmp, otmp));
+                } else {
+                    if (!rn2(3))
+                        void (yield* mongets(mtmp, NHC.K_RATION));
+                    if (!rn2(2))
+                        void (yield* mongets(mtmp, NHC.C_RATION));
+                    if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)) && !rn2(3))
+                        void (yield* mongets(mtmp, NHC.BUGLE));
+                }
+            } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_SHOPKEEPER, $sizeof_permonst))) {
+                void (yield* mongets(mtmp, NHC.SKELETON_KEY));
+                switch (rn2(4)) {
+                    case 0:
+                        void (yield* mongets(mtmp, NHC.WAN_MAGIC_MISSILE));
+                        // @FallThrough
+                        ;
+                    case 1:
+                        void (yield* mongets(mtmp, NHC.POT_EXTRA_HEALING));
+                        // @FallThrough
+                        ;
+                    case 2:
+                        void (yield* mongets(mtmp, NHC.POT_HEALING));
+                        // @FallThrough
+                        ;
+                    case 3:
+                        void (yield* mongets(mtmp, NHC.WAN_STRIKING));
+                }
+            } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_PRIEST ||
+                    (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN &&
+                        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                            NHC.PM_CLERIC) &&
+                        (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER ||
+                            cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
+                void (yield* mongets(
+                    mtmp,
+                    rn2(7)
+                        ? NHC.ROBE
+                        : (rn2(3) ? NHC.CLOAK_OF_PROTECTION : NHC.CLOAK_OF_MAGIC_RESISTANCE)
+                ));
+                void (yield* mongets(mtmp, NHC.SMALL_SHIELD));
+                (yield* mkmonmoney(mtmp, BigInt(((rn2(10) + 20) | 0))));
+            } else if ((cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN &&
+                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) &&
                     (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER ||
                         cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
-            void (yield* mongets(
-                mtmp,
-                rn2(7)
-                    ? NHC.ROBE
-                    : (rn2(3) ? NHC.CLOAK_OF_PROTECTION : NHC.CLOAK_OF_MAGIC_RESISTANCE)
-            ));
-            void (yield* mongets(mtmp, NHC.SMALL_SHIELD));
-            (yield* mkmonmoney(mtmp, BigInt(((rn2(10) + 20) | 0))));
-        } else if ((cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN &&
-                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) &&
-                (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER ||
-                    cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
-            void (yield* mongets(mtmp, rn2(11) ? NHC.ROBE : NHC.CLOAK_OF_MAGIC_RESISTANCE));
-        }
-        break;
+                void (yield* mongets(mtmp, rn2(11) ? NHC.ROBE : NHC.CLOAK_OF_MAGIC_RESISTANCE));
+            }
+            break;
         case NHC.S_NYMPH:
-        if (!rn2(2))
-            void (yield* mongets(mtmp, NHC.MIRROR));
-        if (!rn2(2))
-            void (yield* mongets(mtmp, NHC.POT_OBJECT_DETECTION));
-        break;
+            if (!rn2(2))
+                void (yield* mongets(mtmp, NHC.MIRROR));
+            if (!rn2(2))
+                void (yield* mongets(mtmp, NHC.POT_OBJECT_DETECTION));
+            break;
         case NHC.S_GIANT:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst))) {
-            if (!rn2(8) ||
-                    (cptr.ld1so(gi, $instance_globals_i_in_mklev) &&
-                        (((cptr.ldI16o(
-                            (cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_earth_level
-                            )),
-                            $d_level_dlevel
-                        ) ||
-                            cptr.ldI16((cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_earth_level
-                            )))) &&
-                            on_level(
-                                cptr.add(u, $you_uz),
-                                cptr.add(
+            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst))) {
+                if (!rn2(8) ||
+                        (cptr.ld1so(gi, $instance_globals_i_in_mklev) &&
+                            (((cptr.ldI16o(
+                                (cptr.add(
                                     svd,
                                     $instance_globals_saved_d_dungeon_topology +
                                         $dgn_topology_d_earth_level
-                                )
-                            )))))
-                void (yield* mongets(mtmp, NHC.WAN_DIGGING));
-        } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 8192n) != 0n)) {
-            for (cnt = rn2(((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0)); cnt; cnt--) {
-                otmp = (yield* mksobj(rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)), 0, 0));
-                cptr.stI64o(otmp, $obj_quan, BigInt(((rn2(2) + 3) | 0)));
-                cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+                                )),
+                                $d_level_dlevel
+                            ) ||
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_earth_level
+                                )))) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_earth_level
+                                    )
+                                )))))
+                    void (yield* mongets(mtmp, NHC.WAN_DIGGING));
+            } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 8192n) != 0n)) {
+                for (cnt = rn2(((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0)); cnt; cnt--) {
+                    otmp = (yield* mksobj(
+                        rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)),
+                        0,
+                        0
+                    ));
+                    cptr.stI64o(otmp, $obj_quan, BigInt(((rn2(2) + 3) | 0)));
+                    cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+                    void (yield* mpickobj(mtmp, otmp));
+                }
+            }
+            break;
+        case NHC.S_WRAITH:
+            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_NAZGUL, $sizeof_permonst))) {
+                otmp = (yield* mksobj(NHC.RIN_INVISIBILITY, 0, 0));
+                (yield* curse(otmp));
                 void (yield* mpickobj(mtmp, otmp));
             }
-        }
-        break;
-        case NHC.S_WRAITH:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_NAZGUL, $sizeof_permonst))) {
-            otmp = (yield* mksobj(NHC.RIN_INVISIBILITY, 0, 0));
-            (yield* curse(otmp));
-            void (yield* mpickobj(mtmp, otmp));
-        }
-        break;
+            break;
         case NHC.S_LICH:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst)) && !rn2(13))
-            void (yield* mongets(mtmp, (rn2(7) ? NHC.ATHAME : NHC.WAN_NOTHING)));
-        else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ARCH_LICH, $sizeof_permonst)) && !rn2(3)) {
-            otmp = (yield* mksobj(rn2(3) ? NHC.ATHAME : NHC.QUARTERSTAFF, 1, schar((rn2(13) ? 0 : 1))));
-            if (cptr.ld1so(otmp, $obj_spe) < 2)
-                cptr.st1o(otmp, $obj_spe, schar(rnd(3)));
-            if (!rn2(4))
-                cptr.stI32o(otmp, $obj_oerodeproof, 1);
-            void (yield* mpickobj(mtmp, otmp));
-        }
-        break;
-        case NHC.S_MUMMY:
-        if (rn2(7))
-            void (yield* mongets(mtmp, NHC.MUMMY_WRAPPING));
-        break;
-        case NHC.S_QUANTMECH:
-        if (!rn2(20) && cptr.eq(ptr, cptr.add(mons, NHC.PM_QUANTUM_MECHANIC, $sizeof_permonst))) {
-            let catcorpse;
-
-            otmp = (yield* mksobj(NHC.LARGE_BOX, 0, 0));
-            /* we used to just set the flag, which resulted in weight()
-               treating the box as being heavier by the weight of a cat;
-               now we include a cat corpse that won't rot; when opening or
-               disclosing the box's contents, the corpse might be revived,
-               otherwise it's given a rot timer; weight is now ordinary */
-            if ((catcorpse = (yield* mksobj(NHC.CORPSE, 1, 0))) !== null) {
-                cptr.st1o(otmp, $obj_spe, 1);  /* flag for special SchroedingersBox */
-                (yield* set_corpsenm(catcorpse, NHC.PM_HOUSECAT));
-                void (yield* stop_timer(NHC.ROT_CORPSE, obj_to_any(catcorpse)));
-                (yield* add_to_container(otmp, catcorpse));
-                cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst)) && !rn2(13))
+                void (yield* mongets(mtmp, (rn2(7) ? NHC.ATHAME : NHC.WAN_NOTHING)));
+            else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ARCH_LICH, $sizeof_permonst)) && !rn2(3)) {
+                otmp = (yield* mksobj(rn2(3) ? NHC.ATHAME : NHC.QUARTERSTAFF, 1, schar((rn2(13) ? 0 : 1))));
+                if (cptr.ld1so(otmp, $obj_spe) < 2)
+                    cptr.st1o(otmp, $obj_spe, schar(rnd(3)));
+                if (!rn2(4))
+                    cptr.stI32o(otmp, $obj_oerodeproof, 1);
+                void (yield* mpickobj(mtmp, otmp));
             }
-            void (yield* mpickobj(mtmp, otmp));
-        }
-        break;
+            break;
+        case NHC.S_MUMMY:
+            if (rn2(7))
+                void (yield* mongets(mtmp, NHC.MUMMY_WRAPPING));
+            break;
+        case NHC.S_QUANTMECH:
+            if (!rn2(20) &&
+                    cptr.eq(ptr, cptr.add(mons, NHC.PM_QUANTUM_MECHANIC, $sizeof_permonst))) {
+                let catcorpse;
+
+                otmp = (yield* mksobj(NHC.LARGE_BOX, 0, 0));
+                /* we used to just set the flag, which resulted in weight()
+                   treating the box as being heavier by the weight of a cat;
+                   now we include a cat corpse that won't rot; when opening or
+                   disclosing the box's contents, the corpse might be revived,
+                   otherwise it's given a rot timer; weight is now ordinary */
+                if ((catcorpse = (yield* mksobj(NHC.CORPSE, 1, 0))) !== null) {
+                    cptr.st1o(otmp, $obj_spe, 1);  /* flag for special SchroedingersBox */
+                    (yield* set_corpsenm(catcorpse, NHC.PM_HOUSECAT));
+                    void (yield* stop_timer(NHC.ROT_CORPSE, obj_to_any(catcorpse)));
+                    (yield* add_to_container(otmp, catcorpse));
+                    cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+                }
+                void (yield* mpickobj(mtmp, otmp));
+            }
+            break;
         case NHC.S_LEPRECHAUN:
-        (yield* mkmonmoney(mtmp, BigInt(d(((yield* level_difficulty())), 30))));
-        break;
+            (yield* mkmonmoney(mtmp, BigInt(d(((yield* level_difficulty())), 30))));
+            break;
         case NHC.S_DEMON:
-        /* moved here from m_initweap() because these don't
-           have AT_WEAP so m_initweap() is not called for them */
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ICE_DEVIL, $sizeof_permonst)) && !rn2(4)) {
-            void (yield* mongets(mtmp, NHC.SPEAR));
-        } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ASMODEUS, $sizeof_permonst))) {
-            void (yield* mongets(mtmp, NHC.WAN_COLD));
-            void (yield* mongets(mtmp, NHC.WAN_FIRE));
-        }
-        break;
+            /* moved here from m_initweap() because these don't
+               have AT_WEAP so m_initweap() is not called for them */
+            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ICE_DEVIL, $sizeof_permonst)) && !rn2(4)) {
+                void (yield* mongets(mtmp, NHC.SPEAR));
+            } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ASMODEUS, $sizeof_permonst))) {
+                void (yield* mongets(mtmp, NHC.WAN_COLD));
+                void (yield* mongets(mtmp, NHC.WAN_FIRE));
+            }
+            break;
         case NHC.S_GNOME:
-        if (!rn2((In_mines(cptr.add(u, $you_uz)) && cptr.ld1so(gi, $instance_globals_i_in_mklev))
-                ? 20
-                : 60)) {
-            otmp = (yield* mksobj(rn2(4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
-            cptr.stI64o(otmp, $obj_quan, 1n);
-            cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
-            if (!(yield* mpickobj(mtmp, otmp)) &&
-                    !(cptr.ldI32o3(
-                        svl,
-                        cptr.ldI16o(mtmp, $monst_mx),
-                        $sizeof_rm_x21,
-                        cptr.ldI16o(mtmp, $monst_my),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_lit
-                    ) & 1))
-                (yield* begin_burn(otmp, 0));
-        }
-        break;
+            if (!rn2((In_mines(cptr.add(u, $you_uz)) &&
+                cptr.ld1so(gi, $instance_globals_i_in_mklev))
+                    ? 20
+                    : 60)) {
+                otmp = (yield* mksobj(rn2(4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
+                cptr.stI64o(otmp, $obj_quan, 1n);
+                cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+                if (!(yield* mpickobj(mtmp, otmp)) &&
+                        !(cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16o(mtmp, $monst_mx),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(mtmp, $monst_my),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_lit
+                        ) & 1))
+                    (yield* begin_burn(otmp, 0));
+            }
+            break;
         default:
-        break;
+            break;
     }
 
     /* ordinary soldiers rarely have access to magic (or gold :-) */
@@ -1304,7 +1319,8 @@ export function* clone_mon(mon, x, y) {
         cptr.ldI16o(mm, $nhcoord_y),
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ) !== null)) {
+    ) !==
+            null)) {
         if (!(yield* enexto(
             mm,
             cptr.ldI16(mm),
@@ -1471,14 +1487,10 @@ export function* propagate(mndx, tally, ghostly) {
         mndx,
         $sizeof_mvitals,
         $instance_globals_saved_m_mvitals + $mvitals_mvflags
-    ) & 3) != 0));  /* geno'd|extinct */
-    result = schar(((cptr.ld1uo2(
-        svm,
-        mndx,
-        $sizeof_mvitals,
-        $instance_globals_saved_m_mvitals
-    ) < lim &&
-        !gone)
+    ) &
+            3) != 0));  /* geno'd|extinct */
+    result = schar(((cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals) <
+        lim && !gone)
             ? 1
             : 0));
 
@@ -1554,8 +1566,8 @@ export function monhp_per_lvl(mon) {
     /* like newmonhp, but home elementals are ignored, riders use normal d8 */
     if ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM)) {
         /* draining usually won't be applicable for these critters */
-        hp = (golemhp((cptr.ldI32o((ptr), $permonst_pmidx))) / cptr.ld1so(ptr, $permonst_mlevel)) |
-                0;
+        hp = (golemhp((cptr.ldI32o((ptr), $permonst_pmidx))) /
+                cptr.ld1so(ptr, $permonst_mlevel)) | 0;
     } else if (cptr.ld1so(ptr, $permonst_mlevel) > 49) {
         /* arbitrary; such monsters won't be involved in draining anyway */
         hp = (4 + rnd(4)) | 0;  /* 5..8 */
@@ -1782,8 +1794,8 @@ export function* makemon(ptr, x, y, mmflags) {
             (!(cptr.ldI32o(
                 svl,
                 $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_rndmongen
-            ) & 1) &&
-                !ptr))
+            ) &
+                1) && !ptr))
         return null;
 
     /* if caller wants random location, do it here */
@@ -1814,14 +1826,8 @@ export function* makemon(ptr, x, y, mmflags) {
     }
 
     /* Does monster already exist at the position? */
-    if ((cptr.ldPtro3(
-        svl,
-        x,
-        168,
-        y,
-        8,
-        $instance_globals_saved_l_level + $dlevel_t_monsters
-    ) !== null)) {
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !==
+            null)) {
         if (!(BigInt(mmflags >>> 0) & 16n) || !(yield* enexto_core(cc, x, y, ptr, gpflags)))
             return null;
         x = cptr.ldI16(cc);
@@ -2026,49 +2032,49 @@ export function* makemon(ptr, x, y, mmflags) {
 
     switch (cptr.ld1so(ptr, $permonst_mlet)) {
         case NHC.S_MIMIC:
-        (yield* set_mimic_sym(mtmp));
-        break;
+            (yield* set_mimic_sym(mtmp));
+            break;
         case NHC.S_SPIDER:
         case NHC.S_SNAKE:
-        if (cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
-            if (x && y)
-                void (yield* mkobj_at(NHC.RANDOM_CLASS, x, y, 1));
-            void (yield* hideunder(mtmp));
-        }
-        break;
+            if (cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
+                if (x && y)
+                    void (yield* mkobj_at(NHC.RANDOM_CLASS, x, y, 1));
+                void (yield* hideunder(mtmp));
+            }
+            break;
         case NHC.S_LIGHT:
         case NHC.S_ELEMENTAL:
-        if (mndx == NHC.PM_STALKER || mndx == NHC.PM_BLACK_LIGHT) {
-            cptr.stI32o(mtmp, $monst_perminvis, 1);
-            cptr.stI32o(mtmp, $monst_minvis, 1);
-        }
-        break;
+            if (mndx == NHC.PM_STALKER || mndx == NHC.PM_BLACK_LIGHT) {
+                cptr.stI32o(mtmp, $monst_perminvis, 1);
+                cptr.stI32o(mtmp, $monst_minvis, 1);
+            }
+            break;
         case NHC.S_EEL:
-        if (cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
-            void (yield* hideunder(mtmp));
-        }
-        break;
+            if (cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
+                void (yield* hideunder(mtmp));
+            }
+            break;
         case NHC.S_LEPRECHAUN:
-        cptr.stI32o(mtmp, $monst_msleeping, 1);
-        break;
+            cptr.stI32o(mtmp, $monst_msleeping, 1);
+            break;
         case NHC.S_JABBERWOCK:
         case NHC.S_NYMPH:
-        if (rn2(5) && !(cptr.ldI32o(u, $you_uhave) & 1))
-            cptr.stI32o(mtmp, $monst_msleeping, 1);
-        break;
+            if (rn2(5) && !(cptr.ldI32o(u, $you_uhave) & 1))
+                cptr.stI32o(mtmp, $monst_msleeping, 1);
+            break;
         case NHC.S_ORC:
-        if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))
-            cptr.stI32o(mtmp, $monst_mpeaceful, 0);
-        break;
+            if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))
+                cptr.stI32o(mtmp, $monst_mpeaceful, 0);
+            break;
         case NHC.S_UNICORN:
-        if (is_unicorn(ptr) &&
-                sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(ptr, $permonst_maligntyp)))
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
-        break;
+            if (is_unicorn(ptr) &&
+                    sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(ptr, $permonst_maligntyp)))
+                cptr.stI32o(mtmp, $monst_mpeaceful, 1);
+            break;
         case NHC.S_BAT:
-        if (In_hell(cptr.add(u, $you_uz)) && is_bat(ptr))
-            (yield* mon_adjust_speed(mtmp, 2, null));
-        break;
+            if (In_hell(cptr.add(u, $you_uz)) && is_bat(ptr))
+                (yield* mon_adjust_speed(mtmp, 2, null));
+            break;
     }
     if ((ct = emits_light(cptr.ldPtro(mtmp, $monst_data))) > 0)
         (yield* new_light_source(
@@ -2095,8 +2101,7 @@ export function* makemon(ptr, x, y, mmflags) {
             svc,
             $context_info_no_of_wizards,
             cptr.ldI32o(svc, $context_info_no_of_wizards) + 1
-        )) -
-                (1);
+        )) - (1);
         if (cptr.ldI32o(svc, $context_info_no_of_wizards) == 1 &&
                 (((cptr.ldI16o(
                     (cptr.add(
@@ -2134,8 +2139,7 @@ export function* makemon(ptr, x, y, mmflags) {
             mndx == NHC.PM_WUMPUS ||
             mndx == NHC.PM_LONG_WORM ||
             mndx == NHC.PM_GIANT_EEL) &&
-                !(cptr.ldI32o(u, $you_uhave) & 1) &&
-                rn2(5))
+                !(cptr.ldI32o(u, $you_uhave) & 1) && rn2(5))
             cptr.stI32o(mtmp, $monst_msleeping, 1);
     } else {
         if (byyou) {
@@ -2324,8 +2328,7 @@ export function* unmakemon(mon, mmflags) {
                 mndx,
                 $sizeof_mvitals,
                 $instance_globals_saved_m_mvitals + $mvitals_mvflags
-            ) &
-                -2
+            ) & -2
         );
 
     cptr.stI32o(mon, $monst_mhp, 0);  /* let discard_minvent() know that mon isn't being kept */
@@ -2436,21 +2439,23 @@ function align_shift(ptr) {
                 cptr.ldI16o(u, $you_uz),
                 $sizeof_dungeon,
                 $dungeon_flags + $d_flags_align
-            ) & 7) | 0) {
+            ) &
+                7) |
+                0) {
         default:
         case NHM.AM_NONE:
-        alshift = 0;
-        break;
+            alshift = 0;
+            break;
         case NHM.AM_LAWFUL:
-        alshift = (((cptr.ld1so(ptr, $permonst_maligntyp) + 20) | 0) / 8) | 0;
-        break;
+            alshift = (((cptr.ld1so(ptr, $permonst_maligntyp) + 20) | 0) / 8) | 0;
+            break;
         case NHM.AM_NEUTRAL:
-        alshift = (((20 - Math.abs(cptr.ld1so(ptr, $permonst_maligntyp))) | 0) / NHM.ALIGNWEIGHT) |
-                0;
-        break;
+            alshift = (((20 - Math.abs(cptr.ld1so(ptr, $permonst_maligntyp))) | 0) /
+                    NHM.ALIGNWEIGHT) | 0;
+            break;
         case NHM.AM_CHAOTIC:
-        alshift = ((-((cptr.ld1so(ptr, $permonst_maligntyp) - 20) | 0)) / 8) | 0;
-        break;
+            alshift = ((-((cptr.ld1so(ptr, $permonst_maligntyp) - 20) | 0)) / 8) | 0;
+            break;
     }
     return alshift;
 }
@@ -2661,11 +2666,9 @@ function cmp_init_mongen_order(p1, p2) {
     let offset2 = 0;
 
     /* incorporate the mlet into the sort values for comparison */
-    let difficulty1 = (((cptr.ld1uo2(mons, i1, $sizeof_permonst, $permonst_difficulty) +
-        offset1) | 0) |
+    let difficulty1 = (cptr.ld1uo2(mons, i1, $sizeof_permonst, $permonst_difficulty) + offset1 |
             (cptr.ld1so2(mons, i1, $sizeof_permonst, $permonst_mlet) << 8));
-    let difficulty2 = (((cptr.ld1uo2(mons, i2, $sizeof_permonst, $permonst_difficulty) +
-        offset2) | 0) |
+    let difficulty2 = (cptr.ld1uo2(mons, i2, $sizeof_permonst, $permonst_difficulty) + offset2 |
             (cptr.ld1so2(mons, i2, $sizeof_permonst, $permonst_mlet) << 8));
     return (difficulty1 - difficulty2) | 0;
 }
@@ -2836,8 +2839,7 @@ export function* mkclass_aligned(class$, spc, atyp) {
             (cptr.ldI32o(mongen_order, first, 4)),
             $sizeof_permonst,
             $permonst_mlet
-        ) ==
-                class$)
+        ) == class$)
             break;
     if (first == NHC.SPECIAL_PM) {
         (yield* impossible(__s_mkclass_found_no_class_d_monsters, class$));
@@ -2862,8 +2864,7 @@ export function* mkclass_aligned(class$, spc, atyp) {
                 (cptr.ldI32o(mongen_order, last, 4)),
                 $sizeof_permonst,
                 $permonst_mlet
-            ) ==
-                class$;
+            ) == class$;
         last++
     ) {
         if (atyp != -128 &&
@@ -2910,8 +2911,7 @@ export function* mkclass_aligned(class$, spc, atyp) {
                             (cptr.ldI32o(mongen_order, (last - 1) | 0, 4)),
                             $sizeof_permonst,
                             $permonst_difficulty
-                        ) &&
-                    rn2(2))
+                        ) && rn2(2))
                 break;
             if ((k = (cptr.ldU16o2(
                 mons,
@@ -2919,7 +2919,8 @@ export function* mkclass_aligned(class$, spc, atyp) {
                 $sizeof_permonst,
                 $permonst_geno
             ) &
-                NHM.G_FREQ)) > 0 ||
+                NHM.G_FREQ)) >
+                0 ||
                     (k = (zero_freq_for_entire_class ? 1 : 0)) > 0) {
                 /* skew towards lower value monsters at lower exp. levels
                    (this used to be done in the next loop, but that didn't
@@ -2933,13 +2934,15 @@ export function* mkclass_aligned(class$, spc, atyp) {
                 cptr.stI32o(
                     nums,
                     (cptr.ldI32o(mongen_order, last, 4)),
-                    (k + 1 -
+                    (k +
+                        1 -
                         ((yield* adj_lev(cptr.add(
                             mons,
                             (cptr.ldI32o(mongen_order, last, 4)),
                             $sizeof_permonst
                         ))) >
-                            (Math.imul(cptr.ldI32o(u, $you_ulevel), 2)))) | 0,
+                            (Math.imul(cptr.ldI32o(u, $you_ulevel), 2)))) |
+                        0,
                     4
                 );
                 num = (num + cptr.ldI32o(nums, (cptr.ldI32o(mongen_order, last, 4)), 4)) | 0;
@@ -2991,16 +2994,14 @@ export function mkclass_poly(class$) {
     )
         if (mk_gen_ok(last, NHM.G_GENOD, gmask))
             num = (num +
-                (cptr.ldU16o2(mons, last, $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) |
-                    0;
+                    (cptr.ldU16o2(mons, last, $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) | 0;
     if (!num)
         return NHC.NON_PM;
 
     for (num = rnd(num); num > 0; first++)
         if (mk_gen_ok(first, NHM.G_GENOD, gmask))
             num = (num -
-                (cptr.ldU16o2(mons, first, $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) |
-                    0;
+                    (cptr.ldU16o2(mons, first, $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) | 0;
     first--;  /* correct an off-by-one error */
 
     return first;
@@ -3017,13 +3018,12 @@ export function* adj_lev(ptr) {
          * every time he is killed
          */
         tmp = (cptr.ld1so(ptr, $permonst_mlevel) +
-            cptr.ld1uo2(
-                svm,
-                NHC.PM_WIZARD_OF_YENDOR,
-                $sizeof_mvitals,
-                $instance_globals_saved_m_mvitals + $mvitals_died
-            )) |
-                0;
+                cptr.ld1uo2(
+                    svm,
+                    NHC.PM_WIZARD_OF_YENDOR,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_died
+                )) | 0;
         if (tmp > 49)
             tmp = 49;
         return tmp;
@@ -3088,8 +3088,10 @@ export function* grow_up(mtmp, victim) {
         if (!cptr.ld1uo(mtmp, $monst_m_lev))
             hp_threshold = 4;
         else if ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM))
-            hp_threshold = (Math.imul(((cptr.ldI32o(mtmp, $monst_mhpmax) / 10) | 0) + 1, 10) - 1) |
-                    0;
+            hp_threshold = (Math.imul(
+                ((cptr.ldI32o(mtmp, $monst_mhpmax) / 10) | 0) + 1,
+                10
+            ) - 1) | 0;
         else if (is_home_elemental(ptr))
             hp_threshold = Math.imul(hp_threshold, 3);
         lev_limit = (Math.imul(3, cptr.ld1so(ptr, $permonst_mlevel)) / 2) | 0;  /* same as adj_lev() */
@@ -3132,11 +3134,10 @@ export function* grow_up(mtmp, victim) {
         ptr = cptr.add(mons, newtype, $sizeof_permonst);
         /* new form might force gender change */
         fem = (((cptr.ldU64o((ptr), $permonst_mflags2) & 65536n) != 0n)
-            ? 0
-            : (((cptr.ldU64o((ptr), $permonst_mflags2) & 131072n) != 0n)
-                ? 1
-                : (cptr.ldI32o(mtmp, $monst_female) & 1) | 0)) >>>
-                0;
+                ? 0
+                : (((cptr.ldU64o((ptr), $permonst_mflags2) & 131072n) != 0n)
+                    ? 1
+                    : (cptr.ldI32o(mtmp, $monst_female) & 1) | 0)) >>> 0;
 
         if (cptr.ld1uo2(
             svm,
@@ -3276,29 +3277,29 @@ export function* mongets(mtmp, otyp) {
 export function golemhp(type) {
     switch (type) {
         case NHC.PM_STRAW_GOLEM:
-        return 20;
+            return 20;
         case NHC.PM_PAPER_GOLEM:
-        return 20;
+            return 20;
         case NHC.PM_ROPE_GOLEM:
-        return 30;
+            return 30;
         case NHC.PM_LEATHER_GOLEM:
-        return 40;
+            return 40;
         case NHC.PM_GOLD_GOLEM:
-        return 60;
+            return 60;
         case NHC.PM_WOOD_GOLEM:
-        return 50;
+            return 50;
         case NHC.PM_FLESH_GOLEM:
-        return 40;
+            return 40;
         case NHC.PM_CLAY_GOLEM:
-        return 70;
+            return 70;
         case NHC.PM_STONE_GOLEM:
-        return 100;
+            return 100;
         case NHC.PM_GLASS_GOLEM:
-        return 80;
+            return 80;
         case NHC.PM_IRON_GOLEM:
-        return 120;
+            return 120;
         default:
-        return 0;
+            return 0;
     }
 }
 
@@ -3356,7 +3357,8 @@ export function peace_minded(ptr) {
     return schar((!!rn2((16 +
         (cptr.ldI32o(u, $you_ualign + $align_record) < -15
             ? -15
-            : cptr.ldI32o(u, $you_ualign + $align_record))) | 0) &&
+            : cptr.ldI32o(u, $you_ualign + $align_record))) |
+        0) &&
         !!rn2((2 + Math.abs(mal)) | 0)
             ? 1
             : 0));
@@ -3406,15 +3408,15 @@ export function set_malign(mtmp) {
             cptr.st1o(mtmp, $monst_malign, 0);
         else
             cptr.st1o(mtmp, $monst_malign, 20);  /* really hostile */
-    } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-            2097152n) != 0n)) {
+    } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2097152n) !=
+            0n)) {
         let absmal = Math.abs(mal);
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             cptr.st1o(mtmp, $monst_malign, schar(Math.imul(-3, (5 > (absmal) ? 5 : (absmal)))));
         else
             cptr.st1o(mtmp, $monst_malign, schar(Math.imul(3, (5 > (absmal) ? 5 : (absmal)))));  /* renegade */
-    } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-            1048576n) != 0n)) {
+    } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1048576n) !=
+            0n)) {
         let absmal = Math.abs(mal);
         if (coaligned)
             cptr.st1o(mtmp, $monst_malign, 0);
@@ -3505,9 +3507,10 @@ export function* set_mimic_sym(mtmp) {
             my,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_roomno
-        ) & 63) | 0) -
-            NHM.ROOMOFFSET) |
-                0;
+        ) &
+            63) |
+            0) -
+                NHM.ROOMOFFSET) | 0;
         if (roomno >= 0)
             rt = cptr.ld1so2(svr, roomno, $sizeof_mkroom, $mkroom_rtype);
         else
@@ -3520,7 +3523,8 @@ export function* set_mimic_sym(mtmp) {
             my,
             8,
             $instance_globals_saved_l_level + $dlevel_t_objects
-        ) !== null)) {
+        ) !==
+                null)) {
             ap_type = NHC.M_AP_OBJECT;
             appear = cptr.ldI16o(
                 cptr.ldPtro3(
@@ -3624,9 +3628,8 @@ export function* set_mimic_sym(mtmp) {
                             $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
                         )
                     )))
-                    ? NHC.S_hwall
-                    : NHC.S_hcdoor) >>>
-                        0;
+                        ? NHC.S_hwall
+                        : NHC.S_hcdoor) >>> 0;
             else
                 appear = ((((cptr.ldI16o(
                     (cptr.add(
@@ -3646,13 +3649,14 @@ export function* set_mimic_sym(mtmp) {
                             $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
                         )
                     )))
-                    ? NHC.S_vwall
-                    : NHC.S_vcdoor) >>>
-                        0;
+                        ? NHC.S_vwall
+                        : NHC.S_vcdoor) >>> 0;
         } else if ((cptr.ldI32o(
             svl,
             $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-        ) & 1) | 0 &&
+        ) &
+            1) |
+            0 &&
                 !(In_mines(cptr.add(u, $you_uz)) &&
                     in_town(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
                 !(cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) &&
@@ -3742,8 +3746,7 @@ export function* set_mimic_sym(mtmp) {
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
         ) &
-            NHM.G_NOCORPSE) !=
-                0;
+                NHM.G_NOCORPSE) != 0;
 
         if (appear == NHC.CORPSE && nocorpse_ndx)
             mndx = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) +
@@ -3821,7 +3824,9 @@ export function* bagotricks(bag, tipping, seencount) {
                     cptr.ldI16o(bag, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_name_known
-                ) & 1) | 0) {
+                ) &
+                    1) |
+                    0) {
             cptr.stI32o(bag, $obj_cknown, 1);
             (yield* update_inventory());  /* for perm_invent */
         }

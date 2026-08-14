@@ -686,8 +686,8 @@ function newbox(L) {
 function newbuffsize(B, sz) {
     let newsize = BigInt.asUintN(64, (cptr.ldU64o(B, $luaL_Buffer_size) / 2n) * 3n);  /* buffer size * 1.5 */
     if ((__builtin_expect(
-        BigInt(((BigInt.asUintN(64, 18446744073709551615n - sz) <
-            cptr.ldU64o(B, $luaL_Buffer_n)) != 0)),
+        BigInt(((BigInt.asUintN(64, 18446744073709551615n - sz) < cptr.ldU64o(B, $luaL_Buffer_n)) !=
+            0)),
         0n
     )))
         return BigInt.asUintN(
@@ -1124,33 +1124,33 @@ export function luaL_tolstring(L, idx, len) {
     } else {
         switch (lua_type(L, idx)) {
             case 3:
-            {
-                if (lua_isinteger(L, idx))
-                    lua_pushfstring(L, __s_pct_i, lua_tointegerx(L, (idx), null));
-                else
-                    lua_pushfstring(L, __s_pct_f, lua_tonumberx(L, (idx), null));
-                break;
-            }
+                {
+                    if (lua_isinteger(L, idx))
+                        lua_pushfstring(L, __s_pct_i, lua_tointegerx(L, (idx), null));
+                    else
+                        lua_pushfstring(L, __s_pct_f, lua_tonumberx(L, (idx), null));
+                    break;
+                }
             case 4:
-            lua_pushvalue(L, idx);
-            break;
-            case 1:
-            lua_pushstring(L, (lua_toboolean(L, idx) ? __s_true : __s_false));
-            break;
-            case 0:
-            lua_pushstring(L, __s_nil);
-            break;
-            default:
-            {
-                let tt = luaL_getmetafield(L, idx, __s_name);  /* try name */
-                let kind = (tt == 4)
-                        ? lua_tolstring(L, -1, null)
-                        : lua_typename(L, lua_type(L, (idx)));
-                lua_pushfstring(L, __s_s_p, kind, lua_topointer(L, idx));
-                if (tt != 0)
-                    (lua_rotate(L, -2, -1), lua_settop(L, -2));  /* remove '__name' */
+                lua_pushvalue(L, idx);
                 break;
-            }
+            case 1:
+                lua_pushstring(L, (lua_toboolean(L, idx) ? __s_true : __s_false));
+                break;
+            case 0:
+                lua_pushstring(L, __s_nil);
+                break;
+            default:
+                {
+                    let tt = luaL_getmetafield(L, idx, __s_name);  /* try name */
+                    let kind = (tt == 4)
+                            ? lua_tolstring(L, -1, null)
+                            : lua_typename(L, lua_type(L, (idx)));
+                    lua_pushfstring(L, __s_s_p, kind, lua_topointer(L, idx));
+                    if (tt != 0)
+                        (lua_rotate(L, -2, -1), lua_settop(L, -2));  /* remove '__name' */
+                    break;
+                }
         }
     }
     return lua_tolstring(L, -1, len);

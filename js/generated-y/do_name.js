@@ -726,7 +726,8 @@ function* do_mgivenname() {
                         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8),
                         cx
                     ) &
-                        NHM.IN_SIGHT) != 0) ||
+                        NHM.IN_SIGHT) !=
+                        0) ||
                         see_with_infrared(mtmp)) ||
                         (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
                         (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
@@ -882,8 +883,7 @@ function* do_oname(obj) {
             u,
             $you_uconduct + $u_conduct_literate,
             cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
-        )) -
-                (1n);
+        )) - (1n);
     } else if (cptr.ldI16o(obj, $obj_otyp) == objtyp.v) {
         /* artifact_name() always returns non-Null when it sets objtyp */
         (__builtin_expect(BigInt((!(aname !== null))), 0n)
@@ -956,8 +956,7 @@ export function* oname(obj, name, oflgs) {
                 u,
                 $you_uconduct + $u_conduct_literate,
                 cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
-            )) -
-                    (1n)))
+            )) - (1n)))
                 (yield* livelog_printf(96n, __s_became_literate_by_naming_s, (yield* bare_artifactname(obj))));
             else
                 (yield* livelog_printf(
@@ -980,17 +979,17 @@ export function objtyp_is_callable(i) {
 
     switch (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class)) {
         case NHC.AMULET_CLASS:
-        /* 5.0: calling these used to be allowed but that enabled the
-           player to tell whether two unID'd amulets of yendor were both
-           fake or one was real by calling them distinct names and then
-           checking discoveries to see whether first name was replaced
-           by second or both names stuck; with more than two available
-           to work with, if they weren't all fake it was possible to
-           determine which one was the real one */
-        if (i == NHC.AMULET_OF_YENDOR || i == NHC.FAKE_AMULET_OF_YENDOR)
-            break;  /* return FALSE */
-        // @FallThrough
-        ;
+            /* 5.0: calling these used to be allowed but that enabled the
+               player to tell whether two unID'd amulets of yendor were both
+               fake or one was real by calling them distinct names and then
+               checking discoveries to see whether first name was replaced
+               by second or both names stuck; with more than two available
+               to work with, if they weren't all fake it was possible to
+               determine which one was the real one */
+            if (i == NHC.AMULET_OF_YENDOR || i == NHC.FAKE_AMULET_OF_YENDOR)
+                break;  /* return FALSE */
+            // @FallThrough
+            ;
         case NHC.SCROLL_CLASS:
         case NHC.POTION_CLASS:
         case NHC.WAND_CLASS:
@@ -1000,16 +999,16 @@ export function objtyp_is_callable(i) {
         case NHC.ARMOR_CLASS:
         case NHC.TOOL_CLASS:
         case NHC.VENOM_CLASS:
-        if ((cptr.ldPtro2(
-            obj_descr,
-            cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx),
-            $sizeof_objdescr,
-            $objdescr_oc_descr
-        )))
-            return 1;
-        break;
+            if ((cptr.ldPtro2(
+                obj_descr,
+                cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx),
+                $sizeof_objdescr,
+                $objdescr_oc_descr
+            )))
+                return 1;
+            break;
         default:
-        break;
+            break;
     }
     return 0;
 }
@@ -1045,7 +1044,9 @@ export function call_ok(obj) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_name_known
-            ) & 1) | 0 &&
+            ) &
+                1) |
+                0 &&
                 !cptr.ldPtro2(
                     objects,
                     cptr.ldI16o(obj, $obj_otyp),
@@ -1171,39 +1172,39 @@ export function* docallcmd() {
     switch (ch) {
         default:
         case 113:
-        break;
+            break;
         case 109:
-        (yield* do_mgivenname());
-        break;
+            (yield* do_mgivenname());
+            break;
         case 105:
-        obj = (yield* getobj(__s_name, name_ok, NHM.GETOBJ_PROMPT));
-        if (obj)
-            (yield* do_oname(obj));
-        break;
+            obj = (yield* getobj(__s_name, name_ok, NHM.GETOBJ_PROMPT));
+            if (obj)
+                (yield* do_oname(obj));
+            break;
         case 111:
-        obj = (yield* getobj(__s_call, call_ok, NHM.GETOBJ_NOFLAGS));
-        if (obj) {
-            /* behave as if examining it in inventory;
-               this might set dknown if it was picked up
-               while blind and the hero can now see */
-            void (yield* xname(obj));
+            obj = (yield* getobj(__s_call, call_ok, NHM.GETOBJ_NOFLAGS));
+            if (obj) {
+                /* behave as if examining it in inventory;
+                   this might set dknown if it was picked up
+                   while blind and the hero can now see */
+                void (yield* xname(obj));
 
-            if (!(cptr.ldI32o(obj, $obj_dknown) & 1)) {
-                (yield* You(__s_would_never_recognize_another_one));
-            } else {
-                (yield* docall(obj));
+                if (!(cptr.ldI32o(obj, $obj_dknown) & 1)) {
+                    (yield* You(__s_would_never_recognize_another_one));
+                } else {
+                    (yield* docall(obj));
+                }
             }
-        }
-        break;
+            break;
         case 102:
-        (yield* namefloorobj());
-        break;
+            (yield* namefloorobj());
+            break;
         case 100:
-        (yield* rename_disco());
-        break;
+            (yield* rename_disco());
+            break;
         case 97:
-        (yield* donamelevel());
-        break;
+            (yield* donamelevel());
+            break;
     }
     return NHM.ECMD_OK;
 }
@@ -1329,7 +1330,8 @@ function* namefloorobj() {
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
-            ) & 128n) != 0n))
+            ) &
+                128n) != 0n))
             ? __s_over
             : __s_under
     );
@@ -1757,19 +1759,19 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     cptr.st1o(cptr.decay(buf2), 0, 0, 1);  /* lint suppression */
     switch (article) {
         case NHM.ARTICLE_YOUR:
-        void cptr.strcpy(cptr.decay(buf2), __s_your);
-        break;
+            void cptr.strcpy(cptr.decay(buf2), __s_your);
+            break;
         case NHM.ARTICLE_THE:
-        void cptr.strcpy(cptr.decay(buf2), __s_the);
-        break;
+            void cptr.strcpy(cptr.decay(buf2), __s_the);
+            break;
         case NHM.ARTICLE_A:
-        /* avoid an() here */
-        void (yield* just_an(cptr.decay(buf2), buf));  /* copy "a " or "an " into buf2[] */
-        break;
+            /* avoid an() here */
+            void (yield* just_an(cptr.decay(buf2), buf));  /* copy "a " or "an " into buf2[] */
+            break;
         case NHM.ARTICLE_NONE:
         default:
-        insertbuf2 = 0;
-        break;
+            insertbuf2 = 0;
+            break;
     }
     if (insertbuf2) {
         void cptr.strcat(cptr.decay(buf2), buf);  /* buf2[] isn't viable to return,  */
@@ -1979,18 +1981,18 @@ export function* mon_nam_too(mon, other_mon) {
         outbuf = nextmbuf();
         switch (pronoun_gender(mon, NHM.PRONOUN_HALLU)) {
             case 0:
-            void cptr.strcpy(outbuf, __s_himself);
-            break;
+                void cptr.strcpy(outbuf, __s_himself);
+                break;
             case 1:
-            void cptr.strcpy(outbuf, __s_herself);
-            break;
+                void cptr.strcpy(outbuf, __s_herself);
+                break;
             default:
             case 2:
-            void cptr.strcpy(outbuf, __s_itself);
-            break;
+                void cptr.strcpy(outbuf, __s_itself);
+                break;
             case 3:
-            void cptr.strcpy(outbuf, __s_themselves);
-            break;
+                void cptr.strcpy(outbuf, __s_themselves);
+                break;
         }
     }
     return outbuf;
@@ -2220,7 +2222,8 @@ export function* rndmonnam(code) {
         name = (rn2_on_display_rng(((NHC.SPECIAL_PM + 100 - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0;
     } while (name < NHC.SPECIAL_PM &&
             (((cptr.ldU64o((cptr.add(mons, name, $sizeof_permonst)), $permonst_mflags2) &
-                524288n) != 0n) ||
+                524288n) !=
+                0n) ||
                 (cptr.ldU16o2(mons, name, $sizeof_permonst, $permonst_geno) & NHM.G_NOGEN)));
 
     if (name >= NHC.SPECIAL_PM) {
@@ -2526,8 +2529,8 @@ export function* christen_orc(mtmp, gang, other) {
     /* rndorcname() won't return NULL */
     sz = Number(BigInt.asIntN(32, cptr.strlen(orcname)));
     if (gang)
-        sz = (sz + Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(gang) + 5n - 1n))))) |
-                0;
+        sz = (sz +
+                Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(gang) + 5n - 1n))))) | 0;
     else if (other)
         sz = (sz + Number(BigInt.asIntN(32, cptr.strlen(other)))) | 0;
 

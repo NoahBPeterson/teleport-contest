@@ -519,26 +519,26 @@ export function wornmask_to_armcat(mask) {
 
     switch (mask & 127n) {
         case 1n:
-        cat = NHC.ARM_SUIT;
-        break;
+            cat = NHC.ARM_SUIT;
+            break;
         case 2n:
-        cat = NHC.ARM_CLOAK;
-        break;
+            cat = NHC.ARM_CLOAK;
+            break;
         case 4n:
-        cat = NHC.ARM_HELM;
-        break;
+            cat = NHC.ARM_HELM;
+            break;
         case 8n:
-        cat = NHC.ARM_SHIELD;
-        break;
+            cat = NHC.ARM_SHIELD;
+            break;
         case 16n:
-        cat = NHC.ARM_GLOVES;
-        break;
+            cat = NHC.ARM_GLOVES;
+            break;
         case 32n:
-        cat = NHC.ARM_BOOTS;
-        break;
+            cat = NHC.ARM_BOOTS;
+            break;
         case 64n:
-        cat = NHC.ARM_SHIRT;
-        break;
+            cat = NHC.ARM_SHIRT;
+            break;
     }
     return cat;
 }
@@ -550,26 +550,26 @@ export function armcat_to_wornmask(cat) {
 
     switch (cat) {
         case NHC.ARM_SUIT:
-        mask = 1n;
-        break;
+            mask = 1n;
+            break;
         case NHC.ARM_CLOAK:
-        mask = 2n;
-        break;
+            mask = 2n;
+            break;
         case NHC.ARM_HELM:
-        mask = 4n;
-        break;
+            mask = 4n;
+            break;
         case NHC.ARM_SHIELD:
-        mask = 8n;
-        break;
+            mask = 8n;
+            break;
         case NHC.ARM_GLOVES:
-        mask = 16n;
-        break;
+            mask = 16n;
+            break;
         case NHC.ARM_BOOTS:
-        mask = 32n;
-        break;
+            mask = 32n;
+            break;
         case NHC.ARM_SHIRT:
-        mask = 64n;
-        break;
+            mask = 64n;
+            break;
     }
     return mask;
 }
@@ -584,64 +584,64 @@ export function wearslot(obj) {
 
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.AMULET_CLASS:
-        res = 65536n;  /* WORN_AMUL */
-        break;
+            res = 65536n;  /* WORN_AMUL */
+            break;
         case NHC.RING_CLASS:
-        res = 393216n;  /* W_RING, BOTH_SIDES */
-        break;
+            res = 393216n;  /* W_RING, BOTH_SIDES */
+            break;
         case NHC.ARMOR_CLASS:
-        switch (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp)) {
-            case NHC.ARM_SUIT:
-            res = 1n;
-            break;  /* WORN_ARMOR */
-            case NHC.ARM_SHIELD:
-            res = 8n;
-            break;  /* WORN_SHIELD */
-            case NHC.ARM_HELM:
-            res = 4n;
-            break;  /* WORN_HELMET */
-            case NHC.ARM_GLOVES:
-            res = 16n;
-            break;  /* WORN_GLOVES */
-            case NHC.ARM_BOOTS:
-            res = 32n;
-            break;  /* WORN_BOOTS */
-            case NHC.ARM_CLOAK:
-            res = 2n;
-            break;  /* WORN_CLOAK */
-            case NHC.ARM_SHIRT:
-            res = 64n;
-            break;  /* WORN_SHIRT */
-        }
-        break;
+            switch (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_subtyp)) {
+                case NHC.ARM_SUIT:
+                    res = 1n;
+                    break;  /* WORN_ARMOR */
+                case NHC.ARM_SHIELD:
+                    res = 8n;
+                    break;  /* WORN_SHIELD */
+                case NHC.ARM_HELM:
+                    res = 4n;
+                    break;  /* WORN_HELMET */
+                case NHC.ARM_GLOVES:
+                    res = 16n;
+                    break;  /* WORN_GLOVES */
+                case NHC.ARM_BOOTS:
+                    res = 32n;
+                    break;  /* WORN_BOOTS */
+                case NHC.ARM_CLOAK:
+                    res = 2n;
+                    break;  /* WORN_CLOAK */
+                case NHC.ARM_SHIRT:
+                    res = 64n;
+                    break;  /* WORN_SHIRT */
+            }
+            break;
         case NHC.WEAPON_CLASS:
-        res = 1280n;
-        if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_merge) & 1))
-            res |= 512n;
-        break;
-        case NHC.TOOL_CLASS:
-        if (otyp == NHC.BLINDFOLD || otyp == NHC.TOWEL || otyp == NHC.LENSES)
-            res = 524288n;  /* WORN_BLINDF */
-        else if (is_weptool(obj) || otyp == NHC.TIN_OPENER)
             res = 1280n;
-        else if (otyp == NHC.SADDLE)
-            res = 1048576n;
-        break;
+            if ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_merge) & 1))
+                res |= 512n;
+            break;
+        case NHC.TOOL_CLASS:
+            if (otyp == NHC.BLINDFOLD || otyp == NHC.TOWEL || otyp == NHC.LENSES)
+                res = 524288n;  /* WORN_BLINDF */
+            else if (is_weptool(obj) || otyp == NHC.TIN_OPENER)
+                res = 1280n;
+            else if (otyp == NHC.SADDLE)
+                res = 1048576n;
+            break;
         case NHC.FOOD_CLASS:
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.MEAT_RING)
-            res = 393216n;
-        break;
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.MEAT_RING)
+                res = 393216n;
+            break;
         case NHC.GEM_CLASS:
-        res = 512n;
-        break;
+            res = 512n;
+            break;
         case NHC.BALL_CLASS:
-        res = 2097152n;
-        break;
+            res = 2097152n;
+            break;
         case NHC.CHAIN_CLASS:
-        res = 4194304n;
-        break;
+            res = 4194304n;
+            break;
         default:
-        break;
+            break;
     }
     return res;
 }
@@ -741,38 +741,38 @@ export function* mon_adjust_speed(mon, adjust, obj) {
 
     switch (adjust) {
         case 2:
-        cptr.stI32o(mon, $monst_permspeed, NHM.MFAST);
-        give_msg = 0;  /* special-case monster creation */
-        break;
-        case 1:
-        if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MSLOW)
-            cptr.stI32o(mon, $monst_permspeed, 0);
-        else
             cptr.stI32o(mon, $monst_permspeed, NHM.MFAST);
-        break;
+            give_msg = 0;  /* special-case monster creation */
+            break;
+        case 1:
+            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MSLOW)
+                cptr.stI32o(mon, $monst_permspeed, 0);
+            else
+                cptr.stI32o(mon, $monst_permspeed, NHM.MFAST);
+            break;
         case 0:
-        break;
+            break;
         case -1:
-        if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-            cptr.stI32o(mon, $monst_permspeed, 0);
-        else
-            cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
-        break;
+            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
+                cptr.stI32o(mon, $monst_permspeed, 0);
+            else
+                cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
+            break;
         case -2:
-        cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
-        give_msg = 0;  /* (not currently used) */
-        break;
+            cptr.stI32o(mon, $monst_permspeed, NHM.MSLOW);
+            give_msg = 0;  /* (not currently used) */
+            break;
         case -3:
-        /* take away intrinsic speed but don't reduce normal speed */
-        if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-            cptr.stI32o(mon, $monst_permspeed, 0);
-        petrify = 1;
-        break;
+            /* take away intrinsic speed but don't reduce normal speed */
+            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
+                cptr.stI32o(mon, $monst_permspeed, 0);
+            petrify = 1;
+            break;
         case -4:
-        if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-            cptr.stI32o(mon, $monst_permspeed, 0);
-        give_msg = 0;
-        break;
+            if (((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) == NHM.MFAST)
+                cptr.stI32o(mon, $monst_permspeed, 0);
+            give_msg = 0;
+            break;
     }
 
     for (otmp = cptr.ldPtro(mon, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
@@ -832,192 +832,199 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        which = cptr.ld1uo2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_oprop
-        );
-        altwhich = ((cptr.ldI16o((obj), $obj_otyp) == NHC.ALCHEMY_SMOCK)
-                ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) -
-                    cptr.ld1uo2(
-                        objects,
-                        cptr.ldI16o((obj), $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_oprop
-                    )) | 0)
-                : 0);
+            which = cptr.ld1uo2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_oprop
+            );
+            altwhich = ((cptr.ldI16o((obj), $obj_otyp) == NHC.ALCHEMY_SMOCK)
+                    ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) -
+                        cptr.ld1uo2(
+                            objects,
+                            cptr.ldI16o((obj), $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_oprop
+                        )) | 0)
+                    : 0);
 
-        unseen = !canseemon(mon);
-        if (!which && !altwhich) { __pc = 4; continue; }
-        __pc = 3; continue;
+            unseen = !canseemon(mon);
+            if (!which && !altwhich) { __pc = 4; continue; }
+            __pc = 3; continue;
         }
         case 4: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 3: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* again: */: {
-        if (on) {
-            switch (which) {
-                case NHC.INVIS:
-                cptr.stI32o(mon, $monst_minvis, (!(cptr.ldI32o(mon, $monst_invis_blkd) & 1)) >>> 0);
-                break;
-                case NHC.FAST:
-                {
-                    save_in_mklev = cptr.ld1so(gi, $instance_globals_i_in_mklev);
-                    if (silently)
-                        cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
-                    (yield* mon_adjust_speed(mon, 0, obj));
-                    cptr.st1o(gi, $instance_globals_i_in_mklev, save_in_mklev);
-                    break;
-                }
-                case NHC.ANTIMAGIC:
-                case NHC.REFLECTING:
-                case NHC.PROTECTION:
-                break;
-                case NHC.CLAIRVOYANT:
-                case NHC.STEALTH:
-                case NHC.TELEPAT:
-                break;
-                case NHC.LEVITATION:
-                case NHC.FLYING:
-                case NHC.WWALKING:
-                break;
-                case NHC.DISPLACED:
-                case NHC.FUMBLING:
-                case NHC.JUMPING:
-                break;
-                default:
-                cptr.stI16o(
-                    mon,
-                    $monst_mextrinsics,
-                    cptr.ldU16o(mon, $monst_mextrinsics) |
-                        u16(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
-                            ? uchar((1 << (((which) - 1) | 0)))
-                            : 0))
-                );
-                break;
-            }
-        } else {
-            switch (which) {
-                case NHC.INVIS:
-                cptr.stI32o(mon, $monst_minvis, (cptr.ldI32o(mon, $monst_perminvis) & 1));
-                break;
-                case NHC.FAST:
-                {
-                    save_in_mklev = cptr.ld1so(gi, $instance_globals_i_in_mklev);
-                    if (silently)
-                        cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
-                    (yield* mon_adjust_speed(mon, 0, obj));
-                    cptr.st1o(gi, $instance_globals_i_in_mklev, save_in_mklev);
-                    break;
-                }
-                case NHC.FIRE_RES:
-                case NHC.COLD_RES:
-                case NHC.SLEEP_RES:
-                case NHC.DISINT_RES:
-                case NHC.SHOCK_RES:
-                case NHC.POISON_RES:
-                case NHC.ACID_RES:
-                case NHC.STONE_RES:
-                /*
-                 * Update monster's extrinsics (for worn objects only;
-                 * 'obj' itself might still be worn or already unworn).
-                 *
-                 * If an alchemy smock is being taken off, this code will
-                 * be run twice (via 'goto again') and other worn gear
-                 * gets tested for conferring poison resistance on the
-                 * first pass and acid resistance on the second.
-                 *
-                 * If some other item is being taken off, there will be
-                 * only one pass but a worn alchemy smock will be an
-                 * alternate source for either of those two resistances.
-                 */
-                mask = uchar(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
-                        ? uchar((1 << (((which) - 1) | 0)))
-                        : 0));
-                for (otmp = cptr.ldPtro(mon, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
-                    if (cptr.eq(otmp, obj) || !cptr.ldI64o(otmp, $obj_owornmask))
-                        continue;
-                    if (cptr.ld1uo2(
-                        objects,
-                        cptr.ldI16o(otmp, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_oprop
-                    ) ==
-                            which)
+            if (on) {
+                switch (which) {
+                    case NHC.INVIS:
+                        cptr.stI32o(
+                            mon,
+                            $monst_minvis,
+                            (!(cptr.ldI32o(mon, $monst_invis_blkd) & 1)) >>> 0
+                        );
                         break;
-                    /* check whether 'otmp' confers target property as an extra
-                       one rather than as the one specified for it in objects[] */
-                    if (((cptr.ldI16o((otmp), $obj_otyp) == NHC.ALCHEMY_SMOCK)
-                        ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) -
-                            cptr.ld1uo2(
+                    case NHC.FAST:
+                        {
+                            save_in_mklev = cptr.ld1so(gi, $instance_globals_i_in_mklev);
+                            if (silently)
+                                cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
+                            (yield* mon_adjust_speed(mon, 0, obj));
+                            cptr.st1o(gi, $instance_globals_i_in_mklev, save_in_mklev);
+                            break;
+                        }
+                    case NHC.ANTIMAGIC:
+                    case NHC.REFLECTING:
+                    case NHC.PROTECTION:
+                        break;
+                    case NHC.CLAIRVOYANT:
+                    case NHC.STEALTH:
+                    case NHC.TELEPAT:
+                        break;
+                    case NHC.LEVITATION:
+                    case NHC.FLYING:
+                    case NHC.WWALKING:
+                        break;
+                    case NHC.DISPLACED:
+                    case NHC.FUMBLING:
+                    case NHC.JUMPING:
+                        break;
+                    default:
+                        cptr.stI16o(
+                            mon,
+                            $monst_mextrinsics,
+                            cptr.ldU16o(mon, $monst_mextrinsics) |
+                                u16(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
+                                    ? uchar((1 << (which) - 1))
+                                    : 0))
+                        );
+                        break;
+                }
+            } else {
+                switch (which) {
+                    case NHC.INVIS:
+                        cptr.stI32o(mon, $monst_minvis, (cptr.ldI32o(mon, $monst_perminvis) & 1));
+                        break;
+                    case NHC.FAST:
+                        {
+                            save_in_mklev = cptr.ld1so(gi, $instance_globals_i_in_mklev);
+                            if (silently)
+                                cptr.st1o(gi, $instance_globals_i_in_mklev, 1);
+                            (yield* mon_adjust_speed(mon, 0, obj));
+                            cptr.st1o(gi, $instance_globals_i_in_mklev, save_in_mklev);
+                            break;
+                        }
+                    case NHC.FIRE_RES:
+                    case NHC.COLD_RES:
+                    case NHC.SLEEP_RES:
+                    case NHC.DISINT_RES:
+                    case NHC.SHOCK_RES:
+                    case NHC.POISON_RES:
+                    case NHC.ACID_RES:
+                    case NHC.STONE_RES:
+                        /*
+                         * Update monster's extrinsics (for worn objects only;
+                         * 'obj' itself might still be worn or already unworn).
+                         *
+                         * If an alchemy smock is being taken off, this code will
+                         * be run twice (via 'goto again') and other worn gear
+                         * gets tested for conferring poison resistance on the
+                         * first pass and acid resistance on the second.
+                         *
+                         * If some other item is being taken off, there will be
+                         * only one pass but a worn alchemy smock will be an
+                         * alternate source for either of those two resistances.
+                         */
+                        mask = uchar(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
+                                ? uchar((1 << (which) - 1))
+                                : 0));
+                        for (
+                            otmp = cptr.ldPtro(mon, $monst_minvent);
+                            otmp;
+                            otmp = cptr.ldPtr(otmp)
+                        ) {
+                            if (cptr.eq(otmp, obj) || !cptr.ldI64o(otmp, $obj_owornmask))
+                                continue;
+                            if (cptr.ld1uo2(
                                 objects,
-                                cptr.ldI16o((otmp), $obj_otyp),
+                                cptr.ldI16o(otmp, $obj_otyp),
                                 $sizeof_objclass,
                                 $objclass_oc_oprop
-                            )) | 0)
-                        : 0) ==
-                            which)
+                            ) == which)
+                                break;
+                            /* check whether 'otmp' confers target property as an extra
+                               one rather than as the one specified for it in objects[] */
+                            if (((cptr.ldI16o((otmp), $obj_otyp) == NHC.ALCHEMY_SMOCK)
+                                    ? ((((NHC.POISON_RES + NHC.ACID_RES) | 0) -
+                                        cptr.ld1uo2(
+                                            objects,
+                                            cptr.ldI16o((otmp), $obj_otyp),
+                                            $sizeof_objclass,
+                                            $objclass_oc_oprop
+                                        )) | 0)
+                                    : 0) == which)
+                                break;
+                        }
+                        if (!otmp)
+                            cptr.stI16o(
+                                mon,
+                                $monst_mextrinsics,
+                                cptr.ldU16o(mon, $monst_mextrinsics) & ~(u16(mask))
+                            );
+                        break;
+                    default:
                         break;
                 }
-                if (!otmp)
-                    cptr.stI16o(
-                        mon,
-                        $monst_mextrinsics,
-                        cptr.ldU16o(mon, $monst_mextrinsics) & ~(u16(mask))
-                    );
-                break;
-                default:
-                break;
             }
-        }
-        if (altwhich && which != altwhich) { __pc = 6; continue; }
-        __pc = 5; continue;
+            if (altwhich && which != altwhich) { __pc = 6; continue; }
+            __pc = 5; continue;
         }
         case 6: {
-        which = altwhich;
-        { __pc = 1; continue; }
+            which = altwhich;
+            { __pc = 1; continue; }
         }
         case 5: {
-        __pc = 2;
-        continue;
+            __pc = 2;
+            continue;
         }
         case 2 /* maybe_blocks: */: {
-        /* obj->owornmask has been cleared by this point, so we can't use it.
-           However, since monsters don't wield armor, we don't have to guard
-           against that and can get away with a blanket worn-mask value. */
-        switch (((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1)
-                ? NHC.INVIS
-                : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM && 1 &&
-                    !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
-                    ? NHC.CLAIRVOYANT
-                    : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 1) ? NHC.BLINDED : 0)))) {
-            case NHC.INVIS:
-            cptr.stI32o(mon, $monst_invis_blkd, (on ? 1 : 0) >>> 0);
-            cptr.stI32o(
-                mon,
-                $monst_minvis,
-                (on ? 0 : (cptr.ldI32o(mon, $monst_perminvis) & 1) | 0) >>> 0
-            );
-            break;
-            default:
-            break;
-        }
+            /* obj->owornmask has been cleared by this point, so we can't use it.
+               However, since monsters don't wield armor, we don't have to guard
+               against that and can get away with a blanket worn-mask value. */
+            switch (((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1)
+                    ? NHC.INVIS
+                    : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM &&
+                        1 &&
+                        !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
+                        ? NHC.CLAIRVOYANT
+                        : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 1) ? NHC.BLINDED : 0)))) {
+                case NHC.INVIS:
+                    cptr.stI32o(mon, $monst_invis_blkd, (on ? 1 : 0) >>> 0);
+                    cptr.stI32o(
+                        mon,
+                        $monst_minvis,
+                        (on ? 0 : (cptr.ldI32o(mon, $monst_perminvis) & 1) | 0) >>> 0
+                    );
+                    break;
+                default:
+                    break;
+            }
 
-        if (!on &&
-                cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) &&
-                cptr.ldI16o(obj, $obj_otyp) == NHC.SADDLE)
-            (yield* dismount_steed(NHC.DISMOUNT_FELL));
+            if (!on &&
+                    cptr.eq(mon, cptr.ldPtro(u, $you_usteed)) &&
+                    cptr.ldI16o(obj, $obj_otyp) == NHC.SADDLE)
+                (yield* dismount_steed(NHC.DISMOUNT_FELL));
 
-        /* if couldn't see it but now can, or vice versa, update display */
-        if (!silently && (unseen ^ !canseemon(mon)))
-            (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
-        __pc = -1;
-        continue;
+            /* if couldn't see it but now can, or vice versa, update display */
+            if (!silently && (unseen ^ !canseemon(mon)))
+                (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
+            __pc = -1;
+            continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -1105,7 +1112,8 @@ export function* m_dowear(mon, creation) {
                     cptr.ldI16o((cptr.ldPtro((mon), $monst_mw)), $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_big
-                ) & 1) | 0))
+                ) &
+                    1) | 0))
         (yield* m_dowear_type(mon, 8n, creation, 0));
     (yield* m_dowear_type(mon, 16n, creation, 0));
     if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 524288n) != 0n) &&
@@ -1156,80 +1164,82 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
         for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
             switch (flag) {
                 case 65536n:
-                if (cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS ||
-                        (cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_LIFE_SAVING &&
-                            cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_REFLECTION &&
-                            cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_GUARDING))
-                    continue;
-                /* for 'best' to be non-Null, it must be an amulet of guarding;
-                   life-saving and reflection don't get here due to early return
-                   and other amulets of guarding can't be any better */
-                if (!best || cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_GUARDING) {
-                    best = obj;
-                    if (cptr.ldI16o(best, $obj_otyp) != NHC.AMULET_OF_GUARDING)
-                        break __lbl_outer_break;  /* life-saving or reflection; use it */
-                }
-                continue;  /* skip post-switch armor handling */
+                    if (cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS ||
+                            (cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_LIFE_SAVING &&
+                                cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_REFLECTION &&
+                                cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_GUARDING))
+                        continue;
+                    /* for 'best' to be non-Null, it must be an amulet of guarding;
+                       life-saving and reflection don't get here due to early return
+                       and other amulets of guarding can't be any better */
+                    if (!best || cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_GUARDING) {
+                        best = obj;
+                        if (cptr.ldI16o(best, $obj_otyp) != NHC.AMULET_OF_GUARDING)
+                            break __lbl_outer_break;  /* life-saving or reflection; use it */
+                    }
+                    continue;  /* skip post-switch armor handling */
                 case 64n:
-                if (!is_shirt(obj))
-                    continue;
-                break;
+                    if (!is_shirt(obj))
+                        continue;
+                    break;
                 case 2n:
-                if (!is_cloak(obj))
-                    continue;
-                /* mummy wrapping is only cloak allowed when bigger than human */
-                if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) > NHM.MZ_MEDIUM &&
-                        cptr.ldI16o(obj, $obj_otyp) != NHC.MUMMY_WRAPPING)
-                    continue;
-                /* avoid mummy wrapping if it will allow hero to see mon (unless
-                   this is a new mummy; an invisible one is feasible via ^G) */
-                if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 &&
-                        ((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1)
-                            ? NHC.INVIS
-                            : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM && 0 &&
-                                !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
-                                    NHC.PM_WIZARD))
-                                ? NHC.CLAIRVOYANT
-                                : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 0)
-                                    ? NHC.BLINDED
-                                    : 0))) ==
-                            NHC.INVIS &&
-                        !See_invisible() &&
-                        !creation)
-                    continue;
-                break;
+                    if (!is_cloak(obj))
+                        continue;
+                    /* mummy wrapping is only cloak allowed when bigger than human */
+                    if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) >
+                        NHM.MZ_MEDIUM &&
+                            cptr.ldI16o(obj, $obj_otyp) != NHC.MUMMY_WRAPPING)
+                        continue;
+                    /* avoid mummy wrapping if it will allow hero to see mon (unless
+                       this is a new mummy; an invisible one is feasible via ^G) */
+                    if ((cptr.ldI32o(mon, $monst_minvis) & 1) | 0 &&
+                            ((cptr.ldI16o(obj, $obj_otyp) == NHC.MUMMY_WRAPPING && 1)
+                                ? NHC.INVIS
+                                : ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORNUTHAUM &&
+                                    0 &&
+                                    !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                                        NHC.PM_WIZARD))
+                                    ? NHC.CLAIRVOYANT
+                                    : ((is_art(obj, NHC.ART_EYES_OF_THE_OVERWORLD) && 0)
+                                        ? NHC.BLINDED
+                                        : 0))) ==
+                                NHC.INVIS &&
+                            !See_invisible() &&
+                            !creation)
+                        continue;
+                    break;
                 case 4n:
-                if (!is_helmet(obj))
-                    continue;
-                /* changing alignment is not implemented for monsters;
-                   priests and minions could change alignment but wouldn't
-                   want to, so they reject helms of opposite alignment */
-                if (cptr.ldI16o(obj, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT &&
-                        ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ||
-                            (cptr.ldI32o(mon, $monst_isminion) & 1) | 0))
-                    continue;
-                /* (flimsy exception matches polyself handling) */
-                if ((num_horns(cptr.ldPtro(mon, $monst_data)) > 0) && !is_flimsy(obj))
-                    continue;
-                break;
+                    if (!is_helmet(obj))
+                        continue;
+                    /* changing alignment is not implemented for monsters;
+                       priests and minions could change alignment but wouldn't
+                       want to, so they reject helms of opposite alignment */
+                    if (cptr.ldI16o(obj, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT &&
+                            ((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ||
+                                (cptr.ldI32o(mon, $monst_isminion) & 1) | 0))
+                        continue;
+                    /* (flimsy exception matches polyself handling) */
+                    if ((num_horns(cptr.ldPtro(mon, $monst_data)) > 0) && !is_flimsy(obj))
+                        continue;
+                    break;
                 case 8n:
-                if (!is_shield(obj))
-                    continue;
-                break;
+                    if (!is_shield(obj))
+                        continue;
+                    break;
                 case 16n:
-                if (!is_gloves(obj))
-                    continue;
-                break;
+                    if (!is_gloves(obj))
+                        continue;
+                    break;
                 case 32n:
-                if (!is_boots(obj))
-                    continue;
-                break;
+                    if (!is_boots(obj))
+                        continue;
+                    break;
                 case 1n:
-                if (!is_suit(obj))
-                    continue;
-                if (racialexception && (racial_exception(mon, obj) < 1))
-                    continue;
-                break;
+                    if (!is_suit(obj))
+                        continue;
+                    if (racialexception && (racial_exception(mon, obj) < 1))
+                        continue;
+                    break;
             }
             if (cptr.ldI64o(obj, $obj_owornmask))
                 continue;
@@ -1263,13 +1273,12 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
        taking off current one */
     if (old) {
         m_delay = (m_delay +
-            cptr.ld1so2(
-                objects,
-                cptr.ldI16o(old, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_delay
-            )) |
-                0;
+                cptr.ld1so2(
+                    objects,
+                    cptr.ldI16o(old, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_delay
+                )) | 0;
 
         oldmask = cptr.ldI64o(old, $obj_owornmask);  /* needed later by artifact_light() */
         cptr.stI64o(old, $obj_owornmask, 0n);  /* avoid doname() showing "(being worn)" */
@@ -1321,13 +1330,12 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
                 ));
         }  /* can see it */
         m_delay = (m_delay +
-            cptr.ld1so2(
-                objects,
-                cptr.ldI16o(best, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_delay
-            )) |
-                0;
+                cptr.ld1so2(
+                    objects,
+                    cptr.ldI16o(best, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_delay
+                )) | 0;
         cptr.stI32o(mon, $monst_mfrozen, m_delay >>> 0);
         if ((cptr.ldI32o(mon, $monst_mfrozen) & 127))
             cptr.stI32o(mon, $monst_mcanmove, 0);
@@ -1358,7 +1366,8 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
                     ),
                     cptr.ldI16o(mon, $monst_mx)
                 ) &
-                    NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                    0)) {
             let adesc = arti_light_description(best);
 
             if (sawmon)
@@ -1401,22 +1410,22 @@ export function* which_armor(mon, flag) {
     if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) {
         switch (flag) {
             case 1n:
-            return uarm.v;
+                return uarm.v;
             case 2n:
-            return uarmc.v;
+                return uarmc.v;
             case 4n:
-            return uarmh.v;
+                return uarmh.v;
             case 8n:
-            return uarms.v;
+                return uarms.v;
             case 16n:
-            return uarmg.v;
+                return uarmg.v;
             case 32n:
-            return uarmf.v;
+                return uarmf.v;
             case 64n:
-            return uarmu.v;
+                return uarmu.v;
             default:
-            (yield* impossible(__s_bad_flag_in_which_armor));
-            return null;
+                (yield* impossible(__s_bad_flag_in_which_armor));
+                return null;
         }
     } else {
         let obj;
@@ -1613,7 +1622,8 @@ export function* mon_break_armor(mon, polyspot) {
                         mons,
                         (NHC.PM_GRAY_DRAGON +
                             cptr.ldI16o((otmp), $obj_otyp) -
-                            NHC.GRAY_DRAGON_SCALES) | 0,
+                            NHC.GRAY_DRAGON_SCALES) |
+                            0,
                         $sizeof_permonst
                     )
                 )) ||
@@ -1624,7 +1634,8 @@ export function* mon_break_armor(mon, polyspot) {
                                 mons,
                                 (NHC.PM_GRAY_DRAGON +
                                     cptr.ldI16o((otmp), $obj_otyp) -
-                                    NHC.GRAY_DRAGON_SCALE_MAIL) | 0,
+                                    NHC.GRAY_DRAGON_SCALE_MAIL) |
+                                    0,
                                 $sizeof_permonst
                             )
                         ))) {

@@ -81,33 +81,34 @@ function tinsert(L) {
     e = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (e)) + 1n))));  /* first empty element */
     switch (lua_gettop(L)) {
         case 2:
-        {
-            pos = e;  /* insert new element at the end */
-            break;
-        }
-        case 3:
-        {
-            let i;
-            pos = luaL_checkinteger(L, 2);  /* 2nd argument is the position */
-            /* check whether 'pos' is in [1, e] */
-            (void ((__builtin_expect(
-                BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <
-                    BigInt.asUintN(64, e)) != 0)),
-                1n
-            )) ||
-                luaL_argerror(L, 2, (__s_position_out_of_bounds))
-                    ? 1
-                    : 0));
-            for (i = e; i > pos; i--) {
-                lua_geti(L, 1, BigInt.asIntN(64, i - 1n));
-                lua_seti(L, 1, i);  /* t[i] = t[i - 1] */
+            {
+                pos = e;  /* insert new element at the end */
+                break;
             }
-            break;
-        }
+        case 3:
+            {
+                let i;
+                pos = luaL_checkinteger(L, 2);  /* 2nd argument is the position */
+                /* check whether 'pos' is in [1, e] */
+                (void ((__builtin_expect(
+                    BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <
+                        BigInt.asUintN(64, e)) !=
+                        0)),
+                    1n
+                )) ||
+                    luaL_argerror(L, 2, (__s_position_out_of_bounds))
+                        ? 1
+                        : 0));
+                for (i = e; i > pos; i--) {
+                    lua_geti(L, 1, BigInt.asIntN(64, i - 1n));
+                    lua_seti(L, 1, i);  /* t[i] = t[i - 1] */
+                }
+                break;
+            }
         default:
-        {
-            return luaL_error(L, __s_wrong_number_of_arguments_to_insert);
-        }
+            {
+                return luaL_error(L, __s_wrong_number_of_arguments_to_insert);
+            }
     }
     lua_seti(L, 1, pos);  /* t[pos] = v */
     return 0;
@@ -121,7 +122,8 @@ function tremove(L) {
         /* check whether 'pos' is in [1, size + 1] */
         (void ((__builtin_expect(
             BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <=
-                BigInt.asUintN(64, size)) != 0)),
+                BigInt.asUintN(64, size)) !=
+                0)),
             1n
         )) ||
             luaL_argerror(L, 2, (__s_position_out_of_bounds))
@@ -252,7 +254,8 @@ function tunpack(L) {
     if ((__builtin_expect(
         BigInt(((n >= 2147483647n || !lua_checkstack(L, Number(BigInt.asIntN(32, (++n))))
             ? 1
-            : 0) != 0)),
+            : 0) !=
+            0)),
         0n
     )))
         return luaL_error(L, __s_too_many_results_to_unpack);

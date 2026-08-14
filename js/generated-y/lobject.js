@@ -323,44 +323,44 @@ export function luaO_ceillog2(x) {
 function* intarith(L, op, v1, v2) {
     switch (op) {
         case 0:
-        return (BigInt.asIntN(
-            64,
-            (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) + (BigInt.asUintN(64, (v2)))))
-        ));
+            return (BigInt.asIntN(
+                64,
+                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) + (BigInt.asUintN(64, (v2)))))
+            ));
         case 1:
-        return (BigInt.asIntN(
-            64,
-            (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) - (BigInt.asUintN(64, (v2)))))
-        ));
+            return (BigInt.asIntN(
+                64,
+                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) - (BigInt.asUintN(64, (v2)))))
+            ));
         case 2:
-        return (BigInt.asIntN(
-            64,
-            (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) * (BigInt.asUintN(64, (v2)))))
-        ));
+            return (BigInt.asIntN(
+                64,
+                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) * (BigInt.asUintN(64, (v2)))))
+            ));
         case 3:
-        return (yield* luaV_mod(L, v1, v2));
+            return (yield* luaV_mod(L, v1, v2));
         case 6:
-        return (yield* luaV_idiv(L, v1, v2));
+            return (yield* luaV_idiv(L, v1, v2));
         case 7:
-        return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) & (BigInt.asUintN(64, (v2))))));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) & (BigInt.asUintN(64, (v2))))));
         case 8:
-        return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) | (BigInt.asUintN(64, (v2))))));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) | (BigInt.asUintN(64, (v2))))));
         case 9:
-        return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) ^ (BigInt.asUintN(64, (v2))))));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) ^ (BigInt.asUintN(64, (v2))))));
         case 10:
-        return luaV_shiftl(v1, v2);
+            return luaV_shiftl(v1, v2);
         case 11:
-        return luaV_shiftl(
-            v1,
-            (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v2)))))))
-        );
+            return luaV_shiftl(
+                v1,
+                (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v2)))))))
+            );
         case 12:
-        return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v1)))))));
+            return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v1)))))));
         case 13:
-        return (BigInt.asIntN(64, (18446744073709551615n ^ (BigInt.asUintN(64, (v1))))));
+            return (BigInt.asIntN(64, (18446744073709551615n ^ (BigInt.asUintN(64, (v1))))));
         default:
-        (void 0);
-        return 0n;
+            (void 0);
+            return 0n;
     }
 }
 
@@ -375,24 +375,24 @@ function* intarith(L, op, v1, v2) {
 function numarith(L, op, v1, v2) {
     switch (op) {
         case 0:
-        return ((v1) + (v2));
+            return ((v1) + (v2));
         case 1:
-        return ((v1) - (v2));
+            return ((v1) - (v2));
         case 2:
-        return ((v1) * (v2));
+            return ((v1) * (v2));
         case 5:
-        return ((v1) / (v2));
+            return ((v1) / (v2));
         case 4:
-        return (void L, (v2 == 2) ? (v1) * (v1) : pow(v1, v2));
+            return (void L, (v2 == 2) ? (v1) * (v1) : pow(v1, v2));
         case 6:
-        return (void L, (floor(((v1) / (v2)))));
+            return (void L, (floor(((v1) / (v2)))));
         case 12:
-        return (-(v1));
+            return (-(v1));
         case 3:
-        return luaV_modf(L, v1, v2);
+            return luaV_modf(L, v1, v2);
         default:
-        (void 0);
-        return 0;
+            (void 0);
+            return 0;
     }
 }
 
@@ -413,89 +413,92 @@ export function* luaO_rawarith(L, op, p1, p2, res) {
         case 10:
         case 11:
         case 13:
-        {
-            let i1 = cptr.box(0n);
-            let i2 = cptr.box(0n);
-            if (((__builtin_expect(BigInt(((((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)) != 0)), 1n))
-                ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1)
-                : luaV_tointegerns(p1, i1, NHC.F2Ieq)) &&
-                    ((__builtin_expect(
-                        BigInt(((((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)) != 0)),
-                        1n
-                    ))
-                        ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1)
-                        : luaV_tointegerns(p2, i2, NHC.F2Ieq))) {
-                {
-                    let io = (res);
-                    cptr.stI64(((io)), ((yield* intarith(L, op, i1.v, i2.v))));
-                    (cptr.st1o((io), $TValue_tt_, 3));
-                }
-                ;
-                return 1;
-            } else
-                return 0;  /* fail */
-        }
+            {
+                let i1 = cptr.box(0n);
+                let i2 = cptr.box(0n);
+                if (((__builtin_expect(
+                    BigInt(((((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)) != 0)),
+                    1n
+                ))
+                    ? (cptr.stI64((i1), (cptr.ldI64(((p1))))), 1)
+                    : luaV_tointegerns(p1, i1, NHC.F2Ieq)) &&
+                        ((__builtin_expect(
+                            BigInt(((((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)) != 0)),
+                            1n
+                        ))
+                            ? (cptr.stI64((i2), (cptr.ldI64(((p2))))), 1)
+                            : luaV_tointegerns(p2, i2, NHC.F2Ieq))) {
+                    {
+                        let io = (res);
+                        cptr.stI64(((io)), ((yield* intarith(L, op, i1.v, i2.v))));
+                        (cptr.st1o((io), $TValue_tt_, 3));
+                    }
+                    ;
+                    return 1;
+                } else
+                    return 0;  /* fail */
+            }
         case 5:
         case 4:
-        {
-            let n1;
-            let n2;
-            if ((((cptr.ld1uo(((p1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((p1)))), 1)
-                : (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((p2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((p2)))), 1)
-                        : (((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1)
-                            : 0))) {
-                {
-                    let io = (res);
-                    cptr.stF64(((io)), (numarith(L, op, n1, n2)));
-                    (cptr.st1o((io), $TValue_tt_, 19));
-                }
-                ;
-                return 1;
-            } else
-                return 0;  /* fail */
-        }
+            {
+                let n1;
+                let n2;
+                if ((((cptr.ld1uo(((p1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((p1)))), 1)
+                    : (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((p2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((p2)))), 1)
+                            : (((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1)
+                                : 0))) {
+                    {
+                        let io = (res);
+                        cptr.stF64(((io)), (numarith(L, op, n1, n2)));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                    return 1;
+                } else
+                    return 0;  /* fail */
+            }
         default:
-        {
-            let n1;
-            let n2;
-            if (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3) &&
-                    ((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)) {
-                {
-                    let io = (res);
-                    cptr.stI64(
-                        ((io)),
-                        ((yield* intarith(L, op, (cptr.ldI64(((p1)))), (cptr.ldI64(((p2)))))))
-                    );
-                    (cptr.st1o((io), $TValue_tt_, 3));
-                }
-                ;
-                return 1;
-            } else if ((((cptr.ld1uo(((p1)), $TValue_tt_)) == 19)
-                ? (n1 = (cptr.ldF64(((p1)))), 1)
-                : (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)
-                    ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1)
-                    : 0)) &&
-                    (((cptr.ld1uo(((p2)), $TValue_tt_)) == 19)
-                        ? (n2 = (cptr.ldF64(((p2)))), 1)
-                        : (((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)
-                            ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1)
-                            : 0))) {
-                {
-                    let io = (res);
-                    cptr.stF64(((io)), (numarith(L, op, n1, n2)));
-                    (cptr.st1o((io), $TValue_tt_, 19));
-                }
-                ;
-                return 1;
-            } else
-                return 0;  /* fail */
-        }
+            {
+                let n1;
+                let n2;
+                if (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3) &&
+                        ((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)) {
+                    {
+                        let io = (res);
+                        cptr.stI64(
+                            ((io)),
+                            ((yield* intarith(L, op, (cptr.ldI64(((p1)))), (cptr.ldI64(((p2)))))))
+                        );
+                        (cptr.st1o((io), $TValue_tt_, 3));
+                    }
+                    ;
+                    return 1;
+                } else if ((((cptr.ld1uo(((p1)), $TValue_tt_)) == 19)
+                    ? (n1 = (cptr.ldF64(((p1)))), 1)
+                    : (((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)
+                        ? (n1 = (Number((((cptr.ldI64(((p1)))))))), 1)
+                        : 0)) &&
+                        (((cptr.ld1uo(((p2)), $TValue_tt_)) == 19)
+                            ? (n2 = (cptr.ldF64(((p2)))), 1)
+                            : (((cptr.ld1uo(((p2)), $TValue_tt_)) == 3)
+                                ? (n2 = (Number((((cptr.ldI64(((p2)))))))), 1)
+                                : 0))) {
+                    {
+                        let io = (res);
+                        cptr.stF64(((io)), (numarith(L, op, n1, n2)));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                    return 1;
+                } else
+                    return 0;  /* fail */
+            }
     }
 }
 
@@ -857,92 +860,95 @@ export function* luaO_pushvfstring(L, fmt, argp) {
         (yield* addstr2buff(buff, fmt, BigInt.asUintN(64, cptr.diff(e, fmt))));  /* add 'fmt' up to '%' */
         switch (cptr.ld1s((cptr.add(e, 1)))) {
             case 115:
-            {
-                let s = cptr.vaArg(argp, 'ptr');
-                if (cptr.eq(s, (null)))
-                    s = __s_null;
-                (yield* addstr2buff(buff, s, cptr.strlen(s)));
-                break;
-            }
+                {
+                    let s = cptr.vaArg(argp, 'ptr');
+                    if (cptr.eq(s, (null)))
+                        s = __s_null;
+                    (yield* addstr2buff(buff, s, cptr.strlen(s)));
+                    break;
+                }
             case 99:
-            {
-                let c = cptr.box(schar((uchar(((cptr.vaArg(argp, 'i32')))))));
-                (yield* addstr2buff(buff, c, 1n));
-                break;
-            }
+                {
+                    let c = cptr.box(schar((uchar(((cptr.vaArg(argp, 'i32')))))));
+                    (yield* addstr2buff(buff, c, 1n));
+                    break;
+                }
             case 100:
-            {
-                let num = cptr.alloc(16);
                 {
-                    let io = (num);
-                    cptr.stI64(((io)), BigInt((cptr.vaArg(argp, 'i32'))));
-                    (cptr.st1o((io), $TValue_tt_, 3));
+                    let num = cptr.alloc(16);
+                    {
+                        let io = (num);
+                        cptr.stI64(((io)), BigInt((cptr.vaArg(argp, 'i32'))));
+                        (cptr.st1o((io), $TValue_tt_, 3));
+                    }
+                    ;
+                    (yield* addnum2buff(buff, num));
+                    break;
                 }
-                ;
-                (yield* addnum2buff(buff, num));
-                break;
-            }
             case 73:
-            {
-                let num = cptr.alloc(16);
                 {
-                    let io = (num);
-                    cptr.stI64(((io)), (((cptr.vaArg(argp, 'i64')))));
-                    (cptr.st1o((io), $TValue_tt_, 3));
+                    let num = cptr.alloc(16);
+                    {
+                        let io = (num);
+                        cptr.stI64(((io)), (((cptr.vaArg(argp, 'i64')))));
+                        (cptr.st1o((io), $TValue_tt_, 3));
+                    }
+                    ;
+                    (yield* addnum2buff(buff, num));
+                    break;
                 }
-                ;
-                (yield* addnum2buff(buff, num));
-                break;
-            }
             case 102:
-            {
-                let num = cptr.alloc(16);
                 {
-                    let io = (num);
-                    cptr.stF64(((io)), ((((cptr.vaArg(argp, 'f64'))))));
-                    (cptr.st1o((io), $TValue_tt_, 19));
+                    let num = cptr.alloc(16);
+                    {
+                        let io = (num);
+                        cptr.stF64(((io)), ((((cptr.vaArg(argp, 'f64'))))));
+                        (cptr.st1o((io), $TValue_tt_, 19));
+                    }
+                    ;
+                    (yield* addnum2buff(buff, num));
+                    break;
                 }
-                ;
-                (yield* addnum2buff(buff, num));
-                break;
-            }
             case 112:
-            {
-                let sz = 32;  /* enough space for '%p' */
-                let bf = (yield* getbuff(buff, sz));
-                let p = cptr.vaArg(argp, 'ptr');
-                let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __s_pct_p, p);
-                (cptr.stI32o(
-                    (buff),
-                    $BuffFS_blen,
-                    (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0
-                ));
-                break;
-            }
+                {
+                    let sz = 32;  /* enough space for '%p' */
+                    let bf = (yield* getbuff(buff, sz));
+                    let p = cptr.vaArg(argp, 'ptr');
+                    let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __s_pct_p, p);
+                    (cptr.stI32o(
+                        (buff),
+                        $BuffFS_blen,
+                        (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0
+                    ));
+                    break;
+                }
             case 85:
-            {
-                let bf = new Uint8Array(8);
-                let len = luaO_utf8esc(cptr.decay(bf), BigInt.asUintN(64, cptr.vaArg(argp, 'i64')));
-                (yield* addstr2buff(
-                    buff,
-                    cptr.add(cptr.add(cptr.decay(bf), 8), -(len)),
-                    BigInt.asUintN(64, BigInt(len))
-                ));
-                break;
-            }
+                {
+                    let bf = new Uint8Array(8);
+                    let len = luaO_utf8esc(
+                        cptr.decay(bf),
+                        BigInt.asUintN(64, cptr.vaArg(argp, 'i64'))
+                    );
+                    (yield* addstr2buff(
+                        buff,
+                        cptr.add(cptr.add(cptr.decay(bf), 8), -(len)),
+                        BigInt.asUintN(64, BigInt(len))
+                    ));
+                    break;
+                }
             case 37:
-            {
-                (yield* addstr2buff(buff, __s_pct, 1n));
-                break;
-            }
+                {
+                    (yield* addstr2buff(buff, __s_pct, 1n));
+                    break;
+                }
             default:
-            {
-                (yield* luaG_runerror(
-                    L,
-                    __s_invalid_option_c_to_lua_pushfstring,
-                    cptr.ld1s((cptr.add(e, 1)))
-                ));
-            }
+                {
+                    (yield* luaG_runerror(
+                        L,
+                        __s_invalid_option_c_to_lua_pushfstring,
+                        cptr.ld1s((cptr.add(e, 1)))
+                    ));
+                }
         }
         fmt = cptr.add(e, 2);  /* skip '%' and the specifier */
     }

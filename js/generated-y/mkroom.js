@@ -103,37 +103,37 @@ export function* do_mkroom(roomtype) {
     } else {
         switch (roomtype) {
             case NHC.COURT:
-            mkzoo(NHC.COURT);
-            break;
+                mkzoo(NHC.COURT);
+                break;
             case NHC.ZOO:
-            mkzoo(NHC.ZOO);
-            break;
+                mkzoo(NHC.ZOO);
+                break;
             case NHC.BEEHIVE:
-            mkzoo(NHC.BEEHIVE);
-            break;
+                mkzoo(NHC.BEEHIVE);
+                break;
             case NHC.MORGUE:
-            mkzoo(NHC.MORGUE);
-            break;
+                mkzoo(NHC.MORGUE);
+                break;
             case NHC.BARRACKS:
-            mkzoo(NHC.BARRACKS);
-            break;
+                mkzoo(NHC.BARRACKS);
+                break;
             case NHC.SWAMP:
-            (yield* mkswamp());
-            break;
+                (yield* mkswamp());
+                break;
             case NHC.TEMPLE:
-            (yield* mktemple());
-            break;
+                (yield* mktemple());
+                break;
             case NHC.LEPREHALL:
-            mkzoo(NHC.LEPREHALL);
-            break;
+                mkzoo(NHC.LEPREHALL);
+                break;
             case NHC.COCKNEST:
-            mkzoo(NHC.COCKNEST);
-            break;
+                mkzoo(NHC.COCKNEST);
+                break;
             case NHC.ANTHOLE:
-            mkzoo(NHC.ANTHOLE);
-            break;
+                mkzoo(NHC.ANTHOLE);
+                break;
             default:
-            (yield* impossible(__s_tried_to_make_a_room_of_type_d, roomtype));
+                (yield* impossible(__s_tried_to_make_a_room_of_type_d, roomtype));
         }
     }
 }
@@ -370,72 +370,80 @@ export function* fill_zoo(sroom) {
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
     switch (type) {
         case NHC.COURT:
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-        ) & 1)) {
-            for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16o(sroom, $mkroom_hx); tx++)
-                for (
-                    ty = cptr.ldI16o(sroom, $mkroom_ly);
-                    ty <= cptr.ldI16o(sroom, $mkroom_hy);
-                    ty++
-                )
-                    if (((cptr.ld1so3(
-                        svl,
-                        tx,
-                        $sizeof_rm_x21,
-                        ty,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_typ
-                    )) ==
-                            NHC.THRONE))
-                        {
-                            (yield* mk_zoo_thronemon(tx, ty));
-                            break;
-                        }
-        }
-        i = 100;
-        do {
-            void somexyspace(sroom, mm);
-            tx = cptr.ldI16(mm);
-            ty = cptr.ldI16o(mm, $nhcoord_y);
-        } while (occupied(tx, ty) && --i > 0);
-        (yield* mk_zoo_thronemon(tx, ty));
-        break;
-        case NHC.BEEHIVE:
-        tx = i16(((cptr.ldI16(sroom) +
-                ((((cptr.ldI16o(sroom, $mkroom_hx) - cptr.ldI16(sroom) + 1) | 0) / 2) | 0)) | 0));
-        ty = i16(((cptr.ldI16o(sroom, $mkroom_ly) +
-                ((((cptr.ldI16o(sroom, $mkroom_hy) -
-                    cptr.ldI16o(sroom, $mkroom_ly) + 1) | 0) / 2) | 0)) | 0));
-        if (cptr.ld1so(sroom, $mkroom_irregular)) {
-            /* center might not be valid, so put queen elsewhere */
-            if (((cptr.ldI32o3(
+            if ((cptr.ldI32o(
                 svl,
-                tx,
-                $sizeof_rm_x21,
-                ty,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) != rmno ||
-                    (cptr.ldI32o3(
-                        svl,
-                        tx,
-                        $sizeof_rm_x21,
-                        ty,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_edge
-                    ) & 1) | 0) {
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ) &
+                    1)) {
+                for (tx = cptr.ldI16(sroom); tx <= cptr.ldI16o(sroom, $mkroom_hx); tx++)
+                    for (
+                        ty = cptr.ldI16o(sroom, $mkroom_ly);
+                        ty <= cptr.ldI16o(sroom, $mkroom_hy);
+                        ty++
+                    )
+                        if (((cptr.ld1so3(
+                            svl,
+                            tx,
+                            $sizeof_rm_x21,
+                            ty,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                                NHC.THRONE))
+                            {
+                                (yield* mk_zoo_thronemon(tx, ty));
+                                break;
+                            }
+            }
+            i = 100;
+            do {
                 void somexyspace(sroom, mm);
                 tx = cptr.ldI16(mm);
                 ty = cptr.ldI16o(mm, $nhcoord_y);
+            } while (occupied(tx, ty) && --i > 0);
+            (yield* mk_zoo_thronemon(tx, ty));
+            break;
+        case NHC.BEEHIVE:
+            tx = i16(((cptr.ldI16(sroom) +
+                    ((((cptr.ldI16o(sroom, $mkroom_hx) - cptr.ldI16(sroom) + 1) | 0) / 2) |
+                        0)) | 0));
+            ty = i16(((cptr.ldI16o(sroom, $mkroom_ly) +
+                    ((((cptr.ldI16o(sroom, $mkroom_hy) - cptr.ldI16o(sroom, $mkroom_ly) + 1) | 0) /
+                        2) |
+                        0)) | 0));
+            if (cptr.ld1so(sroom, $mkroom_irregular)) {
+                /* center might not be valid, so put queen elsewhere */
+                if (((cptr.ldI32o3(
+                    svl,
+                    tx,
+                    $sizeof_rm_x21,
+                    ty,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) &
+                    63) |
+                    0) !=
+                    rmno ||
+                        (cptr.ldI32o3(
+                            svl,
+                            tx,
+                            $sizeof_rm_x21,
+                            ty,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_edge
+                        ) &
+                            1) |
+                            0) {
+                    void somexyspace(sroom, mm);
+                    tx = cptr.ldI16(mm);
+                    ty = cptr.ldI16o(mm, $nhcoord_y);
+                }
             }
-        }
-        break;
+            break;
         case NHC.ZOO:
         case NHC.LEPREHALL:
-        goldlim = Math.imul(500, (yield* level_difficulty()));
-        break;
+            goldlim = Math.imul(500, (yield* level_difficulty()));
+            break;
     }
 
     for (sx = cptr.ldI16(sroom); sx <= cptr.ldI16o(sroom, $mkroom_hx); sx++)
@@ -448,7 +456,10 @@ export function* fill_zoo(sroom) {
                     sy,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_roomno
-                ) & 63) | 0) != rmno ||
+                ) &
+                    63) |
+                    0) !=
+                    rmno ||
                         (cptr.ldI32o3(
                             svl,
                             sx,
@@ -456,7 +467,9 @@ export function* fill_zoo(sroom) {
                             sy,
                             $sizeof_rm,
                             $instance_globals_saved_l_level + $rm_edge
-                        ) & 1) | 0 ||
+                        ) &
+                            1) |
+                            0 ||
                         (cptr.ld1so(sroom, $mkroom_doorct) &&
                             (distmin(
                                 i16(sx),
@@ -557,132 +570,132 @@ export function* fill_zoo(sroom) {
             switch (type) {
                 case NHC.ZOO:
                 case NHC.LEPREHALL:
-                if (cptr.ld1so(sroom, $mkroom_doorct)) {
-                    let distval = dist2(
-                        i16(sx),
-                        i16(sy),
-                        cptr.ldI16o(
-                            cptr.ldPtro(svd, $instance_globals_saved_d_doors),
-                            sh,
-                            $sizeof_coord
-                        ),
-                        cptr.ldI16o2(
-                            cptr.ldPtro(svd, $instance_globals_saved_d_doors),
-                            sh,
-                            $sizeof_coord,
-                            $nhcoord_y
-                        )
-                    );
-                    i = (Math.imul((distval), (distval)));
-                } else
-                    i = goldlim;
-                if (i >= goldlim)
-                    i = Math.imul(5, (yield* level_difficulty()));
-                goldlim = (goldlim - i) | 0;
-                void (yield* mkgold(BigInt(((rn2(i) + 10) | 0)), i16(sx), i16(sy)));
-                break;
+                    if (cptr.ld1so(sroom, $mkroom_doorct)) {
+                        let distval = dist2(
+                            i16(sx),
+                            i16(sy),
+                            cptr.ldI16o(
+                                cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                                sh,
+                                $sizeof_coord
+                            ),
+                            cptr.ldI16o2(
+                                cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                                sh,
+                                $sizeof_coord,
+                                $nhcoord_y
+                            )
+                        );
+                        i = (Math.imul((distval), (distval)));
+                    } else
+                        i = goldlim;
+                    if (i >= goldlim)
+                        i = Math.imul(5, (yield* level_difficulty()));
+                    goldlim = (goldlim - i) | 0;
+                    void (yield* mkgold(BigInt(((rn2(i) + 10) | 0)), i16(sx), i16(sy)));
+                    break;
                 case NHC.MORGUE:
-                if (!rn2(5))
-                    void (yield* mk_tt_object(NHC.CORPSE, i16(sx), i16(sy)));
-                if (!rn2(10))
-                    void (yield* mksobj_at(rn2(3) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
-                if (!rn2(5))
-                    (yield* make_grave(i16(sx), i16(sy), null));
-                break;
+                    if (!rn2(5))
+                        void (yield* mk_tt_object(NHC.CORPSE, i16(sx), i16(sy)));
+                    if (!rn2(10))
+                        void (yield* mksobj_at(rn2(3) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
+                    if (!rn2(5))
+                        (yield* make_grave(i16(sx), i16(sy), null));
+                    break;
                 case NHC.BEEHIVE:
-                if (!rn2(3))
-                    void (yield* mksobj_at(NHC.LUMP_OF_ROYAL_JELLY, i16(sx), i16(sy), 1, 0));
-                break;
+                    if (!rn2(3))
+                        void (yield* mksobj_at(NHC.LUMP_OF_ROYAL_JELLY, i16(sx), i16(sy), 1, 0));
+                    break;
                 case NHC.BARRACKS:
-                if (!rn2(20))
-                    void (yield* mksobj_at(rn2(3) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
-                break;
+                    if (!rn2(20))
+                        void (yield* mksobj_at(rn2(3) ? NHC.LARGE_BOX : NHC.CHEST, i16(sx), i16(sy), 1, 0));
+                    break;
                 case NHC.COCKNEST:
-                if (!rn2(3)) {
-                    let sobj = (yield* mk_tt_object(NHC.STATUE, i16(sx), i16(sy)));
+                    if (!rn2(3)) {
+                        let sobj = (yield* mk_tt_object(NHC.STATUE, i16(sx), i16(sy)));
 
-                    if (sobj) {
-                        for (i = rn2(5); i; i--)
-                            void (yield* add_to_container(sobj, (yield* mkobj(NHC.RANDOM_CLASS, 0))));
-                        cptr.stI32o(sobj, $obj_owt, (yield* weight(sobj)) >>> 0);
+                        if (sobj) {
+                            for (i = rn2(5); i; i--)
+                                void (yield* add_to_container(sobj, (yield* mkobj(NHC.RANDOM_CLASS, 0))));
+                            cptr.stI32o(sobj, $obj_owt, (yield* weight(sobj)) >>> 0);
+                        }
                     }
-                }
-                break;
+                    break;
                 case NHC.ANTHOLE:
-                if (!rn2(3))
-                    void (yield* mkobj_at(NHC.FOOD_CLASS, i16(sx), i16(sy), 0));
-                break;
+                    if (!rn2(3))
+                        void (yield* mkobj_at(NHC.FOOD_CLASS, i16(sx), i16(sy), 0));
+                    break;
             }
         }
     switch (type) {
         case NHC.COURT:
-        {
-            let chest;
-            let gold;
-            cptr.st1o3(
-                svl,
-                tx,
-                $sizeof_rm_x21,
-                ty,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_typ,
-                NHC.THRONE
-            );
-            void somexyspace(sroom, mm);
-            gold = (yield* mksobj(NHC.GOLD_PIECE, 1, 0));
-            cptr.stI64o(
-                gold,
-                $obj_quan,
-                BigInt(((rn2(Math.imul(50, (yield* level_difficulty()))) + 10) | 0))
-            );
-            cptr.stI32o(gold, $obj_owt, (yield* weight(gold)) >>> 0);
-            /* the royal coffers */
-            chest = (yield* mksobj_at(NHC.CHEST, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1, 0));
-            (yield* add_to_container(chest, gold));
-            cptr.stI32o(chest, $obj_owt, (yield* weight(chest)) >>> 0);
-            cptr.st1o(chest, $obj_spe, 2);  /* so it can be found later */
+            {
+                let chest;
+                let gold;
+                cptr.st1o3(
+                    svl,
+                    tx,
+                    $sizeof_rm_x21,
+                    ty,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ,
+                    NHC.THRONE
+                );
+                void somexyspace(sroom, mm);
+                gold = (yield* mksobj(NHC.GOLD_PIECE, 1, 0));
+                cptr.stI64o(
+                    gold,
+                    $obj_quan,
+                    BigInt(((rn2(Math.imul(50, (yield* level_difficulty()))) + 10) | 0))
+                );
+                cptr.stI32o(gold, $obj_owt, (yield* weight(gold)) >>> 0);
+                /* the royal coffers */
+                chest = (yield* mksobj_at(NHC.CHEST, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1, 0));
+                (yield* add_to_container(chest, gold));
+                cptr.stI32o(chest, $obj_owt, (yield* weight(chest)) >>> 0);
+                cptr.st1o(chest, $obj_spe, 2);  /* so it can be found later */
+                cptr.stI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court,
+                    1
+                );
+                break;
+            }
+        case NHC.BARRACKS:
             cptr.stI32o(
                 svl,
-                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks,
                 1
             );
             break;
-        }
-        case NHC.BARRACKS:
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks,
-            1
-        );
-        break;
         case NHC.ZOO:
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo,
-            1
-        );
-        break;
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo,
+                1
+            );
+            break;
         case NHC.MORGUE:
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue,
-            1
-        );
-        break;
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue,
+                1
+            );
+            break;
         case NHC.SWAMP:
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
-            1
-        );
-        break;
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp,
+                1
+            );
+            break;
         case NHC.BEEHIVE:
-        cptr.stI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive,
-            1
-        );
-        break;
+            cptr.stI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive,
+                1
+            );
+            break;
     }
 }
 
@@ -755,14 +768,14 @@ export function* antholemon() {
     do {
         switch (((indx + trycnt) | 0) % 3) {
             case 0:
-            mtyp = NHC.PM_SOLDIER_ANT;
-            break;
+                mtyp = NHC.PM_SOLDIER_ANT;
+                break;
             case 1:
-            mtyp = NHC.PM_FIRE_ANT;
-            break;
+                mtyp = NHC.PM_FIRE_ANT;
+                break;
             default:
-            mtyp = NHC.PM_GIANT_ANT;
-            break;
+                mtyp = NHC.PM_GIANT_ANT;
+                break;
         }
         /* try again if chosen type has been genocided or used up */
     } while (++trycnt < 3 &&
@@ -826,7 +839,9 @@ function* mkswamp() {
                             sy,
                             $sizeof_rm,
                             $instance_globals_saved_l_level + $rm_roomno
-                        ) & 63) | 0) != rmno)
+                        ) &
+                            63) |
+                            0) != rmno)
                     continue;
                 if (!(cptr.ldPtro3(
                     svl,
@@ -835,7 +850,8 @@ function* mkswamp() {
                     sy,
                     8,
                     $instance_globals_saved_l_level + $dlevel_t_objects
-                ) !== null) &&
+                ) !==
+                    null) &&
                         !(cptr.ldPtro3(
                             svl,
                             sx,
@@ -843,7 +859,8 @@ function* mkswamp() {
                             sy,
                             8,
                             $instance_globals_saved_l_level + $dlevel_t_monsters
-                        ) !== null) &&
+                        ) !==
+                            null) &&
                         !t_at(sx, sy) &&
                         !nexttodoor(sx, sy)) {
                     if (((sx + sy) | 0) % 2) {
@@ -908,8 +925,7 @@ function shrine_pos(roomno) {
             __static_shrine_pos_buf,
             $nhcoord_y,
             cptr.ldI16o(__static_shrine_pos_buf, $nhcoord_y) + 1
-        )) -
-                (1);
+        )) - (1);
     return __static_shrine_pos_buf;
 }
 
@@ -1034,7 +1050,8 @@ export function inside_room(croom, x, y) {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_edge
-        ) & 1) &&
+        ) &
+            1) &&
             ((cptr.ldI32o3(
                 svl,
                 x,
@@ -1042,7 +1059,8 @@ export function inside_room(croom, x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) == i
+            ) &
+                63) | 0) == i
                 ? 1
                 : 0));
     }
@@ -1082,7 +1100,8 @@ export function somexy(croom, c) {
                 cptr.ldI16o(c, $coord_y),
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) &&
+            ) &
+                1) &&
                     ((cptr.ldI32o3(
                         svl,
                         cptr.ldI16(c),
@@ -1090,7 +1109,9 @@ export function somexy(croom, c) {
                         cptr.ldI16o(c, $coord_y),
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_roomno
-                    ) & 63) | 0) == i)
+                    ) &
+                        63) |
+                        0) == i)
                 return 1;
         }
         /* try harder; exhaustively search until one is found */
@@ -1111,7 +1132,8 @@ export function somexy(croom, c) {
                     cptr.ldI16o(c, $coord_y),
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_edge
-                ) & 1) &&
+                ) &
+                    1) &&
                         ((cptr.ldI32o3(
                             svl,
                             cptr.ldI16(c),
@@ -1119,7 +1141,9 @@ export function somexy(croom, c) {
                             cptr.ldI16o(c, $coord_y),
                             $sizeof_rm,
                             $instance_globals_saved_l_level + $rm_roomno
-                        ) & 63) | 0) == i)
+                        ) &
+                            63) |
+                            0) == i)
                     return 1;
         return 0;
     }
@@ -1431,116 +1455,116 @@ export function cmap_to_type(sym) {
 
     switch (sym) {
         case NHC.S_stone:
-        typ = NHC.STONE;
-        break;
+            typ = NHC.STONE;
+            break;
         case NHC.S_vwall:
-        typ = NHC.VWALL;
-        break;
+            typ = NHC.VWALL;
+            break;
         case NHC.S_hwall:
-        typ = NHC.HWALL;
-        break;
+            typ = NHC.HWALL;
+            break;
         case NHC.S_tlcorn:
-        typ = NHC.TLCORNER;
-        break;
+            typ = NHC.TLCORNER;
+            break;
         case NHC.S_trcorn:
-        typ = NHC.TRCORNER;
-        break;
+            typ = NHC.TRCORNER;
+            break;
         case NHC.S_blcorn:
-        typ = NHC.BLCORNER;
-        break;
+            typ = NHC.BLCORNER;
+            break;
         case NHC.S_brcorn:
-        typ = NHC.BRCORNER;
-        break;
+            typ = NHC.BRCORNER;
+            break;
         case NHC.S_crwall:
-        typ = NHC.CROSSWALL;
-        break;
+            typ = NHC.CROSSWALL;
+            break;
         case NHC.S_tuwall:
-        typ = NHC.TUWALL;
-        break;
+            typ = NHC.TUWALL;
+            break;
         case NHC.S_tdwall:
-        typ = NHC.TDWALL;
-        break;
+            typ = NHC.TDWALL;
+            break;
         case NHC.S_tlwall:
-        typ = NHC.TLWALL;
-        break;
+            typ = NHC.TLWALL;
+            break;
         case NHC.S_trwall:
-        typ = NHC.TRWALL;
-        break;
+            typ = NHC.TRWALL;
+            break;
         case NHC.S_ndoor:
         case NHC.S_vodoor:
         case NHC.S_hodoor:
         case NHC.S_vcdoor:
         case NHC.S_hcdoor:
-        typ = NHC.DOOR;
-        break;
+            typ = NHC.DOOR;
+            break;
         case NHC.S_bars:
-        typ = NHC.IRONBARS;
-        break;
+            typ = NHC.IRONBARS;
+            break;
         case NHC.S_tree:
-        typ = NHC.TREE;
-        break;
+            typ = NHC.TREE;
+            break;
         case NHC.S_room:
         case NHC.S_darkroom:
-        typ = NHC.ROOM;
-        break;
+            typ = NHC.ROOM;
+            break;
         case NHC.S_corr:
         case NHC.S_litcorr:
-        typ = NHC.CORR;
-        break;
+            typ = NHC.CORR;
+            break;
         case NHC.S_upstair:
         case NHC.S_dnstair:
-        typ = NHC.STAIRS;
-        break;
+            typ = NHC.STAIRS;
+            break;
         case NHC.S_upladder:
         case NHC.S_dnladder:
-        typ = NHC.LADDER;
-        break;
+            typ = NHC.LADDER;
+            break;
         case NHC.S_altar:
-        typ = NHC.ALTAR;
-        break;
+            typ = NHC.ALTAR;
+            break;
         case NHC.S_grave:
-        typ = NHC.GRAVE;
-        break;
+            typ = NHC.GRAVE;
+            break;
         case NHC.S_throne:
-        typ = NHC.THRONE;
-        break;
+            typ = NHC.THRONE;
+            break;
         case NHC.S_sink:
-        typ = NHC.SINK;
-        break;
+            typ = NHC.SINK;
+            break;
         case NHC.S_fountain:
-        typ = NHC.FOUNTAIN;
-        break;
+            typ = NHC.FOUNTAIN;
+            break;
         case NHC.S_pool:
-        typ = NHC.POOL;
-        break;
+            typ = NHC.POOL;
+            break;
         case NHC.S_ice:
-        typ = NHC.ICE;
-        break;
+            typ = NHC.ICE;
+            break;
         case NHC.S_lava:
-        typ = NHC.LAVAPOOL;
-        break;
+            typ = NHC.LAVAPOOL;
+            break;
         case NHC.S_vodbridge:
         case NHC.S_hodbridge:
-        typ = NHC.DRAWBRIDGE_DOWN;
-        break;  /* east/west */
+            typ = NHC.DRAWBRIDGE_DOWN;
+            break;  /* east/west */
         case NHC.S_vcdbridge:
         case NHC.S_hcdbridge:
-        typ = NHC.DBWALL;
-        break;
+            typ = NHC.DBWALL;
+            break;
         case NHC.S_air:
-        typ = NHC.AIR;
-        break;
+            typ = NHC.AIR;
+            break;
         case NHC.S_cloud:
-        typ = NHC.CLOUD;
-        break;
+            typ = NHC.CLOUD;
+            break;
         case NHC.S_water:
-        typ = NHC.WATER;
-        break;
+            typ = NHC.WATER;
+            break;
         case NHC.S_lavawall:
-        typ = NHC.LAVAWALL;
-        break;
+            typ = NHC.LAVAWALL;
+            break;
         default:
-        break;  /* not a cmap symbol? */
+            break;  /* not a cmap symbol? */
     }
     return typ;
 }

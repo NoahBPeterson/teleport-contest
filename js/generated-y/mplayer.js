@@ -295,12 +295,8 @@ export function* mk_mplayer(ptr, x, y, special) {
             )))))
         special = 0;
 
-    if ((mtmp = (yield* makemon(
-        ptr,
-        x,
-        y,
-        Number(BigInt.asUintN(32, (special ? 131072n : 0n)))
-    ))) !== null) {
+    if ((mtmp = (yield* makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n)))))) !==
+            null) {
         let weapon;
         let armor;
         let cloak;
@@ -316,8 +312,7 @@ export function* mk_mplayer(ptr, x, y, special) {
             cptr.stI32o(
                 mtmp,
                 $monst_mhpmax,
-                (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) +
-                    (special ? ((30 + rnd(30)) | 0) : 30)) | 0
+                (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) + (special ? 30 + rnd(30) : 30)) | 0
             )
         );
         if (special) {
@@ -344,98 +339,100 @@ export function* mk_mplayer(ptr, x, y, special) {
 
         switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
             case NHC.PM_ARCHEOLOGIST:
-            if (rn2(2))
-                weapon = NHC.BULLWHIP;
-            break;
+                if (rn2(2))
+                    weapon = NHC.BULLWHIP;
+                break;
             case NHC.PM_BARBARIAN:
-            if (rn2(2)) {
-                weapon = i16((rn2(2) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
-                shield = NHC.STRANGE_OBJECT;
-            }
-            if (rn2(2))
-                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
-            if (helm == NHC.HELM_OF_BRILLIANCE)
-                helm = NHC.STRANGE_OBJECT;
-            break;
+                if (rn2(2)) {
+                    weapon = i16((rn2(2) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
+                    shield = NHC.STRANGE_OBJECT;
+                }
+                if (rn2(2))
+                    armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
+                if (helm == NHC.HELM_OF_BRILLIANCE)
+                    helm = NHC.STRANGE_OBJECT;
+                break;
             case NHC.PM_CAVE_DWELLER:
-            if (rn2(4))
-                weapon = NHC.MACE;
-            else if (rn2(2))
-                weapon = NHC.CLUB;
-            if (helm == NHC.HELM_OF_BRILLIANCE)
-                helm = NHC.STRANGE_OBJECT;
-            break;
+                if (rn2(4))
+                    weapon = NHC.MACE;
+                else if (rn2(2))
+                    weapon = NHC.CLUB;
+                if (helm == NHC.HELM_OF_BRILLIANCE)
+                    helm = NHC.STRANGE_OBJECT;
+                break;
             case NHC.PM_HEALER:
-            if (rn2(4))
-                weapon = NHC.QUARTERSTAFF;
-            else if (rn2(2))
-                weapon = i16((rn2(2) ? NHC.UNICORN_HORN : NHC.SCALPEL));
-            if (rn2(4))
-                helm = i16((rn2(2) ? NHC.HELM_OF_BRILLIANCE : NHC.HELM_OF_TELEPATHY));
-            if (rn2(2))
-                shield = NHC.STRANGE_OBJECT;
-            break;
+                if (rn2(4))
+                    weapon = NHC.QUARTERSTAFF;
+                else if (rn2(2))
+                    weapon = i16((rn2(2) ? NHC.UNICORN_HORN : NHC.SCALPEL));
+                if (rn2(4))
+                    helm = i16((rn2(2) ? NHC.HELM_OF_BRILLIANCE : NHC.HELM_OF_TELEPATHY));
+                if (rn2(2))
+                    shield = NHC.STRANGE_OBJECT;
+                break;
             case NHC.PM_KNIGHT:
-            if (rn2(4))
-                weapon = NHC.LONG_SWORD;
-            if (rn2(2))
-                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
-            break;
+                if (rn2(4))
+                    weapon = NHC.LONG_SWORD;
+                if (rn2(2))
+                    armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
+                break;
             case NHC.PM_MONK:
-            weapon = i16((!rn2(3) ? NHC.SHURIKEN : NHC.STRANGE_OBJECT));
-            armor = NHC.STRANGE_OBJECT;
-            cloak = NHC.ROBE;
-            if (rn2(2))
-                shield = NHC.STRANGE_OBJECT;
-            break;
-            case NHC.PM_CLERIC:
-            if (rn2(2))
-                weapon = NHC.MACE;
-            if (rn2(2))
-                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
-            if (rn2(4))
+                weapon = i16((!rn2(3) ? NHC.SHURIKEN : NHC.STRANGE_OBJECT));
+                armor = NHC.STRANGE_OBJECT;
                 cloak = NHC.ROBE;
-            if (rn2(4))
-                helm = i16((rn2(2) ? NHC.HELM_OF_BRILLIANCE : NHC.HELM_OF_TELEPATHY));
-            if (rn2(2))
-                shield = NHC.STRANGE_OBJECT;
-            break;
+                if (rn2(2))
+                    shield = NHC.STRANGE_OBJECT;
+                break;
+            case NHC.PM_CLERIC:
+                if (rn2(2))
+                    weapon = NHC.MACE;
+                if (rn2(2))
+                    armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
+                if (rn2(4))
+                    cloak = NHC.ROBE;
+                if (rn2(4))
+                    helm = i16((rn2(2) ? NHC.HELM_OF_BRILLIANCE : NHC.HELM_OF_TELEPATHY));
+                if (rn2(2))
+                    shield = NHC.STRANGE_OBJECT;
+                break;
             case NHC.PM_RANGER:
-            if (rn2(2))
-                weapon = NHC.ELVEN_DAGGER;
-            break;
+                if (rn2(2))
+                    weapon = NHC.ELVEN_DAGGER;
+                break;
             case NHC.PM_ROGUE:
-            if (rn2(2))
-                weapon = i16((rn2(2) ? NHC.SHORT_SWORD : NHC.ORCISH_DAGGER));
-            break;
+                if (rn2(2))
+                    weapon = i16((rn2(2) ? NHC.SHORT_SWORD : NHC.ORCISH_DAGGER));
+                break;
             case NHC.PM_SAMURAI:
-            if (rn2(2))
-                weapon = NHC.KATANA;
-            break;
+                if (rn2(2))
+                    weapon = NHC.KATANA;
+                break;
             case NHC.PM_TOURIST:
-            /* Defaults are just fine */
-            break;
+                /* Defaults are just fine */
+                break;
             case NHC.PM_VALKYRIE:
-            if (rn2(2))
-                weapon = NHC.WAR_HAMMER;
-            if (rn2(2))
-                armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
-            break;
+                if (rn2(2))
+                    weapon = NHC.WAR_HAMMER;
+                if (rn2(2))
+                    armor = i16(rnd_class(NHC.PLATE_MAIL, NHC.CHAIN_MAIL));
+                break;
             case NHC.PM_WIZARD:
-            if (rn2(4))
-                weapon = i16((rn2(2) ? NHC.QUARTERSTAFF : NHC.ATHAME));
-            if (rn2(2)) {
-                armor = i16((rn2(2) ? NHC.BLACK_DRAGON_SCALE_MAIL : NHC.SILVER_DRAGON_SCALE_MAIL));
-                cloak = NHC.CLOAK_OF_MAGIC_RESISTANCE;
-            }
-            if (rn2(4))
-                helm = NHC.HELM_OF_BRILLIANCE;
-            shield = NHC.STRANGE_OBJECT;
-            break;
+                if (rn2(4))
+                    weapon = i16((rn2(2) ? NHC.QUARTERSTAFF : NHC.ATHAME));
+                if (rn2(2)) {
+                    armor = i16((rn2(2)
+                            ? NHC.BLACK_DRAGON_SCALE_MAIL
+                            : NHC.SILVER_DRAGON_SCALE_MAIL));
+                    cloak = NHC.CLOAK_OF_MAGIC_RESISTANCE;
+                }
+                if (rn2(4))
+                    helm = NHC.HELM_OF_BRILLIANCE;
+                shield = NHC.STRANGE_OBJECT;
+                break;
             default:
-            (yield* impossible(__s_bad_mplayer_monster));
-            weapon = 0;
-            break;
+                (yield* impossible(__s_bad_mplayer_monster));
+                weapon = 0;
+                break;
         }
 
         if (weapon != NHC.STRANGE_OBJECT) {
@@ -455,7 +452,9 @@ export function* mk_mplayer(ptr, x, y, special) {
                 cptr.ldI16o(otmp, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_merge
-            ) & 1) | 0 &&
+            ) &
+                1) |
+                0 &&
                     !cptr.ld1so(otmp, $obj_oartifact) &&
                     monmightthrowwep(otmp))
                 cptr.stI64o(

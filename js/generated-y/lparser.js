@@ -289,8 +289,11 @@ function* registerlocalvar(ls, fs, varname) {
     ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((varname), $TString_marked)) & 24))
             ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((f)))), ((((varname)))))
             : (void 0));
-    return (cptr.stI16o(fs, $FuncState_ndebugvars, cptr.ldI16o(fs, $FuncState_ndebugvars) + 1)) -
-            (1);
+    return (cptr.stI16o(
+        fs,
+        $FuncState_ndebugvars,
+        cptr.ldI16o(fs, $FuncState_ndebugvars) + 1
+    )) - (1);
 }
 
 /*
@@ -414,35 +417,35 @@ function* check_readonly(ls, e) {
     let varname = null;  /* to be set if variable is const */
     switch (cptr.ldI32(e)) {
         case NHC.VCONST:
-        {
-            varname = cptr.ldPtro2(
-                cptr.ldPtr(cptr.ldPtro(ls, $LexState_dyd)),
-                cptr.ldI32o(e, $expdesc_u),
-                $sizeof_Vardesc,
-                16
-            );
-            break;
-        }
+            {
+                varname = cptr.ldPtro2(
+                    cptr.ldPtr(cptr.ldPtro(ls, $LexState_dyd)),
+                    cptr.ldI32o(e, $expdesc_u),
+                    $sizeof_Vardesc,
+                    16
+                );
+                break;
+            }
         case NHC.VLOCAL:
-        {
-            let vardesc = getlocalvardesc(fs, cptr.ldU16o(e, $expdesc_u + 2));
-            if (cptr.ld1uo(vardesc, 9) != 0)
-                varname = cptr.ldPtro(vardesc, 16);
-            break;
-        }
+            {
+                let vardesc = getlocalvardesc(fs, cptr.ldU16o(e, $expdesc_u + 2));
+                if (cptr.ld1uo(vardesc, 9) != 0)
+                    varname = cptr.ldPtro(vardesc, 16);
+                break;
+            }
         case NHC.VUPVAL:
-        {
-            let up = cptr.add(
-                cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues),
-                cptr.ldI32o(e, $expdesc_u),
-                $sizeof_Upvaldesc
-            );
-            if (cptr.ld1uo(up, $Upvaldesc_kind) != 0)
-                varname = cptr.ldPtr(up);
-            break;
-        }
+            {
+                let up = cptr.add(
+                    cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues),
+                    cptr.ldI32o(e, $expdesc_u),
+                    $sizeof_Upvaldesc
+                );
+                if (cptr.ld1uo(up, $Upvaldesc_kind) != 0)
+                    varname = cptr.ldPtr(up);
+                break;
+            }
         default:
-        return;  /* other cases cannot be read-only */
+            return;  /* other cases cannot be read-only */
     }
     if (varname) {
         let msg = (yield* luaO_pushfstring(
@@ -1264,11 +1267,11 @@ function block_follow(ls, withuntil) {
         case NHC.TK_ELSEIF:
         case NHC.TK_END:
         case NHC.TK_EOS:
-        return 1;
+            return 1;
         case NHC.TK_UNTIL:
-        return withuntil;
+            return withuntil;
         default:
-        return 0;
+            return 0;
     }
 }
 
@@ -1400,23 +1403,23 @@ function* field(ls, cc) {
     /* field -> listfield | recfield */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_NAME:
-        {
-            if ((yield* luaX_lookahead(ls)) != 61)
-                (yield* listfield(ls, cc));
-            else
-                (yield* recfield(ls, cc));
-            break;
-        }
+            {
+                if ((yield* luaX_lookahead(ls)) != 61)
+                    (yield* listfield(ls, cc));
+                else
+                    (yield* recfield(ls, cc));
+                break;
+            }
         case 91:
-        {
-            (yield* recfield(ls, cc));
-            break;
-        }
+            {
+                (yield* recfield(ls, cc));
+                break;
+            }
         default:
-        {
-            (yield* listfield(ls, cc));
-            break;
-        }
+            {
+                (yield* listfield(ls, cc));
+                break;
+            }
     }
 }
 
@@ -1476,19 +1479,19 @@ function* parlist(ls) {
         do {
             switch (cptr.ldI32o(ls, $LexState_t)) {
                 case NHC.TK_NAME:
-                {
-                    (yield* new_localvar(ls, (yield* str_checkname(ls))));
-                    nparams++;
-                    break;
-                }
+                    {
+                        (yield* new_localvar(ls, (yield* str_checkname(ls))));
+                        nparams++;
+                        break;
+                    }
                 case NHC.TK_DOTS:
-                {
-                    (yield* luaX_next(ls));
-                    isvararg = 1;
-                    break;
-                }
+                    {
+                        (yield* luaX_next(ls));
+                        isvararg = 1;
+                        break;
+                    }
                 default:
-                (yield* luaX_syntaxerror(ls, __s_name_or_expected));
+                    (yield* luaX_syntaxerror(ls, __s_name_or_expected));
             }
         } while (!isvararg && (yield* testnext(ls, 44)));
     }
@@ -1550,33 +1553,33 @@ function* funcargs(ls, f) {
     let line = cptr.ldI32o(ls, $LexState_linenumber);
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 40:
-        {
-            (yield* luaX_next(ls));
-            if (cptr.ldI32o(ls, $LexState_t) == 41)
-                cptr.stI32(args, NHC.VVOID);
-            else {
-                (yield* explist(ls, args));
-                if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG))
-                    (yield* luaK_setreturns(fs, args, -1));
+            {
+                (yield* luaX_next(ls));
+                if (cptr.ldI32o(ls, $LexState_t) == 41)
+                    cptr.stI32(args, NHC.VVOID);
+                else {
+                    (yield* explist(ls, args));
+                    if (((cptr.ldI32(args)) == NHC.VCALL || (cptr.ldI32(args)) == NHC.VVARARG))
+                        (yield* luaK_setreturns(fs, args, -1));
+                }
+                (yield* check_match(ls, 41, 40, line));
+                break;
             }
-            (yield* check_match(ls, 41, 40, line));
-            break;
-        }
         case 123:
-        {
-            (yield* constructor(ls, args));
-            break;
-        }
+            {
+                (yield* constructor(ls, args));
+                break;
+            }
         case NHC.TK_STRING:
-        {
-            codestring(args, cptr.ldPtro(ls, $LexState_t + $Token_seminfo));
-            (yield* luaX_next(ls));  /* must use 'seminfo' before 'next' */
-            break;
-        }
+            {
+                codestring(args, cptr.ldPtro(ls, $LexState_t + $Token_seminfo));
+                (yield* luaX_next(ls));  /* must use 'seminfo' before 'next' */
+                break;
+            }
         default:
-        {
-            (yield* luaX_syntaxerror(ls, __s_function_arguments_expected));
-        }
+            {
+                (yield* luaX_syntaxerror(ls, __s_function_arguments_expected));
+            }
     }
     (void 0);
     base = cptr.ldI32o(f, $expdesc_u);  /* base register for call */
@@ -1603,23 +1606,23 @@ function* primaryexp(ls, v) {
     /* primaryexp -> NAME | '(' expr ')' */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 40:
-        {
-            let line = cptr.ldI32o(ls, $LexState_linenumber);
-            (yield* luaX_next(ls));
-            (yield* expr(ls, v));
-            (yield* check_match(ls, 41, 40, line));
-            (yield* luaK_dischargevars(cptr.ldPtro(ls, $LexState_fs), v));
-            return;
-        }
+            {
+                let line = cptr.ldI32o(ls, $LexState_linenumber);
+                (yield* luaX_next(ls));
+                (yield* expr(ls, v));
+                (yield* check_match(ls, 41, 40, line));
+                (yield* luaK_dischargevars(cptr.ldPtro(ls, $LexState_fs), v));
+                return;
+            }
         case NHC.TK_NAME:
-        {
-            (yield* singlevar(ls, v));
-            return;
-        }
+            {
+                (yield* singlevar(ls, v));
+                return;
+            }
         default:
-        {
-            (yield* luaX_syntaxerror(ls, __s_unexpected_symbol));
-        }
+            {
+                (yield* luaX_syntaxerror(ls, __s_unexpected_symbol));
+            }
     }
 }
 
@@ -1632,37 +1635,37 @@ function* suffixedexp(ls, v) {
     for (; ; ) {
         switch (cptr.ldI32o(ls, $LexState_t)) {
             case 46:
-            {
-                (yield* fieldsel(ls, v));
-                break;
-            }
+                {
+                    (yield* fieldsel(ls, v));
+                    break;
+                }
             case 91:
-            {
-                let key = cptr.alloc(24);
-                (yield* luaK_exp2anyregup(fs, v));
-                (yield* yindex(ls, key));
-                (yield* luaK_indexed(fs, v, key));
-                break;
-            }
+                {
+                    let key = cptr.alloc(24);
+                    (yield* luaK_exp2anyregup(fs, v));
+                    (yield* yindex(ls, key));
+                    (yield* luaK_indexed(fs, v, key));
+                    break;
+                }
             case 58:
-            {
-                let key = cptr.alloc(24);
-                (yield* luaX_next(ls));
-                (yield* codename(ls, key));
-                (yield* luaK_self(fs, v, key));
-                (yield* funcargs(ls, v));
-                break;
-            }
+                {
+                    let key = cptr.alloc(24);
+                    (yield* luaX_next(ls));
+                    (yield* codename(ls, key));
+                    (yield* luaK_self(fs, v, key));
+                    (yield* funcargs(ls, v));
+                    break;
+                }
             case 40:
             case NHC.TK_STRING:
             case 123:
-            {
-                (yield* luaK_exp2nextreg(fs, v));
-                (yield* funcargs(ls, v));
-                break;
-            }
+                {
+                    (yield* luaK_exp2nextreg(fs, v));
+                    (yield* funcargs(ls, v));
+                    break;
+                }
             default:
-            return;
+                return;
         }
     }
 }
@@ -1673,64 +1676,64 @@ function* simpleexp(ls, v) {
                     constructor | FUNCTION body | suffixedexp */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_FLT:
-        {
-            init_exp(v, NHC.VKFLT, 0);
-            cptr.stF64o(v, $expdesc_u, cptr.ldF64o(ls, $LexState_t + $Token_seminfo));
-            break;
-        }
-        case NHC.TK_INT:
-        {
-            init_exp(v, NHC.VKINT, 0);
-            cptr.stI64o(v, $expdesc_u, cptr.ldI64o(ls, $LexState_t + $Token_seminfo));
-            break;
-        }
-        case NHC.TK_STRING:
-        {
-            codestring(v, cptr.ldPtro(ls, $LexState_t + $Token_seminfo));
-            break;
-        }
-        case NHC.TK_NIL:
-        {
-            init_exp(v, NHC.VNIL, 0);
-            break;
-        }
-        case NHC.TK_TRUE:
-        {
-            init_exp(v, NHC.VTRUE, 0);
-            break;
-        }
-        case NHC.TK_FALSE:
-        {
-            init_exp(v, NHC.VFALSE, 0);
-            break;
-        }
-        case NHC.TK_DOTS:
-        {
-            let fs = cptr.ldPtro(ls, $LexState_fs);
             {
-                if (!(cptr.ld1uo(cptr.ldPtr(fs), $Proto_is_vararg)))
-                    (yield* luaX_syntaxerror(ls, __s_cannot_use_outside_a_vararg_function));
+                init_exp(v, NHC.VKFLT, 0);
+                cptr.stF64o(v, $expdesc_u, cptr.ldF64o(ls, $LexState_t + $Token_seminfo));
+                break;
             }
-            ;
-            init_exp(v, NHC.VVARARG, (yield* luaK_codeABCk(fs, NHC.OP_VARARG, 0, 0, 1, 0)));
-            break;
-        }
+        case NHC.TK_INT:
+            {
+                init_exp(v, NHC.VKINT, 0);
+                cptr.stI64o(v, $expdesc_u, cptr.ldI64o(ls, $LexState_t + $Token_seminfo));
+                break;
+            }
+        case NHC.TK_STRING:
+            {
+                codestring(v, cptr.ldPtro(ls, $LexState_t + $Token_seminfo));
+                break;
+            }
+        case NHC.TK_NIL:
+            {
+                init_exp(v, NHC.VNIL, 0);
+                break;
+            }
+        case NHC.TK_TRUE:
+            {
+                init_exp(v, NHC.VTRUE, 0);
+                break;
+            }
+        case NHC.TK_FALSE:
+            {
+                init_exp(v, NHC.VFALSE, 0);
+                break;
+            }
+        case NHC.TK_DOTS:
+            {
+                let fs = cptr.ldPtro(ls, $LexState_fs);
+                {
+                    if (!(cptr.ld1uo(cptr.ldPtr(fs), $Proto_is_vararg)))
+                        (yield* luaX_syntaxerror(ls, __s_cannot_use_outside_a_vararg_function));
+                }
+                ;
+                init_exp(v, NHC.VVARARG, (yield* luaK_codeABCk(fs, NHC.OP_VARARG, 0, 0, 1, 0)));
+                break;
+            }
         case 123:
-        {
-            (yield* constructor(ls, v));
-            return;
-        }
+            {
+                (yield* constructor(ls, v));
+                return;
+            }
         case NHC.TK_FUNCTION:
-        {
-            (yield* luaX_next(ls));
-            (yield* body(ls, v, 0, cptr.ldI32o(ls, $LexState_linenumber)));
-            return;
-        }
+            {
+                (yield* luaX_next(ls));
+                (yield* body(ls, v, 0, cptr.ldI32o(ls, $LexState_linenumber)));
+                return;
+            }
         default:
-        {
-            (yield* suffixedexp(ls, v));
-            return;
-        }
+            {
+                (yield* suffixedexp(ls, v));
+                return;
+            }
     }
     (yield* luaX_next(ls));
 }
@@ -1739,15 +1742,15 @@ function* simpleexp(ls, v) {
 function getunopr(op) {
     switch (op) {
         case NHC.TK_NOT:
-        return NHC.OPR_NOT;
+            return NHC.OPR_NOT;
         case 45:
-        return NHC.OPR_MINUS;
+            return NHC.OPR_MINUS;
         case 126:
-        return NHC.OPR_BNOT;
+            return NHC.OPR_BNOT;
         case 35:
-        return NHC.OPR_LEN;
+            return NHC.OPR_LEN;
         default:
-        return NHC.OPR_NOUNOPR;
+            return NHC.OPR_NOUNOPR;
     }
 }
 
@@ -1755,49 +1758,49 @@ function getunopr(op) {
 function getbinopr(op) {
     switch (op) {
         case 43:
-        return NHC.OPR_ADD;
+            return NHC.OPR_ADD;
         case 45:
-        return NHC.OPR_SUB;
+            return NHC.OPR_SUB;
         case 42:
-        return NHC.OPR_MUL;
+            return NHC.OPR_MUL;
         case 37:
-        return NHC.OPR_MOD;
+            return NHC.OPR_MOD;
         case 94:
-        return NHC.OPR_POW;
+            return NHC.OPR_POW;
         case 47:
-        return NHC.OPR_DIV;
+            return NHC.OPR_DIV;
         case NHC.TK_IDIV:
-        return NHC.OPR_IDIV;
+            return NHC.OPR_IDIV;
         case 38:
-        return NHC.OPR_BAND;
+            return NHC.OPR_BAND;
         case 124:
-        return NHC.OPR_BOR;
+            return NHC.OPR_BOR;
         case 126:
-        return NHC.OPR_BXOR;
+            return NHC.OPR_BXOR;
         case NHC.TK_SHL:
-        return NHC.OPR_SHL;
+            return NHC.OPR_SHL;
         case NHC.TK_SHR:
-        return NHC.OPR_SHR;
+            return NHC.OPR_SHR;
         case NHC.TK_CONCAT:
-        return NHC.OPR_CONCAT;
+            return NHC.OPR_CONCAT;
         case NHC.TK_NE:
-        return NHC.OPR_NE;
+            return NHC.OPR_NE;
         case NHC.TK_EQ:
-        return NHC.OPR_EQ;
+            return NHC.OPR_EQ;
         case 60:
-        return NHC.OPR_LT;
+            return NHC.OPR_LT;
         case NHC.TK_LE:
-        return NHC.OPR_LE;
+            return NHC.OPR_LE;
         case 62:
-        return NHC.OPR_GT;
+            return NHC.OPR_GT;
         case NHC.TK_GE:
-        return NHC.OPR_GE;
+            return NHC.OPR_GE;
         case NHC.TK_AND:
-        return NHC.OPR_AND;
+            return NHC.OPR_AND;
         case NHC.TK_OR:
-        return NHC.OPR_OR;
+            return NHC.OPR_OR;
         default:
-        return NHC.OPR_NOBINOPR;
+            return NHC.OPR_NOBINOPR;
     }
 }
 
@@ -1891,8 +1894,7 @@ function* subexpr(ls, v, limit) {
         cptr.ldPtro((ls), $LexState_L),
         $lua_State_nCcalls,
         cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1
-    )) -
-            (-1));
+    )) - (-1));
     return op;  /* return first untreated operator */
 }
 
@@ -2014,8 +2016,7 @@ function* restassign(ls, lh, nvars) {
             cptr.ldPtro((ls), $LexState_L),
             $lua_State_nCcalls,
             cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1
-        )) -
-                (-1));
+        )) - (-1));
     } else {
         let nexps;
         (yield* checknext(ls, 61));
@@ -2194,8 +2195,8 @@ function* fixforjump(fs, pc, dest, back) {
     (cptr.stI32(
         jmp,
         (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 17) >>> 0)) << 15) >>> 0))) >>> 0) |
-            ((((((offset) >>> 0) << 15) >>> 0) &
-                (((~(((~0) << 17) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)
+            ((((((offset) >>> 0) << 15) >>> 0) & (((~(((~0) << 17) >>> 0)) << 15) >>> 0)) >>>
+                0)) >>> 0)
     ));
 }
 
@@ -2313,14 +2314,14 @@ function* forstat(ls, line) {
     varname = (yield* str_checkname(ls));  /* first variable name */
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 61:
-        (yield* fornum(ls, varname, line));
-        break;
+            (yield* fornum(ls, varname, line));
+            break;
         case 44:
         case NHC.TK_IN:
-        (yield* forlist(ls, varname));
-        break;
+            (yield* forlist(ls, varname));
+            break;
         default:
-        (yield* luaX_syntaxerror(ls, __s_or_in_expected));
+            (yield* luaX_syntaxerror(ls, __s_or_in_expected));
     }
     (yield* check_match(ls, NHC.TK_END, NHC.TK_FOR, line));
     (yield* leaveblock(fs));  /* loop scope ('break' jumps to this point) */
@@ -2545,9 +2546,10 @@ function* retstat(ls) {
                         cptr.ldI32o((e), $expdesc_u),
                         4
                     ))) &
-                        (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) |
-                        (((((69) << 0) >>> 0) &
-                            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0),
+                        (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>>
+                        0) |
+                        (((((69) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>>
+                        0),
                     4
                 ));
                 (void 0);
@@ -2572,79 +2574,79 @@ function* statement(ls) {
     (yield* luaE_incCstack(cptr.ldPtro(ls, $LexState_L)));
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 59:
-        {
-            (yield* luaX_next(ls));  /* skip ';' */
-            break;
-        }
+            {
+                (yield* luaX_next(ls));  /* skip ';' */
+                break;
+            }
         case NHC.TK_IF:
-        {
-            (yield* ifstat(ls, line));
-            break;
-        }
+            {
+                (yield* ifstat(ls, line));
+                break;
+            }
         case NHC.TK_WHILE:
-        {
-            (yield* whilestat(ls, line));
-            break;
-        }
+            {
+                (yield* whilestat(ls, line));
+                break;
+            }
         case NHC.TK_DO:
-        {
-            (yield* luaX_next(ls));  /* skip DO */
-            (yield* block(ls));
-            (yield* check_match(ls, NHC.TK_END, NHC.TK_DO, line));
-            break;
-        }
+            {
+                (yield* luaX_next(ls));  /* skip DO */
+                (yield* block(ls));
+                (yield* check_match(ls, NHC.TK_END, NHC.TK_DO, line));
+                break;
+            }
         case NHC.TK_FOR:
-        {
-            (yield* forstat(ls, line));
-            break;
-        }
+            {
+                (yield* forstat(ls, line));
+                break;
+            }
         case NHC.TK_REPEAT:
-        {
-            (yield* repeatstat(ls, line));
-            break;
-        }
+            {
+                (yield* repeatstat(ls, line));
+                break;
+            }
         case NHC.TK_FUNCTION:
-        {
-            (yield* funcstat(ls, line));
-            break;
-        }
+            {
+                (yield* funcstat(ls, line));
+                break;
+            }
         case NHC.TK_LOCAL:
-        {
-            (yield* luaX_next(ls));  /* skip LOCAL */
-            if ((yield* testnext(ls, NHC.TK_FUNCTION)))
-                (yield* localfunc(ls));
-            else
-                (yield* localstat(ls));
-            break;
-        }
+            {
+                (yield* luaX_next(ls));  /* skip LOCAL */
+                if ((yield* testnext(ls, NHC.TK_FUNCTION)))
+                    (yield* localfunc(ls));
+                else
+                    (yield* localstat(ls));
+                break;
+            }
         case NHC.TK_DBCOLON:
-        {
-            (yield* luaX_next(ls));  /* skip double colon */
-            (yield* labelstat(ls, (yield* str_checkname(ls)), line));
-            break;
-        }
+            {
+                (yield* luaX_next(ls));  /* skip double colon */
+                (yield* labelstat(ls, (yield* str_checkname(ls)), line));
+                break;
+            }
         case NHC.TK_RETURN:
-        {
-            (yield* luaX_next(ls));  /* skip RETURN */
-            (yield* retstat(ls));
-            break;
-        }
+            {
+                (yield* luaX_next(ls));  /* skip RETURN */
+                (yield* retstat(ls));
+                break;
+            }
         case NHC.TK_BREAK:
-        {
-            (yield* breakstat(ls));
-            break;
-        }
+            {
+                (yield* breakstat(ls));
+                break;
+            }
         case NHC.TK_GOTO:
-        {
-            (yield* luaX_next(ls));  /* skip 'goto' */
-            (yield* gotostat(ls));
-            break;
-        }
+            {
+                (yield* luaX_next(ls));  /* skip 'goto' */
+                (yield* gotostat(ls));
+                break;
+            }
         default:
-        {
-            (yield* exprstat(ls));
-            break;
-        }
+            {
+                (yield* exprstat(ls));
+                break;
+            }
     }
     (void 0);
     cptr.st1o(
@@ -2656,8 +2658,7 @@ function* statement(ls) {
         cptr.ldPtro((ls), $LexState_L),
         $lua_State_nCcalls,
         cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1
-    )) -
-            (-1));
+    )) - (-1));
 }
 
 /* }====================================================================== */

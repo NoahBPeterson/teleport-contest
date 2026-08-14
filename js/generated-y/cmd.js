@@ -973,8 +973,7 @@ function* timed_occupation() {
             gm,
             $instance_globals_m_multi,
             cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
-        )) -
-                (-1n);
+        )) - (-1n);
     return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n;
 }
 
@@ -1354,8 +1353,8 @@ function* doc_extcmd_flagstr(menuwin, efp) {
         return null;
     } else {
         let mprefix = accept_menu_prefix(efp);
-        let autocomplete = schar((((cptr.ldI32o(efp, $ext_func_tab_flags) &
-                NHM.AUTOCOMPLETE) >>> 0) != 0));
+        let autocomplete = schar((((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>>
+                0) != 0));
         let p = cptr.decay(__static_doc_extcmd_flagstr_Abuf);
 
         /* "" or "[m]" or "[A]" or "[mA]" */
@@ -1578,23 +1577,23 @@ export function* doextlist() {
         if (n > 0) {
             switch (cptr.ldI32o(selected.v, 0, $sizeof_menu_item)) {
                 case 1:
-                menumode = (1 - menumode) | 0;  /* toggle 0 -> 1, 1 -> 0 */
-                redisplay = 1;
-                break;
+                    menumode = (1 - menumode) | 0;  /* toggle 0 -> 1, 1 -> 0 */
+                    redisplay = 1;
+                    break;
                 case 2:
-                search = 1;
-                break;
+                    search = 1;
+                    break;
                 case 3:
-                search = 0;
-                cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
-                redisplay = 1;
-                break;
+                    search = 0;
+                    cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
+                    redisplay = 1;
+                    break;
                 case 4:
-                search = 0;
-                cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
-                onelist = (1 - onelist) | 0;  /* toggle 0 -> 1, 1 -> 0 */
-                redisplay = 1;
-                break;
+                    search = 0;
+                    cptr.st1o(cptr.decay(searchbuf), 0, 0, 1);
+                    onelist = (1 - onelist) | 0;  /* toggle 0 -> 1, 1 -> 0 */
+                    redisplay = 1;
+                    break;
             }
             cptr.free(selected.v);
         } else {
@@ -1718,12 +1717,14 @@ export function* extcmd_via_menu() {
                     (acount >= 2 &&
                         (BigInt.asUintN(
                             64,
-                            cptr.strlen(cptr.decay(prompt)) + 4n +
+                            cptr.strlen(cptr.decay(prompt)) +
+                                4n +
                                 cptr.strlen(cptr.ldPtro(
                                     cptr.ldPtro(choices, i, 8),
                                     $ext_func_tab_ef_txt
                                 ))
-                        ) >= 74n))) {
+                        ) >=
+                            74n))) {
                 if (acount) {
                     /* flush extended cmds for that letter already in buf */
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
@@ -2239,25 +2240,25 @@ function* doterrain() {
 
     switch (which) {
         case 1:
-        (yield* reveal_terrain(NHM.TER_MAP));
-        break;
+            (yield* reveal_terrain(NHM.TER_MAP));
+            break;
         case 2:
-        (yield* reveal_terrain(3));
-        break;
+            (yield* reveal_terrain(3));
+            break;
         case 3:
-        (yield* reveal_terrain(7));
-        break;
+            (yield* reveal_terrain(7));
+            break;
         case 4:
-        (yield* reveal_terrain(17));
-        break;
+            (yield* reveal_terrain(17));
+            break;
         case 5:
-        (yield* wiz_map_levltyp());
-        break;
+            (yield* wiz_map_levltyp());
+            break;
         case 6:
-        (yield* wiz_levltyp_legend());
-        break;
+            (yield* wiz_levltyp_legend());
+            break;
         default:
-        break;
+            break;
     }
     return NHM.ECMD_OK;  /* no time elapses */
 }
@@ -2387,7 +2388,8 @@ function* lookaround_known_room(x, y) {
 
         (yield* You(
             __s_s_s_s__2,
-            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && u_in &&
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
+                u_in &&
                 u_can_see_whole_selection(sel)
                 ? __s_are_in
                 : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
@@ -4050,7 +4052,8 @@ export function* get_changed_key_binds(sbuf) {
                 cptr.ldPtro(bind, $Cmd_bind_cmd) &&
                 cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
             if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
-                    NHM.CMD_PARAM) >>> 0) != 0)
+                NHM.CMD_PARAM) >>>
+                    0) != 0)
                 void cptr.sprintf(
                     cptr.decay(buf),
                     __s_bind_s_s_s_s,
@@ -4548,10 +4551,8 @@ export function* key2extcmddesc(key) {
     /* finally, check whether 'key' is a command */
     if ((cmdbind = cmdbind_get(key)) !== null &&
             cptr.ldPtro(cmdbind, $Cmd_bind_cmd) &&
-            (txt = cptr.ldPtro(
-                cptr.ldPtro(cmdbind, $Cmd_bind_cmd),
-                $ext_func_tab_ef_txt
-            )) !== null) {
+            (txt = cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_txt)) !==
+                null) {
         void cptr.sprintf(
             cptr.decay(__static_key2extcmddesc_key2cmdbuf),
             __s_s_s__3,
@@ -4804,7 +4805,8 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
         if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd) !== null) {
             if ((incl_flags &&
                 !((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
-                    incl_flags >>> 0) >>> 0)) ||
+                    incl_flags >>> 0) >>>
+                    0)) ||
                     (excl_flags &&
                         ((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
                             excl_flags >>> 0) >>> 0)))
@@ -4814,7 +4816,8 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
                 continue;
             }
             if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
-                    NHM.CMD_PARAM) >>> 0) != 0)
+                NHM.CMD_PARAM) >>>
+                    0) != 0)
                 void cptr.sprintf(
                     cptr.decay(buf),
                     __s_7s_13s_s_s,
@@ -5190,8 +5193,8 @@ export function* cmdname_from_func(fn, outbuf, fullname) {
             ) {
                 if (cptr.eq(extcmd, cmdptr))
                     continue;
-                if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) &
-                    NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 ||
+                if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.CMD_NOT_AVAILABLE) >>> 0) !=
+                    0 ||
                         (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0 &&
                             !wizard()))
                     continue;
@@ -5620,8 +5623,11 @@ export function* reset_commands(initial) {
 
     /* choose updated movement keys */
     if (updated)
-        (cptr.stI32o(gc, $instance_globals_c_Cmd, cptr.ldI32o(gc, $instance_globals_c_Cmd) + 1)) -
-                (1);
+        (cptr.stI32o(
+            gc,
+            $instance_globals_c_Cmd,
+            cptr.ldI32o(gc, $instance_globals_c_Cmd) + 1
+        )) - (1);
     cptr.stPtro(
         gc,
         $instance_globals_c_Cmd + $cmd_dirchars,
@@ -5698,10 +5704,9 @@ export function* reset_commands(initial) {
         } else {
             /* M(number) works when altmeta is on */
             void (yield* bind_key_fn(
-                uchar((((cptr.ld1so(
-                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
-                    i
-                )) - 128) | 0)),
+                uchar((((cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)) -
+                    128) |
+                    0)),
                 cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)
             ));
             /* can't bind highc() or C() of digits. just use the 5 prefix. */
@@ -5769,59 +5774,58 @@ export function randomkey() {
 
     /* give ^A and ^P a high probability of being repeated */
     if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) &&
-            cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp &&
-            rn2(5))
+            cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && rn2(5))
         return __static_randomkey_last_c;
 
     switch (rn2(16)) {
         default:
-        c = 27;
-        break;
+            c = 27;
+            break;
         case 0:
-        c = 10;
-        break;
+            c = 10;
+            break;
         case 1:
         case 2:
         case 3:
         case 4:
-        c = schar(((rn2(95) + 32) | 0));
-        break;
+            c = schar(((rn2(95) + 32) | 0));
+            break;
         case 5:
-        c = schar((rn2(2) ? 9 : 32));
-        break;
+            c = schar((rn2(2) ? 9 : 32));
+            break;
         case 6:
-        c = schar(((rn2(26) + 97) | 0));
-        break;
+            c = schar(((rn2(26) + 97) | 0));
+            break;
         case 7:
-        c = schar(((rn2(26) + 65) | 0));
-        break;
+            c = schar(((rn2(26) + 65) | 0));
+            break;
         case 8:
-        c = schar(cptr.ld1uo(
-            extcmdlist,
-            u32mod(__static_randomkey_i++, 171 >>> 0),
-            $sizeof_ext_func_tab
-        ));
-        break;
+            c = schar(cptr.ld1uo(
+                extcmdlist,
+                u32mod(__static_randomkey_i++, 171 >>> 0),
+                $sizeof_ext_func_tab
+            ));
+            break;
         case 9:
-        c = 35;
-        break;
+            c = 35;
+            break;
         case 10:
         case 11:
         case 12:
-        {
-            let d = rn2(((NHC.N_DIRS_Z - 2) | 0));
-            let m = rn2(7) ? NHC.MV_WALK : (!rn2(3) ? NHC.MV_RUSH : NHC.MV_RUN);
+            {
+                let d = rn2(((NHC.N_DIRS_Z - 2) | 0));
+                let m = rn2(7) ? NHC.MV_WALK : (!rn2(3) ? NHC.MV_RUSH : NHC.MV_RUN);
 
-            c = cmd_from_dir(d, m);
-        }
-        break;
+                c = cmd_from_dir(d, m);
+            }
+            break;
         case 13:
-        c = schar(((rn2(10) + 48) | 0));
-        break;
+            c = schar(((rn2(10) + 48) | 0));
+            break;
         case 14:
-        /* any char, but avoid '\0' because it's used for mouse click */
-        c = schar(rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127));
-        break;
+            /* any char, but avoid '\0' because it's used for mouse click */
+            c = schar(rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127));
+            break;
     }
 
     if (cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp)
@@ -5893,309 +5897,312 @@ export function* rhack(key) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        firsttime = schar((key == 0));
-        cq = cptr.alloc(32);
-        cmdq = null;
-        cmdq_ec = null;
-        prefix_seen = null;
-        was_m_prefix = 0;
-        func = dummyfunction;
+            firsttime = schar((key == 0));
+            cq = cptr.alloc(32);
+            cmdq = null;
+            cmdq_ec = null;
+            prefix_seen = null;
+            was_m_prefix = 0;
+            func = dummyfunction;
 
-        cptr.st1o(iflags, $instance_flags_menu_requested, 0);
-        cptr.st1o(svc, $context_info_nopick, 0);
-        __pc = 1;
-        continue;
+            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+            cptr.st1o(svc, $context_info_nopick, 0);
+            __pc = 1;
+            continue;
         }
         case 1 /* got_prefix_input: */: {
-        if (cptr.ldI32o(program_state, $sinfo_done_hup))
-            (yield* end_of_input());
-        if ((cmdq = cmdq_pop()) !== null) { __pc = 4; continue; }
-        __pc = 5; continue;
+            if (cptr.ldI32o(program_state, $sinfo_done_hup))
+                (yield* end_of_input());
+            if ((cmdq = cmdq_pop()) !== null) { __pc = 4; continue; }
+            __pc = 5; continue;
         }
         case 4: {
-        /* doing queued commands */
-        cptr.memcpy(cq, cmdq, 32);
-        cptr.free(cmdq);
-        if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD &&
-                (cmdq_ec = cptr.ldPtro(cq, $_cmd_queue_ec_entry)) !== null) { __pc = 7; continue; }
-        __pc = 6; continue;
+            /* doing queued commands */
+            cptr.memcpy(cq, cmdq, 32);
+            cptr.free(cmdq);
+            if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD &&
+                    (cmdq_ec = cptr.ldPtro(cq, $_cmd_queue_ec_entry)) !==
+                        null) { __pc = 7; continue; }
+            __pc = 6; continue;
         }
         case 7: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 6: {
-        /* already handled a queued command (goto do_cmdq_extcmd);
-           if something other than a key is queued, we'll drop down
-           to the !*cmd handling which clears out the command-queue */
-        key = (cptr.ldI32(cq) == NHC.CMDQ_KEY) ? cptr.ld1so(cq, $_cmd_queue_key) : 0;
-        __pc = 3;
-        continue;
+            /* already handled a queued command (goto do_cmdq_extcmd);
+               if something other than a key is queued, we'll drop down
+               to the !*cmd handling which clears out the command-queue */
+            key = (cptr.ldI32(cq) == NHC.CMDQ_KEY) ? cptr.ld1so(cq, $_cmd_queue_key) : 0;
+            __pc = 3;
+            continue;
         }
         case 5: {
-        if (firsttime) { __pc = 9; continue; }
-        __pc = 8; continue;
+            if (firsttime) { __pc = 9; continue; }
+            __pc = 8; continue;
         }
         case 9: {
-        key = (yield* parse());
-        if (!key && cmdq_peek(NHC.CQ_CANNED)) { __pc = 11; continue; }
-        __pc = 10; continue;
+            key = (yield* parse());
+            if (!key && cmdq_peek(NHC.CQ_CANNED)) { __pc = 11; continue; }
+            __pc = 10; continue;
         }
         case 11: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 10: {
-        __pc = 8;
-        continue;
+            __pc = 8;
+            continue;
         }
         case 8: {
-        __pc = 3;
-        continue;
+            __pc = 3;
+            continue;
         }
         case 3: {
 
-        /* if there's no command, there's nothing to do except reset */
-        if (!key ||
-                key == -1 ||
-                key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
-            if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys))
-                /* don't perform next sanity check if player typed ESC for
-                   the current command, similar to handling for CMD_INSANE
-                   flag below (^P and ^R) */
+            /* if there's no command, there's nothing to do except reset */
+            if (!key ||
+                    key == -1 ||
+                    key ==
+                        cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+                if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys))
+                    /* don't perform next sanity check if player typed ESC for
+                       the current command, similar to handling for CMD_INSANE
+                       flag below (^P and ^R) */
+                    cptr.st1o(
+                        iflags,
+                        $instance_flags_sanity_no_check,
+                        cptr.ld1so(iflags, $instance_flags_sanity_check)
+                    );
+                else
+                    (yield* Y.icall(nhbell()()));
+                reset_cmd_vars(1);
+                return;
+            }
+
+            /* handle most movement commands */
+            cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
+
+            cptr.stPtro(gc, $instance_globals_c_cmd_bind, cmdbind_get(uchar((key & 255))));
+            __pc = 2;
+            continue;
+        }
+        case 2 /* do_cmdq_extcmd: */: {
+            if (cmdq_ec)
+                tlist = cmdq_ec;
+            else
+                tlist = cptr.ldPtro(gc, $instance_globals_c_cmd_bind)
+                        ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_cmd)
+                        : null;
+            if (tlist !== null) { __pc = 13; continue; }
+            __pc = 12; continue;
+        }
+        case 13: {
+            if (!(yield* can_do_extcmd(tlist))) { __pc = 15; continue; }
+            __pc = 16; continue;
+        }
+        case 15: {
+            /* can_do_extcmd() already gave a message */
+            reset_cmd_vars(1);
+            res = NHM.ECMD_OK;
+            __pc = 14;
+            continue;
+        }
+        case 16: {
+            if (prefix_seen &&
+                    !((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) &&
+                    !((cptr.ldI32o(tlist, $ext_func_tab_flags) &
+                        (was_m_prefix ? NHM.CMD_M_PREFIX : NHM.CMD_gGF_PREFIX) >>> 0) >>>
+                        0)) { __pc = 18; continue; }
+            __pc = 19; continue;
+        }
+        case 18: {
+            pfxidx = cmd_from_func(cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct));
+            which = (pfxidx != 0)
+                    ? visctrl(pfxidx)
+                    : ((cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct) === do_reqmenu)
+                        ? __s_move_no_pickup_or_request_menu
+                        : cptr.ldPtro(prefix_seen, $ext_func_tab_ef_txt));
+
+            /*
+             * We got a prefix previously and looped for another
+             * command instead of returning, but the command we got
+             * doesn't accept a prefix.  The feedback here supersedes
+             * the former call to help_dir() (for 'bad_command' below).
+             */
+            if (was_m_prefix) {
+                (yield* custompline(
+                    NHM.SUPPRESS_HISTORY,
+                    __s_the_s_command_does_not_accept_s_prefix,
+                    cptr.ldPtro(tlist, $ext_func_tab_ef_txt),
+                    which
+                ));
+            } else {
+                ch = cptr.ld1u(tlist);
+                up = schar((ch == 60 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === doup
+                        ? 1
+                        : 0));
+                down = schar((ch == 62 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === dodown
+                        ? 1
+                        : 0));
+
+                (yield* pline(
+                    __s_the_s_prefix_should_be_followed_by_a,
+                    which,
+                    (up || down) ? __s_other_than_up_or_down : __s_empty
+                ));
+            }
+            res = NHM.ECMD_FAIL;
+            prefix_seen = null;
+            __pc = 17;
+            continue;
+        }
+        case 19: {
+            /* we discard 'const' because some compilers seem to have
+               trouble with the pointer passed to set_occupation() */
+            func = cptr.ldPtro((tlist), $ext_func_tab_ef_funct);
+            if (cptr.ldPtro(tlist, $ext_func_tab_f_text) &&
+                    !cptr.ldPtro(go, $instance_globals_o_occupation) &&
+                    cptr.ldI64o(gm, $instance_globals_m_multi))
+                set_occupation(
+                    func,
+                    cptr.ldPtro(tlist, $ext_func_tab_f_text),
+                    cptr.ldI64o(gm, $instance_globals_m_multi)
+                );
+            cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+
+            if (!cptr.ldI32(gi) && func !== do_repeat && func !== doextcmd) {
+                if (!prefix_seen)
+                    cmdq_clear(NHC.CQ_REPEAT);
+                (yield* cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct)));
+            } else {
+                if (func === doextcmd) {
+                    cmdq_clear(NHC.CQ_REPEAT);
+                }
+            }
+            /* some commands shouldn't trigger sanity_check() because
+               if it produces output that might interfere with them;
+               note: if sanity_check is False, this has no effect */
+            if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.CMD_INSANE) >>> 0) != 0)
                 cptr.st1o(
                     iflags,
                     $instance_flags_sanity_no_check,
                     cptr.ld1so(iflags, $instance_flags_sanity_check)
                 );
-            else
-                (yield* Y.icall(nhbell()()));
-            reset_cmd_vars(1);
-            return;
-        }
 
-        /* handle most movement commands */
-        cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
-
-        cptr.stPtro(gc, $instance_globals_c_cmd_bind, cmdbind_get(uchar((key & 255))));
-        __pc = 2;
-        continue;
-        }
-        case 2 /* do_cmdq_extcmd: */: {
-        if (cmdq_ec)
-            tlist = cmdq_ec;
-        else
-            tlist = cptr.ldPtro(gc, $instance_globals_c_cmd_bind)
-                    ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_cmd)
-                    : null;
-        if (tlist !== null) { __pc = 13; continue; }
-        __pc = 12; continue;
-        }
-        case 13: {
-        if (!(yield* can_do_extcmd(tlist))) { __pc = 15; continue; }
-        __pc = 16; continue;
-        }
-        case 15: {
-        /* can_do_extcmd() already gave a message */
-        reset_cmd_vars(1);
-        res = NHM.ECMD_OK;
-        __pc = 14;
-        continue;
-        }
-        case 16: {
-        if (prefix_seen &&
-                !((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) &&
-                !((cptr.ldI32o(tlist, $ext_func_tab_flags) &
-                    (was_m_prefix
-                        ? NHM.CMD_M_PREFIX
-                        : NHM.CMD_gGF_PREFIX) >>> 0) >>> 0)) { __pc = 18; continue; }
-        __pc = 19; continue;
-        }
-        case 18: {
-        pfxidx = cmd_from_func(cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct));
-        which = (pfxidx != 0)
-                ? visctrl(pfxidx)
-                : ((cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct) === do_reqmenu)
-                    ? __s_move_no_pickup_or_request_menu
-                    : cptr.ldPtro(prefix_seen, $ext_func_tab_ef_txt));
-
-        /*
-         * We got a prefix previously and looped for another
-         * command instead of returning, but the command we got
-         * doesn't accept a prefix.  The feedback here supersedes
-         * the former call to help_dir() (for 'bad_command' below).
-         */
-        if (was_m_prefix) {
-            (yield* custompline(
-                NHM.SUPPRESS_HISTORY,
-                __s_the_s_command_does_not_accept_s_prefix,
-                cptr.ldPtro(tlist, $ext_func_tab_ef_txt),
-                which
-            ));
-        } else {
-            ch = cptr.ld1u(tlist);
-            up = schar((ch == 60 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === doup ? 1 : 0));
-            down = schar((ch == 62 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === dodown
-                    ? 1
-                    : 0));
-
-            (yield* pline(
-                __s_the_s_prefix_should_be_followed_by_a,
-                which,
-                (up || down) ? __s_other_than_up_or_down : __s_empty
-            ));
-        }
-        res = NHM.ECMD_FAIL;
-        prefix_seen = null;
-        __pc = 17;
-        continue;
-        }
-        case 19: {
-        /* we discard 'const' because some compilers seem to have
-           trouble with the pointer passed to set_occupation() */
-        func = cptr.ldPtro((tlist), $ext_func_tab_ef_funct);
-        if (cptr.ldPtro(tlist, $ext_func_tab_f_text) &&
-                !cptr.ldPtro(go, $instance_globals_o_occupation) &&
-                cptr.ldI64o(gm, $instance_globals_m_multi))
-            set_occupation(
-                func,
-                cptr.ldPtro(tlist, $ext_func_tab_f_text),
-                cptr.ldI64o(gm, $instance_globals_m_multi)
-            );
-        cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
-
-        if (!cptr.ldI32(gi) && func !== do_repeat && func !== doextcmd) {
-            if (!prefix_seen)
-                cmdq_clear(NHC.CQ_REPEAT);
-            (yield* cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct)));
-        } else {
-            if (func === doextcmd) {
-                cmdq_clear(NHC.CQ_REPEAT);
+            res = (yield* Y.icall((func)()));  /* perform the command */
+            /* if 'func' is doextcmd(), 'tlist' is for Cmd.commands['#']
+               rather than for the command that doextcmd() just ran;
+               doextcmd() notifies us what that was via ext_tlist;
+               other commands leave it Null */
+            if (cptr.ldPtro(ge, $instance_globals_e_ext_tlist)) {
+                tlist = cptr.ldPtro(ge, $instance_globals_e_ext_tlist),
+                        cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+                /* Add the command post-execution */
+                (yield* cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct)));
+                /* shift the command to first */
+                cmdq_shift(NHC.CQ_REPEAT);
             }
-        }
-        /* some commands shouldn't trigger sanity_check() because
-           if it produces output that might interfere with them;
-           note: if sanity_check is False, this has no effect */
-        if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.CMD_INSANE) >>> 0) != 0)
-            cptr.st1o(
-                iflags,
-                $instance_flags_sanity_no_check,
-                cptr.ld1so(iflags, $instance_flags_sanity_check)
-            );
-
-        res = (yield* Y.icall((func)()));  /* perform the command */
-        /* if 'func' is doextcmd(), 'tlist' is for Cmd.commands['#']
-           rather than for the command that doextcmd() just ran;
-           doextcmd() notifies us what that was via ext_tlist;
-           other commands leave it Null */
-        if (cptr.ldPtro(ge, $instance_globals_e_ext_tlist)) {
-            tlist = cptr.ldPtro(ge, $instance_globals_e_ext_tlist),
-                    cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
-            /* Add the command post-execution */
-            (yield* cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct)));
-            /* shift the command to first */
-            cmdq_shift(NHC.CQ_REPEAT);
-        }
-        if (((cptr.ldI32o(tlist, $ext_func_tab_flags) &
-                NHM.PREFIXCMD) >>> 0) != 0) { __pc = 21; continue; }
-        __pc = 22; continue;
+            if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) !=
+                    0) { __pc = 21; continue; }
+            __pc = 22; continue;
         }
         case 21: {
-        /* it was a prefix command, mark and get another cmd */
-        if ((res & NHM.ECMD_CANCEL) != 0) {
-            /* prefix commands cancel if pressed twice */
-            reset_cmd_vars(1);
-            return;
-        }
-        prefix_seen = tlist;
-        cmdq_ec = null;
-        if (func === do_reqmenu)
-            was_m_prefix = 1;
-        { __pc = 1; continue; }
+            /* it was a prefix command, mark and get another cmd */
+            if ((res & NHM.ECMD_CANCEL) != 0) {
+                /* prefix commands cancel if pressed twice */
+                reset_cmd_vars(1);
+                return;
+            }
+            prefix_seen = tlist;
+            cmdq_ec = null;
+            if (func === do_reqmenu)
+                was_m_prefix = 1;
+            { __pc = 1; continue; }
         }
         case 22: {
-        if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) &&
-                cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
-            /* not a movement command, but a move prefix earlier? */
-            ;  /* just do nothing */
-        } else if (((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 3n) != 0n) &&
-                !cptr.ld1so(svc, $context_info_travel) &&
-                !dxdy_moveok()) {
-            /* trying to move diagonally as a grid bug */
-            (yield* You_cant(__s_get_there_from_here));
-            reset_cmd_vars(1);
-            return;
-        } else if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 1n) != 0n) {
-            if (cptr.ldI64o(gm, $instance_globals_m_multi))
+            if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) &&
+                    cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
+                /* not a movement command, but a move prefix earlier? */
+                ;  /* just do nothing */
+            } else if (((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 3n) != 0n) &&
+                    !cptr.ld1so(svc, $context_info_travel) &&
+                    !dxdy_moveok()) {
+                /* trying to move diagonally as a grid bug */
+                (yield* You_cant(__s_get_there_from_here));
+                reset_cmd_vars(1);
+                return;
+            } else if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 1n) != 0n) {
+                if (cptr.ldI64o(gm, $instance_globals_m_multi))
+                    cptr.st1o(svc, $context_info_mv, 1);
+                (yield* domove());
+                cptr.st1o(svc, $context_info_forcefight, 0);
+                cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+                return;
+            } else if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n) != 0n) {
+                if (firsttime) {
+                    if (!cptr.ldI64o(gm, $instance_globals_m_multi))
+                        cptr.stI64o(gm, $instance_globals_m_multi, 80n);
+                    cptr.stI32o(u, $you_last_str_turn, 0);
+                }
                 cptr.st1o(svc, $context_info_mv, 1);
-            (yield* domove());
-            cptr.st1o(svc, $context_info_forcefight, 0);
-            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
-            return;
-        } else if ((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 2n) != 0n) {
-            if (firsttime) {
-                if (!cptr.ldI64o(gm, $instance_globals_m_multi))
-                    cptr.stI64o(gm, $instance_globals_m_multi, 80n);
-                cptr.stI32o(u, $you_last_str_turn, 0);
+                (yield* domove());
+                cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+                return;
             }
-            cptr.st1o(svc, $context_info_mv, 1);
-            (yield* domove());
-            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
-            return;
-        }
-        __pc = 20;
-        continue;
+            __pc = 20;
+            continue;
         }
         case 20: {
-        prefix_seen = null;
-        __pc = 17;
-        continue;
+            prefix_seen = null;
+            __pc = 17;
+            continue;
         }
         case 17: {
-        __pc = 14;
-        continue;
+            __pc = 14;
+            continue;
         }
         case 14: {
-        /* it is possible to have a result of (ECMD_TIME|ECMD_CANCEL)
-           [for example, using 'f'ire, manually filling quiver with
-           wielded weapon or dual-wielded swap-weapon, then cancelling
-           at the direction prompt; using time to unwield should take
-           precedence over general cancellation] */
-        if ((res & 6) != 0) {
-            /* command was canceled by user, maybe they declined to
-               pick an object to act on, or command failed to finish */
-            reset_cmd_vars(1);
-        } else if ((res & 1) == NHM.ECMD_OK) {
-            reset_cmd_vars(schar((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)));
-        }
-        /* reset_cmd_vars() sets context.move to False so we might
-           need to change it [back] to True */
-        if ((res & NHM.ECMD_TIME) != 0) {
-            cptr.st1o(svc, $context_info_move, 1);
-            if (func !== dokick) {
-                /* hero did something else than kicking a location;
-                   reset the location, so pets don't avoid it */
-                cptr.stI16(gk, 0), cptr.stI16o(gk, $nhcoord_y, 0);
+            /* it is possible to have a result of (ECMD_TIME|ECMD_CANCEL)
+               [for example, using 'f'ire, manually filling quiver with
+               wielded weapon or dual-wielded swap-weapon, then cancelling
+               at the direction prompt; using time to unwield should take
+               precedence over general cancellation] */
+            if ((res & 6) != 0) {
+                /* command was canceled by user, maybe they declined to
+                   pick an object to act on, or command failed to finish */
+                reset_cmd_vars(1);
+            } else if ((res & 1) == NHM.ECMD_OK) {
+                reset_cmd_vars(schar((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n)));
             }
-        }
-        return;
+            /* reset_cmd_vars() sets context.move to False so we might
+               need to change it [back] to True */
+            if ((res & NHM.ECMD_TIME) != 0) {
+                cptr.st1o(svc, $context_info_move, 1);
+                if (func !== dokick) {
+                    /* hero did something else than kicking a location;
+                       reset the location, so pets don't avoid it */
+                    cptr.stI16(gk, 0), cptr.stI16o(gk, $nhcoord_y, 0);
+                }
+            }
+            return;
         }
         case 12: {
-        /* if we reach here, cmd wasn't found in cmdlist[] */
-        bad_command = 1;
+            /* if we reach here, cmd wasn't found in cmdlist[] */
+            bad_command = 1;
 
-        if (bad_command) {
-            (yield* custompline(NHM.SUPPRESS_HISTORY, __s_unknown_command_s, visctrl(schar(key))));
-            cmdq_clear(NHC.CQ_CANNED);
-            cmdq_clear(NHC.CQ_REPEAT);
-            cptr.st1o(
-                iflags,
-                $instance_flags_sanity_no_check,
-                cptr.ld1so(iflags, $instance_flags_sanity_check)
-            );  /* skip sanity check */
-        }
-        /* didn't move */
-        cptr.st1o(svc, $context_info_move, 0);
-        cptr.stI64o(gm, $instance_globals_m_multi, 0n);
-        return;
+            if (bad_command) {
+                (yield* custompline(NHM.SUPPRESS_HISTORY, __s_unknown_command_s, visctrl(schar(key))));
+                cmdq_clear(NHC.CQ_CANNED);
+                cmdq_clear(NHC.CQ_REPEAT);
+                cptr.st1o(
+                    iflags,
+                    $instance_flags_sanity_no_check,
+                    cptr.ld1so(iflags, $instance_flags_sanity_check)
+                );  /* skip sanity check */
+            }
+            /* didn't move */
+            cptr.st1o(svc, $context_info_move, 0);
+            cptr.stI64o(gm, $instance_globals_m_multi, 0n);
+            return;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -6325,253 +6332,275 @@ export function* getdir(s) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        cmdq = cmdq_pop();
-        if (cmdq) { __pc = 4; continue; }
-        __pc = 3; continue;
+            cmdq = cmdq_pop();
+            if (cmdq) { __pc = 4; continue; }
+            __pc = 3; continue;
         }
         case 4: {
-        if (cptr.ldI32(cmdq) == NHC.CMDQ_DIR) {
-            if (!cptr.ld1so(cmdq, $_cmd_queue_dirz)) {
-                dirsym = cptr.ld1so(
-                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
-                    xytodir(cptr.ld1so(cmdq, $_cmd_queue_dirx), cptr.ld1so(cmdq, $_cmd_queue_diry))
-                );
+            if (cptr.ldI32(cmdq) == NHC.CMDQ_DIR) {
+                if (!cptr.ld1so(cmdq, $_cmd_queue_dirz)) {
+                    dirsym = cptr.ld1so(
+                        cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                        xytodir(
+                            cptr.ld1so(cmdq, $_cmd_queue_dirx),
+                            cptr.ld1so(cmdq, $_cmd_queue_diry)
+                        )
+                    );
+                } else {
+                    dirsym = cptr.ld1so(
+                        cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                        (cptr.ld1so(cmdq, $_cmd_queue_dirz) > 0) ? NHC.DIR_DOWN : NHC.DIR_UP
+                    );
+                }
+            } else if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
+                dirsym = cptr.ld1so(cmdq, $_cmd_queue_key);
             } else {
-                dirsym = cptr.ld1so(
-                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
-                    (cptr.ld1so(cmdq, $_cmd_queue_dirz) > 0) ? NHC.DIR_DOWN : NHC.DIR_UP
-                );
+                cmdq_clear(NHC.CQ_CANNED);
+                dirsym = 0;
+                (yield* impossible(__s_getdir_command_queue_had_no_dir));
             }
-        } else if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
-            dirsym = cptr.ld1so(cmdq, $_cmd_queue_key);
-        } else {
-            cmdq_clear(NHC.CQ_CANNED);
-            dirsym = 0;
-            (yield* impossible(__s_getdir_command_queue_had_no_dir));
-        }
-        cptr.free(cmdq);
-        { __pc = 2; continue; }
+            cptr.free(cmdq);
+            { __pc = 2; continue; }
         }
         case 3: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* retry: */: {
-        cptr.stI32o(program_state, $sinfo_input_state, NHC.getdirInp);
-        if (cptr.ldI32(gi) || cptr.ld1s(readchar_queue)) {
-            dirsym = (yield* readchar());
-        } else {
-            dirsym = (yield* yn_function((s && cptr.ld1s(s) != 94) ? s : __s_in_what_direction, null, 0, 0));
+            cptr.stI32o(program_state, $sinfo_input_state, NHC.getdirInp);
+            if (cptr.ldI32(gi) || cptr.ld1s(readchar_queue)) {
+                dirsym = (yield* readchar());
+            } else {
+                dirsym = (yield* yn_function(
+                    (s && cptr.ld1s(s) != 94) ? s : __s_in_what_direction,
+                    null,
+                    0,
+                    0
+                ));
 
-            /* for the fuzzer, usually force the result to be a valid direction,
-               but sometimes let it exercise the invalid direction code; we
-               don't try to enforce no-diagonal for hero in grid bug form since
-               things like '^' to look at adjacent trap shouldn't be bound by
-               that (caller is expected to handle situations where it matters) */
-            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2(20)) {
-                switch (rn2(20)) {
-                    case 0:
-                    dirsym = cptr.ld1so2(
-                        gc,
-                        rn2(2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC,
-                        1,
-                        $instance_globals_c_Cmd + $cmd_spkeys
-                    );
-                    break;
-                    case 1:
-                    dirsym = cptr.ld1so(
-                        cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
-                        rn2(2) ? NHC.DIR_DOWN : NHC.DIR_UP
-                    );
-                    break;
-                    default:
-                    dirsym = cptr.ld1so(
-                        cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
-                        rn2(((NHC.N_DIRS_Z - 2) | 0))
-                    );
-                    break;
+                /* for the fuzzer, usually force the result to be a valid direction,
+                   but sometimes let it exercise the invalid direction code; we
+                   don't try to enforce no-diagonal for hero in grid bug form since
+                   things like '^' to look at adjacent trap shouldn't be bound by
+                   that (caller is expected to handle situations where it matters) */
+                if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2(20)) {
+                    switch (rn2(20)) {
+                        case 0:
+                            dirsym = cptr.ld1so2(
+                                gc,
+                                rn2(2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC,
+                                1,
+                                $instance_globals_c_Cmd + $cmd_spkeys
+                            );
+                            break;
+                        case 1:
+                            dirsym = cptr.ld1so(
+                                cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                                rn2(2) ? NHC.DIR_DOWN : NHC.DIR_UP
+                            );
+                            break;
+                        default:
+                            dirsym = cptr.ld1so(
+                                cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                                rn2(((NHC.N_DIRS_Z - 2) | 0))
+                            );
+                            break;
+                    }
                 }
             }
-        }
-        /* remove the prompt string so caller won't have to */
-        (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
-        if (redraw_cmd(dirsym)) { __pc = 6; continue; }
-        __pc = 5; continue;
+            /* remove the prompt string so caller won't have to */
+            (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
+            if (redraw_cmd(dirsym)) { __pc = 6; continue; }
+            __pc = 5; continue;
         }
         case 6: {
-        (yield* docrt_flags(NHC.docrtRefresh));  /* redraw */
-        { __pc = 1; continue; }
+            (yield* docrt_flags(NHC.docrtRefresh));  /* redraw */
+            { __pc = 1; continue; }
         }
         case 5: {
-        if (!cptr.ldI32(gi))
-            (yield* cmdq_add_key(NHC.CQ_REPEAT, dirsym));
-        __pc = 2;
-        continue;
+            if (!cptr.ldI32(gi))
+                (yield* cmdq_add_key(NHC.CQ_REPEAT, dirsym));
+            __pc = 2;
+            continue;
         }
         case 2 /* got_dirsym: */: {
-        if (dirsym ==
-            cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys) ||
-                dirsym ==
-                    cptr.ld1so2(
-                        gc,
-                        NHC.NHKF_GETDIR_SELF2,
-                        1,
-                        $instance_globals_c_Cmd + $cmd_spkeys
-                    )) { __pc = 8; continue; }
-        __pc = 9; continue;
+            if (dirsym ==
+                cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys) ||
+                    dirsym ==
+                        cptr.ld1so2(
+                            gc,
+                            NHC.NHKF_GETDIR_SELF2,
+                            1,
+                            $instance_globals_c_Cmd + $cmd_spkeys
+                        )) { __pc = 8; continue; }
+            __pc = 9; continue;
         }
         case 8: {
-        cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
-        __pc = 7;
-        continue;
+            cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
+            __pc = 7;
+            continue;
         }
         case 9: {
-        if (dirsym ==
-                cptr.ld1so2(
-                    gc,
-                    NHC.NHKF_GETDIR_MOUSE,
-                    1,
-                    $instance_globals_c_Cmd + $cmd_spkeys
-                )) { __pc = 11; continue; }
-        __pc = 12; continue;
+            if (dirsym ==
+                    cptr.ld1so2(
+                        gc,
+                        NHC.NHKF_GETDIR_MOUSE,
+                        1,
+                        $instance_globals_c_Cmd + $cmd_spkeys
+                    )) { __pc = 11; continue; }
+            __pc = 12; continue;
         }
         case 11: {
-        qbuf = new Uint8Array(128);
-        cc = cptr.alloc(4);
+            qbuf = new Uint8Array(128);
+            cc = cptr.alloc(4);
 
-        /*
-         * For #therecmdmenu:
-         * Player has entered the 'simulated mouse' key ('_' by default)
-         * at the "which direction?" prompt so we use getpos() to get a
-         * simulated click after moving cursor to the desired location.
-         *
-         * getpos() returns 0..3 for period, comma, semi-colon, colon.
-         * We treat "," as left click and "." as right click due to
-         * their positions relative to each other on the keyboard.
-         * Using ";" as synonym for "," and ":" for "." is due to their
-         * shapes rather than to their keyboard location.
-         *
-         * Those keys aren't separately bindable for being treated as
-         * clicks but we do honor their getpos bindings if player has
-         * changed them.  (Bound values might have scrambled keyboard
-         * locations relative to each other so ruin the memory aid of
-         * "," being left of ".".)
-         */
-        void cptr.sprintf(
-            cptr.decay(qbuf),
-            __s_desired_location_then_type_s_for_left,
-            visctrl(cptr.ld1so2(
-                gc,
-                NHC.NHKF_GETPOS_PICK_Q,
-                1,
-                $instance_globals_c_Cmd + $cmd_spkeys
-            )),
-            visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys))
-        );
-        cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* starting cursor location for getpos() */
-        pos = (yield* getpos(cc, 1, cptr.decay(qbuf)));
+            /*
+             * For #therecmdmenu:
+             * Player has entered the 'simulated mouse' key ('_' by default)
+             * at the "which direction?" prompt so we use getpos() to get a
+             * simulated click after moving cursor to the desired location.
+             *
+             * getpos() returns 0..3 for period, comma, semi-colon, colon.
+             * We treat "," as left click and "." as right click due to
+             * their positions relative to each other on the keyboard.
+             * Using ";" as synonym for "," and ":" for "." is due to their
+             * shapes rather than to their keyboard location.
+             *
+             * Those keys aren't separately bindable for being treated as
+             * clicks but we do honor their getpos bindings if player has
+             * changed them.  (Bound values might have scrambled keyboard
+             * locations relative to each other so ruin the memory aid of
+             * "," being left of ".".)
+             */
+            void cptr.sprintf(
+                cptr.decay(qbuf),
+                __s_desired_location_then_type_s_for_left,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_Q,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
+            cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* starting cursor location for getpos() */
+            pos = (yield* getpos(cc, 1, cptr.decay(qbuf)));
 
-        if (pos < 0) {
-            /* ESC or other rejection */
-            cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
-            mod = 0;  /* neither CLICK_1 nor CLICK_2 */
-        } else {
-            /* caller expects simulated click to be relative to hero's spot */
-            cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) - cptr.ldI16(u)) | 0);
-            cptr.stI32o(u, $you_dy, (cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0);
-            /* non-zero getdir_click actually means ok to click farther than
-               one spot away from hero; adjacent click is always allowed */
-            if (!cptr.ldI32o(iflags, $instance_flags_getdir_click)) {
-                cptr.stI32o(u, $you_dx, sgn(cptr.ldI32o(u, $you_dx)));
-                cptr.stI32o(u, $you_dy, sgn(cptr.ldI32o(u, $you_dy)));
-            }
-            cptr.stI32o(u, $you_dz, 0);
-
-            switch ((pos + NHC.NHKF_GETPOS_PICK) | 0) {
-                case NHC.NHKF_GETPOS_PICK_Q:
-                case NHC.NHKF_GETPOS_PICK_O:
-                mod = NHM.CLICK_1;
-                break;
-                case NHC.NHKF_GETPOS_PICK:
-                case NHC.NHKF_GETPOS_PICK_V:
-                mod = NHM.CLICK_2;
-                break;
-                default:
-                /* could plug in bound values for spkeys[NHKF_GETPOS_PICK],&c
-                   but that feels like overkill for something which should
-                   never happen; just show their default values */
-                (yield* impossible(__s_getpos_successful_but_not_one_of_d, pos));
+            if (pos < 0) {
+                /* ESC or other rejection */
+                cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, cptr.stI32o(u, $you_dz, 0)));
                 mod = 0;  /* neither CLICK_1 nor CLICK_2 */
-                pos = -1;  /* return failure */
-                break;
+            } else {
+                /* caller expects simulated click to be relative to hero's spot */
+                cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) - cptr.ldI16(u)) | 0);
+                cptr.stI32o(
+                    u,
+                    $you_dy,
+                    (cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0
+                );
+                /* non-zero getdir_click actually means ok to click farther than
+                   one spot away from hero; adjacent click is always allowed */
+                if (!cptr.ldI32o(iflags, $instance_flags_getdir_click)) {
+                    cptr.stI32o(u, $you_dx, sgn(cptr.ldI32o(u, $you_dx)));
+                    cptr.stI32o(u, $you_dy, sgn(cptr.ldI32o(u, $you_dy)));
+                }
+                cptr.stI32o(u, $you_dz, 0);
+
+                switch ((pos + NHC.NHKF_GETPOS_PICK) | 0) {
+                    case NHC.NHKF_GETPOS_PICK_Q:
+                    case NHC.NHKF_GETPOS_PICK_O:
+                        mod = NHM.CLICK_1;
+                        break;
+                    case NHC.NHKF_GETPOS_PICK:
+                    case NHC.NHKF_GETPOS_PICK_V:
+                        mod = NHM.CLICK_2;
+                        break;
+                    default:
+                        /* could plug in bound values for spkeys[NHKF_GETPOS_PICK],&c
+                           but that feels like overkill for something which should
+                           never happen; just show their default values */
+                        (yield* impossible(__s_getpos_successful_but_not_one_of_d, pos));
+                        mod = 0;  /* neither CLICK_1 nor CLICK_2 */
+                        pos = -1;  /* return failure */
+                        break;
+                }
             }
-        }
-        if (cptr.ldI32o(iflags, $instance_flags_getdir_click))
-            cptr.stI32o(iflags, $instance_flags_getdir_click, mod);
-        return (pos >= 0);
+            if (cptr.ldI32o(iflags, $instance_flags_getdir_click))
+                cptr.stI32o(iflags, $instance_flags_getdir_click, mod);
+            return (pos >= 0);
         }
         case 12: {
-        if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) &&
-                !cptr.ldI32o(u, $you_dz)) { __pc = 14; continue; }
-        __pc = 15; continue;
+            if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) &&
+                    !cptr.ldI32o(u, $you_dz)) { __pc = 14; continue; }
+            __pc = 15; continue;
         }
         case 14: {
-        did_help = 0;
-        if (!cptr.strchr(cptr.decay(quitchars), dirsym)) { __pc = 17; continue; }
-        __pc = 16; continue;
+            did_help = 0;
+            if (!cptr.strchr(cptr.decay(quitchars), dirsym)) { __pc = 17; continue; }
+            __pc = 16; continue;
         }
         case 17: {
-        help_requested = schar((dirsym ==
-                cptr.ld1so2(gc, NHC.NHKF_GETDIR_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
-        if (help_requested ||
-                cptr.ld1so(iflags, $instance_flags_cmdassist)) { __pc = 19; continue; }
-        __pc = 18; continue;
+            help_requested = schar((dirsym ==
+                    cptr.ld1so2(
+                        gc,
+                        NHC.NHKF_GETDIR_HELP,
+                        1,
+                        $instance_globals_c_Cmd + $cmd_spkeys
+                    )));
+            if (help_requested ||
+                    cptr.ld1so(iflags, $instance_flags_cmdassist)) { __pc = 19; continue; }
+            __pc = 18; continue;
         }
         case 19: {
-        did_help = (yield* help_dir(
-            schar(((s && cptr.ld1s(s) == 94) ? dirsym : 0)),
-            uchar(cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)),
-            help_requested ? null : __s_invalid_direction_key
-        ));
-        if (help_requested) { __pc = 21; continue; }
-        __pc = 20; continue;
+            did_help = (yield* help_dir(
+                schar(((s && cptr.ld1s(s) == 94) ? dirsym : 0)),
+                uchar(cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)),
+                help_requested ? null : __s_invalid_direction_key
+            ));
+            if (help_requested) { __pc = 21; continue; }
+            __pc = 20; continue;
         }
         case 21: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 20: {
-        __pc = 18;
-        continue;
+            __pc = 18;
+            continue;
         }
         case 18: {
-        if (!did_help)
-            (yield* pline(__s_what_a_strange_direction));
-        __pc = 16;
-        continue;
+            if (!did_help)
+                (yield* pline(__s_what_a_strange_direction));
+            __pc = 16;
+            continue;
         }
         case 16: {
-        return 0;
-        }
-        case 15: {
-        if (is_mov && !dxdy_moveok()) {
-            (yield* You_cant(__s_orient_yourself_that_direction));
             return 0;
         }
-        __pc = 13;
-        continue;
+        case 15: {
+            if (is_mov && !dxdy_moveok()) {
+                (yield* You_cant(__s_orient_yourself_that_direction));
+                return 0;
+            }
+            __pc = 13;
+            continue;
         }
         case 13: {
-        __pc = 10;
-        continue;
+            __pc = 10;
+            continue;
         }
         case 10: {
-        __pc = 7;
-        continue;
+            __pc = 7;
+            continue;
         }
         case 7: {
-        if (!cptr.ldI32o(u, $you_dz))
-            confdir(0);
-        return 1;
+            if (!cptr.ldI32o(u, $you_dz))
+                confdir(0);
+            return 1;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -6978,14 +7007,8 @@ function* there_cmd_menu_self(win, x, y, act) {
         (yield* mcmd_addmenu(win, NHC.MCMD_DISMOUNT, cptr.decay(buf))), ++K;
     }
 
-    if ((cptr.ldPtro3(
-        svl,
-        x,
-        168,
-        y,
-        8,
-        $instance_globals_saved_l_level + $dlevel_t_objects
-    ) !== null)) {
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !==
+            null)) {
         let otmp = cptr.ldPtro3(
             svl,
             x,
@@ -7070,8 +7093,8 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_flags
-        ) & 31) |
-                0;
+        ) &
+                31) | 0;
 
         if ((dm & 12)) {
             (yield* mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __s_open_the_door)), ++K;
@@ -7222,185 +7245,185 @@ function* act_on_act(act, dx, dy) {
         case NHC.MCMD_THROW_OBJ:
         case NHC.MCMD_TRAVEL:
         case NHC.MCMD_LOOK_AT:
-        /* keep dx,dy as-is */
-        break;
+            /* keep dx,dy as-is */
+            break;
         default:
-        /* force dx and dy to be +1, 0, or -1 */
-        dx = i16(sgn(dx));
-        dy = i16(sgn(dy));
-        break;
+            /* force dx and dy to be +1, 0, or -1 */
+            dx = i16(sgn(dx));
+            dy = i16(sgn(dy));
+            break;
     }
 
     switch (act) {
         case NHC.MCMD_TRAVEL:
-        /* FIXME: player has explicitly picked "travel to this location"
-           from the menu but it will only work if flags.travelcmd is True.
-           That option is intended as way to guard against stray mouse
-           clicks and shouldn't inhibit explicit travel. */
-        cptr.stI16o(
-            iflags,
-            $instance_flags_travelcc,
-            cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + dx) | 0)))
-        );
-        cptr.stI16o(
-            iflags,
-            $instance_flags_travelcc + $nhcoord_y,
-            cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0)))
-        );
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dotravel_target));
-        break;
+            /* FIXME: player has explicitly picked "travel to this location"
+               from the menu but it will only work if flags.travelcmd is True.
+               That option is intended as way to guard against stray mouse
+               clicks and shouldn't inhibit explicit travel. */
+            cptr.stI16o(
+                iflags,
+                $instance_flags_travelcc,
+                cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + dx) | 0)))
+            );
+            cptr.stI16o(
+                iflags,
+                $instance_flags_travelcc + $nhcoord_y,
+                cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0)))
+            );
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dotravel_target));
+            break;
         case NHC.MCMD_THROW_OBJ:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dothrow));
-        (yield* cmdq_add_userinput(NHC.CQ_CANNED));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dothrow));
+            (yield* cmdq_add_userinput(NHC.CQ_CANNED));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
         case NHC.MCMD_OPEN_DOOR:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doopen));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doopen));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
         case NHC.MCMD_LOCK_DOOR:
-        otmp = carrying(NHC.SKELETON_KEY);
-        if (!otmp)
-            otmp = carrying(NHC.LOCK_PICK);
-        if (!otmp)
-            otmp = carrying(NHC.CREDIT_CARD);
-        if (otmp) {
-            (yield* cmdq_add_ec(NHC.CQ_CANNED, doapply));
-            (yield* cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet)));
-            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Lock it?" */
-        }
-        break;
+            otmp = carrying(NHC.SKELETON_KEY);
+            if (!otmp)
+                otmp = carrying(NHC.LOCK_PICK);
+            if (!otmp)
+                otmp = carrying(NHC.CREDIT_CARD);
+            if (otmp) {
+                (yield* cmdq_add_ec(NHC.CQ_CANNED, doapply));
+                (yield* cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet)));
+                (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+                (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Lock it?" */
+            }
+            break;
         case NHC.MCMD_UNTRAP_DOOR:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dountrap));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
-        case NHC.MCMD_KICK_DOOR:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dokick));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
-        case NHC.MCMD_CLOSE_DOOR:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doclose));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
-        case NHC.MCMD_SEARCH:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dosearch));
-        break;
-        case NHC.MCMD_LOOK_TRAP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doidtrap));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
-        case NHC.MCMD_UNTRAP_TRAP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dountrap));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
-        case NHC.MCMD_MOVE_DIR:
-        dir = xytodir(dx, dy);
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
-        break;
-        case NHC.MCMD_RIDE:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doride));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
-        case NHC.MCMD_REMOVE_SADDLE:
-        /* m-prefix for #loot: skip any floor containers */
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu));
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doloot));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Do you want to remove saddle? */
-        break;
-        case NHC.MCMD_APPLY_SADDLE:
-        if ((otmp = carrying(NHC.SADDLE)) !== null) {
-            (yield* cmdq_add_ec(NHC.CQ_CANNED, doapply));
-            (yield* cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet)));
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dountrap));
             (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        }
-        break;
+            break;
+        case NHC.MCMD_KICK_DOOR:
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dokick));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
+        case NHC.MCMD_CLOSE_DOOR:
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doclose));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
+        case NHC.MCMD_SEARCH:
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dosearch));
+            break;
+        case NHC.MCMD_LOOK_TRAP:
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doidtrap));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
+        case NHC.MCMD_UNTRAP_TRAP:
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dountrap));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
+        case NHC.MCMD_MOVE_DIR:
+            dir = xytodir(dx, dy);
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
+            break;
+        case NHC.MCMD_RIDE:
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doride));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
+        case NHC.MCMD_REMOVE_SADDLE:
+            /* m-prefix for #loot: skip any floor containers */
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu));
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doloot));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Do you want to remove saddle? */
+            break;
+        case NHC.MCMD_APPLY_SADDLE:
+            if ((otmp = carrying(NHC.SADDLE)) !== null) {
+                (yield* cmdq_add_ec(NHC.CQ_CANNED, doapply));
+                (yield* cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet)));
+                (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            }
+            break;
         case NHC.MCMD_ATTACK_NEXT2U:
-        dir = xytodir(dx, dy);
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
-        break;
+            dir = xytodir(dx, dy);
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
+            break;
         case NHC.MCMD_TALK:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dotalk));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dotalk));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));
+            break;
         case NHC.MCMD_NAME:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, docallcmd));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 109));  /* name a monster */
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));  /* getpos() uses u.ux+dx,u.uy+dy */
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, docallcmd));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 109));  /* name a monster */
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, schar(dx), schar(dy), 0));  /* getpos() uses u.ux+dx,u.uy+dy */
+            break;
         case NHC.MCMD_QUAFF:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrink));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Drink from the fountain?" */
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrink));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Drink from the fountain?" */
+            break;
         case NHC.MCMD_DIP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dodip));
-        (yield* cmdq_add_userinput(NHC.CQ_CANNED));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Dip foo into the fountain?" */
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dodip));
+            (yield* cmdq_add_userinput(NHC.CQ_CANNED));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "Dip foo into the fountain?" */
+            break;
         case NHC.MCMD_SIT:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dosit));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dosit));
+            break;
         case NHC.MCMD_UP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doup));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doup));
+            break;
         case NHC.MCMD_DOWN:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dodown));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dodown));
+            break;
         case NHC.MCMD_DISMOUNT:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doride));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doride));
+            break;
         case NHC.MCMD_MONABILITY:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, domonability));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, domonability));
+            break;
         case NHC.MCMD_PICKUP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dopickup));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dopickup));
+            break;
         case NHC.MCMD_LOOT:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doloot));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doloot));
+            break;
         case NHC.MCMD_TIP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dotip));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "There is foo here; tip it?" */
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dotip));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "There is foo here; tip it?" */
+            break;
         case NHC.MCMD_EAT:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doeat));
-        (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "There is foo here; eat it?" */
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doeat));
+            (yield* cmdq_add_key(NHC.CQ_CANNED, 121));  /* "There is foo here; eat it?" */
+            break;
         case NHC.MCMD_DROP:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrop));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrop));
+            break;
         case NHC.MCMD_INVENTORY:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, ddoinv));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, ddoinv));
+            break;
         case NHC.MCMD_REST:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, donull));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, donull));
+            break;
         case NHC.MCMD_LOOK_HERE:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dolook));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dolook));
+            break;
         case NHC.MCMD_LOOK_AT:
-        cptr.stI16o(gc, $instance_globals_c_clicklook_cc, i16(((cptr.ldI16(u) + dx) | 0)));
-        cptr.stI16o(
-            gc,
-            $instance_globals_c_clicklook_cc + $nhcoord_y,
-            i16(((cptr.ldI16o(u, $you_uy) + dy) | 0))
-        );
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, doclicklook));
-        break;
+            cptr.stI16o(gc, $instance_globals_c_clicklook_cc, i16(((cptr.ldI16(u) + dx) | 0)));
+            cptr.stI16o(
+                gc,
+                $instance_globals_c_clicklook_cc + $nhcoord_y,
+                i16(((cptr.ldI16o(u, $you_uy) + dy) | 0))
+            );
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, doclicklook));
+            break;
         case NHC.MCMD_UNTRAP_HERE:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dountrap));
-        (yield* cmdq_add_dir(NHC.CQ_CANNED, 0, 0, 1));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dountrap));
+            (yield* cmdq_add_dir(NHC.CQ_CANNED, 0, 0, 1));
+            break;
         case NHC.MCMD_OFFER:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, dosacrifice));
-        (yield* cmdq_add_userinput(NHC.CQ_CANNED));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, dosacrifice));
+            (yield* cmdq_add_userinput(NHC.CQ_CANNED));
+            break;
         case NHC.MCMD_CAST_SPELL:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, docast));
-        break;
+            (yield* cmdq_add_ec(NHC.CQ_CANNED, docast));
+            break;
         default:
-        break;
+            break;
     }
 }
 
@@ -7560,7 +7583,8 @@ function* domouseaction() {
                 cptr.ldI16o(u, $you_uy),
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_objects
-            ))) !== null) {
+            ))) !==
+                    null) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, Is_container(o) ? doloot : dopickup));
                 return NHM.ECMD_OK;
             } else {
@@ -7598,7 +7622,9 @@ function* domouseaction() {
                     (cptr.ldI16o(u, $you_uy) + y) | 0,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                         NHM.D_LOCKED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, dokick));
                     return NHM.ECMD_OK;
@@ -7610,7 +7636,9 @@ function* domouseaction() {
                     (cptr.ldI16o(u, $you_uy) + y) | 0,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                         NHM.D_CLOSED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, doopen));
                     return NHM.ECMD_OK;
@@ -7785,7 +7813,8 @@ function* parse() {
     } else if (cptr.ldI32(gi)) {
         cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
     } else if (foo &&
-            (bind = cmdbind_get(uchar((foo & 255)))) !== null && bind &&
+            (bind = cmdbind_get(uchar((foo & 255)))) !== null &&
+            bind &&
             cptr.ldPtro(bind, $Cmd_bind_cmd) &&
             (cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === do_repeat ||
                 cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) ===
@@ -7803,8 +7832,7 @@ function* parse() {
             gm,
             $instance_globals_m_multi,
             cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
-        )) -
-                (-1n);
+        )) - (-1n);
 
     cptr.stI32o(gc, $instance_globals_c_cmd_key, foo);
     (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
@@ -7828,8 +7856,11 @@ export function* hangup(sig_unused) {
        protects against losing objects in the process of being thrown,
        but also potentially riskier because the disconnected program
        must continue running longer before attempting a hangup save. */
-    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) -
-            (1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_done_hup,
+        cptr.ldI32o(program_state, $sinfo_done_hup) + 1
+    )) - (1);
     /* defer hangup iff game appears to be in progress */
     if (cptr.ldI32o(program_state, $sinfo_in_moveloop) &&
             cptr.ldI32o(program_state, $sinfo_something_worth_saving))
@@ -8212,7 +8243,8 @@ export function* yn_function(query, resp, def, addcmdq) {
 
         /* for the fuzzer, usually force a valid response, but sometimes let
            it exercise windowport yn_function and invalid response handling */
-    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp &&
+    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) &&
+            resp &&
             cptr.ld1s(resp) &&
             rn2(20)) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));

@@ -134,17 +134,17 @@ function dumpConstants(D, f) {
         dumpByte(D, tt);
         switch (tt) {
             case 19:
-            dumpNumber(D, (cptr.ldF64(((o)))));
-            break;
+                dumpNumber(D, (cptr.ldF64(((o)))));
+                break;
             case 3:
-            dumpInteger(D, (cptr.ldI64(((o)))));
-            break;
+                dumpInteger(D, (cptr.ldI64(((o)))));
+                break;
             case 4:
             case 20:
-            dumpString(D, ((((((cptr.ldPtr(((o))))))))));
-            break;
+                dumpString(D, ((((((cptr.ldPtr(((o))))))))));
+                break;
             default:
-            (void 0);
+                (void 0);
         }
     }
 }

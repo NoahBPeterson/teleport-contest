@@ -873,26 +873,34 @@ function* nhl_gettrap(L) {
             (yield* nhl_add_table_entry_bool(L, __s_once, schar((cptr.ldI32o(ttmp, $trap_once) & 1))));
             switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
                 case NHC.SQKY_BOARD:
-                (yield* nhl_add_table_entry_int(L, __s_tnote, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
-                break;
+                    (yield* nhl_add_table_entry_int(L, __s_tnote, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
+                    break;
                 case NHC.ROLLING_BOULDER_TRAP:
-                (yield* nhl_add_table_entry_int(L, __s_launchx, BigInt(cptr.ldI16o(ttmp, $trap_launch))));
-                (yield* nhl_add_table_entry_int(
-                    L,
-                    __s_launchy,
-                    BigInt(cptr.ldI16o(ttmp, $trap_launch + $nhcoord_y))
-                ));
-                (yield* nhl_add_table_entry_int(L, __s_launch2x, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
-                (yield* nhl_add_table_entry_int(
-                    L,
-                    __s_launch2y,
-                    BigInt(cptr.ldI16o(ttmp, $trap_vl + $nhcoord_y))
-                ));
-                break;
+                    (yield* nhl_add_table_entry_int(
+                        L,
+                        __s_launchx,
+                        BigInt(cptr.ldI16o(ttmp, $trap_launch))
+                    ));
+                    (yield* nhl_add_table_entry_int(
+                        L,
+                        __s_launchy,
+                        BigInt(cptr.ldI16o(ttmp, $trap_launch + $nhcoord_y))
+                    ));
+                    (yield* nhl_add_table_entry_int(L, __s_launch2x, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
+                    (yield* nhl_add_table_entry_int(
+                        L,
+                        __s_launch2y,
+                        BigInt(cptr.ldI16o(ttmp, $trap_vl + $nhcoord_y))
+                    ));
+                    break;
                 case NHC.PIT:
                 case NHC.SPIKED_PIT:
-                (yield* nhl_add_table_entry_int(L, __s_conjoined, BigInt(cptr.ld1uo(ttmp, $trap_vl) >>> 0)));
-                break;
+                    (yield* nhl_add_table_entry_int(
+                        L,
+                        __s_conjoined,
+                        BigInt(cptr.ld1uo(ttmp, $trap_vl) >>> 0)
+                    ));
+                    break;
             }
             return 1;
         } else {
@@ -1094,7 +1102,8 @@ function* nhl_getmap(L) {
                 y.v,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) >>> 0)
+            ) &
+                63) >>> 0)
         ));
         (yield* nhl_add_table_entry_bool(
             L,
@@ -1147,7 +1156,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) ==
+                ) &
+                    31) |
+                    0) ==
                     NHM.D_NODOOR))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1160,7 +1171,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.D_BROKEN))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1173,7 +1186,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.D_ISOPEN))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1186,7 +1201,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.D_CLOSED))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1199,7 +1216,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.D_LOCKED))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1212,7 +1231,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.D_TRAPPED))
             ));
         } else if (((cptr.ld1so3(
@@ -1235,7 +1256,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.AM_SHRINE))
             ));
         } else if (((cptr.ld1so3(
@@ -1257,7 +1280,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.T_LOOTED))
             ));
         } else if (cptr.ld1so3(
@@ -1279,7 +1304,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.TREE_LOOTED))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1292,7 +1319,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.TREE_SWARM))
             ));
         } else if (((cptr.ld1so3(
@@ -1314,7 +1343,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.F_LOOTED))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1327,7 +1358,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.F_WARNED))
             ));
         } else if (((cptr.ld1so3(
@@ -1349,7 +1382,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.S_LPUDDING))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1362,7 +1397,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.S_LDWASHER))
             ));
             (yield* nhl_add_table_entry_bool(
@@ -1375,7 +1412,9 @@ function* nhl_getmap(L) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.S_LRING))
             ));
         }
@@ -3094,17 +3133,17 @@ function* nhl_push_anything(L, anytype, src) {
 
     switch (anytype) {
         case NHC.ANY_INT:
-        cptr.stI32(any, cptr.ldI32(src));
-        (yield* lua_pushinteger(L, BigInt(cptr.ldI32(any))));
-        break;
+            cptr.stI32(any, cptr.ldI32(src));
+            (yield* lua_pushinteger(L, BigInt(cptr.ldI32(any))));
+            break;
         case NHC.ANY_UCHAR:
-        cptr.st1(any, cptr.ld1u(src));
-        (yield* lua_pushinteger(L, BigInt(cptr.ld1u(any) >>> 0)));
-        break;
+            cptr.st1(any, cptr.ld1u(src));
+            (yield* lua_pushinteger(L, BigInt(cptr.ld1u(any) >>> 0)));
+            break;
         case NHC.ANY_SCHAR:
-        cptr.st1(any, cptr.ld1s(src));
-        (yield* lua_pushinteger(L, BigInt(cptr.ld1s(any))));
-        break;
+            cptr.st1(any, cptr.ld1s(src));
+            (yield* lua_pushinteger(L, BigInt(cptr.ld1s(any))));
+            break;
     }
     return 1;
 }
@@ -3347,7 +3386,8 @@ export function* nhl_pcall(L, nargs, nresults, name) {
         let ic = BigInt((Math.imul(
             cptr.ldI32o(nud.v, $nhl_user_data_statctr),
             NHM.NHL_SB_STEPSIZE
-        ) >>> 0) >>> 0);  // an approximation
+        ) >>>
+                0) >>> 0);  // an approximation
         (yield* livelog_printf(
             32768n,
             __s_luastats_pcal_d_s_ld,
@@ -3387,27 +3427,27 @@ export function* nhl_pcall_handle(L, nargs, nresults, name, npa) {
         /* XXX can we get a lua stack trace as well? */
         switch (npa) {
             case NHC.NHLpa_panic:
-            (yield* panic(
-                __s_lua_error_d_s_s,
-                cptr.ldI32o(nud.v, $nhl_user_data_sid),
-                cptr.ldPtro(nud.v, $nhl_user_data_name)
-                    ? cptr.ldPtro(nud.v, $nhl_user_data_name)
-                    : __s_unknown,
-                (yield* lua_tolstring(L, -1, null))
-            ));
-            /*NOTREACHED*/
-            break;
+                (yield* panic(
+                    __s_lua_error_d_s_s,
+                    cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                    cptr.ldPtro(nud.v, $nhl_user_data_name)
+                        ? cptr.ldPtro(nud.v, $nhl_user_data_name)
+                        : __s_unknown,
+                    (yield* lua_tolstring(L, -1, null))
+                ));
+                /*NOTREACHED*/
+                break;
             case NHC.NHLpa_impossible:
-            (yield* impossible(
-                __s_lua_error_d_s_s__2,
-                cptr.ldI32o(nud.v, $nhl_user_data_sid),
-                cptr.ldPtro(nud.v, $nhl_user_data_name)
-                    ? cptr.ldPtro(nud.v, $nhl_user_data_name)
-                    : __s_unknown,
-                (yield* lua_tolstring(L, -1, null))
-            ));
-            /* Drop the error.  If the caller cares, use nhl_pcall(). */
-            (yield* lua_settop(L, -2));
+                (yield* impossible(
+                    __s_lua_error_d_s_s__2,
+                    cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                    cptr.ldPtro(nud.v, $nhl_user_data_name)
+                        ? cptr.ldPtro(nud.v, $nhl_user_data_name)
+                        : __s_unknown,
+                    (yield* lua_tolstring(L, -1, null))
+                ));
+                /* Drop the error.  If the caller cares, use nhl_pcall(). */
+                (yield* lua_settop(L, -2));
         }
     }
     return rv;
@@ -3603,7 +3643,8 @@ export function* nhl_done(L) {
                 let ic = BigInt((Math.imul(
                     cptr.ldI32o(nud.v, $nhl_user_data_statctr),
                     NHM.NHL_SB_STEPSIZE
-                ) >>> 0) >>> 0);  // an approximation
+                ) >>>
+                        0) >>> 0);  // an approximation
                 (yield* livelog_printf(
                     32768n,
                     __s_luastats_done_d_s_ld,
@@ -4083,8 +4124,11 @@ function nhl_hookfn(L, ar) {
         $nhl_user_data_steps,
         (cptr.ldI32o(nud.v, $nhl_user_data_steps) - NHM.NHL_SB_STEPSIZE) | 0
     );
-    (cptr.stI32o(nud.v, $nhl_user_data_statctr, cptr.ldI32o(nud.v, $nhl_user_data_statctr) + 1)) -
-            (1);
+    (cptr.stI32o(
+        nud.v,
+        $nhl_user_data_statctr,
+        cptr.ldI32o(nud.v, $nhl_user_data_statctr) + 1
+    )) - (1);
 }
 
 /**

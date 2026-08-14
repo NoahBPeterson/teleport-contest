@@ -452,8 +452,7 @@ function makemap_unmakemon(mtmp, migratory) {
                 ndx,
                 $sizeof_mvitals,
                 $instance_globals_saved_m_mvitals + $mvitals_mvflags
-            ) &
-                -2
+            ) & -2
         );
     if (cptr.ld1uo2(svm, ndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals))
         (cptr.st1o2(
@@ -462,8 +461,7 @@ function makemap_unmakemon(mtmp, migratory) {
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals,
             cptr.ld1uo2(svm, ndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals) + -1
-        )) -
-                (-1);
+        )) - (-1);
 
     /* vault is going away; get rid of guard who might be in play or
        be parked at <0,0>; for the latter, might already be flagged as
@@ -605,8 +603,7 @@ export function wiz_map() {
                 a11y,
                 $accessibility_data_mon_notices_blocked,
                 cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
-            )) -
-                    (1);
+            )) - (1);
         }
         cptr.stI64o2(
             u,
@@ -628,7 +625,8 @@ export function wiz_map() {
                 a11y,
                 $accessibility_data_mon_notices_blocked,
                 cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1
-            ) < 0) {
+            ) <
+                    0) {
                 impossible(__s_mon_notices_blocked_0);
                 cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
             }
@@ -989,7 +987,8 @@ export function wiz_telekinesis() {
             cptr.ldI16o(cc, $nhcoord_y),
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ))) !== null) &&
+        ))) !==
+            null) &&
             canspotmon(mtmp)) ||
                 ((cptr.ldI16(cc)) == cptr.ldI16(u) &&
                     (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
@@ -1090,8 +1089,7 @@ export function wiz_show_seenv() {
                     y,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_seenv
-                ) &
-                        255;
+                ) & 255;
                 if (v == 0)
                     cptr.st1o(
                         cptr.decay(row),
@@ -1550,7 +1548,8 @@ export function wiz_smell() {
             cptr.ldI16o(cc, $nhcoord_y),
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ))) !== null) {
+        ))) !==
+                null) {
             mptr = cptr.ldPtro(mtmp, $monst_data);
         } else {
             mptr = null;
@@ -1664,79 +1663,107 @@ export function wiz_intrinsic() {
                 case NHC.SICK:
                 case NHC.SLIMED:
                 case NHC.STONED:
-                if (oldtimeout > 0n && newtimeout > oldtimeout)
-                    newtimeout = oldtimeout;
-                break;
+                    if (oldtimeout > 0n && newtimeout > oldtimeout)
+                        newtimeout = oldtimeout;
+                    break;
             }
 
             switch (p.v) {
                 case NHC.BLINDED:
-                make_blinded(newtimeout, 1);
-                break;
+                    make_blinded(newtimeout, 1);
+                    break;
                 case NHC.DEAF:
-                make_deaf(newtimeout, 1);
-                break;
+                    make_deaf(newtimeout, 1);
+                    break;
                 case NHC.HALLUC:
-                make_hallucinated(newtimeout, 1, 0n);
-                break;
+                    make_hallucinated(newtimeout, 1, 0n);
+                    break;
                 case NHC.SICK:
-                typ = !rn2(2) ? NHM.SICK_VOMITABLE : NHM.SICK_NONVOMITABLE;
-                make_sick(newtimeout, cptr.decay(__static_wiz_intrinsic_wizintrinsic), 1, typ);
-                break;
+                    typ = !rn2(2) ? NHM.SICK_VOMITABLE : NHM.SICK_NONVOMITABLE;
+                    make_sick(newtimeout, cptr.decay(__static_wiz_intrinsic_wizintrinsic), 1, typ);
+                    break;
                 case NHC.SLIMED:
-                void cptr.sprintf(
-                    cptr.decay(buf),
-                    cptr.decay(__static_wiz_intrinsic_fmt),
-                    !Slimed() ? __s_empty : __s_still,
-                    __s_turning_into_slime
-                );
-                make_slimed(newtimeout, cptr.decay(buf));
-                break;
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        cptr.decay(__static_wiz_intrinsic_fmt),
+                        !Slimed() ? __s_empty : __s_still,
+                        __s_turning_into_slime
+                    );
+                    make_slimed(newtimeout, cptr.decay(buf));
+                    break;
                 case NHC.STONED:
-                void cptr.sprintf(
-                    cptr.decay(buf),
-                    cptr.decay(__static_wiz_intrinsic_fmt),
-                    !Stoned() ? __s_empty : __s_still,
-                    __s_turning_into_stone
-                );
-                make_stoned(
-                    newtimeout,
-                    cptr.decay(buf),
-                    NHM.KILLED_BY,
-                    cptr.decay(__static_wiz_intrinsic_wizintrinsic)
-                );
-                break;
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        cptr.decay(__static_wiz_intrinsic_fmt),
+                        !Stoned() ? __s_empty : __s_still,
+                        __s_turning_into_stone
+                    );
+                    make_stoned(
+                        newtimeout,
+                        cptr.decay(buf),
+                        NHM.KILLED_BY,
+                        cptr.decay(__static_wiz_intrinsic_wizintrinsic)
+                    );
+                    break;
                 case NHC.STUNNED:
-                make_stunned(newtimeout, 1);
-                break;
+                    make_stunned(newtimeout, 1);
+                    break;
                 case NHC.VOMITING:
-                void cptr.sprintf(
-                    cptr.decay(buf),
-                    cptr.decay(__static_wiz_intrinsic_fmt),
-                    !Vomiting() ? __s_empty : __s_still,
-                    __s_vomiting
-                );
-                make_vomiting(newtimeout, 0);
-                pline(__s_pct_s, cptr.decay(buf));
-                break;
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        cptr.decay(__static_wiz_intrinsic_fmt),
+                        !Vomiting() ? __s_empty : __s_still,
+                        __s_vomiting
+                    );
+                    make_vomiting(newtimeout, 0);
+                    pline(__s_pct_s, cptr.decay(buf));
+                    break;
                 case NHC.WARN_OF_MON:
-                if (!Warn_of_mon()) {
-                    cptr.stI16o(
-                        svc,
-                        $context_info_warntype + $warntype_info_speciesidx,
-                        NHC.PM_GRID_BUG
-                    );
-                    cptr.stPtro(
-                        svc,
-                        $context_info_warntype + $warntype_info_species,
-                        cptr.add(
-                            mons,
-                            cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx),
-                            $sizeof_permonst
-                        )
-                    );
-                }
-                {
+                    if (!Warn_of_mon()) {
+                        cptr.stI16o(
+                            svc,
+                            $context_info_warntype + $warntype_info_speciesidx,
+                            NHC.PM_GRID_BUG
+                        );
+                        cptr.stPtro(
+                            svc,
+                            $context_info_warntype + $warntype_info_species,
+                            cptr.add(
+                                mons,
+                                cptr.ldI16o(
+                                    svc,
+                                    $context_info_warntype + $warntype_info_speciesidx
+                                ),
+                                $sizeof_permonst
+                            )
+                        );
+                    }
+                    {
+                        if (p.v != NHC.GLIB)
+                            incr_itimeout(
+                                cptr.add(
+                                    cptr.add(cptr.add(u, $you_uprops), p.v, $sizeof_prop),
+                                    $prop_intrinsic
+                                ),
+                                amt
+                            );
+                        cptr.st1(disp, 1);  /* have pline() do a status update */
+                        pline(
+                            __s_timeout_for_s_s_d,
+                            propname,
+                            oldtimeout ? __s_increased_by : __s_set_to,
+                            amt
+                        );
+                        break;
+                    }
+                case NHC.GLIB:
+                    /* slippery fingers might need a persistent inventory update
+                       so needs more than simple incr_itimeout() but we want
+                       the pline() issued with that */
+                    make_glib(Number(BigInt.asIntN(32, newtimeout)));
+                    // @FallThrough
+                    ;
+                default:
                     if (p.v != NHC.GLIB)
                         incr_itimeout(
                             cptr.add(
@@ -1745,7 +1772,7 @@ export function wiz_intrinsic() {
                             ),
                             amt
                         );
-                    cptr.st1(disp, 1);  /* have pline() do a status update */
+                    cptr.st1(disp, 1);
                     pline(
                         __s_timeout_for_s_s_d,
                         propname,
@@ -1753,31 +1780,6 @@ export function wiz_intrinsic() {
                         amt
                     );
                     break;
-                }
-                case NHC.GLIB:
-                /* slippery fingers might need a persistent inventory update
-                   so needs more than simple incr_itimeout() but we want
-                   the pline() issued with that */
-                make_glib(Number(BigInt.asIntN(32, newtimeout)));
-                // @FallThrough
-                ;
-                default:
-                if (p.v != NHC.GLIB)
-                    incr_itimeout(
-                        cptr.add(
-                            cptr.add(cptr.add(u, $you_uprops), p.v, $sizeof_prop),
-                            $prop_intrinsic
-                        ),
-                        amt
-                    );
-                cptr.st1(disp, 1);
-                pline(
-                    __s_timeout_for_s_s_d,
-                    propname,
-                    oldtimeout ? __s_increased_by : __s_set_to,
-                    amt
-                );
-                break;
             }
             /* this has to be after incr_itimeout() */
             if (p.v == NHC.LEVITATION || p.v == NHC.FLYING)
@@ -1825,22 +1827,27 @@ function size_obj(otmp) {
         sz = (sz + 32) | 0;
         if ((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))
             sz = (sz +
-                (Number(BigInt.asIntN(
-                    32,
-                    cptr.strlen((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))
-                )) + 1)) |
-                    0;
+                    (Number(BigInt.asIntN(
+                        32,
+                        cptr.strlen((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))
+                    )) +
+                        1)) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)))
             sz = (sz +
-                size_monst((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)), 0)) |
-                    0;
+                    size_monst(
+                        (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
+                        0
+                    )) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)))
             sz = (sz +
-                (Number(BigInt.asIntN(
-                    32,
-                    cptr.strlen((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)))
-                )) + 1)) |
-                    0;
+                    (Number(BigInt.asIntN(
+                        32,
+                        cptr.strlen((cptr.ldPtro(
+                            cptr.ldPtro((otmp), $obj_oextra),
+                            $oextra_omailcmd
+                        )))
+                    )) +
+                        1)) | 0;
         /* sz += (int) sizeof (unsigned); -- now part of oextra itself */
     }
     return sz;
@@ -1984,11 +1991,11 @@ function size_monst(mtmp, incl_wsegs) {
         sz = (sz + 64) | 0;
         if ((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))
             sz = (sz +
-                (Number(BigInt.asIntN(
-                    32,
-                    cptr.strlen((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))
-                )) + 1)) |
-                    0;
+                    (Number(BigInt.asIntN(
+                        32,
+                        cptr.strlen((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))
+                    )) +
+                        1)) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)))
             sz = (sz + 652) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)))
@@ -2241,7 +2248,8 @@ function you_sanity_check() {
         cptr.ldI16o(u, $you_uy),
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null) {
+    ))) !==
+            null) {
         /* u.usteed isn't on the map */
         if (!cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp))
             impossible(__s_sanity_check_you_over_monster);
@@ -2318,8 +2326,7 @@ export function sanity_check() {
         program_state,
         $sinfo_in_sanity_check,
         cptr.ldI32o(program_state, $sinfo_in_sanity_check) + 1
-    )) -
-            (1);
+    )) - (1);
     you_sanity_check();
     obj_sanity_check();
     timer_sanity_check();
@@ -2333,8 +2340,7 @@ export function sanity_check() {
         program_state,
         $sinfo_in_sanity_check,
         cptr.ldI32o(program_state, $sinfo_in_sanity_check) + -1
-    )) -
-            (-1);
+    )) - (-1);
 }
 
 /* qsort() comparison routine for use in list_migrating_mons() */
@@ -2413,27 +2419,28 @@ function list_migrating_mons(nextlevl) {
             void cptr.sprintf(eos(cptr.decay(prmpt)), __s_c_s, 27, cptr.decay(xtra));
         c = yn_function(__s_list_which, cptr.decay(prmpt), 113, 1);
         n = ((c == 99)
-            ? here
-            : ((c == 110)
-                ? nxtlv
-                : ((c == 111) ? other : ((c == 97) ? (here + nxtlv + other) | 0 : 0)))) >>>
-                0;
+                ? here
+                : ((c == 110)
+                    ? nxtlv
+                    : ((c == 111) ? other : ((c == 97) ? (here + nxtlv + other) | 0 : 0)))) >>> 0;
         if (n > 0) {
             win = create_nhwindow()(NHM.NHW_TEXT);
             switch (c) {
                 case 99:
                 case 110:
                 case 111:
-                void cptr.sprintf(
-                    cptr.decay(buf),
-                    __s_monster_s_migrating_to_s,
-                    (((n) == 1) ? __s_empty : __s_s),
-                    (c == 99) ? __s_current_level : ((c == 110) ? __s_next_level : __s_other_levels)
-                );
-                break;
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_monster_s_migrating_to_s,
+                        (((n) == 1) ? __s_empty : __s_s),
+                        (c == 99)
+                            ? __s_current_level
+                            : ((c == 110) ? __s_next_level : __s_other_levels)
+                    );
+                    break;
                 default:
-                void cptr.strcpy(cptr.decay(buf), __s_all_migrating_monsters);
-                break;
+                    void cptr.strcpy(cptr.decay(buf), __s_all_migrating_monsters);
+                    break;
             }
             putstr()(win, 0, cptr.decay(buf));
             putstr()(win, 0, __s_empty);
@@ -2867,7 +2874,8 @@ export function wiz_objprobs() {
                 cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class),
                 4
             ) +
-                cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob)) | 0,
+                cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob)) |
+                0,
             4
         );
     }
@@ -2895,7 +2903,8 @@ export function wiz_objprobs() {
             __s_4d_4d_6_2f_s,
             cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob),
             cptr.ldI32o(probsum, oclass, 4),
-            cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob) * 100 /
+            cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob) *
+                100 /
                 cptr.ldI32o(probsum, oclass, 4),
             (cptr.ldPtro(
                 obj_descr,

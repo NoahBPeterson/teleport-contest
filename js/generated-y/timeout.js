@@ -665,48 +665,48 @@ function* stoned_dialogue() {
     }
     switch (Number(BigInt.asIntN(32, i))) {
         case 5:
-        cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
-        if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
-            nomul(0);
-        break;
+            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
+                nomul(0);
+            break;
         case 4:
-        /* just one move left to save oneself so quit fiddling around;
-           don't stop attempt to eat tin--might be lizard or acidic */
-        if (!Popeye(NHC.STONED))
-            (yield* stop_occupation());
-        if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
-            nomul(0);
-        break;
+            /* just one move left to save oneself so quit fiddling around;
+               don't stop attempt to eat tin--might be lizard or acidic */
+            if (!Popeye(NHC.STONED))
+                (yield* stop_occupation());
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
+                nomul(0);
+            break;
         case 3:
-        (yield* stop_occupation());
-        nomul(-3);  /* can't move anymore */
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_getting_stoned);
-        cptr.stPtro(
-            gn,
-            $instance_globals_n_nomovemsg,
-            cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again)
-        );  /* not unconscious */
-        /* "your limbs have turned to stone" so terminate wounded legs */
-        if (Wounded_legs() && !cptr.ldPtro(u, $you_usteed))
-            (yield* heal_legs(2));
-        break;
+            (yield* stop_occupation());
+            nomul(-3);  /* can't move anymore */
+            cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_getting_stoned);
+            cptr.stPtro(
+                gn,
+                $instance_globals_n_nomovemsg,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again)
+            );  /* not unconscious */
+            /* "your limbs have turned to stone" so terminate wounded legs */
+            if (Wounded_legs() && !cptr.ldPtro(u, $you_usteed))
+                (yield* heal_legs(2));
+            break;
         case 2:
-        if ((HDeaf() & 16777215n) > 0n && (HDeaf() & 16777215n) < 5n)
-            set_itimeout(
-                cptr.add(
-                    cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
-                    $prop_intrinsic
-                ),
-                5n
-            );  /* avoid Hear_again at tail end */
-        /* if also vomiting or turning into slime, stop those (no messages) */
-        if (Vomiting())
-            (yield* make_vomiting(0n, 0));
-        if (Slimed())
-            (yield* make_slimed(0n, null));
-        break;
+            if ((HDeaf() & 16777215n) > 0n && (HDeaf() & 16777215n) < 5n)
+                set_itimeout(
+                    cptr.add(
+                        cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
+                        $prop_intrinsic
+                    ),
+                    5n
+                );  /* avoid Hear_again at tail end */
+            /* if also vomiting or turning into slime, stop those (no messages) */
+            if (Vomiting())
+                (yield* make_vomiting(0n, 0));
+            if (Slimed())
+                (yield* make_slimed(0n, null));
+            break;
         default:
-        break;
+            break;
     }
     (yield* exercise(NHC.A_DEX, 0));
 }
@@ -730,60 +730,64 @@ function* vomiting_dialogue() {
        current turn yet, so we use Vomiting-1 here */
     switch (Number(BigInt.asIntN(32, (BigInt.asIntN(64, v - 1n))))) {
         case 14:
-        txt = cptr.ldPtro(vomiting_texts, 0, 8);
-        break;
+            txt = cptr.ldPtro(vomiting_texts, 0, 8);
+            break;
         case 11:
-        txt = cptr.ldPtro(vomiting_texts, 1, 8);
-        if ((yield* strstri(txt, __s_confused__2)) && HConfusion())
-            txt = strsubst(cptr.strcpy(cptr.decay(buf), txt), __s_confused__2, __s_more_confused);
-        break;
+            txt = cptr.ldPtro(vomiting_texts, 1, 8);
+            if ((yield* strstri(txt, __s_confused__2)) && HConfusion())
+                txt = strsubst(
+                    cptr.strcpy(cptr.decay(buf), txt),
+                    __s_confused__2,
+                    __s_more_confused
+                );
+            break;
         case 6:
-        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(d(2, 4))), 0));
-        if (!Popeye(NHC.VOMITING))
-            (yield* stop_occupation());
-        // @FallThrough
-        ;
+            (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(d(2, 4))), 0));
+            if (!Popeye(NHC.VOMITING))
+                (yield* stop_occupation());
+            // @FallThrough
+            ;
         case 9:
-        (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(d(2, 4))), 0));
-        if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
-            nomul(0);
-        break;
+            (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(d(2, 4))), 0));
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
+                nomul(0);
+            break;
         case 8:
-        txt = cptr.ldPtro(vomiting_texts, 2, 8);
-        if ((yield* strstri(txt, __s_think)) && HStun())
-            txt = strsubst(cptr.strcpy(cptr.decay(buf), txt), __s_can_t_seem_to, __s_can_t);
-        break;
+            txt = cptr.ldPtro(vomiting_texts, 2, 8);
+            if ((yield* strstri(txt, __s_think)) && HStun())
+                txt = strsubst(cptr.strcpy(cptr.decay(buf), txt), __s_can_t_seem_to, __s_can_t);
+            break;
         case 5:
-        txt = cptr.ldPtro(vomiting_texts, 3, 8);
-        break;
+            txt = cptr.ldPtro(vomiting_texts, 3, 8);
+            break;
         case 2:
-        txt = cptr.ldPtro(vomiting_texts, 4, 8);
-        if (cantvomit(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
-            txt = __s_gag_uncontrollably;
-        else if (Hallucination())
-            /* "hurl" is short for "hurl chunks" which is slang for
-               relatively violent vomiting... */
-            txt = __s_are_about_to_hurl;
-        break;
+            txt = cptr.ldPtro(vomiting_texts, 4, 8);
+            if (cantvomit(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+                txt = __s_gag_uncontrollably;
+            else if (Hallucination())
+                /* "hurl" is short for "hurl chunks" which is slang for
+                   relatively violent vomiting... */
+                txt = __s_are_about_to_hurl;
+            break;
         case 0:
-        (yield* stop_occupation());
-        if (!cantvomit(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
-            (yield* morehungry(20));
-            /* case 2 used to be "You suddenly vomit!" but it wasn't sudden
-               since you've just been through the earlier messages of the
-               countdown, and it was still possible to move around between
-               that message and "You can move again." (from vomit()'s
-               nomul(-2)) with no intervening message; give one here to
-               have more specific point at which hero became unable to move
-               [vomit() issues its own message for the cantvomit() case
-               and for the FAINTING-or-worse case where stomach is empty] */
-            if (cptr.ldI32o(u, $you_uhs) < NHC.FAINTING)
-                (yield* You(__s_pct_s_bang, !Hallucination() ? __s_vomit : __s_hurl_chunks));
-        }
-        (yield* vomit());
-        break;
+            (yield* stop_occupation());
+            if (!cantvomit(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+                (yield* morehungry(20));
+                /* case 2 used to be "You suddenly vomit!" but it wasn't sudden
+                   since you've just been through the earlier messages of the
+                   countdown, and it was still possible to move around between
+                   that message and "You can move again." (from vomit()'s
+                   nomul(-2)) with no intervening message; give one here to
+                   have more specific point at which hero became unable to move
+                   [vomit() issues its own message for the cantvomit() case
+                   and for the FAINTING-or-worse case where stomach is empty] */
+                if (cptr.ldI32o(u, $you_uhs) < NHC.FAINTING)
+                    (yield* You(__s_pct_s_bang, !Hallucination() ? __s_vomit : __s_hurl_chunks));
+            }
+            (yield* vomit());
+            break;
         default:
-        break;
+            break;
     }
     if (txt)
         (yield* You(__s_pct_s, txt));
@@ -1004,27 +1008,27 @@ function* slime_dialogue() {
 
     switch (i) {
         case 3n:
-        cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);  /* lose intrinsic speed */
-        if (!Popeye(NHC.SLIMED))
-            (yield* stop_occupation());
-        if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
-            nomul(0);
-        break;
+            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);  /* lose intrinsic speed */
+            if (!Popeye(NHC.SLIMED))
+                (yield* stop_occupation());
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
+                nomul(0);
+            break;
         case 2n:
-        if ((HDeaf() & 16777215n) > 0n && (HDeaf() & 16777215n) < 5n)
-            set_itimeout(
-                cptr.add(
-                    cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
-                    $prop_intrinsic
-                ),
-                5n
-            );  /* avoid Hear_again at tail end */
-        break;
+            if ((HDeaf() & 16777215n) > 0n && (HDeaf() & 16777215n) < 5n)
+                set_itimeout(
+                    cptr.add(
+                        cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
+                        $prop_intrinsic
+                    ),
+                    5n
+                );  /* avoid Hear_again at tail end */
+            break;
         case 1n:
-        /* if also turning to stone, stop doing that (no message) */
-        if (Stoned())
-            (yield* make_stoned(0n, null, NHM.KILLED_BY_AN, null));
-        break;
+            /* if also turning to stone, stop doing that (no message) */
+            if (Stoned())
+                (yield* make_stoned(0n, null, NHM.KILLED_BY_AN, null));
+            break;
     }
     (yield* exercise(NHC.A_DEX, 0));
 }
@@ -1106,7 +1110,8 @@ function* slimed_to_death(kptr) {
         $sizeof_mvitals,
         $instance_globals_saved_m_mvitals + $mvitals_mvflags
     ) &
-            NHM.G_GENOD) != 0) {
+        NHM.G_GENOD) !=
+            0) {
         let slimebuf = new Uint8Array(256);
 
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -1246,7 +1251,8 @@ export function* nh_timeout() {
             cptr.ldI64o(svm, $instance_globals_saved_m_moves) %
                 BigInt((((cptr.ldI32o(u, $you_uhave) & 1) | 0 || cptr.ldI32o(u, $you_ugangr))
                     ? 300
-                    : 600)) == 0n) {
+                    : 600)) ==
+                0n) {
         /* Cursed luckstones stop bad luck from timing out; blessed luckstones
          * stop good luck from timing out; normal luckstones stop both;
          * neither is stopped if you don't have a luckstone.
@@ -1297,7 +1303,8 @@ export function* nh_timeout() {
         else if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags2
-        ) & 4n) != 0n))
+        ) &
+                4n) != 0n))
             (yield* you_unwere(0));  /* if polycontrl, asks whether to rehumanize */
         else
             (yield* rehumanize());
@@ -1333,7 +1340,9 @@ export function* nh_timeout() {
             ((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)),
                 $permonst_mflags1
-            ) & 1n) != 0n))) &&
+            ) &
+                1n) !=
+                0n))) &&
         !cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked)
             ? 1
             : 0));
@@ -1354,388 +1363,400 @@ export function* nh_timeout() {
             )));
             switch (cptr.diff(upp, cptr.add(u, $you_uprops)) / 24n) {
                 case 18n:
-                if (kptr && cptr.ld1so2(kptr, 0, 1, $kinfo_name)) {
-                    cptr.stI32o(svk, $kinfo_format, cptr.ldI32o(kptr, $kinfo_format));
-                    void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
-                } else {
-                    cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-                    void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_killed_by_petrification);
-                }
-                (yield* dealloc_killer(kptr));
-                /* (unlike sliming, you aren't changing form here) */
-                (yield* done_timeout(NHC.STONING, NHC.STONED));
-                break;
-                case 22n:
-                (yield* slimed_to_death(kptr));  /* done_timeout(TURNED_SLIME,SLIMED) */
-                break;
-                case 20n:
-                (yield* make_vomiting(0n, 1));
-                break;
-                case 17n:
-                /* hero might be able to bounce back from food poisoning,
-                   but not other forms of illness */
-                if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0 &&
-                        rn2(100) < (acurr(NHC.A_CON))) {
-                    (yield* You(__s_have_recovered_from_your_illness));
-                    (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
-                    (yield* exercise(NHC.A_CON, 0));
-                    (yield* adjattrib(NHC.A_CON, -1, 1));
-                    break;
-                }
-                (yield* urgent_pline(__s_you_die_from_your_illness));
-                if (kptr && cptr.ld1so2(kptr, 0, 1, $kinfo_name)) {
-                    cptr.stI32o(svk, $kinfo_format, cptr.ldI32o(kptr, $kinfo_format));
-                    void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
-                } else {
-                    cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
-                    cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* take the default */
-                }
-                (yield* dealloc_killer(kptr));
-
-                if ((m_idx = (yield* name_to_mon(cptr.add(svk, $kinfo_name), null))) >= NHC.LOW_PM) {
-                    if (((cptr.ldU64o(
-                        (cptr.add(mons, m_idx, $sizeof_permonst)),
-                        $permonst_mflags2
-                    ) &
-                            524288n) != 0n)) {
-                        cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-                    } else if (cptr.ldU16o2(mons, m_idx, $sizeof_permonst, $permonst_geno) &
-                            NHM.G_UNIQ) {
-                        void cptr.strcpy(
-                            cptr.add(svk, $kinfo_name),
-                            (yield* the(cptr.add(svk, $kinfo_name)))
-                        );
-                        cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
+                    if (kptr && cptr.ld1so2(kptr, 0, 1, $kinfo_name)) {
+                        cptr.stI32o(svk, $kinfo_format, cptr.ldI32o(kptr, $kinfo_format));
+                        void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
+                    } else {
+                        cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
+                        void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_killed_by_petrification);
                     }
-                }
-                (yield* done_timeout(NHC.POISONING, NHC.SICK));
-                cptr.stI32o(u, $you_usick_type, 0);
-                break;
-                case 64n:
-                if (!Very_fast())
-                    (yield* You_feel(__s_yourself_slow_down_s, Fast() ? __s_a_bit : __s_empty));
-                break;
-                case 14n:
-                /* So make_confused works properly */
-                set_itimeout(
-                    cptr.add(
-                        cptr.add(cptr.add(u, $you_uprops), NHC.CONFUSION, $sizeof_prop),
-                        $prop_intrinsic
-                    ),
-                    1n
-                );
-                (yield* make_confused(0n, 1));
-                if (!HConfusion())
-                    (yield* stop_occupation());
-                break;
-                case 13n:
-                set_itimeout(
-                    cptr.add(
-                        cptr.add(cptr.add(u, $you_uprops), NHC.STUNNED, $sizeof_prop),
-                        $prop_intrinsic
-                    ),
-                    1n
-                );
-                (yield* make_stunned(0n, 1));
-                if (!HStun())
-                    (yield* stop_occupation());
-                break;
-                case 15n:
-                {
-                    let was_blind = schar((!!Blind()));
+                    (yield* dealloc_killer(kptr));
+                    /* (unlike sliming, you aren't changing form here) */
+                    (yield* done_timeout(NHC.STONING, NHC.STONED));
+                    break;
+                case 22n:
+                    (yield* slimed_to_death(kptr));  /* done_timeout(TURNED_SLIME,SLIMED) */
+                    break;
+                case 20n:
+                    (yield* make_vomiting(0n, 1));
+                    break;
+                case 17n:
+                    /* hero might be able to bounce back from food poisoning,
+                       but not other forms of illness */
+                    if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) ==
+                        0 &&
+                            rn2(100) < (acurr(NHC.A_CON))) {
+                        (yield* You(__s_have_recovered_from_your_illness));
+                        (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
+                        (yield* exercise(NHC.A_CON, 0));
+                        (yield* adjattrib(NHC.A_CON, -1, 1));
+                        break;
+                    }
+                    (yield* urgent_pline(__s_you_die_from_your_illness));
+                    if (kptr && cptr.ld1so2(kptr, 0, 1, $kinfo_name)) {
+                        cptr.stI32o(svk, $kinfo_format, cptr.ldI32o(kptr, $kinfo_format));
+                        void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.add(kptr, $kinfo_name));
+                    } else {
+                        cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
+                        cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* take the default */
+                    }
+                    (yield* dealloc_killer(kptr));
 
+                    if ((m_idx = (yield* name_to_mon(cptr.add(svk, $kinfo_name), null))) >= NHC.LOW_PM) {
+                        if (((cptr.ldU64o(
+                            (cptr.add(mons, m_idx, $sizeof_permonst)),
+                            $permonst_mflags2
+                        ) &
+                            524288n) !=
+                                0n)) {
+                            cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
+                        } else if (cptr.ldU16o2(mons, m_idx, $sizeof_permonst, $permonst_geno) &
+                                NHM.G_UNIQ) {
+                            void cptr.strcpy(
+                                cptr.add(svk, $kinfo_name),
+                                (yield* the(cptr.add(svk, $kinfo_name)))
+                            );
+                            cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
+                        }
+                    }
+                    (yield* done_timeout(NHC.POISONING, NHC.SICK));
+                    cptr.stI32o(u, $you_usick_type, 0);
+                    break;
+                case 64n:
+                    if (!Very_fast())
+                        (yield* You_feel(__s_yourself_slow_down_s, Fast() ? __s_a_bit : __s_empty));
+                    break;
+                case 14n:
+                    /* So make_confused works properly */
                     set_itimeout(
                         cptr.add(
-                            cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop),
+                            cptr.add(cptr.add(u, $you_uprops), NHC.CONFUSION, $sizeof_prop),
                             $prop_intrinsic
                         ),
                         1n
                     );
-                    (yield* make_blinded(0n, 1));
-                    if (was_blind && !Blind())
+                    (yield* make_confused(0n, 1));
+                    if (!HConfusion())
                         (yield* stop_occupation());
                     break;
-                }
-                case 16n:
-                set_itimeout(
-                    cptr.add(
-                        cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
-                        $prop_intrinsic
-                    ),
-                    1n
-                );
-                (yield* make_deaf(0n, 1));
-                cptr.st1(disp, 1);
-                if (!Deaf())
-                    (yield* stop_occupation());
-                break;
-                case 40n:
-                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-                if (!Invis() && !BInvis() && !Blind()) {
-                    (yield* You(!See_invisible()
-                            ? __s_are_no_longer_invisible
-                            : __s_can_no_longer_see_through_yourself));
-                    (yield* stop_occupation());
-                }
-                break;
-                case 29n:
-                (yield* set_mimic_blocking());  /* do special mimic handling */
-                (yield* see_monsters());  /* make invis mons appear */
-                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* make self appear */
-                (yield* stop_occupation());
-                break;
-                case 26n:
-                (yield* heal_legs(0));
-                (yield* stop_occupation());
-                break;
-                case 23n:
-                set_itimeout(
-                    cptr.add(
-                        cptr.add(cptr.add(u, $you_uprops), NHC.HALLUC, $sizeof_prop),
-                        $prop_intrinsic
-                    ),
-                    1n
-                );
-                void (yield* make_hallucinated(0n, 1, 0n));
-                if (!Hallucination())
-                    (yield* stop_occupation());
-                break;
-                case 27n:
-                if (unconscious() || Sleep_resistance()) {
-                    incr_itimeout(
-                        cptr.add(
-                            cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop),
-                            $prop_intrinsic
-                        ),
-                        rnd(100)
-                    );
-                } else if (Sleepy()) {
-                    (yield* You(__s_fall_asleep));
-                    sleeptime = rnd(20);
-                    (yield* fall_asleep(-sleeptime, 1));
-                    incr_itimeout(
-                        cptr.add(
-                            cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop),
-                            $prop_intrinsic
-                        ),
-                        (sleeptime + rnd(100)) | 0
-                    );
-                }
-                break;
-                case 48n:
-                /* timed Levitation is ordinary, timed Flying is via
-                   #wizintrinsic only; still, we want to avoid float_down()
-                   reporting "you have stopped levitating and are now flying"
-                   when both are timing out together; if that is about to
-                   happen, end Flying early to skip feedback about it;
-                   assumes Levitation is handled before Flying */
-                if ((HFlying() & 16777215n) == 1n)
+                case 13n:
                     set_itimeout(
                         cptr.add(
-                            cptr.add(cptr.add(u, $you_uprops), NHC.FLYING, $sizeof_prop),
+                            cptr.add(cptr.add(u, $you_uprops), NHC.STUNNED, $sizeof_prop),
                             $prop_intrinsic
                         ),
-                        0n
-                    );  /* bypass 'case FLYING' */
-                void (yield* float_down(553648127n, 0n));
-                break;
-                case 49n:
-                /* timed Flying is via #wizintrinsic only */
-                if (was_flying && !Flying()) {
+                        1n
+                    );
+                    (yield* make_stunned(0n, 1));
+                    if (!HStun())
+                        (yield* stop_occupation());
+                    break;
+                case 15n:
+                    {
+                        let was_blind = schar((!!Blind()));
+
+                        set_itimeout(
+                            cptr.add(
+                                cptr.add(cptr.add(u, $you_uprops), NHC.BLINDED, $sizeof_prop),
+                                $prop_intrinsic
+                            ),
+                            1n
+                        );
+                        (yield* make_blinded(0n, 1));
+                        if (was_blind && !Blind())
+                            (yield* stop_occupation());
+                        break;
+                    }
+                case 16n:
+                    set_itimeout(
+                        cptr.add(
+                            cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
+                            $prop_intrinsic
+                        ),
+                        1n
+                    );
+                    (yield* make_deaf(0n, 1));
                     cptr.st1(disp, 1);
-                    (yield* You(__s_land));
-                    (yield* spoteffects(1));
-                }
-                break;
+                    if (!Deaf())
+                        (yield* stop_occupation());
+                    break;
+                case 40n:
+                    (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                    if (!Invis() && !BInvis() && !Blind()) {
+                        (yield* You(!See_invisible()
+                                ? __s_are_no_longer_invisible
+                                : __s_can_no_longer_see_through_yourself));
+                        (yield* stop_occupation());
+                    }
+                    break;
+                case 29n:
+                    (yield* set_mimic_blocking());  /* do special mimic handling */
+                    (yield* see_monsters());  /* make invis mons appear */
+                    (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* make self appear */
+                    (yield* stop_occupation());
+                    break;
+                case 26n:
+                    (yield* heal_legs(0));
+                    (yield* stop_occupation());
+                    break;
+                case 23n:
+                    set_itimeout(
+                        cptr.add(
+                            cptr.add(cptr.add(u, $you_uprops), NHC.HALLUC, $sizeof_prop),
+                            $prop_intrinsic
+                        ),
+                        1n
+                    );
+                    void (yield* make_hallucinated(0n, 1, 0n));
+                    if (!Hallucination())
+                        (yield* stop_occupation());
+                    break;
+                case 27n:
+                    if (unconscious() || Sleep_resistance()) {
+                        incr_itimeout(
+                            cptr.add(
+                                cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop),
+                                $prop_intrinsic
+                            ),
+                            rnd(100)
+                        );
+                    } else if (Sleepy()) {
+                        (yield* You(__s_fall_asleep));
+                        sleeptime = rnd(20);
+                        (yield* fall_asleep(-sleeptime, 1));
+                        incr_itimeout(
+                            cptr.add(
+                                cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop),
+                                $prop_intrinsic
+                            ),
+                            (sleeptime + rnd(100)) | 0
+                        );
+                    }
+                    break;
+                case 48n:
+                    /* timed Levitation is ordinary, timed Flying is via
+                       #wizintrinsic only; still, we want to avoid float_down()
+                       reporting "you have stopped levitating and are now flying"
+                       when both are timing out together; if that is about to
+                       happen, end Flying early to skip feedback about it;
+                       assumes Levitation is handled before Flying */
+                    if ((HFlying() & 16777215n) == 1n)
+                        set_itimeout(
+                            cptr.add(
+                                cptr.add(cptr.add(u, $you_uprops), NHC.FLYING, $sizeof_prop),
+                                $prop_intrinsic
+                            ),
+                            0n
+                        );  /* bypass 'case FLYING' */
+                    void (yield* float_down(553648127n, 0n));
+                    break;
+                case 49n:
+                    /* timed Flying is via #wizintrinsic only */
+                    if (was_flying && !Flying()) {
+                        cptr.st1(disp, 1);
+                        (yield* You(__s_land));
+                        (yield* spoteffects(1));
+                    }
+                    break;
                 case 7n:
-                if (!Acid_resistance()) {
-                    if (eating_dangerous_corpse(NHC.ACID_RES)) {
-                        /* extend temporary acid resistance if in midst
-                           of eating an acidic corpse; this will repeat
-                           until eating is finished or interrupted */
-                        set_itimeout(
-                            cptr.add(
-                                cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop),
-                                $prop_intrinsic
-                            ),
-                            1n
-                        );
-                        break;
-                    }
-                    if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
-                            (unconscious() || is_fainted())))
-                        (yield* You(__s_no_longer_feel_safe_from_acid));
-                }
-                break;
-                case 8n:
-                if (!Stone_resistance()) {
-                    if (eating_dangerous_corpse(NHC.STONE_RES)) {
-                        /* extend temporary stoning resistance if in midst
-                           of eating a stoning corpse; this will repeat
-                           until eating is finished or interrupted */
-                        set_itimeout(
-                            cptr.add(
-                                cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop),
-                                $prop_intrinsic
-                            ),
-                            1n
-                        );
-                        break;
-                    }
-                    if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
-                            (unconscious() || is_fainted())))
-                        (yield* You(__s_no_longer_feel_secure_from_petrification));
-                    /* no-op if not wielding a cockatrice corpse;
-                       uswapwep case is always a no-op because two-weapon
-                       combat is only possible with two one-handed weapons
-                       or weapon tools, not corpses */
-                    (yield* wielding_corpse(uwep.v, null, 0));
-                    (yield* wielding_corpse(uswapwep.v, null, 0));
-                }
-                break;
-                case 1n:
-                /* timed fire resistance and timed water walking combine
-                   as a way to survive lava after multiple life-saving
-                   attempts fail to relocate hero; skip timeout message
-                   if hero has acquired fire resistance in the meantime */
-                if (!Fire_resistance())
-                    (yield* Your(__s_temporary_ability_to_survive_burning));
-                break;
-                case 50n:
-                /* [see fire resistance] */
-                if (!((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
-                    cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
-                        !(((cptr.ldI16o(
-                            (cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_water_level
-                            )),
-                            $d_level_dlevel
-                        ) ||
-                            cptr.ldI16((cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_water_level
-                            )))) &&
-                            on_level(
-                                cptr.add(u, $you_uz),
+                    if (!Acid_resistance()) {
+                        if (eating_dangerous_corpse(NHC.ACID_RES)) {
+                            /* extend temporary acid resistance if in midst
+                               of eating an acidic corpse; this will repeat
+                               until eating is finished or interrupted */
+                            set_itimeout(
                                 cptr.add(
+                                    cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop),
+                                    $prop_intrinsic
+                                ),
+                                1n
+                            );
+                            break;
+                        }
+                        if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
+                                (unconscious() || is_fainted())))
+                            (yield* You(__s_no_longer_feel_safe_from_acid));
+                    }
+                    break;
+                case 8n:
+                    if (!Stone_resistance()) {
+                        if (eating_dangerous_corpse(NHC.STONE_RES)) {
+                            /* extend temporary stoning resistance if in midst
+                               of eating a stoning corpse; this will repeat
+                               until eating is finished or interrupted */
+                            set_itimeout(
+                                cptr.add(
+                                    cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop),
+                                    $prop_intrinsic
+                                ),
+                                1n
+                            );
+                            break;
+                        }
+                        if (!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
+                                (unconscious() || is_fainted())))
+                            (yield* You(__s_no_longer_feel_secure_from_petrification));
+                        /* no-op if not wielding a cockatrice corpse;
+                           uswapwep case is always a no-op because two-weapon
+                           combat is only possible with two one-handed weapons
+                           or weapon tools, not corpses */
+                        (yield* wielding_corpse(uwep.v, null, 0));
+                        (yield* wielding_corpse(uswapwep.v, null, 0));
+                    }
+                    break;
+                case 1n:
+                    /* timed fire resistance and timed water walking combine
+                       as a way to survive lava after multiple life-saving
+                       attempts fail to relocate hero; skip timeout message
+                       if hero has acquired fire resistance in the meantime */
+                    if (!Fire_resistance())
+                        (yield* Your(__s_temporary_ability_to_survive_burning));
+                    break;
+                case 50n:
+                    /* [see fire resistance] */
+                    if (!((cptr.ldI64o2(
+                        u,
+                        NHC.WWALKING,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic
+                    ) ||
+                        cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
+                            !(((cptr.ldI16o(
+                                (cptr.add(
                                     svd,
                                     $instance_globals_saved_d_dungeon_topology +
                                         $dgn_topology_d_water_level
-                                )
-                            )))))
-                    (yield* Your(__s_temporary_ability_to_walk_on_liquid_has));
-                break;
+                                )),
+                                $d_level_dlevel
+                            ) ||
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_water_level
+                                )))) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_water_level
+                                    )
+                                )))))
+                        (yield* Your(__s_temporary_ability_to_walk_on_liquid_has));
+                    break;
                 case 41n:
-                if (!Displaced())
-                    (yield* toggle_displacement(null, 0n, 0));
-                break;
+                    if (!Displaced())
+                        (yield* toggle_displacement(null, 0n, 0));
+                    break;
                 case 32n:
-                /* timed Warn_of_mon is via #wizintrinsic only */
-                if (!Warn_of_mon()) {
-                    let wptr = cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species);
+                    /* timed Warn_of_mon is via #wizintrinsic only */
+                    if (!Warn_of_mon()) {
+                        let wptr = cptr.ldPtro(
+                            svc,
+                            $context_info_warntype + $warntype_info_species
+                        );
 
-                    cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, null);
-                    cptr.stI16o(
-                        svc,
-                        $context_info_warntype + $warntype_info_speciesidx,
-                        NHC.NON_PM
-                    );
-                    if (wptr)
-                        (yield* You(
-                            __s_are_no_longer_warned_about_s,
-                            (yield* makeplural(cptr.ldPtro(wptr, NHC.NEUTRAL, 8)))
-                        ));
-                }
-                break;
-                case 53n:
-                if (!Passes_walls()) {
-                    if (stuck_in_wall())
-                        (yield* You_feel(__s_hemmed_in_again));
-                    else
-                        (yield* pline(
-                            __s_you_re_back_to_your_s_self_again,
-                            !Upolyd() ? __s_normal : __s_unusual
-                        ));
-                }
-                break;
-                case 52n:
-                if (!Breathless()) {
-                    if (region_danger())
-                        (yield* You(__s_cough_s, Poison_resistance() ? __s_dot : __s_and_spit_blood));
-                }
-                break;
-                case 19n:
-                cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-                void cptr.strcpy(
-                    cptr.add(svk, $kinfo_name),
-                    ((cptr.ldI32o(u, $you_uburied) & 1)) | 0 ? __s_suffocation : __s_strangulation
-                );
-                (yield* done_timeout(NHC.DIED, NHC.STRANGLED));
-                /* must be declining to die in explore|wizard mode;
-                   treat like being cured of strangulation by prayer */
-                if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_STRANGULATION) {
-                    (yield* Your(__s_amulet_vanishes));
-                    (yield* useup(uamul.v));
-                }
-                break;
-                case 25n:
-                /* call this only when a move took place.  */
-                /* otherwise handle fumbling msgs locally. */
-                if (cptr.ld1so(u, $you_umoved) && !(Levitation() || Flying())) {
-                    (yield* slip_or_trip());
-                    nomul(-2);
-                    cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_fumbling);
-                    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
-                    /* The more you are carrying the more likely you
-                     * are to make noise when you fumble.  Adjustments
-                     * to this number must be thoroughly play tested.
-                     */
-                    if ((inv_weight() > (Math.imul(NHC.WT_NOISY_INV, -1)))) {
-                        if (!Deaf())
-                            (yield* You(__s_make_a_lot_of_noise));
-                        (yield* wake_nearby(0));
+                        cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, null);
+                        cptr.stI16o(
+                            svc,
+                            $context_info_warntype + $warntype_info_speciesidx,
+                            NHC.NON_PM
+                        );
+                        if (wptr)
+                            (yield* You(
+                                __s_are_no_longer_warned_about_s,
+                                (yield* makeplural(cptr.ldPtro(wptr, NHC.NEUTRAL, 8)))
+                            ));
                     }
-                }
-                /* from outside means slippery ice; don't reset
-                   counter if that's the only fumble reason */
-                cptr.stI64o2(
-                    u,
-                    NHC.FUMBLING,
-                    $sizeof_prop,
-                    $you_uprops + $prop_intrinsic,
-                    cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                        (-67108865n)
-                );
-                if (Fumbling())
-                    incr_itimeout(
-                        cptr.add(
-                            cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop),
-                            $prop_intrinsic
-                        ),
-                        rnd(20)
+                    break;
+                case 53n:
+                    if (!Passes_walls()) {
+                        if (stuck_in_wall())
+                            (yield* You_feel(__s_hemmed_in_again));
+                        else
+                            (yield* pline(
+                                __s_you_re_back_to_your_s_self_again,
+                                !Upolyd() ? __s_normal : __s_unusual
+                            ));
+                    }
+                    break;
+                case 52n:
+                    if (!Breathless()) {
+                        if (region_danger())
+                            (yield* You(__s_cough_s, Poison_resistance() ? __s_dot : __s_and_spit_blood));
+                    }
+                    break;
+                case 19n:
+                    cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
+                    void cptr.strcpy(
+                        cptr.add(svk, $kinfo_name),
+                        ((cptr.ldI32o(u, $you_uburied) & 1)) | 0
+                            ? __s_suffocation
+                            : __s_strangulation
                     );
+                    (yield* done_timeout(NHC.DIED, NHC.STRANGLED));
+                    /* must be declining to die in explore|wizard mode;
+                       treat like being cured of strangulation by prayer */
+                    if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_STRANGULATION) {
+                        (yield* Your(__s_amulet_vanishes));
+                        (yield* useup(uamul.v));
+                    }
+                    break;
+                case 25n:
+                    /* call this only when a move took place.  */
+                    /* otherwise handle fumbling msgs locally. */
+                    if (cptr.ld1so(u, $you_umoved) && !(Levitation() || Flying())) {
+                        (yield* slip_or_trip());
+                        nomul(-2);
+                        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_fumbling);
+                        cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
+                        /* The more you are carrying the more likely you
+                         * are to make noise when you fumble.  Adjustments
+                         * to this number must be thoroughly play tested.
+                         */
+                        if ((inv_weight() > (Math.imul(NHC.WT_NOISY_INV, -1)))) {
+                            if (!Deaf())
+                                (yield* You(__s_make_a_lot_of_noise));
+                            (yield* wake_nearby(0));
+                        }
+                    }
+                    /* from outside means slippery ice; don't reset
+                       counter if that's the only fumble reason */
+                    cptr.stI64o2(
+                        u,
+                        NHC.FUMBLING,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                            (-67108865n)
+                    );
+                    if (Fumbling())
+                        incr_itimeout(
+                            cptr.add(
+                                cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop),
+                                $prop_intrinsic
+                            ),
+                            rnd(20)
+                        );
 
-                if (cptr.ld1so(iflags, $instance_flags_defer_decor)) {
-                    /* 'mention_decor' was deferred for message sequencing
-                       reasons; catch up now */
-                    (yield* deferred_decor(0));
-                }
-                break;
+                    if (cptr.ld1so(iflags, $instance_flags_defer_decor)) {
+                        /* 'mention_decor' was deferred for message sequencing
+                           reasons; catch up now */
+                        (yield* deferred_decor(0));
+                    }
+                    break;
                 case 37n:
-                (yield* see_monsters());
-                break;
+                    (yield* see_monsters());
+                    break;
                 case 21n:
-                (yield* make_glib(0));  /* might update persistent inventory */
-                break;
+                    (yield* make_glib(0));  /* might update persistent inventory */
+                    break;
                 case 60n:
-                /* timed Protection_from_shape_changers is via
-                   #wizintrinsic only */
-                if (!Protection_from_shape_changers())
-                    (yield* restartcham());
-                break;
+                    /* timed Protection_from_shape_changers is via
+                       #wizintrinsic only */
+                    if (!Protection_from_shape_changers())
+                        (yield* restartcham());
+                    break;
             }
         }
 
@@ -1837,8 +1858,8 @@ export function* hatch_egg(arg, timeout) {
             cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8),
             x.v
         ) &
-            NHM.IN_SIGHT) != 0) &&
-            !silent
+            NHM.IN_SIGHT) !=
+            0) && !silent
                 ? 1
                 : 0));
         if (!(cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
@@ -1847,7 +1868,8 @@ export function* hatch_egg(arg, timeout) {
                     mnum,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3)) {
+                ) &
+                    3)) {
             for (i = hatchcount; i > 0; i--) {
                 if (!(yield* enexto(cc, x.v, y.v, cptr.add(mons, mnum, $sizeof_permonst))) ||
                         !(mon = (yield* makemon(
@@ -1912,78 +1934,83 @@ export function* hatch_egg(arg, timeout) {
         }
         switch (cptr.ld1so(egg, $obj_where)) {
             case NHM.OBJ_INVENT:
-            knows_egg = 1;  /* true even if you are blind */
-            if (!cansee_hatchspot)
-                (yield* You_feel(
-                    __s_s_s_from_your_pack,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_something),
-                    locomotion(cptr.ldPtro(mon, $monst_data), __s_drop)
-                ));
-            else
-                (yield* You_see(
-                    __s_s_s_out_of_your_pack,
-                    cptr.decay(monnambuf),
-                    locomotion(cptr.ldPtro(mon, $monst_data), __s_drop)
-                ));
-            if (yours) {
-                (yield* pline(
-                    __s_s_s_s_like_s_s,
-                    siblings ? __s_their : __s_its,
-                    (yield* ing_suffix(cry_sound(mon))),
-                    ((cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msound) ==
-                        NHC.MS_SILENT) ||
-                        Deaf())
-                        ? __s_seems
-                        : __s_sounds,
-                    cptr.ld1so(flags, $flag_female) ? __s_mommy : __s_daddy,
-                    cptr.ld1so(egg, $obj_spe) ? __s_dot : __s_query
-                ));
-            } else if (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_DRAGON &&
-                    !Deaf()) {
-                ;
-                (yield* verbalize(__s_gleep));  /* Mything eggs :-) */
-            }
-            break;
-            case NHM.OBJ_FLOOR:
-            if (cansee_hatchspot) {
-                knows_egg = 1;
-                (yield* You_see(__s_s_hatch, cptr.decay(monnambuf)));
-                redraw = 1;  /* update egg's map location */
-            }
-            break;
-            case NHM.OBJ_MINVENT:
-            if (cansee_hatchspot) {
-                /* egg carrying monster might be invisible */
-                mon2 = cptr.ldPtro(egg, $obj_v);
-                if (canseemon(mon2) &&
-                        (!(cptr.ldI32o(mon2, $monst_wormno) & 31) ||
-                            ((cptr.ld1uo(
-                                cptr.ldPtro(
-                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
-                                    cptr.ldI16o(mon2, $monst_my),
-                                    8
-                                ),
-                                cptr.ldI16o(mon2, $monst_mx)
-                            ) &
-                                NHM.IN_SIGHT) != 0))) {
-                    void cptr.sprintf(cptr.decay(carriedby), __s_s_pack, (yield* s_suffix((yield* a_monnam(mon2)))));
-                    knows_egg = 1;
-                } else if (is_pool(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
-                    void cptr.strcpy(cptr.decay(carriedby), __s_empty_water);
-                } else {
-                    void cptr.strcpy(cptr.decay(carriedby), __s_thin_air);
+                knows_egg = 1;  /* true even if you are blind */
+                if (!cansee_hatchspot)
+                    (yield* You_feel(
+                        __s_s_s_from_your_pack,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_something),
+                        locomotion(cptr.ldPtro(mon, $monst_data), __s_drop)
+                    ));
+                else
+                    (yield* You_see(
+                        __s_s_s_out_of_your_pack,
+                        cptr.decay(monnambuf),
+                        locomotion(cptr.ldPtro(mon, $monst_data), __s_drop)
+                    ));
+                if (yours) {
+                    (yield* pline(
+                        __s_s_s_s_like_s_s,
+                        siblings ? __s_their : __s_its,
+                        (yield* ing_suffix(cry_sound(mon))),
+                        ((cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msound) ==
+                            NHC.MS_SILENT) || Deaf())
+                            ? __s_seems
+                            : __s_sounds,
+                        cptr.ld1so(flags, $flag_female) ? __s_mommy : __s_daddy,
+                        cptr.ld1so(egg, $obj_spe) ? __s_dot : __s_query
+                    ));
+                } else if (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) ==
+                    NHC.S_DRAGON &&
+                        !Deaf()) {
+                    ;
+                    (yield* verbalize(__s_gleep));  /* Mything eggs :-) */
                 }
-                (yield* You_see(
-                    __s_s_s_out_of_s,
-                    cptr.decay(monnambuf),
-                    locomotion(cptr.ldPtro(mon, $monst_data), __s_drop),
-                    cptr.decay(carriedby)
-                ));
-            }
-            break;
+                break;
+            case NHM.OBJ_FLOOR:
+                if (cansee_hatchspot) {
+                    knows_egg = 1;
+                    (yield* You_see(__s_s_hatch, cptr.decay(monnambuf)));
+                    redraw = 1;  /* update egg's map location */
+                }
+                break;
+            case NHM.OBJ_MINVENT:
+                if (cansee_hatchspot) {
+                    /* egg carrying monster might be invisible */
+                    mon2 = cptr.ldPtro(egg, $obj_v);
+                    if (canseemon(mon2) &&
+                            (!(cptr.ldI32o(mon2, $monst_wormno) & 31) ||
+                                ((cptr.ld1uo(
+                                    cptr.ldPtro(
+                                        cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                        cptr.ldI16o(mon2, $monst_my),
+                                        8
+                                    ),
+                                    cptr.ldI16o(mon2, $monst_mx)
+                                ) &
+                                    NHM.IN_SIGHT) !=
+                                    0))) {
+                        void cptr.sprintf(
+                            cptr.decay(carriedby),
+                            __s_s_pack,
+                            (yield* s_suffix((yield* a_monnam(mon2))))
+                        );
+                        knows_egg = 1;
+                    } else if (is_pool(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
+                        void cptr.strcpy(cptr.decay(carriedby), __s_empty_water);
+                    } else {
+                        void cptr.strcpy(cptr.decay(carriedby), __s_thin_air);
+                    }
+                    (yield* You_see(
+                        __s_s_s_out_of_s,
+                        cptr.decay(monnambuf),
+                        locomotion(cptr.ldPtro(mon, $monst_data), __s_drop),
+                        cptr.decay(carriedby)
+                    ));
+                }
+                break;
             default:
-            (yield* impossible(__s_egg_hatched_where_d, cptr.ld1so(egg, $obj_where)));
-            break;
+                (yield* impossible(__s_egg_hatched_where_d, cptr.ld1so(egg, $obj_where)));
+                break;
         }
 
         if (cansee_hatchspot && knows_egg)
@@ -2188,20 +2215,20 @@ function* slip_or_trip() {
         if (on_foot) {
             switch (rn2(4)) {
                 case 1:
-                (yield* You(
-                    __s_trip_over_your_own_s,
-                    Hallucination() ? __s_elbow : (yield* makeplural((yield* body_part(NHC.FOOT))))
-                ));
-                break;
+                    (yield* You(
+                        __s_trip_over_your_own_s,
+                        Hallucination() ? __s_elbow : (yield* makeplural((yield* body_part(NHC.FOOT))))
+                    ));
+                    break;
                 case 2:
-                (yield* You(__s_slip_s, Hallucination() ? __s_on_a_banana_peel : __s_and_nearly_fall));
-                break;
+                    (yield* You(__s_slip_s, Hallucination() ? __s_on_a_banana_peel : __s_and_nearly_fall));
+                    break;
                 case 3:
-                (yield* You(__s_flounder));
-                break;
+                    (yield* You(__s_flounder));
+                    break;
                 default:
-                (yield* You(__s_stumble));
-                break;
+                    (yield* You(__s_stumble));
+                    break;
             }
 
             /* mounted; saddle should never end up being Null here;
@@ -2210,17 +2237,17 @@ function* slip_or_trip() {
                 !(cptr.ldI32o(saddle, $obj_cursed) & 1)) {
             switch (rn2(4)) {
                 case 1:
-                (yield* Your(__s_s_slip_out_of_the_stirrups, (yield* makeplural((yield* body_part(NHC.FOOT))))));
-                break;
+                    (yield* Your(__s_s_slip_out_of_the_stirrups, (yield* makeplural((yield* body_part(NHC.FOOT))))));
+                    break;
                 case 2:
-                (yield* You(__s_let_go_of_the_reins));
-                break;
+                    (yield* You(__s_let_go_of_the_reins));
+                    break;
                 case 3:
-                (yield* You(__s_bang_into_the_saddle_horn));
-                break;
+                    (yield* You(__s_bang_into_the_saddle_horn));
+                    break;
                 default:
-                (yield* You(__s_slide_to_one_side_of_the_saddle));
-                break;
+                    (yield* You(__s_slide_to_one_side_of_the_saddle));
+                    break;
             }
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
         }
@@ -2233,11 +2260,11 @@ function* see_lamp_flicker(obj, tailer) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
         case NHM.OBJ_MINVENT:
-        (yield* pline(__s_s_flickers_s, (yield* Yname2(obj)), tailer));
-        break;
+            (yield* pline(__s_s_flickers_s, (yield* Yname2(obj)), tailer));
+            break;
         case NHM.OBJ_FLOOR:
-        (yield* You_see(__s_s_flicker_s, (yield* an((yield* xname(obj)))), tailer));
-        break;
+            (yield* You_see(__s_s_flicker_s, (yield* an((yield* xname(obj)))), tailer));
+            break;
     }
 }
 
@@ -2247,16 +2274,16 @@ function* lantern_message(obj) {
     /* from adventure */
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
-        (yield* Your(__s_lantern_is_getting_dim));
-        if (Hallucination())
-            (yield* pline(__s_batteries_have_not_been_invented_yet));
-        break;
+            (yield* Your(__s_lantern_is_getting_dim));
+            if (Hallucination())
+                (yield* pline(__s_batteries_have_not_been_invented_yet));
+            break;
         case NHM.OBJ_FLOOR:
-        (yield* You_see(__s_a_lantern_getting_dim));
-        break;
+            (yield* You_see(__s_a_lantern_getting_dim));
+            break;
         case NHM.OBJ_MINVENT:
-        (yield* pline(__s_s_lantern_is_getting_dim, (yield* s_suffix((yield* Monnam(cptr.ldPtro(obj, $obj_v)))))));
-        break;
+            (yield* pline(__s_s_lantern_is_getting_dim, (yield* s_suffix((yield* Monnam(cptr.ldPtro(obj, $obj_v)))))));
+            break;
     }
 }
 
@@ -2348,246 +2375,253 @@ export function* burn_object(arg, timeout) {
     /* obj->age is the age remaining at this point.  */
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.POT_OIL:
-        /* this should only be called when we run out */
-        if (canseeit) {
-            switch (cptr.ld1so(obj, $obj_where)) {
-                case NHM.OBJ_INVENT:
-                need_invupdate = 1;
-                // @FallThrough
-                ;
-                case NHM.OBJ_MINVENT:
-                (yield* pline(__s_spotion_of_oil_has_burnt_away, cptr.decay(whose)));
-                break;
-                case NHM.OBJ_FLOOR:
-                (yield* You_see(__s_a_burning_potion_of_oil_go_out));
-                need_newsym = 1;
-                break;
-            }
-        }
-        (yield* end_burn(obj, 0));  /* turn off light source */
-        if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
-            (yield* useupall(obj));
-        } else {
-            /* clear migrating obj's destination code before obfree
-               to avoid false complaint of deleting worn item */
-            if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
-                cptr.stI64o(obj, $obj_owornmask, 0n);
-            (yield* obj_extract_self(obj));
-            (yield* obfree(obj, null));
-        }
-        obj = null;
-        break;
-        case NHC.BRASS_LANTERN:
-        case NHC.OIL_LAMP:
-        switch (Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_age)))) {
-            case 150:
-            case 100:
-            case 50:
+            /* this should only be called when we run out */
             if (canseeit) {
-                if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
-                    (yield* lantern_message(obj));
-                else
-                    (yield* see_lamp_flicker(
-                        obj,
-                        cptr.ldI64o(obj, $obj_age) == 50n ? __s_considerably : __s_empty
-                    ));
-            }
-            break;
-            case 25:
-            if (canseeit) {
-                if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN) {
-                    (yield* lantern_message(obj));
-                } else {
-                    switch (cptr.ld1so(obj, $obj_where)) {
-                        case NHM.OBJ_INVENT:
-                        case NHM.OBJ_MINVENT:
-                        (yield* pline(__s_s_seems_about_to_go_out, (yield* Yname2(obj))));
-                        break;
-                        case NHM.OBJ_FLOOR:
-                        (yield* You_see(__s_s_about_to_go_out, (yield* an((yield* xname(obj))))));
-                        break;
-                    }
-                }
-            }
-            break;
-            case 0:
-            /* even if blind you'll know if holding it */
-            if (canseeit || bytouch) {
                 switch (cptr.ld1so(obj, $obj_where)) {
                     case NHM.OBJ_INVENT:
-                    need_invupdate = 1;
-                    // @FallThrough
-                    ;
-                    case NHM.OBJ_MINVENT:
-                    if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
-                        (yield* pline(__s_slantern_has_run_out_of_power, cptr.decay(whose)));
-                    else
-                        (yield* pline(__s_s_has_gone_out, (yield* Yname2(obj))));
-                    break;
-                    case NHM.OBJ_FLOOR:
-                    if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
-                        (yield* You_see(__s_a_lantern_run_out_of_power));
-                    else
-                        (yield* You_see(__s_s_go_out, (yield* an((yield* xname(obj))))));
-                    break;
-                }
-            }
-            (yield* end_burn(obj, 0));
-            break;
-            default:
-            /*
-             * Someone added fuel to the lamp while it was
-             * lit. Just fall through and let begin_burn()
-             * handle the new age.
-             */
-            break;
-        }
-
-        if (cptr.ldI64o(obj, $obj_age))
-            (yield* begin_burn(obj, 1));
-
-        break;
-        case NHC.CANDELABRUM_OF_INVOCATION:
-        case NHC.TALLOW_CANDLE:
-        case NHC.WAX_CANDLE:
-        switch (cptr.ldI64o(obj, $obj_age)) {
-            case 75n:
-            if (canseeit)
-                switch (cptr.ld1so(obj, $obj_where)) {
-                    case NHM.OBJ_INVENT:
-                    case NHM.OBJ_MINVENT:
-                    (yield* pline(
-                        __s_s_scandle_s_getting_short,
-                        cptr.decay(whose),
-                        menorah ? __s_candelabrum_s : __s_empty,
-                        many ? __s_s_are : __s_is
-                    ));
-                    break;
-                    case NHM.OBJ_FLOOR:
-                    (yield* You_see(
-                        __s_scandle_s_getting_short,
-                        menorah ? __s_a_candelabrum_s : (many ? __s_some : __s_a_sp),
-                        many ? __s_s : __s_empty
-                    ));
-                    break;
-                }
-            break;
-            case 15n:
-            if (canseeit)
-                switch (cptr.ld1so(obj, $obj_where)) {
-                    case NHM.OBJ_INVENT:
-                    case NHM.OBJ_MINVENT:
-                    (yield* pline(
-                        __s_s_scandle_s_flame_s_flicker_s_low,
-                        cptr.decay(whose),
-                        menorah ? __s_candelabrum_s : __s_empty,
-                        many ? __s_s_apos : __s_apos_s,
-                        many ? __s_s : __s_empty,
-                        many ? __s_empty : __s_s
-                    ));
-                    break;
-                    case NHM.OBJ_FLOOR:
-                    (yield* You_see(
-                        __s_scandle_s_flame_s_flicker_low,
-                        menorah ? __s_a_candelabrum_s : (many ? __s_some : __s_a_sp),
-                        many ? __s_s_apos : __s_apos_s,
-                        many ? __s_s : __s_empty
-                    ));
-                    break;
-                }
-            break;
-            case 0n:
-            /* we know even if blind and in our inventory */
-            if (canseeit || bytouch) {
-                if (menorah) {
-                    switch (cptr.ld1so(obj, $obj_where)) {
-                        case NHM.OBJ_INVENT:
                         need_invupdate = 1;
                         // @FallThrough
                         ;
-                        case NHM.OBJ_MINVENT:
-                        (yield* pline(
-                            __s_scandelabrum_s_flame_s,
-                            cptr.decay(whose),
-                            many ? __s_s_die : __s_dies
-                        ));
+                    case NHM.OBJ_MINVENT:
+                        (yield* pline(__s_spotion_of_oil_has_burnt_away, cptr.decay(whose)));
                         break;
-                        case NHM.OBJ_FLOOR:
-                        (yield* You_see(__s_a_candelabrum_s_flame_s_die, many ? __s_s : __s_empty));
-                        break;
-                    }
-                } else {
-                    switch (cptr.ld1so(obj, $obj_where)) {
-                        case NHM.OBJ_INVENT:
-                        // @FallThrough
-                        /* no need_invupdate for update_inventory() necessary;
-                           useupall() -> freeinv() handles it */
-                        ;
-                        case NHM.OBJ_MINVENT:
-                        (yield* pline(__s_s_s_consumed, (yield* Yname2(obj)), many ? __s_are : __s_is__2));
-                        break;
-                        case NHM.OBJ_FLOOR:
-                        /*
-                          You see some wax candles consumed!
-                          You see a wax candle consumed!
-                         */
-                        (yield* You_see(
-                            __s_s_s_consumed__2,
-                            many ? __s_some : __s_empty,
-                            many ? (yield* xname(obj)) : (yield* an((yield* xname(obj))))
-                        ));
+                    case NHM.OBJ_FLOOR:
+                        (yield* You_see(__s_a_burning_potion_of_oil_go_out));
                         need_newsym = 1;
                         break;
-                    }
-
-                    /* post message */
-                    (yield* pline(Hallucination()
-                            ? (many ? __s_they_shriek : __s_it_shrieks)
-                            : (Blind()
-                                ? __s_empty
-                                : (many ? __s_their_flames_die : __s_its_flame_dies))));
                 }
             }
-            (yield* end_burn(obj, 0));
-
-            if (menorah) {
-                cptr.st1o(obj, $obj_spe, 0);  /* no candles */
-                cptr.stI32o(obj, $obj_owt, (yield* weight(obj)) >>> 0);
-                if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
-                    need_invupdate = 1;
+            (yield* end_burn(obj, 0));  /* turn off light source */
+            if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
+                (yield* useupall(obj));
             } else {
-                if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
-                    (yield* useupall(obj));
-                } else {
-                    let onfloor = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR));
-
-                    /* clear migrating obj's destination code
-                       so obfree won't think this item is worn */
-                    if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
-                        cptr.stI64o(obj, $obj_owornmask, 0n);
-                    (yield* obj_extract_self(obj));
-                    if (onfloor)
-                        (yield* maybe_unhide_at(x.v, y.v));
-                    (yield* obfree(obj, null));
-                }
-                obj = null;
+                /* clear migrating obj's destination code before obfree
+                   to avoid false complaint of deleting worn item */
+                if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
+                    cptr.stI64o(obj, $obj_owornmask, 0n);
+                (yield* obj_extract_self(obj));
+                (yield* obfree(obj, null));
             }
-            break;  /* case [age ==] 0 */
-            default:
-            /*
-             * Someone added fuel (candles) to the menorah while
-             * it was lit. Just fall through and let begin_burn()
-             * handle the new age.
-             */
+            obj = null;
             break;
-        }
+        case NHC.BRASS_LANTERN:
+        case NHC.OIL_LAMP:
+            switch (Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_age)))) {
+                case 150:
+                case 100:
+                case 50:
+                    if (canseeit) {
+                        if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
+                            (yield* lantern_message(obj));
+                        else
+                            (yield* see_lamp_flicker(
+                                obj,
+                                cptr.ldI64o(obj, $obj_age) == 50n ? __s_considerably : __s_empty
+                            ));
+                    }
+                    break;
+                case 25:
+                    if (canseeit) {
+                        if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN) {
+                            (yield* lantern_message(obj));
+                        } else {
+                            switch (cptr.ld1so(obj, $obj_where)) {
+                                case NHM.OBJ_INVENT:
+                                case NHM.OBJ_MINVENT:
+                                    (yield* pline(__s_s_seems_about_to_go_out, (yield* Yname2(obj))));
+                                    break;
+                                case NHM.OBJ_FLOOR:
+                                    (yield* You_see(__s_s_about_to_go_out, (yield* an((yield* xname(obj))))));
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case 0:
+                    /* even if blind you'll know if holding it */
+                    if (canseeit || bytouch) {
+                        switch (cptr.ld1so(obj, $obj_where)) {
+                            case NHM.OBJ_INVENT:
+                                need_invupdate = 1;
+                                // @FallThrough
+                                ;
+                            case NHM.OBJ_MINVENT:
+                                if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
+                                    (yield* pline(__s_slantern_has_run_out_of_power, cptr.decay(whose)));
+                                else
+                                    (yield* pline(__s_s_has_gone_out, (yield* Yname2(obj))));
+                                break;
+                            case NHM.OBJ_FLOOR:
+                                if (cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN)
+                                    (yield* You_see(__s_a_lantern_run_out_of_power));
+                                else
+                                    (yield* You_see(__s_s_go_out, (yield* an((yield* xname(obj))))));
+                                break;
+                        }
+                    }
+                    (yield* end_burn(obj, 0));
+                    break;
+                default:
+                    /*
+                     * Someone added fuel to the lamp while it was
+                     * lit. Just fall through and let begin_burn()
+                     * handle the new age.
+                     */
+                    break;
+            }
 
-        if (obj && cptr.ldI64o(obj, $obj_age))
-            (yield* begin_burn(obj, 1));
-        break;  /* case [otyp ==] candelabrum|tallow_candle|wax_candle */
+            if (cptr.ldI64o(obj, $obj_age))
+                (yield* begin_burn(obj, 1));
+
+            break;
+        case NHC.CANDELABRUM_OF_INVOCATION:
+        case NHC.TALLOW_CANDLE:
+        case NHC.WAX_CANDLE:
+            switch (cptr.ldI64o(obj, $obj_age)) {
+                case 75n:
+                    if (canseeit)
+                        switch (cptr.ld1so(obj, $obj_where)) {
+                            case NHM.OBJ_INVENT:
+                            case NHM.OBJ_MINVENT:
+                                (yield* pline(
+                                    __s_s_scandle_s_getting_short,
+                                    cptr.decay(whose),
+                                    menorah ? __s_candelabrum_s : __s_empty,
+                                    many ? __s_s_are : __s_is
+                                ));
+                                break;
+                            case NHM.OBJ_FLOOR:
+                                (yield* You_see(
+                                    __s_scandle_s_getting_short,
+                                    menorah ? __s_a_candelabrum_s : (many ? __s_some : __s_a_sp),
+                                    many ? __s_s : __s_empty
+                                ));
+                                break;
+                        }
+                    break;
+                case 15n:
+                    if (canseeit)
+                        switch (cptr.ld1so(obj, $obj_where)) {
+                            case NHM.OBJ_INVENT:
+                            case NHM.OBJ_MINVENT:
+                                (yield* pline(
+                                    __s_s_scandle_s_flame_s_flicker_s_low,
+                                    cptr.decay(whose),
+                                    menorah ? __s_candelabrum_s : __s_empty,
+                                    many ? __s_s_apos : __s_apos_s,
+                                    many ? __s_s : __s_empty,
+                                    many ? __s_empty : __s_s
+                                ));
+                                break;
+                            case NHM.OBJ_FLOOR:
+                                (yield* You_see(
+                                    __s_scandle_s_flame_s_flicker_low,
+                                    menorah ? __s_a_candelabrum_s : (many ? __s_some : __s_a_sp),
+                                    many ? __s_s_apos : __s_apos_s,
+                                    many ? __s_s : __s_empty
+                                ));
+                                break;
+                        }
+                    break;
+                case 0n:
+                    /* we know even if blind and in our inventory */
+                    if (canseeit || bytouch) {
+                        if (menorah) {
+                            switch (cptr.ld1so(obj, $obj_where)) {
+                                case NHM.OBJ_INVENT:
+                                    need_invupdate = 1;
+                                    // @FallThrough
+                                    ;
+                                case NHM.OBJ_MINVENT:
+                                    (yield* pline(
+                                        __s_scandelabrum_s_flame_s,
+                                        cptr.decay(whose),
+                                        many ? __s_s_die : __s_dies
+                                    ));
+                                    break;
+                                case NHM.OBJ_FLOOR:
+                                    (yield* You_see(
+                                        __s_a_candelabrum_s_flame_s_die,
+                                        many ? __s_s : __s_empty
+                                    ));
+                                    break;
+                            }
+                        } else {
+                            switch (cptr.ld1so(obj, $obj_where)) {
+                                case NHM.OBJ_INVENT:
+                                    // @FallThrough
+                                    /* no need_invupdate for update_inventory() necessary;
+                                       useupall() -> freeinv() handles it */
+                                    ;
+                                case NHM.OBJ_MINVENT:
+                                    (yield* pline(
+                                        __s_s_s_consumed,
+                                        (yield* Yname2(obj)),
+                                        many ? __s_are : __s_is__2
+                                    ));
+                                    break;
+                                case NHM.OBJ_FLOOR:
+                                    /*
+                                      You see some wax candles consumed!
+                                      You see a wax candle consumed!
+                                     */
+                                    (yield* You_see(
+                                        __s_s_s_consumed__2,
+                                        many ? __s_some : __s_empty,
+                                        many ? (yield* xname(obj)) : (yield* an((yield* xname(obj))))
+                                    ));
+                                    need_newsym = 1;
+                                    break;
+                            }
+
+                            /* post message */
+                            (yield* pline(Hallucination()
+                                    ? (many ? __s_they_shriek : __s_it_shrieks)
+                                    : (Blind()
+                                        ? __s_empty
+                                        : (many ? __s_their_flames_die : __s_its_flame_dies))));
+                        }
+                    }
+                    (yield* end_burn(obj, 0));
+
+                    if (menorah) {
+                        cptr.st1o(obj, $obj_spe, 0);  /* no candles */
+                        cptr.stI32o(obj, $obj_owt, (yield* weight(obj)) >>> 0);
+                        if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
+                            need_invupdate = 1;
+                    } else {
+                        if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
+                            (yield* useupall(obj));
+                        } else {
+                            let onfloor = schar((cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR));
+
+                            /* clear migrating obj's destination code
+                               so obfree won't think this item is worn */
+                            if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MIGRATING)
+                                cptr.stI64o(obj, $obj_owornmask, 0n);
+                            (yield* obj_extract_self(obj));
+                            if (onfloor)
+                                (yield* maybe_unhide_at(x.v, y.v));
+                            (yield* obfree(obj, null));
+                        }
+                        obj = null;
+                    }
+                    break;  /* case [age ==] 0 */
+                default:
+                    /*
+                     * Someone added fuel (candles) to the menorah while
+                     * it was lit. Just fall through and let begin_burn()
+                     * handle the new age.
+                     */
+                    break;
+            }
+
+            if (obj && cptr.ldI64o(obj, $obj_age))
+                (yield* begin_burn(obj, 1));
+            break;  /* case [otyp ==] candelabrum|tallow_candle|wax_candle */
         default:
-        (yield* impossible(__s_burn_object_unexpected_obj_s, (yield* xname(obj))));
-        break;
+            (yield* impossible(__s_burn_object_unexpected_obj_s, (yield* xname(obj))));
+            break;
     }
     if (need_newsym)
         (yield* newsym(x.v, y.v));
@@ -2637,52 +2671,52 @@ export function* begin_burn(obj, already_lit) {
 
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.MAGIC_LAMP:
-        cptr.stI32o(obj, $obj_lamplit, 1);
-        do_timer = 0;
-        break;
+            cptr.stI32o(obj, $obj_lamplit, 1);
+            do_timer = 0;
+            break;
         case NHC.POT_OIL:
-        turns = cptr.ldI64o(obj, $obj_age);
-        if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
-            turns = (BigInt.asIntN(64, 3n * turns + 2n)) / 4n;
-        radius = 1;  /* very dim light */
-        break;
+            turns = cptr.ldI64o(obj, $obj_age);
+            if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
+                turns = (BigInt.asIntN(64, 3n * turns + 2n)) / 4n;
+            radius = 1;  /* very dim light */
+            break;
         case NHC.BRASS_LANTERN:
         case NHC.OIL_LAMP:
-        /* magic times are 150, 100, 50, 25, and 0 */
-        if (cptr.ldI64o(obj, $obj_age) > 150n)
-            turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 150n);
-        else if (cptr.ldI64o(obj, $obj_age) > 100n)
-            turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 100n);
-        else if (cptr.ldI64o(obj, $obj_age) > 50n)
-            turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 50n);
-        else if (cptr.ldI64o(obj, $obj_age) > 25n)
-            turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 25n);
-        else
-            turns = cptr.ldI64o(obj, $obj_age);
-        break;
+            /* magic times are 150, 100, 50, 25, and 0 */
+            if (cptr.ldI64o(obj, $obj_age) > 150n)
+                turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 150n);
+            else if (cptr.ldI64o(obj, $obj_age) > 100n)
+                turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 100n);
+            else if (cptr.ldI64o(obj, $obj_age) > 50n)
+                turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 50n);
+            else if (cptr.ldI64o(obj, $obj_age) > 25n)
+                turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 25n);
+            else
+                turns = cptr.ldI64o(obj, $obj_age);
+            break;
         case NHC.CANDELABRUM_OF_INVOCATION:
         case NHC.TALLOW_CANDLE:
         case NHC.WAX_CANDLE:
-        /* magic times are 75, 15, and 0 */
-        if (cptr.ldI64o(obj, $obj_age) > 75n)
-            turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 75n);
-        else if (cptr.ldI64o(obj, $obj_age) > 15n)
-            turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 15n);
-        else
-            turns = cptr.ldI64o(obj, $obj_age);
-        radius = candle_light_range(obj);
-        break;
+            /* magic times are 75, 15, and 0 */
+            if (cptr.ldI64o(obj, $obj_age) > 75n)
+                turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 75n);
+            else if (cptr.ldI64o(obj, $obj_age) > 15n)
+                turns = BigInt.asIntN(64, cptr.ldI64o(obj, $obj_age) - 15n);
+            else
+                turns = cptr.ldI64o(obj, $obj_age);
+            radius = candle_light_range(obj);
+            break;
         default:
-        /* [ALI] Support artifact light sources */
-        if (artifact_light(obj)) {
-            cptr.stI32o(obj, $obj_lamplit, 1);
-            do_timer = 0;
-            radius = arti_light_radius(obj);
-        } else {
-            (yield* impossible(__s_begin_burn_unexpected_s, (yield* xname(obj))));
-            turns = cptr.ldI64o(obj, $obj_age);
-        }
-        break;
+            /* [ALI] Support artifact light sources */
+            if (artifact_light(obj)) {
+                cptr.stI32o(obj, $obj_lamplit, 1);
+                do_timer = 0;
+                radius = arti_light_radius(obj);
+            } else {
+                (yield* impossible(__s_begin_burn_unexpected_s, (yield* xname(obj))));
+                turns = cptr.ldI64o(obj, $obj_age);
+            }
+            break;
     }
 
     if (do_timer) {
@@ -2770,11 +2804,8 @@ export function* do_storms() {
     let count;
 
     /* no lightning if not stormy level or too often, even then */
-    if (!(cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy
-    ) & 1) ||
-            rn2(8))
+    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) &
+            1) || rn2(8))
         return;
 
     /* the number of strikes is 8-log2(nstrike) */
@@ -2874,16 +2905,16 @@ cptr.stPtro(timeout_funcs, 192 + $ttable_name, __s_melt_ice_away);
 function* kind_name(kind) {
     switch (kind) {
         case NHC.TIMER_NONE:
-        (yield* impossible(__s_no_timer_type));
-        return __s_none;
+            (yield* impossible(__s_no_timer_type));
+            return __s_none;
         case NHC.TIMER_LEVEL:
-        return __s_level;
+            return __s_level;
         case NHC.TIMER_GLOBAL:
-        return __s_global;
+            return __s_global;
         case NHC.TIMER_OBJECT:
-        return __s_object;
+            return __s_object;
         case NHC.TIMER_MONSTER:
-        return __s_monster;
+            return __s_monster;
     }
     return __s_unknown;
 }
@@ -3070,127 +3101,135 @@ export function* timer_sanity_check() {
         t_id = cptr.ldU64o(curr, $timer_element_tid);
         switch (cptr.ldI16o(curr, $timer_element_kind)) {
             case NHC.TIMER_OBJECT:
-            {
-                /* TODO? verify that the timer type is attached to applicable
-                   object (egg for hatch, glob for shrink, and so forth) */
-                let obj = cptr.ldPtro(curr, $timer_element_arg);
-                let top;
-                let obj_adr = fmt_ptr(obj);
-                let owhere = cptr.ld1so(obj, $obj_where);
+                {
+                    /* TODO? verify that the timer type is attached to applicable
+                       object (egg for hatch, glob for shrink, and so forth) */
+                    let obj = cptr.ldPtro(curr, $timer_element_arg);
+                    let top;
+                    let obj_adr = fmt_ptr(obj);
+                    let owhere = cptr.ld1so(obj, $obj_where);
 
-                if (cptr.ldI16o(obj, $obj_timed) == 0) {
-                    (yield* impossible(__s_timer_sanity_untimed_obj_s_timer_lu, obj_adr, t_id));
-                }
-                x.v = (y.v = 0);
-                /* if obj is in a container, possibly a nested one, figure out
-                   where the outermost container is */
-                for (top = obj; top; top = cptr.ldPtro(top, $obj_v))
-                    if ((owhere = cptr.ld1so(top, $obj_where)) != NHM.OBJ_CONTAINED)
-                        break;
-                (__builtin_expect(BigInt((!(!cptr.eq(top, (null))))), 0n)
-                        ? __assert_rtn(__s_timer_sanity_check, __s_timeout_c, 2156, __s_top_null)
-                        : void 0);
-                if (owhere == NHM.OBJ_MIGRATING ||
-                        (owhere == NHM.OBJ_MINVENT && !mon_is_local(cptr.ldPtro(top, $obj_v)))) {
-                    /* migrating directly or carried by migrating monster */
-                    ;  /* not able to validate location so skip checks */
-                } else if (!get_obj_location(obj, x, y, 3)) {
-                    /* free? or on a shop's used-up bill? */
-                    (yield* impossible(
-                        __s_timer_sanity_can_t_locate_obj_s_where_d,
-                        obj_adr,
-                        cptr.ld1so(obj, $obj_where),
-                        t_id
-                    ));
-                } else if (!isok(x.v, y.v)) {
-                    (yield* impossible(
-                        __s_timer_sanity_obj_s_where_d_located_at_d,
-                        obj_adr,
-                        cptr.ld1so(obj, $obj_where),
-                        x.v,
-                        y.v,
-                        t_id
-                    ));
-                }
-                break;
-            }
-            case NHC.TIMER_MONSTER:
-            (yield* impossible(__s_timer_sanity_unexpected_monster_timer_lu, t_id));
-            break;
-            case NHC.TIMER_LEVEL:
-            {
-                let lwhere = cptr.ldI64o(curr, $timer_element_arg);
-
-                x.v = Number(BigInt.asIntN(16, ((lwhere >> 16n) & 65535n)));
-                y.v = Number(BigInt.asIntN(16, (lwhere & 65535n)));
-                if (isok(x.v, y.v)) {
-                    /* replicate isok() in order to convince static analysis
-                       that the decoding via '& 0xFFFF' hasn't produced a value
-                       too big for levl[][] and that the cast to a narrower type
-                       hasn't intruded on the sign bit to yield a negative value;
-                       the analyzer isn't aware that isok() filters such things */
-                    (__builtin_expect(
-                        BigInt((!(x.v > 0 && x.v < NHM.COLNO && y.v >= 0 && y.v < NHM.ROWNO))),
-                        0n
-                    )
+                    if (cptr.ldI16o(obj, $obj_timed) == 0) {
+                        (yield* impossible(__s_timer_sanity_untimed_obj_s_timer_lu, obj_adr, t_id));
+                    }
+                    x.v = (y.v = 0);
+                    /* if obj is in a container, possibly a nested one, figure out
+                       where the outermost container is */
+                    for (top = obj; top; top = cptr.ldPtro(top, $obj_v))
+                        if ((owhere = cptr.ld1so(top, $obj_where)) != NHM.OBJ_CONTAINED)
+                            break;
+                    (__builtin_expect(BigInt((!(!cptr.eq(top, (null))))), 0n)
                             ? __assert_rtn(
                                 __s_timer_sanity_check,
                                 __s_timeout_c,
-                                2188,
-                                __s_x_0_x_colno_y_0_y_rowno
+                                2156,
+                                __s_top_null
                             )
                             : void 0);
+                    if (owhere == NHM.OBJ_MIGRATING ||
+                            (owhere == NHM.OBJ_MINVENT &&
+                                !mon_is_local(cptr.ldPtro(top, $obj_v)))) {
+                        /* migrating directly or carried by migrating monster */
+                        ;  /* not able to validate location so skip checks */
+                    } else if (!get_obj_location(obj, x, y, 3)) {
+                        /* free? or on a shop's used-up bill? */
+                        (yield* impossible(
+                            __s_timer_sanity_can_t_locate_obj_s_where_d,
+                            obj_adr,
+                            cptr.ld1so(obj, $obj_where),
+                            t_id
+                        ));
+                    } else if (!isok(x.v, y.v)) {
+                        (yield* impossible(
+                            __s_timer_sanity_obj_s_where_d_located_at_d,
+                            obj_adr,
+                            cptr.ld1so(obj, $obj_where),
+                            x.v,
+                            y.v,
+                            t_id
+                        ));
+                    }
+                    break;
+                }
+            case NHC.TIMER_MONSTER:
+                (yield* impossible(__s_timer_sanity_unexpected_monster_timer_lu, t_id));
+                break;
+            case NHC.TIMER_LEVEL:
+                {
+                    let lwhere = cptr.ldI64o(curr, $timer_element_arg);
 
-                    if (cptr.ldI16o(curr, $timer_element_func_index) == NHC.MELT_ICE_AWAY &&
-                            !is_ice(x.v, y.v) &&
-                            !(cptr.ld1so3(
-                                svl,
-                                x.v,
-                                $sizeof_rm_x21,
-                                y.v,
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_typ
-                            ) ==
-                                NHC.DRAWBRIDGE_DOWN &&
-                                (((cptr.ldI32o3(
+                    x.v = Number(BigInt.asIntN(16, ((lwhere >> 16n) & 65535n)));
+                    y.v = Number(BigInt.asIntN(16, (lwhere & 65535n)));
+                    if (isok(x.v, y.v)) {
+                        /* replicate isok() in order to convince static analysis
+                           that the decoding via '& 0xFFFF' hasn't produced a value
+                           too big for levl[][] and that the cast to a narrower type
+                           hasn't intruded on the sign bit to yield a negative value;
+                           the analyzer isn't aware that isok() filters such things */
+                        (__builtin_expect(
+                            BigInt((!(x.v > 0 && x.v < NHM.COLNO && y.v >= 0 && y.v < NHM.ROWNO))),
+                            0n
+                        )
+                                ? __assert_rtn(
+                                    __s_timer_sanity_check,
+                                    __s_timeout_c,
+                                    2188,
+                                    __s_x_0_x_colno_y_0_y_rowno
+                                )
+                                : void 0);
+
+                        if (cptr.ldI16o(curr, $timer_element_func_index) == NHC.MELT_ICE_AWAY &&
+                                !is_ice(x.v, y.v) &&
+                                !(cptr.ld1so3(
                                     svl,
                                     x.v,
                                     $sizeof_rm_x21,
                                     y.v,
                                     $sizeof_rm,
-                                    $instance_globals_saved_l_level + $rm_flags
-                                ) & 31) | 0) &
-                                    NHM.DB_UNDER) ==
-                                    NHM.DB_ICE))
-                        (yield* impossible(
-                            __s_timer_sanity_melt_timer_lu_on_non_ice_d,
-                            t_id,
-                            cptr.ld1so3(
-                                svl,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                ) ==
+                                    NHC.DRAWBRIDGE_DOWN &&
+                                    (((cptr.ldI32o3(
+                                        svl,
+                                        x.v,
+                                        $sizeof_rm_x21,
+                                        y.v,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_flags
+                                    ) &
+                                        31) |
+                                        0) &
+                                        NHM.DB_UNDER) ==
+                                        NHM.DB_ICE))
+                            (yield* impossible(
+                                __s_timer_sanity_melt_timer_lu_on_non_ice_d,
+                                t_id,
+                                cptr.ld1so3(
+                                    svl,
+                                    x.v,
+                                    $sizeof_rm_x21,
+                                    y.v,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                ),
                                 x.v,
-                                $sizeof_rm_x21,
-                                y.v,
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_typ
-                            ),
-                            x.v,
-                            y.v
-                        ));
-                } else {
-                    (yield* impossible(__s_timer_sanity_spot_timer_lu_at_d_d, t_id, x.v, y.v));
+                                y.v
+                            ));
+                    } else {
+                        (yield* impossible(__s_timer_sanity_spot_timer_lu_at_d_d, t_id, x.v, y.v));
+                    }
+                    break;
                 }
-                break;
-            }
             case NHC.TIMER_GLOBAL:
-            (yield* impossible(__s_timer_sanity_unexpected_global_timer_lu, t_id));
-            break;
+                (yield* impossible(__s_timer_sanity_unexpected_global_timer_lu, t_id));
+                break;
             default:
-            (yield* impossible(
-                __s_timer_sanity_unknown_timer_lu_type_d,
-                t_id,
-                cptr.ldI16o(curr, $timer_element_kind)
-            ));
-            break;
+                (yield* impossible(
+                    __s_timer_sanity_unknown_timer_lu_type_d,
+                    t_id,
+                    cptr.ldI16o(curr, $timer_element_kind)
+                ));
+                break;
         }
     }
 }
@@ -3219,8 +3258,7 @@ export function* run_timers() {
                 (cptr.ldPtro(curr, $timer_element_arg)),
                 $obj_timed,
                 cptr.ldI16o((cptr.ldPtro(curr, $timer_element_arg)), $obj_timed) + -1
-            )) -
-                    (-1);
+            )) - (-1);
         (yield* Y.icall((cptr.ldPtro(
             timeout_funcs,
             cptr.ldI16o(curr, $timer_element_func_index),
@@ -3279,8 +3317,7 @@ export function* start_timer(when, kind, func_index, arg) {
             svt,
             $instance_globals_saved_t_timer_id,
             cptr.ldU64o(svt, $instance_globals_saved_t_timer_id) + 1n
-        )) -
-            (1n)
+        )) - (1n)
     );
     cptr.stI64o(
         gnu,
@@ -3298,8 +3335,7 @@ export function* start_timer(when, kind, func_index, arg) {
             (cptr.ldPtr(arg)),
             $obj_timed,
             cptr.ldI16o((cptr.ldPtr(arg)), $obj_timed) + 1
-        )) -
-                (1);
+        )) - (1);
 
     return 1;
 }
@@ -3328,8 +3364,7 @@ export function* stop_timer(func_index, arg) {
                 (cptr.ldPtr(arg)),
                 $obj_timed,
                 cptr.ldI16o((cptr.ldPtr(arg)), $obj_timed) + -1
-            )) -
-                    (-1);
+            )) - (-1);
         if ((cleanup_func = cptr.ldPtro2(
             timeout_funcs,
             cptr.ldI16o(doomed, $timer_element_func_index),
@@ -3607,52 +3642,56 @@ function* write_timer(nhfp, timer) {
     switch (cptr.ldI16o(timer, $timer_element_kind)) {
         case NHC.TIMER_GLOBAL:
         case NHC.TIMER_LEVEL:
-        /* assume no pointers in arg */
-        (yield* sfo_fe(nhfp, timer, __s_timer));
-        break;
+            /* assume no pointers in arg */
+            (yield* sfo_fe(nhfp, timer, __s_timer));
+            break;
         case NHC.TIMER_OBJECT:
-        if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
-            (yield* sfo_fe(nhfp, timer, __s_timer));
-        } else {
-            /* replace object pointer with id */
-            cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
-            cptr.memcpy(
-                cptr.add(timer, $timer_element_arg),
-                cptr.add(cg, $const_globals_zeroany),
-                8
-            );
-            cptr.stI32o(timer, $timer_element_arg, cptr.ldI32o((cptr.ldPtr(arg_save)), $obj_o_id));
-            cptr.stI32o(timer, $timer_element_needs_fixup, 1);
-            (yield* sfo_fe(nhfp, timer, __s_timer));
-            cptr.stPtro(timer, $timer_element_arg, cptr.ldPtr(arg_save));
-            cptr.stI32o(timer, $timer_element_needs_fixup, 0);
-        }
-        break;
+            if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
+                (yield* sfo_fe(nhfp, timer, __s_timer));
+            } else {
+                /* replace object pointer with id */
+                cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
+                cptr.memcpy(
+                    cptr.add(timer, $timer_element_arg),
+                    cptr.add(cg, $const_globals_zeroany),
+                    8
+                );
+                cptr.stI32o(
+                    timer,
+                    $timer_element_arg,
+                    cptr.ldI32o((cptr.ldPtr(arg_save)), $obj_o_id)
+                );
+                cptr.stI32o(timer, $timer_element_needs_fixup, 1);
+                (yield* sfo_fe(nhfp, timer, __s_timer));
+                cptr.stPtro(timer, $timer_element_arg, cptr.ldPtr(arg_save));
+                cptr.stI32o(timer, $timer_element_needs_fixup, 0);
+            }
+            break;
         case NHC.TIMER_MONSTER:
-        if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
-            (yield* sfo_fe(nhfp, timer, __s_timer));
-        } else {
-            /* replace monster pointer with id */
-            cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
-            cptr.memcpy(
-                cptr.add(timer, $timer_element_arg),
-                cptr.add(cg, $const_globals_zeroany),
-                8
-            );
-            cptr.stI32o(
-                timer,
-                $timer_element_arg,
-                cptr.ldI32o((cptr.ldPtr(arg_save)), $monst_m_id)
-            );
-            cptr.stI32o(timer, $timer_element_needs_fixup, 1);
-            (yield* sfo_fe(nhfp, timer, __s_timer));
-            cptr.stPtro(timer, $timer_element_arg, cptr.ldPtr(arg_save));
-            cptr.stI32o(timer, $timer_element_needs_fixup, 0);
-        }
-        break;
+            if (cptr.ldI32o(timer, $timer_element_needs_fixup)) {
+                (yield* sfo_fe(nhfp, timer, __s_timer));
+            } else {
+                /* replace monster pointer with id */
+                cptr.stPtr(arg_save, cptr.ldPtro(timer, $timer_element_arg));
+                cptr.memcpy(
+                    cptr.add(timer, $timer_element_arg),
+                    cptr.add(cg, $const_globals_zeroany),
+                    8
+                );
+                cptr.stI32o(
+                    timer,
+                    $timer_element_arg,
+                    cptr.ldI32o((cptr.ldPtr(arg_save)), $monst_m_id)
+                );
+                cptr.stI32o(timer, $timer_element_needs_fixup, 1);
+                (yield* sfo_fe(nhfp, timer, __s_timer));
+                cptr.stPtro(timer, $timer_element_arg, cptr.ldPtr(arg_save));
+                cptr.stI32o(timer, $timer_element_needs_fixup, 0);
+            }
+            break;
         default:
-        (yield* panic(__s_write_timer));
-        break;
+            (yield* panic(__s_write_timer));
+            break;
     }
 }
 
@@ -3665,14 +3704,14 @@ export function* obj_is_local(obj) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
         case NHM.OBJ_MIGRATING:
-        return 0;
+            return 0;
         case NHM.OBJ_FLOOR:
         case NHM.OBJ_BURIED:
-        return 1;
+            return 1;
         case NHM.OBJ_CONTAINED:
-        return (yield* obj_is_local(cptr.ldPtro(obj, $obj_v)));
+            return (yield* obj_is_local(cptr.ldPtro(obj, $obj_v)));
         case NHM.OBJ_MINVENT:
-        return mon_is_local(cptr.ldPtro(obj, $obj_v));
+            return mon_is_local(cptr.ldPtro(obj, $obj_v));
     }
     (yield* panic(__s_obj_is_local));
     /*NOTREACHED*/
@@ -3705,13 +3744,13 @@ function mon_is_local(mon) {
 function* timer_is_local(timer) {
     switch (cptr.ldI16o(timer, $timer_element_kind)) {
         case NHC.TIMER_LEVEL:
-        return 1;
+            return 1;
         case NHC.TIMER_GLOBAL:
-        return 0;
+            return 0;
         case NHC.TIMER_OBJECT:
-        return (yield* obj_is_local(cptr.ldPtro(timer, $timer_element_arg)));
+            return (yield* obj_is_local(cptr.ldPtro(timer, $timer_element_arg)));
         case NHC.TIMER_MONSTER:
-        return mon_is_local(cptr.ldPtro(timer, $timer_element_arg));
+            return mon_is_local(cptr.ldPtro(timer, $timer_element_arg));
     }
     (yield* panic(__s_timer_is_local));
     /*NOTREACHED*/

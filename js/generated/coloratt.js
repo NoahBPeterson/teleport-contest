@@ -1634,26 +1634,26 @@ export function query_attr(prompt, dflt_attr) {
                         pick_cnt == 1) {
                     switch (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr)) {
                         case NHM.ATR_NONE:
-                        k = NHC.HL_NONE;
-                        break;
+                            k = NHC.HL_NONE;
+                            break;
                         case NHM.ATR_BOLD:
-                        k |= NHC.HL_BOLD;
-                        break;
+                            k |= NHC.HL_BOLD;
+                            break;
                         case NHM.ATR_DIM:
-                        k |= NHC.HL_DIM;
-                        break;
+                            k |= NHC.HL_DIM;
+                            break;
                         case NHM.ATR_ITALIC:
-                        k |= NHC.HL_ITALIC;
-                        break;
+                            k |= NHC.HL_ITALIC;
+                            break;
                         case NHM.ATR_ULINE:
-                        k |= NHC.HL_ULINE;
-                        break;
+                            k |= NHC.HL_ULINE;
+                            break;
                         case NHM.ATR_BLINK:
-                        k |= NHC.HL_BLINK;
-                        break;
+                            k |= NHC.HL_BLINK;
+                            break;
                         case NHM.ATR_INVERSE:
-                        k |= NHC.HL_INVERSE;
-                        break;
+                            k |= NHC.HL_INVERSE;
+                            break;
                     }
                 }
             }
@@ -2089,18 +2089,10 @@ export function wc_color_name(colorindx) {
             /* override hex value if this is a named color */
             for (indx = 16; indx < 155; ++indx)
                 if (cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_r) == r &&
-                        cptr.ldI64o2(
-                            colortable,
-                            indx,
-                            $sizeof_nethack_color,
-                            $nethack_color_g
-                        ) == g &&
-                        cptr.ldI64o2(
-                            colortable,
-                            indx,
-                            $sizeof_nethack_color,
-                            $nethack_color_b
-                        ) == b) {
+                        cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_g) ==
+                            g &&
+                        cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_b) ==
+                            b) {
                     result = cptr.ldPtro2(
                         colortable,
                         indx,
@@ -2172,7 +2164,9 @@ export function rgbstr_to_int32(rgbstr) {
             }
         }
         /* sanity checks */
-        if (c_r && c_g && c_b &&
+        if (c_r &&
+                c_g &&
+                c_b &&
                 (cptr.strlen(c_r) > 0n && cptr.strlen(c_r) < 4n) &&
                 (cptr.strlen(c_g) > 0n && cptr.strlen(c_g) < 4n) &&
                 (cptr.strlen(c_b) > 0n && cptr.strlen(c_b) < 4n)) {

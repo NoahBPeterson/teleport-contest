@@ -303,8 +303,7 @@ export function* dosave() {
                 program_state,
                 $sinfo_savefile_completed,
                 cptr.ldI32o(program_state, $sinfo_savefile_completed) + 1
-            )) -
-                    (1);
+            )) - (1);
             cptr.stI32o(u, $you_uhp, -1);  /* universal game's over indicator */
             if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
                 (yield* Y.icall((cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_dosave)));
@@ -330,15 +329,17 @@ export function* dosave0() {
     let res = 0;
     __lbl_done: {
 
-        (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
-                (1);  /* inhibit status and perm_invent updates */
+        (cptr.stI32o(
+            program_state,
+            $sinfo_saving,
+            cptr.ldI32o(program_state, $sinfo_saving) + 1
+        )) - (1);  /* inhibit status and perm_invent updates */
         {
             (cptr.stI32o(
                 a11y,
                 $accessibility_data_mon_notices_blocked,
                 cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
-            )) -
-                    (1);
+            )) - (1);
         }
         /* we may get here via hangup signal, in which case we want to fix up
            a few of things before saving so that they won't be restored in
@@ -372,12 +373,8 @@ export function* dosave0() {
                     (yield* close_nhfile(nhfp));
                     (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
                     (yield* There(__s_seems_to_be_an_old_save_file));
-                    if ((yield* yn_function(
-                        __s_overwrite_the_old_file,
-                        cptr.decay(ynchars),
-                        110,
-                        1
-                    )) == 110) {
+                    if ((yield* yn_function(__s_overwrite_the_old_file, cptr.decay(ynchars), 110, 1)) ==
+                            110) {
                         nh_sfconvert(fq_save);
                         (yield* nh_compress(fq_save));
                         break __lbl_done;
@@ -486,13 +483,17 @@ export function* dosave0() {
             a11y,
             $accessibility_data_mon_notices_blocked,
             cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1
-        ) < 0) {
+        ) <
+                0) {
             (yield* impossible(__s_mon_notices_blocked_0));
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
     }
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
-            (-1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_saving,
+        cptr.ldI32o(program_state, $sinfo_saving) + -1
+    )) - (-1);
     return res;
 }
 
@@ -529,8 +530,11 @@ function* savegamestate(nhfp) {
     let i;
     let uid = cptr.box(0n);
 
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
-            (1);  /* caller should/did already set this... */
+    (cptr.stI32o(
+        program_state,
+        $sinfo_saving,
+        cptr.ldI32o(program_state, $sinfo_saving) + 1
+    )) - (1);  /* caller should/did already set this... */
     uid.v = BigInt(getuid() >>> 0);
     (yield* sfo_ulong(nhfp, uid, __s_gamestate_uid));
     ;
@@ -622,8 +626,11 @@ function* savegamestate(nhfp) {
     (yield* save_luadata(nhfp));
     if (cptr.ld1so(nhfp, $NHFILE_structlevel))
         (yield* bflush(cptr.ldI32(nhfp)));
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
-            (-1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_saving,
+        cptr.ldI32o(program_state, $sinfo_saving) + -1
+    )) - (-1);
     return;
 }
 
@@ -646,8 +653,11 @@ export function* savestateinlock() {
     let whynot = new Uint8Array(256);
     let nhfp;
 
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
-            (1);  /* inhibit status and perm_invent updates */
+    (cptr.stI32o(
+        program_state,
+        $sinfo_saving,
+        cptr.ldI32o(program_state, $sinfo_saving) + 1
+    )) - (1);  /* inhibit status and perm_invent updates */
     /* When checkpointing is on, the full state needs to be written
      * on each checkpoint.  When checkpointing is off, only the pid
      * needs to be in the level.0 file, so it does not need to be
@@ -672,8 +682,7 @@ export function* savestateinlock() {
                 program_state,
                 $sinfo_saving,
                 cptr.ldI32o(program_state, $sinfo_saving) + -1
-            )) -
-                    (-1);
+            )) - (-1);
             return;
         }
 
@@ -697,8 +706,7 @@ export function* savestateinlock() {
                     program_state,
                     $sinfo_saving,
                     cptr.ldI32o(program_state, $sinfo_saving) + -1
-                )) -
-                        (-1);
+                )) - (-1);
                 (yield* done(NHC.TRICKED));
                 return;
             }
@@ -713,8 +721,7 @@ export function* savestateinlock() {
                 program_state,
                 $sinfo_saving,
                 cptr.ldI32o(program_state, $sinfo_saving) + -1
-            )) -
-                    (-1);
+            )) - (-1);
             (yield* done(NHC.TRICKED));
             return;
         }
@@ -736,8 +743,11 @@ export function* savestateinlock() {
         }
         (yield* close_nhfile(nhfp));
     }
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
-            (-1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_saving,
+        cptr.ldI32o(program_state, $sinfo_saving) + -1
+    )) - (-1);
     cptr.st1o(gh, $instance_globals_h_havestate, cptr.ld1so(flags, $flag_ins_chkpt));
     return;
 }
@@ -780,8 +790,11 @@ function* savelev_core(nhfp, lev) {
     let tmpc;
     __lbl_skip_lots: {
 
-        (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
-                (1);  /* even if current mode is FREEING */
+        (cptr.stI32o(
+            program_state,
+            $sinfo_saving,
+            cptr.ldI32o(program_state, $sinfo_saving) + 1
+        )) - (1);  /* even if current mode is FREEING */
 
         if (!nhfp)
             (yield* panic(__s_save_on_bad_file));  /* impossible */
@@ -891,8 +904,11 @@ function* savelev_core(nhfp, lev) {
         if (cptr.ld1so(nhfp, $NHFILE_structlevel))
             (yield* bflush(cptr.ldI32(nhfp)));
     }
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
-            (-1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_saving,
+        cptr.ldI32o(program_state, $sinfo_saving) + -1
+    )) - (-1);
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         (yield* clear_level_structures());
         cptr.stPtr(gf, null);
@@ -1193,15 +1209,13 @@ function* saveobjchn(nhfp, obj_p) {
                 program_state,
                 $sinfo_freeingdata,
                 cptr.ldI32o(program_state, $sinfo_freeingdata) + 1
-            )) -
-                    (1);
+            )) - (1);
             (yield* dealloc_obj(otmp));
             (cptr.stI32o(
                 program_state,
                 $sinfo_freeingdata,
                 cptr.ldI32o(program_state, $sinfo_freeingdata) + -1
-            )) -
-                    (-1);
+            )) - (-1);
         }
         otmp = otmp2;
     }

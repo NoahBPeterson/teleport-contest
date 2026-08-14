@@ -456,18 +456,18 @@ function* get_uchars(bufp, list, modlist, size, name) {
             case 0:
             case 9:
             case 10:
-            if (havenum) {
-                /* if modifying in place, don't insert zeros */
-                if (num || !modlist)
-                    cptr.st1o(list, count, uchar(num));
-                count++;
-                num = 0;
-                havenum = 0;
-            }
-            if (count == size || !cptr.ld1s(bufp))
-                return count;
-            bufp = cptr.add(bufp, 1);
-            break;
+                if (havenum) {
+                    /* if modifying in place, don't insert zeros */
+                    if (num || !modlist)
+                        cptr.st1o(list, count, uchar(num));
+                    count++;
+                    num = 0;
+                    havenum = 0;
+                }
+                if (count == size || !cptr.ld1s(bufp))
+                    return count;
+                bufp = cptr.add(bufp, 1);
+                break;
             case 48:
             case 49:
             case 50:
@@ -478,20 +478,20 @@ function* get_uchars(bufp, list, modlist, size, name) {
             case 55:
             case 56:
             case 57:
-            havenum = 1;
-            num = ((Math.imul(num, 10) >>> 0) + (((cptr.ld1s(bufp) - 48) | 0) >>> 0)) >>> 0;
-            bufp = cptr.add(bufp, 1);
-            break;
+                havenum = 1;
+                num = ((Math.imul(num, 10) >>> 0) + (((cptr.ld1s(bufp) - 48) | 0) >>> 0)) >>> 0;
+                bufp = cptr.add(bufp, 1);
+                break;
             case 92:
-            {
+                {
+                    (yield* raw_printf(__s_syntax_error_in_s, name));
+                    (yield* Y.icall(wait_synch()()));
+                    return count;
+                }
+            default:
                 (yield* raw_printf(__s_syntax_error_in_s, name));
                 (yield* Y.icall(wait_synch()()));
                 return count;
-            }
-            default:
-            (yield* raw_printf(__s_syntax_error_in_s, name));
-            (yield* Y.icall(wait_synch()()));
-            return count;
         }
     }
     /*NOTREACHED*/
@@ -1683,8 +1683,7 @@ export function* config_erradd(buf) {
         config_error_data,
         $_config_error_frame_num_errors,
         cptr.ldI32o(config_error_data, $_config_error_frame_num_errors) + 1
-    )) -
-            (1);
+    )) - (1);
     if (!cptr.ld1so(config_error_data, $_config_error_frame_origline_shown) &&
             !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
         (yield* pline(__s_nl_pct_s, cptr.add(config_error_data, $_config_error_frame_origline)));
@@ -1843,7 +1842,8 @@ function* parse_conf_buf(p, proc) {
                         (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }
                     ),
                     cptr.ldPtr(p)
-                ) >= 0 &&
+                ) >=
+                    0 &&
                     cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 92
                     ? 1
                     : 0))
@@ -1894,15 +1894,14 @@ function* parse_conf_buf(p, proc) {
                 len = (Number(BigInt.asIntN(
                     32,
                     cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_ep))
-                )) + 1) |
-                        0;  /* +1: final '\0' */
+                )) + 1) | 0;  /* +1: final '\0' */
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf))
                     len = (len +
-                        (Number(BigInt.asIntN(
-                            32,
-                            cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf))
-                        )) + 1)) |
-                            0;  /* +1: space */
+                            (Number(BigInt.asIntN(
+                                32,
+                                cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf))
+                            )) +
+                                1)) | 0;  /* +1: space */
                 tmpbuf = (yield* alloc(len >>> 0));
                 cptr.st1(tmpbuf, 0);
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf)) {

@@ -145,7 +145,9 @@ export function IS_TREE(typ) {
         ((cptr.ldI32o(
             svl,
             $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-        ) & 1) | 0 &&
+        ) &
+            1) |
+            0 &&
             (typ) == NHC.STONE)
         ? 1
         : 0);
@@ -247,7 +249,8 @@ export function SURFACE_AT(x, y) {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_flags
-        ) & 31) | 0)
+        ) &
+            31) | 0)
         : cptr.ld1so3(
             svl,
             x,
@@ -348,7 +351,9 @@ export function befriend_with_obj(ptr, obj) {
                     cptr.ldI16o((obj), $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_material
-                ) & 31) | 0) ==
+                ) &
+                    31) |
+                    0) ==
                     NHC.VEGGY ||
                 (cptr.ldI16o((obj), $obj_otyp) == NHC.CORPSE &&
                     cptr.ldI32o((obj), $obj_corpsenm) == NHC.PM_LICHEN))
@@ -484,7 +489,8 @@ export function corpse_eater(ptr) {
 export function could_twoweap(ptr) {
     return ((((cptr.ld1uo2((ptr), 0, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP) +
         (cptr.ld1uo2((ptr), 1, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP) +
-        (cptr.ld1uo2((ptr), 2, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP)) | 0) > 1);
+        (cptr.ld1uo2((ptr), 2, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP)) |
+        0) > 1);
 }
 
 /** C: include/mondata.h — the `eggs_in_water(ptr)` macro body */
@@ -1028,7 +1034,7 @@ export function glyph_to_statue_corpsenm(glyph) {
 export function glyph_to_swallow(glyph) {
     return (((glyph) >= NHC.GLYPH_SWALLOW_OFF &&
         (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0))
-        ? ((((glyph) - NHC.GLYPH_SWALLOW_OFF) | 0) & 7)
+        ? ((glyph) - NHC.GLYPH_SWALLOW_OFF & 7)
         : 0);
 }
 
@@ -1040,7 +1046,8 @@ export function glyph_to_trap(glyph) {
         ? ((((glyph) -
             ((NHC.GLYPH_CMAP_B_OFF + (NHC.S_arrow_trap - NHC.S_grave)) | 0) +
             NHC.S_arrow_trap -
-            NHC.S_arrow_trap + 1) | 0))
+            NHC.S_arrow_trap +
+            1) | 0))
         : NHC.MAX_GLYPH);
 }
 
@@ -1208,8 +1215,12 @@ export function is_ammo(otmp) {
         cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS) &&
         cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) >=
             -22 &&
-        cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) <=
-            -20
+        cptr.ld1so2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_subtyp
+        ) <= -20
         ? 1
         : 0);
 }
@@ -1255,12 +1266,9 @@ export function is_blunt_weapon(o) {
                 $objclass_oc_subtyp
             ) !=
                 NHC.P_NONE)) &&
-        ((((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o((o), $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_dir
-        ) & 7) | 0) &
+        ((((cptr.ldI32o2(objects, cptr.ldI16o((o), $obj_otyp), $sizeof_objclass, $objclass_oc_dir) &
+            7) |
+            0) &
             NHM.WHACK) != 0)
         ? 1
         : 0);
@@ -1329,14 +1337,18 @@ export function is_corrodeable(otmp) {
         cptr.ldI16o(otmp, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
         NHC.COPPER ||
         ((cptr.ldI32o2(
             objects,
             cptr.ldI16o(otmp, $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) ==
+        ) &
+            31) |
+            0) ==
             NHC.IRON
         ? 1
         : 0);
@@ -1349,7 +1361,9 @@ export function is_crackable(otmp) {
         cptr.ldI16o((otmp), $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
         NHC.GLASS &&
         cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS
         ? 1
@@ -1363,7 +1377,9 @@ export function is_damageable(otmp) {
         cptr.ldI16o(otmp, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
         NHC.IRON) ||
         is_flammable(otmp) ||
         is_rottable(otmp) ||
@@ -1372,21 +1388,27 @@ export function is_damageable(otmp) {
             cptr.ldI16o(otmp, $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) ==
+        ) &
+            31) |
+            0) ==
             NHC.COPPER ||
             ((cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(otmp, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
+            ) &
+                31) |
+                0) ==
                 NHC.IRON) ||
         (((cptr.ldI32o2(
             objects,
             cptr.ldI16o((otmp), $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) ==
+        ) &
+            31) |
+            0) ==
             NHC.GLASS &&
             cptr.ld1so((otmp), $obj_oclass) == NHC.ARMOR_CLASS)
         ? 1
@@ -1448,7 +1470,9 @@ export function is_flimsy(otmp) {
         cptr.ldI16o((otmp), $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) <=
+    ) &
+        31) |
+        0) <=
         NHC.LEATHER ||
         cptr.ldI16o((otmp), $obj_otyp) == NHC.RUBBER_HOSE
         ? 1
@@ -1555,14 +1579,18 @@ export function is_metallic(otmp) {
         cptr.ldI16o(otmp, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) >=
+    ) &
+        31) |
+        0) >=
         NHC.IRON &&
         ((cptr.ldI32o2(
             objects,
             cptr.ldI16o(otmp, $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) <=
+        ) &
+            31) |
+            0) <=
             NHC.MITHRIL
         ? 1
         : 0);
@@ -1582,8 +1610,12 @@ export function is_missile(otmp) {
         cptr.ld1so(otmp, $obj_oclass) == NHC.TOOL_CLASS) &&
         cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) >=
             -25 &&
-        cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) <=
-            -23
+        cptr.ld1so2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_subtyp
+        ) <= -23
         ? 1
         : 0);
 }
@@ -1601,8 +1633,12 @@ export function is_multigen(otmp) {
     return (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS &&
         cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) >=
             -24 &&
-        cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) <=
-            -20
+        cptr.ld1so2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_subtyp
+        ) <= -20
         ? 1
         : 0);
 }
@@ -2033,14 +2069,18 @@ export function stone_missile(o) {
         cptr.ldI16o((o), $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
         NHC.GEMSTONE ||
         (((cptr.ldI32o2(
             objects,
             cptr.ldI16o((o), $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) ==
+        ) &
+            31) |
+            0) ==
             NHC.MINERAL)) &&
         cptr.ld1so((o), $obj_oclass) != NHC.RING_CLASS
         ? 1

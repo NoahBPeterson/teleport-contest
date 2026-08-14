@@ -416,10 +416,8 @@ function ready_weapon(wep) {
         if ((cptr.ldI32o(wep.v, $obj_unpaid) & 1)) {
             let this_shkp;
 
-            if ((this_shkp = shop_keeper(inside_shop(
-                cptr.ldI16(u),
-                cptr.ldI16o(u, $you_uy)
-            ))) !== null) {
+            if ((this_shkp = shop_keeper(inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) !==
+                    null) {
                 pline(__s_s_says_you_be_careful_with_my_s, shkname(this_shkp), xname(wep.v));
             }
         }
@@ -574,14 +572,14 @@ export function dowield() {
                 );
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
-                    return NHM.ECMD_OK;
+                        return NHM.ECMD_OK;
                     case 121:
-                    /* leave N-1 quivered, split off 1 to wield */
-                    wep = splitobj(uquiver.v, 1n);
-                    finish_splitting(wep);
-                    break __lbl_wielding;
+                        /* leave N-1 quivered, split off 1 to wield */
+                        wep = splitobj(uquiver.v, 1n);
+                        finish_splitting(wep);
+                        break __lbl_wielding;
                     default:
-                    break;
+                        break;
                 }
                 void cptr.strcpy(cptr.decay(qbuf), __s_wield_all_of_them_instead);
             } else {
@@ -756,17 +754,17 @@ export function doquiver_core(verb) {
                 );
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
-                    return NHM.ECMD_OK;
+                        return NHM.ECMD_OK;
                     case 121:
-                    /* leave 1 wielded, split rest off and put into quiver */
-                    newquiver = splitobj(
-                        uwep.v,
-                        BigInt.asIntN(64, cptr.ldI64o(uwep.v, $obj_quan) - 1n)
-                    );
-                    finish_splitting(newquiver);
-                    break __lbl_quivering;
+                        /* leave 1 wielded, split rest off and put into quiver */
+                        newquiver = splitobj(
+                            uwep.v,
+                            BigInt.asIntN(64, cptr.ldI64o(uwep.v, $obj_quan) - 1n)
+                        );
+                        finish_splitting(newquiver);
+                        break __lbl_quivering;
                     default:
-                    break;
+                        break;
                 }
                 void cptr.strcpy(cptr.decay(qbuf), __s_ready_all_of_them_instead);
             } else {
@@ -810,17 +808,17 @@ export function doquiver_core(verb) {
                 );
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
-                    return NHM.ECMD_OK;
+                        return NHM.ECMD_OK;
                     case 121:
-                    /* leave 1 alt-wielded, split rest off and put into quiver */
-                    newquiver = splitobj(
-                        uswapwep.v,
-                        BigInt.asIntN(64, cptr.ldI64o(uswapwep.v, $obj_quan) - 1n)
-                    );
-                    finish_splitting(newquiver);
-                    break __lbl_quivering;
+                        /* leave 1 alt-wielded, split rest off and put into quiver */
+                        newquiver = splitobj(
+                            uswapwep.v,
+                            BigInt.asIntN(64, cptr.ldI64o(uswapwep.v, $obj_quan) - 1n)
+                        );
+                        finish_splitting(newquiver);
+                        break __lbl_quivering;
                     default:
-                    break;
+                        break;
                 }
                 void cptr.strcpy(cptr.decay(qbuf), __s_ready_all_of_them_instead);
             } else {

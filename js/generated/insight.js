@@ -1139,14 +1139,14 @@ function enlght_halfdmg(category, final) {
 
     switch (category) {
         case NHC.HALF_PHDAM:
-        category_name = __s_physical;
-        break;
+            category_name = __s_physical;
+            break;
         case NHC.HALF_SPDAM:
-        category_name = __s_spell;
-        break;
+            category_name = __s_spell;
+            break;
         default:
-        category_name = __s_unknown;
-        break;
+            category_name = __s_unknown;
+            break;
     }
     void cptr.sprintf(
         cptr.decay(buf),
@@ -1207,27 +1207,27 @@ export function trap_predicament(outbuf, final, wizxtra) {
     cptr.st1(outbuf, 0);
     switch (cptr.ldI32o(u, $you_utraptype)) {
         case NHC.TT_BURIEDBALL:
-        void cptr.strcpy(outbuf, __s_tethered_to_something_buried);
-        break;
+            void cptr.strcpy(outbuf, __s_tethered_to_something_buried);
+            break;
         case NHC.TT_LAVA:
-        void cptr.sprintf(outbuf, __s_sinking_into_s, final ? __s_lava : hliquid(__s_lava));
-        break;
+            void cptr.sprintf(outbuf, __s_sinking_into_s, final ? __s_lava : hliquid(__s_lava));
+            break;
         case NHC.TT_INFLOOR:
-        void cptr.sprintf(
-            outbuf,
-            __s_stuck_in_s,
-            the(surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-        );
-        break;
-        default:
-        void cptr.strcpy(outbuf, __s_trapped);
-        if ((t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null)
             void cptr.sprintf(
-                eos(outbuf),
-                __s_in_s,
-                an(trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))
+                outbuf,
+                __s_stuck_in_s,
+                the(surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             );
-        break;
+            break;
+        default:
+            void cptr.strcpy(outbuf, __s_trapped);
+            if ((t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null)
+                void cptr.sprintf(
+                    eos(outbuf),
+                    __s_in_s,
+                    an(trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))
+                );
+            break;
     }
     if (wizxtra) {
         /* curly braces: u.utrap is an escape attempt counter rather than a
@@ -1257,7 +1257,9 @@ function cause_known(propindx) {
                     cptr.ldI16o(o, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_name_known
-                ) & 1) | 0 &&
+                ) &
+                    1) |
+                    0 &&
                 (cptr.ldI32o(o, $obj_dknown) & 1) | 0)
             return 1;
     }
@@ -1364,17 +1366,17 @@ function N_times(n, outbuf) {
     switch (n) {
         case 0n:
         default:
-        void cptr.sprintf(outbuf, __s_ld_times, n);
-        break;
+            void cptr.sprintf(outbuf, __s_ld_times, n);
+            break;
         case 1n:
-        void cptr.strcpy(outbuf, __s_once);
-        break;
+            void cptr.strcpy(outbuf, __s_once);
+            break;
         case 2n:
-        void cptr.strcpy(outbuf, __s_twice);
-        break;
+            void cptr.strcpy(outbuf, __s_twice);
+            break;
         case 3n:
-        void cptr.strcpy(outbuf, __s_thrice);
-        break;
+            void cptr.strcpy(outbuf, __s_thrice);
+            break;
     }
     return outbuf;
 }
@@ -2038,19 +2040,24 @@ function basics_enlightenment(mode, final) {
             $permonst_mlevel
         )) {
             case 0:
-            /* status line currently being explained shows "HD:0" */
-            void cptr.strcpy(cptr.decay(buf), __s_0_hit_dice_actually_1_2);
-            break;
+                /* status line currently being explained shows "HD:0" */
+                void cptr.strcpy(cptr.decay(buf), __s_0_hit_dice_actually_1_2);
+                break;
             case 1:
-            void cptr.strcpy(cptr.decay(buf), __s_1_hit_die);
-            break;
+                void cptr.strcpy(cptr.decay(buf), __s_1_hit_die);
+                break;
             default:
-            void cptr.sprintf(
-                cptr.decay(buf),
-                __s_d_hit_dice,
-                cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel)
-            );
-            break;
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_d_hit_dice,
+                    cptr.ld1so2(
+                        mons,
+                        cptr.ldI32o(u, $you_umonnum),
+                        $sizeof_permonst,
+                        $permonst_mlevel
+                    )
+                );
+                break;
         }
         enlght_line(
             cptr.decay((You_)),
@@ -2188,33 +2195,33 @@ function one_characteristic(mode, final, attrindx) {
     }
     switch (attrindx) {
         case NHC.A_STR:
-        if (uarmg.v &&
-                cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER &&
-                (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
-            hide_innate_value = 1;
-        break;
+            if (uarmg.v &&
+                    cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER &&
+                    (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
+                hide_innate_value = 1;
+            break;
         case NHC.A_DEX:
-        break;
+            break;
         case NHC.A_CON:
-        if (is_art(uwep.v, NHC.ART_OGRESMASHER) && (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0)
-            hide_innate_value = 1;
-        break;
+            if (is_art(uwep.v, NHC.ART_OGRESMASHER) && (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0)
+                hide_innate_value = 1;
+            break;
         case NHC.A_INT:
-        if (uarmh.v &&
-                cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
-                (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
-            hide_innate_value = 1;
-        break;
+            if (uarmh.v &&
+                    cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
+                    (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
+                hide_innate_value = 1;
+            break;
         case NHC.A_WIS:
-        if (uarmh.v &&
-                cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
-                (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
-            hide_innate_value = 1;
-        break;
+            if (uarmh.v &&
+                    cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
+                    (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
+                hide_innate_value = 1;
+            break;
         case NHC.A_CHA:
-        break;
+            break;
         default:
-        return;  /* impossible */
+            return;  /* impossible */
     }
     ;
     /* note: final disclosure includes MAGICENLIGHTENTMENT */
@@ -2647,8 +2654,8 @@ function status_enlightenment(mode, final) {
                 ? 1
                 : 0));
         let dx = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_mx) - cptr.ldI16(u)) | 0;
-        let dy = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_my) - cptr.ldI16o(u, $you_uy)) |
-                0;
+        let dy = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_my) -
+                cptr.ldI16o(u, $you_uy)) | 0;
 
         nh_snprintf(
             __s_status_enlightenment,
@@ -2802,20 +2809,20 @@ function status_enlightenment(mode, final) {
         cptr.st1(cptr.decay(buf), lowc(cptr.ld1s(cptr.decay(buf))));
         switch (cap) {
             case NHC.SLT_ENCUMBER:
-            adj = __s_slightly;
-            break;  /* burdened */
+                adj = __s_slightly;
+                break;  /* burdened */
             case NHC.MOD_ENCUMBER:
-            adj = __s_moderately;
-            break;  /* stressed */
+                adj = __s_moderately;
+                break;  /* stressed */
             case NHC.HVY_ENCUMBER:
-            adj = __s_very;
-            break;  /* strained */
+                adj = __s_very;
+                break;  /* strained */
             case NHC.EXT_ENCUMBER:
-            adj = __s_extremely;
-            break;  /* overtaxed */
+                adj = __s_extremely;
+                break;  /* overtaxed */
             case NHC.OVERLOADED:
-            adj = __s_not_possible;
-            break;
+                adj = __s_not_possible;
+                break;
         }
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lt_pct_d_gt, inv_weight());
@@ -3763,7 +3770,9 @@ function attributes_enlightenment(unused_mode, final) {
     if (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
-    ) & 16n) != 0n)) {
+    ) &
+        16n) !=
+            0n)) {
         let has_lid = has_ceiling(cptr.add(u, $you_uz));
 
         if (has_lid && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
@@ -3880,7 +3889,8 @@ function attributes_enlightenment(unused_mode, final) {
                         ((Math.imul(
                             4,
                             cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)
-                        ) / 5) | 0))
+                        ) /
+                            5) | 0))
                         ? __s_partly_offsetting
                         : ((cptr.ld1so(u, $you_uhitinc) <
                             cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr))
@@ -4065,7 +4075,8 @@ function attributes_enlightenment(unused_mode, final) {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-        4194304n) != 0n) &&
+        4194304n) !=
+        0n) &&
             cptr.ld1so(flags, $flag_female))
         enlght_line(
             cptr.decay((You_)),
@@ -4286,19 +4297,19 @@ function attributes_enlightenment(unused_mode, final) {
             p = __s_are_dead;
             switch (cptr.ldI32o(u, $you_umortality)) {
                 case 0:
-                impossible(__s_dead_without_dying);
-                // @FallThrough
-                ;
+                    impossible(__s_dead_without_dying);
+                    // @FallThrough
+                    ;
                 case 1:
-                break;  /* just "are dead" */
+                    break;  /* just "are dead" */
                 default:
-                void cptr.sprintf(
-                    cptr.decay(buf),
-                    __s_d_s_time,
-                    cptr.ldI32o(u, $you_umortality),
-                    ordin(cptr.ldI32o(u, $you_umortality))
-                );
-                break;
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_d_s_time,
+                        cptr.ldI32o(u, $you_umortality),
+                        ordin(cptr.ldI32o(u, $you_umortality))
+                    );
+                    break;
             }
         }
         if (p)
@@ -4367,7 +4378,9 @@ export function youhiding(via_enlghtmt, msgflag) {
         } else if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
-        ) & 128n) != 0n)) {
+        ) &
+            128n) !=
+                0n)) {
             let o = cptr.ldPtro3(
                 svl,
                 cptr.ldI16(u),
@@ -4382,7 +4395,9 @@ export function youhiding(via_enlghtmt, msgflag) {
         } else if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
-        ) & 16n) != 0n) ||
+        ) &
+            16n) !=
+            0n) ||
                 Flying()) {
             /* Flying: 'lurker above' hides on ceiling but doesn't cling */
             void cptr.sprintf(bp, __s_on_the_s, ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -4802,211 +4817,213 @@ function show_achievements(final) {
 
         switch (absidx) {
             case NHC.ACH_BLND:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_explored) : (__s_are_exploring),
-                (__s_without_being_able_to_see),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_explored) : (__s_are_exploring),
+                    (__s_without_being_able_to_see),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_NUDE:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_went) : (__s_have_gone),
-                (__s_without_any_armor),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_went) : (__s_have_gone),
+                    (__s_without_any_armor),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_MINE:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_entered_the_gnomish_mines)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_entered_the_gnomish_mines)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_TOWN:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_entered_minetown)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_entered_minetown)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_SHOP:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_entered_a_shop)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_entered_a_shop)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_TMPL:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_entered_a_temple)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_entered_a_temple)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_ORCL:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_consulted_the_oracle_of_delphi)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_consulted_the_oracle_of_delphi)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_NOVL:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_read_from_a_discworld_novel)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_read_from_a_discworld_novel)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_SOKO:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_entered_sokoban)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_entered_sokoban)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_SOKO_PRIZE:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_completed_sokoban)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_completed_sokoban)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_MINE_PRIZE:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_completed_the_gnomish_mines)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_completed_the_gnomish_mines)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_BGRM:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_entered_the_big_room)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_entered_the_big_room)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_MEDU:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_defeated_medusa)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_defeated_medusa)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_TUNE:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_learned_the_tune_to_open_and_close_the)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_learned_the_tune_to_open_and_close_the)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_BELL:
-            /* alternate phrasing for present vs past and also for
-               possessing the item vs once held it */
-            enlght_line(
-                cptr.decay((You_)),
-                final
-                    ? ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
-                        ? __s_had__3
-                        : __s_handled)
-                    : ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
-                        ? __s_have__2
-                        : __s_have_handled),
-                (__s_the_bell_of_opening),
-                (__s_empty)
-            );
-            break;
+                /* alternate phrasing for present vs past and also for
+                   possessing the item vs once held it */
+                enlght_line(
+                    cptr.decay((You_)),
+                    final
+                        ? ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
+                            ? __s_had__3
+                            : __s_handled)
+                        : ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
+                            ? __s_have__2
+                            : __s_have_handled),
+                    (__s_the_bell_of_opening),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_HELL:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : (__s_have),
-                (__s_entered_gehennom),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : (__s_have),
+                    (__s_entered_gehennom),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_CNDL:
-            enlght_line(
-                cptr.decay((You_)),
-                final
-                    ? ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
-                        ? __s_had__3
-                        : __s_handled)
-                    : ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
-                        ? __s_have__2
-                        : __s_have_handled),
-                (__s_the_candelabrum_of_invocation),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final
+                        ? ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
+                            ? __s_had__3
+                            : __s_handled)
+                        : ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
+                            ? __s_have__2
+                            : __s_have_handled),
+                    (__s_the_candelabrum_of_invocation),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_BOOK:
-            enlght_line(
-                cptr.decay((You_)),
-                final
-                    ? ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
-                        ? __s_had__3
-                        : __s_handled)
-                    : ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
-                        ? __s_have__2
-                        : __s_have_handled),
-                (__s_the_book_of_the_dead),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final
+                        ? ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
+                            ? __s_had__3
+                            : __s_handled)
+                        : ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
+                            ? __s_have__2
+                            : __s_have_handled),
+                    (__s_the_book_of_the_dead),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_INVK:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_gained_access_to_moloch_s_sanctum)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_gained_access_to_moloch_s_sanctum)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_AMUL:
-            /* alternate wording for ascended (always past tense) since
-               hero had it until #offer forced it to be relinquished */
-            enlght_line(
-                cptr.decay((You_)),
-                final
-                    ? ((cptr.ldI32o(u, $you_uevent + $u_event_ascended) & 1) | 0
-                        ? __s_delivered
-                        : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_had__3 : __s_had_obtained))
-                    : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_have__2 : __s_have_obtained),
-                (__s_the_amulet_of_yendor),
-                (__s_empty)
-            );
-            break;
+                /* alternate wording for ascended (always past tense) since
+                   hero had it until #offer forced it to be relinquished */
+                enlght_line(
+                    cptr.decay((You_)),
+                    final
+                        ? ((cptr.ldI32o(u, $you_uevent + $u_event_ascended) & 1) | 0
+                            ? __s_delivered
+                            : ((cptr.ldI32o(u, $you_uhave) & 1) | 0
+                                ? __s_had__3
+                                : __s_had_obtained))
+                        : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_have__2 : __s_have_obtained),
+                    (__s_the_amulet_of_yendor),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_ENDG:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_reached_the_elemental_planes)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_reached_the_elemental_planes)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_ASTR:
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                ((__s_reached_the_astral_plane)),
-                (__s_empty)
-            );
-            break;
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    ((__s_reached_the_astral_plane)),
+                    (__s_empty)
+                );
+                break;
             case NHC.ACH_UWIN:
-            /* the ultimate achievement... */
-            enlght_out(__s_you_ascended);
-            break;
+                /* the ultimate achievement... */
+                enlght_out(__s_you_ascended);
+                break;
             case NHC.ACH_RNK1:
             case NHC.ACH_RNK2:
             case NHC.ACH_RNK3:
@@ -5015,26 +5032,26 @@ function show_achievements(final) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(
-                cptr.decay(buf),
-                __s_attained_the_rank_of_s,
-                rank_of(
-                    rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0),
-                    Role_switch(),
-                    schar(((achidx < 0) ? 1 : 0))
-                )
-            );
-            enlght_line(
-                cptr.decay((You_)),
-                final ? (__s_empty) : cptr.decay((have)),
-                cptr.decay(((buf))),
-                (__s_empty)
-            );
-            break;
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_attained_the_rank_of_s,
+                    rank_of(
+                        rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0),
+                        Role_switch(),
+                        schar(((achidx < 0) ? 1 : 0))
+                    )
+                );
+                enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_empty) : cptr.decay((have)),
+                    cptr.decay(((buf))),
+                    (__s_empty)
+                );
+                break;
             default:
-            void cptr.sprintf(cptr.decay(buf), __s_unexpected_achievement_d, achidx);
-            enlght_out(cptr.decay(buf));
-            break;
+                void cptr.sprintf(cptr.decay(buf), __s_unexpected_achievement_d, achidx);
+                enlght_out(cptr.decay(buf));
+                break;
         }  /* switch */
     }  /* for */
 
@@ -5308,107 +5325,106 @@ function vanqsort_cmp(vptr1, vptr2) {
     switch (cptr.ld1uo(flags, $flag_vanq_sortmode)) {
         default:
         case NHC.VANQ_MLVL_MNDX:
-        /* sort by monster level */
-        mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
-        mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
-        res = (mlev2 - mlev1) | 0;  /* mlevel high to low */
-        break;
-        case NHC.VANQ_MSTR_MNDX:
-        /* sort by monster toughness */
-        mstr1 = cptr.ld1uo2(mons, indx1, $sizeof_permonst, $permonst_difficulty);
-        mstr2 = cptr.ld1uo2(mons, indx2, $sizeof_permonst, $permonst_difficulty);
-        res = (mstr2 - mstr1) | 0;  /* monstr high to low */
-        break;
-        case NHC.VANQ_ALPHA_SEP:
-        uniq1 = ((cptr.ldU16o2(mons, indx1, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
-            indx1 != NHC.PM_HIGH_CLERIC
-                ? 1
-                : 0);
-        uniq2 = ((cptr.ldU16o2(mons, indx2, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
-            indx2 != NHC.PM_HIGH_CLERIC
-                ? 1
-                : 0);
-        if (uniq1 ^ uniq2) {
-            res = (uniq2 - uniq1) | 0;
-            break;
-        }  /* else both unique or neither unique */
-        // @FallThrough
-        ;
-        case NHC.VANQ_ALPHA_MIX:
-        name1 = cptr.ldPtro3(mons, indx1, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
-        name2 = cptr.ldPtro3(mons, indx2, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
-        res = strncmpi((name1), (name2), -1);  /* caseblind alpha, low to high */
-        break;
-        case NHC.VANQ_MCLS_HTOL:
-        case NHC.VANQ_MCLS_LTOH:
-        /* mons[].mlet is a small integer, 1..N, of type plain char;
-           if 'char' happens to be unsigned, (mlet1 - mlet2) would yield
-           an inappropriate result when mlet2 is greater than mlet1,
-           so force our copies (mcls1, mcls2) to be signed */
-        mcls1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlet);
-        mcls2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlet);
-        /* S_ANT through S_ZRUTY correspond to lowercase monster classes,
-           S_ANGEL through S_ZOMBIE correspond to uppercase, and various
-           punctuation characters are used for classes beyond those */
-        if (mcls1 > NHC.S_ZOMBIE && mcls2 > NHC.S_ZOMBIE) {
-
-            if ((punct = cptr.strchr(
-                cptr.decay(__static_vanqsort_cmp_punctclasses),
-                mcls1
-            )) !== null)
-                mcls1 = schar(((((NHC.S_ZOMBIE + 1) | 0) +
-                        Number(BigInt.asIntN(
-                            32,
-                            (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))
-                        ))) | 0));
-            if ((punct = cptr.strchr(
-                cptr.decay(__static_vanqsort_cmp_punctclasses),
-                mcls2
-            )) !== null)
-                mcls2 = schar(((((NHC.S_ZOMBIE + 1) | 0) +
-                        Number(BigInt.asIntN(
-                            32,
-                            (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))
-                        ))) | 0));
-        }
-        res = (mcls1 - mcls2) | 0;  /* class */
-        if (res == 0) {
-            /* Riders are in the same class as major demons, yielding res==0
-               above when both mcls1 and mcls2 are either Riders or demons or
-               one of each; force Riders to be sorted before demons */
-            res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) -
-                is_rider(cptr.add(mons, indx1, $sizeof_permonst))) |
-                    0;
-            /* res -1 => #1 is a Rider, #2 isn't;
-                    0 => both Riders or neither;
-                   +1 => #2 is a Rider, #1 isn't */
-            if (res)
-                break;
+            /* sort by monster level */
             mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
             mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
-            res = (mlev1 - mlev2) | 0;  /* mlevel low to high */
-            if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL)
-                res = -res;  /* mlevel high to low */
-        }
-        break;
+            res = (mlev2 - mlev1) | 0;  /* mlevel high to low */
+            break;
+        case NHC.VANQ_MSTR_MNDX:
+            /* sort by monster toughness */
+            mstr1 = cptr.ld1uo2(mons, indx1, $sizeof_permonst, $permonst_difficulty);
+            mstr2 = cptr.ld1uo2(mons, indx2, $sizeof_permonst, $permonst_difficulty);
+            res = (mstr2 - mstr1) | 0;  /* monstr high to low */
+            break;
+        case NHC.VANQ_ALPHA_SEP:
+            uniq1 = ((cptr.ldU16o2(mons, indx1, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
+                indx1 != NHC.PM_HIGH_CLERIC
+                    ? 1
+                    : 0);
+            uniq2 = ((cptr.ldU16o2(mons, indx2, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
+                indx2 != NHC.PM_HIGH_CLERIC
+                    ? 1
+                    : 0);
+            if (uniq1 ^ uniq2) {
+                res = (uniq2 - uniq1) | 0;
+                break;
+            }  /* else both unique or neither unique */
+            // @FallThrough
+            ;
+        case NHC.VANQ_ALPHA_MIX:
+            name1 = cptr.ldPtro3(mons, indx1, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
+            name2 = cptr.ldPtro3(mons, indx2, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
+            res = strncmpi((name1), (name2), -1);  /* caseblind alpha, low to high */
+            break;
+        case NHC.VANQ_MCLS_HTOL:
+        case NHC.VANQ_MCLS_LTOH:
+            /* mons[].mlet is a small integer, 1..N, of type plain char;
+               if 'char' happens to be unsigned, (mlet1 - mlet2) would yield
+               an inappropriate result when mlet2 is greater than mlet1,
+               so force our copies (mcls1, mcls2) to be signed */
+            mcls1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlet);
+            mcls2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlet);
+            /* S_ANT through S_ZRUTY correspond to lowercase monster classes,
+               S_ANGEL through S_ZOMBIE correspond to uppercase, and various
+               punctuation characters are used for classes beyond those */
+            if (mcls1 > NHC.S_ZOMBIE && mcls2 > NHC.S_ZOMBIE) {
+
+                if ((punct = cptr.strchr(
+                    cptr.decay(__static_vanqsort_cmp_punctclasses),
+                    mcls1
+                )) !== null)
+                    mcls1 = schar(((((NHC.S_ZOMBIE + 1) | 0) +
+                            Number(BigInt.asIntN(
+                                32,
+                                (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))
+                            ))) | 0));
+                if ((punct = cptr.strchr(
+                    cptr.decay(__static_vanqsort_cmp_punctclasses),
+                    mcls2
+                )) !== null)
+                    mcls2 = schar(((((NHC.S_ZOMBIE + 1) | 0) +
+                            Number(BigInt.asIntN(
+                                32,
+                                (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))
+                            ))) | 0));
+            }
+            res = (mcls1 - mcls2) | 0;  /* class */
+            if (res == 0) {
+                /* Riders are in the same class as major demons, yielding res==0
+                   above when both mcls1 and mcls2 are either Riders or demons or
+                   one of each; force Riders to be sorted before demons */
+                res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) -
+                        is_rider(cptr.add(mons, indx1, $sizeof_permonst))) | 0;
+                /* res -1 => #1 is a Rider, #2 isn't;
+                        0 => both Riders or neither;
+                       +1 => #2 is a Rider, #1 isn't */
+                if (res)
+                    break;
+                mlev1 = cptr.ld1so2(mons, indx1, $sizeof_permonst, $permonst_mlevel);
+                mlev2 = cptr.ld1so2(mons, indx2, $sizeof_permonst, $permonst_mlevel);
+                res = (mlev1 - mlev2) | 0;  /* mlevel low to high */
+                if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL)
+                    res = -res;  /* mlevel high to low */
+            }
+            break;
         case NHC.VANQ_COUNT_H_L:
         case NHC.VANQ_COUNT_L_H:
-        died1 = cptr.ld1uo2(
-            svm,
-            indx1,
-            $sizeof_mvitals,
-            $instance_globals_saved_m_mvitals + $mvitals_died
-        );
-        died2 = cptr.ld1uo2(
-            svm,
-            indx2,
-            $sizeof_mvitals,
-            $instance_globals_saved_m_mvitals + $mvitals_died
-        );
-        res = (died2 - died1) | 0;  /* dead count high to low */
-        if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
-            res = -res;  /* dead count low to high */
-        break;
+            died1 = cptr.ld1uo2(
+                svm,
+                indx1,
+                $sizeof_mvitals,
+                $instance_globals_saved_m_mvitals + $mvitals_died
+            );
+            died2 = cptr.ld1uo2(
+                svm,
+                indx2,
+                $sizeof_mvitals,
+                $instance_globals_saved_m_mvitals + $mvitals_died
+            );
+            res = (died2 - died1) | 0;  /* dead count high to low */
+            if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
+                res = -res;  /* dead count low to high */
+            break;
     }
     /* tiebreaker: internal mons[] index */
     if (res == 0)
@@ -5574,8 +5590,7 @@ export function list_vanquished(defquery, ask) {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
         if (c == 121 || c == 97) {
             if (c == 97 && ntypes > 1) {
                 /* choose value for vanq_sortmode via menu; ESC cancels list
@@ -5761,7 +5776,8 @@ function num_extinct() {
             i,
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) & 3) ==
+        ) &
+            3) ==
                 NHM.G_EXTINCT)
             ++n;
     }
@@ -5789,7 +5805,8 @@ function num_gone(mvflags, mindx) {
             i,
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) & mflg) != 0)
+        ) &
+                mflg) != 0)
             cptr.stI32o(mindx, n++, i, 4);
     }
     return n;
@@ -5846,8 +5863,7 @@ export function list_genocided(defquery, ask) {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
         if (c == 121 || c == 97) {
             let save_sortmode;
             let mlet;
@@ -5936,7 +5952,8 @@ export function list_genocided(defquery, ask) {
                     mndx,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3) ==
+                ) &
+                    3) ==
                         NHM.G_EXTINCT)
                     void cptr.strcat(cptr.decay(buf), __s_extinct__3);
                 putstr()(klwin, 0, cptr.decay(buf));
@@ -5996,7 +6013,9 @@ export function doborn() {
                     i,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3) != 0) {
+                ) &
+                    3) !=
+                    0) {
             void cptr.sprintf(
                 cptr.decay(buf),
                 cptr.decay(__static_doborn_fmt),
@@ -6012,7 +6031,8 @@ export function doborn() {
                     i,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3) ==
+                ) &
+                    3) ==
                     NHM.G_EXTINCT)
                     ? 69
                     : (((cptr.ld1uo2(
@@ -6020,7 +6040,8 @@ export function doborn() {
                         i,
                         $sizeof_mvitals,
                         $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                    ) & 3) ==
+                    ) &
+                        3) ==
                         NHM.G_GENOD)
                         ? 71
                         : (((cptr.ld1uo2(
@@ -6028,23 +6049,22 @@ export function doborn() {
                             i,
                             $sizeof_mvitals,
                             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                        ) & 3) != 0)
+                        ) &
+                            3) != 0)
                             ? 88
                             : 32)),
                 cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
             );
             putstr()(datawin, 0, cptr.decay(buf));
             nborn = (nborn +
-                cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals)) |
-                    0;
+                    cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals)) | 0;
             ndied = (ndied +
-                cptr.ld1uo2(
-                    svm,
-                    i,
-                    $sizeof_mvitals,
-                    $instance_globals_saved_m_mvitals + $mvitals_died
-                )) |
-                    0;
+                    cptr.ld1uo2(
+                        svm,
+                        i,
+                        $sizeof_mvitals,
+                        $instance_globals_saved_m_mvitals + $mvitals_died
+                    )) | 0;
         }
 
     putstr()(datawin, 0, __s_empty);
@@ -6073,13 +6093,13 @@ export function doborn() {
 export function align_str(alignment) {
     switch (alignment) {
         case -1:
-        return __s_chaotic;
+            return __s_chaotic;
         case NHM.A_NEUTRAL:
-        return __s_neutral;
+            return __s_neutral;
         case NHM.A_LAWFUL:
-        return __s_lawful;
+            return __s_lawful;
         case -128:
-        return __s_unaligned;
+            return __s_unaligned;
     }
     return __s_unknown;
 }
@@ -6091,26 +6111,26 @@ function size_str(msize) {
 
     switch (msize) {
         case NHM.MZ_TINY:
-        void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_tiny);
-        break;
+            void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_tiny);
+            break;
         case NHM.MZ_SMALL:
-        void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_small);
-        break;
+            void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_small);
+            break;
         case NHM.MZ_MEDIUM:
-        void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_medium);
-        break;
+            void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_medium);
+            break;
         case NHM.MZ_LARGE:
-        void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_large);
-        break;
+            void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_large);
+            break;
         case NHM.MZ_HUGE:
-        void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_huge);
-        break;
+            void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_huge);
+            break;
         case NHM.MZ_GIGANTIC:
-        void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_gigantic);
-        break;
+            void cptr.strcpy(cptr.decay(__static_size_str_outbuf), __s_gigantic);
+            break;
         default:
-        void cptr.sprintf(cptr.decay(__static_size_str_outbuf), __s_unknown_size_d, msize);
-        break;
+            void cptr.sprintf(cptr.decay(__static_size_str_outbuf), __s_unknown_size_d, msize);
+            break;
     }
     return cptr.decay(__static_size_str_outbuf);
 }

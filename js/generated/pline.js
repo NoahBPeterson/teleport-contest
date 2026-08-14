@@ -351,11 +351,11 @@ function vpline(line, the_args) {
             NHM.PLINE_NOREPEAT) >>> 0)
                 ? 1
                 : 0));
-        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) &
-                NHM.OVERRIDE_MSGTYPE) >>> 0) == 0) {
+        if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.OVERRIDE_MSGTYPE) >>> 0) ==
+                0) {
             msgtyp = msgtype_type(line, no_repeat);
-            if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) &
-                NHM.URGENT_MESSAGE) >>> 0) == 0 &&
+            if (((cptr.ldI32o(gp, $instance_globals_p_pline_flags) & NHM.URGENT_MESSAGE) >>> 0) ==
+                0 &&
                     (msgtyp == NHM.MSGTYP_NOSHOW ||
                         (msgtyp == NHM.MSGTYP_NOREP &&
                             !strcmp(line, cptr.add(gp, $instance_globals_p_prevmsg)))))
@@ -770,8 +770,7 @@ export function raw_printf(line, ...__va) {
             ge,
             $instance_globals_e_early_raw_messages,
             cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) + 1
-        )) -
-                (1);
+        )) - (1);
 }
 
 /** C ref: pline.c:563 — @param {CPtr<char>} line @param {CPtr} the_args */
@@ -800,8 +799,7 @@ function vraw_printf(line, the_args) {
             ge,
             $instance_globals_e_early_raw_messages,
             cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) + 1
-        )) -
-                (1);
+        )) - (1);
 }
 
 /** C ref: pline.c:584 — @param {CPtr<char>} s */

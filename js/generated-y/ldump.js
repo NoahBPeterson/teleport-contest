@@ -139,17 +139,17 @@ function* dumpConstants(D, f) {
         (yield* dumpByte(D, tt));
         switch (tt) {
             case 19:
-            (yield* dumpNumber(D, (cptr.ldF64(((o))))));
-            break;
+                (yield* dumpNumber(D, (cptr.ldF64(((o))))));
+                break;
             case 3:
-            (yield* dumpInteger(D, (cptr.ldI64(((o))))));
-            break;
+                (yield* dumpInteger(D, (cptr.ldI64(((o))))));
+                break;
             case 4:
             case 20:
-            (yield* dumpString(D, ((((((cptr.ldPtr(((o)))))))))));
-            break;
+                (yield* dumpString(D, ((((((cptr.ldPtr(((o)))))))))));
+                break;
             default:
-            (void 0);
+                (void 0);
         }
     }
 }

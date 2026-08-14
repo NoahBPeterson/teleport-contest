@@ -781,37 +781,41 @@ export function erode_armor(mdef, hurt) {
     while (1) {
         switch (rn2(5)) {
             case 0:
-            target = which_armor(mdef, 4n);
-            if (!target || erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
-                continue;
-            break;
-            case 1:
-            target = which_armor(mdef, 2n);
-            if (target) {
-                void erode_obj(target, xname(target), hurt, 5);
+                target = which_armor(mdef, 4n);
+                if (!target ||
+                        erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
+                    continue;
                 break;
-            }
-            if ((target = which_armor(mdef, 1n)) !== null) {
-                void erode_obj(target, xname(target), hurt, 5);
-            } else if ((target = which_armor(mdef, 64n)) !== null) {
-                void erode_obj(target, xname(target), hurt, 5);
-            }
-            break;
+            case 1:
+                target = which_armor(mdef, 2n);
+                if (target) {
+                    void erode_obj(target, xname(target), hurt, 5);
+                    break;
+                }
+                if ((target = which_armor(mdef, 1n)) !== null) {
+                    void erode_obj(target, xname(target), hurt, 5);
+                } else if ((target = which_armor(mdef, 64n)) !== null) {
+                    void erode_obj(target, xname(target), hurt, 5);
+                }
+                break;
             case 2:
-            target = which_armor(mdef, 8n);
-            if (!target || erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
-                continue;
-            break;
+                target = which_armor(mdef, 8n);
+                if (!target ||
+                        erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
+                    continue;
+                break;
             case 3:
-            target = which_armor(mdef, 16n);
-            if (!target || erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
-                continue;
-            break;
+                target = which_armor(mdef, 16n);
+                if (!target ||
+                        erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
+                    continue;
+                break;
             case 4:
-            target = which_armor(mdef, 32n);
-            if (!target || erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
-                continue;
-            break;
+                target = which_armor(mdef, 32n);
+                if (!target ||
+                        erode_obj(target, xname(target), hurt, NHM.EF_GREASE) == NHM.ER_NOTHING)
+                    continue;
+                break;
         }
         break;  /* Out of while loop */
     }
@@ -874,10 +878,8 @@ export function attack_checks(mtmp, wep) {
             !((glyph) == NHC.GLYPH_INVIS_OFF) &&
             !(!Blind() &&
                 (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 &&
-                ((cptr.ldU64o(
-                    (cptr.ldPtro(mtmp, $monst_data)),
-                    $permonst_mflags1
-                ) & 128n) != 0n))) {
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) !=
+                    0n))) {
         pline(
             __s_wait_there_s_s_there_you_can_t_see,
             cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
@@ -1062,17 +1064,16 @@ export function find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pena
     cptr.stI32(role_roll_penalty, 0);  /* default is `none' */
 
     tmp = (1 +
-        abon() +
-        find_mac(mtmp) +
-        cptr.ld1so(u, $you_uhitinc) +
-        (Math.imul(sgn(Luck()), ((((Math.abs(Luck()) + 2) | 0) / 3) | 0))) +
-        (Upolyd()
-            ? (cptr.ld1so(
-                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                $permonst_mlevel
-            ))
-            : (cptr.ldI32o(u, $you_ulevel)))) |
-            0;
+            abon() +
+            find_mac(mtmp) +
+            cptr.ld1so(u, $you_uhitinc) +
+            (Math.imul(sgn(Luck()), ((((Math.abs(Luck()) + 2) | 0) / 3) | 0))) +
+            (Upolyd()
+                ? (cptr.ld1so(
+                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                    $permonst_mlevel
+                ))
+                : (cptr.ldI32o(u, $you_ulevel)))) | 0;
 
     /* some actions should occur only once during multiple attacks */
     if (!((cptr.stI32(attk_count, cptr.ldI32(attk_count) + 1)) - (1))) {
@@ -1094,11 +1095,10 @@ export function find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pena
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) && !Upolyd()) {
         if (uarm.v)
             tmp = (tmp -
-                (cptr.stI32(
-                    role_roll_penalty,
-                    cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)
-                ))) |
-                    0;
+                    (cptr.stI32(
+                        role_roll_penalty,
+                        cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)
+                    ))) | 0;
         else if (!uwep.v && !uarms.v)
             tmp = (tmp + (((cptr.ldI32o(u, $you_ulevel) / 3) | 0) + 2)) | 0;
     }
@@ -1107,7 +1107,8 @@ export function find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pena
                 ? (((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags2
-                ) & 16n) != 0n))
+                ) &
+                    16n) != 0n))
                 : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
         tmp++;
 
@@ -1193,10 +1194,8 @@ export function do_attack(mtmp) {
                         $instance_globals_saved_l_level + $rm_typ
                     )) <
                         NHC.POOL) &&
-                        !((cptr.ldU64o(
-                            (cptr.ldPtro(mtmp, $monst_data)),
-                            $permonst_mflags1
-                        ) & 8n) != 0n))
+                        !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
+                            8n) != 0n))
                         ? 1
                         : 0));
                 let inshop = 0;
@@ -1408,8 +1407,7 @@ function known_hitum(mon, weapon, mhit, rollneeded, armorpenalty, uattk, dieroll
                 u,
                 $you_uconduct + $u_conduct_weaphit,
                 cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit) + 1n
-            )) -
-                    (1n);
+            )) - (1n);
 
         /* we hit the monster; be careful: it might die or
            be knocked into a different location */
@@ -1785,17 +1783,17 @@ function hmon_hitmon_barehands(hmd, mon) {
     /* copy silverhit info back into struct _hitmon_data *hmd */
     switch (cptr.ldI32o(hmd, $_hitmon_data_twohits)) {
         case 0:
-        cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, (silverhit.v & 393216n) ? 1 : 0);
-        break;
+            cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, (silverhit.v & 393216n) ? 1 : 0);
+            break;
         case 1:
-        cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, (silverhit.v & 262144n) ? 1 : 0);
-        break;
+            cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, (silverhit.v & 262144n) ? 1 : 0);
+            break;
         case 2:
-        cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, (silverhit.v & 131072n) ? 1 : 0);
-        break;
+            cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, (silverhit.v & 131072n) ? 1 : 0);
+            break;
         default:
-        cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, 0);
-        break;
+            cptr.stI32o(hmd, $_hitmon_data_barehand_silver_rings, 0);
+            break;
     }
     if (cptr.ldI32o(hmd, $_hitmon_data_barehand_silver_rings) > 0)
         cptr.st1o(hmd, $_hitmon_data_silvermsg, 1);
@@ -1909,7 +1907,9 @@ function hmon_hitmon_weapon_melee(hmd, mon, obj) {
                         (cptr.ldI32o((cptr.ldPtro(mon, $monst_data)), $permonst_pmidx)),
                         $sizeof_mvitals,
                         $instance_globals_saved_m_mvitals + $mvitals_died
-                    ) / 6) | 0))) | 0
+                    ) /
+                        6) |
+                        0))) | 0
         );
 
     /* special attack actions */
@@ -2121,119 +2121,52 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
         case NHC.BOULDER:
         case NHC.HEAVY_IRON_BALL:
         case NHC.IRON_CHAIN:
-        cptr.stI32(hmd, dmgval(obj, mon));
-        break;
+            cptr.stI32(hmd, dmgval(obj, mon));
+            break;
         case NHC.MIRROR:
-        if (breaktest(obj)) {
-            You(__s_break_s_that_s_bad_luck, ysimple_name(obj));
-            change_luck(-2);
-            useup(obj);
-            obj = null;
-            cptr.st1o(hmd, $_hitmon_data_unarmed, 0);  /* avoid obj==0 confusion */
-            cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
-            cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
-        }
-        cptr.stI32(hmd, 1);
-        break;
-        case NHC.EXPENSIVE_CAMERA:
-        You(__s_succeed_in_destroying_s_congratulations, ysimple_name(obj));
-        release_camera_demon(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        useup(obj);
-        cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
-        cptr.st1o(hmd, $_hitmon_data_retval, 1);
-        return;
-        case NHC.CORPSE:
-        if (touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) {
-            cptr.stI32(hmd, 1);
-            cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
-            You(
-                __s_hit_s_with_s,
-                mon_nam(mon),
-                corpse_xname(
-                    obj,
-                    null,
-                    ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0
-                        ? NHM.CXN_PFX_THE
-                        : NHM.CXN_ARTICLE) >>> 0
-                )
-            );
-            observe_object(obj);
-            if (!munstone(mon, 1))
-                minstapetrify(mon, 1);
-            if (Resists_Elem(mon, NHC.STONE_RES))
-                break;
-            /* note: hp may be <= 0 even if munstoned==TRUE */
-            cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
-            cptr.st1o(hmd, $_hitmon_data_retval, schar((!(cptr.ldI32o((mon), $monst_mhp) < 1))));
-            return;
-        }
-        cptr.stI32(
-            hmd,
-            ((ismnum(cptr.ldI32o(obj, $obj_corpsenm))
-                ? cptr.ld1uo2(
-                    mons,
-                    cptr.ldI32o(obj, $obj_corpsenm),
-                    $sizeof_permonst,
-                    $permonst_msize
-                )
-                : 0) + 1) | 0
-        );
-        break;
-        case NHC.EGG:
-        {
-            let cnt = cptr.ldI64o(obj, $obj_quan);
-
-            cptr.stI32(hmd, 1);  /* nominal physical damage */
-            cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
-            cptr.st1o(hmd, $_hitmon_data_hittxt, 1);  /* message always given */
-            /* egg is always either used up or transformed, so next
-               hand-to-hand attack should yield a "bashing" mesg */
-            if (cptr.eq(obj, uwep.v))
-                cptr.st1o(gu, $instance_globals_u_unweapon, 1);
-            if (cptr.ld1so(obj, $obj_spe) && ismnum(cptr.ldI32o(obj, $obj_corpsenm))) {
-                if (cptr.ldI64o(obj, $obj_quan) < 5n)
-                    change_luck(Number(BigInt.asIntN(8, (-(cptr.ldI64o(obj, $obj_quan))))));
-                else
-                    change_luck(-5);
+            if (breaktest(obj)) {
+                You(__s_break_s_that_s_bad_luck, ysimple_name(obj));
+                change_luck(-2);
+                useup(obj);
+                obj = null;
+                cptr.st1o(hmd, $_hitmon_data_unarmed, 0);  /* avoid obj==0 confusion */
+                cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
+                cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
             }
-
-            if (ismnum(cptr.ldI32o(obj, $obj_corpsenm)) &&
-                    touch_petrifies(cptr.add(
-                        mons,
-                        cptr.ldI32o(obj, $obj_corpsenm),
-                        $sizeof_permonst
-                    ))) {
-                /*learn_egg_type(obj->corpsenm);*/
-                pline(
-                    __s_splat_you_hit_s_with_s_s_egg_s,
+            cptr.stI32(hmd, 1);
+            break;
+        case NHC.EXPENSIVE_CAMERA:
+            You(__s_succeed_in_destroying_s_congratulations, ysimple_name(obj));
+            release_camera_demon(obj, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+            useup(obj);
+            cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
+            cptr.st1o(hmd, $_hitmon_data_retval, 1);
+            return;
+        case NHC.CORPSE:
+            if (touch_petrifies(cptr.add(
+                mons,
+                cptr.ldI32o(obj, $obj_corpsenm),
+                $sizeof_permonst
+            ))) {
+                cptr.stI32(hmd, 1);
+                cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
+                You(
+                    __s_hit_s_with_s,
                     mon_nam(mon),
-                    (cptr.ldI32o(obj, $obj_known) & 1) | 0
-                        ? __s_the
-                        : (cnt > 1n ? __s_some : __s_a),
-                    (cptr.ldI32o(obj, $obj_known) & 1) | 0
-                        ? cptr.ldPtro3(
-                            mons,
-                            cptr.ldI32o(obj, $obj_corpsenm),
-                            $sizeof_permonst,
-                            NHC.NEUTRAL,
-                            8,
-                            0
-                        )
-                        : __s_petrifying,
-                    (((cnt) == 1n) ? __s_empty : __s_s)
+                    corpse_xname(
+                        obj,
+                        null,
+                        ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0
+                            ? NHM.CXN_PFX_THE
+                            : NHM.CXN_ARTICLE) >>> 0
+                    )
                 );
-                cptr.stI32o(obj, $obj_known, 1);  /* (not much point...) */
-                {
-                    if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
-                        obfree(obj, null);
-                    else
-                        useupall(obj);
-                    obj = null;
-                }
+                observe_object(obj);
                 if (!munstone(mon, 1))
                     minstapetrify(mon, 1);
                 if (Resists_Elem(mon, NHC.STONE_RES))
                     break;
+                /* note: hp may be <= 0 even if munstoned==TRUE */
                 cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
                 cptr.st1o(
                     hmd,
@@ -2241,45 +2174,63 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                     schar((!(cptr.ldI32o((mon), $monst_mhp) < 1)))
                 );
                 return;
-                /*return (boolean) (!DEADMONSTER(mon));*/
-            } else {
-                let mnum = cptr.ldI32o(obj, $obj_corpsenm);
-                let eggp = (ismnum(mnum) && (cptr.ldI32o(obj, $obj_known) & 1) | 0)
-                        ? the(cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0))
-                        : ((cnt > 1n) ? __s_some : __s_an);
+            }
+            cptr.stI32(
+                hmd,
+                ((ismnum(cptr.ldI32o(obj, $obj_corpsenm))
+                    ? cptr.ld1uo2(
+                        mons,
+                        cptr.ldI32o(obj, $obj_corpsenm),
+                        $sizeof_permonst,
+                        $permonst_msize
+                    )
+                    : 0) + 1) | 0
+            );
+            break;
+        case NHC.EGG:
+            {
+                let cnt = cptr.ldI64o(obj, $obj_quan);
 
-                You(
-                    __s_hit_s_with_s_egg_s,
-                    mon_nam(mon),
-                    eggp,
-                    (((cnt) == 1n) ? __s_empty : __s_s)
-                );
-                if (touch_petrifies(cptr.ldPtro(hmd, $_hitmon_data_mdat)) &&
-                        !((BigInt.asIntN(
-                            64,
-                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                                cptr.ldI64o((obj), $obj_age)
-                        )) > 400n)) {
-                    pline_The(
-                        __s_egg_s_s_alive_any_more,
-                        (((cnt) == 1n) ? __s_empty : __s_s),
-                        (cnt == 1n) ? __s_isn_t : __s_aren_t
+                cptr.stI32(hmd, 1);  /* nominal physical damage */
+                cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
+                cptr.st1o(hmd, $_hitmon_data_hittxt, 1);  /* message always given */
+                /* egg is always either used up or transformed, so next
+                   hand-to-hand attack should yield a "bashing" mesg */
+                if (cptr.eq(obj, uwep.v))
+                    cptr.st1o(gu, $instance_globals_u_unweapon, 1);
+                if (cptr.ld1so(obj, $obj_spe) && ismnum(cptr.ldI32o(obj, $obj_corpsenm))) {
+                    if (cptr.ldI64o(obj, $obj_quan) < 5n)
+                        change_luck(Number(BigInt.asIntN(8, (-(cptr.ldI64o(obj, $obj_quan))))));
+                    else
+                        change_luck(-5);
+                }
+
+                if (ismnum(cptr.ldI32o(obj, $obj_corpsenm)) &&
+                        touch_petrifies(cptr.add(
+                            mons,
+                            cptr.ldI32o(obj, $obj_corpsenm),
+                            $sizeof_permonst
+                        ))) {
+                    /*learn_egg_type(obj->corpsenm);*/
+                    pline(
+                        __s_splat_you_hit_s_with_s_s_egg_s,
+                        mon_nam(mon),
+                        (cptr.ldI32o(obj, $obj_known) & 1) | 0
+                            ? __s_the
+                            : (cnt > 1n ? __s_some : __s_a),
+                        (cptr.ldI32o(obj, $obj_known) & 1) | 0
+                            ? cptr.ldPtro3(
+                                mons,
+                                cptr.ldI32o(obj, $obj_corpsenm),
+                                $sizeof_permonst,
+                                NHC.NEUTRAL,
+                                8,
+                                0
+                            )
+                            : __s_petrifying,
+                        (((cnt) == 1n) ? __s_empty : __s_s)
                     );
-                    if (cptr.ldI16o(obj, $obj_timed))
-                        obj_stop_timers(obj);
-                    cptr.stI16o(obj, $obj_otyp, NHC.ROCK);
-                    cptr.st1o(obj, $obj_oclass, NHC.GEM_CLASS);
-                    cptr.st1o(obj, $obj_oartifact, 0);
-                    cptr.st1o(obj, $obj_spe, 0);
-                    cptr.stI32o(
-                        obj,
-                        $obj_known,
-                        cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_bknown, 0))
-                    );
-                    cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
-                    if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
-                        place_object(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
-                } else if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK) {
+                    cptr.stI32o(obj, $obj_known, 1);  /* (not much point...) */
                     {
                         if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
                             obfree(obj, null);
@@ -2287,14 +2238,10 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                             useupall(obj);
                         obj = null;
                     }
-                    explode(
-                        cptr.ldI16o(mon, $monst_mx),
-                        cptr.ldI16o(mon, $monst_my),
-                        -11,
-                        d(3, 6),
-                        0,
-                        NHC.EXPL_FIERY
-                    );
+                    if (!munstone(mon, 1))
+                        minstapetrify(mon, 1);
+                    if (Resists_Elem(mon, NHC.STONE_RES))
+                        break;
                     cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
                     cptr.st1o(
                         hmd,
@@ -2302,180 +2249,252 @@ function hmon_hitmon_misc_obj(hmd, mon, obj) {
                         schar((!(cptr.ldI32o((mon), $monst_mhp) < 1)))
                     );
                     return;
+                    /*return (boolean) (!DEADMONSTER(mon));*/
                 } else {
-                    pline(__s_splat);
-                    {
+                    let mnum = cptr.ldI32o(obj, $obj_corpsenm);
+                    let eggp = (ismnum(mnum) && (cptr.ldI32o(obj, $obj_known) & 1) | 0)
+                            ? the(cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0))
+                            : ((cnt > 1n) ? __s_some : __s_an);
+
+                    You(
+                        __s_hit_s_with_s_egg_s,
+                        mon_nam(mon),
+                        eggp,
+                        (((cnt) == 1n) ? __s_empty : __s_s)
+                    );
+                    if (touch_petrifies(cptr.ldPtro(hmd, $_hitmon_data_mdat)) &&
+                            !((BigInt.asIntN(
+                                64,
+                                cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                                    cptr.ldI64o((obj), $obj_age)
+                            )) >
+                                400n)) {
+                        pline_The(
+                            __s_egg_s_s_alive_any_more,
+                            (((cnt) == 1n) ? __s_empty : __s_s),
+                            (cnt == 1n) ? __s_isn_t : __s_aren_t
+                        );
+                        if (cptr.ldI16o(obj, $obj_timed))
+                            obj_stop_timers(obj);
+                        cptr.stI16o(obj, $obj_otyp, NHC.ROCK);
+                        cptr.st1o(obj, $obj_oclass, NHC.GEM_CLASS);
+                        cptr.st1o(obj, $obj_oartifact, 0);
+                        cptr.st1o(obj, $obj_spe, 0);
+                        cptr.stI32o(
+                            obj,
+                            $obj_known,
+                            cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_bknown, 0))
+                        );
+                        cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
                         if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
-                            obfree(obj, null);
-                        else
-                            useupall(obj);
-                        obj = null;
+                            place_object(
+                                obj,
+                                cptr.ldI16o(mon, $monst_mx),
+                                cptr.ldI16o(mon, $monst_my)
+                            );
+                    } else if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK) {
+                        {
+                            if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
+                                obfree(obj, null);
+                            else
+                                useupall(obj);
+                            obj = null;
+                        }
+                        explode(
+                            cptr.ldI16o(mon, $monst_mx),
+                            cptr.ldI16o(mon, $monst_my),
+                            -11,
+                            d(3, 6),
+                            0,
+                            NHC.EXPL_FIERY
+                        );
+                        cptr.st1o(hmd, $_hitmon_data_doreturn, 1);
+                        cptr.st1o(
+                            hmd,
+                            $_hitmon_data_retval,
+                            schar((!(cptr.ldI32o((mon), $monst_mhp) < 1)))
+                        );
+                        return;
+                    } else {
+                        pline(__s_splat);
+                        {
+                            if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
+                                obfree(obj, null);
+                            else
+                                useupall(obj);
+                            obj = null;
+                        }
+                        exercise(NHC.A_WIS, 0);
                     }
-                    exercise(NHC.A_WIS, 0);
                 }
+                break;
             }
-            break;
-        }
         case NHC.CLOVE_OF_GARLIC:
-        if (((cptr.ldU64o((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_mflags2) & 2n) != 0n) ||
-                is_vampshifter(mon)) {
-            monflee(mon, d(2, 4), 0, 1);
-        }
-        cptr.stI32(hmd, 1);
-        break;
+            if (((cptr.ldU64o((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_mflags2) & 2n) !=
+                0n) ||
+                    is_vampshifter(mon)) {
+                monflee(mon, d(2, 4), 0, 1);
+            }
+            cptr.stI32(hmd, 1);
+            break;
         case NHC.CREAM_PIE:
         case NHC.BLINDING_VENOM:
-        cptr.stI32o(mon, $monst_msleeping, 0);
-        if (can_blnd(
-            cptr.add(gy, $instance_globals_y_youmonst),
-            mon,
-            uchar(((cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM)
-                ? NHM.AT_SPIT
-                : NHM.AT_WEAP)),
-            obj
-        )) {
-            if (Blind()) {
-                pline(cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE ? __s_splat : __s_splash);
-            } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM) {
-                pline_The(
-                    __s_venom_blinds_s_s,
-                    mon_nam(mon),
-                    (cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 ? __s_empty : __s_further
-                );
-            } else {
-                let whom = mon_nam(mon);
-                let what = The(xname(obj));
-
-                if (!cptr.ldI32o(hmd, $_hitmon_data_thrown) && cptr.ldI64o(obj, $obj_quan) > 1n)
-                    what = An(singular(obj, xname));
-                /* note: s_suffix returns a modifiable buffer */
-                if (((cptr.ldU64o((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_mflags1) &
-                    4096n) == 0n) &&
-                        !cptr.eq(
-                            cptr.ldPtro(hmd, $_hitmon_data_mdat),
-                            cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)
-                        ))
-                    whom = cptr.strcat(
-                        cptr.strcat(s_suffix(whom), __s_sp),
-                        mbodypart(mon, NHC.FACE)
+            cptr.stI32o(mon, $monst_msleeping, 0);
+            if (can_blnd(
+                cptr.add(gy, $instance_globals_y_youmonst),
+                mon,
+                uchar(((cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM)
+                    ? NHM.AT_SPIT
+                    : NHM.AT_WEAP)),
+                obj
+            )) {
+                if (Blind()) {
+                    pline(cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE ? __s_splat : __s_splash);
+                } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM) {
+                    pline_The(
+                        __s_venom_blinds_s_s,
+                        mon_nam(mon),
+                        (cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 ? __s_empty : __s_further
                     );
-                pline(__s_s_s_over_s, what, vtense(what, __s_splash__2), whom);
+                } else {
+                    let whom = mon_nam(mon);
+                    let what = The(xname(obj));
+
+                    if (!cptr.ldI32o(hmd, $_hitmon_data_thrown) && cptr.ldI64o(obj, $obj_quan) > 1n)
+                        what = An(singular(obj, xname));
+                    /* note: s_suffix returns a modifiable buffer */
+                    if (((cptr.ldU64o((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_mflags1) &
+                        4096n) ==
+                        0n) &&
+                            !cptr.eq(
+                                cptr.ldPtro(hmd, $_hitmon_data_mdat),
+                                cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst)
+                            ))
+                        whom = cptr.strcat(
+                            cptr.strcat(s_suffix(whom), __s_sp),
+                            mbodypart(mon, NHC.FACE)
+                        );
+                    pline(__s_s_s_over_s, what, vtense(what, __s_splash__2), whom);
+                }
+                setmangry(mon, 1);
+                cptr.stI32o(mon, $monst_mcansee, 0);
+                cptr.stI32(hmd, ((rn2(25) + 21) | 0));
+                if (((((cptr.ldI32o(mon, $monst_mblinded) & 127) | 0) + cptr.ldI32(hmd)) | 0) > 127)
+                    cptr.stI32o(mon, $monst_mblinded, 127);
+                else
+                    cptr.stI32o(
+                        mon,
+                        $monst_mblinded,
+                        (cptr.ldI32o(mon, $monst_mblinded) + cptr.ldI32(hmd)) | 0
+                    );
+            } else {
+                pline(cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE ? __s_splat : __s_splash);
+                setmangry(mon, 1);
             }
-            setmangry(mon, 1);
-            cptr.stI32o(mon, $monst_mcansee, 0);
-            cptr.stI32(hmd, ((rn2(25) + 21) | 0));
-            if (((((cptr.ldI32o(mon, $monst_mblinded) & 127) | 0) + cptr.ldI32(hmd)) | 0) > 127)
-                cptr.stI32o(mon, $monst_mblinded, 127);
-            else
-                cptr.stI32o(
-                    mon,
-                    $monst_mblinded,
-                    (cptr.ldI32o(mon, $monst_mblinded) + cptr.ldI32(hmd)) | 0
-                );
-        } else {
-            pline(cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE ? __s_splat : __s_splash);
-            setmangry(mon, 1);
-        }
-        {
-            let more_than_1 = schar((cptr.ldI64o(obj, $obj_quan) > 1n));
+            {
+                let more_than_1 = schar((cptr.ldI64o(obj, $obj_quan) > 1n));
 
-            if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
-                obfree(obj, null);
-            else
-                useup(obj);
+                if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
+                    obfree(obj, null);
+                else
+                    useup(obj);
 
-            if (!more_than_1)
-                obj = null;
-        }
-        cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
-        cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
-        cptr.stI32(hmd, 0);
-        break;
-        case NHC.ACID_VENOM:
-        if (Resists_Elem(mon, NHC.ACID_RES)) {
-            Your(__s_venom_hits_s_harmlessly, mon_nam(mon));
+                if (!more_than_1)
+                    obj = null;
+            }
+            cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
+            cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
             cptr.stI32(hmd, 0);
-        } else {
-            Your(__s_venom_burns_s, mon_nam(mon));
-            cptr.stI32(hmd, dmgval(obj, mon));
-        }
-        {
-            let more_than_1 = schar((cptr.ldI64o(obj, $obj_quan) > 1n));
+            break;
+        case NHC.ACID_VENOM:
+            if (Resists_Elem(mon, NHC.ACID_RES)) {
+                Your(__s_venom_hits_s_harmlessly, mon_nam(mon));
+                cptr.stI32(hmd, 0);
+            } else {
+                Your(__s_venom_burns_s, mon_nam(mon));
+                cptr.stI32(hmd, dmgval(obj, mon));
+            }
+            {
+                let more_than_1 = schar((cptr.ldI64o(obj, $obj_quan) > 1n));
 
-            if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
-                obfree(obj, null);
-            else
-                useup(obj);
+                if (cptr.ldI32o(hmd, $_hitmon_data_thrown))
+                    obfree(obj, null);
+                else
+                    useup(obj);
 
-            if (!more_than_1)
-                obj = null;
-        }
-        cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
-        cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
-        break;
+                if (!more_than_1)
+                    obj = null;
+            }
+            cptr.st1o(hmd, $_hitmon_data_hittxt, 1);
+            cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
+            break;
         default:
-        if ((((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) & 31) | 0) ==
-            NHC.VEGGY ||
-            ((cptr.ldI32o2(
+            if ((((cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
-                NHC.PAPER) &&
-                cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS) {
-            /* vegetables (and similar) do no damage, because they
-               aren't rigid enough; paper objects also do no damage,
-               except for books */
-            cptr.stI32(hmd, 0);
-            cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
-            break;
-        }
-        /* non-weapons can damage because of their weight */
-        /* (but not too much) */
-        cptr.stI32(hmd, u32div(((cptr.ldI32o(obj, $obj_owt) + 99) >>> 0), 100) | 0);
-        cptr.stI32(hmd, (cptr.ldI32(hmd) <= 1) ? 1 : rnd(cptr.ldI32(hmd)));
-        if (cptr.ldI32(hmd) > 6)
-            cptr.stI32(hmd, 6);
-        /* wet towel has modest damage bonus beyond its weight,
-           based on its wetness */
-        if (is_wet_towel(obj)) {
-            let doubld = schar((cptr.eq(
-                cptr.ldPtro(mon, $monst_data),
-                cptr.add(mons, NHC.PM_IRON_GOLEM, $sizeof_permonst)
-            )));
+            ) &
+                31) |
+                0) ==
+                NHC.VEGGY ||
+                ((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
+                    0) ==
+                    NHC.PAPER) &&
+                    cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS) {
+                /* vegetables (and similar) do no damage, because they
+                   aren't rigid enough; paper objects also do no damage,
+                   except for books */
+                cptr.stI32(hmd, 0);
+                cptr.st1o(hmd, $_hitmon_data_get_dmg_bonus, 0);
+                break;
+            }
+            /* non-weapons can damage because of their weight */
+            /* (but not too much) */
+            cptr.stI32(hmd, u32div(((cptr.ldI32o(obj, $obj_owt) + 99) >>> 0), 100) | 0);
+            cptr.stI32(hmd, (cptr.ldI32(hmd) <= 1) ? 1 : rnd(cptr.ldI32(hmd)));
+            if (cptr.ldI32(hmd) > 6)
+                cptr.stI32(hmd, 6);
+            /* wet towel has modest damage bonus beyond its weight,
+               based on its wetness */
+            if (is_wet_towel(obj)) {
+                let doubld = schar((cptr.eq(
+                    cptr.ldPtro(mon, $monst_data),
+                    cptr.add(mons, NHC.PM_IRON_GOLEM, $sizeof_permonst)
+                )));
 
-            /* wielded wet towel should probably use whip skill
-               (but not by setting objects[TOWEL].oc_skill==P_WHIP
-               because that would turn towel into a weptool);
-               due to low weight, tmp always starts at 1 here, and
-               due to wet towel's definition, obj->spe is 1..7 */
-            cptr.stI32(
-                hmd,
-                (cptr.ldI32(hmd) + Math.imul(cptr.ld1so(obj, $obj_spe), (doubld ? 2 : 1))) | 0
-            );
-            cptr.stI32(hmd, rnd(cptr.ldI32(hmd)));  /* wet towel damage not capped at 6 */
-            /* usually lose some wetness but defer doing so
-               until after hit message */
-            cptr.st1o(
-                hmd,
-                $_hitmon_data_dryit,
-                schar((rn2((cptr.ld1so(obj, $obj_spe) + 1) | 0) > 0))
-            );
-        }
-        /* things like silver wands can arrive here so we
-           need another silver check; blessed check too */
-        if (cptr.ldI32o(hmd, $_hitmon_data_material) == NHC.SILVER && mon_hates_silver(mon)) {
-            cptr.stI32(hmd, (cptr.ldI32(hmd) + rnd(20)) | 0);
-            cptr.st1o(hmd, $_hitmon_data_silvermsg, cptr.st1o(hmd, $_hitmon_data_silverobj, 1));
-        }
-        if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
-            cptr.stI32(hmd, (cptr.ldI32(hmd) + rnd(4)) | 0);
+                /* wielded wet towel should probably use whip skill
+                   (but not by setting objects[TOWEL].oc_skill==P_WHIP
+                   because that would turn towel into a weptool);
+                   due to low weight, tmp always starts at 1 here, and
+                   due to wet towel's definition, obj->spe is 1..7 */
+                cptr.stI32(
+                    hmd,
+                    (cptr.ldI32(hmd) + Math.imul(cptr.ld1so(obj, $obj_spe), (doubld ? 2 : 1))) | 0
+                );
+                cptr.stI32(hmd, rnd(cptr.ldI32(hmd)));  /* wet towel damage not capped at 6 */
+                /* usually lose some wetness but defer doing so
+                   until after hit message */
+                cptr.st1o(
+                    hmd,
+                    $_hitmon_data_dryit,
+                    schar((rn2((cptr.ld1so(obj, $obj_spe) + 1) | 0) > 0))
+                );
+            }
+            /* things like silver wands can arrive here so we
+               need another silver check; blessed check too */
+            if (cptr.ldI32o(hmd, $_hitmon_data_material) == NHC.SILVER && mon_hates_silver(mon)) {
+                cptr.stI32(hmd, (cptr.ldI32(hmd) + rnd(20)) | 0);
+                cptr.st1o(hmd, $_hitmon_data_silvermsg, cptr.st1o(hmd, $_hitmon_data_silverobj, 1));
+            }
+            if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
+                cptr.stI32(hmd, (cptr.ldI32(hmd) + rnd(4)) | 0);
     }
 }
 
@@ -2690,8 +2709,8 @@ function hmon_hitmon_stagger(hmd, mon, obj) {
         (cptr.ldI16o2(u, NHC.P_BARE_HANDED_COMBAT, $sizeof_skills, $you_weapon_skills)) &&
             !(cptr.ld1uo((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_msize) >=
                 NHM.MZ_LARGE) &&
-            !((cptr.ldU64o((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_mflags1) &
-                2097152n) != 0n)) {
+            !((cptr.ldU64o((cptr.ldPtro(hmd, $_hitmon_data_mdat)), $permonst_mflags1) & 2097152n) !=
+                0n)) {
         if (canspotmon(mon))
             pline(
                 __s_s_s_from_your_powerful_strike,
@@ -2738,7 +2757,8 @@ function hmon_hitmon_splitmon(hmd, mon, obj) {
         )) &&
             cptr.ldI32o(mon, $monst_mhp) > 1 &&
             !(cptr.ldI32o(mon, $monst_mcan) & 1) &&
-            !cptr.ld1so(hmd, $_hitmon_data_offmap) && obj &&
+            !cptr.ld1so(hmd, $_hitmon_data_offmap) &&
+            obj &&
             (cptr.eq(obj, uwep.v) || (cptr.ld1so(u, $you_twoweap) && cptr.eq(obj, uswapwep.v))) &&
             ((cptr.ldI32o(hmd, $_hitmon_data_material) == NHC.IRON ||
                 cptr.ldI32o(hmd, $_hitmon_data_material) == NHC.METAL) &&
@@ -3215,7 +3235,9 @@ function shade_aware(obj) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
+            ) &
+                31) |
+                0) ==
                 NHC.SILVER)
         return 1;
     return 0;
@@ -3256,7 +3278,8 @@ export function shade_miss(magr, mdef, obj, thrown, verbose) {
                     ),
                     cptr.ldI16o(mdef, $monst_mx)
                 ) &
-                    NHM.IN_SIGHT) != 0) ||
+                    NHM.IN_SIGHT) !=
+                    0) ||
                 sensemon(mdef)) ||
                 (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) && m_next2u(mdef)))) {
 
@@ -3386,8 +3409,8 @@ function joust(mon, obj) {
     if ((joust_dieroll = rn2(5)) < skill_rating) {
         if (joust_dieroll == 0 &&
                 rnl(50) == 49 &&
-                !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
-                    1048576n) != 0n) &&
+                !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 1048576n) !=
+                    0n) &&
                 !obj_resists(obj, 0, 100))
             return -1;  /* hit that breaks lance */
         return 1;  /* successful joust */
@@ -4630,14 +4653,14 @@ export function mhitm_ad_drst(magr, mattk, mdef, mhm) {
 
         switch (cptr.ld1uo(mattk, $attack_adtyp)) {
             case NHM.AD_DRST:
-            ptmp = NHC.A_STR;
-            break;
+                ptmp = NHC.A_STR;
+                break;
             case NHM.AD_DRDX:
-            ptmp = NHC.A_DEX;
-            break;
+                ptmp = NHC.A_DEX;
+                break;
             case NHM.AD_DRCO:
-            ptmp = NHC.A_CON;
-            break;
+                ptmp = NHC.A_CON;
+                break;
         }
         hitmsg(magr, mattk);
         if (!negated && !rn2(8)) {
@@ -5263,19 +5286,19 @@ export function mhitm_ad_ench(magr, mattk, mdef, mhm) {
                    amulets and blindfolds aren't (at present) */
                 switch (rn2(5)) {
                     case 0:
-                    break;
+                        break;
                     case 1:
-                    obj = uright.v;
-                    break;
+                        obj = uright.v;
+                        break;
                     case 2:
-                    obj = uleft.v;
-                    break;
+                        obj = uleft.v;
+                        break;
                     case 3:
-                    obj = uamul.v;
-                    break;
+                        obj = uamul.v;
+                        break;
                     case 4:
-                    obj = ublindf.v;
-                    break;
+                        obj = ublindf.v;
+                        break;
                 }
             }
             if (obj && drain_item(obj, 0)) {
@@ -5523,45 +5546,45 @@ export function mhitm_ad_pest(magr, mattk, mdef, mhm) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        alt_attk = cptr.alloc(4);
-        pa = cptr.ldPtro(magr, $monst_data);
-        if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) { __pc = 3; continue; }
-        __pc = 4; continue;
+            alt_attk = cptr.alloc(4);
+            pa = cptr.ldPtro(magr, $monst_data);
+            if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) { __pc = 3; continue; }
+            __pc = 4; continue;
         }
         case 3: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 4: {
-        if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) { __pc = 6; continue; }
-        __pc = 7; continue;
+            if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) { __pc = 6; continue; }
+            __pc = 7; continue;
         }
         case 6: {
-        /* mhitu */
-        pline_mon(magr, __s_s_reaches_out_and_you_feel_fever_and, Monnam(magr));
-        void diseasemu(pa);
-        __pc = 5;
-        continue;
+            /* mhitu */
+            pline_mon(magr, __s_s_reaches_out_and_you_feel_fever_and, Monnam(magr));
+            void diseasemu(pa);
+            __pc = 5;
+            continue;
         }
         case 7: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* mhitm_pest: */: {
-        /* mhitm; it's possible for Pestilence to hit another monster;
-           treat it the same as an attack for AD_DISE damage */
-        cptr.memcpy(alt_attk, mattk, 4);
-        cptr.st1o(alt_attk, $attack_adtyp, NHM.AD_DISE);
-        mhitm_ad_dise(magr, alt_attk, mdef, mhm);
-        __pc = 5;
-        continue;
+            /* mhitm; it's possible for Pestilence to hit another monster;
+               treat it the same as an attack for AD_DISE damage */
+            cptr.memcpy(alt_attk, mattk, 4);
+            cptr.st1o(alt_attk, $attack_adtyp, NHM.AD_DISE);
+            mhitm_ad_dise(magr, alt_attk, mdef, mhm);
+            __pc = 5;
+            continue;
         }
         case 5: {
-        __pc = 2;
-        continue;
+            __pc = 2;
+            continue;
         }
         case 2: {
-        __pc = -1;
-        continue;
+            __pc = -1;
+            continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -5599,27 +5622,27 @@ export function mhitm_ad_deth(magr, mattk, mdef, mhm) {
                 case 19:
                 case 18:
                 case 17:
-                if (!Antimagic()) {
-                    touch_of_death(magr);
-                    cptr.stI32(mhm, 0);
-                    return;
-                }
-                // @FallThrough
-                ;
+                    if (!Antimagic()) {
+                        touch_of_death(magr);
+                        cptr.stI32(mhm, 0);
+                        return;
+                    }
+                    // @FallThrough
+                    ;
                 default:
-                You_feel(__s_your_life_force_draining_away);
-                cptr.st1o(mhm, $mhitm_data_permdmg, 1);  /* actual damage done by caller */
-                return;
+                    You_feel(__s_your_life_force_draining_away);
+                    cptr.st1o(mhm, $mhitm_data_permdmg, 1);  /* actual damage done by caller */
+                    return;
                 case 4:
                 case 3:
                 case 2:
                 case 1:
                 case 0:
-                if (Antimagic())
-                    shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                pline(__s_lucky_for_you_it_didn_t_work);
-                cptr.stI32(mhm, 0);
-                return;
+                    if (Antimagic())
+                        shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                    pline(__s_lucky_for_you_it_didn_t_work);
+                    cptr.stI32(mhm, 0);
+                    return;
             }
         } else {
             __go_mhitm_deth = true; break __skip_mhitm_deth;
@@ -5894,7 +5917,9 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                     cptr.ldI16o(otmp, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_material
-                ) & 31) | 0) ==
+                ) &
+                    31) |
+                    0) ==
                     NHC.SILVER &&
                         (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
                             hates_silver(cptr.ldPtro(
@@ -5921,14 +5946,18 @@ export function mhitm_ad_phys(magr, mattk, mdef, mhm) {
                             cptr.ldI16o(otmp, $obj_otyp),
                             $sizeof_objclass,
                             $objclass_oc_material
-                        ) & 31) | 0) ==
+                        ) &
+                            31) |
+                            0) ==
                             NHC.IRON ||
                             ((cptr.ldI32o2(
                                 objects,
                                 cptr.ldI16o(otmp, $obj_otyp),
                                 $sizeof_objclass,
                                 $objclass_oc_material
-                            ) & 31) | 0) ==
+                            ) &
+                                31) |
+                                0) ==
                                 NHC.METAL) &&
                         (cptr.ldI32o(u, $you_umonnum) == NHC.PM_BLACK_PUDDING ||
                             cptr.ldI32o(u, $you_umonnum) == NHC.PM_BROWN_PUDDING)) {
@@ -6214,7 +6243,8 @@ export function mhitm_ad_heal(magr, mattk, mdef, mhm) {
                     /* hard upper limit via nurse care: 25 * ulevel */
                     if (cptr.ldI32o(u, $you_uhpmax) <
                             ((Math.imul(5, cptr.ldI32o(u, $you_ulevel)) +
-                                d((Math.imul(2, cptr.ldI32o(u, $you_ulevel))), 10)) | 0)) {
+                                d((Math.imul(2, cptr.ldI32o(u, $you_ulevel))), 10)) |
+                                0)) {
                         (cptr.stI32o(u, $you_uhpmax, cptr.ldI32o(u, $you_uhpmax) + 1)) - (1);
                         if (cptr.ldI32o(u, $you_uhpmax) > cptr.ldI32o(u, $you_uhppeak))
                             cptr.stI32o(u, $you_uhppeak, cptr.ldI32o(u, $you_uhpmax));
@@ -6602,32 +6632,33 @@ export function mhitm_ad_sedu(magr, mattk, mdef, mhm) {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         switch (steal(magr, cptr.decay(buf))) {
             case -1:
-            cptr.stI32o(mhm, $mhitm_data_hitflags, NHM.M_ATTK_AGR_DIED);  /* return 2??? */
-            cptr.st1o(mhm, $mhitm_data_done, 1);
-            return;
+                cptr.stI32o(mhm, $mhitm_data_hitflags, NHM.M_ATTK_AGR_DIED);  /* return 2??? */
+                cptr.st1o(mhm, $mhitm_data_done, 1);
+                return;
             case 0:
-            return;
+                return;
             default:
-            if (!((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) &
-                262144n) != 0n) &&
-                    !tele_restrict(magr))
-                void rloc(magr, NHM.RLOC_MSG);
-            if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) &
-                262144n) != 0n) &&
-                    cptr.ld1s(cptr.decay(buf))) {
-                if (canseemon(magr))
-                    pline_mon(
-                        magr,
-                        __s_s_tries_to_s_away_with_s,
-                        Monnam(magr),
-                        locomotion(cptr.ldPtro(magr, $monst_data), __s_run),
-                        cptr.decay(buf)
-                    );
-            }
-            monflee(magr, 0, 0, 0);
-            cptr.stI32o(mhm, $mhitm_data_hitflags, NHM.M_ATTK_AGR_DONE);  /* return 3??? */
-            cptr.st1o(mhm, $mhitm_data_done, 1);
-            return;
+                if (!((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) &
+                    262144n) !=
+                    0n) &&
+                        !tele_restrict(magr))
+                    void rloc(magr, NHM.RLOC_MSG);
+                if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 262144n) !=
+                    0n) &&
+                        cptr.ld1s(cptr.decay(buf))) {
+                    if (canseemon(magr))
+                        pline_mon(
+                            magr,
+                            __s_s_tries_to_s_away_with_s,
+                            Monnam(magr),
+                            locomotion(cptr.ldPtro(magr, $monst_data), __s_run),
+                            cptr.decay(buf)
+                        );
+                }
+                monflee(magr, 0, 0, 0);
+                cptr.stI32o(mhm, $mhitm_data_hitflags, NHM.M_ATTK_AGR_DONE);  /* return 3??? */
+                cptr.st1o(mhm, $mhitm_data_done, 1);
+                return;
         }
     } else {
         /* mhitm */
@@ -6742,127 +6773,127 @@ export function mhitm_ad_ssex(magr, mattk, mdef, mhm) {
 export function mhitm_adtyping(magr, mattk, mdef, mhm) {
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_STUN:
-        mhitm_ad_stun(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_stun(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_LEGS:
-        mhitm_ad_legs(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_legs(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_WERE:
-        mhitm_ad_were(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_were(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_HEAL:
-        mhitm_ad_heal(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_heal(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_PHYS:
-        mhitm_ad_phys(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_phys(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_FIRE:
-        mhitm_ad_fire(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_fire(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_COLD:
-        mhitm_ad_cold(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_cold(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_ELEC:
-        mhitm_ad_elec(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_elec(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_ACID:
-        mhitm_ad_acid(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_acid(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_STON:
-        mhitm_ad_ston(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_ston(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SSEX:
-        mhitm_ad_ssex(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_ssex(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SITM:
         case NHM.AD_SEDU:
-        mhitm_ad_sedu(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_sedu(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SGLD:
-        mhitm_ad_sgld(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_sgld(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_TLPT:
-        mhitm_ad_tlpt(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_tlpt(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_BLND:
-        mhitm_ad_blnd(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_blnd(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_CURS:
-        mhitm_ad_curs(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_curs(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DRLI:
-        mhitm_ad_drli(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_drli(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_RUST:
-        mhitm_ad_rust(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_rust(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_CORR:
-        mhitm_ad_corr(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_corr(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DCAY:
-        mhitm_ad_dcay(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_dcay(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DREN:
-        mhitm_ad_dren(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_dren(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DRST:
         case NHM.AD_DRDX:
         case NHM.AD_DRCO:
-        mhitm_ad_drst(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_drst(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DRIN:
-        mhitm_ad_drin(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_drin(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_STCK:
-        mhitm_ad_stck(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_stck(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_WRAP:
-        mhitm_ad_wrap(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_wrap(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_PLYS:
-        mhitm_ad_plys(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_plys(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SLEE:
-        mhitm_ad_slee(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_slee(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SLIM:
-        mhitm_ad_slim(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_slim(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_ENCH:
-        mhitm_ad_ench(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_ench(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SLOW:
-        mhitm_ad_slow(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_slow(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_CONF:
-        mhitm_ad_conf(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_conf(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_POLY:
-        mhitm_ad_poly(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_poly(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DISE:
-        mhitm_ad_dise(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_dise(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_SAMU:
-        mhitm_ad_samu(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_samu(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DETH:
-        mhitm_ad_deth(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_deth(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_PEST:
-        mhitm_ad_pest(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_pest(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_FAMN:
-        mhitm_ad_famn(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_famn(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_DGST:
-        mhitm_ad_dgst(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_dgst(magr, mattk, mdef, mhm);
+            break;
         case NHM.AD_HALU:
-        mhitm_ad_halu(magr, mattk, mdef, mhm);
-        break;
+            mhitm_ad_halu(magr, mattk, mdef, mhm);
+            break;
         default:
-        cptr.stI32(mhm, 0);
+            cptr.stI32(mhm, 0);
     }
 }
 
@@ -6885,7 +6916,9 @@ export function damageum(mdef, mattk, specialdmg) {
     if (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags2
-    ) & 256n) != 0n) &&
+    ) &
+        256n) !=
+        0n) &&
             !rn2(13) &&
             !uwep.v &&
             cptr.ldI32o(u, $you_umonnum) != NHC.PM_AMOROUS_DEMON &&
@@ -6926,7 +6959,8 @@ export function damageum(mdef, mattk, specialdmg) {
                     ),
                     cptr.ldI16o(mdef, $monst_mx)
                 ) &
-                    NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                    0)) {
             You_feel(__s_embarrassed_for_a_moment);
             if (cptr.ldI32(mhm))
                 xkilled(mdef, NHM.XKILL_NOMSG);
@@ -6958,49 +6992,49 @@ export function explum(mdef, mattk) {
 
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_BLND:
-        if (mdef && !resists_blnd(mdef)) {
-            pline(__s_s_is_blinded_by_your_flash_of_light, Monnam(mdef));
-            cptr.stI32o(
-                mdef,
-                $monst_mblinded,
-                (((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0) < 127
-                    ? ((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0)
-                    : 127) >>> 0
-            );
-            cptr.stI32o(mdef, $monst_mcansee, 0);
-        }
-        break;
+            if (mdef && !resists_blnd(mdef)) {
+                pline(__s_s_is_blinded_by_your_flash_of_light, Monnam(mdef));
+                cptr.stI32o(
+                    mdef,
+                    $monst_mblinded,
+                    (((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0) < 127
+                        ? ((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0)
+                        : 127) >>> 0
+                );
+                cptr.stI32o(mdef, $monst_mcansee, 0);
+            }
+            break;
         case NHM.AD_HALU:
-        if (mdef &&
-                ((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) &
-                    4096n) == 0n) &&
-                (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0) {
-            pline(__s_s_is_affected_by_your_flash_of_light, Monnam(mdef));
-            cptr.stI32o(mdef, $monst_mconf, 1);
-        }
-        break;
+            if (mdef &&
+                    ((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 4096n) ==
+                        0n) &&
+                    (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0) {
+                pline(__s_s_is_affected_by_your_flash_of_light, Monnam(mdef));
+                cptr.stI32o(mdef, $monst_mconf, 1);
+            }
+            break;
         case NHM.AD_COLD:
         case NHM.AD_FIRE:
         case NHM.AD_ELEC:
-        /* See comment in mon_explodes() and in zap.c for an explanation
-           of this math.  Here, the player is causing the explosion, so it
-           should be in the +20 to +29 range instead of negative. */
-        explode(
-            cptr.ldI16(u),
-            cptr.ldI16o(u, $you_uy),
-            (cptr.ld1uo(mattk, $attack_adtyp) - 1 + 20) | 0,
-            tmp,
-            (schar(((NHC.MAXOCLASSES + 2) | 0))),
-            adtyp_to_expltype(cptr.ld1uo(mattk, $attack_adtyp))
-        );
-        if (mdef && (cptr.ldI32o((mdef), $monst_mhp) < 1)) {
-            /* Other monsters may have died too, but return this if the actual
-               target died. */
-            return NHM.M_ATTK_DEF_DIED;
-        }
-        break;
+            /* See comment in mon_explodes() and in zap.c for an explanation
+               of this math.  Here, the player is causing the explosion, so it
+               should be in the +20 to +29 range instead of negative. */
+            explode(
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                (cptr.ld1uo(mattk, $attack_adtyp) - 1 + 20) | 0,
+                tmp,
+                (schar(((NHC.MAXOCLASSES + 2) | 0))),
+                adtyp_to_expltype(cptr.ld1uo(mattk, $attack_adtyp))
+            );
+            if (mdef && (cptr.ldI32o((mdef), $monst_mhp) < 1)) {
+                /* Other monsters may have died too, but return this if the actual
+                   target died. */
+                return NHM.M_ATTK_DEF_DIED;
+            }
+            break;
         default:
-        break;
+            break;
     }
     wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 49);  /* same radius as exploding monster */
     return NHM.M_ATTK_HIT;
@@ -7029,10 +7063,8 @@ function start_engulf(mdef) {
                     (cptr.ldPtro((cptr.add(gy, $instance_globals_y_youmonst)), $monst_data)),
                     $permonst_pmidx
                 ))) +
-                ((((cptr.ldI32o(
-                    (cptr.add(gy, $instance_globals_y_youmonst)),
-                    $monst_female
-                ) & 1) | 0) == 0)
+                ((((cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_female) & 1) |
+                    0) == 0)
                     ? NHC.GLYPH_MON_MALE_OFF
                     : NHC.GLYPH_MON_FEM_OFF)) | 0))
         );
@@ -7155,197 +7187,201 @@ function gulpum(mdef, mattk) {
             start_engulf(mdef);
             switch (cptr.ld1uo(mattk, $attack_adtyp)) {
                 case NHM.AD_DGST:
-                /* eating a Rider or its corpse is fatal */
-                if (is_rider(pd)) {
-                    pline(__s_unfortunately_digesting_any_of_it_is);
-                    end_engulf();
-                    void cptr.sprintf(
-                        cptr.add(svk, $kinfo_name),
-                        __s_unwisely_tried_to_eat_s,
-                        pmname(pd, Mgender(mdef))
-                    );
-                    cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-                    done(NHC.DIED);
-                    return NHM.M_ATTK_MISS;  /* lifesaved */
-                }
-
-                if (Slow_digestion()) {
-                    dam = 0;
-                    break;
-                }
-
-                /* Use up amulet of life saving */
-                if ((otmp = mlifesaver(mdef)) !== null)
-                    m_useup(mdef, otmp);
-
-                newuhs(0);
-                /* start_engulf() issues "you engulf <mdef>" above; this
-                   used to specify XKILL_NOMSG but we need "you kill <mdef>"
-                   in case we're also going to get "welcome to level N+1";
-                   "you totally digest <mdef>" will be coming soon (after
-                   several turns) but the level-gain message seems out of
-                   order if the kill message is left implicit */
-                cptr.stPtro(
-                    gm,
-                    $instance_globals_m_mswallower,
-                    cptr.add(gy, $instance_globals_y_youmonst)
-                );
-                xkilled(mdef, 2);
-                if (!(cptr.ldI32o((mdef), $monst_mhp) < 1)) {
-                    You(__s_hurriedly_regurgitate_the_sizzling_in, body_part(NHC.STOMACH));
-                } else {
-                    tmp = ((1 + (cptr.ldI32o(pd, $permonst_cwt) >>> 8)) >>> 0) | 0;
-                    if (corpse_chance(mdef, cptr.add(gy, $instance_globals_y_youmonst), 1) &&
-                            !(cptr.ld1uo2(
-                                svm,
-                                (cptr.ldI32o((pd), $permonst_pmidx)),
-                                $sizeof_mvitals,
-                                $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                            ) &
-                                NHM.G_NOCORPSE)) {
-                        /* nutrition only if there can be a corpse */
-                        cptr.stI32o(
-                            u,
-                            $you_uhunger,
-                            (cptr.ldI32o(u, $you_uhunger) +
-                                ((((cptr.ldU16o(pd, $permonst_cnutrit) + 1) | 0) / 2) | 0)) | 0
+                    /* eating a Rider or its corpse is fatal */
+                    if (is_rider(pd)) {
+                        pline(__s_unfortunately_digesting_any_of_it_is);
+                        end_engulf();
+                        void cptr.sprintf(
+                            cptr.add(svk, $kinfo_name),
+                            __s_unwisely_tried_to_eat_s,
+                            pmname(pd, Mgender(mdef))
                         );
-                    } else {
-                        tmp = 0;
+                        cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
+                        done(NHC.DIED);
+                        return NHM.M_ATTK_MISS;  /* lifesaved */
                     }
-                    void cptr.sprintf(
-                        cptr.decay(__static_gulpum_msgbuf),
-                        __s_you_totally_digest_s,
-                        mon_nam(mdef)
+
+                    if (Slow_digestion()) {
+                        dam = 0;
+                        break;
+                    }
+
+                    /* Use up amulet of life saving */
+                    if ((otmp = mlifesaver(mdef)) !== null)
+                        m_useup(mdef, otmp);
+
+                    newuhs(0);
+                    /* start_engulf() issues "you engulf <mdef>" above; this
+                       used to specify XKILL_NOMSG but we need "you kill <mdef>"
+                       in case we're also going to get "welcome to level N+1";
+                       "you totally digest <mdef>" will be coming soon (after
+                       several turns) but the level-gain message seems out of
+                       order if the kill message is left implicit */
+                    cptr.stPtro(
+                        gm,
+                        $instance_globals_m_mswallower,
+                        cptr.add(gy, $instance_globals_y_youmonst)
                     );
-                    if (tmp != 0) {
-                        /* setting afternmv = end_engulf is tempting,
-                         * but will cause problems if the player is
-                         * attacked (which uses his real location) or
-                         * if his See_invisible wears off
-                         */
-                        You(__s_digest_s, mon_nam(mdef));
-                        if (Slow_digestion())
-                            tmp = Math.imul(tmp, 2);
-                        nomul(-tmp);
-                        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_digesting_something);
-                        cptr.stPtro(
-                            gn,
-                            $instance_globals_n_nomovemsg,
-                            cptr.decay(__static_gulpum_msgbuf)
-                        );
-                        /* possible intrinsic once totally digested */
-                        cptr.stI16o(
-                            gc,
-                            $instance_globals_c_corpsenm_digested,
-                            (cptr.ldI32o((pd), $permonst_pmidx))
-                        );
-                        cptr.stPtr(ga, Finish_digestion);
-                    } else
-                        pline(__s_pct_s, cptr.decay(__static_gulpum_msgbuf));
-                    if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst))) {
+                    xkilled(mdef, 2);
+                    if (!(cptr.ldI32o((mdef), $monst_mhp) < 1)) {
+                        You(__s_hurriedly_regurgitate_the_sizzling_in, body_part(NHC.STOMACH));
+                    } else {
+                        tmp = ((1 + (cptr.ldI32o(pd, $permonst_cwt) >>> 8)) >>> 0) | 0;
+                        if (corpse_chance(mdef, cptr.add(gy, $instance_globals_y_youmonst), 1) &&
+                                !(cptr.ld1uo2(
+                                    svm,
+                                    (cptr.ldI32o((pd), $permonst_pmidx)),
+                                    $sizeof_mvitals,
+                                    $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                                ) &
+                                    NHM.G_NOCORPSE)) {
+                            /* nutrition only if there can be a corpse */
+                            cptr.stI32o(
+                                u,
+                                $you_uhunger,
+                                (cptr.ldI32o(u, $you_uhunger) +
+                                    ((((cptr.ldU16o(pd, $permonst_cnutrit) + 1) | 0) / 2) | 0)) | 0
+                            );
+                        } else {
+                            tmp = 0;
+                        }
                         void cptr.sprintf(
                             cptr.decay(__static_gulpum_msgbuf),
-                            __s_s_isn_t_sitting_well_with_you,
-                            The(pmname(pd, Mgender(mdef)))
+                            __s_you_totally_digest_s,
+                            mon_nam(mdef)
                         );
-                        if (!Unchanging()) {
-                            make_slimed(5n, null);
-                        }
-                    } else
-                        exercise(NHC.A_CON, 1);
-                }
-                cptr.stPtro(gm, $instance_globals_m_mswallower, null);
-                end_engulf();
-                return NHM.M_ATTK_DEF_DIED;
+                        if (tmp != 0) {
+                            /* setting afternmv = end_engulf is tempting,
+                             * but will cause problems if the player is
+                             * attacked (which uses his real location) or
+                             * if his See_invisible wears off
+                             */
+                            You(__s_digest_s, mon_nam(mdef));
+                            if (Slow_digestion())
+                                tmp = Math.imul(tmp, 2);
+                            nomul(-tmp);
+                            cptr.stPtro(
+                                gm,
+                                $instance_globals_m_multi_reason,
+                                __s_digesting_something
+                            );
+                            cptr.stPtro(
+                                gn,
+                                $instance_globals_n_nomovemsg,
+                                cptr.decay(__static_gulpum_msgbuf)
+                            );
+                            /* possible intrinsic once totally digested */
+                            cptr.stI16o(
+                                gc,
+                                $instance_globals_c_corpsenm_digested,
+                                (cptr.ldI32o((pd), $permonst_pmidx))
+                            );
+                            cptr.stPtr(ga, Finish_digestion);
+                        } else
+                            pline(__s_pct_s, cptr.decay(__static_gulpum_msgbuf));
+                        if (cptr.eq(pd, cptr.add(mons, NHC.PM_GREEN_SLIME, $sizeof_permonst))) {
+                            void cptr.sprintf(
+                                cptr.decay(__static_gulpum_msgbuf),
+                                __s_s_isn_t_sitting_well_with_you,
+                                The(pmname(pd, Mgender(mdef)))
+                            );
+                            if (!Unchanging()) {
+                                make_slimed(5n, null);
+                            }
+                        } else
+                            exercise(NHC.A_CON, 1);
+                    }
+                    cptr.stPtro(gm, $instance_globals_m_mswallower, null);
+                    end_engulf();
+                    return NHM.M_ATTK_DEF_DIED;
                 case NHM.AD_PHYS:
-                if (cptr.eq(
-                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                    cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)
-                )) {
-                    pline(__s_s_is_laden_with_your_moisture, Monnam(mdef));
-                    if ((((cptr.ldU64o((pd), $permonst_mflags1) & 1024n) != 0n) ||
-                        ((cptr.ldU64o((pd), $permonst_mflags1) & 512n) != 0n)) &&
-                            !flaming(pd)) {
-                        dam = 0;
-                        pline(__s_s_seems_unharmed, Monnam(mdef));
+                    if (cptr.eq(
+                        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                        cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)
+                    )) {
+                        pline(__s_s_is_laden_with_your_moisture, Monnam(mdef));
+                        if ((((cptr.ldU64o((pd), $permonst_mflags1) & 1024n) != 0n) ||
+                            ((cptr.ldU64o((pd), $permonst_mflags1) & 512n) != 0n)) &&
+                                !flaming(pd)) {
+                            dam = 0;
+                            pline(__s_s_seems_unharmed, Monnam(mdef));
+                        }
+                    } else {
+                        pline(
+                            __s_s_is_s,
+                            Monnam(mdef),
+                            (dmgtype_fromattack(
+                                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                                NHM.AD_WRAP,
+                                NHM.AT_ENGL
+                            ) !== null)
+                                ? __s_being_squashed
+                                : __s_pummeled_with_your_debris
+                        );
                     }
-                } else {
-                    pline(
-                        __s_s_is_s,
-                        Monnam(mdef),
-                        (dmgtype_fromattack(
-                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-                            NHM.AD_WRAP,
-                            NHM.AT_ENGL
-                        ) !== null)
-                            ? __s_being_squashed
-                            : __s_pummeled_with_your_debris
-                    );
-                }
-                break;
+                    break;
                 case NHM.AD_ACID:
-                pline(__s_s_is_covered_with_your_goo, Monnam(mdef));
-                if (Resists_Elem(mdef, NHC.ACID_RES)) {
-                    pline(__s_it_seems_harmless_to_s, mon_nam(mdef));
-                    dam = 0;
-                }
-                break;
-                case NHM.AD_BLND:
-                if (can_blnd(
-                    cptr.add(gy, $instance_globals_y_youmonst),
-                    mdef,
-                    cptr.ld1u(mattk),
-                    null
-                )) {
-                    if ((cptr.ldI32o(mdef, $monst_mcansee) & 1))
-                        pline(__s_s_can_t_see_in_there, Monnam(mdef));
-                    cptr.stI32o(mdef, $monst_mcansee, 0);
-                    dam = (dam + ((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0)) | 0;
-                    if (dam > 127)
-                        dam = 127;
-                    cptr.stI32o(mdef, $monst_mblinded, dam >>> 0);
-                }
-                dam = 0;
-                break;
-                case NHM.AD_ELEC:
-                if (rn2(2)) {
-                    pline_The(__s_air_around_s_crackles_with_electricity, mon_nam(mdef));
-                    if (Resists_Elem(mdef, NHC.SHOCK_RES)) {
-                        pline(__s_s_seems_unhurt, Monnam(mdef));
+                    pline(__s_s_is_covered_with_your_goo, Monnam(mdef));
+                    if (Resists_Elem(mdef, NHC.ACID_RES)) {
+                        pline(__s_it_seems_harmless_to_s, mon_nam(mdef));
                         dam = 0;
                     }
-                    golemeffects(mdef, cptr.ld1uo(mattk, $attack_adtyp), dam);
-                } else
+                    break;
+                case NHM.AD_BLND:
+                    if (can_blnd(
+                        cptr.add(gy, $instance_globals_y_youmonst),
+                        mdef,
+                        cptr.ld1u(mattk),
+                        null
+                    )) {
+                        if ((cptr.ldI32o(mdef, $monst_mcansee) & 1))
+                            pline(__s_s_can_t_see_in_there, Monnam(mdef));
+                        cptr.stI32o(mdef, $monst_mcansee, 0);
+                        dam = (dam + ((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0)) | 0;
+                        if (dam > 127)
+                            dam = 127;
+                        cptr.stI32o(mdef, $monst_mblinded, dam >>> 0);
+                    }
                     dam = 0;
-                break;
+                    break;
+                case NHM.AD_ELEC:
+                    if (rn2(2)) {
+                        pline_The(__s_air_around_s_crackles_with_electricity, mon_nam(mdef));
+                        if (Resists_Elem(mdef, NHC.SHOCK_RES)) {
+                            pline(__s_s_seems_unhurt, Monnam(mdef));
+                            dam = 0;
+                        }
+                        golemeffects(mdef, cptr.ld1uo(mattk, $attack_adtyp), dam);
+                    } else
+                        dam = 0;
+                    break;
                 case NHM.AD_COLD:
-                if (rn2(2)) {
-                    if (Resists_Elem(mdef, NHC.COLD_RES)) {
-                        pline(__s_s_seems_mildly_chilly, Monnam(mdef));
-                        dam = 0;
+                    if (rn2(2)) {
+                        if (Resists_Elem(mdef, NHC.COLD_RES)) {
+                            pline(__s_s_seems_mildly_chilly, Monnam(mdef));
+                            dam = 0;
+                        } else
+                            pline(__s_s_is_freezing_to_death, Monnam(mdef));
+                        golemeffects(mdef, cptr.ld1uo(mattk, $attack_adtyp), dam);
                     } else
-                        pline(__s_s_is_freezing_to_death, Monnam(mdef));
-                    golemeffects(mdef, cptr.ld1uo(mattk, $attack_adtyp), dam);
-                } else
-                    dam = 0;
-                break;
+                        dam = 0;
+                    break;
                 case NHM.AD_FIRE:
-                if (rn2(2)) {
-                    if (Resists_Elem(mdef, NHC.FIRE_RES)) {
-                        pline(__s_s_seems_mildly_hot, Monnam(mdef));
-                        dam = 0;
+                    if (rn2(2)) {
+                        if (Resists_Elem(mdef, NHC.FIRE_RES)) {
+                            pline(__s_s_seems_mildly_hot, Monnam(mdef));
+                            dam = 0;
+                        } else
+                            pline(__s_s_is_burning_to_a_crisp, Monnam(mdef));
+                        golemeffects(mdef, cptr.ld1uo(mattk, $attack_adtyp), dam);
                     } else
-                        pline(__s_s_is_burning_to_a_crisp, Monnam(mdef));
-                    golemeffects(mdef, cptr.ld1uo(mattk, $attack_adtyp), dam);
-                } else
-                    dam = 0;
-                break;
+                        dam = 0;
+                    break;
                 case NHM.AD_DREN:
-                if (!rn2(4))
-                    xdrainenergym(mdef, 1);
-                dam = 0;
-                break;
+                    if (!rn2(4))
+                        xdrainenergym(mdef, 1);
+                    dam = 0;
+                    break;
             }
             end_engulf();
             cptr.stI32o(mdef, $monst_mhp, (cptr.ldI32o(mdef, $monst_mhp) - dam) | 0);
@@ -7360,7 +7396,8 @@ function gulpum(mdef, mattk) {
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    262144n) != 0n)) &&
+                    262144n) !=
+                    0n)) &&
                     u_digest) {
                 pline(__s_obviously_you_didn_t_like_s_taste, s_suffix(mon_nam(mdef)));
             }
@@ -7702,726 +7739,742 @@ function hmonas(mon) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        alt_attk = cptr.alloc(4);
-        altwep = 0;
-        weapon_used = 0;
-        odd_claw = 1;
-        sum = cptr.alloc(6 * 4);
-        dhit.v = 0;
-        attknum.v = 0;
-        multi_claw = 0;
-        multi_weap = 0;
+            alt_attk = cptr.alloc(4);
+            altwep = 0;
+            weapon_used = 0;
+            odd_claw = 1;
+            sum = cptr.alloc(6 * 4);
+            dhit.v = 0;
+            attknum.v = 0;
+            multi_claw = 0;
+            multi_weap = 0;
 
-        /* not used here but umpteen mhitm_ad_xxxx() need this */
-        cptr.st1o(gv, $instance_globals_v_vis, schar((canseemon(mon) || m_next2u(mon) ? 1 : 0)));
+            /* not used here but umpteen mhitm_ad_xxxx() need this */
+            cptr.st1o(
+                gv,
+                $instance_globals_v_vis,
+                schar((canseemon(mon) || m_next2u(mon) ? 1 : 0))
+            );
 
-        /* with just one touch/claw/weapon attack, both rings matter;
-           with more than one, alternate right and left when checking
-           whether silver ring causes successful hit */
-        for (i = 0; i < NHM.NATTK; i++) {
-            cptr.stI32o(sum, i, NHM.M_ATTK_MISS, 4);
-            mattk = getmattk(cptr.add(gy, $instance_globals_y_youmonst), mon, i, sum, alt_attk);
-            if (cptr.ld1u(mattk) == NHM.AT_WEAP)
-                ++multi_weap;
-            if (cptr.ld1u(mattk) == NHM.AT_WEAP ||
-                    cptr.ld1u(mattk) == NHM.AT_CLAW ||
-                    cptr.ld1u(mattk) == NHM.AT_TUCH)
-                ++multi_claw;
-        }
-        multi_claw = (multi_claw > 1);  /* switch from count to yes/no */
-        cptr.stI32o(gt, $instance_globals_t_twohits, 0);
+            /* with just one touch/claw/weapon attack, both rings matter;
+               with more than one, alternate right and left when checking
+               whether silver ring causes successful hit */
+            for (i = 0; i < NHM.NATTK; i++) {
+                cptr.stI32o(sum, i, NHM.M_ATTK_MISS, 4);
+                mattk = getmattk(cptr.add(gy, $instance_globals_y_youmonst), mon, i, sum, alt_attk);
+                if (cptr.ld1u(mattk) == NHM.AT_WEAP)
+                    ++multi_weap;
+                if (cptr.ld1u(mattk) == NHM.AT_WEAP ||
+                        cptr.ld1u(mattk) == NHM.AT_CLAW ||
+                        cptr.ld1u(mattk) == NHM.AT_TUCH)
+                    ++multi_claw;
+            }
+            multi_claw = (multi_claw > 1);  /* switch from count to yes/no */
+            cptr.stI32o(gt, $instance_globals_t_twohits, 0);
 
-        cptr.st1o(gs, $instance_globals_s_skipdrin, 0);  /* [see mattackm(mhitm.c)] */
-        i = 0;
-        __pc = 4; continue;
+            cptr.st1o(gs, $instance_globals_s_skipdrin, 0);  /* [see mattackm(mhitm.c)] */
+            i = 0;
+            __pc = 4; continue;
         }
         case 4: {
-        if (!(i < NHM.NATTK)) { __pc = 3; continue; }
-        __pc = 5; continue;
+            if (!(i < NHM.NATTK)) { __pc = 3; continue; }
+            __pc = 5; continue;
         }
         case 5: {
-        if (i > 0 &&
-                (!cptr.eq(
-                    (cptr.ldPtro3(
-                        svl,
-                        cptr.ldI16o(gb, $instance_globals_b_bhitpos),
-                        168,
-                        cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y),
-                        8,
-                        $instance_globals_saved_l_level + $dlevel_t_monsters
-                    )),
-                    mon
-                ) ||
-                    (cptr.ldI32o((mon), $monst_mhp) < 1))) { __pc = 8; continue; }
-        __pc = 7; continue;
+            if (i > 0 &&
+                    (!cptr.eq(
+                        (cptr.ldPtro3(
+                            svl,
+                            cptr.ldI16o(gb, $instance_globals_b_bhitpos),
+                            168,
+                            cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y),
+                            8,
+                            $instance_globals_saved_l_level + $dlevel_t_monsters
+                        )),
+                        mon
+                    ) ||
+                        (cptr.ldI32o((mon), $monst_mhp) < 1))) { __pc = 8; continue; }
+            __pc = 7; continue;
         }
         case 8: {
-        { __pc = 6; continue; }
+            { __pc = 6; continue; }
         }
         case 7: {
 
-        mattk = getmattk(cptr.add(gy, $instance_globals_y_youmonst), mon, i, sum, alt_attk);
-        if (cptr.ld1so(gs, $instance_globals_s_skipdrin) &&
-                cptr.ld1u(mattk) == NHM.AT_TENT &&
-                cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DRIN) { __pc = 10; continue; }
-        __pc = 9; continue;
+            mattk = getmattk(cptr.add(gy, $instance_globals_y_youmonst), mon, i, sum, alt_attk);
+            if (cptr.ld1so(gs, $instance_globals_s_skipdrin) &&
+                    cptr.ld1u(mattk) == NHM.AT_TENT &&
+                    cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DRIN) { __pc = 10; continue; }
+            __pc = 9; continue;
         }
         case 10: {
-        { __pc = 6; continue; }
+            { __pc = 6; continue; }
         }
         case 9: {
-        weapon = null;
-        let __sw12 = cptr.ld1u(mattk);
-        if (__sw12 === (NHM.AT_WEAP)) { __pc = 13; continue; }
-        if (__sw12 === (NHM.AT_CLAW)) { __pc = 14; continue; }
-        if (__sw12 === (NHM.AT_TUCH)) { __pc = 15; continue; }
-        if (__sw12 === (NHM.AT_KICK)) { __pc = 16; continue; }
-        if (__sw12 === (NHM.AT_BITE)) { __pc = 17; continue; }
-        if (__sw12 === (NHM.AT_STNG)) { __pc = 18; continue; }
-        if (__sw12 === (NHM.AT_BUTT)) { __pc = 19; continue; }
-        if (__sw12 === (NHM.AT_TENT)) { __pc = 20; continue; }
-        if (__sw12 === (NHM.AT_HUGS)) { __pc = 21; continue; }
-        if (__sw12 === (NHM.AT_EXPL)) { __pc = 22; continue; }
-        if (__sw12 === (NHM.AT_ENGL)) { __pc = 23; continue; }
-        if (__sw12 === (NHM.AT_MAGC)) { __pc = 24; continue; }
-        if (__sw12 === (NHM.AT_NONE)) { __pc = 25; continue; }
-        if (__sw12 === (NHM.AT_BOOM)) { __pc = 26; continue; }
-        if (__sw12 === (NHM.AT_BREA)) { __pc = 27; continue; }
-        if (__sw12 === (NHM.AT_SPIT)) { __pc = 28; continue; }
-        if (__sw12 === (NHM.AT_GAZE)) { __pc = 29; continue; }
-        __pc = 30; continue;
+            weapon = null;
+            let __sw12 = cptr.ld1u(mattk);
+            if (__sw12 === (NHM.AT_WEAP)) { __pc = 13; continue; }
+            if (__sw12 === (NHM.AT_CLAW)) { __pc = 14; continue; }
+            if (__sw12 === (NHM.AT_TUCH)) { __pc = 15; continue; }
+            if (__sw12 === (NHM.AT_KICK)) { __pc = 16; continue; }
+            if (__sw12 === (NHM.AT_BITE)) { __pc = 17; continue; }
+            if (__sw12 === (NHM.AT_STNG)) { __pc = 18; continue; }
+            if (__sw12 === (NHM.AT_BUTT)) { __pc = 19; continue; }
+            if (__sw12 === (NHM.AT_TENT)) { __pc = 20; continue; }
+            if (__sw12 === (NHM.AT_HUGS)) { __pc = 21; continue; }
+            if (__sw12 === (NHM.AT_EXPL)) { __pc = 22; continue; }
+            if (__sw12 === (NHM.AT_ENGL)) { __pc = 23; continue; }
+            if (__sw12 === (NHM.AT_MAGC)) { __pc = 24; continue; }
+            if (__sw12 === (NHM.AT_NONE)) { __pc = 25; continue; }
+            if (__sw12 === (NHM.AT_BOOM)) { __pc = 26; continue; }
+            if (__sw12 === (NHM.AT_BREA)) { __pc = 27; continue; }
+            if (__sw12 === (NHM.AT_SPIT)) { __pc = 28; continue; }
+            if (__sw12 === (NHM.AT_GAZE)) { __pc = 29; continue; }
+            __pc = 30; continue;
         }
         case 13: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* use_weapon: */: {
-        odd_claw = schar((!odd_claw));  /* see case AT_CLAW,AT_TUCH below */
-        if (weapon_used &&
-                (cptr.ldI32o(sum, (i - 1) | 0, 4) > NHM.M_ATTK_MISS) &&
-                uwep.v &&
-                bimanual(uwep.v)) { __pc = 32; continue; }
-        __pc = 31; continue;
+            odd_claw = schar((!odd_claw));  /* see case AT_CLAW,AT_TUCH below */
+            if (weapon_used &&
+                    (cptr.ldI32o(sum, (i - 1) | 0, 4) > NHM.M_ATTK_MISS) &&
+                    uwep.v &&
+                    bimanual(uwep.v)) { __pc = 32; continue; }
+            __pc = 31; continue;
         }
         case 32: {
-        { __pc = 6; continue; }
+            { __pc = 6; continue; }
         }
         case 31: {
-        /* Certain monsters don't use weapons when encountered as enemies,
-         * but players who polymorph into them have hands or claws and
-         * thus should be able to use weapons.  This shouldn't prohibit
-         * the use of most special abilities, either.
-         * If monster has multiple claw attacks, only one can use weapon.
-         */
-        weapon_used = 1;
-        /* Potential problem: if the monster gets multiple weapon attacks,
-         * we currently allow the player to get each of these as a weapon
-         * attack.  Is this really desirable?
-         */
-        /* approximate two-weapon mode; known_hitum() -> hmon() -> &c
-           might destroy the weapon argument, but it might also already
-           be Null, and we want to track that for passive() */
-        originalweapon = (altwep && uswapwep.v) ? uswapwep : uwep;
-        if (uswapwep.v &&
-                uwep.v &&
-                (cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)) &&
-                !bimanual(uwep.v) &&
-                !uarms.v &&
-                !cptr.ld1so(uswapwep.v, $obj_oartifact) &&
-                (cptr.ld1so(uswapwep.v, $obj_oclass) == NHC.WEAPON_CLASS ||
-                    is_weptool(uswapwep.v)) &&
-                !(is_launcher(uswapwep.v) || is_ammo(uswapwep.v) || is_missile(uswapwep.v)) &&
-                !bimanual(uswapwep.v) &&
-                !(((cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(uswapwep.v, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_material
-                ) & 31) | 0) ==
-                    NHC.SILVER &&
-                    (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
-                        hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))))
-            altwep = schar((!altwep));  /* toggle for next attack */
-        weapon = cptr.ldPtr(originalweapon);
-        if (!weapon)
-            originalweapon = uarmg;  /*... subject to erosion damage */
+            /* Certain monsters don't use weapons when encountered as enemies,
+             * but players who polymorph into them have hands or claws and
+             * thus should be able to use weapons.  This shouldn't prohibit
+             * the use of most special abilities, either.
+             * If monster has multiple claw attacks, only one can use weapon.
+             */
+            weapon_used = 1;
+            /* Potential problem: if the monster gets multiple weapon attacks,
+             * we currently allow the player to get each of these as a weapon
+             * attack.  Is this really desirable?
+             */
+            /* approximate two-weapon mode; known_hitum() -> hmon() -> &c
+               might destroy the weapon argument, but it might also already
+               be Null, and we want to track that for passive() */
+            originalweapon = (altwep && uswapwep.v) ? uswapwep : uwep;
+            if (uswapwep.v &&
+                    uwep.v &&
+                    (cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)) &&
+                    !bimanual(uwep.v) &&
+                    !uarms.v &&
+                    !cptr.ld1so(uswapwep.v, $obj_oartifact) &&
+                    (cptr.ld1so(uswapwep.v, $obj_oclass) == NHC.WEAPON_CLASS ||
+                        is_weptool(uswapwep.v)) &&
+                    !(is_launcher(uswapwep.v) || is_ammo(uswapwep.v) || is_missile(uswapwep.v)) &&
+                    !bimanual(uswapwep.v) &&
+                    !(((cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(uswapwep.v, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_material
+                    ) &
+                        31) |
+                        0) ==
+                        NHC.SILVER &&
+                        (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
+                            hates_silver(cptr.ldPtro(
+                                gy,
+                                $instance_globals_y_youmonst + $monst_data
+                            )))))
+                altwep = schar((!altwep));  /* toggle for next attack */
+            weapon = cptr.ldPtr(originalweapon);
+            if (!weapon)
+                originalweapon = uarmg;  /*... subject to erosion damage */
 
-        tmp = find_roll_to_hit(mon, NHM.AT_WEAP, weapon, attknum, armorpenalty);
-        mon_maybe_unparalyze(mon);
-        dieroll = rnd(20);
-        dhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
-        if (multi_weap > 1)
-            cptr.stI32o(
-                gt,
-                $instance_globals_t_twohits,
-                cptr.ldI32o(gt, $instance_globals_t_twohits) + 1
-            );
-        /* caller must set gb.bhitpos */
-        monster_survived = known_hitum(mon, weapon, dhit, tmp, armorpenalty.v, mattk, dieroll);
-        /* originalweapon points to an equipment slot which might
-           now be empty if the weapon was destroyed during the hit;
-           passive(,weapon,...) won't call passive_obj() in that case */
-        weapon = cptr.ldPtr(originalweapon);  /* might receive passive erosion */
-        if (!monster_survived) { __pc = 34; continue; }
-        __pc = 35; continue;
+            tmp = find_roll_to_hit(mon, NHM.AT_WEAP, weapon, attknum, armorpenalty);
+            mon_maybe_unparalyze(mon);
+            dieroll = rnd(20);
+            dhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
+            if (multi_weap > 1)
+                cptr.stI32o(
+                    gt,
+                    $instance_globals_t_twohits,
+                    cptr.ldI32o(gt, $instance_globals_t_twohits) + 1
+                );
+            /* caller must set gb.bhitpos */
+            monster_survived = known_hitum(mon, weapon, dhit, tmp, armorpenalty.v, mattk, dieroll);
+            /* originalweapon points to an equipment slot which might
+               now be empty if the weapon was destroyed during the hit;
+               passive(,weapon,...) won't call passive_obj() in that case */
+            weapon = cptr.ldPtr(originalweapon);  /* might receive passive erosion */
+            if (!monster_survived) { __pc = 34; continue; }
+            __pc = 35; continue;
         }
         case 34: {
-        /* enemy dead, before any special abilities used */
-        cptr.stI32o(sum, i, NHM.M_ATTK_DEF_DIED, 4);
-        { __pc = 11; continue; }
+            /* enemy dead, before any special abilities used */
+            cptr.stI32o(sum, i, NHM.M_ATTK_DEF_DIED, 4);
+            { __pc = 11; continue; }
         }
         case 35: {
-        cptr.stI32o(sum, i, dhit.v ? NHM.M_ATTK_HIT : NHM.M_ATTK_MISS, 4);
-        __pc = 33;
-        continue;
+            cptr.stI32o(sum, i, dhit.v ? NHM.M_ATTK_HIT : NHM.M_ATTK_MISS, 4);
+            __pc = 33;
+            continue;
         }
         case 33: {
-        if (!cptr.eq(
-            (cptr.ldPtro3(
-                svl,
-                (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0,
-                168,
-                (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0,
-                8,
-                $instance_globals_saved_l_level + $dlevel_t_monsters
-            )),
-            mon
-        )) { __pc = 37; continue; }
-        __pc = 36; continue;
+            if (!cptr.eq(
+                (cptr.ldPtro3(
+                    svl,
+                    (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0,
+                    168,
+                    (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                )),
+                mon
+            )) { __pc = 37; continue; }
+            __pc = 36; continue;
         }
         case 37: {
-        i = NHM.NATTK;  /* skip additional attacks */
-        { __pc = 2; continue; }
+            i = NHM.NATTK;  /* skip additional attacks */
+            { __pc = 2; continue; }
         }
         case 36: {
-        /* Do not print "You hit" message; known_hitum already did it. */
-        if (dhit.v &&
-                cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_SPEL &&
-                cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_PHYS)
-            cptr.stI32o(sum, i, damageum(mon, mattk, 0), 4);
-        { __pc = 11; continue; }
+            /* Do not print "You hit" message; known_hitum already did it. */
+            if (dhit.v &&
+                    cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_SPEL &&
+                    cptr.ld1uo(mattk, $attack_adtyp) != NHM.AD_PHYS)
+                cptr.stI32o(sum, i, damageum(mon, mattk, 0), 4);
+            { __pc = 11; continue; }
         }
         case 14: {
-        if (uwep.v &&
-                !cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-                !weapon_used) { __pc = 39; continue; }
-        __pc = 38; continue;
+            if (uwep.v &&
+                    !cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
+                    !weapon_used) { __pc = 39; continue; }
+            __pc = 38; continue;
         }
         case 39: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 38: {
-        // @FallThrough
-        ;
-        __pc = 15;
-        continue;
+            // @FallThrough
+            ;
+            __pc = 15;
+            continue;
         }
         case 15: {
-        if (uwep.v &&
+            if (uwep.v &&
+                    cptr.ld1so(
+                        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                        $permonst_mlet
+                    ) ==
+                        NHC.S_LICH &&
+                    !weapon_used) { __pc = 41; continue; }
+            __pc = 40; continue;
+        }
+        case 41: {
+            { __pc = 1; continue; }
+        }
+        case 40: {
+            // @FallThrough
+            ;
+            __pc = 16;
+            continue;
+        }
+        case 16: {
+            if (cptr.ld1u(mattk) == NHM.AT_KICK &&
+                    mtrapped_in_pit(cptr.add(
+                        gy,
+                        $instance_globals_y_youmonst
+                    ))) { __pc = 43; continue; }
+            __pc = 42; continue;
+        }
+        case 43: {
+            { __pc = 6; continue; }
+        }
+        case 42: {
+            // @FallThrough
+            ;
+            __pc = 17;
+            continue;
+        }
+        case 17: {
+            __pc = 18;
+            continue;
+        }
+        case 18: {
+            __pc = 19;
+            continue;
+        }
+        case 19: {
+            __pc = 20;
+            continue;
+        }
+        case 20: {
+            /*weaponless:*/
+            tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
+            mon_maybe_unparalyze(mon);
+            dieroll = rnd(20);
+            dhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
+            if (dhit.v) { __pc = 45; continue; }
+            __pc = 46; continue;
+        }
+        case 45: {
+            silverhit.v = 0n;
+            verb = null;  /* verb or body part */
+            if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                    (compat = could_seduce(
+                        cptr.add(gy, $instance_globals_y_youmonst),
+                        mon,
+                        mattk
+                    )) !=
+                        0) { __pc = 48; continue; }
+            __pc = 47; continue;
+        }
+        case 48: {
+            You(
+                __s_s_s_s__3,
+                ((cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 &&
+                    ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
+                        4096n) == 0n))
+                    ? __s_smile_at
+                    : __s_talk_to,
+                mon_nam(mon),
+                (compat == 2) ? __s_engagingly : __s_seductively
+            );
+            /* doesn't anger it; no wakeup() */
+            cptr.stI32o(sum, i, damageum(mon, mattk, 0), 4);
+            { __pc = 11; continue; }
+        }
+        case 47: {
+            wakeup(mon, 1);
+
+            specialdmg = 0;  /* blessed and/or silver bonus */
+            switch (cptr.ld1u(mattk)) {
+                case NHM.AT_CLAW:
+                case NHM.AT_TUCH:
+                    /* verb=="claws" may be overridden below */
+                    verb = (cptr.ld1u(mattk) == NHM.AT_TUCH) ? __s_touch : __s_claws;
+                    /* decide if silver-hater will be hit by silver ring(s);
+                       for 'multi_claw' where attacks alternate right/left,
+                       assume 'even' claw or touch attacks use dominant hand
+                       or paw, 'odd' ones use non-dominant hand for ring
+                       interaction; even vs odd is based on actual attacks
+                       rather than on index into mon->dat->mattk[] so that
+                       {bite,claw,claw} instead of {claw,claw,bite} doesn't
+                       make poly'd hero mysteriously switch handedness */
+                    odd_claw = schar((!odd_claw));
+                    specialdmg = special_dmgval(
+                        cptr.add(gy, $instance_globals_y_youmonst),
+                        mon,
+                        16n |
+                            ((odd_claw || !multi_claw) ? 131072n : 0n) |
+                            ((!odd_claw || !multi_claw) ? 262144n : 0n),
+                        silverhit
+                    );
+                    break;
+                case NHM.AT_TENT:
+                    /* assumes mind flayer's tentacles-on-head rather
+                       than sea monster's tentacle-as-arm */
+                    verb = __s_tentacles;
+                    break;
+                case NHM.AT_KICK:
+                    verb = __s_kick;
+                    specialdmg = special_dmgval(
+                        cptr.add(gy, $instance_globals_y_youmonst),
+                        mon,
+                        32n,
+                        silverhit
+                    );
+                    break;
+                case NHM.AT_BUTT:
+                    verb = __s_head_butt;  /* mbodypart(mon,HEAD)=="head" */
+                    /* hypothetical; if any form with a head-butt attack
+                       could wear a helmet, it would hit shades when
+                       wearing a blessed (or silver) one */
+                    specialdmg = special_dmgval(
+                        cptr.add(gy, $instance_globals_y_youmonst),
+                        mon,
+                        4n,
+                        silverhit
+                    );
+                    break;
+                case NHM.AT_BITE:
+                    verb = __s_bite;
+                    break;
+                case NHM.AT_STNG:
+                    verb = __s_sting;
+                    break;
+                default:
+                    verb = __s_hit;
+                    break;
+            }
+            if (cptr.eq(
+                cptr.ldPtro(mon, $monst_data),
+                cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
+            ) &&
+                    !specialdmg) { __pc = 50; continue; }
+            __pc = 51; continue;
+        }
+        case 50: {
+            if (!strcmp(verb, __s_hit) ||
+                    (cptr.ld1u(mattk) == NHM.AT_CLAW &&
+                        ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
+                            131072n) != 0n)))
+                verb = __s_attack;
+            Your(__s_s_s_harmlessly_through_s, verb, vtense(verb, __s_pass), mon_nam(mon));
+            __pc = 49;
+            continue;
+        }
+        case 51: {
+            if (failed_grab(
+                cptr.add(gy, $instance_globals_y_youmonst),
+                mon,
+                mattk
+            )) { __pc = 53; continue; }
+            __pc = 52; continue;
+        }
+        case 53: {
+            { __pc = 11; continue; }
+        }
+        case 52: {
+
+            if (cptr.ld1u(mattk) == NHM.AT_TENT) {
+                Your(__s_tentacles_suck_s, mon_nam(mon));
+            } else {
+                if (cptr.ld1u(mattk) == NHM.AT_CLAW)
+                    verb = __s_hit;  /* not "claws" */
+                You(__s_s_s__4, verb, mon_nam(mon));
+                if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
+                    silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
+            }
+            cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
+            __pc = 49;
+            continue;
+        }
+        case 49: {
+            __pc = 44;
+            continue;
+        }
+        case 46: {
+            missum(mon, mattk, schar((((tmp + armorpenalty.v) | 0) > dieroll)));
+            __pc = 44;
+            continue;
+        }
+        case 44: {
+            { __pc = 11; continue; }
+        }
+        case 21: {
+            silverhit.v = 0n;
+            byhand = schar((cptr.eq(
+                (cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst)),
+                cptr.add(mons, NHC.PM_ROPE_GOLEM, $sizeof_permonst)
+            )));
+            unconcerned = schar((byhand && !can_be_strangled(mon) ? 1 : 0));
+            if (sticks(cptr.ldPtro(mon, $monst_data)) ||
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                    cptr.ld1so(gn, $instance_globals_n_notonhead) ||
+                    (byhand &&
+                        (uwep.v ||
+                            !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
+                                32768n) ==
+                                0n)))) { __pc = 55; continue; }
+            __pc = 54; continue;
+        }
+        case 55: {
+            /* can't hold a holder due to subsequent ambiguity over
+               who is holding whom; can't hug engulfer from inside;
+               can't hug a worm tail (would immobilize entire worm!);
+               byhand: can't choke something that lacks a head;
+               not allowed to make a choking hug if wielding a weapon
+               (but might have grabbed w/o weapon, then wielded one,
+               and may even be attacking a different monster now) */
+            if (byhand &&
+                    uwep.v &&
+                    cptr.ldPtro(u, $you_ustuck) &&
+                    !(sticks(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)) ||
+                        (cptr.ldI32o(u, $you_uswallow) & 1) | 0))
+                uunstick();
+            { __pc = 6; continue; }
+        }
+        case 54: {
+            /* automatic if prev two attacks succeed, or if
+               already grabbed in a previous attack */
+            dhit.v = 1;
+            wakeup(mon, 1);
+            /* choking hug/throttling grab uses hands (gloves or rings);
+               normal hug uses outermost of cloak/suit/shirt */
+            specialdmg = special_dmgval(
+                cptr.add(gy, $instance_globals_y_youmonst),
+                mon,
+                byhand ? 393232n : 67n,
+                silverhit
+            );
+            if (unconcerned) {
+                /* strangling something which can't be strangled */
+                if (!cptr.eq(mattk, alt_attk)) {
+                    cptr.memcpy(alt_attk, mattk, 4);
+                    mattk = alt_attk;
+                }
+                /* change damage to 1d1; not strangling but still
+                   doing [minimal] physical damage to victim's body */
+                cptr.st1o(mattk, $attack_damn, cptr.st1o(mattk, $attack_damd, 1));
+                /* don't give 'unconcerned' feedback if there is extra damage
+                   or if it is nearly destroyed or if creature doesn't have
+                   the mental ability to be concerned in the first place */
+                if (specialdmg ||
+                        ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
+                            65536n) !=
+                            0n) ||
+                        cptr.ldI32o(mon, $monst_mhp) <=
+                            ((1 +
+                                ((cptr.ld1so(u, $you_udaminc)) > 1
+                                    ? (cptr.ld1so(u, $you_udaminc))
+                                    : 1)) | 0))
+                    unconcerned = 0;
+            }
+            if (cptr.eq(
+                cptr.ldPtro(mon, $monst_data),
+                cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
+            )) { __pc = 57; continue; }
+            __pc = 56; continue;
+        }
+        case 57: {
+            verb = byhand ? __s_grasp : __s_hug;
+
+            /* hugging a shade; successful if blessed outermost armor
+               for normal hug, or blessed gloves or silver ring(s) for
+               choking hug; deals damage but never grabs hold */
+            if (specialdmg) {
+                You(__s_s_s_s, verb, mon_nam(mon), exclam(specialdmg));
+                if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
+                    silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
+                cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
+            } else {
+                Your(__s_s_passes_harmlessly_through_s, verb, mon_nam(mon));
+            }
+            { __pc = 11; continue; }
+        }
+        case 56: {
+            if (failed_grab(
+                cptr.add(gy, $instance_globals_y_youmonst),
+                mon,
+                mattk
+            )) { __pc = 59; continue; }
+            __pc = 58; continue;
+        }
+        case 59: {
+            { __pc = 11; continue; }
+        }
+        case 58: {
+            /* hug attack against ordinary foe */
+            if (cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))) {
+                pline(
+                    __s_s_is_being_s_s,
+                    Monnam(mon),
+                    byhand ? __s_throttled : __s_crushed,
+                    unconcerned ? __s_but_doesn_t_seem_concerned : __s_empty
+                );
+                if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
+                    silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
+                cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
+            } else if (i >= 2 &&
+                    (cptr.ldI32o(sum, (i - 1) | 0, 4) > NHM.M_ATTK_MISS) &&
+                    (cptr.ldI32o(sum, (i - 2) | 0, 4) > NHM.M_ATTK_MISS)) {
+                /* in case we're hugging a new target while already
+                   holding something else; yields feedback
+                   "<u.ustuck> is no longer in your clutches" */
+                if (cptr.ldPtro(u, $you_ustuck) && !cptr.eq(cptr.ldPtro(u, $you_ustuck), mon))
+                    uunstick();
+                You(__s_grab_s, mon_nam(mon));
+                set_ustuck(mon);
+                if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
+                    silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
+                cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
+            }
+            { __pc = 11; continue; }
+        }
+        case 22: {
+            dhit.v = -1;
+            wakeup(mon, 1);
+            You(__s_explode);
+            cptr.stI32o(sum, i, explum(mon, mattk), 4);
+            { __pc = 11; continue; }
+        }
+        case 23: {
+            tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
+            mon_maybe_unparalyze(mon);
+            if ((dhit.v = (tmp > rnd((20 + i) | 0)))) {
+                wakeup(mon, 1);
+                /* can't engulf unsolid creatures */
+                if (cptr.eq(
+                    cptr.ldPtro(mon, $monst_data),
+                    cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
+                )) {
+                    /* no specialdmg check needed */
+                    Your(__s_attempt_to_surround_s_is_harmless, mon_nam(mon));
+                } else if (failed_grab(cptr.add(gy, $instance_globals_y_youmonst), mon, mattk)) {
+                    ;  /* non-shade miss; message already given */
+                } else {
+                    cptr.stI32o(sum, i, gulpum(mon, mattk), 4);
+                    if (cptr.ldI32o(sum, i, 4) == NHM.M_ATTK_DEF_DIED &&
+                            (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) ==
+                                NHC.S_ZOMBIE ||
+                                cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) ==
+                                    NHC.S_MUMMY) &&
+                            rn2(5) &&
+                            !(cptr.ldI64o2(
+                                u,
+                                NHC.SICK_RES,
+                                $sizeof_prop,
+                                $you_uprops + $prop_intrinsic
+                            ) ||
+                                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
+                                defended(
+                                    cptr.add(gy, $instance_globals_y_youmonst),
+                                    NHM.AD_DISE
+                                ))) {
+                        You_feel(__s_ssick, (Sick()) ? __s_very : __s_empty);
+                        mdamageu(mon, rnd(8));
+                    }
+                }
+            } else {
+                missum(mon, mattk, 0);
+            }
+            { __pc = 11; continue; }
+        }
+        case 24: {
+            if ((cptr.ld1so(
+                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                $permonst_mlet
+            ) ==
+                NHC.S_KOBOLD ||
                 cptr.ld1so(
                     cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                     $permonst_mlet
                 ) ==
-                    NHC.S_LICH &&
-                !weapon_used) { __pc = 41; continue; }
-        __pc = 40; continue;
-        }
-        case 41: {
-        { __pc = 1; continue; }
-        }
-        case 40: {
-        // @FallThrough
-        ;
-        __pc = 16;
-        continue;
-        }
-        case 16: {
-        if (cptr.ld1u(mattk) == NHM.AT_KICK &&
-                mtrapped_in_pit(cptr.add(
-                    gy,
-                    $instance_globals_y_youmonst
-                ))) { __pc = 43; continue; }
-        __pc = 42; continue;
-        }
-        case 43: {
-        { __pc = 6; continue; }
-        }
-        case 42: {
-        // @FallThrough
-        ;
-        __pc = 17;
-        continue;
-        }
-        case 17: {
-        __pc = 18;
-        continue;
-        }
-        case 18: {
-        __pc = 19;
-        continue;
-        }
-        case 19: {
-        __pc = 20;
-        continue;
-        }
-        case 20: {
-        /*weaponless:*/
-        tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
-        mon_maybe_unparalyze(mon);
-        dieroll = rnd(20);
-        dhit.v = (tmp > dieroll || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? 1 : 0);
-        if (dhit.v) { __pc = 45; continue; }
-        __pc = 46; continue;
-        }
-        case 45: {
-        silverhit.v = 0n;
-        verb = null;  /* verb or body part */
-        if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
-                (compat = could_seduce(
-                    cptr.add(gy, $instance_globals_y_youmonst),
-                    mon,
-                    mattk
-                )) != 0) { __pc = 48; continue; }
-        __pc = 47; continue;
-        }
-        case 48: {
-        You(
-            __s_s_s_s__3,
-            ((cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 &&
-                ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n))
-                ? __s_smile_at
-                : __s_talk_to,
-            mon_nam(mon),
-            (compat == 2) ? __s_engagingly : __s_seductively
-        );
-        /* doesn't anger it; no wakeup() */
-        cptr.stI32o(sum, i, damageum(mon, mattk, 0), 4);
-        { __pc = 11; continue; }
-        }
-        case 47: {
-        wakeup(mon, 1);
-
-        specialdmg = 0;  /* blessed and/or silver bonus */
-        switch (cptr.ld1u(mattk)) {
-            case NHM.AT_CLAW:
-            case NHM.AT_TUCH:
-            /* verb=="claws" may be overridden below */
-            verb = (cptr.ld1u(mattk) == NHM.AT_TUCH) ? __s_touch : __s_claws;
-            /* decide if silver-hater will be hit by silver ring(s);
-               for 'multi_claw' where attacks alternate right/left,
-               assume 'even' claw or touch attacks use dominant hand
-               or paw, 'odd' ones use non-dominant hand for ring
-               interaction; even vs odd is based on actual attacks
-               rather than on index into mon->dat->mattk[] so that
-               {bite,claw,claw} instead of {claw,claw,bite} doesn't
-               make poly'd hero mysteriously switch handedness */
-            odd_claw = schar((!odd_claw));
-            specialdmg = special_dmgval(
-                cptr.add(gy, $instance_globals_y_youmonst),
-                mon,
-                16n |
-                    ((odd_claw || !multi_claw) ? 131072n : 0n) |
-                    ((!odd_claw || !multi_claw) ? 262144n : 0n),
-                silverhit
-            );
-            break;
-            case NHM.AT_TENT:
-            /* assumes mind flayer's tentacles-on-head rather
-               than sea monster's tentacle-as-arm */
-            verb = __s_tentacles;
-            break;
-            case NHM.AT_KICK:
-            verb = __s_kick;
-            specialdmg = special_dmgval(
-                cptr.add(gy, $instance_globals_y_youmonst),
-                mon,
-                32n,
-                silverhit
-            );
-            break;
-            case NHM.AT_BUTT:
-            verb = __s_head_butt;  /* mbodypart(mon,HEAD)=="head" */
-            /* hypothetical; if any form with a head-butt attack
-               could wear a helmet, it would hit shades when
-               wearing a blessed (or silver) one */
-            specialdmg = special_dmgval(
-                cptr.add(gy, $instance_globals_y_youmonst),
-                mon,
-                4n,
-                silverhit
-            );
-            break;
-            case NHM.AT_BITE:
-            verb = __s_bite;
-            break;
-            case NHM.AT_STNG:
-            verb = __s_sting;
-            break;
-            default:
-            verb = __s_hit;
-            break;
-        }
-        if (cptr.eq(
-            cptr.ldPtro(mon, $monst_data),
-            cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
-        ) &&
-                !specialdmg) { __pc = 50; continue; }
-        __pc = 51; continue;
-        }
-        case 50: {
-        if (!strcmp(verb, __s_hit) ||
-                (cptr.ld1u(mattk) == NHM.AT_CLAW &&
-                    ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
-                        131072n) != 0n)))
-            verb = __s_attack;
-        Your(__s_s_s_harmlessly_through_s, verb, vtense(verb, __s_pass), mon_nam(mon));
-        __pc = 49;
-        continue;
-        }
-        case 51: {
-        if (failed_grab(
-            cptr.add(gy, $instance_globals_y_youmonst),
-            mon,
-            mattk
-        )) { __pc = 53; continue; }
-        __pc = 52; continue;
-        }
-        case 53: {
-        { __pc = 11; continue; }
-        }
-        case 52: {
-
-        if (cptr.ld1u(mattk) == NHM.AT_TENT) {
-            Your(__s_tentacles_suck_s, mon_nam(mon));
-        } else {
-            if (cptr.ld1u(mattk) == NHM.AT_CLAW)
-                verb = __s_hit;  /* not "claws" */
-            You(__s_s_s__4, verb, mon_nam(mon));
-            if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
-                silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
-        }
-        cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
-        __pc = 49;
-        continue;
-        }
-        case 49: {
-        __pc = 44;
-        continue;
-        }
-        case 46: {
-        missum(mon, mattk, schar((((tmp + armorpenalty.v) | 0) > dieroll)));
-        __pc = 44;
-        continue;
-        }
-        case 44: {
-        { __pc = 11; continue; }
-        }
-        case 21: {
-        silverhit.v = 0n;
-        byhand = schar((cptr.eq(
-            (cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst)),
-            cptr.add(mons, NHC.PM_ROPE_GOLEM, $sizeof_permonst)
-        )));
-        unconcerned = schar((byhand && !can_be_strangled(mon) ? 1 : 0));
-        if (sticks(cptr.ldPtro(mon, $monst_data)) ||
-                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
-                cptr.ld1so(gn, $instance_globals_n_notonhead) ||
-                (byhand &&
-                    (uwep.v ||
-                        !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
-                            32768n) == 0n)))) { __pc = 55; continue; }
-        __pc = 54; continue;
-        }
-        case 55: {
-        /* can't hold a holder due to subsequent ambiguity over
-           who is holding whom; can't hug engulfer from inside;
-           can't hug a worm tail (would immobilize entire worm!);
-           byhand: can't choke something that lacks a head;
-           not allowed to make a choking hug if wielding a weapon
-           (but might have grabbed w/o weapon, then wielded one,
-           and may even be attacking a different monster now) */
-        if (byhand &&
-                uwep.v &&
-                cptr.ldPtro(u, $you_ustuck) &&
-                !(sticks(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)) ||
-                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0))
-            uunstick();
-        { __pc = 6; continue; }
-        }
-        case 54: {
-        /* automatic if prev two attacks succeed, or if
-           already grabbed in a previous attack */
-        dhit.v = 1;
-        wakeup(mon, 1);
-        /* choking hug/throttling grab uses hands (gloves or rings);
-           normal hug uses outermost of cloak/suit/shirt */
-        specialdmg = special_dmgval(
-            cptr.add(gy, $instance_globals_y_youmonst),
-            mon,
-            byhand ? 393232n : 67n,
-            silverhit
-        );
-        if (unconcerned) {
-            /* strangling something which can't be strangled */
-            if (!cptr.eq(mattk, alt_attk)) {
-                cptr.memcpy(alt_attk, mattk, 4);
-                mattk = alt_attk;
-            }
-            /* change damage to 1d1; not strangling but still
-               doing [minimal] physical damage to victim's body */
-            cptr.st1o(mattk, $attack_damn, cptr.st1o(mattk, $attack_damd, 1));
-            /* don't give 'unconcerned' feedback if there is extra damage
-               or if it is nearly destroyed or if creature doesn't have
-               the mental ability to be concerned in the first place */
-            if (specialdmg ||
-                    ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
-                        65536n) != 0n) ||
-                    cptr.ldI32o(mon, $monst_mhp) <=
-                        ((1 +
-                            ((cptr.ld1so(u, $you_udaminc)) > 1
-                                ? (cptr.ld1so(u, $you_udaminc))
-                                : 1)) | 0))
-                unconcerned = 0;
-        }
-        if (cptr.eq(
-            cptr.ldPtro(mon, $monst_data),
-            cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
-        )) { __pc = 57; continue; }
-        __pc = 56; continue;
-        }
-        case 57: {
-        verb = byhand ? __s_grasp : __s_hug;
-
-        /* hugging a shade; successful if blessed outermost armor
-           for normal hug, or blessed gloves or silver ring(s) for
-           choking hug; deals damage but never grabs hold */
-        if (specialdmg) {
-            You(__s_s_s_s, verb, mon_nam(mon), exclam(specialdmg));
-            if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
-                silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
-            cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
-        } else {
-            Your(__s_s_passes_harmlessly_through_s, verb, mon_nam(mon));
-        }
-        { __pc = 11; continue; }
-        }
-        case 56: {
-        if (failed_grab(
-            cptr.add(gy, $instance_globals_y_youmonst),
-            mon,
-            mattk
-        )) { __pc = 59; continue; }
-        __pc = 58; continue;
-        }
-        case 59: {
-        { __pc = 11; continue; }
-        }
-        case 58: {
-        /* hug attack against ordinary foe */
-        if (cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))) {
-            pline(
-                __s_s_is_being_s_s,
-                Monnam(mon),
-                byhand ? __s_throttled : __s_crushed,
-                unconcerned ? __s_but_doesn_t_seem_concerned : __s_empty
-            );
-            if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
-                silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
-            cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
-        } else if (i >= 2 &&
-                (cptr.ldI32o(sum, (i - 1) | 0, 4) > NHM.M_ATTK_MISS) &&
-                (cptr.ldI32o(sum, (i - 2) | 0, 4) > NHM.M_ATTK_MISS)) {
-            /* in case we're hugging a new target while already
-               holding something else; yields feedback
-               "<u.ustuck> is no longer in your clutches" */
-            if (cptr.ldPtro(u, $you_ustuck) && !cptr.eq(cptr.ldPtro(u, $you_ustuck), mon))
-                uunstick();
-            You(__s_grab_s, mon_nam(mon));
-            set_ustuck(mon);
-            if (silverhit.v && cptr.ld1so(flags, $flag_verbose))
-                silver_sears(cptr.add(gy, $instance_globals_y_youmonst), mon, silverhit.v);
-            cptr.stI32o(sum, i, damageum(mon, mattk, specialdmg), 4);
-        }
-        { __pc = 11; continue; }
-        }
-        case 22: {
-        dhit.v = -1;
-        wakeup(mon, 1);
-        You(__s_explode);
-        cptr.stI32o(sum, i, explum(mon, mattk), 4);
-        { __pc = 11; continue; }
-        }
-        case 23: {
-        tmp = find_roll_to_hit(mon, cptr.ld1u(mattk), null, attknum, armorpenalty);
-        mon_maybe_unparalyze(mon);
-        if ((dhit.v = (tmp > rnd((20 + i) | 0)))) {
-            wakeup(mon, 1);
-            /* can't engulf unsolid creatures */
-            if (cptr.eq(
-                cptr.ldPtro(mon, $monst_data),
-                cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
-            )) {
-                /* no specialdmg check needed */
-                Your(__s_attempt_to_surround_s_is_harmless, mon_nam(mon));
-            } else if (failed_grab(cptr.add(gy, $instance_globals_y_youmonst), mon, mattk)) {
-                ;  /* non-shade miss; message already given */
-            } else {
-                cptr.stI32o(sum, i, gulpum(mon, mattk), 4);
-                if (cptr.ldI32o(sum, i, 4) == NHM.M_ATTK_DEF_DIED &&
-                        (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) ==
-                            NHC.S_ZOMBIE ||
-                            cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) ==
-                                NHC.S_MUMMY) &&
-                        rn2(5) &&
-                        !(cptr.ldI64o2(
-                            u,
-                            NHC.SICK_RES,
-                            $sizeof_prop,
-                            $you_uprops + $prop_intrinsic
-                        ) ||
-                            cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
-                            defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE))) {
-                    You_feel(__s_ssick, (Sick()) ? __s_very : __s_empty);
-                    mdamageu(mon, rnd(8));
-                }
-            }
-        } else {
-            missum(mon, mattk, 0);
-        }
-        { __pc = 11; continue; }
-        }
-        case 24: {
-        if ((cptr.ld1so(
-            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-            $permonst_mlet
-        ) ==
-            NHC.S_KOBOLD ||
-            cptr.ld1so(
-                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                $permonst_mlet
-            ) ==
-                NHC.S_ORC ||
-            cptr.ld1so(
-                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                $permonst_mlet
-            ) ==
-                NHC.S_GNOME) &&
-                !weapon_used) { __pc = 61; continue; }
-        __pc = 60; continue;
+                    NHC.S_ORC ||
+                cptr.ld1so(
+                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                    $permonst_mlet
+                ) ==
+                    NHC.S_GNOME) &&
+                    !weapon_used) { __pc = 61; continue; }
+            __pc = 60; continue;
         }
         case 61: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 60: {
-        // @FallThrough
-        ;
-        __pc = 25;
-        continue;
+            // @FallThrough
+            ;
+            __pc = 25;
+            continue;
         }
         case 25: {
-        __pc = 26;
-        continue;
+            __pc = 26;
+            continue;
         }
         case 26: {
-        { __pc = 6; continue; }
+            { __pc = 6; continue; }
         }
         case 27: {
-        __pc = 28;
-        continue;
+            __pc = 28;
+            continue;
         }
         case 28: {
-        __pc = 29;
-        continue;
+            __pc = 29;
+            continue;
         }
         case 29: {
-        dhit.v = 0;
-        { __pc = 11; continue; }
+            dhit.v = 0;
+            { __pc = 11; continue; }
         }
         case 30: {
-        impossible(__s_strange_attack_of_yours_d, cptr.ld1u(mattk));
-        __pc = 11;
-        continue;
+            impossible(__s_strange_attack_of_yours_d, cptr.ld1u(mattk));
+            __pc = 11;
+            continue;
         }
         case 11: {
-        if (dhit.v == -1) {
-            cptr.stI32o(u, $you_mh, -1);  /* dead in the current form */
-            rehumanize();
-        }
-        if (cptr.ldI32o(sum, i, 4) == NHM.M_ATTK_DEF_DIED) {
-            /* defender dead */
-            void passive(mon, weapon, 1, 0, cptr.ld1u(mattk), 0);
-        } else {
-            void passive(
+            if (dhit.v == -1) {
+                cptr.stI32o(u, $you_mh, -1);  /* dead in the current form */
+                rehumanize();
+            }
+            if (cptr.ldI32o(sum, i, 4) == NHM.M_ATTK_DEF_DIED) {
+                /* defender dead */
+                void passive(mon, weapon, 1, 0, cptr.ld1u(mattk), 0);
+            } else {
+                void passive(
+                    mon,
+                    weapon,
+                    schar((cptr.ldI32o(sum, i, 4) != NHM.M_ATTK_MISS)),
+                    1,
+                    cptr.ld1u(mattk),
+                    0
+                );
+            }
+            if (mhitm_knockback(
+                cptr.add(gy, $instance_globals_y_youmonst),
                 mon,
-                weapon,
-                schar((cptr.ldI32o(sum, i, 4) != NHM.M_ATTK_MISS)),
-                1,
-                cptr.ld1u(mattk),
-                0
-            );
-        }
-        if (mhitm_knockback(
-            cptr.add(gy, $instance_globals_y_youmonst),
-            mon,
-            mattk,
-            cptr.add(sum, i, 4),
-            weapon_used
-        )) { __pc = 63; continue; }
-        __pc = 62; continue;
+                mattk,
+                cptr.add(sum, i, 4),
+                weapon_used
+            )) { __pc = 63; continue; }
+            __pc = 62; continue;
         }
         case 63: {
-        { __pc = 3; continue; }
+            { __pc = 3; continue; }
         }
         case 62: {
-        __pc = 2;
-        continue;
+            __pc = 2;
+            continue;
         }
         case 2 /* passivedone: */: {
-        if (uswapwep.v &&
-                cptr.eq(weapon, uswapwep.v) &&
-                (cptr.ldI32o(weapon, $obj_cursed) & 1) | 0) { __pc = 65; continue; }
-        __pc = 64; continue;
+            if (uswapwep.v &&
+                    cptr.eq(weapon, uswapwep.v) &&
+                    (cptr.ldI32o(weapon, $obj_cursed) & 1) | 0) { __pc = 65; continue; }
+            __pc = 64; continue;
         }
         case 65: {
-        drop_uswapwep();
-        { __pc = 3; continue; }
+            drop_uswapwep();
+            { __pc = 3; continue; }
         }
         case 64: {
-        if ((cptr.ldI32o((mon), $monst_mhp) < 1)) { __pc = 67; continue; }
-        __pc = 66; continue;
+            if ((cptr.ldI32o((mon), $monst_mhp) < 1)) { __pc = 67; continue; }
+            __pc = 66; continue;
         }
         case 67: {
-        { __pc = 3; continue; }
+            { __pc = 3; continue; }
         }
         case 66: {
-        if (!Upolyd()) { __pc = 69; continue; }
-        __pc = 68; continue;
+            if (!Upolyd()) { __pc = 69; continue; }
+            __pc = 68; continue;
         }
         case 69: {
-        { __pc = 3; continue; }
+            { __pc = 3; continue; }
         }
         case 68: {
-        if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) { __pc = 71; continue; }
-        __pc = 70; continue;
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) { __pc = 71; continue; }
+            __pc = 70; continue;
         }
         case 71: {
-        { __pc = 3; continue; }
+            { __pc = 3; continue; }
         }
         case 70: {
-        __pc = 6;
-        continue;
+            __pc = 6;
+            continue;
         }
         case 6: {
-        i++;
-        __pc = 4;
-        continue;
+            i++;
+            __pc = 4;
+            continue;
         }
         case 3: {
 
-        cptr.st1o(gv, $instance_globals_v_vis, 0);  /* reset */
-        cptr.stI32o(gt, $instance_globals_t_twohits, 0);
-        /* return value isn't used, but make it match hitum()'s */
-        return schar((!(cptr.ldI32o((mon), $monst_mhp) < 1)));
+            cptr.st1o(gv, $instance_globals_v_vis, 0);  /* reset */
+            cptr.stI32o(gt, $instance_globals_t_twohits, 0);
+            /* return value isn't used, but make it match hitum()'s */
+            return schar((!(cptr.ldI32o((mon), $monst_mhp) < 1)));
         }
         }
         if (__pc === -1) break __dispatch;
@@ -8471,147 +8524,151 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
      */
     switch (cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
         case NHM.AD_FIRE:
-        if (mhitb && !(cptr.ldI32o(mon, $monst_mcan) & 1) && weapon) {
-            if (aatyp == NHM.AT_KICK) {
-                if (uarmf.v && !rn2(6))
-                    void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_BURN, 5);
-            } else if (aatyp == NHM.AT_WEAP ||
-                    aatyp == NHM.AT_CLAW ||
-                    aatyp == NHM.AT_MAGC ||
-                    aatyp == NHM.AT_TUCH)
-                passive_obj(
-                    mon,
-                    weapon,
-                    cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
-                );
-        }
-        break;
-        case NHM.AD_ACID:
-        if (mhitb && rn2(2)) {
-            if (Blind() || !cptr.ld1so(flags, $flag_verbose))
-                You(__s_are_splashed);
-            else
-                You(__s_are_splashed_by_s_s, s_suffix(mon_nam(mon)), hliquid(__s_acid));
-
-            if (!Acid_resistance()) {
-                mdamageu(mon, tmp);
-                monstunseesu(128n);
-            } else {
-                monstseesu(128n);
+            if (mhitb && !(cptr.ldI32o(mon, $monst_mcan) & 1) && weapon) {
+                if (aatyp == NHM.AT_KICK) {
+                    if (uarmf.v && !rn2(6))
+                        void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_BURN, 5);
+                } else if (aatyp == NHM.AT_WEAP ||
+                        aatyp == NHM.AT_CLAW ||
+                        aatyp == NHM.AT_MAGC ||
+                        aatyp == NHM.AT_TUCH)
+                    passive_obj(
+                        mon,
+                        weapon,
+                        cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
+                    );
             }
-            if (!rn2(30))
-                erode_armor(cptr.add(gy, $instance_globals_y_youmonst), NHM.ERODE_CORRODE);
-        }
-        if (mhitb && weapon) {
-            if (aatyp == NHM.AT_KICK) {
-                if (uarmf.v && !rn2(6))
-                    void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_CORRODE, 5);
-            } else if (aatyp == NHM.AT_WEAP ||
-                    aatyp == NHM.AT_CLAW ||
-                    aatyp == NHM.AT_MAGC ||
-                    aatyp == NHM.AT_TUCH)
-                passive_obj(
-                    mon,
-                    weapon,
-                    cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
-                );
-        }
-        exercise(NHC.A_STR, 0);
-        break;
+            break;
+        case NHM.AD_ACID:
+            if (mhitb && rn2(2)) {
+                if (Blind() || !cptr.ld1so(flags, $flag_verbose))
+                    You(__s_are_splashed);
+                else
+                    You(__s_are_splashed_by_s_s, s_suffix(mon_nam(mon)), hliquid(__s_acid));
+
+                if (!Acid_resistance()) {
+                    mdamageu(mon, tmp);
+                    monstunseesu(128n);
+                } else {
+                    monstseesu(128n);
+                }
+                if (!rn2(30))
+                    erode_armor(cptr.add(gy, $instance_globals_y_youmonst), NHM.ERODE_CORRODE);
+            }
+            if (mhitb && weapon) {
+                if (aatyp == NHM.AT_KICK) {
+                    if (uarmf.v && !rn2(6))
+                        void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_CORRODE, 5);
+                } else if (aatyp == NHM.AT_WEAP ||
+                        aatyp == NHM.AT_CLAW ||
+                        aatyp == NHM.AT_MAGC ||
+                        aatyp == NHM.AT_TUCH)
+                    passive_obj(
+                        mon,
+                        weapon,
+                        cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
+                    );
+            }
+            exercise(NHC.A_STR, 0);
+            break;
         case NHM.AD_STON:
-        if (mhitb) {
-            let protector = attk_protection(aatyp);
+            if (mhitb) {
+                let protector = attk_protection(aatyp);
 
-            /* hero using monsters' AT_MAGC attack is hitting hand to
-               hand rather than casting a spell */
-            if (aatyp == NHM.AT_MAGC)
-                protector = 16n;
+                /* hero using monsters' AT_MAGC attack is hitting hand to
+                   hand rather than casting a spell */
+                if (aatyp == NHM.AT_MAGC)
+                    protector = 16n;
 
-            if (protector == 0n ||
-                    (protector == 16n && !uarmg.v && !uwep.v && !wep_was_destroyed) ||
-                    (protector == 32n && !uarmf.v) ||
-                    (protector == 4n && !uarmh.v) ||
-                    (protector == 18n && (!uarmc.v || !uarmg.v))) {
-                if (!Stone_resistance() &&
-                        !(poly_when_stoned(cptr.ldPtro(
-                            gy,
-                            $instance_globals_y_youmonst + $monst_data
-                        )) &&
-                            polymon(NHC.PM_STONE_GOLEM))) {
-                    done_in_by(mon, NHC.STONING);  /* "You turn to stone..." */
-                    return NHM.M_ATTK_DEF_DIED;
+                if (protector == 0n ||
+                        (protector == 16n && !uarmg.v && !uwep.v && !wep_was_destroyed) ||
+                        (protector == 32n && !uarmf.v) ||
+                        (protector == 4n && !uarmh.v) ||
+                        (protector == 18n && (!uarmc.v || !uarmg.v))) {
+                    if (!Stone_resistance() &&
+                            !(poly_when_stoned(cptr.ldPtro(
+                                gy,
+                                $instance_globals_y_youmonst + $monst_data
+                            )) &&
+                                polymon(NHC.PM_STONE_GOLEM))) {
+                        done_in_by(mon, NHC.STONING);  /* "You turn to stone..." */
+                        return NHM.M_ATTK_DEF_DIED;
+                    }
                 }
             }
-        }
-        break;
+            break;
         case NHM.AD_RUST:
-        if (mhitb && !(cptr.ldI32o(mon, $monst_mcan) & 1) && weapon) {
-            if (aatyp == NHM.AT_KICK) {
-                if (uarmf.v)
-                    void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_RUST, 5);
-            } else if (aatyp == NHM.AT_WEAP ||
-                    aatyp == NHM.AT_CLAW ||
-                    aatyp == NHM.AT_MAGC ||
-                    aatyp == NHM.AT_TUCH)
-                passive_obj(
-                    mon,
-                    weapon,
-                    cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
-                );
-        }
-        break;
-        case NHM.AD_CORR:
-        if (mhitb && !(cptr.ldI32o(mon, $monst_mcan) & 1) && weapon) {
-            if (aatyp == NHM.AT_KICK) {
-                if (uarmf.v)
-                    void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_CORRODE, 5);
-            } else if (aatyp == NHM.AT_WEAP ||
-                    aatyp == NHM.AT_CLAW ||
-                    aatyp == NHM.AT_MAGC ||
-                    aatyp == NHM.AT_TUCH)
-                passive_obj(
-                    mon,
-                    weapon,
-                    cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
-                );
-        }
-        break;
-        case NHM.AD_MAGM:
-        /* wrath of gods for attacking Oracle */
-        if (Antimagic()) {
-            shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-            monstseesu(1n);
-            pline(__s_a_hail_of_magic_missiles_narrowly);
-        } else {
-            You(__s_are_hit_by_magic_missiles_appearing);
-            mdamageu(mon, tmp);
-            monstunseesu(1n);
-        }
-        break;
-        case NHM.AD_ENCH:
-        if (mhitb) {
-            if (aatyp == NHM.AT_KICK) {
-                if (!weapon)
-                    break;
-            } else if (aatyp == NHM.AT_BITE ||
-                    aatyp == NHM.AT_BUTT ||
-                    (aatyp >= NHM.AT_STNG && aatyp < NHM.AT_WEAP)) {
-                break;  /* no object involved */
-            } else {
-                /*
-                 * TODO:  #H2668 - if hitting with a ring that has a
-                 * positive enchantment, it ought to be subject to
-                 * having that enchantment reduced.  But we don't have
-                 * sufficient information here to know which hand/ring
-                 * has delivered a weaponless blow.
-                 */
-                ;
+            if (mhitb && !(cptr.ldI32o(mon, $monst_mcan) & 1) && weapon) {
+                if (aatyp == NHM.AT_KICK) {
+                    if (uarmf.v)
+                        void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_RUST, 5);
+                } else if (aatyp == NHM.AT_WEAP ||
+                        aatyp == NHM.AT_CLAW ||
+                        aatyp == NHM.AT_MAGC ||
+                        aatyp == NHM.AT_TUCH)
+                    passive_obj(
+                        mon,
+                        weapon,
+                        cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
+                    );
             }
-            passive_obj(mon, weapon, cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack));
-        }
-        break;
+            break;
+        case NHM.AD_CORR:
+            if (mhitb && !(cptr.ldI32o(mon, $monst_mcan) & 1) && weapon) {
+                if (aatyp == NHM.AT_KICK) {
+                    if (uarmf.v)
+                        void erode_obj(uarmf.v, xname(uarmf.v), NHM.ERODE_CORRODE, 5);
+                } else if (aatyp == NHM.AT_WEAP ||
+                        aatyp == NHM.AT_CLAW ||
+                        aatyp == NHM.AT_MAGC ||
+                        aatyp == NHM.AT_TUCH)
+                    passive_obj(
+                        mon,
+                        weapon,
+                        cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
+                    );
+            }
+            break;
+        case NHM.AD_MAGM:
+            /* wrath of gods for attacking Oracle */
+            if (Antimagic()) {
+                shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                monstseesu(1n);
+                pline(__s_a_hail_of_magic_missiles_narrowly);
+            } else {
+                You(__s_are_hit_by_magic_missiles_appearing);
+                mdamageu(mon, tmp);
+                monstunseesu(1n);
+            }
+            break;
+        case NHM.AD_ENCH:
+            if (mhitb) {
+                if (aatyp == NHM.AT_KICK) {
+                    if (!weapon)
+                        break;
+                } else if (aatyp == NHM.AT_BITE ||
+                        aatyp == NHM.AT_BUTT ||
+                        (aatyp >= NHM.AT_STNG && aatyp < NHM.AT_WEAP)) {
+                    break;  /* no object involved */
+                } else {
+                    /*
+                     * TODO:  #H2668 - if hitting with a ring that has a
+                     * positive enchantment, it ought to be subject to
+                     * having that enchantment reduced.  But we don't have
+                     * sufficient information here to know which hand/ring
+                     * has delivered a weaponless blow.
+                     */
+                    ;
+                }
+                passive_obj(
+                    mon,
+                    weapon,
+                    cptr.add(cptr.add(ptr, $permonst_mattk), i, $sizeof_attack)
+                );
+            }
+            break;
         default:
-        break;
+            break;
     }
 
     /*  These only affect you if they still live.
@@ -8619,106 +8676,106 @@ export function passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) {
     if (malive && !(cptr.ldI32o(mon, $monst_mcan) & 1) && rn2(3)) {
         switch (cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
             case NHM.AD_PLYS:
-            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
-                if (!canseemon(mon)) {
-                    break;
-                }
-                if ((cptr.ldI32o(mon, $monst_mcansee) & 1)) {
-                    if (ureflects(__s_s_gaze_is_reflected_by_your_s, s_suffix(Monnam(mon)))) {
-                        ;
-                    } else if (Hallucination() && rn2(4)) {
-                        /* [it's the hero who should be getting paralyzed
-                           and isn't; this message describes the monster's
-                           reaction rather than the hero's escape] */
-                        pline(
-                            __s_s_looks_s_s,
-                            Monnam(mon),
-                            !rn2(2) ? __s_empty : __s_rather,
-                            !rn2(2) ? __s_numb : __s_stupefied
-                        );
-                    } else if (Free_action()) {
-                        You(__s_momentarily_stiffen_under_s_gaze, s_suffix(mon_nam(mon)));
-                    } else {
-                        You(__s_are_frozen_by_s_gaze, s_suffix(mon_nam(mon)));
-                        nomul(((acurr(NHC.A_WIS)) > 12 || rn2(4)) ? -tmp : -127);
-                        /* set gm.multi_reason;
-                           3.6.x used "frozen by a monster's gaze" */
-                        dynamic_multi_reason(mon, __s_frozen, 1);
-                        cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
+                if (cptr.eq(ptr, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
+                    if (!canseemon(mon)) {
+                        break;
                     }
+                    if ((cptr.ldI32o(mon, $monst_mcansee) & 1)) {
+                        if (ureflects(__s_s_gaze_is_reflected_by_your_s, s_suffix(Monnam(mon)))) {
+                            ;
+                        } else if (Hallucination() && rn2(4)) {
+                            /* [it's the hero who should be getting paralyzed
+                               and isn't; this message describes the monster's
+                               reaction rather than the hero's escape] */
+                            pline(
+                                __s_s_looks_s_s,
+                                Monnam(mon),
+                                !rn2(2) ? __s_empty : __s_rather,
+                                !rn2(2) ? __s_numb : __s_stupefied
+                            );
+                        } else if (Free_action()) {
+                            You(__s_momentarily_stiffen_under_s_gaze, s_suffix(mon_nam(mon)));
+                        } else {
+                            You(__s_are_frozen_by_s_gaze, s_suffix(mon_nam(mon)));
+                            nomul(((acurr(NHC.A_WIS)) > 12 || rn2(4)) ? -tmp : -127);
+                            /* set gm.multi_reason;
+                               3.6.x used "frozen by a monster's gaze" */
+                            dynamic_multi_reason(mon, __s_frozen, 1);
+                            cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
+                        }
+                    } else {
+                        pline(__s_s_cannot_defend_itself, Adjmonnam(mon, __s_blind));
+                        if (!rn2(500))
+                            change_luck(-1);
+                    }
+                } else if (Free_action()) {
+                    You(__s_momentarily_stiffen);
                 } else {
-                    pline(__s_s_cannot_defend_itself, Adjmonnam(mon, __s_blind));
-                    if (!rn2(500))
-                        change_luck(-1);
+                    You(__s_are_frozen_by_s, mon_nam(mon));
+                    cptr.stPtro(
+                        gn,
+                        $instance_globals_n_nomovemsg,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again)
+                    );
+                    nomul(-tmp);
+                    /* set gm.multi_reason;
+                       3.6.x used "frozen by a monster"; be more specific */
+                    dynamic_multi_reason(mon, __s_frozen, 0);
+                    exercise(NHC.A_DEX, 0);
                 }
-            } else if (Free_action()) {
-                You(__s_momentarily_stiffen);
-            } else {
-                You(__s_are_frozen_by_s, mon_nam(mon));
-                cptr.stPtro(
-                    gn,
-                    $instance_globals_n_nomovemsg,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again)
-                );
-                nomul(-tmp);
-                /* set gm.multi_reason;
-                   3.6.x used "frozen by a monster"; be more specific */
-                dynamic_multi_reason(mon, __s_frozen, 0);
-                exercise(NHC.A_DEX, 0);
-            }
-            break;
-            case NHM.AD_COLD:
-            if (monnear(mon, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-                if (Cold_resistance()) {
-                    shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                    You_feel(__s_a_mild_chill);
-                    monstseesu(4n);
-                    ugolemeffects(NHM.AD_COLD, tmp);
-                    break;
-                }
-                monstunseesu(4n);
-                You(__s_are_suddenly_very_cold);
-                mdamageu(mon, tmp);
-                /* monster gets stronger with your heat! */
-                healmon(mon, (((tmp + rn2(2)) | 0) / 2) | 0, (((tmp + 1) | 0) / 2) | 0);
-                /* at a certain point, the monster will reproduce! */
-                if (cptr.ldI32o(mon, $monst_mhpmax) >
-                        Math.imul((cptr.ld1uo(mon, $monst_m_lev)) + 1, 8))
-                    void split_mon(mon, cptr.add(gy, $instance_globals_y_youmonst));
-            }
-            break;
-            case NHM.AD_STUN:
-            if (!HStun())
-                make_stunned(BigInt(tmp), 1);
-            break;
-            case NHM.AD_FIRE:
-            if (monnear(mon, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
-                if (Fire_resistance()) {
-                    shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                    You_feel(__s_mildly_warm);
-                    monstseesu(2n);
-                    ugolemeffects(NHM.AD_FIRE, tmp);
-                    break;
-                }
-                monstunseesu(2n);
-                You(__s_are_suddenly_very_hot);
-                mdamageu(mon, tmp);  /* fire damage */
-            }
-            break;
-            case NHM.AD_ELEC:
-            if (Shock_resistance()) {
-                shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                You_feel(__s_a_mild_tingle);
-                monstseesu(32n);
-                ugolemeffects(NHM.AD_ELEC, tmp);
                 break;
-            }
-            monstunseesu(32n);
-            You(__s_are_jolted_with_electricity);
-            mdamageu(mon, tmp);
-            break;
+            case NHM.AD_COLD:
+                if (monnear(mon, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+                    if (Cold_resistance()) {
+                        shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                        You_feel(__s_a_mild_chill);
+                        monstseesu(4n);
+                        ugolemeffects(NHM.AD_COLD, tmp);
+                        break;
+                    }
+                    monstunseesu(4n);
+                    You(__s_are_suddenly_very_cold);
+                    mdamageu(mon, tmp);
+                    /* monster gets stronger with your heat! */
+                    healmon(mon, (((tmp + rn2(2)) | 0) / 2) | 0, (((tmp + 1) | 0) / 2) | 0);
+                    /* at a certain point, the monster will reproduce! */
+                    if (cptr.ldI32o(mon, $monst_mhpmax) >
+                            Math.imul((cptr.ld1uo(mon, $monst_m_lev)) + 1, 8))
+                        void split_mon(mon, cptr.add(gy, $instance_globals_y_youmonst));
+                }
+                break;
+            case NHM.AD_STUN:
+                if (!HStun())
+                    make_stunned(BigInt(tmp), 1);
+                break;
+            case NHM.AD_FIRE:
+                if (monnear(mon, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+                    if (Fire_resistance()) {
+                        shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                        You_feel(__s_mildly_warm);
+                        monstseesu(2n);
+                        ugolemeffects(NHM.AD_FIRE, tmp);
+                        break;
+                    }
+                    monstunseesu(2n);
+                    You(__s_are_suddenly_very_hot);
+                    mdamageu(mon, tmp);  /* fire damage */
+                }
+                break;
+            case NHM.AD_ELEC:
+                if (Shock_resistance()) {
+                    shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                    You_feel(__s_a_mild_tingle);
+                    monstseesu(32n);
+                    ugolemeffects(NHM.AD_ELEC, tmp);
+                    break;
+                }
+                monstunseesu(32n);
+                You(__s_are_jolted_with_electricity);
+                mdamageu(mon, tmp);
+                break;
             default:
-            break;
+                break;
         }
     }
     return (malive | mhit);
@@ -8761,44 +8818,44 @@ export function passive_obj(mon, obj, mattk) {
 
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_FIRE:
-        if (!rn2(6) &&
-                !(cptr.ldI32o(mon, $monst_mcan) & 1) &&
-                !cptr.eq(
-                    cptr.ldPtro(mon, $monst_data),
-                    cptr.add(mons, NHC.PM_STEAM_VORTEX, $sizeof_permonst)
-                )) {
-            void erode_obj(obj, null, NHM.ERODE_BURN, NHM.EF_NONE);
-        }
-        break;
-        case NHM.AD_ACID:
-        if (!rn2(6)) {
-            void erode_obj(obj, null, NHM.ERODE_CORRODE, NHM.EF_GREASE);
-        }
-        break;
-        case NHM.AD_RUST:
-        if (!(cptr.ldI32o(mon, $monst_mcan) & 1)) {
-            void erode_obj(obj, null, NHM.ERODE_RUST, NHM.EF_GREASE);
-        }
-        break;
-        case NHM.AD_CORR:
-        if (!(cptr.ldI32o(mon, $monst_mcan) & 1)) {
-            void erode_obj(obj, null, NHM.ERODE_CORRODE, NHM.EF_GREASE);
-        }
-        break;
-        case NHM.AD_ENCH:
-        if (!(cptr.ldI32o(mon, $monst_mcan) & 1)) {
-            if (drain_item(obj, 1) &&
-                    (cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) &&
-                    ((cptr.ldI32o(obj, $obj_known) & 1) | 0 ||
-                        cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS)) {
-                pline(__s_s_less_effective, Yobjnam2(obj, __s_seem));
+            if (!rn2(6) &&
+                    !(cptr.ldI32o(mon, $monst_mcan) & 1) &&
+                    !cptr.eq(
+                        cptr.ldPtro(mon, $monst_data),
+                        cptr.add(mons, NHC.PM_STEAM_VORTEX, $sizeof_permonst)
+                    )) {
+                void erode_obj(obj, null, NHM.ERODE_BURN, NHM.EF_NONE);
             }
             break;
-        }
-        // @FallThrough
-        ;
+        case NHM.AD_ACID:
+            if (!rn2(6)) {
+                void erode_obj(obj, null, NHM.ERODE_CORRODE, NHM.EF_GREASE);
+            }
+            break;
+        case NHM.AD_RUST:
+            if (!(cptr.ldI32o(mon, $monst_mcan) & 1)) {
+                void erode_obj(obj, null, NHM.ERODE_RUST, NHM.EF_GREASE);
+            }
+            break;
+        case NHM.AD_CORR:
+            if (!(cptr.ldI32o(mon, $monst_mcan) & 1)) {
+                void erode_obj(obj, null, NHM.ERODE_CORRODE, NHM.EF_GREASE);
+            }
+            break;
+        case NHM.AD_ENCH:
+            if (!(cptr.ldI32o(mon, $monst_mcan) & 1)) {
+                if (drain_item(obj, 1) &&
+                        (cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) &&
+                        ((cptr.ldI32o(obj, $obj_known) & 1) | 0 ||
+                            cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS)) {
+                    pline(__s_s_less_effective, Yobjnam2(obj, __s_seem));
+                }
+                break;
+            }
+            // @FallThrough
+            ;
         default:
-        break;
+            break;
     }
 
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
@@ -9109,7 +9166,8 @@ export function light_hits_gremlin(mon, dmg) {
                 (cptr.ldI16o((mon), $monst_my)),
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy)
-            ) <= 90) {
+            ) <=
+                90) {
         /* cry of pain can be heard somewhat farther than the waking radius */
         pline_mon(
             mon,
@@ -9133,7 +9191,8 @@ export function light_hits_gremlin(mon, dmg) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8),
         cptr.ldI16o(mon, $monst_mx)
     ) &
-        NHM.IN_SIGHT) != 0) &&
+        NHM.IN_SIGHT) !=
+        0) &&
             !canspotmon(mon)) {
         map_invisible(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
     }

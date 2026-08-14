@@ -174,7 +174,8 @@ function md_start(startp) {
                     ),
                     cptr.ldI16(stway)
                 ) &
-                    NHM.COULD_SEE) != 0)) {
+                    NHM.COULD_SEE) !=
+                    0)) {
             cptr.stI16(startp, cptr.ldI16(stway));
             cptr.stI16o(startp, $coord_y, cptr.ldI16o(stway, $stairway_sy));
             return 1;
@@ -227,7 +228,8 @@ function md_start(startp) {
                                 ),
                                 cptr.ldI16(testcc)
                             ) &
-                                NHM.IN_SIGHT) != 0) &&
+                                NHM.IN_SIGHT) !=
+                                0) &&
                             ((cptr.ld1uo(
                                 cptr.ldPtro(
                                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -236,7 +238,8 @@ function md_start(startp) {
                                 ),
                                 cptr.ldI16(testcc)
                             ) &
-                                NHM.COULD_SEE) != 0)) {
+                                NHM.COULD_SEE) !=
+                                0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -270,7 +273,8 @@ function md_start(startp) {
                                 ),
                                 cptr.ldI16(testcc)
                             ) &
-                                NHM.IN_SIGHT) != 0) &&
+                                NHM.IN_SIGHT) !=
+                                0) &&
                             ((cptr.ld1uo(
                                 cptr.ldPtro(
                                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -279,7 +283,8 @@ function md_start(startp) {
                                 ),
                                 cptr.ldI16(testcc)
                             ) &
-                                NHM.COULD_SEE) != 0)) {
+                                NHM.COULD_SEE) !=
+                                0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -329,7 +334,8 @@ function md_stop(stopp, startp) {
                         y,
                         8,
                         $instance_globals_saved_l_level + $dlevel_t_monsters
-                    ) !== null)) {
+                    ) !==
+                        null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
                 if (min_distance < 0 ||
                         distance < min_distance ||
@@ -513,7 +519,8 @@ function md_rush(md, tx, ty) {
         fy,
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null) {
+    ))) !==
+            null) {
         cptr.stPtro3(
             svl,
             fx,

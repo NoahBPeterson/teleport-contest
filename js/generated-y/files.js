@@ -325,10 +325,8 @@ export function* fname_encode(legal, quotechar, s, callerbuf, bufsz) {
             op = cptr.add(op, 3);
             cnt = (cnt + 3) | 0;
         } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) ||
-                (cptr.strchr(
-                    cptr.decay(__static_fname_encode_hexdigits),
-                    cptr.ld1s(sp)
-                ) !== null)) {
+                (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !==
+                    null)) {
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(sp));
             cptr.st1(op, 0);
             cnt++;
@@ -945,7 +943,8 @@ export function set_savefile_name(regularize_it) {
         if (BigInt.asUintN(
             64,
             cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__s_empty)
-        ) < 53n) {
+        ) <
+                53n) {
             void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __s_empty);
         } else
             overflow = 3;
@@ -1207,12 +1206,8 @@ export function* get_saved_games() {
 
                 if (!entry)
                     break;
-                if (sscanf(
-                    cptr.add(entry, $dirent_d_name),
-                    __s_d_63s,
-                    uid,
-                    cptr.decay(name)
-                ) == 2) {
+                if (sscanf(cptr.add(entry, $dirent_d_name), __s_d_63s, uid, cptr.decay(name)) ==
+                        2) {
                     if (uid.v == myuid) {
                         let filename = new Uint8Array(256);
                         let r;
@@ -1477,30 +1472,30 @@ function* problematic_savefile(sfstatus, savefilenm) {
 
     switch (sfstatus) {
         case NHM.SF_UPTODATE:
-        break;
+            break;
         case NHM.SF_DM_IL32LLP64_ON_ILP32LL64:
         case NHM.SF_DM_I32LP64_ON_ILP32LL64:
         case NHM.SF_DM_ILP32LL64_ON_I32LP64:
         case NHM.SF_DM_ILP32LL64_ON_IL32LLP64:
         case NHM.SF_DM_I32LP64_ON_IL32LLP64:
         case NHM.SF_DM_IL32LLP64_ON_I32LP64:
-        // @FallThrough
-        ;
+            // @FallThrough
+            ;
         case NHM.SF_DM_MISMATCH:
         case NHM.SF_OUTDATED:
         case NHM.SF_CRITICAL_BYTE_COUNT_MISMATCH:
         default:
-        for (i = 0; i < 10; ++i) {
-            if (cptr.ldI32o(sf2msg, i, $sizeof_sfstatus_to_msg) == sfstatus) {
-                (yield* raw_printf(
-                    __s_s_is_s_s,
-                    savefilenm,
-                    (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a,
-                    cptr.ldPtro2(sf2msg, i, $sizeof_sfstatus_to_msg, $sfstatus_to_msg_msg)
-                ));
-                break;
+            for (i = 0; i < 10; ++i) {
+                if (cptr.ldI32o(sf2msg, i, $sizeof_sfstatus_to_msg) == sfstatus) {
+                    (yield* raw_printf(
+                        __s_s_is_s_s,
+                        savefilenm,
+                        (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a,
+                        cptr.ldPtro2(sf2msg, i, $sizeof_sfstatus_to_msg, $sfstatus_to_msg_msg)
+                    ));
+                    break;
+                }
             }
-        }
     }
     return nhfp;
 }
@@ -1656,8 +1651,7 @@ export function* lock_file(filename, whichprefix, retryct) {
         gn,
         $instance_globals_n_nesting,
         cptr.ldI32o(gn, $instance_globals_n_nesting) + 1
-    )) -
-            (1);
+    )) - (1);
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) > 1) {
         (yield* impossible(__s_tried_to_nest_locks));
         return 1;
@@ -1671,8 +1665,7 @@ export function* lock_file(filename, whichprefix, retryct) {
             gn,
             $instance_globals_n_nesting,
             cptr.ldI32o(gn, $instance_globals_n_nesting) + -1
-        )) -
-                (-1);
+        )) - (-1);
         return 0;
     }
     cptr.stI16o(sflock, $flock_l_type, 3);
@@ -1693,8 +1686,7 @@ export function* lock_file(filename, whichprefix, retryct) {
                 gn,
                 $instance_globals_n_nesting,
                 cptr.ldI32o(gn, $instance_globals_n_nesting) + -1
-            )) -
-                    (-1);
+            )) - (-1);
             return 0;
         }
     }
@@ -1719,8 +1711,7 @@ export function* unlock_file(filename) {
         gn,
         $instance_globals_n_nesting,
         cptr.ldI32o(gn, $instance_globals_n_nesting) + -1
-    )) -
-            (-1);
+    )) - (-1);
 }
 
 /* ----------  END FILE LOCKING HANDLING ----------- */
@@ -2377,85 +2368,85 @@ export function* read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bu
             void strip_newline(cptr.decay(line));
             switch (cptr.ld1so(cptr.decay(line), 0, 1)) {
                 case 37:
-                if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_section, 8))) {
-                    let st = cptr.add(cptr.decay(line), 9, 1);  /* 9 from "%section " */
+                    if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_section, 8))) {
+                        let st = cptr.add(cptr.decay(line), 9, 1);  /* 9 from "%section " */
 
-                    scope = 1;
-                    matchedsection = schar((!(yield* strncmpi((st), (tribsection), -1)) ? 1 : 0));
-                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_title, 6))) {
-                    let st = cptr.add(cptr.decay(line), 7, 1);  /* 7 from "%title " */
-                    let p1;
-                    let p2;
+                        scope = 1;
+                        matchedsection = schar((!(yield* strncmpi((st), (tribsection), -1)) ? 1 : 0));
+                    } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_title, 6))) {
+                        let st = cptr.add(cptr.decay(line), 7, 1);  /* 7 from "%title " */
+                        let p1;
+                        let p2;
 
-                    if ((p1 = cptr.strchr(st, 40)) !== null) {
-                        cptr.st1(cptr.postinc(() => p1, (v) => { p1 = v; }), 0);
-                        void (yield* mungspaces(st));
-                        if ((p2 = cptr.strchr(p1, 41)) !== null) {
-                            cptr.st1(p2, 0);
-                            passagecnt = atoi(p1);
-                            scope = 2;
-                            if (matchedsection && !(yield* strncmpi((st), (tribtitle), -1))) {
-                                matchedtitle = 1;
-                                targetpassage = !tribpassage
-                                        ? choose_passage(passagecnt, oid)
-                                        : ((tribpassage <= passagecnt) ? tribpassage : 0);
-                            } else {
-                                matchedtitle = 0;
+                        if ((p1 = cptr.strchr(st, 40)) !== null) {
+                            cptr.st1(cptr.postinc(() => p1, (v) => { p1 = v; }), 0);
+                            void (yield* mungspaces(st));
+                            if ((p2 = cptr.strchr(p1, 41)) !== null) {
+                                cptr.st1(p2, 0);
+                                passagecnt = atoi(p1);
+                                scope = 2;
+                                if (matchedsection && !(yield* strncmpi((st), (tribtitle), -1))) {
+                                    matchedtitle = 1;
+                                    targetpassage = !tribpassage
+                                            ? choose_passage(passagecnt, oid)
+                                            : ((tribpassage <= passagecnt) ? tribpassage : 0);
+                                } else {
+                                    matchedtitle = 0;
+                                }
                             }
                         }
-                    }
-                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_passage, 8))) {
-                    let passagenum = 0;
-                    let st = cptr.add(cptr.decay(line), 9, 1);  /* 9 from "%passage " */
+                    } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_passage, 8))) {
+                        let passagenum = 0;
+                        let st = cptr.add(cptr.decay(line), 9, 1);  /* 9 from "%passage " */
 
-                    (yield* mungspaces(st));
-                    passagenum = atoi(st);
-                    if (passagenum > 0 && passagenum <= passagecnt) {
-                        scope = 3;
-                        if (matchedtitle && passagenum == targetpassage) {
-                            foundpassage = 1;
-                            if (!nowin_buf) {
-                                tribwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
-                                if (tribwin == -1)
-                                    break __lbl_cleanup;
+                        (yield* mungspaces(st));
+                        passagenum = atoi(st);
+                        if (passagenum > 0 && passagenum <= passagecnt) {
+                            scope = 3;
+                            if (matchedtitle && passagenum == targetpassage) {
+                                foundpassage = 1;
+                                if (!nowin_buf) {
+                                    tribwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+                                    if (tribwin == -1)
+                                        break __lbl_cleanup;
+                                }
                             }
                         }
-                    }
-                } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_e_sp, 2))) {
-                    if (foundpassage)
-                        break __lbl_cleanup;
-                    if (scope == 2)
-                        matchedtitle = 0;
-                    if (scope == 1)
-                        matchedsection = 0;
-                    if (scope)
-                        --scope;
-                } else {
-                    {
-                        if ((yield* debugcore(__s_files_c, 1))) {
-                            let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                            (yield* pline(__s_tribute_file_error_bad_command_line_d, linect));
-                            cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
-                        }
-                    }
-                }
-                break;
-                case 35:
-                /* comment only, next! */
-                break;
-                default:
-                if (foundpassage) {
-                    if (!nowin_buf) {
-                        /* outputting multi-line passage to text window */
-                        (yield* Y.icall(putstr()(tribwin, 0, cptr.decay(line))));
-                        if (cptr.ld1s(cptr.decay(line)))
-                            void cptr.strcpy(cptr.decay(lastline), cptr.decay(line));
+                    } else if (!(yield* strncmpi(cptr.add(cptr.decay(line), 1, 1), __s_e_sp, 2))) {
+                        if (foundpassage)
+                            break __lbl_cleanup;
+                        if (scope == 2)
+                            matchedtitle = 0;
+                        if (scope == 1)
+                            matchedsection = 0;
+                        if (scope)
+                            --scope;
                     } else {
-                        /* fetching one-line passage into buffer */
-                        (yield* copynchars(nowin_buf, cptr.decay(line), (bufsz - 1) | 0));
-                        break __lbl_cleanup;  /* don't wait for "%e passage" */
+                        {
+                            if ((yield* debugcore(__s_files_c, 1))) {
+                                let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
+                                (yield* pline(__s_tribute_file_error_bad_command_line_d, linect));
+                                cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
+                            }
+                        }
                     }
-                }
+                    break;
+                case 35:
+                    /* comment only, next! */
+                    break;
+                default:
+                    if (foundpassage) {
+                        if (!nowin_buf) {
+                            /* outputting multi-line passage to text window */
+                            (yield* Y.icall(putstr()(tribwin, 0, cptr.decay(line))));
+                            if (cptr.ld1s(cptr.decay(line)))
+                                void cptr.strcpy(cptr.decay(lastline), cptr.decay(line));
+                        } else {
+                            /* fetching one-line passage into buffer */
+                            (yield* copynchars(nowin_buf, cptr.decay(line), (bufsz - 1) | 0));
+                            break __lbl_cleanup;  /* don't wait for "%e passage" */
+                        }
+                    }
             }
         }
     }

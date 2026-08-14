@@ -107,7 +107,8 @@ function currentpc(ci) {
                 $Proto_code
             )
         ) / 4n))
-    ))) - 1) | 0);
+    ))) -
+            1) | 0);
 }
 
 /*
@@ -574,82 +575,86 @@ function auxgetinfo(L, what, ar, f, ci) {
     for (; cptr.ld1s(what); what = cptr.add(what, 1)) {
         switch (cptr.ld1s(what)) {
             case 83:
-            {
-                funcinfo(ar, f);
-                break;
-            }
+                {
+                    funcinfo(ar, f);
+                    break;
+                }
             case 108:
-            {
-                cptr.stI32o(
-                    ar,
-                    $lua_Debug_currentline,
-                    (ci && (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
-                        ? getcurrentline(ci)
-                        : -1
-                );
-                break;
-            }
+                {
+                    cptr.stI32o(
+                        ar,
+                        $lua_Debug_currentline,
+                        (ci && (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
+                            ? getcurrentline(ci)
+                            : -1
+                    );
+                    break;
+                }
             case 117:
-            {
-                cptr.st1o(
-                    ar,
-                    $lua_Debug_nups,
-                    uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1uo(f, $CClosure_nupvalues)))
-                );
-                if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), $CClosure_tt) == 6)) {
-                    cptr.st1o(ar, $lua_Debug_isvararg, 1);
-                    cptr.st1o(ar, $lua_Debug_nparams, 0);
-                } else {
+                {
                     cptr.st1o(
                         ar,
-                        $lua_Debug_isvararg,
-                        schar(cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_is_vararg))
+                        $lua_Debug_nups,
+                        uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1uo(f, $CClosure_nupvalues)))
                     );
-                    cptr.st1o(
-                        ar,
-                        $lua_Debug_nparams,
-                        cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_numparams)
-                    );
+                    if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), $CClosure_tt) == 6)) {
+                        cptr.st1o(ar, $lua_Debug_isvararg, 1);
+                        cptr.st1o(ar, $lua_Debug_nparams, 0);
+                    } else {
+                        cptr.st1o(
+                            ar,
+                            $lua_Debug_isvararg,
+                            schar(cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_is_vararg))
+                        );
+                        cptr.st1o(
+                            ar,
+                            $lua_Debug_nparams,
+                            cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_numparams)
+                        );
+                    }
+                    break;
                 }
-                break;
-            }
             case 116:
-            {
-                cptr.st1o(
-                    ar,
-                    $lua_Debug_istailcall,
-                    schar(((ci) ? cptr.ldU16o(ci, $CallInfo_callstatus) & 32 : 0))
-                );
-                break;
-            }
+                {
+                    cptr.st1o(
+                        ar,
+                        $lua_Debug_istailcall,
+                        schar(((ci) ? cptr.ldU16o(ci, $CallInfo_callstatus) & 32 : 0))
+                    );
+                    break;
+                }
             case 110:
-            {
-                cptr.stPtro(
-                    ar,
-                    $lua_Debug_namewhat,
-                    getfuncname(L, ci, cptr.add(ar, $lua_Debug_name))
-                );
-                if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_namewhat), (null))) {
-                    cptr.stPtro(ar, $lua_Debug_namewhat, __s_empty);  /* not found */
-                    cptr.stPtro(ar, $lua_Debug_name, null);
+                {
+                    cptr.stPtro(
+                        ar,
+                        $lua_Debug_namewhat,
+                        getfuncname(L, ci, cptr.add(ar, $lua_Debug_name))
+                    );
+                    if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_namewhat), (null))) {
+                        cptr.stPtro(ar, $lua_Debug_namewhat, __s_empty);  /* not found */
+                        cptr.stPtro(ar, $lua_Debug_name, null);
+                    }
+                    break;
                 }
-                break;
-            }
             case 114:
-            {
-                if (cptr.eq(ci, (null)) || !(cptr.ldU16o(ci, $CallInfo_callstatus) & 256))
-                    cptr.stI16o(ar, $lua_Debug_ftransfer, cptr.stI16o(ar, $lua_Debug_ntransfer, 0));
-                else {
-                    cptr.stI16o(ar, $lua_Debug_ftransfer, cptr.ldU16o(ci, $CallInfo_u2));
-                    cptr.stI16o(ar, $lua_Debug_ntransfer, cptr.ldU16o(ci, $CallInfo_u2 + 2));
+                {
+                    if (cptr.eq(ci, (null)) || !(cptr.ldU16o(ci, $CallInfo_callstatus) & 256))
+                        cptr.stI16o(
+                            ar,
+                            $lua_Debug_ftransfer,
+                            cptr.stI16o(ar, $lua_Debug_ntransfer, 0)
+                        );
+                    else {
+                        cptr.stI16o(ar, $lua_Debug_ftransfer, cptr.ldU16o(ci, $CallInfo_u2));
+                        cptr.stI16o(ar, $lua_Debug_ntransfer, cptr.ldU16o(ci, $CallInfo_u2 + 2));
+                    }
+                    break;
                 }
-                break;
-            }
             case 76:
             case 102:
-            break;
+                break;
             default:
-            status = 0;  /* invalid option */
+                status = 0;  /* invalid option */
         }
     }
     return status;
@@ -745,7 +750,8 @@ function findsetreg(p, lastpc, reg) {
     if ((cptr.ld1uo(
         cptr.decay(luaP_opmodes),
         ((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc, 4)) >>> 0) &
-            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>>
+            0))),
         1
     ) & 128))
         lastpc--;  /* previous instruction was not actually executed */
@@ -756,36 +762,38 @@ function findsetreg(p, lastpc, reg) {
         let change;  /* true if current instruction changed 'reg' */
         switch (op) {
             case NHC.OP_LOADNIL:
-            {
-                let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-                change = (a <= reg && reg <= ((a + b) | 0) ? 1 : 0);
-                break;
-            }
+                {
+                    let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            0)) | 0)));
+                    change = (a <= reg && reg <= ((a + b) | 0) ? 1 : 0);
+                    break;
+                }
             case NHC.OP_TFORCALL:
-            {
-                change = (reg >= ((a + 2) | 0));
-                break;
-            }
+                {
+                    change = (reg >= ((a + 2) | 0));
+                    break;
+                }
             case NHC.OP_CALL:
             case NHC.OP_TAILCALL:
-            {
-                change = (reg >= a);
-                break;
-            }
+                {
+                    change = (reg >= a);
+                    break;
+                }
             case NHC.OP_JMP:
-            {
-                let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                        16777215) | 0);
-                let dest = (pc + 1 + b) | 0;
-                /* jump does not skip 'lastpc' and is larger than current one? */
-                if (dest <= lastpc && dest > jmptarget)
-                    jmptarget = dest;  /* update 'jmptarget' */
-                change = 0;
-                break;
-            }
+                {
+                    let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                        0)) -
+                            16777215) | 0);
+                    let dest = (pc + 1 + b) | 0;
+                    /* jump does not skip 'lastpc' and is larger than current one? */
+                    if (dest <= lastpc && dest > jmptarget)
+                        jmptarget = dest;  /* update 'jmptarget' */
+                    change = 0;
+                    break;
+                }
             default:
-            change = ((cptr.ld1uo(cptr.decay(luaP_opmodes), op, 1) & 8) && reg == a ? 1 : 0);
-            break;
+                change = ((cptr.ld1uo(cptr.decay(luaP_opmodes), op, 1) & 8) && reg == a ? 1 : 0);
+                break;
         }
         if (change)
             setreg = filterpc(pc, jmptarget);
@@ -834,38 +842,42 @@ function basicgetobjname(p, ppc, reg, name) {
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
             case NHC.OP_MOVE:
-            {
-                let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* move from 'b' to 'a' */
-                if (b < (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
-                    return basicgetobjname(p, ppc, b, name);  /* get name for 'b' */
-                break;
-            }
+                {
+                    let b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            0)) | 0)));  /* move from 'b' to 'a' */
+                    if (b < (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
+                        return basicgetobjname(p, ppc, b, name);  /* get name for 'b' */
+                    break;
+                }
             case NHC.OP_GETUPVAL:
-            {
-                cptr.stPtr(
-                    name,
-                    upvalname(
-                        p,
-                        ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
-                    )
-                );
-                return cptr.decay(strupval);
-            }
+                {
+                    cptr.stPtr(
+                        name,
+                        upvalname(
+                            p,
+                            ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                                0)) | 0)))
+                        )
+                    );
+                    return cptr.decay(strupval);
+                }
             case NHC.OP_LOADK:
-            return kname(
-                p,
-                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                name
-            );
+                return kname(
+                    p,
+                    ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                    name
+                );
             case NHC.OP_LOADKX:
-            return kname(
-                p,
-                ((((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), (pc + 1) | 0, 4)) >>> 7) &
-                    (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
-                name
-            );
+                return kname(
+                    p,
+                    ((((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), (pc + 1) | 0, 4)) >>> 7) &
+                        (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
+                        0)) |
+                        0))),
+                    name
+                );
             default:
-            break;
+                break;
         }
     }
     return null;  /* could not find reasonable name */
@@ -956,35 +968,38 @@ function getobjname(p, lastpc, reg, name) {
         let op = ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
         switch (op) {
             case NHC.OP_GETTABUP:
-            {
-                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
-                kname(p, k, name);
-                return isEnv(p, lastpc.v, i, 1);
-            }
+                {
+                    let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            0)) | 0)));  /* key index */
+                    kname(p, k, name);
+                    return isEnv(p, lastpc.v, i, 1);
+                }
             case NHC.OP_GETTABLE:
-            {
-                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
-                rname(p, lastpc.v, k, name);
-                return isEnv(p, lastpc.v, i, 0);
-            }
+                {
+                    let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            0)) | 0)));  /* key index */
+                    rname(p, lastpc.v, k, name);
+                    return isEnv(p, lastpc.v, i, 0);
+                }
             case NHC.OP_GETI:
-            {
-                cptr.stPtr(name, __s_integer_index);
-                return __s_field;
-            }
+                {
+                    cptr.stPtr(name, __s_integer_index);
+                    return __s_field;
+                }
             case NHC.OP_GETFIELD:
-            {
-                let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
-                kname(p, k, name);
-                return isEnv(p, lastpc.v, i, 0);
-            }
+                {
+                    let k = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            0)) | 0)));  /* key index */
+                    kname(p, k, name);
+                    return isEnv(p, lastpc.v, i, 0);
+                }
             case NHC.OP_SELF:
-            {
-                rkname(p, lastpc.v, i, name);
-                return __s_method;
-            }
+                {
+                    rkname(p, lastpc.v, i, name);
+                    return __s_method;
+                }
             default:
-            break;  /* go through to return NULL */
+                break;  /* go through to return NULL */
         }
     }
     return null;  /* could not find reasonable name */
@@ -1010,69 +1025,69 @@ function funcnamefromcode(L, p, pc, name) {
     switch (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
         case NHC.OP_CALL:
         case NHC.OP_TAILCALL:
-        return getobjname(
-            p,
-            pc,
-            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
-            name
-        );  /* get function name */
+            return getobjname(
+                p,
+                pc,
+                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                name
+            );  /* get function name */
         case NHC.OP_TFORCALL:
-        {
-            cptr.stPtr(name, __s_for_iterator);
-            return __s_for_iterator;
-        }
+            {
+                cptr.stPtr(name, __s_for_iterator);
+                return __s_for_iterator;
+            }
         case NHC.OP_SELF:
         case NHC.OP_GETTABUP:
         case NHC.OP_GETTABLE:
         case NHC.OP_GETI:
         case NHC.OP_GETFIELD:
-        tm = NHC.TM_INDEX;
-        break;
+            tm = NHC.TM_INDEX;
+            break;
         case NHC.OP_SETTABUP:
         case NHC.OP_SETTABLE:
         case NHC.OP_SETI:
         case NHC.OP_SETFIELD:
-        tm = NHC.TM_NEWINDEX;
-        break;
+            tm = NHC.TM_NEWINDEX;
+            break;
         case NHC.OP_MMBIN:
         case NHC.OP_MMBINI:
         case NHC.OP_MMBINK:
-        {
-            tm = ((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))));
-            break;
-        }
+            {
+                tm = ((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))));
+                break;
+            }
         case NHC.OP_UNM:
-        tm = NHC.TM_UNM;
-        break;
+            tm = NHC.TM_UNM;
+            break;
         case NHC.OP_BNOT:
-        tm = NHC.TM_BNOT;
-        break;
+            tm = NHC.TM_BNOT;
+            break;
         case NHC.OP_LEN:
-        tm = NHC.TM_LEN;
-        break;
+            tm = NHC.TM_LEN;
+            break;
         case NHC.OP_CONCAT:
-        tm = NHC.TM_CONCAT;
-        break;
+            tm = NHC.TM_CONCAT;
+            break;
         case NHC.OP_EQ:
-        tm = NHC.TM_EQ;
-        break;
+            tm = NHC.TM_EQ;
+            break;
         case NHC.OP_LT:
         case NHC.OP_LTI:
         case NHC.OP_GTI:
-        /* no cases for OP_EQI and OP_EQK, as they don't call metamethods */
-        tm = NHC.TM_LT;
-        break;
+            /* no cases for OP_EQI and OP_EQK, as they don't call metamethods */
+            tm = NHC.TM_LT;
+            break;
         case NHC.OP_LE:
         case NHC.OP_LEI:
         case NHC.OP_GEI:
-        tm = NHC.TM_LE;
-        break;
+            tm = NHC.TM_LE;
+            break;
         case NHC.OP_CLOSE:
         case NHC.OP_RETURN:
-        tm = NHC.TM_CLOSE;
-        break;
+            tm = NHC.TM_CLOSE;
+            break;
         default:
-        return null;  /* cannot find a reasonable name */
+            return null;  /* cannot find a reasonable name */
     }
     cptr.stPtr(
         name,
@@ -1521,11 +1536,15 @@ export function* luaG_traceexec(L, pc) {
     if (!((cptr.ld1uo(
         cptr.decay(luaP_opmodes),
         ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 0) &
-            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>>
+            0))),
         1
-    ) & 32) &&
+    ) &
+        32) &&
             ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 16) &
-                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0))
+                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                0)) |
+                0))) == 0))
         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top */
     if (counthook)
         (yield* luaD_hook(L, 3, -1, 0, 0));  /* call count hook */
@@ -1537,7 +1556,8 @@ export function* luaG_traceexec(L, pc) {
         let npci = (((Number(BigInt.asIntN(
             32,
             ((cptr.diff((pc), cptr.ldPtro((p), $Proto_code)) / 4n))
-        ))) - 1) | 0);
+        ))) -
+                1) | 0);
         if (npci <= oldpc || changedline(p, oldpc, npci)) {
             let newline = luaG_getfuncline(p, npci);
             (yield* luaD_hook(L, 2, newline, 0, 0));  /* call line hook */

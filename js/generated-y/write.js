@@ -118,7 +118,7 @@ function* cost(otmp) {
 
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.SCR_MAIL:
-        return 2;
+            return 2;
         case NHC.SCR_LIGHT:
         case NHC.SCR_GOLD_DETECTION:
         case NHC.SCR_FOOD_DETECTION:
@@ -126,30 +126,30 @@ function* cost(otmp) {
         case NHC.SCR_AMNESIA:
         case NHC.SCR_FIRE:
         case NHC.SCR_EARTH:
-        return 8;
+            return 8;
         case NHC.SCR_DESTROY_ARMOR:
         case NHC.SCR_CREATE_MONSTER:
         case NHC.SCR_PUNISHMENT:
-        return 10;
+            return 10;
         case NHC.SCR_CONFUSE_MONSTER:
-        return 12;
+            return 12;
         case NHC.SCR_IDENTIFY:
-        return 14;
+            return 14;
         case NHC.SCR_ENCHANT_ARMOR:
         case NHC.SCR_REMOVE_CURSE:
         case NHC.SCR_ENCHANT_WEAPON:
         case NHC.SCR_CHARGING:
-        return 16;
+            return 16;
         case NHC.SCR_SCARE_MONSTER:
         case NHC.SCR_STINKING_CLOUD:
         case NHC.SCR_TAMING:
         case NHC.SCR_TELEPORTATION:
-        return 20;
+            return 20;
         case NHC.SCR_GENOCIDE:
-        return 30;
+            return 30;
         case NHC.SCR_BLANK_PAPER:
         default:
-        (yield* impossible(__s_you_can_t_write_such_a_weird_scroll));
+            (yield* impossible(__s_you_can_t_write_such_a_weird_scroll));
     }
     return 1000;
 }
@@ -196,7 +196,8 @@ export function* dowrite(pen) {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-                8192n) != 0n)) {
+            8192n) !=
+                0n)) {
             (yield* You(__s_need_hands_to_be_able_to_write));
             return NHM.ECMD_OK;
         } else if (Glib()) {
@@ -267,8 +268,7 @@ export function* dowrite(pen) {
             (cptr.ld1so(paper, $obj_oclass) + 1) | 0,
             4,
             $instance_globals_saved_b_bases
-        ) - 1) |
-                0;
+        ) - 1) | 0;
         /* first loop: look for match with name/description */
         for (i = first; i <= last; i++) {
             /* extra shufflable descr not representing a real object */
@@ -325,12 +325,8 @@ export function* dowrite(pen) {
                         -1
                     )) &&
                     !(real &&
-                        (cptr.ldI32o2(
-                            objects,
-                            i,
-                            $sizeof_objclass,
-                            $objclass_oc_name_known
-                        ) & 1) | 0) &&
+                        (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) |
+                            0) &&
                     !rn2(++deferralchance)) {
                 deferred = i;
                 /* writing by user-assigned name is same as by description:
@@ -393,8 +389,7 @@ export function* dowrite(pen) {
         u,
         $you_uconduct + $u_conduct_literate,
         cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
-    )) -
-            (1n)))
+    )) - (1n)))
         (yield* livelog_printf(32n, __s_became_literate_by_writing_s, (yield* an(typeword))));
 
     new_obj = (yield* mksobj(i, 0, 0));
@@ -472,14 +467,17 @@ export function* dowrite(pen) {
         cptr.ldI16o(new_obj, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_name_known
-    ) & 1) &&
+    ) &
+        1) &&
             !(by_descr &&
                 (cptr.ldI32o2(
                     objects,
                     cptr.ldI16o(new_obj, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_encountered
-                ) & 1) | 0) &&
+                ) &
+                    1) |
+                    0) &&
             spell_knowledge != NHC.spe_Fresh &&
             rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
                 cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) ||
@@ -560,7 +558,9 @@ export function* dowrite(pen) {
         cptr.ldI16o(new_obj, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_name_known
-    ) & 1) | 0 ||
+    ) &
+        1) |
+        0 ||
             by_descr)
         (yield* observe_object(new_obj));
 

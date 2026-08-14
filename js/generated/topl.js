@@ -102,8 +102,11 @@ export function tty_doprev_message() {
                 if (cptr.ldI64o(cw, $WinDesc_maxcol) == cptr.ldI64o(cw, $WinDesc_maxrow)) {
                     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 16);  /* ^P ok at --More-- */
                     redotoplin(cptr.add(gt, $instance_globals_t_toplines));
-                    (cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxcol) + -1n)) -
-                            (-1n);
+                    (cptr.stI64o(
+                        cw,
+                        $WinDesc_maxcol,
+                        cptr.ldI64o(cw, $WinDesc_maxcol) + -1n
+                    )) - (-1n);
                     if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
                         cptr.stI64o(
                             cw,
@@ -124,8 +127,11 @@ export function tty_doprev_message() {
                         cptr.ldI64o(cw, $WinDesc_maxcol),
                         8
                     ));
-                    (cptr.stI64o(cw, $WinDesc_maxcol, cptr.ldI64o(cw, $WinDesc_maxcol) + -1n)) -
-                            (-1n);
+                    (cptr.stI64o(
+                        cw,
+                        $WinDesc_maxcol,
+                        cptr.ldI64o(cw, $WinDesc_maxcol) + -1n
+                    )) - (-1n);
                     if (cptr.ldI64o(cw, $WinDesc_maxcol) < 0n)
                         cptr.stI64o(
                             cw,
@@ -255,8 +261,7 @@ function redotoplin(str) {
                 ttyDisplay,
                 $DisplayDesc_curx,
                 cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
-            )) -
-                    (1);
+            )) - (1);
         }
         end_glyphout();  /* in case message printed during graphics output */
     }
@@ -309,7 +314,7 @@ export function remember_topl() {
     if (len > cptr.ldI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, 2)) {
         if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8))
             cptr.free(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), idx, 8));
-        len = (len + ((8 - ((len & 7) >>> 0)) >>> 0)) | 0;  /* pad up to next multiple of 8 */
+        len = (len + (8 - ((len & 7) >>> 0))) | 0;  /* pad up to next multiple of 8 */
         cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), idx, alloc(len), 8);
         cptr.stI16o(cptr.ldPtro(cw, $WinDesc_datlen), idx, i16(len), 2);
     }
@@ -360,8 +365,7 @@ export function more() {
         ttyDisplay,
         $DisplayDesc_inmore,
         cptr.ldI32o(ttyDisplay, $DisplayDesc_inmore) + 1
-    )) -
-            (1);
+    )) - (1);
 
     if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin)) {
         tty_curs(
@@ -418,10 +422,9 @@ export function update_topl(bp) {
     if ((cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE || skip) &&
             cptr.ldI64o(cw, $WinDesc_cury) == 0n &&
             ((n0 +
-                Number(BigInt.asIntN(
-                    32,
-                    cptr.strlen(cptr.add(gt, $instance_globals_t_toplines))
-                )) + 3) | 0) <
+                Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gt, $instance_globals_t_toplines)))) +
+                3) |
+                0) <
                 ((CO() - 8) | 0) &&
             (notdied = cptr.strncmp(bp, __s_you_die, 7n)) != 0) {
         void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), __s_sp2);
@@ -480,42 +483,39 @@ function topl_putsym(c) {
 
     switch (c) {
         case 8:
-        if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == 0 &&
-                cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > 0)
-            tty_curs(BASE_WINDOW, CO(), (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) - 1) | 0);
-        backsp();
-        void ((!!(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > 0)) ||
-            (nhassert_failed(__s_ttydisplay_curx_0, __s_win_tty_topl_c, 317), 0)
-                ? 1
-                : 0);
-        (cptr.stI16o(
-            ttyDisplay,
-            $DisplayDesc_curx,
-            cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
-        )) -
-                (-1);
-        cptr.stI64o(cw, $WinDesc_curx, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)));
-        return;
+            if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == 0 &&
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > 0)
+                tty_curs(BASE_WINDOW, CO(), (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) - 1) | 0);
+            backsp();
+            void ((!!(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > 0)) ||
+                (nhassert_failed(__s_ttydisplay_curx_0, __s_win_tty_topl_c, 317), 0)
+                    ? 1
+                    : 0);
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_curx,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+            )) - (-1);
+            cptr.stI64o(cw, $WinDesc_curx, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)));
+            return;
         case 10:
-        cl_end();
-        cptr.stI16o(ttyDisplay, $DisplayDesc_curx, 0);
-        (cptr.stI16o(
-            ttyDisplay,
-            $DisplayDesc_cury,
-            cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1
-        )) -
-                (1);
-        cptr.stI64o(cw, $WinDesc_cury, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)));
-        break;
+            cl_end();
+            cptr.stI16o(ttyDisplay, $DisplayDesc_curx, 0);
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_cury,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1
+            )) - (1);
+            cptr.stI64o(cw, $WinDesc_cury, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)));
+            break;
         default:
-        if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == ((CO() - 1) | 0))
-            topl_putsym(10);  /* 1 <= curx < CO; avoid CO */
-        (cptr.stI16o(
-            ttyDisplay,
-            $DisplayDesc_curx,
-            cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
-        )) -
-                (1);
+            if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) == ((CO() - 1) | 0))
+                topl_putsym(10);  /* 1 <= curx < CO; avoid CO */
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_curx,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+            )) - (1);
     }
     cptr.stI64o(cw, $WinDesc_curx, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)));
     if (cptr.ldI64o(cw, $WinDesc_curx) == 0n)
@@ -532,8 +532,7 @@ function topl_putsym(c) {
             ttyDisplay,
             $DisplayDesc_curx,
             cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
-        )) -
-                (-1);
+        )) - (-1);
         nomux_putch(c);
         cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
     }
@@ -593,8 +592,7 @@ export function tty_yn_function(query, resp, def) {
             ttyDisplay,
             $DisplayDesc_inread,
             cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1
-        )) -
-                (1);
+        )) - (1);
         if (resp) {
             let rb;
             let respbuf = new Uint8Array(128);
@@ -762,16 +760,14 @@ export function tty_yn_function(query, resp, def) {
         ttyDisplay,
         $DisplayDesc_inread,
         cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1
-    )) -
-            (-1);
+    )) - (-1);
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
     if (cptr.ldI32o(ttyDisplay, $DisplayDesc_intr))
         (cptr.stI32o(
             ttyDisplay,
             $DisplayDesc_intr,
             cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + -1
-        )) -
-                (-1);
+        )) - (-1);
     if (cptr.ldI64o(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), $WinDesc_cury))
         tty_clear_nhwindow(WIN_MESSAGE.v);
 

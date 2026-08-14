@@ -206,14 +206,14 @@ function* txtToken(ls, token) {
         case NHC.TK_STRING:
         case NHC.TK_FLT:
         case NHC.TK_INT:
-        (yield* save(ls, 0));
-        return (yield* luaO_pushfstring(
-            cptr.ldPtro(ls, $LexState_L),
-            __s_apos_pct_s_apos,
-            (cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff))))
-        ));
+            (yield* save(ls, 0));
+            return (yield* luaO_pushfstring(
+                cptr.ldPtro(ls, $LexState_L),
+                __s_apos_pct_s_apos,
+                (cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff))))
+            ));
         default:
-        return (yield* luaX_token2str(ls, token));
+            return (yield* luaX_token2str(ls, token));
     }
 }
 
@@ -597,56 +597,87 @@ function* read_long_string(ls, seminfo, sep) {
         for (; ; ) {
             switch (cptr.ldI32(ls)) {
                 case -1:
-                {
-                    let what = (seminfo ? __s_string__2 : __s_comment);
-                    let msg = (yield* luaO_pushfstring(
-                        cptr.ldPtro(ls, $LexState_L),
-                        __s_unfinished_long_s_starting_at_line_d,
-                        what,
-                        line
-                    ));
-                    (yield* lexerror(ls, msg, NHC.TK_EOS));
-                    break;  /* to avoid warnings */
-                }
-                case 93:
-                {
-                    if ((yield* skip_sep(ls)) == sep) {
-                        (
-                            (yield* save(ls, cptr.ldI32(ls))),
-                            (cptr.stI32(
-                                ls,
-                                (((cptr.stU64(
-                                    (cptr.ldPtro(ls, $LexState_z)),
-                                    cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                                )) -
-                                    (-1n)) > 0n
-                                    ? (uchar(((cptr.ld1s(cptr.postinc(
-                                        () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                                        (v) => {
-                                            cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
-                                        }
-                                    ))))))
-                                    : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                            ))
-                        );  /* skip 2nd ']' */
-                        break __lbl_endloop;
+                    {
+                        let what = (seminfo ? __s_string__2 : __s_comment);
+                        let msg = (yield* luaO_pushfstring(
+                            cptr.ldPtro(ls, $LexState_L),
+                            __s_unfinished_long_s_starting_at_line_d,
+                            what,
+                            line
+                        ));
+                        (yield* lexerror(ls, msg, NHC.TK_EOS));
+                        break;  /* to avoid warnings */
                     }
-                    break;
-                }
+                case 93:
+                    {
+                        if ((yield* skip_sep(ls)) == sep) {
+                            (
+                                (yield* save(ls, cptr.ldI32(ls))),
+                                (cptr.stI32(
+                                    ls,
+                                    (((cptr.stU64(
+                                        (cptr.ldPtro(ls, $LexState_z)),
+                                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                                    )) -
+                                        (-1n)) > 0n
+                                        ? (uchar(((cptr.ld1s(cptr.postinc(
+                                            () => cptr.ldPtro(
+                                                (cptr.ldPtro(ls, $LexState_z)),
+                                                $ZIO_p
+                                            ),
+                                            (v) => {
+                                                cptr.stPtro(
+                                                    (cptr.ldPtro(ls, $LexState_z)),
+                                                    $ZIO_p,
+                                                    v
+                                                );
+                                            }
+                                        ))))))
+                                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                                ))
+                            );  /* skip 2nd ']' */
+                            break __lbl_endloop;
+                        }
+                        break;
+                    }
                 case 10:
                 case 13:
-                {
-                    (yield* save(ls, 10));
-                    (yield* inclinenumber(ls));
-                    if (!seminfo)
-                        (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));  /* avoid wasting space */
-                    break;
-                }
+                    {
+                        (yield* save(ls, 10));
+                        (yield* inclinenumber(ls));
+                        if (!seminfo)
+                            (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));  /* avoid wasting space */
+                        break;
+                    }
                 default:
-                {
-                    if (seminfo)
-                        (
-                            (yield* save(ls, cptr.ldI32(ls))),
+                    {
+                        if (seminfo)
+                            (
+                                (yield* save(ls, cptr.ldI32(ls))),
+                                (cptr.stI32(
+                                    ls,
+                                    (((cptr.stU64(
+                                        (cptr.ldPtro(ls, $LexState_z)),
+                                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                                    )) -
+                                        (-1n)) > 0n
+                                        ? (uchar(((cptr.ld1s(cptr.postinc(
+                                            () => cptr.ldPtro(
+                                                (cptr.ldPtro(ls, $LexState_z)),
+                                                $ZIO_p
+                                            ),
+                                            (v) => {
+                                                cptr.stPtro(
+                                                    (cptr.ldPtro(ls, $LexState_z)),
+                                                    $ZIO_p,
+                                                    v
+                                                );
+                                            }
+                                        ))))))
+                                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                                ))
+                            );
+                        else
                             (cptr.stI32(
                                 ls,
                                 (((cptr.stU64(
@@ -661,25 +692,8 @@ function* read_long_string(ls, seminfo, sep) {
                                         }
                                     ))))))
                                     : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                            ))
-                        );
-                    else
-                        (cptr.stI32(
-                            ls,
-                            (((cptr.stU64(
-                                (cptr.ldPtro(ls, $LexState_z)),
-                                cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                            )) -
-                                (-1n)) > 0n
-                                ? (uchar(((cptr.ld1s(cptr.postinc(
-                                    () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                                    (v) => {
-                                        cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
-                                    }
-                                ))))))
-                                : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                        ));
-                }
+                            ));
+                    }
             }
         }
     }
@@ -899,83 +913,20 @@ function* read_string(ls, del, seminfo) {
     while (cptr.ldI32(ls) != del) {
         switch (cptr.ldI32(ls)) {
             case -1:
-            (yield* lexerror(ls, __s_unfinished_string, NHC.TK_EOS));
-            break;  /* to avoid warnings */
+                (yield* lexerror(ls, __s_unfinished_string, NHC.TK_EOS));
+                break;  /* to avoid warnings */
             case 10:
             case 13:
-            (yield* lexerror(ls, __s_unfinished_string, NHC.TK_STRING));
-            break;  /* to avoid warnings */
+                (yield* lexerror(ls, __s_unfinished_string, NHC.TK_STRING));
+                break;  /* to avoid warnings */
             case 92:
-            {
-                let c;  /* final character to be saved */
-                __lbl_no_save: {
-                __lbl_only_save: {
-                __lbl_read_save: {
-                    (
-                        (yield* save(ls, cptr.ldI32(ls))),
-                        (cptr.stI32(
-                            ls,
-                            (((cptr.stU64(
-                                (cptr.ldPtro(ls, $LexState_z)),
-                                cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                            )) -
-                                (-1n)) > 0n
-                                ? (uchar(((cptr.ld1s(cptr.postinc(
-                                    () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                                    (v) => {
-                                        cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
-                                    }
-                                ))))))
-                                : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                        ))
-                    );  /* keep '\\' for error messages */
-                    switch (cptr.ldI32(ls)) {
-                        case 97:
-                        c = 7;
-                        break __lbl_read_save;
-                        case 98:
-                        c = 8;
-                        break __lbl_read_save;
-                        case 102:
-                        c = 12;
-                        break __lbl_read_save;
-                        case 110:
-                        c = 10;
-                        break __lbl_read_save;
-                        case 114:
-                        c = 13;
-                        break __lbl_read_save;
-                        case 116:
-                        c = 9;
-                        break __lbl_read_save;
-                        case 118:
-                        c = 11;
-                        break __lbl_read_save;
-                        case 120:
-                        c = (yield* readhexaesc(ls));
-                        break __lbl_read_save;
-                        case 117:
-                        (yield* utf8esc(ls));
-                        break __lbl_no_save;
-                        case 10:
-                        case 13:
-                        (yield* inclinenumber(ls));
-                        c = 10;
-                        break __lbl_only_save;
-                        case 92:
-                        case 34:
-                        case 39:
-                        c = cptr.ldI32(ls);
-                        break __lbl_read_save;
-                        case -1:
-                        break __lbl_no_save;  /* will raise an error next loop */
-                        case 122:
-                        {
-                            (cptr.stU64o(
-                                (cptr.ldPtro(ls, $LexState_buff)),
-                                $Mbuffer_n,
-                                cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 1n
-                            ));  /* remove '\\' */
+                {
+                    let c;  /* final character to be saved */
+                    __lbl_no_save: {
+                    __lbl_only_save: {
+                    __lbl_read_save: {
+                        (
+                            (yield* save(ls, cptr.ldI32(ls))),
                             (cptr.stI32(
                                 ls,
                                 (((cptr.stU64(
@@ -990,15 +941,58 @@ function* read_string(ls, del, seminfo) {
                                         }
                                     ))))))
                                     : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                            ));  /* skip the 'z' */
-                            while ((cptr.ld1uo(
-                                cptr.decay(luai_ctype_),
-                                ((cptr.ldI32(ls)) + 1) | 0,
-                                1
-                            ) & 8)) {
-                                if ((cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13))
-                                    (yield* inclinenumber(ls));
-                                else
+                            ))
+                        );  /* keep '\\' for error messages */
+                        switch (cptr.ldI32(ls)) {
+                            case 97:
+                                c = 7;
+                                break __lbl_read_save;
+                            case 98:
+                                c = 8;
+                                break __lbl_read_save;
+                            case 102:
+                                c = 12;
+                                break __lbl_read_save;
+                            case 110:
+                                c = 10;
+                                break __lbl_read_save;
+                            case 114:
+                                c = 13;
+                                break __lbl_read_save;
+                            case 116:
+                                c = 9;
+                                break __lbl_read_save;
+                            case 118:
+                                c = 11;
+                                break __lbl_read_save;
+                            case 120:
+                                c = (yield* readhexaesc(ls));
+                                break __lbl_read_save;
+                            case 117:
+                                (yield* utf8esc(ls));
+                                break __lbl_no_save;
+                            case 10:
+                            case 13:
+                                (yield* inclinenumber(ls));
+                                c = 10;
+                                break __lbl_only_save;
+                            case 92:
+                            case 34:
+                            case 39:
+                                c = cptr.ldI32(ls);
+                                break __lbl_read_save;
+                            case -1:
+                                break __lbl_no_save;  /* will raise an error next loop */
+                            case 122:
+                                {
+                                    (cptr.stU64o(
+                                        (cptr.ldPtro(ls, $LexState_buff)),
+                                        $Mbuffer_n,
+                                        cptr.ldU64o(
+                                            (cptr.ldPtro(ls, $LexState_buff)),
+                                            $Mbuffer_n
+                                        ) - 1n
+                                    ));  /* remove '\\' */
                                     (cptr.stI32(
                                         ls,
                                         (((cptr.stU64(
@@ -1020,26 +1014,87 @@ function* read_string(ls, del, seminfo) {
                                                 }
                                             ))))))
                                             : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                                    ));  /* skip the 'z' */
+                                    while ((cptr.ld1uo(
+                                        cptr.decay(luai_ctype_),
+                                        ((cptr.ldI32(ls)) + 1) | 0,
+                                        1
+                                    ) &
+                                            8)) {
+                                        if ((cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13))
+                                            (yield* inclinenumber(ls));
+                                        else
+                                            (cptr.stI32(
+                                                ls,
+                                                (((cptr.stU64(
+                                                    (cptr.ldPtro(ls, $LexState_z)),
+                                                    cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                                                )) -
+                                                    (-1n)) > 0n
+                                                    ? (uchar(((cptr.ld1s(cptr.postinc(
+                                                        () => cptr.ldPtro(
+                                                            (cptr.ldPtro(ls, $LexState_z)),
+                                                            $ZIO_p
+                                                        ),
+                                                        (v) => {
+                                                            cptr.stPtro(
+                                                                (cptr.ldPtro(ls, $LexState_z)),
+                                                                $ZIO_p,
+                                                                v
+                                                            );
+                                                        }
+                                                    ))))))
+                                                    : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                                            ));
+                                    }
+                                    break __lbl_no_save;
+                                }
+                            default:
+                                {
+                                    (yield* esccheck(
+                                        ls,
+                                        (cptr.ld1uo(
+                                            cptr.decay(luai_ctype_),
+                                            ((cptr.ldI32(ls)) + 1) | 0,
+                                            1
+                                        ) &
+                                            2),
+                                        __s_invalid_escape_sequence
                                     ));
-                            }
-                            break __lbl_no_save;
-                        }
-                        default:
-                        {
-                            (yield* esccheck(
-                                ls,
-                                (cptr.ld1uo(
-                                    cptr.decay(luai_ctype_),
-                                    ((cptr.ldI32(ls)) + 1) | 0,
-                                    1
-                                ) & 2),
-                                __s_invalid_escape_sequence
-                            ));
-                            c = (yield* readdecesc(ls));  /* digital escape '\ddd' */
-                            break __lbl_only_save;
+                                    c = (yield* readdecesc(ls));  /* digital escape '\ddd' */
+                                    break __lbl_only_save;
+                                }
                         }
                     }
+                        (cptr.stI32(
+                            ls,
+                            (((cptr.stU64(
+                                (cptr.ldPtro(ls, $LexState_z)),
+                                cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                            )) -
+                                (-1n)) > 0n
+                                ? (uchar(((cptr.ld1s(cptr.postinc(
+                                    () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                    (v) => {
+                                        cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
+                                    }
+                                ))))))
+                                : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                        ));
+                    }
+                        (cptr.stU64o(
+                            (cptr.ldPtro(ls, $LexState_buff)),
+                            $Mbuffer_n,
+                            cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 1n
+                        ));  /* remove '\\' */
+                        (yield* save(ls, c));
+                    }
+                    /* go through */
+                    break;
                 }
+            default:
+                (
+                    (yield* save(ls, cptr.ldI32(ls))),
                     (cptr.stI32(
                         ls,
                         (((cptr.stU64(
@@ -1052,35 +1107,8 @@ function* read_string(ls, del, seminfo) {
                                 (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
                             ))))))
                             : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                    ));
-                }
-                    (cptr.stU64o(
-                        (cptr.ldPtro(ls, $LexState_buff)),
-                        $Mbuffer_n,
-                        cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n) - 1n
-                    ));  /* remove '\\' */
-                    (yield* save(ls, c));
-                }
-                /* go through */
-                break;
-            }
-            default:
-            (
-                (yield* save(ls, cptr.ldI32(ls))),
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ))
-            );
+                    ))
+                );
         }
     }
     (
@@ -1116,72 +1144,15 @@ function* llex(ls, seminfo) {
         switch (cptr.ldI32(ls)) {
             case 10:
             case 13:
-            {
-                (yield* inclinenumber(ls));
-                break;
-            }
+                {
+                    (yield* inclinenumber(ls));
+                    break;
+                }
             case 32:
             case 12:
             case 9:
             case 11:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                break;
-            }
-            case 45:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if (cptr.ldI32(ls) != 45)
-                    return 45;
-                /* else is a comment */
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if (cptr.ldI32(ls) == 91) {
-                    let sep = (yield* skip_sep(ls));
-                    (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));  /* 'skip_sep' may dirty the buffer */
-                    if (sep >= 2n) {
-                        (yield* read_long_string(ls, null, sep));  /* skip long comment */
-                        (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));  /* previous call may dirty the buff. */
-                        break;
-                    }
-                }
-                /* else short comment */
-                while (!(cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13) && cptr.ldI32(ls) != -1)
+                {
                     (cptr.stI32(
                         ls,
                         (((cptr.stU64(
@@ -1194,181 +1165,242 @@ function* llex(ls, seminfo) {
                                 (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
                             ))))))
                             : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                    ));  /* skip until end of line (or end of file) */
-                break;
-            }
+                    ));
+                    break;
+                }
+            case 45:
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if (cptr.ldI32(ls) != 45)
+                        return 45;
+                    /* else is a comment */
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if (cptr.ldI32(ls) == 91) {
+                        let sep = (yield* skip_sep(ls));
+                        (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));  /* 'skip_sep' may dirty the buffer */
+                        if (sep >= 2n) {
+                            (yield* read_long_string(ls, null, sep));  /* skip long comment */
+                            (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));  /* previous call may dirty the buff. */
+                            break;
+                        }
+                    }
+                    /* else short comment */
+                    while (!(cptr.ldI32(ls) == 10 || cptr.ldI32(ls) == 13) && cptr.ldI32(ls) != -1)
+                        (cptr.stI32(
+                            ls,
+                            (((cptr.stU64(
+                                (cptr.ldPtro(ls, $LexState_z)),
+                                cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                            )) -
+                                (-1n)) > 0n
+                                ? (uchar(((cptr.ld1s(cptr.postinc(
+                                    () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                    (v) => {
+                                        cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
+                                    }
+                                ))))))
+                                : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                        ));  /* skip until end of line (or end of file) */
+                    break;
+                }
             case 91:
-            {
-                let sep = (yield* skip_sep(ls));
-                if (sep >= 2n) {
-                    (yield* read_long_string(ls, seminfo, sep));
-                    return NHC.TK_STRING;
-                } else if (sep == 0n)
-                    (yield* lexerror(ls, __s_invalid_long_string_delimiter, NHC.TK_STRING));
-                return 91;
-            }
+                {
+                    let sep = (yield* skip_sep(ls));
+                    if (sep >= 2n) {
+                        (yield* read_long_string(ls, seminfo, sep));
+                        return NHC.TK_STRING;
+                    } else if (sep == 0n)
+                        (yield* lexerror(ls, __s_invalid_long_string_delimiter, NHC.TK_STRING));
+                    return 91;
+                }
             case 61:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if ((yield* check_next1(ls, 61)))
-                    return NHC.TK_EQ;  /* '==' */
-                else
-                    return 61;
-            }
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if ((yield* check_next1(ls, 61)))
+                        return NHC.TK_EQ;  /* '==' */
+                    else
+                        return 61;
+                }
             case 60:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if ((yield* check_next1(ls, 61)))
-                    return NHC.TK_LE;  /* '<=' */
-                else if ((yield* check_next1(ls, 60)))
-                    return NHC.TK_SHL;  /* '<<' */
-                else
-                    return 60;
-            }
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if ((yield* check_next1(ls, 61)))
+                        return NHC.TK_LE;  /* '<=' */
+                    else if ((yield* check_next1(ls, 60)))
+                        return NHC.TK_SHL;  /* '<<' */
+                    else
+                        return 60;
+                }
             case 62:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if ((yield* check_next1(ls, 61)))
-                    return NHC.TK_GE;  /* '>=' */
-                else if ((yield* check_next1(ls, 62)))
-                    return NHC.TK_SHR;  /* '>>' */
-                else
-                    return 62;
-            }
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if ((yield* check_next1(ls, 61)))
+                        return NHC.TK_GE;  /* '>=' */
+                    else if ((yield* check_next1(ls, 62)))
+                        return NHC.TK_SHR;  /* '>>' */
+                    else
+                        return 62;
+                }
             case 47:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if ((yield* check_next1(ls, 47)))
-                    return NHC.TK_IDIV;  /* '//' */
-                else
-                    return 47;
-            }
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if ((yield* check_next1(ls, 47)))
+                        return NHC.TK_IDIV;  /* '//' */
+                    else
+                        return 47;
+                }
             case 126:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if ((yield* check_next1(ls, 61)))
-                    return NHC.TK_NE;  /* '~=' */
-                else
-                    return 126;
-            }
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if ((yield* check_next1(ls, 61)))
+                        return NHC.TK_NE;  /* '~=' */
+                    else
+                        return 126;
+                }
             case 58:
-            {
-                (cptr.stI32(
-                    ls,
-                    (((cptr.stU64(
-                        (cptr.ldPtro(ls, $LexState_z)),
-                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                    )) -
-                        (-1n)) > 0n
-                        ? (uchar(((cptr.ld1s(cptr.postinc(
-                            () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                            (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                        ))))))
-                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                ));
-                if ((yield* check_next1(ls, 58)))
-                    return NHC.TK_DBCOLON;  /* '::' */
-                else
-                    return 58;
-            }
+                {
+                    (cptr.stI32(
+                        ls,
+                        (((cptr.stU64(
+                            (cptr.ldPtro(ls, $LexState_z)),
+                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                        )) -
+                            (-1n)) > 0n
+                            ? (uchar(((cptr.ld1s(cptr.postinc(
+                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
+                            ))))))
+                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                    ));
+                    if ((yield* check_next1(ls, 58)))
+                        return NHC.TK_DBCOLON;  /* '::' */
+                    else
+                        return 58;
+                }
             case 34:
             case 39:
-            {
-                (yield* read_string(ls, cptr.ldI32(ls), seminfo));
-                return NHC.TK_STRING;
-            }
+                {
+                    (yield* read_string(ls, cptr.ldI32(ls), seminfo));
+                    return NHC.TK_STRING;
+                }
             case 46:
-            {
-                (
-                    (yield* save(ls, cptr.ldI32(ls))),
-                    (cptr.stI32(
-                        ls,
-                        (((cptr.stU64(
-                            (cptr.ldPtro(ls, $LexState_z)),
-                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                        )) -
-                            (-1n)) > 0n
-                            ? (uchar(((cptr.ld1s(cptr.postinc(
-                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                            ))))))
-                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                    ))
-                );
-                if ((yield* check_next1(ls, 46))) {
-                    if ((yield* check_next1(ls, 46)))
-                        return NHC.TK_DOTS;  /* '...' */
+                {
+                    (
+                        (yield* save(ls, cptr.ldI32(ls))),
+                        (cptr.stI32(
+                            ls,
+                            (((cptr.stU64(
+                                (cptr.ldPtro(ls, $LexState_z)),
+                                cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                            )) -
+                                (-1n)) > 0n
+                                ? (uchar(((cptr.ld1s(cptr.postinc(
+                                    () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                    (v) => {
+                                        cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
+                                    }
+                                ))))))
+                                : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                        ))
+                    );
+                    if ((yield* check_next1(ls, 46))) {
+                        if ((yield* check_next1(ls, 46)))
+                            return NHC.TK_DOTS;  /* '...' */
+                        else
+                            return NHC.TK_CONCAT;  /* '..' */
+                    } else if (!(cptr.ld1uo(
+                        cptr.decay(luai_ctype_),
+                        ((cptr.ldI32(ls)) + 1) | 0,
+                        1
+                    ) & 2))
+                        return 46;
                     else
-                        return NHC.TK_CONCAT;  /* '..' */
-                } else if (!(cptr.ld1uo(
-                    cptr.decay(luai_ctype_),
-                    ((cptr.ldI32(ls)) + 1) | 0,
-                    1
-                ) & 2))
-                    return 46;
-                else
-                    return (yield* read_numeral(ls, seminfo));
-            }
+                        return (yield* read_numeral(ls, seminfo));
+                }
             case 48:
             case 49:
             case 50:
@@ -1379,71 +1411,80 @@ function* llex(ls, seminfo) {
             case 55:
             case 56:
             case 57:
-            {
-                return (yield* read_numeral(ls, seminfo));
-            }
-            case -1:
-            {
-                return NHC.TK_EOS;
-            }
-            default:
-            {
-                if ((cptr.ld1uo(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1) & 1)) {
-                    let ts;
-                    do {
-                        (
-                            (yield* save(ls, cptr.ldI32(ls))),
-                            (cptr.stI32(
-                                ls,
-                                (((cptr.stU64(
-                                    (cptr.ldPtro(ls, $LexState_z)),
-                                    cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                                )) -
-                                    (-1n)) > 0n
-                                    ? (uchar(((cptr.ld1s(cptr.postinc(
-                                        () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                                        (v) => {
-                                            cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
-                                        }
-                                    ))))))
-                                    : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                            ))
-                        );
-                    } while ((cptr.ld1uo(
-                        cptr.decay(luai_ctype_),
-                        ((cptr.ldI32(ls)) + 1) | 0,
-                        1
-                    ) & 3));
-                    ts = (yield* luaX_newstring(
-                        ls,
-                        (cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))),
-                        (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n))
-                    ));
-                    cptr.stPtr(seminfo, ts);
-                    if ((cptr.ld1uo((ts), $TString_tt) == 4 &&
-                            cptr.ld1uo((ts), $TString_extra) > 0))
-                        return (cptr.ld1uo(ts, $TString_extra) - 1 + 256) | 0;
-                    else {
-                        return NHC.TK_NAME;
-                    }
-                } else {
-                    let c = cptr.ldI32(ls);
-                    (cptr.stI32(
-                        ls,
-                        (((cptr.stU64(
-                            (cptr.ldPtro(ls, $LexState_z)),
-                            cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
-                        )) -
-                            (-1n)) > 0n
-                            ? (uchar(((cptr.ld1s(cptr.postinc(
-                                () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
-                                (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); }
-                            ))))))
-                            : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
-                    ));
-                    return c;
+                {
+                    return (yield* read_numeral(ls, seminfo));
                 }
-            }
+            case -1:
+                {
+                    return NHC.TK_EOS;
+                }
+            default:
+                {
+                    if ((cptr.ld1uo(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1) & 1)) {
+                        let ts;
+                        do {
+                            (
+                                (yield* save(ls, cptr.ldI32(ls))),
+                                (cptr.stI32(
+                                    ls,
+                                    (((cptr.stU64(
+                                        (cptr.ldPtro(ls, $LexState_z)),
+                                        cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                                    )) -
+                                        (-1n)) > 0n
+                                        ? (uchar(((cptr.ld1s(cptr.postinc(
+                                            () => cptr.ldPtro(
+                                                (cptr.ldPtro(ls, $LexState_z)),
+                                                $ZIO_p
+                                            ),
+                                            (v) => {
+                                                cptr.stPtro(
+                                                    (cptr.ldPtro(ls, $LexState_z)),
+                                                    $ZIO_p,
+                                                    v
+                                                );
+                                            }
+                                        ))))))
+                                        : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                                ))
+                            );
+                        } while ((cptr.ld1uo(
+                            cptr.decay(luai_ctype_),
+                            ((cptr.ldI32(ls)) + 1) | 0,
+                            1
+                        ) & 3));
+                        ts = (yield* luaX_newstring(
+                            ls,
+                            (cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))),
+                            (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n))
+                        ));
+                        cptr.stPtr(seminfo, ts);
+                        if ((cptr.ld1uo((ts), $TString_tt) == 4 &&
+                                cptr.ld1uo((ts), $TString_extra) > 0))
+                            return (cptr.ld1uo(ts, $TString_extra) - 1 + 256) | 0;
+                        else {
+                            return NHC.TK_NAME;
+                        }
+                    } else {
+                        let c = cptr.ldI32(ls);
+                        (cptr.stI32(
+                            ls,
+                            (((cptr.stU64(
+                                (cptr.ldPtro(ls, $LexState_z)),
+                                cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n
+                            )) -
+                                (-1n)) > 0n
+                                ? (uchar(((cptr.ld1s(cptr.postinc(
+                                    () => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p),
+                                    (v) => {
+                                        cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v);
+                                    }
+                                ))))))
+                                : (yield* luaZ_fill(cptr.ldPtro(ls, $LexState_z))))
+                        ));
+                        return c;
+                    }
+                }
         }
     }
 }

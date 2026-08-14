@@ -963,13 +963,13 @@ function* parent_dlevel(s, pd) {
 function* correct_branch_type(tbr) {
     switch (cptr.ldI32o(tbr, $tmpbranch_type)) {
         case NHM.TBR_STAIR:
-        return NHM.BR_STAIR;
+            return NHM.BR_STAIR;
         case NHM.TBR_NO_UP:
-        return cptr.ldI32o(tbr, $tmpbranch_up) ? NHM.BR_NO_END1 : NHM.BR_NO_END2;
+            return cptr.ldI32o(tbr, $tmpbranch_up) ? NHM.BR_NO_END1 : NHM.BR_NO_END2;
         case NHM.TBR_NO_DOWN:
-        return cptr.ldI32o(tbr, $tmpbranch_up) ? NHM.BR_NO_END2 : NHM.BR_NO_END1;
+            return cptr.ldI32o(tbr, $tmpbranch_up) ? NHM.BR_NO_END2 : NHM.BR_NO_END1;
         case NHM.TBR_PORTAL:
-        return NHM.BR_PORTAL;
+            return NHM.BR_PORTAL;
     }
     (yield* impossible(__s_correct_branch_type_unknown_branch_type));
     return NHM.BR_STAIR;
@@ -1011,7 +1011,9 @@ export function* insert_branch(new_branch, extract_first) {
     new_val = (BigInt.asIntN(
         64,
         (BigInt(cptr.ldI16o((new_branch), $branch_end1)) * 33n +
-            BigInt(cptr.ldI16o((new_branch), $branch_end1 + $d_level_dlevel))) * 17n * 33n +
+            BigInt(cptr.ldI16o((new_branch), $branch_end1 + $d_level_dlevel))) *
+            17n *
+            33n +
             (BigInt(cptr.ldI16o((new_branch), $branch_end2)) * 33n +
                 BigInt(cptr.ldI16o((new_branch), $branch_end2 + $d_level_dlevel)))
     ));
@@ -1019,7 +1021,9 @@ export function* insert_branch(new_branch, extract_first) {
         curr_val = (BigInt.asIntN(
             64,
             (BigInt(cptr.ldI16o((curr), $branch_end1)) * 33n +
-                BigInt(cptr.ldI16o((curr), $branch_end1 + $d_level_dlevel))) * 17n * 33n +
+                BigInt(cptr.ldI16o((curr), $branch_end1 + $d_level_dlevel))) *
+                17n *
+                33n +
                 (BigInt(cptr.ldI16o((curr), $branch_end2)) * 33n +
                     BigInt(cptr.ldI16o((curr), $branch_end2 + $d_level_dlevel)))
         ));
@@ -1171,8 +1175,8 @@ function* init_level(dgn, proto_index, pd) {
         cptr.stI32o(
             new_level,
             $s_level_flags + $d_flags_align,
-            ((cptr.ldI32o2(pd, dgn, $sizeof_tmpdungeon, $tmpdungeon_flags) &
-                NHM.D_ALIGN_MASK) >> 4) >>> 0
+            ((cptr.ldI32o2(pd, dgn, $sizeof_tmpdungeon, $tmpdungeon_flags) & NHM.D_ALIGN_MASK) >>
+                4) >>> 0
         );
 
     cptr.st1o(new_level, $s_level_rndlevs, uchar(cptr.ldI32o(tlevel, $tmplevel_rndlevs)));
@@ -1781,7 +1785,8 @@ function init_dungeon_set_entry(pd, dngidx) {
             $sizeof_dungeon,
             $dungeon_entry_lev,
             i16(((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs) +
-                dgn_entry + 1) | 0))
+                dgn_entry +
+                1) | 0))
         );
         if (cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) <= 0)
             cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, 1);
@@ -2252,8 +2257,11 @@ export function* init_dungeons() {
             for (
                 ;
                 cptr.ldI32o(pd, $proto_dungeon_start) < cptr.ldI32o(pd, $proto_dungeon_n_levs);
-                (cptr.stI32o(pd, $proto_dungeon_start, cptr.ldI32o(pd, $proto_dungeon_start) + 1)) -
-                    (1)
+                (cptr.stI32o(
+                    pd,
+                    $proto_dungeon_start,
+                    cptr.ldI32o(pd, $proto_dungeon_start) + 1
+                )) - (1)
             )
                 if (cptr.ldPtro2(
                     pd,
@@ -2413,7 +2421,8 @@ export function* ledger_to_dlev(ledgerno) {
 /** C ref: dungeon.c:1431 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function depth(lev) {
     return schar(((cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_depth_start) +
-            cptr.ldI16o(lev, $d_level_dlevel) - 1) | 0));
+            cptr.ldI16o(lev, $d_level_dlevel) -
+            1) | 0));
 }
 
 /* are "lev1" and "lev2" actually the same? */
@@ -2694,7 +2703,8 @@ export function Can_dig_down(lev) {
     return schar((!(cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
-    ) & 1) &&
+    ) &
+        1) &&
         !Is_botlevel(lev) &&
         !Invocation_lev(lev)
             ? 1
@@ -3051,7 +3061,9 @@ export function* get_level(newlevel, levnum) {
         levnum = cptr.ldI16o(u, $you_uz + $d_level_dlevel);
     } else if (levnum >
             ((cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start) +
-                cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs) - 1) | 0)) {
+                cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs) -
+                1) |
+                0)) {
         /* beyond end of dungeon, jump to last level */
         levnum = cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs);
     } else {
@@ -3625,13 +3637,13 @@ function* tport_menu(win, entry, lchoices, lvl_p, cannotreach) {
 function br_string(type) {
     switch (type) {
         case NHM.BR_PORTAL:
-        return __s_portal__2;
+            return __s_portal__2;
         case NHM.BR_NO_END1:
-        return __s_connection;
+            return __s_connection;
         case NHM.BR_NO_END2:
-        return __s_one_way_stair;
+            return __s_one_way_stair;
         case NHM.BR_STAIR:
-        return __s_stair__2;
+            return __s_stair__2;
     }
     return __s_unknown__2;
 }
@@ -4274,7 +4286,8 @@ export function rm_mapseen(ledger_num) {
             $sizeof_dungeon,
             $dungeon_ledger_start
         ) +
-            cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel)) | 0) ==
+            cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel)) |
+            0) ==
                 ledger_num)
             break;
     if (!mptr)
@@ -4593,7 +4606,8 @@ export function update_lastseentyp(x, y) {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_flags
-        ) & 31) | 0);
+        ) &
+                31) | 0);
     if ((mtmp = (cptr.ldPtro3(
         svl,
         x,
@@ -4601,7 +4615,8 @@ export function update_lastseentyp(x, y) {
         y,
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null &&
+    ))) !==
+        null &&
             (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE &&
             canseemon(mtmp))
         ltyp = cmap_to_type(cptr.ldI32o(mtmp, $monst_mappearance) | 0);
@@ -4624,148 +4639,149 @@ function count_feat_lastseentyp(mptr, x, y) {
 
     switch (cptr.ld1so3(svl, x, 21, y, 1, 0)) {
         case NHC.TREE:
-        count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3) | 0) + 1) | 0;
-        if (count <= 3)
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_ntree, count >>> 0);
-        break;
+            count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3) | 0) + 1) | 0;
+            if (count <= 3)
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_ntree, count >>> 0);
+            break;
         case NHC.FOUNTAIN:
-        count = (((cptr.ldI32o(mptr, $mapseen_feat) & 3) | 0) + 1) | 0;
-        if (count <= 3)
-            cptr.stI32o(mptr, $mapseen_feat, count >>> 0);
-        break;
+            count = (((cptr.ldI32o(mptr, $mapseen_feat) & 3) | 0) + 1) | 0;
+            if (count <= 3)
+                cptr.stI32o(mptr, $mapseen_feat, count >>> 0);
+            break;
         case NHC.THRONE:
-        count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3) | 0) + 1) | 0;
-        if (count <= 3)
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone, count >>> 0);
-        break;
+            count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3) | 0) + 1) | 0;
+            if (count <= 3)
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone, count >>> 0);
+            break;
         case NHC.SINK:
-        count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3) | 0) + 1) | 0;
-        if (count <= 3)
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_nsink, count >>> 0);
-        break;
+            count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3) | 0) + 1) | 0;
+            if (count <= 3)
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_nsink, count >>> 0);
+            break;
         case NHC.GRAVE:
-        count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3) | 0) + 1) | 0;
-        if (count <= 3)
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave, count >>> 0);
-        break;
+            count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3) | 0) + 1) | 0;
+            if (count <= 3)
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave, count >>> 0);
+            break;
         case NHC.ALTAR:
-        /* get the altarmask for this location; might be a mimic */
-        atmp = altarmask_at(x, y) >>> 0;
-        /* convert to index: 0..3 */
-        atmp = ((((cptr.ldI16o(
-            (cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-            )),
-            $d_level_dlevel
-        ) ||
-            cptr.ldI16((cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-            )))) &&
-            on_level(
-                cptr.add(u, $you_uz),
-                cptr.add(
+            /* get the altarmask for this location; might be a mimic */
+            atmp = altarmask_at(x, y) >>> 0;
+            /* convert to index: 0..3 */
+            atmp = ((((cptr.ldI16o(
+                (cptr.add(
                     svd,
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-                )
-            ))) &&
-            (cptr.ld1uo3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_seenv
-            ) & 255) != 255)
-                ? NHM.MSA_NONE
-                : Amask2msa(atmp);
-        if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_msalign, atmp);
-        else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_msalign) & 3) != atmp)
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_msalign, NHM.MSA_NONE);
-        count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) + 1) | 0;
-        if (count <= 3)
-            cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_naltar, count >>> 0);
-        break;
-        case NHC.DOOR:
-        if ((((cptr.ldI16o(
-            (cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
-            )),
-            $d_level_dlevel
-        ) ||
-            cptr.ldI16((cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
-            )))) &&
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))) &&
                 on_level(
                     cptr.add(u, $you_uz),
                     cptr.add(
                         svd,
-                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
                     )
-                )))) {
-            let ty;
-            let tx = (x - 4) | 0;
+                ))) &&
+                (cptr.ld1uo3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_seenv
+                ) &
+                    255) != 255)
+                    ? NHM.MSA_NONE
+                    : Amask2msa(atmp);
+            if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_msalign, atmp);
+            else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_msalign) & 3) != atmp)
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_msalign, NHM.MSA_NONE);
+            count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) + 1) | 0;
+            if (count <= 3)
+                cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_naltar, count >>> 0);
+            break;
+        case NHC.DOOR:
+            if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                        )
+                    )))) {
+                let ty;
+                let tx = (x - 4) | 0;
 
-            /* Throne is four columns to left, either directly in
-             * line or one row higher or lower, and doesn't have
-             * to have been seen yet.
-             *   ......|}}}.
-             *   ..\...S}...
-             *   ..\...S}...
-             *   ......|}}}.
-             * For 3.6.0 and earlier, it was always in direct line:
-             * both throne and door on the lower of the two rows.
-             */
-            for (ty = (y - 1) | 0; ty <= ((y + 1) | 0); ++ty)
-                if (isok(i16(tx), i16(ty)) &&
-                        ((cptr.ld1so3(
-                            svl,
-                            tx,
-                            $sizeof_rm_x21,
-                            ty,
-                            $sizeof_rm,
-                            $instance_globals_saved_l_level + $rm_typ
-                        )) ==
-                            NHC.THRONE)) {
-                    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_ludios, 1);
-                    break;
-                }
-            break;
-        }
-        if (is_drawbridge_wall(x, y) < 0)
-            break;
-        // @FallThrough
-        ;
+                /* Throne is four columns to left, either directly in
+                 * line or one row higher or lower, and doesn't have
+                 * to have been seen yet.
+                 *   ......|}}}.
+                 *   ..\...S}...
+                 *   ..\...S}...
+                 *   ......|}}}.
+                 * For 3.6.0 and earlier, it was always in direct line:
+                 * both throne and door on the lower of the two rows.
+                 */
+                for (ty = (y - 1) | 0; ty <= ((y + 1) | 0); ++ty)
+                    if (isok(i16(tx), i16(ty)) &&
+                            ((cptr.ld1so3(
+                                svl,
+                                tx,
+                                $sizeof_rm_x21,
+                                ty,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            )) ==
+                                NHC.THRONE)) {
+                        cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_ludios, 1);
+                        break;
+                    }
+                break;
+            }
+            if (is_drawbridge_wall(x, y) < 0)
+                break;
+            // @FallThrough
+            ;
         case NHC.DBWALL:
         case NHC.DRAWBRIDGE_DOWN:
-        if ((((cptr.ldI16o(
-            (cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
-            )),
-            $d_level_dlevel
-        ) ||
-            cptr.ldI16((cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
-            )))) &&
-                on_level(
-                    cptr.add(u, $you_uz),
-                    cptr.add(
-                        svd,
-                        $instance_globals_saved_d_dungeon_topology +
-                            $dgn_topology_d_stronghold_level
-                    )
-                ))))
-            cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castle, 1),
-                    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castletune, 1);
-        break;
+            if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+                )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_stronghold_level
+                        )
+                    ))))
+                cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castle, 1),
+                        cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castletune, 1);
+            break;
         default:
-        break;
+            break;
     }
 }
 
@@ -4947,14 +4963,14 @@ export function* recalc_mapseen() {
                 else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype) & 31) !=
                         cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype))
                     cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype, 0);
-                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3) | 0) + 1) |
-                        0;
+                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3) |
+                        0) + 1) | 0;
                 if (count <= 3)
                     cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_nshop, count >>> 0);
             } else if (cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype) == NHC.TEMPLE) {
                 /* altar and temple alignment handled below */
-                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0) + 1) |
-                        0;
+                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) |
+                        0) + 1) | 0;
                 if (count <= 3)
                     cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple, count >>> 0);
             } else if (cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_orig_rtype) == NHC.DELPHI) {
@@ -5064,7 +5080,8 @@ export function* recalc_mapseen() {
                 : ((oth_mptr = find_mapseen(cptr.add(
                     svd,
                     $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
-                ))) === null ||
+                ))) ===
+                    null ||
                     !(cptr.ldI32o(oth_mptr, $mapseen_flags + $mapseen_flags_msanctum) & 1)
                     ? 1
                     : 0)) >>> 0
@@ -5246,13 +5263,13 @@ function seen_string(x, obj) {
     /* players are computer scientists: 0, 1, 2, n */
     switch (x) {
         case 0:
-        return __s_no;
+            return __s_no;
         case 1:
-        return cptr.strchr(cptr.decay(vowels), cptr.ld1s(obj)) ? __s_an : __s_a;
+            return cptr.strchr(cptr.decay(vowels), cptr.ld1s(obj)) ? __s_an : __s_a;
         case 2:
-        return __s_some;
+            return __s_some;
         case 3:
-        return __s_many;
+            return __s_many;
     }
 
     return __s_unknown__3;
@@ -5269,13 +5286,15 @@ function br_string2(br) {
 
     switch (cptr.ldI32o(br, $branch_type)) {
         case NHM.BR_PORTAL:
-        return closed_portal ? __s_sealed_portal : __s_portal__2;
+            return closed_portal ? __s_sealed_portal : __s_portal__2;
         case NHM.BR_NO_END1:
-        return __s_connection;
+            return __s_connection;
         case NHM.BR_NO_END2:
-        return cptr.ld1so(br, $branch_end1_up) ? __s_one_way_stairs_up : __s_one_way_stairs_down;
+            return cptr.ld1so(br, $branch_end1_up)
+                    ? __s_one_way_stairs_up
+                    : __s_one_way_stairs_down;
         case NHM.BR_STAIR:
-        return cptr.ld1so(br, $branch_end1_up) ? __s_stairs_up : __s_stairs_down;
+            return cptr.ld1so(br, $branch_end1_up) ? __s_stairs_up : __s_stairs_down;
     }
 
     return __s_unknown__3;
@@ -5289,20 +5308,20 @@ export function endgamelevelname(outbuf, indx) {
     cptr.st1(outbuf, 0);
     switch (indx) {
         case -5:
-        void cptr.strcpy(outbuf, __s_astral_plane);
-        break;
+            void cptr.strcpy(outbuf, __s_astral_plane);
+            break;
         case -4:
-        planename = __s_water__2;
-        break;
+            planename = __s_water__2;
+            break;
         case -3:
-        planename = __s_fire__2;
-        break;
+            planename = __s_fire__2;
+            break;
         case -2:
-        planename = __s_air__2;
-        break;
+            planename = __s_air__2;
+            break;
         case -1:
-        planename = __s_earth__2;
-        break;
+            planename = __s_earth__2;
+            break;
     }
     if (planename)
         void cptr.sprintf(outbuf, __s_plane_of_s, planename);
@@ -5516,10 +5535,8 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                                 (__s_shop__2)
                             ),
                             (__s_shop__2),
-                            (((((cptr.ldI32o(
-                                mptr,
-                                $mapseen_feat + $mapseen_feat_nshop
-                            ) & 3)) | 0) == 1)
+                            (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3)) |
+                                0) == 1)
                                 ? __s_empty
                                 : __s_s)
                         );
@@ -5529,10 +5546,8 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                     eos(cptr.decay(buf)),
                     __s_s_s,
                     (i++ > 0 ? __s_comma_sp : __s_sp6),
-                    (yield* an(shop_string((cptr.ldI32o(
-                        mptr,
-                        $mapseen_feat + $mapseen_feat_shoptype
-                    ) & 31) | 0)))
+                    (yield* an(shop_string((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype) &
+                        31) | 0)))
                 );
         }
         if (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) > 0 ||
@@ -5556,10 +5571,8 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                             (__s_temple)
                         ),
                         (__s_temple),
-                        (((((cptr.ldI32o(
-                            mptr,
-                            $mapseen_feat + $mapseen_feat_ntemple
-                        ) & 3)) | 0) == 1)
+                        (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3)) |
+                            0) == 1)
                             ? __s_empty
                             : __s_s),
                         seen_string(
@@ -5567,10 +5580,8 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                             (__s_altar)
                         ),
                         (__s_altar),
-                        (((((cptr.ldI32o(
-                            mptr,
-                            $mapseen_feat + $mapseen_feat_naltar
-                        ) & 3)) | 0) == 1)
+                        (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3)) |
+                            0) == 1)
                             ? __s_empty
                             : __s_s)
                     );
@@ -5582,17 +5593,14 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                                 __s_s_s_s_s,
                                 (i++ > 0 ? __s_comma_sp : __s_sp6),
                                 seen_string(
-                                    i16(((cptr.ldI32o(
-                                        mptr,
-                                        $mapseen_feat + $mapseen_feat_ntemple
-                                    ) & 3))),
+                                    i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) &
+                                        3))),
                                     (__s_temple)
                                 ),
                                 (__s_temple),
-                                (((((cptr.ldI32o(
-                                    mptr,
-                                    $mapseen_feat + $mapseen_feat_ntemple
-                                ) & 3)) | 0) == 1)
+                                (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) &
+                                    3)) |
+                                    0) == 1)
                                     ? __s_empty
                                     : __s_s)
                             );
@@ -5605,17 +5613,13 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                                 __s_s_s_s_s,
                                 (i++ > 0 ? __s_comma_sp : __s_sp6),
                                 seen_string(
-                                    i16(((cptr.ldI32o(
-                                        mptr,
-                                        $mapseen_feat + $mapseen_feat_naltar
-                                    ) & 3))),
+                                    i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) &
+                                        3))),
                                     (__s_altar)
                                 ),
                                 (__s_altar),
-                                (((((cptr.ldI32o(
-                                    mptr,
-                                    $mapseen_feat + $mapseen_feat_naltar
-                                ) & 3)) | 0) == 1)
+                                (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3)) |
+                                    0) == 1)
                                     ? __s_empty
                                     : __s_s)
                             );

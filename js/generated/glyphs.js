@@ -445,35 +445,35 @@ function glyph_find_core(id, findwhat) {
                 do_callback = 0;
                 switch (cptr.ldI32(findwhat)) {
                     case NHC.find_cmap:
-                    if (glyph_to_cmap(glyph) == cptr.ldI32o(findwhat, $find_struct_val))
-                        do_callback = 1;
-                    break;
+                        if (glyph_to_cmap(glyph) == cptr.ldI32o(findwhat, $find_struct_val))
+                            do_callback = 1;
+                        break;
                     case NHC.find_pm:
-                    if (glyph_is_monster(glyph) &&
-                            cptr.ld1so2(
-                                mons,
-                                glyph_to_mon(glyph),
-                                $sizeof_permonst,
-                                $permonst_mlet
-                            ) ==
-                                cptr.ldI32o(findwhat, $find_struct_val))
-                        do_callback = 1;
-                    break;
+                        if (glyph_is_monster(glyph) &&
+                                cptr.ld1so2(
+                                    mons,
+                                    glyph_to_mon(glyph),
+                                    $sizeof_permonst,
+                                    $permonst_mlet
+                                ) ==
+                                    cptr.ldI32o(findwhat, $find_struct_val))
+                            do_callback = 1;
+                        break;
                     case NHC.find_oc:
-                    if (glyph_is_object(glyph) &&
-                            glyph_to_obj(glyph) == cptr.ldI32o(findwhat, $find_struct_val))
-                        do_callback = 1;
-                    break;
+                        if (glyph_is_object(glyph) &&
+                                glyph_to_obj(glyph) == cptr.ldI32o(findwhat, $find_struct_val))
+                            do_callback = 1;
+                        break;
                     case NHC.find_glyph:
-                    if (glyph == cptr.ldI32o(findwhat, $find_struct_val)) {
-                        do_callback = 1;
-                        end_find = 1;
-                    }
-                    break;
+                        if (glyph == cptr.ldI32o(findwhat, $find_struct_val)) {
+                            do_callback = 1;
+                            end_find = 1;
+                        }
+                        break;
                     case NHC.find_nothing:
                     default:
-                    end_find = 1;
-                    break;
+                        end_find = 1;
+                        break;
                 }
                 if (do_callback)
                     (cptr.ldPtro(findwhat, $find_struct_callback))(glyph, findwhat);
@@ -623,7 +623,8 @@ function find_glyph_in_cache(id) {
             (id),
             (cptr.ldPtro2(glyphid_cache, i, $sizeof_glyphid_cache_t, $glyphid_cache_t_id)),
             -1
-        ) == 0) {
+        ) ==
+                0) {
             /* Match found */
             return cptr.ldI32o(glyphid_cache, i, $sizeof_glyphid_cache_t);
         }
@@ -640,12 +641,8 @@ function find_glyphid_in_cache_by_glyphnum(glyphnum) {
         return null;
     for (idx = 0n; idx < glyphid_cache_size; ++idx) {
         if (cptr.ldI32o(glyphid_cache, idx, $sizeof_glyphid_cache_t) == glyphnum &&
-                cptr.ldPtro2(
-                    glyphid_cache,
-                    idx,
-                    $sizeof_glyphid_cache_t,
-                    $glyphid_cache_t_id
-                ) !== null) {
+                cptr.ldPtro2(glyphid_cache, idx, $sizeof_glyphid_cache_t, $glyphid_cache_t_id) !==
+                    null) {
             /* Match found */
             return cptr.ldPtro2(glyphid_cache, idx, $sizeof_glyphid_cache_t, $glyphid_cache_t_id);
         }
@@ -755,8 +752,7 @@ export function add_custom_nhcolor_entry(customization_name, glyphidx, nhcolor, 
         gdc,
         $symset_customization_count,
         cptr.ldI32o(gdc, $symset_customization_count) + 1
-    )) -
-            (1);
+    )) - (1);
     return 1;
 }
 
@@ -925,7 +921,8 @@ function shuffle_customizations() {
                             idx,
                             $sizeof_glyph_map,
                             $glyph_map_entry_customcolor
-                        ) != 0) {
+                        ) !=
+                            0) {
                     cptr.stI32o(duplicate, idx, i, 4);
                     cptr.stPtro2(obj_glyphs, idx, $sizeof_glyph_map, $glyph_map_entry_u, null);
                     cptr.stI32o2(

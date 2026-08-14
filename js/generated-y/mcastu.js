@@ -304,14 +304,15 @@ function* cursetxt(mtmp, undirected) {
                 ),
                 cptr.ldI16o(mtmp, $monst_mx)
             ) &
-                NHM.COULD_SEE) != 0)) {
+                NHM.COULD_SEE) !=
+                0)) {
         let point_msg;  /* spellcasting monsters are impolite */
 
         if (undirected)
             point_msg = __s_all_around_then_curses;
         else if ((Invis() &&
-            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                16777216n) != 0n) &&
+            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                0n) &&
             (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) ||
                 cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy))) ||
                 ((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) &
@@ -405,7 +406,8 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
      * attacking monster does.
      */
     if ((cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_SPEL ||
-            cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_CLRC) && ml) {
+        cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_CLRC) &&
+            ml) {
         let cnt = 40;
 
         do {
@@ -492,7 +494,8 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
                 ? __s_empty
                 : ((Invis() &&
                     !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n) &&
+                        16777216n) !=
+                        0n) &&
                     !((cptr.ldI16o(mtmp, $monst_mux)) == cptr.ldI16(u) &&
                         (cptr.ldI16o(mtmp, $monst_muy)) == cptr.ldI16o(u, $you_uy)))
                     ? __s_at_a_spot_near_you
@@ -536,53 +539,53 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
      */
     switch (cptr.ld1uo(mattk, $attack_adtyp)) {
         case NHM.AD_FIRE:
-        (yield* pline(__s_you_re_enveloped_in_flames));
-        if (Fire_resistance()) {
-            (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__s_but_you_resist_the_effects));
-            monstseesu(2n);
-            dmg = 0;
-        } else {
-            monstunseesu(2n);
-        }
-        (yield* burn_away_slime());
-        /* burn up flammable items on the floor, melt ice terrain */
-        (yield* mon_spell_hits_spot(mtmp, NHM.AD_FIRE, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        break;
+            (yield* pline(__s_you_re_enveloped_in_flames));
+            if (Fire_resistance()) {
+                (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline(__s_but_you_resist_the_effects));
+                monstseesu(2n);
+                dmg = 0;
+            } else {
+                monstunseesu(2n);
+            }
+            (yield* burn_away_slime());
+            /* burn up flammable items on the floor, melt ice terrain */
+            (yield* mon_spell_hits_spot(mtmp, NHM.AD_FIRE, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+            break;
         case NHM.AD_COLD:
-        (yield* pline(__s_you_re_covered_in_frost));
-        if (Cold_resistance()) {
-            (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__s_but_you_resist_the_effects));
-            monstseesu(4n);
-            dmg = 0;
-        } else {
-            monstunseesu(4n);
-        }
-        /* freeze water or lava terrain */
-        /* FIXME: mon_spell_hits_spot() uses zap_over_floor(); unlike with
-         * fire, it does not target susceptible floor items with cold */
-        (yield* mon_spell_hits_spot(mtmp, NHM.AD_COLD, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        break;
+            (yield* pline(__s_you_re_covered_in_frost));
+            if (Cold_resistance()) {
+                (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline(__s_but_you_resist_the_effects));
+                monstseesu(4n);
+                dmg = 0;
+            } else {
+                monstunseesu(4n);
+            }
+            /* freeze water or lava terrain */
+            /* FIXME: mon_spell_hits_spot() uses zap_over_floor(); unlike with
+             * fire, it does not target susceptible floor items with cold */
+            (yield* mon_spell_hits_spot(mtmp, NHM.AD_COLD, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+            break;
         case NHM.AD_MAGM:
-        (yield* You(__s_are_hit_by_a_shower_of_missiles));
-        if (Antimagic()) {
-            (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline_The(__s_missiles_bounce_off));
-            monstseesu(1n);
-            dmg = 0;
-        } else {
-            dmg = d(((((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0) + 1) | 0), 6);
-            monstunseesu(1n);
-        }
-        /* shower of magic missiles scuffs an engraving */
-        (yield* mon_spell_hits_spot(mtmp, NHM.AD_MAGM, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        break;
+            (yield* You(__s_are_hit_by_a_shower_of_missiles));
+            if (Antimagic()) {
+                (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline_The(__s_missiles_bounce_off));
+                monstseesu(1n);
+                dmg = 0;
+            } else {
+                dmg = d(((((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0) + 1) | 0), 6);
+                monstunseesu(1n);
+            }
+            /* shower of magic missiles scuffs an engraving */
+            (yield* mon_spell_hits_spot(mtmp, NHM.AD_MAGM, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+            break;
         case NHM.AD_SPEL:
         case NHM.AD_CLRC:
-        (yield* mcast_spell(mtmp, dmg, spellnum));
-        dmg = 0;  /* done by the spell casting functions */
-        break;
+            (yield* mcast_spell(mtmp, dmg, spellnum));
+            dmg = 0;  /* done by the spell casting functions */
+            break;
     }  /* switch */
     if (dmg)
         (yield* mdamageu(mtmp, dmg));
@@ -684,7 +687,9 @@ function* mcast_death_touch(mtmp) {
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags2
-            ) & 256n) != 0n)) {
+            ) &
+                256n) !=
+                0n)) {
         (yield* You(__s_seem_no_deader_than_before));
     } else if (!Antimagic() && rn2(cptr.ld1uo(mtmp, $monst_m_lev)) > 12) {
         if (Hallucination()) {
@@ -728,8 +733,8 @@ function* mcast_summon_mons(mtmp) {
         /* messages not quite right if plural monsters created but
            only a single monster is seen */
         if (Invis() &&
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    16777216n) != 0n) &&
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                    0n) &&
                 (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) ||
                     cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy)))
             (yield* pline(__s_s_s_a_spot_near_you, mappear, one ? __s_at : __s_around));
@@ -801,7 +806,8 @@ function* mcast_disappear(mtmp) {
             ),
             cptr.ldI16o(mtmp, $monst_mx)
         ) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
                 !canspotmon(mtmp))
             (yield* map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
     } else
@@ -970,12 +976,8 @@ function* mcast_insects(mtmp) {
         )))
             return;
         if ((pm = (yield* mkclass(let$, 0))) !== null &&
-                (mtmp2 = (yield* makemon(
-                    pm,
-                    cptr.ldI16(bypos),
-                    cptr.ldI16o(bypos, $nhcoord_y),
-                    131104
-                ))) !== null) {
+                (mtmp2 = (yield* makemon(pm, cptr.ldI16(bypos), cptr.ldI16o(bypos, $nhcoord_y), 131104))) !==
+                    null) {
             success = 1;
             cptr.stI32o(
                 mtmp2,
@@ -1027,8 +1029,8 @@ function* mcast_insects(mtmp) {
     } else if (let$ == NHC.S_SNAKE) {
         fmt = __s_s_transforms_a_clump_of_sticks_into_s;
     } else if (Invis() &&
-            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                16777216n) != 0n) &&
+            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                0n) &&
             (cptr.ldI16o(mtmp, $monst_mux) != cptr.ldI16(u) ||
                 cptr.ldI16o(mtmp, $monst_muy) != cptr.ldI16o(u, $you_uy))) {
         fmt = __s_s_summons_s_around_a_spot_near_you;
@@ -1134,84 +1136,84 @@ function* mcast_spell(mtmp, dmg, spellnum) {
 
     switch (spellnum) {
         case NHC.MCAST_DEATH_TOUCH:
-        (yield* mcast_death_touch(mtmp));
-        dmg = 0;
-        break;
+            (yield* mcast_death_touch(mtmp));
+            dmg = 0;
+            break;
         case NHC.MCAST_CLONE_WIZ:
-        (yield* mcast_clone_wiz(mtmp));
-        dmg = 0;
-        break;
+            (yield* mcast_clone_wiz(mtmp));
+            dmg = 0;
+            break;
         case NHC.MCAST_SUMMON_MONS:
-        (yield* mcast_summon_mons(mtmp));
-        dmg = 0;
-        break;
+            (yield* mcast_summon_mons(mtmp));
+            dmg = 0;
+            break;
         case NHC.MCAST_AGGRAVATION:
-        (yield* You_feel(__s_that_monsters_are_aware_of_your_presence));
-        (yield* aggravate());
-        dmg = 0;
-        break;
+            (yield* You_feel(__s_that_monsters_are_aware_of_your_presence));
+            (yield* aggravate());
+            dmg = 0;
+            break;
         case NHC.MCAST_CURSE_ITEMS:
-        (yield* You_feel(__s_as_if_you_need_some_help));
-        (yield* rndcurse());
-        dmg = 0;
-        break;
+            (yield* You_feel(__s_as_if_you_need_some_help));
+            (yield* rndcurse());
+            dmg = 0;
+            break;
         case NHC.MCAST_DESTRY_ARMR:
-        (yield* mcast_destroy_armor());
-        dmg = 0;
-        break;
+            (yield* mcast_destroy_armor());
+            dmg = 0;
+            break;
         case NHC.MCAST_WEAKEN_YOU:
-        (yield* mcast_weaken_you(mtmp, dmg));
-        dmg = 0;
-        break;
+            (yield* mcast_weaken_you(mtmp, dmg));
+            dmg = 0;
+            break;
         case NHC.MCAST_DISAPPEAR:
-        (yield* mcast_disappear(mtmp));
-        dmg = 0;
-        break;
+            (yield* mcast_disappear(mtmp));
+            dmg = 0;
+            break;
         case NHC.MCAST_STUN_YOU:
-        (yield* mcast_stun_you(dmg));
-        dmg = 0;
-        break;
+            (yield* mcast_stun_you(dmg));
+            dmg = 0;
+            break;
         case NHC.MCAST_HASTE_SELF:
-        (yield* mon_adjust_speed(mtmp, 1, null));
-        dmg = 0;
-        break;
+            (yield* mon_adjust_speed(mtmp, 1, null));
+            dmg = 0;
+            break;
         case NHC.MCAST_CURE_SELF:
-        dmg = (yield* m_cure_self(mtmp, dmg));
-        break;
+            dmg = (yield* m_cure_self(mtmp, dmg));
+            break;
         case NHC.MCAST_PSI_BOLT:
-        dmg = (yield* mcast_psi_bolt(dmg));
-        break;
+            dmg = (yield* mcast_psi_bolt(dmg));
+            break;
         case NHC.MCAST_GEYSER:
-        dmg = (yield* mcast_geyser(dmg));
-        break;
+            dmg = (yield* mcast_geyser(dmg));
+            break;
         case NHC.MCAST_FIRE_PILLAR:
-        dmg = (yield* mcast_fire_pillar(mtmp, dmg));
-        break;
+            dmg = (yield* mcast_fire_pillar(mtmp, dmg));
+            break;
         case NHC.MCAST_LIGHTNING:
-        dmg = (yield* mcast_lightning(mtmp, dmg));
-        break;
+            dmg = (yield* mcast_lightning(mtmp, dmg));
+            break;
         case NHC.MCAST_INSECTS:
-        (yield* mcast_insects(mtmp));
-        dmg = 0;
-        break;
+            (yield* mcast_insects(mtmp));
+            dmg = 0;
+            break;
         case NHC.MCAST_BLIND_YOU:
-        (yield* mcast_blind_you());
-        dmg = 0;
-        break;
+            (yield* mcast_blind_you());
+            dmg = 0;
+            break;
         case NHC.MCAST_PARALYZE:
-        dmg = (yield* mcast_paralyze(mtmp));
-        break;
+            dmg = (yield* mcast_paralyze(mtmp));
+            break;
         case NHC.MCAST_CONFUSE_YOU:
-        (yield* mcast_confuse_you(mtmp));
-        dmg = 0;
-        break;
+            (yield* mcast_confuse_you(mtmp));
+            dmg = 0;
+            break;
         case NHC.MCAST_OPEN_WOUNDS:
-        dmg = (yield* mcast_open_wounds(dmg));
-        break;
+            dmg = (yield* mcast_open_wounds(dmg));
+            break;
         default:
-        (yield* impossible(__s_mcastu_invalid_magic_spell_d, spellnum));
-        dmg = 0;
-        break;
+            (yield* impossible(__s_mcastu_invalid_magic_spell_d, spellnum));
+            dmg = 0;
+            break;
     }
 
     if (dmg)
@@ -1238,14 +1240,16 @@ function* spell_would_be_useless(mtmp, spellnum) {
 
     /* spell is only cast by hostile monsters */
     if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) &
-            NHM.MCF_HOSTILE) != 0) {
+        NHM.MCF_HOSTILE) !=
+            0) {
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
             return 1;
     }
 
     /* spell needs the monster to see hero */
     if ((cptr.ldI32o2(mcast_data, spellnum, $sizeof__mcast_data, $_mcast_data_flags) &
-            NHM.MCF_SIGHT) != 0) {
+        NHM.MCF_SIGHT) !=
+            0) {
         let mcouldseeu = schar(((cptr.ld1uo(
             cptr.ldPtro(
                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -1262,57 +1266,57 @@ function* spell_would_be_useless(mtmp, spellnum) {
 
     switch (spellnum) {
         case NHC.MCAST_DEATH_TOUCH:
-        if ((Antimagic() || Hallucination()) && !rn2(2))
-            return 1;
-        break;
+            if ((Antimagic() || Hallucination()) && !rn2(2))
+                return 1;
+            break;
         case NHC.MCAST_GEYSER:
-        if (!rn2(5))
-            return 1;
-        break;
+            if (!rn2(5))
+                return 1;
+            break;
         case NHC.MCAST_CLONE_WIZ:
-        /* only the Wizard is allowed to clone himself */
-        if (!(cptr.ldI32o(mtmp, $monst_iswiz) & 1) ||
-                cptr.ldI32o(svc, $context_info_no_of_wizards) > 1)
-            return 1;
-        break;
+            /* only the Wizard is allowed to clone himself */
+            if (!(cptr.ldI32o(mtmp, $monst_iswiz) & 1) ||
+                    cptr.ldI32o(svc, $context_info_no_of_wizards) > 1)
+                return 1;
+            break;
         case NHC.MCAST_AGGRAVATION:
-        /* aggravation (global wakeup) when everyone is already active */
-        /* if nothing needs to be awakened then this spell is useless
-           but caster might not realize that [chance to pick it then
-           must be very small otherwise caller's many retry attempts
-           will eventually end up picking it too often] */
-        if (!(yield* has_aggravatables(mtmp)))
-            return schar((rn2(100) ? 1 : 0));
-        break;
+            /* aggravation (global wakeup) when everyone is already active */
+            /* if nothing needs to be awakened then this spell is useless
+               but caster might not realize that [chance to pick it then
+               must be very small otherwise caller's many retry attempts
+               will eventually end up picking it too often] */
+            if (!(yield* has_aggravatables(mtmp)))
+                return schar((rn2(100) ? 1 : 0));
+            break;
         case NHC.MCAST_HASTE_SELF:
-        /* haste self when already fast */
-        if (((cptr.ldI32o(mtmp, $monst_permspeed) & 3) | 0) == NHM.MFAST)
-            return 1;
-        break;
+            /* haste self when already fast */
+            if (((cptr.ldI32o(mtmp, $monst_permspeed) & 3) | 0) == NHM.MFAST)
+                return 1;
+            break;
         case NHC.MCAST_DISAPPEAR:
-        /* invisibility when already invisible */
-        if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 ||
-                (cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0)
-            return 1;
-        /* peaceful monster won't cast invisibility if you can't see
-           invisible,
-           same as when monsters drink potions of invisibility.  This doesn't
-           really make a lot of sense, but lets the player avoid hitting
-           peaceful monsters by mistake */
-        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !See_invisible())
-            return 1;
-        break;
+            /* invisibility when already invisible */
+            if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 ||
+                    (cptr.ldI32o(mtmp, $monst_invis_blkd) & 1) | 0)
+                return 1;
+            /* peaceful monster won't cast invisibility if you can't see
+               invisible,
+               same as when monsters drink potions of invisibility.  This doesn't
+               really make a lot of sense, but lets the player avoid hitting
+               peaceful monsters by mistake */
+            if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !See_invisible())
+                return 1;
+            break;
         case NHC.MCAST_CURE_SELF:
-        /* healing when already healed */
-        if (cptr.ldI32o(mtmp, $monst_mhp) == cptr.ldI32o(mtmp, $monst_mhpmax))
-            return 1;
-        break;
+            /* healing when already healed */
+            if (cptr.ldI32o(mtmp, $monst_mhp) == cptr.ldI32o(mtmp, $monst_mhpmax))
+                return 1;
+            break;
         case NHC.MCAST_BLIND_YOU:
-        if (Blinded())
-            return 1;
-        break;
+            if (Blinded())
+                return 1;
+            break;
         default:
-        break;
+            break;
     }
     return 0;
 }

@@ -383,22 +383,22 @@ export function Resists_Elem(mon, propindx) {
         case NHC.POISON_RES:
         case NHC.ACID_RES:
         case NHC.STONE_RES:
-        damgtype = (propindx + 1) | 0;  /* valid for propindx 1..8, damgtype 2..9 */
-        rsstmask = 1 << ((propindx - 1) | 0);  /* valid for propindx 1..8 */
-        u_resist = cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
-            cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops)
-                ? 1
-                : 0;
-        break;
+            damgtype = (propindx + 1) | 0;  /* valid for propindx 1..8, damgtype 2..9 */
+            rsstmask = 1 << propindx - 1;  /* valid for propindx 1..8 */
+            u_resist = cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+                cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops)
+                    ? 1
+                    : 0;
+            break;
         case NHC.ANTIMAGIC:
-        return resists_magm(mon);
+            return resists_magm(mon);
         case NHC.DRAIN_RES:
-        return resists_drli(mon);
+            return resists_drli(mon);
         case NHC.BLND_RES:
-        return resists_blnd(mon);
+            return resists_blnd(mon);
         default:
-        impossible(__s_resists_elem_d_unexpected_property_type, propindx);
-        return 0;
+            impossible(__s_resists_elem_d_unexpected_property_type, propindx);
+            return 0;
     }
 
     if (is_you ? u_resist : ((mon_resistancebits(mon) & rsstmask) != 0))
@@ -571,57 +571,57 @@ export function can_blnd(magr, mdef, aatyp, obj) {
         case NHM.AT_GAZE:
         case NHM.AT_MAGC:
         case NHM.AT_BREA:
-        /* light-based attacks may be cancelled or resisted */
-        if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
-            return 0;
-        return schar((!resists_blnd(mdef)));
+            /* light-based attacks may be cancelled or resisted */
+            if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
+                return 0;
+            return schar((!resists_blnd(mdef)));
         case NHM.AT_WEAP:
         case NHM.AT_SPIT:
         case NHM.AT_NONE:
-        /* an object is used (thrown/spit/other) */
-        if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE)) {
-            if (is_you && EBlinded())
-                return 0;
-        } else if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM)) {
-            /* all ublindf, including LENSES, protect, cream-pies too */
-            if (is_you && (ublindf.v || cptr.ldI32o(u, $you_ucreamed)))
-                return 0;
-            check_visor = 1;
-        } else if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_BLINDNESS)) {
-            return 1;  /* no defense */
-        } else
-            return 0;  /* other objects cannot cause blindness yet */
-        if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
-            return 0;  /* can't affect eyes while inside monster */
-        break;
+            /* an object is used (thrown/spit/other) */
+            if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE)) {
+                if (is_you && EBlinded())
+                    return 0;
+            } else if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM)) {
+                /* all ublindf, including LENSES, protect, cream-pies too */
+                if (is_you && (ublindf.v || cptr.ldI32o(u, $you_ucreamed)))
+                    return 0;
+                check_visor = 1;
+            } else if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_BLINDNESS)) {
+                return 1;  /* no defense */
+            } else
+                return 0;  /* other objects cannot cause blindness yet */
+            if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                return 0;  /* can't affect eyes while inside monster */
+            break;
         case NHM.AT_ENGL:
-        if (is_you &&
-                (EBlinded() ||
-                    (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
-                        (unconscious() || is_fainted())) ||
-                    cptr.ldI32o(u, $you_ucreamed)))
-            return 0;
-        if (!is_you && (cptr.ldI32o(mdef, $monst_msleeping) & 1) | 0)
-            return 0;
-        break;
+            if (is_you &&
+                    (EBlinded() ||
+                        (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
+                            (unconscious() || is_fainted())) ||
+                        cptr.ldI32o(u, $you_ucreamed)))
+                return 0;
+            if (!is_you && (cptr.ldI32o(mdef, $monst_msleeping) & 1) | 0)
+                return 0;
+            break;
         case NHM.AT_CLAW:
-        /* e.g. raven: all ublindf, including LENSES, protect */
-        if (is_you && ublindf.v)
-            return 0;
-        if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
-            return 0;  /* can't affect eyes while inside monster */
-        check_visor = 1;
-        break;
+            /* e.g. raven: all ublindf, including LENSES, protect */
+            if (is_you && ublindf.v)
+                return 0;
+            if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
+                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                return 0;  /* can't affect eyes while inside monster */
+            check_visor = 1;
+            break;
         case NHM.AT_TUCH:
         case NHM.AT_STNG:
-        /* some physical, blind-inducing attacks can be cancelled */
-        if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
-            return 0;
-        break;
+            /* some physical, blind-inducing attacks can be cancelled */
+            if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
+                return 0;
+            break;
         default:
-        break;
+            break;
     }
 
     /* check if wearing a visor (only checked if visor might help) */
@@ -682,17 +682,17 @@ export function mstrength(ptr) {
         n = (n + (tmp2 > 0)) | 0;
         n = (n + (tmp2 == NHM.AT_MAGC)) | 0;
         n = (n +
-            (tmp2 == NHM.AT_WEAP && (cptr.ldU64o(ptr, $permonst_mflags2) & 67108864n) ? 1 : 0)) |
-                0;
+                (tmp2 == NHM.AT_WEAP && (cptr.ldU64o(ptr, $permonst_mflags2) & 67108864n)
+                    ? 1
+                    : 0)) | 0;
         if (tmp2 == NHM.AT_EXPL) {
             let tmp3 = cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_adtyp);
             /* {freezing,flaming,shocking} spheres are fairly weak but
                can destroy equipment; {yellow,black} lights can't */
             n = (n +
-                ((tmp3 == NHM.AD_COLD || tmp3 == NHM.AD_FIRE)
-                    ? 3
-                    : ((tmp3 == NHM.AD_ELEC) ? 5 : 0))) |
-                    0;
+                    ((tmp3 == NHM.AD_COLD || tmp3 == NHM.AD_FIRE)
+                        ? 3
+                        : ((tmp3 == NHM.AD_ELEC) ? 5 : 0))) | 0;
         }
     }
 
@@ -709,11 +709,11 @@ export function mstrength(ptr) {
         else if (strcmp(cptr.ldPtro(ptr, NHC.NEUTRAL, 8), __s_grid_bug))
             n = (n + (tmp2 != NHM.AD_PHYS)) | 0;
         n = (n +
-            ((Math.imul(
-                cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd),
-                cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn)
-            )) > 23)) |
-                0;
+                ((Math.imul(
+                    cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd),
+                    cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn)
+                )) >
+                    23)) | 0;
     }
 
     /* Leprechauns are a special case.  They have many hit dice so they can
@@ -820,8 +820,8 @@ export function can_blow(mtmp) {
         cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_BUZZ) &&
             (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1024n) != 0n) ||
                 (cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) ||
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    32768n) == 0n) ||
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32768n) ==
+                    0n) ||
                 cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL))
         return 0;
     if ((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) && Strangled())
@@ -885,7 +885,8 @@ export function can_be_strangled(mon) {
         /* monsters don't wear amulets of magical breathing,
            so second part doesn't achieve anything useful... */
         nonbreathing = schar((((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) &
-            1024n) != 0n) ||
+            1024n) !=
+            0n) ||
             ((mamul = which_armor(mon, 65536n)) !== null &&
                 (cptr.ldI16o(mamul, $obj_otyp) == NHC.AMULET_OF_MAGICAL_BREATHING))
                 ? 1
@@ -961,14 +962,14 @@ export function num_horns(ptr) {
         case NHC.PM_MINOTAUR:
         case NHC.PM_ASMODEUS:
         case NHC.PM_BALROG:
-        return 2;
+            return 2;
         case NHC.PM_WHITE_UNICORN:
         case NHC.PM_GRAY_UNICORN:
         case NHC.PM_BLACK_UNICORN:
         case NHC.PM_KI_RIN:
-        return 1;
+            return 1;
         default:
-        break;
+            break;
     }
     return 0;
 }
@@ -1028,10 +1029,10 @@ export function max_passive_dmg(mdef, magr) {
             case NHM.AT_ENGL:
             case NHM.AT_TENT:
             case NHM.AT_WEAP:
-            multi2++;
-            break;
+                multi2++;
+                break;
             default:
-            break;
+                break;
         }
 
     dmg = 0;
@@ -2023,17 +2024,17 @@ export function on_fire(mptr, mattk) {
         case NHC.PM_FIRE_VORTEX:
         case NHC.PM_FIRE_ELEMENTAL:
         case NHC.PM_SALAMANDER:
-        what = __s_already_on_fire;
-        break;
+            what = __s_already_on_fire;
+            break;
         case NHC.PM_WATER_ELEMENTAL:
         case NHC.PM_FOG_CLOUD:
         case NHC.PM_STEAM_VORTEX:
-        what = __s_boiling;
-        break;
+            what = __s_boiling;
+            break;
         case NHC.PM_ICE_VORTEX:
         case NHC.PM_GLASS_GOLEM:
-        what = __s_melting;
-        break;
+            what = __s_melting;
+            break;
         case NHC.PM_STONE_GOLEM:
         case NHC.PM_CLAY_GOLEM:
         case NHC.PM_GOLD_GOLEM:
@@ -2041,11 +2042,11 @@ export function on_fire(mptr, mattk) {
         case NHC.PM_EARTH_ELEMENTAL:
         case NHC.PM_DUST_VORTEX:
         case NHC.PM_ENERGY_VORTEX:
-        what = __s_heating_up;
-        break;
+            what = __s_heating_up;
+            break;
         default:
-        what = (cptr.ld1u(mattk) == NHM.AT_HUGS) ? __s_being_roasted : __s_on_fire;
-        break;
+            what = (cptr.ld1u(mattk) == NHM.AT_HUGS) ? __s_being_roasted : __s_on_fire;
+            break;
     }
     return what;
 }
@@ -2073,35 +2074,35 @@ export function msummon_environ(mptr, cloud) {
         case NHC.PM_FOG_CLOUD:
         case NHC.PM_ICE_VORTEX:
         case NHC.PM_FREEZING_SPHERE:
-        what = __s_vapor;
-        break;
+            what = __s_vapor;
+            break;
         case NHC.PM_STEAM_VORTEX:
-        what = __s_steam;
-        break;
+            what = __s_steam;
+            break;
         case NHC.PM_ENERGY_VORTEX:
         case NHC.PM_SHOCKING_SPHERE:
-        cptr.stPtr(cloud, __s_shower);  /* "shower of sparks" instead of "cloud of..." */
-        what = __s_sparks;
-        break;
+            cptr.stPtr(cloud, __s_shower);  /* "shower of sparks" instead of "cloud of..." */
+            what = __s_sparks;
+            break;
         case NHC.PM_EARTH_ELEMENTAL:
         case NHC.PM_DUST_VORTEX:
-        what = __s_dust;
-        break;
+            what = __s_dust;
+            break;
         case NHC.PM_FIRE_ELEMENTAL:
         case NHC.PM_FIRE_VORTEX:
         case NHC.PM_FLAMING_SPHERE:
-        /*case PM_SALAMANDER:*/
-        cptr.stPtr(cloud, __s_ball);  /* "ball of flame" instead of "cloud of..." */
-        what = __s_flame;
-        break;
+            /*case PM_SALAMANDER:*/
+            cptr.stPtr(cloud, __s_ball);  /* "ball of flame" instead of "cloud of..." */
+            what = __s_flame;
+            break;
         case NHC.PM_ANGEL:
         case NHC.PM_YELLOW_LIGHT:
-        cptr.stPtr(cloud, __s_flash);  /* "flash of light" instead of "cloud of..." */
-        what = __s_light;
-        break;
+            cptr.stPtr(cloud, __s_flash);  /* "flash of light" instead of "cloud of..." */
+            what = __s_light;
+            break;
         default:
-        what = __s_smoke;
-        break;
+            what = __s_smoke;
+            break;
     }
     return what;
 }
@@ -2135,24 +2136,24 @@ export function olfaction(mdat) {
 export function cvt_adtyp_to_mseenres(adtyp) {
     switch (adtyp) {
         case NHM.AD_MAGM:
-        return 1n;
+            return 1n;
         case NHM.AD_FIRE:
-        return 2n;
+            return 2n;
         case NHM.AD_COLD:
-        return 4n;
+            return 4n;
         case NHM.AD_SLEE:
-        return 8n;
+            return 8n;
         case NHM.AD_DISN:
-        return 16n;
+            return 16n;
         case NHM.AD_ELEC:
-        return 32n;
+            return 32n;
         case NHM.AD_DRST:
-        return 64n;
+            return 64n;
         case NHM.AD_ACID:
-        return 128n;
+            return 128n;
         default:
-        /* M_SEEN_REFL has no corresponding AD_foo type */
-        return 0n;
+            /* M_SEEN_REFL has no corresponding AD_foo type */
+            return 0n;
     }
 }
 
@@ -2161,25 +2162,25 @@ export function cvt_adtyp_to_mseenres(adtyp) {
 export function cvt_prop_to_mseenres(prop) {
     switch (prop) {
         case NHC.ANTIMAGIC:
-        return 1n;
+            return 1n;
         case NHC.FIRE_RES:
-        return 2n;
+            return 2n;
         case NHC.COLD_RES:
-        return 4n;
+            return 4n;
         case NHC.SLEEP_RES:
-        return 8n;
+            return 8n;
         case NHC.DISINT_RES:
-        return 16n;
+            return 16n;
         case NHC.POISON_RES:
-        return 64n;
+            return 64n;
         case NHC.SHOCK_RES:
-        return 32n;
+            return 32n;
         case NHC.ACID_RES:
-        return 128n;
+            return 128n;
         case NHC.REFLECTING:
-        return 256n;
+            return 256n;
         default:
-        return 0n;
+            return 0n;
     }
 }
 
@@ -2199,7 +2200,8 @@ export function monstseesu(seenres) {
         if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) &&
                 ((!Invis() ||
                     ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n)) &&
+                        16777216n) !=
+                        0n)) &&
                     !Underwater() &&
                     ((cptr.ld1uo(
                         cptr.ldPtro(
@@ -2233,7 +2235,8 @@ export function monstunseesu(seenres) {
         if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) &&
                 ((!Invis() ||
                     ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n)) &&
+                        16777216n) !=
+                        0n)) &&
                     !Underwater() &&
                     ((cptr.ld1uo(
                         cptr.ldPtro(
@@ -2260,14 +2263,14 @@ export function give_u_to_m_resistances(mtmp) {
        equivalents -- FIRE_RES to MR_FIRE, COLD_RES to MR_COLD, etc -- and
        add each to the mintrinsics field for the given monster */
     for (intr = NHC.FIRE_RES; intr <= NHC.STONE_RES; intr++) {
-        if ((cptr.ldI64o2(u, intr, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                117440512n) != 0n) {
+        if ((cptr.ldI64o2(u, intr, $sizeof_prop, $you_uprops + $prop_intrinsic) & 117440512n) !=
+                0n) {
             cptr.stI16o(
                 mtmp,
                 $monst_mintrinsics,
                 cptr.ldU16o(mtmp, $monst_mintrinsics) |
                     u16(((NHC.FIRE_RES <= (intr) && (intr) <= NHC.STONE_RES)
-                        ? uchar((1 << (((intr) - 1) | 0)))
+                        ? uchar((1 << (intr) - 1))
                         : 0))
             );
         }
@@ -2343,10 +2346,10 @@ export function mons_see_trap(ttmp) {
         mtmp = cptr.ldPtr(mtmp)
     ) {
         if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) ||
-                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    65536n) != 0n) ||
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    4096n) == 0n) ||
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) !=
+                    0n) ||
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
+                    0n) ||
                 !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
             continue;
         if (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), tx, ty) > maxdist)

@@ -341,7 +341,9 @@ export function* noteleport_level(mon) {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_COVETOUS)))
         return 1;
 
@@ -447,14 +449,8 @@ export function* goodpos(x, y, mtmp, gpflags) {
             return 0;
     }
 
-    if ((cptr.ldPtro3(
-        svl,
-        x,
-        168,
-        y,
-        8,
-        $instance_globals_saved_l_level + $dlevel_t_monsters
-    ) !== null) &&
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !==
+        null) &&
             avoid_monpos)
         return 0;
 
@@ -963,8 +959,7 @@ export function* teleds(nux, nuy, teleds_flags) {
             a11y,
             $accessibility_data_mon_notices_blocked,
             cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
-        )) -
-                (1);
+        )) - (1);
     }
     (yield* vision_recalc(0));  /* vision before effects */
 
@@ -1022,7 +1017,8 @@ export function* teleds(nux, nuy, teleds_flags) {
             a11y,
             $accessibility_data_mon_notices_blocked,
             cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1
-        ) < 0) {
+        ) <
+                0) {
             (yield* impossible(__s_mon_notices_blocked_0));
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
@@ -1515,39 +1511,39 @@ export function* dotelecmd() {
         }
         switch (tmode) {
             case 110:
-            cptr.stI64o2(
-                u,
-                NHC.TELEPORT,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) |
-                    536870912n
-            );  /* confer intrinsic teleportation */
-            hidden = (yield* tport_spell(1));  /* hide teleport-away */
-            break;
+                cptr.stI64o2(
+                    u,
+                    NHC.TELEPORT,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                        536870912n
+                );  /* confer intrinsic teleportation */
+                hidden = (yield* tport_spell(1));  /* hide teleport-away */
+                break;
             case 115:
-            cptr.stI64o2(
-                u,
-                NHC.TELEPORT,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n)
-            );  /* suppress intrinsic */
-            added = (yield* tport_spell(2));  /* add teleport-away */
-            break;
+                cptr.stI64o2(
+                    u,
+                    NHC.TELEPORT,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n)
+                );  /* suppress intrinsic */
+                added = (yield* tport_spell(2));  /* add teleport-away */
+                break;
             case 116:
-            cptr.stI64o2(
-                u,
-                NHC.TELEPORT,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n)
-            );  /* suppress intrinsic */
-            hidden = (yield* tport_spell(1));  /* hide teleport-away */
-            break;
+                cptr.stI64o2(
+                    u,
+                    NHC.TELEPORT,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, 0n)
+                );  /* suppress intrinsic */
+                hidden = (yield* tport_spell(1));  /* hide teleport-away */
+                break;
             case 119:
-            ignore_restrictions = 1;
-            break;
+                ignore_restrictions = 1;
+                break;
         }
     }
 
@@ -1578,12 +1574,8 @@ export function* dotele(break_the_rules) {
     if (trap) {
         if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.LEVEL_TELEP &&
                 (cptr.ldI32o(trap, $trap_tseen) & 1) | 0) {
-            if ((yield* yn_function(
-                __s_there_is_a_level_teleporter_here,
-                cptr.decay(ynchars),
-                110,
-                1
-            )) == 121) {
+            if ((yield* yn_function(__s_there_is_a_level_teleporter_here, cptr.decay(ynchars), 110, 1)) ==
+                    121) {
                 (yield* level_tele_trap(trap, NHM.FORCETRAP));
                 /* deliberate jumping will always take time even if it doesn't
                  * work */
@@ -1619,7 +1611,8 @@ export function* dotele(break_the_rules) {
                         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                         $permonst_mflags1
                     ) &
-                        33554432n) != 0n))) {
+                        33554432n) !=
+                        0n))) {
             /* Try to use teleport away spell. */
             let knownsp = known_spell(NHC.SPE_TELEPORT_AWAY);
 
@@ -1724,450 +1717,464 @@ export function* level_tele() {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        newlevel = cptr.alloc(4);
-        escape_by_flying = null;  /* when surviving dest of -N */
-        buf = new Uint8Array(256);
-        force_dest = 0;
+            newlevel = cptr.alloc(4);
+            escape_by_flying = null;  /* when surviving dest of -N */
+            buf = new Uint8Array(256);
+            force_dest = 0;
 
-        if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
-            do {
-                cptr.stI16(newlevel, i16(rn2(cptr.ldI32(svn))));
-            } while (cptr.ldI16(newlevel) ==
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-                ))) ||
-                    (cptr.ldI32o2(
+            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
+                do {
+                    cptr.stI16(newlevel, i16(rn2(cptr.ldI32(svn))));
+                } while (cptr.ldI16(newlevel) ==
+                    cptr.ldI16((cptr.add(
                         svd,
-                        cptr.ldI16(newlevel),
-                        $sizeof_dungeon,
-                        $dungeon_flags + $d_flags_unconnected
-                    ) & 1) | 0 ||
-                    !cptr.ldI16o2(
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    ))) ||
+                        (cptr.ldI32o2(
+                            svd,
+                            cptr.ldI16(newlevel),
+                            $sizeof_dungeon,
+                            $dungeon_flags + $d_flags_unconnected
+                        ) &
+                            1) |
+                            0 ||
+                        !cptr.ldI16o2(
+                            svd,
+                            cptr.ldI16(newlevel),
+                            $sizeof_dungeon,
+                            $dungeon_num_dunlevs
+                        ));
+                cptr.stI16o(
+                    newlevel,
+                    $d_level_dlevel,
+                    i16(((1 + rn2(dunlevs_in_dungeon(newlevel))) | 0))
+                );
+                assign_level(cptr.add(u, $you_ucamefrom), cptr.add(u, $you_uz));
+                (yield* schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null));
+                return;
+            }
+            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 ||
+                (cptr.ldI16((cptr.add(u, $you_uz))) ==
+                    cptr.ldI16((cptr.add(
                         svd,
-                        cptr.ldI16(newlevel),
-                        $sizeof_dungeon,
-                        $dungeon_num_dunlevs
-                    ));
-            cptr.stI16o(
-                newlevel,
-                $d_level_dlevel,
-                i16(((1 + rn2(dunlevs_in_dungeon(newlevel))) | 0))
-            );
-            assign_level(cptr.add(u, $you_ucamefrom), cptr.add(u, $you_uz));
-            (yield* schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null));
-            return;
-        }
-        if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 ||
-            (cptr.ldI16((cptr.add(u, $you_uz))) ==
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-                )))) ||
-            (cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())) &&
-                !wizard()) {
-            (yield* You_feel(__s_very_disoriented_for_a_moment));
-            return;
-        }
-        if ((Teleport_control() && !HStun()) || wizard()) { __pc = 4; continue; }
-        __pc = 5; continue;
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))) ||
+                (cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())) &&
+                    !wizard()) {
+                (yield* You_feel(__s_very_disoriented_for_a_moment));
+                return;
+            }
+            if ((Teleport_control() && !HStun()) || wizard()) { __pc = 4; continue; }
+            __pc = 5; continue;
         }
         case 4: {
-        qbuf = new Uint8Array(256);
-        trycnt = 0;
+            qbuf = new Uint8Array(256);
+            trycnt = 0;
 
-        void cptr.strcpy(cptr.decay(qbuf), __s_to_what_level_do_you_want_to_teleport);
-        __pc = 7; continue;
+            void cptr.strcpy(cptr.decay(qbuf), __s_to_what_level_do_you_want_to_teleport);
+            __pc = 7; continue;
         }
         case 7: {
-        __pc = 8; continue;
+            __pc = 8; continue;
         }
         case 8: {
-        if (cptr.ld1so(iflags, $instance_flags_menu_requested)) { __pc = 10; continue; }
-        __pc = 9; continue;
+            if (cptr.ld1so(iflags, $instance_flags_menu_requested)) { __pc = 10; continue; }
+            __pc = 9; continue;
         }
         case 10: {
-        /* wizard mode 'm ^V' skips prompting on first pass
-           (note: level Tport via menu won't have any second pass) */
-        cptr.st1o(iflags, $instance_flags_menu_requested, 0);
-        if (wizard()) { __pc = 12; continue; }
-        __pc = 11; continue;
+            /* wizard mode 'm ^V' skips prompting on first pass
+               (note: level Tport via menu won't have any second pass) */
+            cptr.st1o(iflags, $instance_flags_menu_requested, 0);
+            if (wizard()) { __pc = 12; continue; }
+            __pc = 11; continue;
         }
         case 12: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 11: {
-        __pc = 9;
-        continue;
+            __pc = 9;
+            continue;
         }
         case 9: {
-        if (++trycnt == 2) {
-            if (wizard())
-                void cptr.strcat(cptr.decay(qbuf), __s_type_a_number_name_or_for_a_menu);
-            else
-                void cptr.strcat(cptr.decay(qbuf), __s_type_a_number_or_name);
-        }
-        cptr.st1(cptr.decay(buf), 0);
-        (yield* getlin(cptr.decay(qbuf), cptr.decay(buf)));
-        if (!strcmp(cptr.decay(buf), __s_star)) { __pc = 14; continue; }
-        __pc = 15; continue;
+            if (++trycnt == 2) {
+                if (wizard())
+                    void cptr.strcat(cptr.decay(qbuf), __s_type_a_number_name_or_for_a_menu);
+                else
+                    void cptr.strcat(cptr.decay(qbuf), __s_type_a_number_or_name);
+            }
+            cptr.st1(cptr.decay(buf), 0);
+            (yield* getlin(cptr.decay(qbuf), cptr.decay(buf)));
+            if (!strcmp(cptr.decay(buf), __s_star)) { __pc = 14; continue; }
+            __pc = 15; continue;
         }
         case 14: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 15: {
-        if (HConfusion() && rnl(5)) { __pc = 17; continue; }
-        __pc = 18; continue;
+            if (HConfusion() && rnl(5)) { __pc = 17; continue; }
+            __pc = 18; continue;
         }
         case 17: {
-        (yield* pline(__s_oops));
-        { __pc = 2; continue; }
+            (yield* pline(__s_oops));
+            { __pc = 2; continue; }
         }
         case 18: {
-        if (!strcmp(cptr.decay(buf), __s_esc)) {
-            return;
-        }
-        __pc = 16;
-        continue;
+            if (!strcmp(cptr.decay(buf), __s_esc)) {
+                return;
+            }
+            __pc = 16;
+            continue;
         }
         case 16: {
-        __pc = 13;
-        continue;
+            __pc = 13;
+            continue;
         }
         case 13: {
-        if (wizard() && !strcmp(cptr.decay(buf), __s_query)) { __pc = 20; continue; }
-        __pc = 21; continue;
+            if (wizard() && !strcmp(cptr.decay(buf), __s_query)) { __pc = 20; continue; }
+            __pc = 21; continue;
         }
         case 20: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* levTport_menu: */: {
-        destlev.v = 0;
-        destdnum.v = 0;
-        newlev = (yield* print_dungeon(1, destlev, destdnum));
-        if (!newlev)
-            return;
+            destlev.v = 0;
+            destdnum.v = 0;
+            newlev = (yield* print_dungeon(1, destlev, destdnum));
+            if (!newlev)
+                return;
 
-        cptr.stI16(newlevel, destdnum.v);
-        cptr.stI16o(newlevel, $d_level_dlevel, i16(destlev.v));
-        if ((cptr.ldI16((newlevel)) ==
-            cptr.ldI16((cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-            )))) &&
-                !(cptr.ldI16((cptr.add(u, $you_uz))) ==
+            cptr.stI16(newlevel, destdnum.v);
+            cptr.stI16o(newlevel, $d_level_dlevel, i16(destlev.v));
+            if ((cptr.ldI16((newlevel)) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))) &&
+                    !(cptr.ldI16((cptr.add(u, $you_uz))) ==
+                        cptr.ldI16((cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_astral_level
+                        ))))) {
+
+                if (!(cptr.ldI32o(u, $you_uhave) & 1) &&
+                        (amu = (yield* mksobj(NHC.AMULET_OF_YENDOR, 1, 0))) !== null) {
+                    /* ordinarily we'd use hold_another_object()
+                       for something like this, but we don't want
+                       fumbling or already full pack to interfere */
+                    amu = (yield* addinv(amu));
+                    (yield* prinv(__s_endgame_prerequisite, amu, 0n));
+                }
+            }
+            force_dest = 1;
+            __pc = 19;
+            continue;
+        }
+        case 21: {
+            if ((newlev = (yield* lev_by_name(cptr.decay(buf)))) == 0)
+                newlev = atoi(cptr.decay(buf));
+            __pc = 19;
+            continue;
+        }
+        case 19: {
+            if (!newlev &&
+                    !digit(cptr.ld1so(cptr.decay(buf), 0, 1)) &&
+                    (cptr.ld1so(cptr.decay(buf), 0, 1) != 45 ||
+                        !digit(cptr.ld1so(cptr.decay(buf), 1, 1))) &&
+                    trycnt < 10) { __pc = 8; continue; }
+            __pc = 6;
+            continue;
+        }
+        case 6: {
+            if (newlev == 0) { __pc = 23; continue; }
+            __pc = 22; continue;
+        }
+        case 23: {
+            if (trycnt >= 10) { __pc = 25; continue; }
+            __pc = 24; continue;
+        }
+        case 25: {
+            { __pc = 2; continue; }
+        }
+        case 24: {
+            if ((yield* yn_function(__s_go_to_nowhere_are_you_sure, cptr.decay(ynqchars), 113, 1)) != 121)
+                return;
+            (yield* You(
+                __s_s_in_agony_as_your_body_begins_to_warp,
+                (cptr.ld1uo(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_msound
+                ) ==
+                    NHC.MS_SILENT)
+                    ? __s_writhe
+                    : __s_scream
+            ));
+            (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
+            (yield* You(__s_cease_to_exist));
+            if (cptr.ldPtro(gi, $instance_globals_i_invent))
+                (yield* Your(
+                    __s_possessions_land_on_the_s_with_a_thud,
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                ));
+            cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
+            void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_committed_suicide);
+            (yield* done(NHC.DIED));
+            (yield* pline(__s_an_energized_cloud_of_dust_begins_to));
+            (yield* Your(
+                __s_body_rematerializes_s,
+                cptr.ldPtro(gi, $instance_globals_i_invent)
+                    ? __s_and_you_gather_up_all_your_possessions
+                    : __s_empty
+            ));
+            return;
+        }
+        case 22: {
+
+            /* if in Knox and the requested level > 0, stay put.
+             * we let negative values requests fall into the "heaven" loop.
+             */
+            if (single_level_branch(cptr.add(u, $you_uz)) && newlev > 0 && !force_dest) {
+                (yield* You(
+                    __s_pct_s,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)
+                ));
+                return;
+            }
+            /* if in Quest, the player sees "Home 1", etc., on the status
+             * line, instead of the logical depth of the level.  controlled
+             * level teleport request is likely to be relativized to the
+             * status line, and consequently it should be incremented to
+             * the value of the logical depth of the target level.
+             *
+             * we let negative values requests fall into the "heaven" handling.
+             */
+            if (In_quest(cptr.add(u, $you_uz)) && newlev > 0)
+                newlev = (newlev +
+                        cptr.ldI32o2(
+                            svd,
+                            cptr.ldI16o(u, $you_uz),
+                            $sizeof_dungeon,
+                            $dungeon_depth_start
+                        ) - 1) | 0;
+            __pc = 3;
+            continue;
+        }
+        case 5: {
+            __pc = 2;
+            continue;
+        }
+        case 2 /* random_levtport: */: {
+            newlev = random_teleport_level();
+            if (newlev == depth(cptr.add(u, $you_uz))) {
+                (yield* You(
+                    __s_pct_s,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)
+                ));
+                return;
+            }
+            __pc = 3;
+            continue;
+        }
+        case 3: {
+
+            if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)
+                (yield* buried_ball_to_punishment());
+
+            if (!(yield* next_to_u()) && !force_dest) {
+                (yield* You(
+                    __s_pct_s,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)
+                ));
+                return;
+            }
+            if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
                     cptr.ldI16((cptr.add(
                         svd,
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
                     ))))) {
+                llimit = dunlevs_in_dungeon(cptr.add(u, $you_uz));
 
-            if (!(cptr.ldI32o(u, $you_uhave) & 1) &&
-                    (amu = (yield* mksobj(NHC.AMULET_OF_YENDOR, 1, 0))) !== null) {
-                /* ordinarily we'd use hold_another_object()
-                   for something like this, but we don't want
-                   fumbling or already full pack to interfere */
-                amu = (yield* addinv(amu));
-                (yield* prinv(__s_endgame_prerequisite, amu, 0n));
-            }
-        }
-        force_dest = 1;
-        __pc = 19;
-        continue;
-        }
-        case 21: {
-        if ((newlev = (yield* lev_by_name(cptr.decay(buf)))) == 0)
-            newlev = atoi(cptr.decay(buf));
-        __pc = 19;
-        continue;
-        }
-        case 19: {
-        if (!newlev &&
-                !digit(cptr.ld1so(cptr.decay(buf), 0, 1)) &&
-                (cptr.ld1so(cptr.decay(buf), 0, 1) != 45 ||
-                    !digit(cptr.ld1so(cptr.decay(buf), 1, 1))) &&
-                trycnt < 10) { __pc = 8; continue; }
-        __pc = 6;
-        continue;
-        }
-        case 6: {
-        if (newlev == 0) { __pc = 23; continue; }
-        __pc = 22; continue;
-        }
-        case 23: {
-        if (trycnt >= 10) { __pc = 25; continue; }
-        __pc = 24; continue;
-        }
-        case 25: {
-        { __pc = 2; continue; }
-        }
-        case 24: {
-        if ((yield* yn_function(__s_go_to_nowhere_are_you_sure, cptr.decay(ynqchars), 113, 1)) != 121)
-            return;
-        (yield* You(
-            __s_s_in_agony_as_your_body_begins_to_warp,
-            (cptr.ld1uo(
-                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-                $permonst_msound
-            ) ==
-                NHC.MS_SILENT)
-                ? __s_writhe
-                : __s_scream
-        ));
-        (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
-        (yield* You(__s_cease_to_exist));
-        if (cptr.ldPtro(gi, $instance_globals_i_invent))
-            (yield* Your(
-                __s_possessions_land_on_the_s_with_a_thud,
-                surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-            ));
-        cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-        void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_committed_suicide);
-        (yield* done(NHC.DIED));
-        (yield* pline(__s_an_energized_cloud_of_dust_begins_to));
-        (yield* Your(
-            __s_body_rematerializes_s,
-            cptr.ldPtro(gi, $instance_globals_i_invent)
-                ? __s_and_you_gather_up_all_your_possessions
-                : __s_empty
-        ));
-        return;
-        }
-        case 22: {
-
-        /* if in Knox and the requested level > 0, stay put.
-         * we let negative values requests fall into the "heaven" loop.
-         */
-        if (single_level_branch(cptr.add(u, $you_uz)) && newlev > 0 && !force_dest) {
-            (yield* You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
-            return;
-        }
-        /* if in Quest, the player sees "Home 1", etc., on the status
-         * line, instead of the logical depth of the level.  controlled
-         * level teleport request is likely to be relativized to the
-         * status line, and consequently it should be incremented to
-         * the value of the logical depth of the target level.
-         *
-         * we let negative values requests fall into the "heaven" handling.
-         */
-        if (In_quest(cptr.add(u, $you_uz)) && newlev > 0)
-            newlev = (newlev +
-                cptr.ldI32o2(
-                    svd,
-                    cptr.ldI16o(u, $you_uz),
-                    $sizeof_dungeon,
-                    $dungeon_depth_start
-                ) - 1) |
-                    0;
-        __pc = 3;
-        continue;
-        }
-        case 5: {
-        __pc = 2;
-        continue;
-        }
-        case 2 /* random_levtport: */: {
-        newlev = random_teleport_level();
-        if (newlev == depth(cptr.add(u, $you_uz))) {
-            (yield* You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
-            return;
-        }
-        __pc = 3;
-        continue;
-        }
-        case 3: {
-
-        if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)
-            (yield* buried_ball_to_punishment());
-
-        if (!(yield* next_to_u()) && !force_dest) {
-            (yield* You(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)));
-            return;
-        }
-        if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-                ))))) {
-            llimit = dunlevs_in_dungeon(cptr.add(u, $you_uz));
-
-            if (newlev >= 0 || newlev <= -llimit) {
-                (yield* You_cant(cptr.decay(__static_level_tele_get_there_from), __s_here));
+                if (newlev >= 0 || newlev <= -llimit) {
+                    (yield* You_cant(cptr.decay(__static_level_tele_get_there_from), __s_here));
+                    return;
+                }
+                cptr.stI16(newlevel, cptr.ldI16o(u, $you_uz));
+                cptr.stI16o(newlevel, $d_level_dlevel, i16(((llimit + newlev) | 0)));
+                (yield* schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null));
                 return;
             }
-            cptr.stI16(newlevel, cptr.ldI16o(u, $you_uz));
-            cptr.stI16o(newlevel, $d_level_dlevel, i16(((llimit + newlev) | 0)));
-            (yield* schedule_goto(newlevel, NHC.UTOTYPE_NONE, null, null));
-            return;
-        }
 
-        cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* still alive, so far... */
-        if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && newlev < 0) { __pc = 27; continue; }
-        __pc = 26; continue;
+            cptr.st1o2(svk, 0, 1, $kinfo_name, 0);  /* still alive, so far... */
+            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) &&
+                    newlev < 0) { __pc = 27; continue; }
+            __pc = 26; continue;
         }
         case 27: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 26: {
-        if (newlev < 0 && !force_dest) {
-            if (cptr.ld1so(u, $you_ushops0)) {
-                /* take unpaid inventory items off of shop bills */
-                cptr.st1o(gi, $instance_globals_i_in_mklev, 1);  /* suppress map update */
-                (yield* u_left_shop(cptr.add(u, $you_ushops0), 1));
-                /* you're now effectively out of the shop */
-                cptr.st1o(u, $you_ushops0, cptr.st1o(u, $you_ushops, 0));
-                cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
+            if (newlev < 0 && !force_dest) {
+                if (cptr.ld1so(u, $you_ushops0)) {
+                    /* take unpaid inventory items off of shop bills */
+                    cptr.st1o(gi, $instance_globals_i_in_mklev, 1);  /* suppress map update */
+                    (yield* u_left_shop(cptr.add(u, $you_ushops0), 1));
+                    /* you're now effectively out of the shop */
+                    cptr.st1o(u, $you_ushops0, cptr.st1o(u, $you_ushops, 0));
+                    cptr.st1o(gi, $instance_globals_i_in_mklev, 0);
+                }
+                if (newlev <= -10) {
+                    (yield* You(__s_arrive_in_heaven));
+                    ;
+                    (yield* verbalize(__s_thou_art_early_but_we_ll_admit_thee));
+                    cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
+                    void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_went_to_heaven_prematurely);
+                } else if (newlev == -9) {
+                    (yield* You_feel(__s_deliriously_happy));
+                    (yield* pline(__s_in_fact_you_re_on_cloud_9));
+                    (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
+                } else
+                    (yield* You(__s_are_now_high_above_the_clouds));
+
+                if (cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
+                    ;  /* arrival in heaven is pending */
+                } else if (Levitation()) {
+                    escape_by_flying = __s_float_gently_down_to_earth;
+                } else if (Flying()) {
+                    escape_by_flying = __s_fly_down_to_the_ground;
+                } else {
+                    (yield* pline(__s_unfortunately_you_don_t_know_how_to_fly));
+                    (yield* You(__s_plummet_a_few_thousand_feet_to_your));
+                    void cptr.sprintf(
+                        cptr.add(svk, $kinfo_name),
+                        __s_teleported_out_of_the_dungeon_and_fell,
+                        (cptr.ldPtro2(
+                            genders,
+                            cptr.ld1so(flags, $flag_female) ? 1 : 0,
+                            $sizeof_Gender,
+                            $Gender_his
+                        ))
+                    );
+                    cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
+                }
             }
-            if (newlev <= -10) {
-                (yield* You(__s_arrive_in_heaven));
-                ;
-                (yield* verbalize(__s_thou_art_early_but_we_ll_admit_thee));
-                cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), __s_went_to_heaven_prematurely);
-            } else if (newlev == -9) {
-                (yield* You_feel(__s_deliriously_happy));
-                (yield* pline(__s_in_fact_you_re_on_cloud_9));
-                (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 0)));
-            } else
-                (yield* You(__s_are_now_high_above_the_clouds));
 
             if (cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
-                ;  /* arrival in heaven is pending */
-            } else if (Levitation()) {
-                escape_by_flying = __s_float_gently_down_to_earth;
-            } else if (Flying()) {
-                escape_by_flying = __s_fly_down_to_the_ground;
-            } else {
-                (yield* pline(__s_unfortunately_you_don_t_know_how_to_fly));
-                (yield* You(__s_plummet_a_few_thousand_feet_to_your));
-                void cptr.sprintf(
-                    cptr.add(svk, $kinfo_name),
-                    __s_teleported_out_of_the_dungeon_and_fell,
-                    (cptr.ldPtro2(
-                        genders,
-                        cptr.ld1so(flags, $flag_female) ? 1 : 0,
-                        $sizeof_Gender,
-                        $Gender_his
-                    ))
-                );
-                cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
+                lsav = cptr.alloc(4);
+
+                /* set specific death location; this also suppresses bones */
+                cptr.memcpy(lsav, cptr.add(u, $you_uz), 4);  /* save current level; see below */
+                cptr.stI16o(u, $you_uz, 0);  /* main dungeon */
+                cptr.stI16o(u, $you_uz + $d_level_dlevel, i16(((newlev <= -10) ? -10 : 0)));  /* heaven or surface */
+                (yield* done(NHC.DIED));
+                /* can only get here via life-saving (or declining to die in
+                   explore|debug mode); the hero has now left the dungeon... */
+                escape_by_flying = __s_find_yourself_back_on_the_surface;
+                cptr.memcpy(cptr.add(u, $you_uz), lsav, 4);  /* restore u.uz so escape code works */
             }
-        }
 
-        if (cptr.ld1so2(svk, 0, 1, $kinfo_name)) {
-            lsav = cptr.alloc(4);
-
-            /* set specific death location; this also suppresses bones */
-            cptr.memcpy(lsav, cptr.add(u, $you_uz), 4);  /* save current level; see below */
-            cptr.stI16o(u, $you_uz, 0);  /* main dungeon */
-            cptr.stI16o(u, $you_uz + $d_level_dlevel, i16(((newlev <= -10) ? -10 : 0)));  /* heaven or surface */
-            (yield* done(NHC.DIED));
-            /* can only get here via life-saving (or declining to die in
-               explore|debug mode); the hero has now left the dungeon... */
-            escape_by_flying = __s_find_yourself_back_on_the_surface;
-            cptr.memcpy(cptr.add(u, $you_uz), lsav, 4);  /* restore u.uz so escape code works */
-        }
-
-        /* calls done(ESCAPED) if newlevel==0 */
-        if (escape_by_flying) {
-            (yield* You(__s_pct_s_dot, escape_by_flying));
-            /* [dlevel used to be set to 1, but it doesn't make sense to
-                teleport out of the dungeon and float or fly down to the
-                surface but then actually arrive back inside the dungeon] */
-            cptr.stI16(newlevel, 0);  /* specify main dungeon */
-            cptr.stI16o(newlevel, $d_level_dlevel, 0);  /* escape the dungeon */
-        } else if (force_dest) {
-            /* wizard mode menu; no further validation needed */
-            ;
-        } else if (cptr.ldI16o(u, $you_uz) ==
-            cptr.ldI16((cptr.add(
-                svd,
-                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
-            ))) &&
-                newlev >=
-                    ((cptr.ldI32o2(
-                        svd,
-                        cptr.ldI16o(u, $you_uz),
-                        $sizeof_dungeon,
-                        $dungeon_depth_start
-                    ) +
-                        dunlevs_in_dungeon(cptr.add(u, $you_uz))) | 0)) {
-            find_hell(newlevel);
-        } else {
-            /* FIXME: we should avoid using hard-coded knowledge of
-               which branches don't connect to anything deeper;
-               mainly used to distinguish "can't get there from here"
-               vs "from anywhere" rather than to control destination */
-            qbranch = In_quest(cptr.add(u, $you_uz))
-                    ? cptr.add(
-                        svd,
-                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
-                    )
-                    : (In_mines(cptr.add(u, $you_uz))
+            /* calls done(ESCAPED) if newlevel==0 */
+            if (escape_by_flying) {
+                (yield* You(__s_pct_s_dot, escape_by_flying));
+                /* [dlevel used to be set to 1, but it doesn't make sense to
+                    teleport out of the dungeon and float or fly down to the
+                    surface but then actually arrive back inside the dungeon] */
+                cptr.stI16(newlevel, 0);  /* specify main dungeon */
+                cptr.stI16o(newlevel, $d_level_dlevel, 0);  /* escape the dungeon */
+            } else if (force_dest) {
+                /* wizard mode menu; no further validation needed */
+                ;
+            } else if (cptr.ldI16o(u, $you_uz) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+                ))) &&
+                    newlev >=
+                        ((cptr.ldI32o2(
+                            svd,
+                            cptr.ldI16o(u, $you_uz),
+                            $sizeof_dungeon,
+                            $dungeon_depth_start
+                        ) +
+                            dunlevs_in_dungeon(cptr.add(u, $you_uz))) |
+                            0)) {
+                find_hell(newlevel);
+            } else {
+                /* FIXME: we should avoid using hard-coded knowledge of
+                   which branches don't connect to anything deeper;
+                   mainly used to distinguish "can't get there from here"
+                   vs "from anywhere" rather than to control destination */
+                qbranch = In_quest(cptr.add(u, $you_uz))
                         ? cptr.add(
                             svd,
                             $instance_globals_saved_d_dungeon_topology +
-                                $dgn_topology_d_mineend_level
-                        )
-                        : cptr.add(
-                            svd,
-                            $instance_globals_saved_d_dungeon_topology +
-                                $dgn_topology_d_sanctum_level
-                        ));
-            deepest = (cptr.ldI32o2(
-                svd,
-                cptr.ldI16(qbranch),
-                $sizeof_dungeon,
-                $dungeon_depth_start
-            ) +
-                dunlevs_in_dungeon(qbranch) - 1) |
-                    0;
-
-            /* if invocation did not yet occur, teleporting into
-             * the last level of Gehennom is forbidden.
-             */
-            if (!wizard() &&
-                    In_hell(cptr.add(u, $you_uz)) &&
-                    !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) &&
-                    newlev >= deepest) {
-                newlev = (deepest - 1) | 0;
-                (yield* pline(__s_sorry));
-            }
-            /* no teleporting out of quest dungeon */
-            if (In_quest(cptr.add(u, $you_uz)) &&
-                    newlev <
-                        depth(cptr.add(
-                            svd,
-                            $instance_globals_saved_d_dungeon_topology +
                                 $dgn_topology_d_qstart_level
-                        )))
-                newlev = depth(cptr.add(
+                        )
+                        : (In_mines(cptr.add(u, $you_uz))
+                            ? cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_mineend_level
+                            )
+                            : cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_sanctum_level
+                            ));
+                deepest = (cptr.ldI32o2(
                     svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
-                ));
-            /* the player thinks of levels purely in logical terms, so
-             * we must translate newlev to a number relative to the
-             * current dungeon.
-             */
-            (yield* get_level(newlevel, newlev));
+                    cptr.ldI16(qbranch),
+                    $sizeof_dungeon,
+                    $dungeon_depth_start
+                ) +
+                        dunlevs_in_dungeon(qbranch) - 1) | 0;
 
-            if (on_level(newlevel, cptr.add(u, $you_uz)) && newlev != depth(cptr.add(u, $you_uz))) {
-                (yield* You_cant(
-                    cptr.decay(__static_level_tele_get_there_from),
-                    (newlev > deepest) ? __s_anywhere : __s_here
-                ));
-                return;
+                /* if invocation did not yet occur, teleporting into
+                 * the last level of Gehennom is forbidden.
+                 */
+                if (!wizard() &&
+                        In_hell(cptr.add(u, $you_uz)) &&
+                        !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) &&
+                        newlev >= deepest) {
+                    newlev = (deepest - 1) | 0;
+                    (yield* pline(__s_sorry));
+                }
+                /* no teleporting out of quest dungeon */
+                if (In_quest(cptr.add(u, $you_uz)) &&
+                        newlev <
+                            depth(cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_qstart_level
+                            )))
+                    newlev = depth(cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+                    ));
+                /* the player thinks of levels purely in logical terms, so
+                 * we must translate newlev to a number relative to the
+                 * current dungeon.
+                 */
+                (yield* get_level(newlevel, newlev));
+
+                if (on_level(newlevel, cptr.add(u, $you_uz)) &&
+                        newlev != depth(cptr.add(u, $you_uz))) {
+                    (yield* You_cant(
+                        cptr.decay(__static_level_tele_get_there_from),
+                        (newlev > deepest) ? __s_anywhere : __s_here
+                    ));
+                    return;
+                }
             }
-        }
 
-        (yield* schedule_goto(
-            newlevel,
-            NHC.UTOTYPE_NONE,
-            null,
-            cptr.ld1so(flags, $flag_verbose) ? __s_you_materialize_on_a_different_level : null
-        ));
-        __pc = -1;
-        continue;
+            (yield* schedule_goto(
+                newlevel,
+                NHC.UTOTYPE_NONE,
+                null,
+                cptr.ld1so(flags, $flag_verbose) ? __s_you_materialize_on_a_different_level : null
+            ));
+            __pc = -1;
+            continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -2415,7 +2422,9 @@ function* rloc_pos_ok(x, y, mtmp) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) !=
+            ) &
+                63) |
+                0) !=
                     uchar(cptr.ld1so(
                         (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
                         $eshk_shoproom
@@ -2429,7 +2438,9 @@ function* rloc_pos_ok(x, y, mtmp) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) !=
+            ) &
+                63) |
+                0) !=
                     uchar(cptr.ld1so(
                         (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)),
                         $epri_shroom
@@ -2492,7 +2503,8 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
     if (oldx) {
         if (domsg && canspotmon(mtmp)) {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-                NHM.COULD_SEE) != 0) ||
+                NHM.COULD_SEE) !=
+                0) ||
                     sensemon(mtmp)) {
                 telemsg = 1;
             } else {
@@ -2562,7 +2574,8 @@ function* rloc_to_core(mtmp, x, y, rlocflags) {
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
                     x
                 ) &
-                    NHM.COULD_SEE) != 0) ||
+                    NHM.COULD_SEE) !=
+                    0) ||
                     sensemon(mtmp))) {
             (yield* pline(
                 __s_s_vanishes_and_reappears_s,
@@ -3158,7 +3171,8 @@ export function* rloco(obj) {
                 if ((cptr.ldI32o(obj, $obj_unpaid) & 1))
                     (yield* subfrombill(obj, shkp));
             } else if (hinshop &&
-                    (yield* costly_adjacent(shkp, tx, ty)) && oo &&
+                    (yield* costly_adjacent(shkp, tx, ty)) &&
+                    oo &&
                     cptr.strchr((yield* in_rooms(tx, ty, 0)), oo)) {
                 if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
                     (yield* addtobill(obj, 0, 0, 0));
@@ -3239,23 +3253,13 @@ export function random_teleport_level() {
             $dungeon_depth_start
         );
         max_depth = (bottom +
-            (cptr.ldI32o2(
-                svd,
-                cptr.ldI16o(u, $you_uz),
-                $sizeof_dungeon,
-                $dungeon_depth_start
-            ) - 1)) |
-                0;
+                (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) -
+                    1)) | 0;
     } else {
         min_depth = 1;
         max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) +
-            (cptr.ldI32o2(
-                svd,
-                cptr.ldI16o(u, $you_uz),
-                $sizeof_dungeon,
-                $dungeon_depth_start
-            ) - 1)) |
-                0;
+                (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) -
+                    1)) | 0;
         /* can't reach Sanctum if the invocation hasn't been performed */
         if (In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1))
             max_depth = (max_depth - 1) | 0;

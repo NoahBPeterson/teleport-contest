@@ -339,7 +339,8 @@ function good_rm_wall_doorpos(x, y, dir, room) {
                 ty,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0))
+            ) &
+                63) | 0))
         return 0;
 
     return 1;
@@ -451,32 +452,32 @@ function* finddpos(cc, dir, aroom) {
 
         switch (dir) {
             case NHC.DIR_N:
-            x1 = cptr.ldI16(aroom);
-            x2 = cptr.ldI16o(aroom, $mkroom_hx);
-            y1 = i16(((cptr.ldI16o(aroom, $mkroom_ly) - 1) | 0));
-            y2 = i16(((cptr.ldI16o(aroom, $mkroom_ly) - 1) | 0));
-            break;
+                x1 = cptr.ldI16(aroom);
+                x2 = cptr.ldI16o(aroom, $mkroom_hx);
+                y1 = i16(((cptr.ldI16o(aroom, $mkroom_ly) - 1) | 0));
+                y2 = i16(((cptr.ldI16o(aroom, $mkroom_ly) - 1) | 0));
+                break;
             case NHC.DIR_S:
-            x1 = cptr.ldI16(aroom);
-            x2 = cptr.ldI16o(aroom, $mkroom_hx);
-            y1 = i16(((cptr.ldI16o(aroom, $mkroom_hy) + 1) | 0));
-            y2 = i16(((cptr.ldI16o(aroom, $mkroom_hy) + 1) | 0));
-            break;
+                x1 = cptr.ldI16(aroom);
+                x2 = cptr.ldI16o(aroom, $mkroom_hx);
+                y1 = i16(((cptr.ldI16o(aroom, $mkroom_hy) + 1) | 0));
+                y2 = i16(((cptr.ldI16o(aroom, $mkroom_hy) + 1) | 0));
+                break;
             case NHC.DIR_W:
-            x1 = i16(((cptr.ldI16(aroom) - 1) | 0));
-            x2 = i16(((cptr.ldI16(aroom) - 1) | 0));
-            y1 = cptr.ldI16o(aroom, $mkroom_ly);
-            y2 = cptr.ldI16o(aroom, $mkroom_hy);
-            break;
+                x1 = i16(((cptr.ldI16(aroom) - 1) | 0));
+                x2 = i16(((cptr.ldI16(aroom) - 1) | 0));
+                y1 = cptr.ldI16o(aroom, $mkroom_ly);
+                y2 = cptr.ldI16o(aroom, $mkroom_hy);
+                break;
             case NHC.DIR_E:
-            x1 = i16(((cptr.ldI16o(aroom, $mkroom_hx) + 1) | 0));
-            x2 = i16(((cptr.ldI16o(aroom, $mkroom_hx) + 1) | 0));
-            y1 = cptr.ldI16o(aroom, $mkroom_ly);
-            y2 = cptr.ldI16o(aroom, $mkroom_hy);
-            break;
+                x1 = i16(((cptr.ldI16o(aroom, $mkroom_hx) + 1) | 0));
+                x2 = i16(((cptr.ldI16o(aroom, $mkroom_hx) + 1) | 0));
+                y1 = cptr.ldI16o(aroom, $mkroom_ly);
+                y2 = cptr.ldI16o(aroom, $mkroom_hy);
+                break;
             default:
-            (yield* impossible(__s_finddpos_illegal_dir));
-            return 0;
+                (yield* impossible(__s_finddpos_illegal_dir));
+                return 0;
         }
 
         /* try random points */
@@ -728,8 +729,7 @@ export function* add_room(lowx, lowy, hix, hiy, lit, rtype, special) {
         svn,
         $instance_globals_saved_n_nroom,
         cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + 1
-    )) -
-            (1);
+    )) - (1);
 }
 
 /**
@@ -768,8 +768,7 @@ export function* add_subroom(proom, lowx, lowy, hix, hiy, lit, rtype, special) {
         gn,
         $instance_globals_n_nsubroom,
         cptr.ldI32o(gn, $instance_globals_n_nsubroom) + 1
-    )) -
-            (1);
+    )) - (1);
 }
 
 /** C ref: mklev.c:345 — @param {*} theme_group */
@@ -1136,7 +1135,8 @@ export function* add_door(x, y, aroom) {
                 cptr.ldPtro(svd, $instance_globals_saved_d_doors),
                 tmp,
                 $sizeof_coord
-            ) == x &&
+            ) ==
+                x &&
                     cptr.ldI16o2(
                         cptr.ldPtro(svd, $instance_globals_saved_d_doors),
                         tmp,
@@ -1271,7 +1271,9 @@ function* dosdoor(x, y, aroom, type) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) !=
+            ) &
+                31) |
+                0) !=
                 NHM.D_ISOPEN &&
                     !shdoor &&
                     (yield* level_difficulty()) >= 5 &&
@@ -1342,7 +1344,9 @@ function* dosdoor(x, y, aroom, type) {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_flags
-        ) & 31) | 0) &
+        ) &
+            31) |
+            0) &
                 NHM.D_TRAPPED) {
             let mtmp;
 
@@ -1353,19 +1357,22 @@ function* dosdoor(x, y, aroom, type) {
                         NHC.PM_SMALL_MIMIC,
                         $sizeof_mvitals,
                         $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                    ) & 3) &&
+                    ) &
+                        3) &&
                         (cptr.ld1uo2(
                             svm,
                             NHC.PM_LARGE_MIMIC,
                             $sizeof_mvitals,
                             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                        ) & 3) &&
+                        ) &
+                            3) &&
                         (cptr.ld1uo2(
                             svm,
                             NHC.PM_GIANT_MIMIC,
                             $sizeof_mvitals,
                             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                        ) & 3))) {
+                        ) &
+                            3))) {
                 /* make a mimic instead */
                 cptr.stI32o3(
                     svl,
@@ -1447,7 +1454,8 @@ function cardinal_nextto_room(aroom, x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) &&
+            ) &
+                1) &&
             ((cptr.ldI32o3(
                 svl,
                 (x - 1) | 0,
@@ -1455,7 +1463,9 @@ function cardinal_nextto_room(aroom, x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) == rmno)
+            ) &
+                63) |
+                0) == rmno)
         return 1;
     if (isok(i16(((x + 1) | 0)), y) &&
             !(cptr.ldI32o3(
@@ -1465,7 +1475,8 @@ function cardinal_nextto_room(aroom, x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) &&
+            ) &
+                1) &&
             ((cptr.ldI32o3(
                 svl,
                 (x + 1) | 0,
@@ -1473,7 +1484,9 @@ function cardinal_nextto_room(aroom, x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) == rmno)
+            ) &
+                63) |
+                0) == rmno)
         return 1;
     if (isok(x, i16(((y - 1) | 0))) &&
             !(cptr.ldI32o3(
@@ -1483,7 +1496,8 @@ function cardinal_nextto_room(aroom, x, y) {
                 (y - 1) | 0,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) &&
+            ) &
+                1) &&
             ((cptr.ldI32o3(
                 svl,
                 x,
@@ -1491,7 +1505,9 @@ function cardinal_nextto_room(aroom, x, y) {
                 (y - 1) | 0,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) == rmno)
+            ) &
+                63) |
+                0) == rmno)
         return 1;
     if (isok(x, i16(((y + 1) | 0))) &&
             !(cptr.ldI32o3(
@@ -1501,7 +1517,8 @@ function cardinal_nextto_room(aroom, x, y) {
                 (y + 1) | 0,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) &&
+            ) &
+                1) &&
             ((cptr.ldI32o3(
                 svl,
                 x,
@@ -1509,7 +1526,9 @@ function cardinal_nextto_room(aroom, x, y) {
                 (y + 1) | 0,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) == rmno)
+            ) &
+                63) |
+                0) == rmno)
         return 1;
     return 0;
 }
@@ -1725,7 +1744,8 @@ function* make_niches() {
     let ltptr = schar((!(cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-    ) & 1) &&
+    ) &
+        1) &&
         dep > 15
             ? 1
             : 0));
@@ -2318,7 +2338,8 @@ function chk_okdoor(x, y) {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_horizontal
-        ) & 1)) {
+        ) &
+                1)) {
             if ((isok(x, i16(((y - 1) | 0))) &&
                 (cptr.ld1so3(
                     svl,
@@ -2452,7 +2473,8 @@ function* makelevel() {
     if (cptr.ldI16o(
         (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)),
         $d_level_dlevel
-    ) == 0) {
+    ) ==
+            0) {
         (yield* impossible(__s_makelevel_called_when_dungeon_not_yet));
         (yield* init_dungeons());
     }
@@ -2691,7 +2713,8 @@ function* makelevel() {
                     if (!(cptr.ldI32o(
                         svl,
                         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-                    ) & 1) &&
+                    ) &
+                        1) &&
                             !rn2(3))
                         (yield* makevtele());
                 }
@@ -2957,7 +2980,9 @@ export function* mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_ch
                 (cptr.ldI32o(
                     svl,
                     $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                ) & 1) | 0 ||
+                ) &
+                    1) |
+                    0 ||
                 ((sp = Is_special(cptr.add(u, $you_uz))) !== null &&
                     !(((cptr.ldI16o(
                         (cptr.add(svd, $instance_globals_saved_d_dungeon_topology)),
@@ -3023,7 +3048,9 @@ export function* mineralize(kelp_pool, kelp_moat, goldprob, gemprob, skip_lvl_ch
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) &
+            ) &
+                31) |
+                0) &
                 NHM.W_NONDIGGABLE) &&
                     cptr.ld1so3(
                         svl,
@@ -3151,7 +3178,8 @@ export function* level_finalize_topology() {
     if (!(cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-    ) & 1)) {
+    ) &
+            1)) {
         for (
             croom = cptr.add(svr, 0, $sizeof_mkroom);
             !cptr.eq(
@@ -3217,7 +3245,9 @@ export function topologize(croom) {
         lowy,
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_roomno
-    ) & 63) | 0) ==
+    ) &
+        63) |
+        0) ==
         roomno ||
             cptr.ld1so(croom, $mkroom_irregular))
         return;
@@ -3618,20 +3648,20 @@ function* mktrap_victim(ttmp) {
        that kill in a specific way that's obvious after the fact. */
     switch (kind) {
         case NHC.ARROW_TRAP:
-        otmp = (yield* mksobj(NHC.ARROW, 1, 0));
-        cptr.stI32o(otmp, $obj_otrapped, 0);
-        /* don't adjust the quantity; maybe the trap shot multiple
-           times, there was an untrapping attempt, etc... */
-        break;
+            otmp = (yield* mksobj(NHC.ARROW, 1, 0));
+            cptr.stI32o(otmp, $obj_otrapped, 0);
+            /* don't adjust the quantity; maybe the trap shot multiple
+               times, there was an untrapping attempt, etc... */
+            break;
         case NHC.DART_TRAP:
-        otmp = (yield* mksobj(NHC.DART, 1, 0));
-        break;
+            otmp = (yield* mksobj(NHC.DART, 1, 0));
+            break;
         case NHC.ROCKTRAP:
-        otmp = (yield* mksobj(NHC.ROCK, 1, 0));
-        break;
+            otmp = (yield* mksobj(NHC.ROCK, 1, 0));
+            break;
         default:
-        /* no item dropped by the trap */
-        break;
+            /* no item dropped by the trap */
+            break;
     }
     if (otmp) {
         (yield* place_object(otmp, x, y));
@@ -3647,17 +3677,17 @@ function* mktrap_victim(ttmp) {
 
         switch (rn2(4)) {
             case 0:
-            poss_class = NHC.WEAPON_CLASS;
-            break;
+                poss_class = NHC.WEAPON_CLASS;
+                break;
             case 1:
-            poss_class = NHC.TOOL_CLASS;
-            break;
+                poss_class = NHC.TOOL_CLASS;
+                break;
             case 2:
-            poss_class = NHC.FOOD_CLASS;
-            break;
+                poss_class = NHC.FOOD_CLASS;
+                break;
             case 3:
-            poss_class = NHC.GEM_CLASS;
-            break;
+                poss_class = NHC.GEM_CLASS;
+                break;
         }
 
         /* these items are always cursed, both for flavour (owned
@@ -3681,52 +3711,52 @@ function* mktrap_victim(ttmp) {
     /* Place a corpse. */
     switch (rn2(15)) {
         case 0:
-        /* elf corpses are the rarest as they're the most useful */
-        victim_mnum = NHC.PM_ELF;
-        /* elven adventurers get sleep resistance early; so don't
-           generate elf corpses on sleeping gas traps unless a)
-           we're on dlvl 2 (1 is impossible) and b) we pass a coin
-           flip */
-        if (kind == NHC.SLP_GAS_TRAP && !(lvl <= 2 && rn2(2)))
-            victim_mnum = NHC.PM_HUMAN;
-        break;
+            /* elf corpses are the rarest as they're the most useful */
+            victim_mnum = NHC.PM_ELF;
+            /* elven adventurers get sleep resistance early; so don't
+               generate elf corpses on sleeping gas traps unless a)
+               we're on dlvl 2 (1 is impossible) and b) we pass a coin
+               flip */
+            if (kind == NHC.SLP_GAS_TRAP && !(lvl <= 2 && rn2(2)))
+                victim_mnum = NHC.PM_HUMAN;
+            break;
         case 1:
         case 2:
-        victim_mnum = NHC.PM_DWARF;
-        break;
+            victim_mnum = NHC.PM_DWARF;
+            break;
         case 3:
         case 4:
         case 5:
-        victim_mnum = NHC.PM_ORC;
-        break;
+            victim_mnum = NHC.PM_ORC;
+            break;
         case 6:
         case 7:
         case 8:
         case 9:
-        /* more common as they could have come from the Mines */
-        victim_mnum = NHC.PM_GNOME;
-        /* 10% chance of a candle too */
-        if (!rn2(10)) {
-            otmp = (yield* mksobj(rn2(4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
-            cptr.stI64o(otmp, $obj_quan, 1n);
-            cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
-            (yield* curse(otmp));
-            (yield* place_object(otmp, x, y));
-            if (!(cptr.ldI32o3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_lit
-            ) & 1))
-                (yield* begin_burn(otmp, 0));
-        }
-        break;
+            /* more common as they could have come from the Mines */
+            victim_mnum = NHC.PM_GNOME;
+            /* 10% chance of a candle too */
+            if (!rn2(10)) {
+                otmp = (yield* mksobj(rn2(4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
+                cptr.stI64o(otmp, $obj_quan, 1n);
+                cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
+                (yield* curse(otmp));
+                (yield* place_object(otmp, x, y));
+                if (!(cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_lit
+                ) & 1))
+                    (yield* begin_burn(otmp, 0));
+            }
+            break;
         default:
-        /* human is the most common result */
-        victim_mnum = NHC.PM_HUMAN;
-        break;
+            /* human is the most common result */
+            victim_mnum = NHC.PM_HUMAN;
+            break;
     }
     /* PM_HUMAN is a placeholder monster primarily used for zombie, mummy,
        and vampire corpses; usually change it into a fake player monster
@@ -3754,59 +3784,61 @@ function* traptype_rnd(mktrapflags) {
     switch (kind) {
         case NHC.TRAPPED_DOOR:
         case NHC.TRAPPED_CHEST:
-        kind = NHC.NO_TRAP;
-        break;
+            kind = NHC.NO_TRAP;
+            break;
         case NHC.MAGIC_PORTAL:
         case NHC.VIBRATING_SQUARE:
-        kind = NHC.NO_TRAP;
-        break;
+            kind = NHC.NO_TRAP;
+            break;
         case NHC.ROLLING_BOULDER_TRAP:
         case NHC.SLP_GAS_TRAP:
-        if (lvl < 2)
-            kind = NHC.NO_TRAP;
-        break;
+            if (lvl < 2)
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.LEVEL_TELEP:
-        if (lvl < 5 ||
-                (cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-                ) & 1) | 0 ||
-                single_level_branch(cptr.add(u, $you_uz)))
-            kind = NHC.NO_TRAP;
-        break;
+            if (lvl < 5 ||
+                    (cptr.ldI32o(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+                    ) &
+                        1) |
+                        0 ||
+                    single_level_branch(cptr.add(u, $you_uz)))
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.SPIKED_PIT:
-        if (lvl < 5)
-            kind = NHC.NO_TRAP;
-        break;
+            if (lvl < 5)
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.LANDMINE:
-        if (lvl < 6)
-            kind = NHC.NO_TRAP;
-        break;
+            if (lvl < 6)
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.WEB:
-        if (lvl < 7 && !((mktrapflags & NHM.MKTRAP_NOSPIDERONWEB) >>> 0))
-            kind = NHC.NO_TRAP;
-        break;
+            if (lvl < 7 && !((mktrapflags & NHM.MKTRAP_NOSPIDERONWEB) >>> 0))
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.STATUE_TRAP:
         case NHC.POLY_TRAP:
-        if (lvl < 8)
-            kind = NHC.NO_TRAP;
-        break;
+            if (lvl < 8)
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.FIRE_TRAP:
-        if (!In_hell(cptr.add(u, $you_uz)))
-            kind = NHC.NO_TRAP;
-        break;
+            if (!In_hell(cptr.add(u, $you_uz)))
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.TELEP_TRAP:
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-        ) & 1))
-            kind = NHC.NO_TRAP;
-        break;
+            if ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+            ) & 1))
+                kind = NHC.NO_TRAP;
+            break;
         case NHC.HOLE:
-        /* make these much less often than other traps */
-        if (rn2(7))
-            kind = NHC.NO_TRAP;
-        break;
+            /* make these much less often than other traps */
+            if (rn2(7))
+                kind = NHC.NO_TRAP;
+            break;
     }
     return kind;
 }
@@ -3818,26 +3850,26 @@ function traptype_roguelvl() {
 
     switch (rn2(7)) {
         default:
-        kind = NHC.BEAR_TRAP;
-        break;  /* 0 */
+            kind = NHC.BEAR_TRAP;
+            break;  /* 0 */
         case 1:
-        kind = NHC.ARROW_TRAP;
-        break;
+            kind = NHC.ARROW_TRAP;
+            break;
         case 2:
-        kind = NHC.DART_TRAP;
-        break;
+            kind = NHC.DART_TRAP;
+            break;
         case 3:
-        kind = NHC.TRAPDOOR;
-        break;
+            kind = NHC.TRAPDOOR;
+            break;
         case 4:
-        kind = NHC.PIT;
-        break;
+            kind = NHC.PIT;
+            break;
         case 5:
-        kind = NHC.SLP_GAS_TRAP;
-        break;
+            kind = NHC.SLP_GAS_TRAP;
+            break;
         case 6:
-        kind = NHC.RUST_TRAP;
-        break;
+            kind = NHC.RUST_TRAP;
+            break;
     }
     return kind;
 }
@@ -4473,27 +4505,27 @@ function* mkinvpos(x, y, dist) {
 
     switch (dist) {
         case 1:
-        if (is_pool(x, y))
+            if (is_pool(x, y))
+                break;
+            cptr.st1o(lev, $rm_typ, NHC.ROOM);
+            ttmp = (yield* maketrap(x, y, NHC.FIRE_TRAP));
+            if (ttmp)
+                cptr.stI32o(ttmp, $trap_tseen, 1);
             break;
-        cptr.st1o(lev, $rm_typ, NHC.ROOM);
-        ttmp = (yield* maketrap(x, y, NHC.FIRE_TRAP));
-        if (ttmp)
-            cptr.stI32o(ttmp, $trap_tseen, 1);
-        break;
         case 0:
         case 2:
         case 3:
         case 6:
-        cptr.st1o(lev, $rm_typ, NHC.ROOM);
-        break;
+            cptr.st1o(lev, $rm_typ, NHC.ROOM);
+            break;
         case 4:
         case 5:
-        cptr.st1o(lev, $rm_typ, NHC.MOAT);
-        /* No kelp! */
-        break;
+            cptr.st1o(lev, $rm_typ, NHC.MOAT);
+            /* No kelp! */
+            break;
         default:
-        (yield* impossible(__s_mkinvpos_called_with_dist_d, dist));
-        break;
+            (yield* impossible(__s_mkinvpos_called_with_dist_d, dist));
+            break;
     }
 
     if ((mon = (cptr.ldPtro3(
@@ -4503,7 +4535,8 @@ function* mkinvpos(x, y, dist) {
         y,
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null) {
+    ))) !==
+            null) {
         /* wake up mimics, don't want to deal with them blocking vision */
         if (cptr.ld1uo(mon, $monst_m_ap_type))
             (yield* seemimic(mon));

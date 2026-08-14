@@ -223,7 +223,9 @@ export function is_lava(x, y) {
                     y,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.DB_UNDER) ==
                     NHM.DB_LAVA))
         return 1;
@@ -261,7 +263,9 @@ export function is_ice(x, y) {
                     y,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31) | 0) &
+                ) &
+                    31) |
+                    0) &
                     NHM.DB_UNDER) ==
                     NHM.DB_ICE))
         return 1;
@@ -306,7 +310,9 @@ export function is_moat(x, y) {
                         y,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_flags
-                    ) & 31) | 0) &
+                    ) &
+                        31) |
+                        0) &
                         NHM.DB_UNDER) ==
                         NHM.DB_MOAT)))
         return 1;
@@ -317,13 +323,13 @@ export function is_moat(x, y) {
 export function db_under_typ(mask) {
     switch (mask & NHM.DB_UNDER) {
         case NHM.DB_ICE:
-        return NHC.ICE;
+            return NHC.ICE;
         case NHM.DB_LAVA:
-        return NHC.LAVAPOOL;
+            return NHC.LAVAPOOL;
         case NHM.DB_MOAT:
-        return NHC.MOAT;
+            return NHC.MOAT;
         default:
-        return NHC.STONE;
+            return NHC.STONE;
     }
 }
 
@@ -374,7 +380,9 @@ export function is_drawbridge_wall(x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) &
+            ) &
+                31) |
+                0) &
                 NHM.DB_DIR) ==
                 NHM.DB_WEST)
         return NHM.DB_WEST;
@@ -404,7 +412,9 @@ export function is_drawbridge_wall(x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) &
+            ) &
+                31) |
+                0) &
                 NHM.DB_DIR) ==
                 NHM.DB_EAST)
         return NHM.DB_EAST;
@@ -434,7 +444,9 @@ export function is_drawbridge_wall(x, y) {
                 (y - 1) | 0,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) &
+            ) &
+                31) |
+                0) &
                 NHM.DB_DIR) ==
                 NHM.DB_SOUTH)
         return NHM.DB_SOUTH;
@@ -464,7 +476,9 @@ export function is_drawbridge_wall(x, y) {
                 (y + 1) | 0,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) &
+            ) &
+                31) |
+                0) &
                 NHM.DB_DIR) ==
                 NHM.DB_NORTH)
         return NHM.DB_NORTH;
@@ -521,17 +535,17 @@ export function find_drawbridge(x, y) {
     if (dir >= 0) {
         switch (dir) {
             case NHM.DB_NORTH:
-            (cptr.stI16(y, cptr.ldI16(y) + 1)) - (1);
-            break;
+                (cptr.stI16(y, cptr.ldI16(y) + 1)) - (1);
+                break;
             case NHM.DB_SOUTH:
-            (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
-            break;
+                (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
+                break;
             case NHM.DB_EAST:
-            (cptr.stI16(x, cptr.ldI16(x) + -1)) - (-1);
-            break;
+                (cptr.stI16(x, cptr.ldI16(x) + -1)) - (-1);
+                break;
             case NHM.DB_WEST:
-            (cptr.stI16(x, cptr.ldI16(x) + 1)) - (1);
-            break;
+                (cptr.stI16(x, cptr.ldI16(x) + 1)) - (1);
+                break;
         }
         return 1;
     }
@@ -550,20 +564,22 @@ function get_wall_for_db(x, y) {
         cptr.ldI16(y),
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_flags
-    ) & 31) | 0) &
+    ) &
+        31) |
+        0) &
             NHM.DB_DIR) {
         case NHM.DB_NORTH:
-        (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
-        break;
+            (cptr.stI16(y, cptr.ldI16(y) + -1)) - (-1);
+            break;
         case NHM.DB_SOUTH:
-        (cptr.stI16(y, cptr.ldI16(y) + 1)) - (1);
-        break;
+            (cptr.stI16(y, cptr.ldI16(y) + 1)) - (1);
+            break;
         case NHM.DB_EAST:
-        (cptr.stI16(x, cptr.ldI16(x) + 1)) - (1);
-        break;
+            (cptr.stI16(x, cptr.ldI16(x) + 1)) - (1);
+            break;
         case NHM.DB_WEST:
-        (cptr.stI16(x, cptr.ldI16(x) + -1)) - (-1);
-        break;
+            (cptr.stI16(x, cptr.ldI16(x) + -1)) - (-1);
+            break;
     }
 }
 
@@ -598,25 +614,25 @@ export function create_drawbridge(x, y, dir, flag) {
     y2 = y;
     switch (dir) {
         case NHM.DB_NORTH:
-        horiz = 1;
-        y2--;
-        break;
+            horiz = 1;
+            y2--;
+            break;
         case NHM.DB_SOUTH:
-        horiz = 1;
-        y2++;
-        break;
+            horiz = 1;
+            y2++;
+            break;
         case NHM.DB_EAST:
-        horiz = 0;
-        x2++;
-        break;
+            horiz = 0;
+            x2++;
+            break;
         default:
-        impossible(__s_bad_direction_in_create_drawbridge);
-        // @FallThrough
-        ;
+            impossible(__s_bad_direction_in_create_drawbridge);
+            // @FallThrough
+            ;
         case NHM.DB_WEST:
-        horiz = 0;
-        x2--;
-        break;
+            horiz = 0;
+            x2--;
+            break;
     }
     if (!((cptr.ld1so3(
         svl,
@@ -758,7 +774,8 @@ function e_at(x, y) {
                     entitycnt,
                     $sizeof_entity,
                     $instance_globals_o_occupants + $entity_ex
-                ) == x &&
+                ) ==
+                    x &&
                 cptr.ldI32o2(
                     go,
                     entitycnt,
@@ -926,10 +943,8 @@ function e_survives_at(etmp, x, y) {
     if (is_db_wall(x, y))
         return schar(((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))
                 ? Passes_walls()
-                : ((cptr.ldU64o(
-                    (cptr.ldPtro(etmp, $entity_edata)),
-                    $permonst_mflags1
-                ) & 8n) != 0n)));
+                : ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) &
+                    8n) != 0n)));
     return 1;
 }
 
@@ -1453,10 +1468,8 @@ function do_entity(etmp) {
             i16(cptr.ldI32o(etmp, $entity_ey))
         )) {
             if (e_inview &&
-                    !((cptr.ldU64o(
-                        (cptr.ldPtro(etmp, $entity_edata)),
-                        $permonst_mflags1
-                    ) & 1n) != 0n) &&
+                    !((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 1n) !=
+                        0n) &&
                     !is_floater(cptr.ldPtro(etmp, $entity_edata)))
                 pline(__s_s_from_the_bridge, E_phrase(etmp, __s_fall));
             return;
@@ -1537,12 +1550,14 @@ export function close_drawbridge(x, y) {
     y2.v = y;
     get_wall_for_db(x2, y2);
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-        NHM.IN_SIGHT) != 0) ||
+        NHM.IN_SIGHT) !=
+        0) ||
             ((cptr.ld1uo(
                 cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8),
                 x2.v
             ) &
-                NHM.IN_SIGHT) != 0)) {
+                NHM.IN_SIGHT) !=
+                0)) {
         You_see(
             __s_a_drawbridge_s_up,
             (((cptr.ldI16(u) == x || cptr.ldI16o(u, $you_uy) == y) && !Underwater()) ||
@@ -1565,12 +1580,12 @@ export function close_drawbridge(x, y) {
     switch (((cptr.ldI32o(lev1, $rm_flags) & 31) | 0) & NHM.DB_DIR) {
         case NHM.DB_NORTH:
         case NHM.DB_SOUTH:
-        cptr.stI32o(lev2, $rm_horizontal, 1);
-        break;
+            cptr.stI32o(lev2, $rm_horizontal, 1);
+            break;
         case NHM.DB_WEST:
         case NHM.DB_EAST:
-        cptr.stI32o(lev2, $rm_horizontal, 0);
-        break;
+            cptr.stI32o(lev2, $rm_horizontal, 0);
+            break;
     }
     cptr.stI32o(lev2, $rm_flags, NHM.W_NONDIGGABLE);
     set_entity(x, y, cptr.add(cptr.add(go, $instance_globals_o_occupants), 0, $sizeof_entity));
@@ -1586,14 +1601,8 @@ export function close_drawbridge(x, y) {
         cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity)
     );  /* do_entity for worm tail */
     do_entity(cptr.add(cptr.add(go, $instance_globals_o_occupants), 1, $sizeof_entity));
-    if ((cptr.ldPtro3(
-        svl,
-        x,
-        168,
-        y,
-        8,
-        $instance_globals_saved_l_level + $dlevel_t_objects
-    ) !== null) &&
+    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !==
+        null) &&
             !Deaf()) {
         ;
         You_hear(__s_smashing_and_crushing);
@@ -1636,12 +1645,14 @@ export function open_drawbridge(x, y) {
     y2.v = y;
     get_wall_for_db(x2, y2);
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-        NHM.IN_SIGHT) != 0) ||
+        NHM.IN_SIGHT) !=
+        0) ||
             ((cptr.ld1uo(
                 cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8),
                 x2.v
             ) &
-                NHM.IN_SIGHT) != 0)) {
+                NHM.IN_SIGHT) !=
+                0)) {
         You_see(
             __s_a_drawbridge_s_down,
             (dist2((x2.v), (y2.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <
@@ -1750,7 +1761,8 @@ export function destroy_drawbridge(x, y) {
                 cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y2.v, 8),
                 x2.v
             ) &
-                NHM.IN_SIGHT) != 0) ||
+                NHM.IN_SIGHT) !=
+                0) ||
                     ((x2.v) == cptr.ldI16(u) && (y2.v) == cptr.ldI16o(u, $you_uy)))
                 pline_The(
                     __s_portcullis_of_the_drawbridge_falls_into,
@@ -1760,7 +1772,8 @@ export function destroy_drawbridge(x, y) {
                 You_hear(__s_a_loud_splash);  /* Deaf-aware */
         } else {
             if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-                NHM.IN_SIGHT) != 0) ||
+                NHM.IN_SIGHT) !=
+                0) ||
                     ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 pline_The(__s_drawbridge_collapses_into_the_s, lava ? hliquid(__s_lava) : __s_moat);
             else
@@ -1776,7 +1789,8 @@ export function destroy_drawbridge(x, y) {
         /* no moat beneath */
         ;  /* Deaf-aware */
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-            NHM.IN_SIGHT) != 0) ||
+            NHM.IN_SIGHT) !=
+            0) ||
                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
             pline_The(__s_drawbridge_disintegrates);
         else

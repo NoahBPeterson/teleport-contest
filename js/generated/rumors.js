@@ -174,7 +174,8 @@ function init_rumors(fp) {
         cptr.add(gf, $instance_globals_f_false_rumor_size),
         cptr.add(gf, $instance_globals_f_false_rumor_start),
         eof_offset
-    ) == 7 &&
+    ) ==
+        7 &&
             cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) > 0n &&
             cptr.ldI64o(gf, $instance_globals_f_false_rumor_size) > 0n) {
         cptr.stI64o(
@@ -250,23 +251,23 @@ export function getrumor(truth, rumor_buf, exclude_cookie) {
             switch (adjtruth = (truth + rn2(2)) | 0) {
                 case 2:
                 case 1:
-                beginning = BigInt.asIntN(
-                    64,
-                    cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)
-                );
-                ending = cptr.ldI64o(gt, $instance_globals_t_true_rumor_end);
-                break;
+                    beginning = BigInt.asIntN(
+                        64,
+                        cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)
+                    );
+                    ending = cptr.ldI64o(gt, $instance_globals_t_true_rumor_end);
+                    break;
                 case 0:
                 case -1:
-                beginning = BigInt.asIntN(
-                    64,
-                    cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)
-                );
-                ending = cptr.ldI64o(gf, $instance_globals_f_false_rumor_end);
-                break;
+                    beginning = BigInt.asIntN(
+                        64,
+                        cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)
+                    );
+                    ending = cptr.ldI64o(gf, $instance_globals_f_false_rumor_end);
+                    break;
                 default:
-                impossible(__s_strange_truth_value_for_rumor);
-                return cptr.strcpy(rumor_buf, __s_oops);
+                    impossible(__s_strange_truth_value_for_rumor);
+                    return cptr.strcpy(rumor_buf, __s_oops);
             }
             void cptr.strcpy(
                 rumor_buf,
@@ -749,24 +750,24 @@ export function outrumor(truth, mechanism) {
         line = __s_nethack_rumors_file_closed_for;
     switch (mechanism) {
         case NHM.BY_ORACLE:
-        /* Oracle delivers the rumor */
-        pline(
-            __s_true_to_her_word_the_oracle_ssays,
-            (!rn2(4)
-                ? __s_offhandedly
-                : (!rn2(3) ? __s_casually : (rn2(2) ? __s_nonchalantly : __s_empty)))
-        );
-        ;
-        verbalize(__s_pct_s, line);
-        /* [WIS exercised by getrumor()] */
-        return;
+            /* Oracle delivers the rumor */
+            pline(
+                __s_true_to_her_word_the_oracle_ssays,
+                (!rn2(4)
+                    ? __s_offhandedly
+                    : (!rn2(3) ? __s_casually : (rn2(2) ? __s_nonchalantly : __s_empty)))
+            );
+            ;
+            verbalize(__s_pct_s, line);
+            /* [WIS exercised by getrumor()] */
+            return;
         case NHM.BY_COOKIE:
-        pline(cptr.decay(__static_outrumor_fortune_msg));
-        // @FallThrough
-        ;
+            pline(cptr.decay(__static_outrumor_fortune_msg));
+            // @FallThrough
+            ;
         case NHM.BY_PAPER:
-        pline(__s_it_reads);
-        break;
+            pline(__s_it_reads);
+            break;
     }
     pline(__s_pct_s, line);
 }
@@ -969,28 +970,28 @@ export function doconsult(oracl) {
     switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
         default:
         case 113:
-        return NHM.ECMD_OK;
+            return NHM.ECMD_OK;
         case 121:
-        if (umoney < BigInt(minor_cost)) {
-            You(__s_don_t_even_have_enough_gold_for_that);
-            return NHM.ECMD_OK;
-        }
-        u_pay = minor_cost;
-        break;
+            if (umoney < BigInt(minor_cost)) {
+                You(__s_don_t_even_have_enough_gold_for_that);
+                return NHM.ECMD_OK;
+            }
+            u_pay = minor_cost;
+            break;
         case 110:
-        if (umoney <= BigInt(minor_cost) ||
-                (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
-            return NHM.ECMD_OK;
-        void cptr.sprintf(
-            cptr.decay(qbuf),
-            __s_then_dost_thou_desire_a_major_one_d_s,
-            major_cost,
-            currency(BigInt(major_cost))
-        );
-        if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 121)
-            return NHM.ECMD_OK;
-        u_pay = (umoney < BigInt(major_cost)) ? Number(BigInt.asIntN(32, umoney)) : major_cost;
-        break;
+            if (umoney <= BigInt(minor_cost) ||
+                    (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
+                return NHM.ECMD_OK;
+            void cptr.sprintf(
+                cptr.decay(qbuf),
+                __s_then_dost_thou_desire_a_major_one_d_s,
+                major_cost,
+                currency(BigInt(major_cost))
+            );
+            if (yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1) != 121)
+                return NHM.ECMD_OK;
+            u_pay = (umoney < BigInt(major_cost)) ? Number(BigInt.asIntN(32, umoney)) : major_cost;
+            break;
     }
     money2mon(oracl, BigInt(u_pay));
     cptr.st1(disp, 1);
@@ -1002,8 +1003,7 @@ export function doconsult(oracl) {
         outrumor(1, NHM.BY_ORACLE);
         if (!(cptr.ldI32o(u, $you_uevent) & 1))
             add_xpts = (u_pay /
-                ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) |
-                    0;
+                    ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
         /* 5 pts if very 1st, or 2 pts if major already done */
         cptr.stI32o(u, $you_uevent, 1);
     } else {

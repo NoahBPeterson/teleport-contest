@@ -326,65 +326,69 @@ export function weapon_descr(obj) {
     /* assorted special cases */
     switch (skill) {
         case NHC.P_NONE:
-        /* not a weapon or weptool: use item class name;
-           override class name for things where it sounds strange and
-           for things that aren't unexpected to find being wielded:
-           corpses, tins, eggs, and globs avoid "food",
-           statues and boulders avoid "large rock",
-           and towels and tin openers avoid "tool" */
-        descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.TIN ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.EGG ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL ||
-            cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER)
-                ? (cptr.ldPtro(
-                    obj_descr,
-                    cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))),
-                    $sizeof_objdescr
-                ))
-                : ((cptr.ldI32o(obj, $obj_globby) & 1) | 0
-                    ? __s_glob
-                    : cptr.ldPtro2(
-                        def_oc_syms,
-                        cptr.ld1so(obj, $obj_oclass),
-                        $sizeof_class_sym,
-                        $class_sym_name
-                    ));
-        break;
-        case NHC.P_SLING:
-        if (is_ammo(obj))
-            descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK || is_graystone(obj))
-                    ? __s_stone
-                    : ((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS)
-                        ? __s_gem
+            /* not a weapon or weptool: use item class name;
+               override class name for things where it sounds strange and
+               for things that aren't unexpected to find being wielded:
+               corpses, tins, eggs, and globs avoid "food",
+               statues and boulders avoid "large rock",
+               and towels and tin openers avoid "tool" */
+            descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.TIN ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.EGG ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.TOWEL ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER)
+                    ? (cptr.ldPtro(
+                        obj_descr,
+                        cptr.ldI16((cptr.add(
+                            objects,
+                            cptr.ldI16o(obj, $obj_otyp),
+                            $sizeof_objclass
+                        ))),
+                        $sizeof_objdescr
+                    ))
+                    : ((cptr.ldI32o(obj, $obj_globby) & 1) | 0
+                        ? __s_glob
                         : cptr.ldPtro2(
                             def_oc_syms,
                             cptr.ld1so(obj, $obj_oclass),
                             $sizeof_class_sym,
                             $class_sym_name
                         ));
-        break;
+            break;
+        case NHC.P_SLING:
+            if (is_ammo(obj))
+                descr = (cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK || is_graystone(obj))
+                        ? __s_stone
+                        : ((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS)
+                            ? __s_gem
+                            : cptr.ldPtro2(
+                                def_oc_syms,
+                                cptr.ld1so(obj, $obj_oclass),
+                                $sizeof_class_sym,
+                                $class_sym_name
+                            ));
+            break;
         case NHC.P_BOW:
-        if (is_ammo(obj))
-            descr = __s_arrow;
-        break;
+            if (is_ammo(obj))
+                descr = __s_arrow;
+            break;
         case NHC.P_CROSSBOW:
-        if (is_ammo(obj))
-            descr = __s_bolt;
-        break;
+            if (is_ammo(obj))
+                descr = __s_bolt;
+            break;
         case NHC.P_FLAIL:
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.GRAPPLING_HOOK)
-            descr = __s_hook;
-        break;
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.GRAPPLING_HOOK)
+                descr = __s_hook;
+            break;
         case NHC.P_PICK_AXE:
-        /* even if "dwarvish mattock" hasn't been discovered yet */
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.DWARVISH_MATTOCK)
-            descr = __s_mattock;
-        break;
+            /* even if "dwarvish mattock" hasn't been discovered yet */
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.DWARVISH_MATTOCK)
+                descr = __s_mattock;
+            break;
         default:
-        break;
+            break;
     }
     return makesingular(descr);
 }
@@ -411,8 +415,12 @@ export function hitval(otmp, mon) {
 
     /* Put weapon-specific "to hit" bonuses in below: */
     tmp = (tmp +
-        cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc1)) |
-            0;
+            cptr.ld1so2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_oc1
+            )) | 0;
 
     /* Put weapon vs. monster type "to hit" bonuses in below: */
 
@@ -500,28 +508,28 @@ export function dmgval(otmp, mon) {
             case NHC.RUNESWORD:
             case NHC.ELVEN_BROADSWORD:
             case NHC.BROADSWORD:
-            tmp++;
-            break;
+                tmp++;
+                break;
             case NHC.FLAIL:
             case NHC.RANSEUR:
             case NHC.VOULGE:
-            tmp = (tmp + rnd(4)) | 0;
-            break;
+                tmp = (tmp + rnd(4)) | 0;
+                break;
             case NHC.ACID_VENOM:
             case NHC.HALBERD:
             case NHC.SPETUM:
-            tmp = (tmp + rnd(6)) | 0;
-            break;
+                tmp = (tmp + rnd(6)) | 0;
+                break;
             case NHC.BATTLE_AXE:
             case NHC.BARDICHE:
             case NHC.TRIDENT:
-            tmp = (tmp + d(2, 4)) | 0;
-            break;
+                tmp = (tmp + d(2, 4)) | 0;
+                break;
             case NHC.TSURUGI:
             case NHC.DWARVISH_MATTOCK:
             case NHC.TWO_HANDED_SWORD:
-            tmp = (tmp + d(2, 6)) | 0;
-            break;
+                tmp = (tmp + d(2, 6)) | 0;
+                break;
         }
     } else {
         if (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wsdam))
@@ -535,8 +543,8 @@ export function dmgval(otmp, mon) {
             case NHC.FLAIL:
             case NHC.SPETUM:
             case NHC.TRIDENT:
-            tmp++;
-            break;
+                tmp++;
+                break;
             case NHC.BATTLE_AXE:
             case NHC.BARDICHE:
             case NHC.BILL_GUISARME:
@@ -548,11 +556,11 @@ export function dmgval(otmp, mon) {
             case NHC.ELVEN_BROADSWORD:
             case NHC.RUNESWORD:
             case NHC.VOULGE:
-            tmp = (tmp + rnd(4)) | 0;
-            break;
+                tmp = (tmp + rnd(4)) | 0;
+                break;
             case NHC.ACID_VENOM:
-            tmp = (tmp + rnd(6)) | 0;
-            break;
+                tmp = (tmp + rnd(6)) | 0;
+                break;
         }
     }
     if (Is_weapon) {
@@ -572,8 +580,12 @@ export function dmgval(otmp, mon) {
 
     /* "very heavy iron ball"; weight increase is in increments */
     if (otyp == NHC.HEAVY_IRON_BALL && tmp > 0) {
-        let wt = cptr.ldI32o2(objects, NHC.HEAVY_IRON_BALL, $sizeof_objclass, $objclass_oc_weight) |
-                0;
+        let wt = cptr.ldI32o2(
+            objects,
+            NHC.HEAVY_IRON_BALL,
+            $sizeof_objclass,
+            $objclass_oc_weight
+        ) | 0;
 
         if ((cptr.ldI32o(otmp, $obj_owt) | 0) > wt) {
             wt = ((((cptr.ldI32o(otmp, $obj_owt) | 0) - wt) | 0) / NHC.WT_IRON_BALL_INCR) | 0;
@@ -670,7 +682,9 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
             cptr.ldI16o(obj, $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) ==
+        ) &
+            31) |
+            0) ==
             NHC.SILVER &&
                 mon_hates_silver(mdef)) {
             bonus = (bonus + rnd(20)) | 0;
@@ -686,7 +700,9 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
                 cptr.ldI16o(uleft.v, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
+            ) &
+                31) |
+                0) ==
                 NHC.SILVER &&
                     mon_hates_silver(mdef)) {
                 bonus = (bonus + rnd(20)) | 0;
@@ -699,7 +715,9 @@ export function special_dmgval(magr, mdef, armask, silverhit_p) {
                 cptr.ldI16o(uright.v, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
+            ) &
+                31) |
+                0) ==
                 NHC.SILVER &&
                     mon_hates_silver(mdef)) {
                 /* two silver rings don't give double silver damage
@@ -735,22 +753,14 @@ export function silver_sears(magr, mdef, silverhit) {
     let both;
     let l_dknown = schar((uleft.v && (cptr.ldI32o(uleft.v, $obj_dknown) & 1) | 0 ? 1 : 0));
     let r_dknown = schar((uright.v && (cptr.ldI32o(uright.v, $obj_dknown) & 1) | 0 ? 1 : 0));
-    let l_ag = schar((((cptr.ldI32o2(
-        objects,
-        ltyp,
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) & 31) | 0) ==
+    let l_ag = schar((((cptr.ldI32o2(objects, ltyp, $sizeof_objclass, $objclass_oc_material) & 31) |
+        0) ==
         NHC.SILVER &&
         l_dknown
             ? 1
             : 0));
-    let r_ag = schar((((cptr.ldI32o2(
-        objects,
-        rtyp,
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) & 31) | 0) ==
+    let r_ag = schar((((cptr.ldI32o2(objects, rtyp, $sizeof_objclass, $objclass_oc_material) & 31) |
+        0) ==
         NHC.SILVER &&
         r_dknown
             ? 1
@@ -919,7 +929,8 @@ export function select_rwep(mtmp) {
         cptr.ldI16o(mtmp, $monst_my),
         cptr.ldI16o(mtmp, $monst_mux),
         cptr.ldI16o(mtmp, $monst_muy)
-    ) <= 13 &&
+    ) <=
+        13 &&
             ((cptr.ld1uo(
                 cptr.ldPtro(
                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -928,7 +939,8 @@ export function select_rwep(mtmp) {
                 ),
                 cptr.ldI16o(mtmp, $monst_mx)
             ) &
-                NHM.COULD_SEE) != 0)) {
+                NHM.COULD_SEE) !=
+                0)) {
         if (is_art(mwep, NHC.ART_SNICKERSNEE)) {
             cptr.stPtro(gp, $instance_globals_p_propellor, mwep);
             return mwep;
@@ -939,21 +951,24 @@ export function select_rwep(mtmp) {
              * Big weapon is basically the same as bimanual.
              * All monsters can wield the remaining weapons.
              */
-            if (((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                67108864n) != 0n) &&
+            if (((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 67108864n) !=
+                0n) &&
                 (cptr.ldI64o(mtmp, $monst_misc_worn_check) & 8n) == 0n) ||
                 !(cptr.ldI32o2(
                     objects,
                     cptr.ldI32o(pwep, i, 4),
                     $sizeof_objclass,
                     $objclass_oc_big
-                ) & 1)) &&
+                ) &
+                    1)) &&
                     (((cptr.ldI32o2(
                         objects,
                         cptr.ldI32o(pwep, i, 4),
                         $sizeof_objclass,
                         $objclass_oc_material
-                    ) & 31) | 0) !=
+                    ) &
+                        31) |
+                        0) !=
                         NHC.SILVER ||
                         !mon_hates_silver(mtmp))) {
                 if ((otmp = oselect(mtmp, cptr.ldI32o(pwep, i, 4))) !== null &&
@@ -972,8 +987,8 @@ export function select_rwep(mtmp) {
         let arw = cptr.add(arwep, i, $sizeof_throw_and_return_weapon);
 
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) &&
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    262144n) != 0n) &&
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) !=
+                    0n) &&
                 !mweponly &&
                 dist2(
                     cptr.ldI16o(mtmp, $monst_mx),
@@ -990,20 +1005,19 @@ export function select_rwep(mtmp) {
                     ),
                     cptr.ldI16o(mtmp, $monst_mx)
                 ) &
-                    NHM.COULD_SEE) != 0)) {
+                    NHM.COULD_SEE) !=
+                    0)) {
             if ((((cptr.ldI64o(mtmp, $monst_misc_worn_check) & 8n) == 0n) ||
-                !(cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16(arw),
-                    $sizeof_objclass,
-                    $objclass_oc_big
-                ) & 1)) &&
+                !(cptr.ldI32o2(objects, cptr.ldI16(arw), $sizeof_objclass, $objclass_oc_big) &
+                    1)) &&
                     (((cptr.ldI32o2(
                         objects,
                         cptr.ldI16(arw),
                         $sizeof_objclass,
                         $objclass_oc_material
-                    ) & 31) | 0) !=
+                    ) &
+                        31) |
+                        0) !=
                         NHC.SILVER ||
                         !mon_hates_silver(mtmp))) {
                 if ((otmp = oselect(mtmp, cptr.ldI16(arw))) !== null &&
@@ -1025,8 +1039,8 @@ export function select_rwep(mtmp) {
         /* shooting gems from slings; this goes just before the darts */
         /* (shooting rocks is already handled via the rwep[] ordering) */
         if (cptr.ldI32o(rwep, i, 4) == NHC.DART &&
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                    536870912n) != 0n) &&
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) !=
+                    0n) &&
                 m_carrying(mtmp, NHC.SLING)) {
             for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS &&
@@ -1044,19 +1058,27 @@ export function select_rwep(mtmp) {
         if (prop < 0) {
             switch (-prop) {
                 case NHC.P_BOW:
-                cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.YUMI));
-                if (!cptr.ldPtro(gp, $instance_globals_p_propellor))
-                    cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.ELVEN_BOW));
-                if (!cptr.ldPtro(gp, $instance_globals_p_propellor))
-                    cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.BOW));
-                if (!cptr.ldPtro(gp, $instance_globals_p_propellor))
-                    cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.ORCISH_BOW));
-                break;
+                    cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.YUMI));
+                    if (!cptr.ldPtro(gp, $instance_globals_p_propellor))
+                        cptr.stPtro(
+                            gp,
+                            $instance_globals_p_propellor,
+                            oselect(mtmp, NHC.ELVEN_BOW)
+                        );
+                    if (!cptr.ldPtro(gp, $instance_globals_p_propellor))
+                        cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.BOW));
+                    if (!cptr.ldPtro(gp, $instance_globals_p_propellor))
+                        cptr.stPtro(
+                            gp,
+                            $instance_globals_p_propellor,
+                            oselect(mtmp, NHC.ORCISH_BOW)
+                        );
+                    break;
                 case NHC.P_SLING:
-                cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.SLING));
-                break;
+                    cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.SLING));
+                    break;
                 case NHC.P_CROSSBOW:
-                cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.CROSSBOW));
+                    cptr.stPtro(gp, $instance_globals_p_propellor, oselect(mtmp, NHC.CROSSBOW));
             }
             if ((otmp = (cptr.ldPtro((mtmp), $monst_mw))) &&
                     mwelded(otmp) &&
@@ -1184,8 +1206,7 @@ export function select_hwep(mtmp) {
     else if (cptr.eq(
         cptr.ldPtro(mtmp, $monst_data),
         cptr.add(mons, NHC.PM_BALROG, $sizeof_permonst)
-    ) &&
-            uwep.v)
+    ) && uwep.v)
         {
             if ((otmp = oselect(mtmp, NHC.BULLWHIP)) !== null)
                 return otmp;
@@ -1200,18 +1221,16 @@ export function select_hwep(mtmp) {
                 !Resists_Elem(mtmp, NHC.STONE_RES))
             continue;
         if (((strong && !wearing_shield) ||
-            !(cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(hwep, i, 2),
-                $sizeof_objclass,
-                $objclass_oc_big
-            ) & 1)) &&
+            !(cptr.ldI32o2(objects, cptr.ldI16o(hwep, i, 2), $sizeof_objclass, $objclass_oc_big) &
+                1)) &&
                 (((cptr.ldI32o2(
                     objects,
                     cptr.ldI16o(hwep, i, 2),
                     $sizeof_objclass,
                     $objclass_oc_material
-                ) & 31) | 0) !=
+                ) &
+                    31) |
+                    0) !=
                     NHC.SILVER ||
                     !mon_hates_silver(mtmp)))
             {
@@ -1254,7 +1273,8 @@ export function possibly_unwield(mon, polyspot) {
             ),
             cptr.ldI16o(mon, $monst_mx)
         ) &
-                NHM.IN_SIGHT) != 0)) {
+            NHM.IN_SIGHT) !=
+                0)) {
             pline_mon(mon, __s_s_drops_s, Monnam(mon), distant_name(obj, doname));
             newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
         }
@@ -1304,41 +1324,45 @@ export function mon_wield_item(mon) {
         return 0;
     switch (cptr.ldI16o(mon, $monst_weapon_check)) {
         case NHC.NEED_HTH_WEAPON:
-        obj = select_hwep(mon);
-        break;
+            obj = select_hwep(mon);
+            break;
         case NHC.NEED_RANGED_WEAPON:
-        void select_rwep(mon);
-        obj = cptr.ldPtro(gp, $instance_globals_p_propellor);
-        break;
+            void select_rwep(mon);
+            obj = cptr.ldPtro(gp, $instance_globals_p_propellor);
+            break;
         case NHC.NEED_PICK_AXE:
-        obj = m_carrying(mon, NHC.PICK_AXE);
-        /* KMH -- allow other picks */
-        if (!obj && !which_armor(mon, 8n))
-            obj = m_carrying(mon, NHC.DWARVISH_MATTOCK);
-        exclaim = 0;  /* mon is just planning to dig */
-        break;
-        case NHC.NEED_AXE:
-        /* currently, only 2 types of axe */
-        obj = m_carrying(mon, NHC.BATTLE_AXE);
-        if (!obj || which_armor(mon, 8n))
-            obj = m_carrying(mon, NHC.AXE);
-        exclaim = 0;
-        break;
-        case NHC.NEED_PICK_OR_AXE:
-        /* prefer pick for fewer switches on most levels */
-        obj = m_carrying(mon, NHC.DWARVISH_MATTOCK);
-        if (!obj)
-            obj = m_carrying(mon, NHC.BATTLE_AXE);
-        if (!obj || which_armor(mon, 8n)) {
             obj = m_carrying(mon, NHC.PICK_AXE);
-            if (!obj)
+            /* KMH -- allow other picks */
+            if (!obj && !which_armor(mon, 8n))
+                obj = m_carrying(mon, NHC.DWARVISH_MATTOCK);
+            exclaim = 0;  /* mon is just planning to dig */
+            break;
+        case NHC.NEED_AXE:
+            /* currently, only 2 types of axe */
+            obj = m_carrying(mon, NHC.BATTLE_AXE);
+            if (!obj || which_armor(mon, 8n))
                 obj = m_carrying(mon, NHC.AXE);
-        }
-        exclaim = 0;
-        break;
+            exclaim = 0;
+            break;
+        case NHC.NEED_PICK_OR_AXE:
+            /* prefer pick for fewer switches on most levels */
+            obj = m_carrying(mon, NHC.DWARVISH_MATTOCK);
+            if (!obj)
+                obj = m_carrying(mon, NHC.BATTLE_AXE);
+            if (!obj || which_armor(mon, 8n)) {
+                obj = m_carrying(mon, NHC.PICK_AXE);
+                if (!obj)
+                    obj = m_carrying(mon, NHC.AXE);
+            }
+            exclaim = 0;
+            break;
         default:
-        impossible(__s_weapon_check_d_for_s, cptr.ldI16o(mon, $monst_weapon_check), mon_nam(mon));
-        return 0;
+            impossible(
+                __s_weapon_check_d_for_s,
+                cptr.ldI16o(mon, $monst_weapon_check),
+                mon_nam(mon)
+            );
+            return 0;
     }
     if (obj && !cptr.eq(obj, hands_obj)) {
         let mw_tmp = (cptr.ldPtro((mon), $monst_mw));
@@ -1621,26 +1645,26 @@ export function skill_level_name(skill, buf) {
 
     switch ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills))) {
         case NHC.P_UNSKILLED:
-        ptr = __s_unskilled;
-        break;
+            ptr = __s_unskilled;
+            break;
         case NHC.P_BASIC:
-        ptr = __s_basic;
-        break;
+            ptr = __s_basic;
+            break;
         case NHC.P_SKILLED:
-        ptr = __s_skilled;
-        break;
+            ptr = __s_skilled;
+            break;
         case NHC.P_EXPERT:
-        ptr = __s_expert;
-        break;
+            ptr = __s_expert;
+            break;
         case NHC.P_MASTER:
-        ptr = __s_master;
-        break;
+            ptr = __s_master;
+            break;
         case NHC.P_GRAND_MASTER:
-        ptr = __s_grand_master;
-        break;
+            ptr = __s_grand_master;
+            break;
         default:
-        ptr = __s_unknown;
-        break;
+            ptr = __s_unknown;
+            break;
     }
     void cptr.strcpy(buf, ptr);
     return buf;
@@ -1771,8 +1795,7 @@ function skill_advance(skill) {
         $sizeof_skills,
         $you_weapon_skills,
         cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills) + 1
-    )) -
-            (1);
+    )) - (1);
     cptr.stI16o2(
         u,
         (cptr.stI32o(u, $you_skills_advanced, cptr.ldI32o(u, $you_skills_advanced) + 1)) - (1),
@@ -1874,7 +1897,8 @@ export function add_skills_to_menu(win, selectable, speedy) {
                     : cptr.ldPtro(odd_skill_names, -cptr.ldI16o(skill_names_indices, i, 2), 8))),
             __s_add_skills_to_menu,
             1241
-        ) | 0) >
+        ) |
+            0) >
                 longest)
             longest = len;
     }
@@ -2292,8 +2316,7 @@ export function lose_weapon_skill(n) {
                 $sizeof_skills,
                 $you_weapon_skills,
                 cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills) + -1
-            )) -
-                    (-1);  /* drop skill one level */
+            )) - (-1);  /* drop skill one level */
             /* Lost skill might have taken more than one slot; refund rest. */
             cptr.stI32o(u, $you_weapon_slots, (slots_required(skill) - 1) | 0);
             /* It might now be possible to advance some other pending
@@ -2328,8 +2351,11 @@ export function drain_weapon_skill(n) {
                     cptr.ldI16o2(u, (i + 1) | 0, 2, $you_skill_record)
                 );
             }
-            (cptr.stI32o(u, $you_skills_advanced, cptr.ldI32o(u, $you_skills_advanced) + -1)) -
-                    (-1);
+            (cptr.stI32o(
+                u,
+                $you_skills_advanced,
+                cptr.ldI32o(u, $you_skills_advanced) + -1
+            )) - (-1);
             if ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) <= NHC.P_UNSKILLED)
                 panic(__s_drain_weapon_skill_d, skill);
             (cptr.stI16o2(
@@ -2338,8 +2364,7 @@ export function drain_weapon_skill(n) {
                 $sizeof_skills,
                 $you_weapon_skills,
                 cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills) + -1
-            )) -
-                    (-1);  /* drop skill one level */
+            )) - (-1);  /* drop skill one level */
             /* refund slots used for skill */
             cptr.stI32o(
                 u,
@@ -2457,25 +2482,25 @@ export function weapon_hit_bonus(weapon) {
     } else if (type <= NHC.P_UNICORN_HORN) {
         switch ((cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills))) {
             default:
-            impossible(
-                cptr.decay(__static_weapon_hit_bonus_bad_skill),
-                (cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills))
-            );
-            // @FallThrough
-            ;
+                impossible(
+                    cptr.decay(__static_weapon_hit_bonus_bad_skill),
+                    (cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills))
+                );
+                // @FallThrough
+                ;
             case NHC.P_ISRESTRICTED:
             case NHC.P_UNSKILLED:
-            bonus = -4;
-            break;
+                bonus = -4;
+                break;
             case NHC.P_BASIC:
-            bonus = 0;
-            break;
+                bonus = 0;
+                break;
             case NHC.P_SKILLED:
-            bonus = 2;
-            break;
+                bonus = 2;
+                break;
             case NHC.P_EXPERT:
-            bonus = 3;
-            break;
+                bonus = 3;
+                break;
         }
     } else if (type == NHC.P_TWO_WEAPON_COMBAT) {
         skill = (cptr.ldI16o2(u, NHC.P_TWO_WEAPON_COMBAT, $sizeof_skills, $you_weapon_skills));
@@ -2483,22 +2508,22 @@ export function weapon_hit_bonus(weapon) {
             skill = (cptr.ldI16o2(u, wep_type, $sizeof_skills, $you_weapon_skills));
         switch (skill) {
             default:
-            impossible(cptr.decay(__static_weapon_hit_bonus_bad_skill), skill);
-            // @FallThrough
-            ;
+                impossible(cptr.decay(__static_weapon_hit_bonus_bad_skill), skill);
+                // @FallThrough
+                ;
             case NHC.P_ISRESTRICTED:
             case NHC.P_UNSKILLED:
-            bonus = -9;
-            break;
+                bonus = -9;
+                break;
             case NHC.P_BASIC:
-            bonus = -7;
-            break;
+                bonus = -7;
+                break;
             case NHC.P_SKILLED:
-            bonus = -5;
-            break;
+                bonus = -5;
+                break;
             case NHC.P_EXPERT:
-            bonus = -3;
-            break;
+                bonus = -3;
+                break;
         }
     } else if (type == NHC.P_BARE_HANDED_COMBAT) {
         /*
@@ -2518,8 +2543,7 @@ export function weapon_hit_bonus(weapon) {
                 (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
                 ? 2
                 : 1)
-        )) / 2) |
-                0;
+        )) / 2) | 0;
     }
 
     /* KMH -- It's harder to hit while you are riding */
@@ -2527,15 +2551,15 @@ export function weapon_hit_bonus(weapon) {
         switch ((cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills))) {
             case NHC.P_ISRESTRICTED:
             case NHC.P_UNSKILLED:
-            bonus = (bonus - 2) | 0;
-            break;
+                bonus = (bonus - 2) | 0;
+                break;
             case NHC.P_BASIC:
-            bonus = (bonus - 1) | 0;
-            break;
+                bonus = (bonus - 1) | 0;
+                break;
             case NHC.P_SKILLED:
-            break;
+                break;
             case NHC.P_EXPERT:
-            break;
+                break;
         }
         if (cptr.ld1so(u, $you_twoweap))
             bonus = (bonus - 2) | 0;
@@ -2567,25 +2591,25 @@ export function weapon_dam_bonus(weapon) {
     } else if (type <= NHC.P_UNICORN_HORN) {
         switch ((cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills))) {
             default:
-            impossible(
-                __s_weapon_dam_bonus_bad_skill_d,
-                (cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills))
-            );
-            // @FallThrough
-            ;
+                impossible(
+                    __s_weapon_dam_bonus_bad_skill_d,
+                    (cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills))
+                );
+                // @FallThrough
+                ;
             case NHC.P_ISRESTRICTED:
             case NHC.P_UNSKILLED:
-            bonus = -2;
-            break;
+                bonus = -2;
+                break;
             case NHC.P_BASIC:
-            bonus = 0;
-            break;
+                bonus = 0;
+                break;
             case NHC.P_SKILLED:
-            bonus = 1;
-            break;
+                bonus = 1;
+                break;
             case NHC.P_EXPERT:
-            bonus = 2;
-            break;
+                bonus = 2;
+                break;
         }
     } else if (type == NHC.P_TWO_WEAPON_COMBAT) {
         skill = (cptr.ldI16o2(u, NHC.P_TWO_WEAPON_COMBAT, $sizeof_skills, $you_weapon_skills));
@@ -2595,17 +2619,17 @@ export function weapon_dam_bonus(weapon) {
             default:
             case NHC.P_ISRESTRICTED:
             case NHC.P_UNSKILLED:
-            bonus = -3;
-            break;
+                bonus = -3;
+                break;
             case NHC.P_BASIC:
-            bonus = -1;
-            break;
+                bonus = -1;
+                break;
             case NHC.P_SKILLED:
-            bonus = 0;
-            break;
+                bonus = 0;
+                break;
             case NHC.P_EXPERT:
-            bonus = 1;
-            break;
+                bonus = 1;
+                break;
         }
     } else if (type == NHC.P_BARE_HANDED_COMBAT) {
         /*
@@ -2625,8 +2649,7 @@ export function weapon_dam_bonus(weapon) {
                 (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
                 ? 3
                 : 1)
-        )) / 2) |
-                0;
+        )) / 2) | 0;
     }
 
     /* KMH -- Riding gives some thrusting damage */
@@ -2634,15 +2657,15 @@ export function weapon_dam_bonus(weapon) {
         switch ((cptr.ldI16o2(u, NHC.P_RIDING, $sizeof_skills, $you_weapon_skills))) {
             case NHC.P_ISRESTRICTED:
             case NHC.P_UNSKILLED:
-            break;
+                break;
             case NHC.P_BASIC:
-            break;
+                break;
             case NHC.P_SKILLED:
-            bonus = (bonus + 1) | 0;
-            break;
+                bonus = (bonus + 1) | 0;
+                break;
             case NHC.P_EXPERT:
-            bonus = (bonus + 2) | 0;
-            break;
+                bonus = (bonus + 2) | 0;
+                break;
         }
     }
 

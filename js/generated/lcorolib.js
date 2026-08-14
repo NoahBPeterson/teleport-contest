@@ -159,19 +159,19 @@ function auxstatus(L, co) {
     else {
         switch (lua_status(co)) {
             case 1:
-            return 2;
+                return 2;
             case 0:
-            {
-                let ar = cptr.alloc(136);
-                if (lua_getstack(co, 0, ar))
-                    return 3;  /* it is running */
-                else if (lua_gettop(co) == 0)
-                    return 1;
-                else
-                    return 2;  /* initial state */
-            }
+                {
+                    let ar = cptr.alloc(136);
+                    if (lua_getstack(co, 0, ar))
+                        return 3;  /* it is running */
+                    else if (lua_gettop(co) == 0)
+                        return 1;
+                    else
+                        return 2;  /* initial state */
+                }
             default:
-            return 1;
+                return 1;
         }
     }
 }
@@ -204,19 +204,19 @@ function luaB_close(L) {
     switch (status) {
         case 1:
         case 2:
-        {
-            status = lua_closethread(co, L);
-            if (status == 0) {
-                lua_pushboolean(L, 1);
-                return 1;
-            } else {
-                lua_pushboolean(L, 0);
-                lua_xmove(co, L, 1);  /* move error message */
-                return 2;
+            {
+                status = lua_closethread(co, L);
+                if (status == 0) {
+                    lua_pushboolean(L, 1);
+                    return 1;
+                } else {
+                    lua_pushboolean(L, 0);
+                    lua_xmove(co, L, 1);  /* move error message */
+                    return 2;
+                }
             }
-        }
         default:
-        return luaL_error(L, __s_cannot_close_a_s_coroutine, cptr.ldPtro(statname, status, 8));
+            return luaL_error(L, __s_cannot_close_a_s_coroutine, cptr.ldPtro(statname, status, 8));
     }
 }
 

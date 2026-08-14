@@ -418,11 +418,14 @@ function give_to_nearby_mon(otmp, x, y) {
              * likes_* property, intentionally. Assume that the monster is
              * rifling through and taking things that look interesting. */
             if (!(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                268435456n) != 0n) ||
+                268435456n) !=
+                0n) ||
                     ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                        536870912n) != 0n) ||
+                        536870912n) !=
+                        0n) ||
                     ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                        1073741824n) != 0n ||
+                        1073741824n) !=
+                        0n ||
                         attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) ||
                     ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
                         2147483648n) != 0n)))
@@ -520,9 +523,10 @@ function fixuporacle(oracle) {
         cptr.ldI16o(oracle, $monst_my),
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_roomno
-    ) & 63) | 0) -
-        NHM.ROOMOFFSET) |
-            0;
+    ) &
+        63) |
+        0) -
+            NHM.ROOMOFFSET) | 0;
     if (o_ridx >= 0 && cptr.ld1so2(svr, o_ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.DELPHI)
         return 1;  /* no fixup needed */
 
@@ -543,13 +547,17 @@ function fixuporacle(oracle) {
         cptr.stI16(
             cc,
             i16(((((cptr.ldI16o(svr, ridx, $sizeof_mkroom) +
-                cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hx)) | 0) / 2) | 0))
+                cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hx)) |
+                0) /
+                2) | 0))
         );
         cptr.stI16o(
             cc,
             $nhcoord_y,
             i16(((((cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_ly) +
-                cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hy)) | 0) / 2) | 0))
+                cptr.ldI16o2(svr, ridx, $sizeof_mkroom, $mkroom_hy)) |
+                0) /
+                2) | 0))
         );
         if (enexto(
             cc,
@@ -565,9 +573,10 @@ function fixuporacle(oracle) {
                 cptr.ldI16o(oracle, $monst_my),
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_roomno
-            ) & 63) | 0) -
-                NHM.ROOMOFFSET) |
-                    0;
+            ) &
+                63) |
+                0) -
+                    NHM.ROOMOFFSET) | 0;
         }
         /* [if her room is already full, she might end up outside;
            that's ok, next hero just won't get any welcome message,
@@ -656,7 +665,8 @@ export function savebones(how, when, corpse) {
                     cptr.decay(ynchars),
                     110,
                     1
-                ) == 121) {
+                ) ==
+                        121) {
                     if (delete_bonesfile(cptr.add(u, $you_uz)))
                         break __lbl_make_bones;
                     else
@@ -1111,8 +1121,7 @@ export function getbones() {
         u,
         $you_uroleplay + $u_roleplay_numbones,
         cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones) + 1n
-    )) -
-            (1n);
+    )) - (1n);
 
     if (wizard()) {
         if (yn_function(__s_unlink_bones, cptr.decay(ynchars), 110, 1) == 110) {
@@ -1180,14 +1189,14 @@ export function fix_ghostly_obj(obj) {
         case NHC.ORCISH_BOW:
         case NHC.YUMI:
         case NHC.BOOMERANG:
-        You(
-            __s_make_adjustments_to_s_to_suit_your_s,
-            the(xname(obj)),
-            URIGHTY() ? __s_right : __s_left
-        );
-        break;
+            You(
+                __s_make_adjustments_to_s_to_suit_your_s,
+                the(xname(obj)),
+                URIGHTY() ? __s_right : __s_left
+            );
+            break;
         default:
-        break;
+            break;
     }
     cptr.stI32o(obj, $obj_ghostly, 0);
 }

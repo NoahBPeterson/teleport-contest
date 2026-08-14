@@ -297,7 +297,8 @@ export function* main(argc, argv) {
                         cptr.decay(ynchars),
                         110,
                         1
-                    )) == 110) {
+                    )) ==
+                            110) {
                         void (yield* delete_savefile());
                     } else {
                         void chmod(fq_save, NHM.FCMASK);  /* back to readable */
@@ -392,105 +393,105 @@ function* process_options(argc, argv) {
         switch (cptr.ld1so(arg, 1)) {
             case 68:
             case 100:
-            if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) ||
-                    !(yield* strncmpi((arg), (__s_debug), -1))) {
-                cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
-            } else if (!(yield* strncmpi(arg, __s_decgraphics, l))) {
-                (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
-                (yield* switch_symbols(1));
-            } else {
-                (yield* config_error_add(__s_unknown_option_60s, origarg));
-            }
-            break;
+                if ((cptr.ld1so(arg, 1) == 68 && !cptr.ld1so(arg, 2)) ||
+                        !(yield* strncmpi((arg), (__s_debug), -1))) {
+                    cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
+                } else if (!(yield* strncmpi(arg, __s_decgraphics, l))) {
+                    (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
+                    (yield* switch_symbols(1));
+                } else {
+                    (yield* config_error_add(__s_unknown_option_60s, origarg));
+                }
+                break;
             case 88:
-            cptr.st1o(flags, $flag_explore, 1), cptr.st1o(flags, $flag_debug, 0);
-            break;
+                cptr.st1o(flags, $flag_explore, 1), cptr.st1o(flags, $flag_debug, 0);
+                break;
             case 110:
-            if (!cptr.ld1so(arg, 2) || !strcmp(arg, __s_no_news)) {
-                cptr.st1o(iflags, $instance_flags_news, 0);
+                if (!cptr.ld1so(arg, 2) || !strcmp(arg, __s_no_news)) {
+                    cptr.st1o(iflags, $instance_flags_news, 0);
+                    break;
+                } else if (!strcmp(arg, __s_news__2)) {
+                    /* in case RC has !news, allow 'nethack -news' to override */
+                    cptr.st1o(iflags, $instance_flags_news, 1);
+                    break;
+                }
                 break;
-            } else if (!strcmp(arg, __s_news__2)) {
-                /* in case RC has !news, allow 'nethack -news' to override */
-                cptr.st1o(iflags, $instance_flags_news, 1);
-                break;
-            }
-            break;
             case 117:
-            if (cptr.ld1so(arg, 2)) {
-                void __builtin___strncpy_chk(
-                    svp,
-                    cptr.add(arg, 2),
-                    31n,
-                    __builtin_object_size(svp, 1)
-                );
-                cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);  /* plname[] might have -role-race attached */
-            } else if (argc > 1) {
-                argc--;
-                argv = cptr.add(argv, 1, 8);
-                void __builtin___strncpy_chk(
-                    svp,
-                    cptr.ldPtro(argv, 0, 8),
-                    31n,
-                    __builtin_object_size(svp, 1)
-                );
-                cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);
-            } else {
-                (yield* config_error_add(__s_character_name_expected_after_u));
-            }
-            break;
+                if (cptr.ld1so(arg, 2)) {
+                    void __builtin___strncpy_chk(
+                        svp,
+                        cptr.add(arg, 2),
+                        31n,
+                        __builtin_object_size(svp, 1)
+                    );
+                    cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);  /* plname[] might have -role-race attached */
+                } else if (argc > 1) {
+                    argc--;
+                    argv = cptr.add(argv, 1, 8);
+                    void __builtin___strncpy_chk(
+                        svp,
+                        cptr.ldPtro(argv, 0, 8),
+                        31n,
+                        __builtin_object_size(svp, 1)
+                    );
+                    cptr.stI32o(gp, $instance_globals_p_plnamelen, 0);
+                } else {
+                    (yield* config_error_add(__s_character_name_expected_after_u));
+                }
+                break;
             case 73:
             case 105:
-            if (!(yield* strncmpi(arg, __s_ibmgraphics, l))) {
-                (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
-                (yield* load_symset(__s_rogueibm, NHC.ROGUESET));
-                (yield* switch_symbols(1));
-            } else {
-                (yield* config_error_add(__s_unknown_option_60s, origarg));
-            }
-            break;
-            case 108:
-            if (!cptr.strncmp(arg, __s_loglua, 7n)) {
-                cptr.stI32o(gl, $instance_globals_l_loglua, 1);
-            } else
-                (yield* config_error_add(__s_unknown_option_60s, origarg));
-            break;
-            case 112:
-            if (cptr.ld1so(arg, 2)) {
-                if ((i = (yield* str2role(cptr.add(arg, 2)))) >= 0)
-                    cptr.stI32o(flags, $flag_initrole, i);
-            } else if (argc > 1) {
-                argc--;
-                argv = cptr.add(argv, 1, 8);
-                if ((i = (yield* str2role(cptr.ldPtro(argv, 0, 8)))) >= 0)
-                    cptr.stI32o(flags, $flag_initrole, i);
-            }
-            break;
-            case 114:
-            if (cptr.ld1so(arg, 2)) {
-                if ((i = (yield* str2race(cptr.add(arg, 2)))) >= 0)
-                    cptr.stI32o(flags, $flag_initrace, i);
-            } else if (argc > 1) {
-                argc--;
-                argv = cptr.add(argv, 1, 8);
-                if ((i = (yield* str2race(cptr.ldPtro(argv, 0, 8)))) >= 0)
-                    cptr.stI32o(flags, $flag_initrace, i);
-            }
-            break;
-            case 64:
-            cptr.stI32o(flags, $flag_randomall, 1);
-            break;
-            case 45:
-            /* "--" or "--x" or "--x=y"; need at least 2 chars after the
-               dashes in order to accept "--x" as an alternative to "-x";
-               don't just silently ignore it */
-            (yield* config_error_add(__s_unknown_option_60s, origarg));
-            break;
-            default:
-            /* default for "-x" is to play as the role that starts with "x" */
-            if ((i = (yield* str2role(cptr.add(cptr.ldPtro(argv, 0, 8), 1)))) >= 0) {
-                cptr.stI32o(flags, $flag_initrole, i);
+                if (!(yield* strncmpi(arg, __s_ibmgraphics, l))) {
+                    (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
+                    (yield* load_symset(__s_rogueibm, NHC.ROGUESET));
+                    (yield* switch_symbols(1));
+                } else {
+                    (yield* config_error_add(__s_unknown_option_60s, origarg));
+                }
                 break;
-            }
+            case 108:
+                if (!cptr.strncmp(arg, __s_loglua, 7n)) {
+                    cptr.stI32o(gl, $instance_globals_l_loglua, 1);
+                } else
+                    (yield* config_error_add(__s_unknown_option_60s, origarg));
+                break;
+            case 112:
+                if (cptr.ld1so(arg, 2)) {
+                    if ((i = (yield* str2role(cptr.add(arg, 2)))) >= 0)
+                        cptr.stI32o(flags, $flag_initrole, i);
+                } else if (argc > 1) {
+                    argc--;
+                    argv = cptr.add(argv, 1, 8);
+                    if ((i = (yield* str2role(cptr.ldPtro(argv, 0, 8)))) >= 0)
+                        cptr.stI32o(flags, $flag_initrole, i);
+                }
+                break;
+            case 114:
+                if (cptr.ld1so(arg, 2)) {
+                    if ((i = (yield* str2race(cptr.add(arg, 2)))) >= 0)
+                        cptr.stI32o(flags, $flag_initrace, i);
+                } else if (argc > 1) {
+                    argc--;
+                    argv = cptr.add(argv, 1, 8);
+                    if ((i = (yield* str2race(cptr.ldPtro(argv, 0, 8)))) >= 0)
+                        cptr.stI32o(flags, $flag_initrace, i);
+                }
+                break;
+            case 64:
+                cptr.stI32o(flags, $flag_randomall, 1);
+                break;
+            case 45:
+                /* "--" or "--x" or "--x=y"; need at least 2 chars after the
+                   dashes in order to accept "--x" as an alternative to "-x";
+                   don't just silently ignore it */
+                (yield* config_error_add(__s_unknown_option_60s, origarg));
+                break;
+            default:
+                /* default for "-x" is to play as the role that starts with "x" */
+                if ((i = (yield* str2role(cptr.add(cptr.ldPtro(argv, 0, 8), 1)))) >= 0) {
+                    cptr.stI32o(flags, $flag_initrole, i);
+                    break;
+                }
         }
     }
 

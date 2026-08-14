@@ -814,7 +814,8 @@ export function* adjattrib(ndx, incr, msgflg) {
              * decr = rn2(-(ABASE - ATTRMIN) + 1);
              */
             decr = rn2(((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) -
-                    (cptr.ld1so2(u, ndx, 1, $you_acurr)) + 1) | 0);
+                    (cptr.ld1so2(u, ndx, 1, $you_acurr)) +
+                    1) | 0);
             cptr.st1o2(
                 u,
                 ndx,
@@ -1268,22 +1269,22 @@ function* exerper() {
         }
         switch (hs) {
             case NHC.SATIATED:
-            (yield* exercise(NHC.A_DEX, 0));
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
-                (yield* exercise(NHC.A_WIS, 0));
-            break;
+                (yield* exercise(NHC.A_DEX, 0));
+                if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
+                    (yield* exercise(NHC.A_WIS, 0));
+                break;
             case NHC.NOT_HUNGRY:
-            (yield* exercise(NHC.A_CON, 1));
-            break;
+                (yield* exercise(NHC.A_CON, 1));
+                break;
             case NHC.WEAK:
-            (yield* exercise(NHC.A_STR, 0));
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
-                (yield* exercise(NHC.A_WIS, 1));
-            break;
+                (yield* exercise(NHC.A_STR, 0));
+                if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
+                    (yield* exercise(NHC.A_WIS, 1));
+                break;
             case NHC.FAINTING:
             case NHC.FAINTED:
-            (yield* exercise(NHC.A_CON, 0));
-            break;
+                (yield* exercise(NHC.A_CON, 0));
+                break;
         }
         {
             if ((yield* debugcore(__s_attrib_c, 1))) {
@@ -1296,16 +1297,16 @@ function* exerper() {
         }
         switch (near_capacity()) {
             case NHC.MOD_ENCUMBER:
-            (yield* exercise(NHC.A_STR, 1));
-            break;
+                (yield* exercise(NHC.A_STR, 1));
+                break;
             case NHC.HVY_ENCUMBER:
-            (yield* exercise(NHC.A_STR, 1));
-            (yield* exercise(NHC.A_DEX, 0));
-            break;
+                (yield* exercise(NHC.A_STR, 1));
+                (yield* exercise(NHC.A_DEX, 0));
+                break;
             case NHC.EXT_ENCUMBER:
-            (yield* exercise(NHC.A_DEX, 0));
-            (yield* exercise(NHC.A_CON, 0));
-            break;
+                (yield* exercise(NHC.A_DEX, 0));
+                (yield* exercise(NHC.A_CON, 0));
+                break;
         }
     }
 
@@ -1618,7 +1619,8 @@ export function redist_attr() {
             schar(((Math.imul(
                 (cptr.ld1so2(u, i, 1, $you_acurr)),
                 (cptr.ld1so2(u, i, 1, $you_amax))
-            ) / tmp) | 0))
+            ) /
+                tmp) | 0))
         );
         /* ABASE(i) > ATTRMAX(i) is impossible */
         if ((cptr.ld1so2(u, i, 1, $you_acurr)) <
@@ -1719,22 +1721,22 @@ function check_innate_abil(ability, frommask) {
     else if (frommask == 33554432n)
         switch (Race_switch()) {
             case NHC.PM_DWARF:
-            abil = dwa_abil;
-            break;
+                abil = dwa_abil;
+                break;
             case NHC.PM_ELF:
-            abil = elf_abil;
-            break;
+                abil = elf_abil;
+                break;
             case NHC.PM_GNOME:
-            abil = gno_abil;
-            break;
+                abil = gno_abil;
+                break;
             case NHC.PM_ORC:
-            abil = orc_abil;
-            break;
+                abil = orc_abil;
+                break;
             case NHC.PM_HUMAN:
-            abil = hum_abil;
-            break;
+                abil = hum_abil;
+                break;
             default:
-            break;
+                break;
         }
 
     while (abil && cptr.ldPtro(abil, $innate_ability)) {
@@ -1785,7 +1787,8 @@ export function is_innate(propidx) {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-            4096n) == 0n)) ||
+            4096n) ==
+            0n)) ||
             (propidx == NHC.BLND_RES && (HBlnd_resist() & 268435456n) != 0n))
         return 5;
     return 0;
@@ -1900,36 +1903,36 @@ export function* from_what(propidx) {
                replace this with what_blocks() comparable to what_gives() */
             switch (-propidx) {
                 case NHC.BLINDED:
-                /* wearing the Eyes of the Overworld overrides blindness */
-                if (BBlinded() && is_art(ublindf.v, NHC.ART_EYES_OF_THE_OVERWORLD))
-                    void cptr.sprintf(
-                        cptr.decay(__static_from_what_buf),
-                        cptr.decay(__static_from_what_because_of),
-                        (yield* bare_artifactname(ublindf.v))
-                    );
-                break;
+                    /* wearing the Eyes of the Overworld overrides blindness */
+                    if (BBlinded() && is_art(ublindf.v, NHC.ART_EYES_OF_THE_OVERWORLD))
+                        void cptr.sprintf(
+                            cptr.decay(__static_from_what_buf),
+                            cptr.decay(__static_from_what_because_of),
+                            (yield* bare_artifactname(ublindf.v))
+                        );
+                    break;
                 case NHC.INVIS:
-                if (cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_blocked) & 2n)
-                    void cptr.sprintf(
-                        cptr.decay(__static_from_what_buf),
-                        cptr.decay(__static_from_what_because_of),
-                        (yield* ysimple_name(uarmc.v))
-                    );
-                break;
+                    if (cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_blocked) & 2n)
+                        void cptr.sprintf(
+                            cptr.decay(__static_from_what_buf),
+                            cptr.decay(__static_from_what_because_of),
+                            (yield* ysimple_name(uarmc.v))
+                        );
+                    break;
                 case NHC.CLAIRVOYANT:
-                if (wizard() &&
-                        (cptr.ldI64o2(
-                            u,
-                            NHC.CLAIRVOYANT,
-                            $sizeof_prop,
-                            $you_uprops + $prop_blocked
-                        ) & 4n))
-                    void cptr.sprintf(
-                        cptr.decay(__static_from_what_buf),
-                        cptr.decay(__static_from_what_because_of),
-                        (yield* ysimple_name(uarmh.v))
-                    );
-                break;
+                    if (wizard() &&
+                            (cptr.ldI64o2(
+                                u,
+                                NHC.CLAIRVOYANT,
+                                $sizeof_prop,
+                                $you_uprops + $prop_blocked
+                            ) & 4n))
+                        void cptr.sprintf(
+                            cptr.decay(__static_from_what_buf),
+                            cptr.decay(__static_from_what_because_of),
+                            (yield* ysimple_name(uarmh.v))
+                        );
+                    break;
             }
         }
 
@@ -1948,17 +1951,17 @@ export function* adjabil(oldlevel, newlevel) {
 
     switch (Race_switch()) {
         case NHC.PM_ELF:
-        rabil = elf_abil;
-        break;
+            rabil = elf_abil;
+            break;
         case NHC.PM_ORC:
-        rabil = orc_abil;
-        break;
+            rabil = orc_abil;
+            break;
         case NHC.PM_HUMAN:
         case NHC.PM_DWARF:
         case NHC.PM_GNOME:
         default:
-        rabil = null;
-        break;
+            rabil = null;
+            break;
     }
 
     while (abil || rabil) {
@@ -2031,22 +2034,19 @@ export function newhp() {
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         /* Initialize hit points */
         hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv) +
-            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv)) |
-                0;
+                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd) > 0)
             hp = (hp +
-                rnd(cptr.ldI16o(
-                    gu,
-                    $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd
-                ))) |
-                    0;
+                    rnd(cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd
+                    ))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd) > 0)
             hp = (hp +
-                rnd(cptr.ldI16o(
-                    gu,
-                    $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd
-                ))) |
-                    0;
+                    rnd(cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd
+                    ))) | 0;
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 0n) {
             /* Initialize alignment stuff */
             cptr.st1o(
@@ -2069,40 +2069,40 @@ export function newhp() {
     } else {
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lofix) +
-                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lofix)) |
-                    0;
+                    cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lofix
+                    )) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd) > 0)
                 hp = (hp +
-                    rnd(cptr.ldI16o(
-                        gu,
-                        $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd
-                    ))) |
-                        0;
+                        rnd(cptr.ldI16o(
+                            gu,
+                            $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd
+                        ))) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd) > 0)
                 hp = (hp +
-                    rnd(cptr.ldI16o(
-                        gu,
-                        $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd
-                    ))) |
-                        0;
+                        rnd(cptr.ldI16o(
+                            gu,
+                            $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd
+                        ))) | 0;
         } else {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hifix) +
-                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hifix)) |
-                    0;
+                    cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hifix
+                    )) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd) > 0)
                 hp = (hp +
-                    rnd(cptr.ldI16o(
-                        gu,
-                        $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd
-                    ))) |
-                        0;
+                        rnd(cptr.ldI16o(
+                            gu,
+                            $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd
+                        ))) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd) > 0)
                 hp = (hp +
-                    rnd(cptr.ldI16o(
-                        gu,
-                        $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd
-                    ))) |
-                        0;
+                        rnd(cptr.ldI16o(
+                            gu,
+                            $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd
+                        ))) | 0;
         }
         if ((acurr(NHC.A_CON)) <= 3)
             conplus = -2;
@@ -2196,9 +2196,8 @@ export function acurr(chridx) {
             ? __assert_rtn(__s_acurr, __s_attrib_c, 1204, __s_chridx_0_chridx_a_max)
             : void 0);
     tmp = (cptr.ld1so2(u, chridx, 1, $you_abon) +
-        cptr.ld1so2(u, chridx, 1, $you_atemp) +
-        cptr.ld1so2(u, chridx, 1, $you_acurr)) |
-            0;
+            cptr.ld1so2(u, chridx, 1, $you_atemp) +
+            cptr.ld1so2(u, chridx, 1, $you_acurr)) | 0;
 
     /* for Strength:  3 <= result <= 125;
        for all others:  3 <= result <= 25 */

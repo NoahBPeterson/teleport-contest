@@ -284,7 +284,8 @@ function* freestack(L) {
                         cptr.ldPtro((L), $lua_State_stack_last),
                         cptr.ldPtro((L), $lua_State_stack)
                     ) / 16n))
-                ))) + 5) | 0))
+                ))) +
+                    5) | 0))
             ) * 16n
         )
     ));  /* free stack */

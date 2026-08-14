@@ -304,15 +304,15 @@ export function mon_has_special(mtmp) {
 function which_arti(mask) {
     switch (mask) {
         case NHM.M3_WANTSAMUL:
-        return NHC.AMULET_OF_YENDOR;
+            return NHC.AMULET_OF_YENDOR;
         case NHM.M3_WANTSBELL:
-        return NHC.BELL_OF_OPENING;
+            return NHC.BELL_OF_OPENING;
         case NHM.M3_WANTSCAND:
-        return NHC.CANDELABRUM_OF_INVOCATION;
+            return NHC.CANDELABRUM_OF_INVOCATION;
         case NHM.M3_WANTSBOOK:
-        return NHC.SPE_BOOK_OF_THE_DEAD;
+            return NHC.SPE_BOOK_OF_THE_DEAD;
         default:
-        break;  /* 0 signifies quest artifact */
+            break;  /* 0 signifies quest artifact */
     }
     return 0;
 }
@@ -387,17 +387,17 @@ function on_ground(otyp) {
 function you_have(mask) {
     switch (mask) {
         case NHM.M3_WANTSAMUL:
-        return schar((cptr.ldI32o(u, $you_uhave) & 1));
+            return schar((cptr.ldI32o(u, $you_uhave) & 1));
         case NHM.M3_WANTSBELL:
-        return schar((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1));
         case NHM.M3_WANTSCAND:
-        return schar((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1));
         case NHM.M3_WANTSBOOK:
-        return schar((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1));
         case NHM.M3_WANTSARTI:
-        return schar((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1));
+            return schar((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1));
         default:
-        break;
+            break;
     }
     return 0;
 }
@@ -448,25 +448,25 @@ function* strategy(mtmp) {
             ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && (yield* inhistemple(mtmp))))
         return 0n;
 
-    switch (((Math.imul(cptr.ldI32o(mtmp, $monst_mhp), 3)) /
-            cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) {
+    switch (((Math.imul(cptr.ldI32o(mtmp, $monst_mhp), 3)) / cptr.ldI32o(mtmp, $monst_mhpmax)) |
+            0) {
         default:
         case 0:
-        return 134217728n;
-        case 1:
-        if (!cptr.eq(
-            cptr.ldPtro(mtmp, $monst_data),
-            cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst)
-        ))
             return 134217728n;
-        // @FallThrough
-        ;
+        case 1:
+            if (!cptr.eq(
+                cptr.ldPtro(mtmp, $monst_data),
+                cptr.add(mons, NHC.PM_WIZARD_OF_YENDOR, $sizeof_permonst)
+            ))
+                return 134217728n;
+            // @FallThrough
+            ;
         case 2:
-        dstrat = 134217728n;
-        break;
+            dstrat = 134217728n;
+            break;
         case 3:
-        dstrat = 0n;
-        break;
+            dstrat = 0n;
+            break;
     }
 
     if (cptr.ld1so(svc, $context_info_made_amulet))
@@ -549,104 +549,107 @@ export function* tactics(mtmp) {
 
     switch (strat) {
         case 134217728n:
-        mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
+            mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
 
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp))
-            (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1));
+            if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                    cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp))
+                (yield* expels(mtmp, cptr.ldPtro(mtmp, $monst_data), 1));
 
-        /* if wounded, hole up on or near the stairs (to block them) */
-        (yield* choose_stairs(sx, sy, schar((u32mod(cptr.ldI32o(mtmp, $monst_m_id), 2)))));
-        cptr.stI32o(mtmp, $monst_mavenge, 1);  /* covetous monsters attack while fleeing */
-        if ((yield* In_W_tower(mx, my, cptr.add(u, $you_uz))) ||
-                ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && !sx.v && !mon_has_amulet(mtmp))) {
-            if (!(yield* noteleport_level(mtmp)) &&
-                    !rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0))
-                void (yield* rloc(mtmp, NHM.RLOC_MSG));
-        } else if (sx.v && (mx != sx.v || my != sy.v)) {
-            if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, sx.v, sy.v, 1, NHM.RLOC_MSG))) {
-                /* couldn't move to the target spot for some reason,
-                   so stay where we are (don't actually need rloc_to()
-                   because mtmp is still on the map at <mx,my>... */
-                (yield* rloc_to(mtmp, mx, my));
-                return 0;
-            }
-            mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);  /* update cached location */
-        }
-        /* if you're not around, cast healing spells */
-        if (dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 64)
-            if (cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 8) | 0)) {
-                (yield* healmon(mtmp, rnd(8), 0));
-                return 1;
-            }
-        // @FallThrough
-        ;
-        case 0n:
-        if (!(yield* noteleport_level(mtmp)) && !rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33))
-            (yield* mnexto(mtmp, NHM.RLOC_MSG));
-        return 0;
-        default:
-        {
-            let where = BigInt.asIntN(64, (strat & 251658240n));
-            let tx = cptr.ldI16o(mtmp, $monst_mgoal);
-            let ty = cptr.ldI16o(mtmp, $monst_mgoal + $nhcoord_y);
-            let targ = Number(BigInt.asIntN(32, (strat & 255n)));
-            let otmp;
-
-            if (!targ || !isok(tx, ty)) {
-                return 0;
-            }
-            if ((yield* noteleport_level(mtmp)) && !monnear(mtmp, tx, ty))
-                return 0;
-            if (((tx) == cptr.ldI16(u) && (ty) == cptr.ldI16o(u, $you_uy)) || where == 16777216n) {
-                /* player is standing on it (or has it) */
-                mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
-                if ((yield* noteleport_level(mtmp)) || !(yield* mnearto(mtmp, tx, ty, 0, NHM.RLOC_MSG)))
-                    (yield* rloc_to(mtmp, mx, my));  /* no room? stay put */
-                return 0;
-            }
-            if (where == 67108864n) {
-                if (!(cptr.ldPtro3(
-                    svl,
-                    tx,
-                    168,
-                    ty,
-                    8,
-                    $instance_globals_saved_l_level + $dlevel_t_monsters
-                ) !== null) ||
-                        (cptr.ldI16o(mtmp, $monst_mx) == tx &&
-                            cptr.ldI16o(mtmp, $monst_my) == ty)) {
-                    /* teleport to it and pick it up */
-                    (yield* rloc_to(mtmp, tx, ty));  /* clean old pos */
-
-                    if ((otmp = on_ground(which_arti(targ))) !== null) {
-                        if (((cptr.ld1uo(
-                            cptr.ldPtro(
-                                cptr.ldPtro(gv, $instance_globals_v_viz_array),
-                                cptr.ldI16o(mtmp, $monst_my),
-                                8
-                            ),
-                            cptr.ldI16o(mtmp, $monst_mx)
-                        ) &
-                                NHM.IN_SIGHT) != 0))
-                            (yield* pline(__s_s_picks_up_s, (yield* Monnam(mtmp)), (yield* distant_name(otmp, doname))));
-                        (yield* obj_extract_self(otmp));
-                        void (yield* mpickobj(mtmp, otmp));
-                        return 1;
-                    } else
-                        return 0;
-                } else {
-                    /* a monster is standing on it - cause some trouble */
-                    if (!rn2(5) && !(yield* noteleport_level(mtmp)))
-                        (yield* mnexto(mtmp, NHM.RLOC_MSG));
+            /* if wounded, hole up on or near the stairs (to block them) */
+            (yield* choose_stairs(sx, sy, schar((u32mod(cptr.ldI32o(mtmp, $monst_m_id), 2)))));
+            cptr.stI32o(mtmp, $monst_mavenge, 1);  /* covetous monsters attack while fleeing */
+            if ((yield* In_W_tower(mx, my, cptr.add(u, $you_uz))) ||
+                    ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && !sx.v && !mon_has_amulet(mtmp))) {
+                if (!(yield* noteleport_level(mtmp)) &&
+                        !rn2((3 + ((cptr.ldI32o(mtmp, $monst_mhp) / 10) | 0)) | 0))
+                    void (yield* rloc(mtmp, NHM.RLOC_MSG));
+            } else if (sx.v && (mx != sx.v || my != sy.v)) {
+                if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, sx.v, sy.v, 1, NHM.RLOC_MSG))) {
+                    /* couldn't move to the target spot for some reason,
+                       so stay where we are (don't actually need rloc_to()
+                       because mtmp is still on the map at <mx,my>... */
+                    (yield* rloc_to(mtmp, mx, my));
                     return 0;
                 }
-            } else {
-                mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
-                if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, tx, ty, 0, NHM.RLOC_MSG)))
-                    (yield* rloc_to(mtmp, mx, my));  /* no room? stay put */
-                return 0;
+                mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);  /* update cached location */
             }
-        }  /* default case */
+            /* if you're not around, cast healing spells */
+            if (dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 64)
+                if (cptr.ldI32o(mtmp, $monst_mhp) <= ((cptr.ldI32o(mtmp, $monst_mhpmax) - 8) | 0)) {
+                    (yield* healmon(mtmp, rnd(8), 0));
+                    return 1;
+                }
+            // @FallThrough
+            ;
+        case 0n:
+            if (!(yield* noteleport_level(mtmp)) && !rn2(!(cptr.ldI32o(mtmp, $monst_mflee) & 1) ? 5 : 33))
+                (yield* mnexto(mtmp, NHM.RLOC_MSG));
+            return 0;
+        default:
+            {
+                let where = BigInt.asIntN(64, (strat & 251658240n));
+                let tx = cptr.ldI16o(mtmp, $monst_mgoal);
+                let ty = cptr.ldI16o(mtmp, $monst_mgoal + $nhcoord_y);
+                let targ = Number(BigInt.asIntN(32, (strat & 255n)));
+                let otmp;
+
+                if (!targ || !isok(tx, ty)) {
+                    return 0;
+                }
+                if ((yield* noteleport_level(mtmp)) && !monnear(mtmp, tx, ty))
+                    return 0;
+                if (((tx) == cptr.ldI16(u) && (ty) == cptr.ldI16o(u, $you_uy)) ||
+                        where == 16777216n) {
+                    /* player is standing on it (or has it) */
+                    mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
+                    if ((yield* noteleport_level(mtmp)) || !(yield* mnearto(mtmp, tx, ty, 0, NHM.RLOC_MSG)))
+                        (yield* rloc_to(mtmp, mx, my));  /* no room? stay put */
+                    return 0;
+                }
+                if (where == 67108864n) {
+                    if (!(cptr.ldPtro3(
+                        svl,
+                        tx,
+                        168,
+                        ty,
+                        8,
+                        $instance_globals_saved_l_level + $dlevel_t_monsters
+                    ) !==
+                        null) ||
+                            (cptr.ldI16o(mtmp, $monst_mx) == tx &&
+                                cptr.ldI16o(mtmp, $monst_my) == ty)) {
+                        /* teleport to it and pick it up */
+                        (yield* rloc_to(mtmp, tx, ty));  /* clean old pos */
+
+                        if ((otmp = on_ground(which_arti(targ))) !== null) {
+                            if (((cptr.ld1uo(
+                                cptr.ldPtro(
+                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                    cptr.ldI16o(mtmp, $monst_my),
+                                    8
+                                ),
+                                cptr.ldI16o(mtmp, $monst_mx)
+                            ) &
+                                    NHM.IN_SIGHT) != 0))
+                                (yield* pline(__s_s_picks_up_s, (yield* Monnam(mtmp)), (yield* distant_name(otmp, doname))));
+                            (yield* obj_extract_self(otmp));
+                            void (yield* mpickobj(mtmp, otmp));
+                            return 1;
+                        } else
+                            return 0;
+                    } else {
+                        /* a monster is standing on it - cause some trouble */
+                        if (!rn2(5) && !(yield* noteleport_level(mtmp)))
+                            (yield* mnexto(mtmp, NHM.RLOC_MSG));
+                        return 0;
+                    }
+                } else {
+                    mx = cptr.ldI16o(mtmp, $monst_mx), my = cptr.ldI16o(mtmp, $monst_my);
+                    if (!(yield* noteleport_level(mtmp)) && !(yield* mnearto(mtmp, tx, ty, 0, NHM.RLOC_MSG)))
+                        (yield* rloc_to(mtmp, mx, my));  /* no room? stay put */
+                    return 0;
+                }
+            }  /* default case */
     }  /* switch */
     /*NOTREACHED*/
     return 0;
@@ -729,7 +732,8 @@ export function* clonewiz() {
         cptr.ldI16(u),
         cptr.ldI16o(u, $you_uy),
         NHM.MM_NOWAIT
-    ))) !== null) {
+    ))) !==
+            null) {
         cptr.stI32o(
             mtmp2,
             $monst_msleeping,
@@ -795,7 +799,8 @@ export function pick_nasty(difcap) {
         $sizeof_mvitals,
         $instance_globals_saved_m_mvitals + $mvitals_mvflags
     ) &
-        NHM.G_GENOD) != 0 ||
+        NHM.G_GENOD) !=
+        0 ||
             (difcap > 0 &&
                 cptr.ld1uo2(mons, res, $sizeof_permonst, $permonst_difficulty) >= difcap) ||
             (cptr.ldU16o2(mons, res, $sizeof_permonst, $permonst_geno) &
@@ -808,7 +813,8 @@ export function pick_nasty(difcap) {
                 $sizeof_mvitals,
                 $instance_globals_saved_m_mvitals + $mvitals_mvflags
             ) &
-                NHM.G_GENOD) == 0) {
+                NHM.G_GENOD) ==
+                0) {
         let mnam = cptr.ldPtro3(mons, alt, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
         let lastspace = cptr.strrchr(mnam, 32);
 
@@ -923,7 +929,8 @@ export function* nasty(summoner) {
                         cptr.ldI16(bypos),
                         cptr.ldI16o(bypos, $nhcoord_y),
                         mmflags
-                    ))) !== null) {
+                    ))) !==
+                            null) {
                         cptr.stI32o(
                             mtmp,
                             $monst_msleeping,
@@ -939,7 +946,8 @@ export function* nasty(summoner) {
                             cptr.ldI16(bypos),
                             cptr.ldI16o(bypos, $nhcoord_y),
                             mmflags
-                        ))) !== null) {
+                        ))) !==
+                                null) {
                             m_cls = cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet);
                             if ((difcap > 0 &&
                                 cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_difficulty) >=
@@ -994,10 +1002,8 @@ export function* nasty(summoner) {
                         cptr.stI32o(mtmp, $monst_mspec_used, rnd(4));
 
                         if (++count >= 10 ||
-                                cptr.ld1so(
-                                    cptr.ldPtro(mtmp, $monst_data),
-                                    $permonst_maligntyp
-                                ) == 0 ||
+                                cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp) ==
+                                    0 ||
                                 sgn(cptr.ld1so(
                                     cptr.ldPtro(mtmp, $monst_data),
                                     $permonst_maligntyp
@@ -1048,7 +1054,8 @@ export function* resurrect() {
                         64,
                         cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
                             cptr.ldI64o(mtmp, $monst_mlstmv)
-                    )) > 0n) {
+                    )) >
+                        0n) {
                 (yield* mon_catchup_elapsed_time(mtmp, elapsed));
                 if (elapsed >= 32767n)
                     elapsed = 32766n;
@@ -1121,22 +1128,22 @@ export function* intervene() {
     switch (which) {
         case 0:
         case 1:
-        (yield* You_feel(__s_vaguely_nervous));
-        break;
+            (yield* You_feel(__s_vaguely_nervous));
+            break;
         case 2:
-        if (!Blind())
-            (yield* You(__s_notice_a_s_glow_surrounding_you, hcolor(cptr.ldPtr(c_color_names))));
-        (yield* rndcurse());
-        break;
+            if (!Blind())
+                (yield* You(__s_notice_a_s_glow_surrounding_you, hcolor(cptr.ldPtr(c_color_names))));
+            (yield* rndcurse());
+            break;
         case 3:
-        (yield* aggravate());
-        break;
+            (yield* aggravate());
+            break;
         case 4:
-        void (yield* nasty(null));
-        break;
+            void (yield* nasty(null));
+            break;
         case 5:
-        (yield* resurrect());
-        break;
+            (yield* resurrect());
+            break;
     }
 }
 
@@ -1148,8 +1155,7 @@ export function wizdeadorgone() {
         svc,
         $context_info_no_of_wizards,
         cptr.ldI32o(svc, $context_info_no_of_wizards) + -1
-    )) -
-            (-1);
+    )) - (-1);
     if (!(cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
         cptr.stI32o(u, $you_udg_cnt, ((rn2(250) + 50) | 0) >>> 0);

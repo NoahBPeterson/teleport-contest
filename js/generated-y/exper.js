@@ -83,15 +83,15 @@ function enermod(en) {
     switch (Role_switch()) {
         case NHC.PM_CLERIC:
         case NHC.PM_WIZARD:
-        return (Math.imul(2, en));
+            return (Math.imul(2, en));
         case NHC.PM_HEALER:
         case NHC.PM_KNIGHT:
-        return (((Math.imul(3, en)) / 2) | 0);
+            return (((Math.imul(3, en)) / 2) | 0);
         case NHC.PM_BARBARIAN:
         case NHC.PM_VALKYRIE:
-        return (((Math.imul(3, en)) / 4) | 0);
+            return (((Math.imul(3, en)) / 4) | 0);
         default:
-        return en;
+            return en;
     }
 }
 
@@ -104,46 +104,45 @@ export function newpw() {
 
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) +
-            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) |
-                0;
+                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
             en = (en +
-                rnd(cptr.ldI16o(
-                    gu,
-                    $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd
-                ))) |
-                    0;
+                    rnd(cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd
+                    ))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd) > 0)
             en = (en +
-                rnd(cptr.ldI16o(
-                    gu,
-                    $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd
-                ))) |
-                    0;
+                    rnd(cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd
+                    ))) | 0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
             enrnd = (enrnd +
-                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) +
+                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) +
+                        cptr.ldI16o(
+                            gu,
+                            $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lornd
+                        ))) | 0;
+            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lofix) +
                     cptr.ldI16o(
                         gu,
-                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lornd
-                    ))) |
-                    0;
-            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lofix) +
-                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lofix)) |
-                    0;
+                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lofix
+                    )) | 0;
         } else {
             enrnd = (enrnd +
-                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) +
+                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) +
+                        cptr.ldI16o(
+                            gu,
+                            $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd
+                        ))) | 0;
+            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) +
                     cptr.ldI16o(
                         gu,
-                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd
-                    ))) |
-                    0;
-            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) +
-                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) |
-                    0;
+                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix
+                    )) | 0;
         }
         en = enermod(((rn2(enrnd) + (enfix)) | 0));
     }

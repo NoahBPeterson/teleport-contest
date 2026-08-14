@@ -596,7 +596,9 @@ function mkobj_erosions(otmp) {
                             cptr.ldI16o(otmp, $obj_otyp),
                             $sizeof_objclass,
                             $objclass_oc_material
-                        ) & 31) | 0) ==
+                        ) &
+                            31) |
+                            0) ==
                             NHC.IRON) ||
                         is_crackable(otmp))) {
                 do {
@@ -746,30 +748,30 @@ function mkbox_cnts(box) {
 
     switch (cptr.ldI16o(box, $obj_otyp)) {
         case NHC.ICE_BOX:
-        n = 20;
-        break;
+            n = 20;
+            break;
         case NHC.CHEST:
-        n = (cptr.ldI32o(box, $obj_olocked) & 1) | 0 ? 7 : 5;
-        break;
+            n = (cptr.ldI32o(box, $obj_olocked) & 1) | 0 ? 7 : 5;
+            break;
         case NHC.LARGE_BOX:
-        n = (cptr.ldI32o(box, $obj_olocked) & 1) | 0 ? 5 : 3;
-        break;
+            n = (cptr.ldI32o(box, $obj_olocked) & 1) | 0 ? 5 : 3;
+            break;
         case NHC.SACK:
         case NHC.OILSKIN_SACK:
-        /* initial inventory: sack starts out empty */
-        if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n &&
-                !cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
+            /* initial inventory: sack starts out empty */
+            if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n &&
+                    !cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
+                n = 0;
+                break;
+            }
+            // @FallThrough
+            ;
+        case NHC.BAG_OF_HOLDING:
+            n = 1;
+            break;
+        default:
             n = 0;
             break;
-        }
-        // @FallThrough
-        ;
-        case NHC.BAG_OF_HOLDING:
-        n = 1;
-        break;
-        default:
-        n = 0;
-        break;
     }
 
     for (n = rn2((n + 1) | 0); n > 0; n--) {
@@ -1053,16 +1055,16 @@ export function unsplitobj(obj) {
         case NHM.OBJ_MIGRATING:
         case NHM.OBJ_BURIED:
         default:
-        return null;
+            return null;
         case NHM.OBJ_INVENT:
-        list = cptr.ldPtro(gi, $instance_globals_i_invent);
-        break;
+            list = cptr.ldPtro(gi, $instance_globals_i_invent);
+            break;
         case NHM.OBJ_MINVENT:
-        list = cptr.ldPtro(cptr.ldPtro(obj, $obj_v), $monst_minvent);
-        break;
+            list = cptr.ldPtro(cptr.ldPtro(obj, $obj_v), $monst_minvent);
+            break;
         case NHM.OBJ_CONTAINED:
-        list = cptr.ldPtro(cptr.ldPtro(obj, $obj_v), $obj_cobj);
-        break;
+            list = cptr.ldPtro(cptr.ldPtro(obj, $obj_v), $obj_cobj);
+            break;
     }
 
     /* first try the expected case; obj is split from another stack */
@@ -1126,49 +1128,49 @@ export function replace_object(obj, otmp) {
     cptr.st1o(otmp, $obj_where, cptr.ld1so(obj, $obj_where));
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_FREE:
-        /* do nothing */
-        break;
+            /* do nothing */
+            break;
         case NHM.OBJ_INVENT:
-        cptr.stPtr(otmp, cptr.ldPtr(obj));
-        cptr.stPtr(obj, otmp);
-        extract_nobj(obj, cptr.add(gi, $instance_globals_i_invent));
-        break;
+            cptr.stPtr(otmp, cptr.ldPtr(obj));
+            cptr.stPtr(obj, otmp);
+            extract_nobj(obj, cptr.add(gi, $instance_globals_i_invent));
+            break;
         case NHM.OBJ_CONTAINED:
-        cptr.stPtr(otmp, cptr.ldPtr(obj));
-        cptr.stPtro(otmp, $obj_v, cptr.ldPtro(obj, $obj_v));
-        cptr.stPtr(obj, otmp);
-        extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $obj_cobj));
-        break;
+            cptr.stPtr(otmp, cptr.ldPtr(obj));
+            cptr.stPtro(otmp, $obj_v, cptr.ldPtro(obj, $obj_v));
+            cptr.stPtr(obj, otmp);
+            extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $obj_cobj));
+            break;
         case NHM.OBJ_MINVENT:
-        cptr.stPtr(otmp, cptr.ldPtr(obj));
-        cptr.stPtro(otmp, $obj_v, cptr.ldPtro(obj, $obj_v));
-        cptr.stPtr(obj, otmp);
-        extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $monst_minvent));
-        break;
+            cptr.stPtr(otmp, cptr.ldPtr(obj));
+            cptr.stPtro(otmp, $obj_v, cptr.ldPtro(obj, $obj_v));
+            cptr.stPtr(obj, otmp);
+            extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $monst_minvent));
+            break;
         case NHM.OBJ_FLOOR:
-        cptr.stPtr(otmp, cptr.ldPtr(obj));
-        cptr.stPtro(otmp, $obj_v, cptr.ldPtro(obj, $obj_v));
-        cptr.stI16o(otmp, $obj_ox, cptr.ldI16o(obj, $obj_ox));
-        cptr.stI16o(otmp, $obj_oy, cptr.ldI16o(obj, $obj_oy));
-        cptr.stPtr(obj, otmp);
-        cptr.stPtro(obj, $obj_v, otmp);
-        extract_nobj(obj, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
-        extract_nexthere(
-            obj,
-            cptr.add(
+            cptr.stPtr(otmp, cptr.ldPtr(obj));
+            cptr.stPtro(otmp, $obj_v, cptr.ldPtro(obj, $obj_v));
+            cptr.stI16o(otmp, $obj_ox, cptr.ldI16o(obj, $obj_ox));
+            cptr.stI16o(otmp, $obj_oy, cptr.ldI16o(obj, $obj_oy));
+            cptr.stPtr(obj, otmp);
+            cptr.stPtro(obj, $obj_v, otmp);
+            extract_nobj(obj, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objlist));
+            extract_nexthere(
+                obj,
                 cptr.add(
-                    cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objects),
-                    cptr.ldI16o(obj, $obj_ox),
-                    168
-                ),
-                cptr.ldI16o(obj, $obj_oy),
-                8
-            )
-        );
-        break;
+                    cptr.add(
+                        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_objects),
+                        cptr.ldI16o(obj, $obj_ox),
+                        168
+                    ),
+                    cptr.ldI16o(obj, $obj_oy),
+                    8
+                )
+            );
+            break;
         default:
-        panic(__s_replace_object_obj_position);
-        break;
+            panic(__s_replace_object_obj_position);
+            break;
     }
 }
 
@@ -1316,39 +1318,39 @@ export function costly_alteration(obj, alter_type) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_FREE:
         case NHM.OBJ_INVENT:
-        if (learn_bknown)
-            set_bknown(obj, 1);
-        if (shkp.v) {
-            ;
-        }
-        verbalize(
-            __s_you_s_s_s_you_pay_for_s,
-            cptr.ldPtro(alteration_verbs, alter_type, 8),
-            those,
-            simpleonames(obj),
-            them
-        );
-        bill_dummy_object(obj);
-        break;
-        case NHM.OBJ_FLOOR:
-        if (learn_bknown)
-            cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() here */
-        if (costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
-                objroom == cptr.ld1so(u, $you_ushops)) {
+            if (learn_bknown)
+                set_bknown(obj, 1);
             if (shkp.v) {
                 ;
             }
             verbalize(
-                __s_you_s_s_you_pay_for_s,
+                __s_you_s_s_s_you_pay_for_s,
                 cptr.ldPtro(alteration_verbs, alter_type, 8),
                 those,
+                simpleonames(obj),
                 them
             );
             bill_dummy_object(obj);
-        } else {
-            void stolen_value(obj, ox.v, oy.v, 0, 0);
-        }
-        break;
+            break;
+        case NHM.OBJ_FLOOR:
+            if (learn_bknown)
+                cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() here */
+            if (costly_spot(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
+                    objroom == cptr.ld1so(u, $you_ushops)) {
+                if (shkp.v) {
+                    ;
+                }
+                verbalize(
+                    __s_you_s_s_you_pay_for_s,
+                    cptr.ldPtro(alteration_verbs, alter_type, 8),
+                    those,
+                    them
+                );
+                bill_dummy_object(obj);
+            } else {
+                void stolen_value(obj, ox.v, oy.v, 0, 0);
+            }
+            break;
     }
 }
 
@@ -1435,366 +1437,380 @@ function mksobj_init(obj, artif) {
 
     switch (let$) {
         case NHC.WEAPON_CLASS:
-        cptr.stI64o(otmp, $obj_quan, is_multigen(otmp) ? BigInt(((rn2(6) + 6) | 0)) : 1n);
-        if (!rn2(11)) {
-            cptr.st1o(otmp, $obj_spe, schar(rne(3)));
-            cptr.stI32o(otmp, $obj_blessed, rn2(2) >>> 0);
-        } else if (!rn2(10)) {
-            curse(otmp);
-            cptr.st1o(otmp, $obj_spe, schar((-rne(3))));
-        } else
-            blessorcurse(otmp, 10);
-        if (is_poisonable(otmp) && !rn2(100))
-            cptr.stI32o(otmp, $obj_otrapped, 1);
+            cptr.stI64o(otmp, $obj_quan, is_multigen(otmp) ? BigInt(((rn2(6) + 6) | 0)) : 1n);
+            if (!rn2(11)) {
+                cptr.st1o(otmp, $obj_spe, schar(rne(3)));
+                cptr.stI32o(otmp, $obj_blessed, rn2(2) >>> 0);
+            } else if (!rn2(10)) {
+                curse(otmp);
+                cptr.st1o(otmp, $obj_spe, schar((-rne(3))));
+            } else
+                blessorcurse(otmp, 10);
+            if (is_poisonable(otmp) && !rn2(100))
+                cptr.stI32o(otmp, $obj_otrapped, 1);
 
-        if (artif && !rn2((20 + (Math.imul(10, nartifact_exist()))) | 0)) {
-            /* mk_artifact() with otmp and A_NONE will never return NULL */
-            otmp = mk_artifact(otmp, -128, 99, 1);
-            cptr.stPtr(obj, otmp);
-        }
-        break;
+            if (artif && !rn2((20 + (Math.imul(10, nartifact_exist()))) | 0)) {
+                /* mk_artifact() with otmp and A_NONE will never return NULL */
+                otmp = mk_artifact(otmp, -128, 99, 1);
+                cptr.stPtr(obj, otmp);
+            }
+            break;
         case NHC.FOOD_CLASS:
-        cptr.stI32o(otmp, $obj_oeaten, 0);
-        switch (cptr.ldI16o(otmp, $obj_otyp)) {
-            case NHC.CORPSE:
-            /* possibly overridden by mkcorpstat() */
-            tryct = 50;
-            do
-                cptr.stI32o(otmp, $obj_corpsenm, undead_to_corpse(rndmonnum()));
-            while ((cptr.ld1uo2(
-                svm,
-                cptr.ldI32o(otmp, $obj_corpsenm),
-                $sizeof_mvitals,
-                $instance_globals_saved_m_mvitals + $mvitals_mvflags
-            ) &
-                NHM.G_NOCORPSE) &&
-                    (--tryct > 0));
-            if (tryct == 0) {
-                /* perhaps rndmonnum() only wants to make G_NOCORPSE
-                   monsters on this svl.level; create an adventurer's
-                   corpse instead, then */
-                cptr.stI32o(otmp, $obj_corpsenm, NHC.PM_HUMAN);
-            }
-            /* timer set below */
-            break;
-            case NHC.EGG:
-            cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);  /* generic egg */
-            if (!rn2(3))
-                for (tryct = 200; tryct > 0; --tryct) {
-                    mndx = can_be_hatched(rndmonnum());
-                    if (mndx != NHC.NON_PM && !dead_species(mndx, 1)) {
-                        cptr.stI32o(otmp, $obj_corpsenm, mndx);  /* typed egg */
-                        break;
+            cptr.stI32o(otmp, $obj_oeaten, 0);
+            switch (cptr.ldI16o(otmp, $obj_otyp)) {
+                case NHC.CORPSE:
+                    /* possibly overridden by mkcorpstat() */
+                    tryct = 50;
+                    do
+                        cptr.stI32o(otmp, $obj_corpsenm, undead_to_corpse(rndmonnum()));
+                    while ((cptr.ld1uo2(
+                        svm,
+                        cptr.ldI32o(otmp, $obj_corpsenm),
+                        $sizeof_mvitals,
+                        $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                    ) &
+                        NHM.G_NOCORPSE) &&
+                            (--tryct > 0));
+                    if (tryct == 0) {
+                        /* perhaps rndmonnum() only wants to make G_NOCORPSE
+                           monsters on this svl.level; create an adventurer's
+                           corpse instead, then */
+                        cptr.stI32o(otmp, $obj_corpsenm, NHC.PM_HUMAN);
                     }
-                }
-            /* timer set below */
-            break;
-            case NHC.TIN:
-            cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);  /* empty (so far) */
-            if (!rn2(6))
-                set_tin_variety(otmp, -1);
-            else
-                for (tryct = 200; tryct > 0; --tryct) {
-                    mndx = undead_to_corpse(rndmonnum());
-                    if (cptr.ldU16o2(mons, mndx, $sizeof_permonst, $permonst_cnutrit) &&
-                            !(cptr.ld1uo2(
-                                svm,
-                                mndx,
-                                $sizeof_mvitals,
-                                $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                            ) &
-                                NHM.G_NOCORPSE)) {
-                        cptr.stI32o(otmp, $obj_corpsenm, mndx);
-                        set_tin_variety(otmp, -2);
-                        break;
-                    }
-                }
-            blessorcurse(otmp, 10);
-            break;
-            case NHC.SLIME_MOLD:
-            cptr.st1o(otmp, $obj_spe, schar(cptr.ldI32o(svc, $context_info_current_fruit)));
-            cptr.st1o(flags, $flag_made_fruit, 1);
-            break;
-            case NHC.KELP_FROND:
-            cptr.stI64o(otmp, $obj_quan, BigInt(rnd(2)));
-            break;
-            case NHC.CANDY_BAR:
-            /* set otmp->spe */
-            assign_candy_wrapper(otmp);
-            break;
-            default:
-            break;
-        }
-        if (Is_pudding(otmp)) {
-            cptr.stI32o(otmp, $obj_globby, 1);
-            /* for emphasis; glob quantity is always 1 and weight varies
-               when other globs coalesce with it or this one shrinks */
-            cptr.stI64o(otmp, $obj_quan, 1n);
-            /* 5.0: globs in 3.6.x left owt as 0 and let weight() fix
-               that up during 'obj->owt = weight(obj)' below, but now
-               we initialize glob->owt explicitly so weight() doesn't
-               need to perform any fix up and returns glob->owt as-is */
-            cptr.stI32o(
-                otmp,
-                $obj_owt,
-                cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(otmp, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_weight
-                )
-            );
-            /* dknown, but not observed */
-            cptr.stI32o(otmp, $obj_known, cptr.stI32o(otmp, $obj_dknown, 1));
-            cptr.stI32o(
-                otmp,
-                $obj_corpsenm,
-                (NHC.PM_GRAY_OOZE + (cptr.ldI16o(otmp, $obj_otyp) - NHC.GLOB_OF_GRAY_OOZE)) | 0
-            );
-            start_glob_timeout(otmp, 0n);
-        } else {
-            if (cptr.ldI16o(otmp, $obj_otyp) != NHC.CORPSE &&
-                    cptr.ldI16o(otmp, $obj_otyp) != NHC.MEAT_RING &&
-                    cptr.ldI16o(otmp, $obj_otyp) != NHC.KELP_FROND &&
-                    !rn2(6)) {
-                cptr.stI64o(otmp, $obj_quan, 2n);
+                    /* timer set below */
+                    break;
+                case NHC.EGG:
+                    cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);  /* generic egg */
+                    if (!rn2(3))
+                        for (tryct = 200; tryct > 0; --tryct) {
+                            mndx = can_be_hatched(rndmonnum());
+                            if (mndx != NHC.NON_PM && !dead_species(mndx, 1)) {
+                                cptr.stI32o(otmp, $obj_corpsenm, mndx);  /* typed egg */
+                                break;
+                            }
+                        }
+                    /* timer set below */
+                    break;
+                case NHC.TIN:
+                    cptr.stI32o(otmp, $obj_corpsenm, NHC.NON_PM);  /* empty (so far) */
+                    if (!rn2(6))
+                        set_tin_variety(otmp, -1);
+                    else
+                        for (tryct = 200; tryct > 0; --tryct) {
+                            mndx = undead_to_corpse(rndmonnum());
+                            if (cptr.ldU16o2(mons, mndx, $sizeof_permonst, $permonst_cnutrit) &&
+                                    !(cptr.ld1uo2(
+                                        svm,
+                                        mndx,
+                                        $sizeof_mvitals,
+                                        $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                                    ) &
+                                        NHM.G_NOCORPSE)) {
+                                cptr.stI32o(otmp, $obj_corpsenm, mndx);
+                                set_tin_variety(otmp, -2);
+                                break;
+                            }
+                        }
+                    blessorcurse(otmp, 10);
+                    break;
+                case NHC.SLIME_MOLD:
+                    cptr.st1o(otmp, $obj_spe, schar(cptr.ldI32o(svc, $context_info_current_fruit)));
+                    cptr.st1o(flags, $flag_made_fruit, 1);
+                    break;
+                case NHC.KELP_FROND:
+                    cptr.stI64o(otmp, $obj_quan, BigInt(rnd(2)));
+                    break;
+                case NHC.CANDY_BAR:
+                    /* set otmp->spe */
+                    assign_candy_wrapper(otmp);
+                    break;
+                default:
+                    break;
             }
-        }
-        break;
-        case NHC.GEM_CLASS:
-        cptr.stI32o(otmp, $obj_corpsenm, 0);  /* LOADSTONE hack */
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE)
-            curse(otmp);
-        else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK)
-            cptr.stI64o(otmp, $obj_quan, BigInt(((rn2(6) + 6) | 0)));
-        else if (cptr.ldI16o(otmp, $obj_otyp) != NHC.LUCKSTONE && !rn2(6))
-            cptr.stI64o(otmp, $obj_quan, 2n);
-        else
-            cptr.stI64o(otmp, $obj_quan, 1n);
-        break;
-        case NHC.TOOL_CLASS:
-        switch (cptr.ldI16o(otmp, $obj_otyp)) {
-            case NHC.TALLOW_CANDLE:
-            case NHC.WAX_CANDLE:
-            cptr.st1o(otmp, $obj_spe, 1);
-            cptr.stI64o(
-                otmp,
-                $obj_age,
-                BigInt.asIntN(
-                    64,
-                    20n *
-                        BigInt(cptr.ldI16o2(
-                            objects,
-                            cptr.ldI16o(otmp, $obj_otyp),
-                            $sizeof_objclass,
-                            $objclass_oc_cost
-                        ))
-                )
-            );
-            cptr.stI32o(otmp, $obj_lamplit, 0);
-            cptr.stI64o(otmp, $obj_quan, BigInt.asIntN(64, 1n + BigInt((rn2(2) ? rn2(7) : 0))));
-            blessorcurse(otmp, 5);
-            break;
-            case NHC.BRASS_LANTERN:
-            case NHC.OIL_LAMP:
-            cptr.st1o(otmp, $obj_spe, 1);
-            cptr.stI64o(otmp, $obj_age, BigInt(((rn2(500) + 1000) | 0)));
-            cptr.stI32o(otmp, $obj_lamplit, 0);
-            blessorcurse(otmp, 5);
-            break;
-            case NHC.MAGIC_LAMP:
-            cptr.st1o(otmp, $obj_spe, 1);
-            cptr.stI32o(otmp, $obj_lamplit, 0);
-            blessorcurse(otmp, 2);
-            break;
-            case NHC.CHEST:
-            case NHC.LARGE_BOX:
-            cptr.stI32o(otmp, $obj_olocked, (!!rn2(5)) >>> 0);
-            cptr.stI32o(otmp, $obj_otrapped, (!rn2(10)) >>> 0);
-            cptr.stI32o(
-                otmp,
-                $obj_tknown,
-                ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 && !rn2(100) ? 1 : 0) >>> 0
-            );  /* obvious trap */
-            // @FallThrough
-            ;
-            case NHC.ICE_BOX:
-            case NHC.SACK:
-            case NHC.OILSKIN_SACK:
-            case NHC.BAG_OF_HOLDING:
-            mkbox_cnts(otmp);
-            break;
-            case NHC.EXPENSIVE_CAMERA:
-            case NHC.TINNING_KIT:
-            case NHC.MAGIC_MARKER:
-            cptr.st1o(otmp, $obj_spe, schar(((rn2(70) + 30) | 0)));
-            break;
-            case NHC.CAN_OF_GREASE:
-            cptr.st1o(otmp, $obj_spe, schar(((rn2(21) + 5) | 0)));  /* 0..20 + 5 => 5..25 */
-            blessorcurse(otmp, 10);
-            break;
-            case NHC.CRYSTAL_BALL:
-            cptr.st1o(otmp, $obj_spe, schar(((rn2(5) + 3) | 0)));  /* 0..4 + 3 => 3..7 */
-            blessorcurse(otmp, 2);
-            break;
-            case NHC.HORN_OF_PLENTY:
-            case NHC.BAG_OF_TRICKS:
-            cptr.st1o(otmp, $obj_spe, schar(((rn2(18) + 3) | 0)));  /* 0..17 + 3 => 3..20 */
-            break;
-            case NHC.FIGURINE:
-            tryct = 0;
-            /* figurines are slightly harder monsters */
-            do
-                cptr.stI32o(otmp, $obj_corpsenm, rndmonnum_adj(5, 10));
-            while (((cptr.ldU64o(
-                (cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)),
-                $permonst_mflags2
-            ) & 8n) != 0n) &&
-                    tryct++ < 30);
-            blessorcurse(otmp, 4);
-            break;
-            case NHC.BELL_OF_OPENING:
-            cptr.st1o(otmp, $obj_spe, 3);
-            break;
-            case NHC.MAGIC_FLUTE:
-            case NHC.MAGIC_HARP:
-            case NHC.FROST_HORN:
-            case NHC.FIRE_HORN:
-            case NHC.DRUM_OF_EARTHQUAKE:
-            cptr.st1o(otmp, $obj_spe, schar(((rn2(5) + 4) | 0)));
-            break;
-        }
-        break;
-        case NHC.AMULET_CLASS:
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR)
-            cptr.st1o(svc, $context_info_made_amulet, 1);
-        if (rn2(10) &&
-                (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_STRANGULATION ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_CHANGE ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_RESTFUL_SLEEP)) {
-            curse(otmp);
-        } else
-            blessorcurse(otmp, 10);
-        break;
-        case NHC.VENOM_CLASS:
-        case NHC.CHAIN_CLASS:
-        case NHC.BALL_CLASS:
-        break;
-        case NHC.POTION_CLASS:
-        case NHC.SCROLL_CLASS:
-        if (cptr.ldI16o(otmp, $obj_otyp) != NHC.SCR_MAIL)
-            blessorcurse(otmp, 4);
-        break;
-        case NHC.SPBOOK_CLASS:
-        cptr.stI32o(otmp, $obj_usecount, 0);
-        blessorcurse(otmp, 17);
-        break;
-        case NHC.ARMOR_CLASS:
-        if (rn2(10) &&
-                (cptr.ldI16o(otmp, $obj_otyp) == NHC.FUMBLE_BOOTS ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.LEVITATION_BOOTS ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING ||
-                    !rn2(11))) {
-            curse(otmp);
-            cptr.st1o(otmp, $obj_spe, schar((-rne(3))));
-        } else if (!rn2(10)) {
-            cptr.stI32o(otmp, $obj_blessed, rn2(2) >>> 0);
-            cptr.st1o(otmp, $obj_spe, schar(rne(3)));
-        } else
-            blessorcurse(otmp, 10);
-        if (artif && !rn2((40 + (Math.imul(10, nartifact_exist()))) | 0)) {
-            /* mk_artifact() with otmp and A_NONE will never return NULL */
-            otmp = mk_artifact(otmp, -128, 99, 1);
-            cptr.stPtr(obj, otmp);
-        }
-        /* simulate lacquered armor for samurai */
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) &&
-                cptr.ldI16o(otmp, $obj_otyp) == NHC.SPLINT_MAIL &&
-                (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n ||
-                    In_quest(cptr.add(u, $you_uz)))) {
-            cptr.stI32o(otmp, $obj_oerodeproof, cptr.stI32o(otmp, $obj_rknown, 1));
-        }
-        break;
-        case NHC.WAND_CLASS:
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_WISHING)
-            cptr.st1o(otmp, $obj_spe, 1);
-        else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_STASIS)
-            /* just as easy to recharge as other NODIR wands, but starts with
-               fewer charges */
-            cptr.st1o(otmp, $obj_spe, schar(((rn2(4) + 3) | 0)));
-        else
-            cptr.st1o(
-                otmp,
-                $obj_spe,
-                schar(((rn2(5) +
-                    ((((cptr.ldI32o2(
+            if (Is_pudding(otmp)) {
+                cptr.stI32o(otmp, $obj_globby, 1);
+                /* for emphasis; glob quantity is always 1 and weight varies
+                   when other globs coalesce with it or this one shrinks */
+                cptr.stI64o(otmp, $obj_quan, 1n);
+                /* 5.0: globs in 3.6.x left owt as 0 and let weight() fix
+                   that up during 'obj->owt = weight(obj)' below, but now
+                   we initialize glob->owt explicitly so weight() doesn't
+                   need to perform any fix up and returns glob->owt as-is */
+                cptr.stI32o(
+                    otmp,
+                    $obj_owt,
+                    cptr.ldI32o2(
                         objects,
                         cptr.ldI16o(otmp, $obj_otyp),
                         $sizeof_objclass,
-                        $objclass_oc_dir
-                    ) & 7) | 0) ==
-                        NHM.NODIR)
-                        ? 11
-                        : 4)) | 0))
-            );
-        blessorcurse(otmp, 17);
-        cptr.stI32o(otmp, $obj_recharged, 0);  /* used to control recharging */
-        break;
-        case NHC.RING_CLASS:
-        if ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(otmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_charged
-        ) & 1)) {
-            blessorcurse(otmp, 3);
-            if (rn2(10)) {
-                if (rn2(10) && bcsign(otmp))
-                    cptr.st1o(otmp, $obj_spe, schar(Math.imul(bcsign(otmp), rne(3))));
-                else
-                    cptr.st1o(otmp, $obj_spe, schar((rn2(2) ? rne(3) : -rne(3))));
+                        $objclass_oc_weight
+                    )
+                );
+                /* dknown, but not observed */
+                cptr.stI32o(otmp, $obj_known, cptr.stI32o(otmp, $obj_dknown, 1));
+                cptr.stI32o(
+                    otmp,
+                    $obj_corpsenm,
+                    (NHC.PM_GRAY_OOZE + (cptr.ldI16o(otmp, $obj_otyp) - NHC.GLOB_OF_GRAY_OOZE)) | 0
+                );
+                start_glob_timeout(otmp, 0n);
+            } else {
+                if (cptr.ldI16o(otmp, $obj_otyp) != NHC.CORPSE &&
+                        cptr.ldI16o(otmp, $obj_otyp) != NHC.MEAT_RING &&
+                        cptr.ldI16o(otmp, $obj_otyp) != NHC.KELP_FROND &&
+                        !rn2(6)) {
+                    cptr.stI64o(otmp, $obj_quan, 2n);
+                }
             }
-            /* make useless +0 rings much less common */
-            if (cptr.ld1so(otmp, $obj_spe) == 0)
-                cptr.st1o(otmp, $obj_spe, schar(((rn2(4) - rn2(3)) | 0)));
-            /* negative rings are usually cursed */
-            if (cptr.ld1so(otmp, $obj_spe) < 0 && rn2(5))
+            break;
+        case NHC.GEM_CLASS:
+            cptr.stI32o(otmp, $obj_corpsenm, 0);  /* LOADSTONE hack */
+            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOADSTONE)
                 curse(otmp);
-        } else if (rn2(10) &&
-                (cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_TELEPORTATION ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_POLYMORPH ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_AGGRAVATE_MONSTER ||
-                    cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_HUNGER ||
-                    !rn2(9))) {
-            curse(otmp);
-        }
-        break;
+            else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK)
+                cptr.stI64o(otmp, $obj_quan, BigInt(((rn2(6) + 6) | 0)));
+            else if (cptr.ldI16o(otmp, $obj_otyp) != NHC.LUCKSTONE && !rn2(6))
+                cptr.stI64o(otmp, $obj_quan, 2n);
+            else
+                cptr.stI64o(otmp, $obj_quan, 1n);
+            break;
+        case NHC.TOOL_CLASS:
+            switch (cptr.ldI16o(otmp, $obj_otyp)) {
+                case NHC.TALLOW_CANDLE:
+                case NHC.WAX_CANDLE:
+                    cptr.st1o(otmp, $obj_spe, 1);
+                    cptr.stI64o(
+                        otmp,
+                        $obj_age,
+                        BigInt.asIntN(
+                            64,
+                            20n *
+                                BigInt(cptr.ldI16o2(
+                                    objects,
+                                    cptr.ldI16o(otmp, $obj_otyp),
+                                    $sizeof_objclass,
+                                    $objclass_oc_cost
+                                ))
+                        )
+                    );
+                    cptr.stI32o(otmp, $obj_lamplit, 0);
+                    cptr.stI64o(
+                        otmp,
+                        $obj_quan,
+                        BigInt.asIntN(64, 1n + BigInt((rn2(2) ? rn2(7) : 0)))
+                    );
+                    blessorcurse(otmp, 5);
+                    break;
+                case NHC.BRASS_LANTERN:
+                case NHC.OIL_LAMP:
+                    cptr.st1o(otmp, $obj_spe, 1);
+                    cptr.stI64o(otmp, $obj_age, BigInt(((rn2(500) + 1000) | 0)));
+                    cptr.stI32o(otmp, $obj_lamplit, 0);
+                    blessorcurse(otmp, 5);
+                    break;
+                case NHC.MAGIC_LAMP:
+                    cptr.st1o(otmp, $obj_spe, 1);
+                    cptr.stI32o(otmp, $obj_lamplit, 0);
+                    blessorcurse(otmp, 2);
+                    break;
+                case NHC.CHEST:
+                case NHC.LARGE_BOX:
+                    cptr.stI32o(otmp, $obj_olocked, (!!rn2(5)) >>> 0);
+                    cptr.stI32o(otmp, $obj_otrapped, (!rn2(10)) >>> 0);
+                    cptr.stI32o(
+                        otmp,
+                        $obj_tknown,
+                        ((cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0 && !rn2(100) ? 1 : 0) >>> 0
+                    );  /* obvious trap */
+                    // @FallThrough
+                    ;
+                case NHC.ICE_BOX:
+                case NHC.SACK:
+                case NHC.OILSKIN_SACK:
+                case NHC.BAG_OF_HOLDING:
+                    mkbox_cnts(otmp);
+                    break;
+                case NHC.EXPENSIVE_CAMERA:
+                case NHC.TINNING_KIT:
+                case NHC.MAGIC_MARKER:
+                    cptr.st1o(otmp, $obj_spe, schar(((rn2(70) + 30) | 0)));
+                    break;
+                case NHC.CAN_OF_GREASE:
+                    cptr.st1o(otmp, $obj_spe, schar(((rn2(21) + 5) | 0)));  /* 0..20 + 5 => 5..25 */
+                    blessorcurse(otmp, 10);
+                    break;
+                case NHC.CRYSTAL_BALL:
+                    cptr.st1o(otmp, $obj_spe, schar(((rn2(5) + 3) | 0)));  /* 0..4 + 3 => 3..7 */
+                    blessorcurse(otmp, 2);
+                    break;
+                case NHC.HORN_OF_PLENTY:
+                case NHC.BAG_OF_TRICKS:
+                    cptr.st1o(otmp, $obj_spe, schar(((rn2(18) + 3) | 0)));  /* 0..17 + 3 => 3..20 */
+                    break;
+                case NHC.FIGURINE:
+                    tryct = 0;
+                    /* figurines are slightly harder monsters */
+                    do
+                        cptr.stI32o(otmp, $obj_corpsenm, rndmonnum_adj(5, 10));
+                    while (((cptr.ldU64o(
+                        (cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)),
+                        $permonst_mflags2
+                    ) &
+                        8n) !=
+                        0n) &&
+                            tryct++ < 30);
+                    blessorcurse(otmp, 4);
+                    break;
+                case NHC.BELL_OF_OPENING:
+                    cptr.st1o(otmp, $obj_spe, 3);
+                    break;
+                case NHC.MAGIC_FLUTE:
+                case NHC.MAGIC_HARP:
+                case NHC.FROST_HORN:
+                case NHC.FIRE_HORN:
+                case NHC.DRUM_OF_EARTHQUAKE:
+                    cptr.st1o(otmp, $obj_spe, schar(((rn2(5) + 4) | 0)));
+                    break;
+            }
+            break;
+        case NHC.AMULET_CLASS:
+            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR)
+                cptr.st1o(svc, $context_info_made_amulet, 1);
+            if (rn2(10) &&
+                    (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_STRANGULATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_CHANGE ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_RESTFUL_SLEEP)) {
+                curse(otmp);
+            } else
+                blessorcurse(otmp, 10);
+            break;
+        case NHC.VENOM_CLASS:
+        case NHC.CHAIN_CLASS:
+        case NHC.BALL_CLASS:
+            break;
+        case NHC.POTION_CLASS:
+        case NHC.SCROLL_CLASS:
+            if (cptr.ldI16o(otmp, $obj_otyp) != NHC.SCR_MAIL)
+                blessorcurse(otmp, 4);
+            break;
+        case NHC.SPBOOK_CLASS:
+            cptr.stI32o(otmp, $obj_usecount, 0);
+            blessorcurse(otmp, 17);
+            break;
+        case NHC.ARMOR_CLASS:
+            if (rn2(10) &&
+                    (cptr.ldI16o(otmp, $obj_otyp) == NHC.FUMBLE_BOOTS ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.LEVITATION_BOOTS ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.HELM_OF_OPPOSITE_ALIGNMENT ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING ||
+                        !rn2(11))) {
+                curse(otmp);
+                cptr.st1o(otmp, $obj_spe, schar((-rne(3))));
+            } else if (!rn2(10)) {
+                cptr.stI32o(otmp, $obj_blessed, rn2(2) >>> 0);
+                cptr.st1o(otmp, $obj_spe, schar(rne(3)));
+            } else
+                blessorcurse(otmp, 10);
+            if (artif && !rn2((40 + (Math.imul(10, nartifact_exist()))) | 0)) {
+                /* mk_artifact() with otmp and A_NONE will never return NULL */
+                otmp = mk_artifact(otmp, -128, 99, 1);
+                cptr.stPtr(obj, otmp);
+            }
+            /* simulate lacquered armor for samurai */
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) &&
+                    cptr.ldI16o(otmp, $obj_otyp) == NHC.SPLINT_MAIL &&
+                    (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n ||
+                        In_quest(cptr.add(u, $you_uz)))) {
+                cptr.stI32o(otmp, $obj_oerodeproof, cptr.stI32o(otmp, $obj_rknown, 1));
+            }
+            break;
+        case NHC.WAND_CLASS:
+            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_WISHING)
+                cptr.st1o(otmp, $obj_spe, 1);
+            else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAN_STASIS)
+                /* just as easy to recharge as other NODIR wands, but starts with
+                   fewer charges */
+                cptr.st1o(otmp, $obj_spe, schar(((rn2(4) + 3) | 0)));
+            else
+                cptr.st1o(
+                    otmp,
+                    $obj_spe,
+                    schar(((rn2(5) +
+                        ((((cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(otmp, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_dir
+                        ) &
+                            7) |
+                            0) ==
+                            NHM.NODIR)
+                            ? 11
+                            : 4)) | 0))
+                );
+            blessorcurse(otmp, 17);
+            cptr.stI32o(otmp, $obj_recharged, 0);  /* used to control recharging */
+            break;
+        case NHC.RING_CLASS:
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_charged
+            ) &
+                    1)) {
+                blessorcurse(otmp, 3);
+                if (rn2(10)) {
+                    if (rn2(10) && bcsign(otmp))
+                        cptr.st1o(otmp, $obj_spe, schar(Math.imul(bcsign(otmp), rne(3))));
+                    else
+                        cptr.st1o(otmp, $obj_spe, schar((rn2(2) ? rne(3) : -rne(3))));
+                }
+                /* make useless +0 rings much less common */
+                if (cptr.ld1so(otmp, $obj_spe) == 0)
+                    cptr.st1o(otmp, $obj_spe, schar(((rn2(4) - rn2(3)) | 0)));
+                /* negative rings are usually cursed */
+                if (cptr.ld1so(otmp, $obj_spe) < 0 && rn2(5))
+                    curse(otmp);
+            } else if (rn2(10) &&
+                    (cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_TELEPORTATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_POLYMORPH ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_AGGRAVATE_MONSTER ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.RIN_HUNGER ||
+                        !rn2(9))) {
+                curse(otmp);
+            }
+            break;
         case NHC.ROCK_CLASS:
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
-            /* possibly overridden by mkcorpstat() */
-            cptr.stI32o(otmp, $obj_corpsenm, rndmonnum());
-            if (!(cptr.ld1uo(
-                (cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)),
-                $permonst_msize
-            ) <
-                NHM.MZ_SMALL) &&
-                    rn2((((level_difficulty() / 2) | 0) + 10) | 0) > 10)
-                void add_to_container(otmp, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
-        }
-        /* boulder init'd below in the 'regardless of !init' code */
-        break;
+            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
+                /* possibly overridden by mkcorpstat() */
+                cptr.stI32o(otmp, $obj_corpsenm, rndmonnum());
+                if (!(cptr.ld1uo(
+                    (cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst)),
+                    $permonst_msize
+                ) <
+                    NHM.MZ_SMALL) &&
+                        rn2((((level_difficulty() / 2) | 0) + 10) | 0) > 10)
+                    void add_to_container(otmp, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
+            }
+            /* boulder init'd below in the 'regardless of !init' code */
+            break;
         case NHC.COIN_CLASS:
-        break;  /* do nothing */
+            break;  /* do nothing */
         default:
-        /* 3.6.3: this used to be impossible() followed by return 0
-           but most callers aren't prepared to deal with Null result
-           and cluttering them up to do so is pointless */
-        panic(
-            __s_mksobj_tried_to_make_type_d_class_d,
-            cptr.ldI16o(otmp, $obj_otyp),
-            cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_class)
-        );
+            /* 3.6.3: this used to be impossible() followed by return 0
+               but most callers aren't prepared to deal with Null result
+               and cluttering them up to do so is pointless */
+            panic(
+                __s_mksobj_tried_to_make_type_d_class_d,
+                cptr.ldI16o(otmp, $obj_otyp),
+                cptr.ld1so2(
+                    objects,
+                    cptr.ldI16o(otmp, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_class
+                )
+            );
     }
 
     mkobj_erosions(otmp);
@@ -1842,67 +1858,67 @@ export function mksobj(otyp, init, artif) {
             ? NHC.POT_WATER
             : cptr.ldI16o(otmp.v, $obj_otyp)) {
         case NHC.CORPSE:
-        if (cptr.ldI32o(otmp.v, $obj_corpsenm) == NHC.NON_PM) {
-            cptr.stI32o(otmp.v, $obj_corpsenm, undead_to_corpse(rndmonnum()));
-            if (cptr.ld1uo2(
-                svm,
-                cptr.ldI32o(otmp.v, $obj_corpsenm),
-                $sizeof_mvitals,
-                $instance_globals_saved_m_mvitals + $mvitals_mvflags
-            ) & 19)
-                cptr.stI32o(
-                    otmp.v,
-                    $obj_corpsenm,
-                    cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)
-                );
-        }
-        // @FallThrough
-        ;
+            if (cptr.ldI32o(otmp.v, $obj_corpsenm) == NHC.NON_PM) {
+                cptr.stI32o(otmp.v, $obj_corpsenm, undead_to_corpse(rndmonnum()));
+                if (cptr.ld1uo2(
+                    svm,
+                    cptr.ldI32o(otmp.v, $obj_corpsenm),
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                ) & 19)
+                    cptr.stI32o(
+                        otmp.v,
+                        $obj_corpsenm,
+                        cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)
+                    );
+            }
+            // @FallThrough
+            ;
         case NHC.STATUE:
         case NHC.FIGURINE:
-        if (cptr.ldI32o(otmp.v, $obj_corpsenm) == NHC.NON_PM)
-            cptr.stI32o(otmp.v, $obj_corpsenm, rndmonnum());
-        if (cptr.ldI32o(otmp.v, $obj_corpsenm) != NHC.NON_PM) {
-            let ptr = cptr.add(mons, cptr.ldI32o(otmp.v, $obj_corpsenm), $sizeof_permonst);
+            if (cptr.ldI32o(otmp.v, $obj_corpsenm) == NHC.NON_PM)
+                cptr.stI32o(otmp.v, $obj_corpsenm, rndmonnum());
+            if (cptr.ldI32o(otmp.v, $obj_corpsenm) != NHC.NON_PM) {
+                let ptr = cptr.add(mons, cptr.ldI32o(otmp.v, $obj_corpsenm), $sizeof_permonst);
 
-            cptr.st1o(
-                otmp.v,
-                $obj_spe,
-                schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 262144n) != 0n)
-                    ? NHM.CORPSTAT_NEUTER
-                    : (((cptr.ldU64o((ptr), $permonst_mflags2) & 131072n) != 0n)
-                        ? NHM.CORPSTAT_FEMALE
-                        : (((cptr.ldU64o((ptr), $permonst_mflags2) & 65536n) != 0n)
-                            ? NHM.CORPSTAT_MALE
-                            : (rn2(2) ? NHM.CORPSTAT_FEMALE : NHM.CORPSTAT_MALE)))))
-            );
-        }
-        // @FallThrough
-        ;
+                cptr.st1o(
+                    otmp.v,
+                    $obj_spe,
+                    schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 262144n) != 0n)
+                        ? NHM.CORPSTAT_NEUTER
+                        : (((cptr.ldU64o((ptr), $permonst_mflags2) & 131072n) != 0n)
+                            ? NHM.CORPSTAT_FEMALE
+                            : (((cptr.ldU64o((ptr), $permonst_mflags2) & 65536n) != 0n)
+                                ? NHM.CORPSTAT_MALE
+                                : (rn2(2) ? NHM.CORPSTAT_FEMALE : NHM.CORPSTAT_MALE)))))
+                );
+            }
+            // @FallThrough
+            ;
         case NHC.EGG:
-        /* case TIN: */
-        set_corpsenm(otmp.v, cptr.ldI32o(otmp.v, $obj_corpsenm));
-        break;
+            /* case TIN: */
+            set_corpsenm(otmp.v, cptr.ldI32o(otmp.v, $obj_corpsenm));
+            break;
         case NHC.BOULDER:
-        /* next_boulder overloads corpsenm so the default value is NON_PM;
-           since that is non-zero, the "next boulder" case in xname() would
-           happen when it shouldn't; explicitly set it to 0 */
-        cptr.stI32o(otmp.v, $obj_corpsenm, 0);
-        break;
+            /* next_boulder overloads corpsenm so the default value is NON_PM;
+               since that is non-zero, the "next boulder" case in xname() would
+               happen when it shouldn't; explicitly set it to 0 */
+            cptr.stI32o(otmp.v, $obj_corpsenm, 0);
+            break;
         case NHC.POT_OIL:
-        cptr.stI64o(otmp.v, $obj_age, 400n);  /* amount of oil */
-        // @FallThrough
-        ;
+            cptr.stI64o(otmp.v, $obj_age, 400n);  /* amount of oil */
+            // @FallThrough
+            ;
         case NHC.POT_WATER:
-        cptr.stI32o(otmp.v, $obj_corpsenm, 0);  /* overloads corpsenm, which was set to NON_PM */
-        break;
+            cptr.stI32o(otmp.v, $obj_corpsenm, 0);  /* overloads corpsenm, which was set to NON_PM */
+            break;
         case NHC.LEASH:
-        cptr.stI32o(otmp.v, $obj_corpsenm, 0);  /* overloads corpsenm, which was set to NON_PM */
-        break;
+            cptr.stI32o(otmp.v, $obj_corpsenm, 0);  /* overloads corpsenm, which was set to NON_PM */
+            break;
         case NHC.SPE_NOVEL:
-        cptr.stI32o(otmp.v, $obj_corpsenm, -1);  /* "none of the above"; will be changed */
-        otmp.v = oname(otmp.v, noveltitle(cptr.add(otmp.v, $obj_corpsenm)), NHM.ONAME_NO_FLAGS);
-        break;
+            cptr.stI32o(otmp.v, $obj_corpsenm, -1);  /* "none of the above"; will be changed */
+            otmp.v = oname(otmp.v, noveltitle(cptr.add(otmp.v, $obj_corpsenm)), NHM.ONAME_NO_FLAGS);
+            break;
     }
 
     /* unique objects may have an associated artifact entry */
@@ -1940,11 +1956,11 @@ export function stone_furniture_type(mappearance) {
         case NHC.S_altar:
         case NHC.S_throne:
         case NHC.S_sink:
-        return 1;
-        default:
-        if (sym >= NHC.S_vwall && sym <= NHC.S_trwall)
             return 1;
-        break;
+        default:
+            if (sym >= NHC.S_vwall && sym <= NHC.S_trwall)
+                return 1;
+            break;
     }
     return 0;
 }
@@ -2011,25 +2027,25 @@ export function set_corpsenm(obj, id) {
     cptr.stI32o(obj, $obj_corpsenm, id);
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.CORPSE:
-        start_corpse_timeout(obj);
-        cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
-        break;
+            start_corpse_timeout(obj);
+            cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
+            break;
         case NHC.FIGURINE:
-        if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
-                !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1) &&
-                ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) ||
-                    (cptr.ld1so((obj), $obj_where) == NHM.OBJ_MINVENT)))
-            attach_fig_transform_timeout(obj);
-        cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
-        break;
+            if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
+                    !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1) &&
+                    ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) ||
+                        (cptr.ld1so((obj), $obj_where) == NHM.OBJ_MINVENT)))
+                attach_fig_transform_timeout(obj);
+            cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
+            break;
         case NHC.EGG:
-        if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
-                !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1))
-            attach_egg_hatch_timeout(obj, when);
-        break;
+            if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
+                    !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1))
+                attach_egg_hatch_timeout(obj, when);
+            break;
         default:
-        cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
-        break;
+            cptr.stI32o(obj, $obj_owt, weight(obj) >>> 0);
+            break;
     }
 }
 
@@ -2133,15 +2149,15 @@ function item_on_ice(item) {
     if (get_obj_location(otmp, ox, oy, NHM.BURIED_TOO)) {
         switch (cptr.ld1so(otmp, $obj_where)) {
             case NHM.OBJ_FLOOR:
-            if (is_ice(ox.v, oy.v))
-                return NHC.SET_ON_ICE;
-            break;
+                if (is_ice(ox.v, oy.v))
+                    return NHC.SET_ON_ICE;
+                break;
             case NHM.OBJ_BURIED:
-            if (is_ice(ox.v, oy.v))
-                return NHC.BURIED_UNDER_ICE;
-            break;
+                if (is_ice(ox.v, oy.v))
+                    return NHC.BURIED_UNDER_ICE;
+                break;
             default:
-            break;
+                break;
         }
     }
     return NHC.NOT_ON_ICE;
@@ -2211,8 +2227,7 @@ export function shrink_glob(arg, expire_time) {
         let delta = (BigInt.asIntN(
             64,
             cptr.ldI64o(svm, $instance_globals_saved_m_moves) - expire_time + 24n
-        )) /
-                25n;
+        )) / 25n;
         let moddelta = BigInt.asIntN(64, 25n - (delta % 25n));
 
         if (globloc == NHC.SET_ON_ICE)
@@ -2598,8 +2613,7 @@ export function weight(obj) {
         cptr.ldI16o(obj, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_weight
-    ) |
-            0;  /* weight of 1 'otyp' */
+    ) | 0;  /* weight of 1 'otyp' */
 
     if (cptr.ldI64o(obj, $obj_quan) < 1n) {
         impossible(__s_calculating_weight_of_ld_s, cptr.ldI64o(obj, $obj_quan), simpleonames(obj));
@@ -2641,8 +2655,7 @@ export function weight(obj) {
                     $sizeof_permonst,
                     $permonst_cwt
                 ) | 0
-            ) / 2) |
-                    0;
+            ) / 2) | 0;
             /* some monsters that never leave a corpse when they die have
                corpse weight defined as 0; statues resembling them need to
                have non-zero weight; others are so tiny (killer bee) that
@@ -2715,15 +2728,19 @@ export function weight(obj) {
     } else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION &&
             cptr.ld1so(obj, $obj_spe)) {
         return (wt +
-            Math.imul(
-                cptr.ld1so(obj, $obj_spe),
-                cptr.ldI32o2(objects, NHC.TALLOW_CANDLE, $sizeof_objclass, $objclass_oc_weight) | 0
-            )) |
-                0;
+                Math.imul(
+                    cptr.ld1so(obj, $obj_spe),
+                    cptr.ldI32o2(
+                        objects,
+                        NHC.TALLOW_CANDLE,
+                        $sizeof_objclass,
+                        $objclass_oc_weight
+                    ) | 0
+                )) | 0;
     }
     return (wt
             ? Math.imul(wt, Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))))
-            : ((Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))) + 1) | 0) >> 1);
+            : Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))) + 1 >> 1);
 }
 
 /** C ref: mkobj.c:1978 — int[5] */
@@ -3085,12 +3102,8 @@ export function is_flammable(otmp) {
 export function is_rottable(otmp) {
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
 
-    return schar(((((cptr.ldI32o2(
-        objects,
-        otyp,
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) & 31) | 0) <=
+    return schar(((((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) |
+        0) <=
         NHC.WOOD &&
         ((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) !=
             NHC.LIQUID) ||
@@ -3438,34 +3451,37 @@ export function obj_extract_self(obj) {
         case NHM.OBJ_FREE:
         case NHM.OBJ_LUAFREE:
         case NHM.OBJ_DELETED:
-        break;
+            break;
         case NHM.OBJ_FLOOR:
-        remove_object(obj);
-        break;
+            remove_object(obj);
+            break;
         case NHM.OBJ_CONTAINED:
-        extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $obj_cobj));
-        container_weight(cptr.ldPtro(obj, $obj_v));
-        cptr.stPtro(obj, $obj_v, null);  /* clear stale back-link */
-        break;
+            extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $obj_cobj));
+            container_weight(cptr.ldPtro(obj, $obj_v));
+            cptr.stPtro(obj, $obj_v, null);  /* clear stale back-link */
+            break;
         case NHM.OBJ_INVENT:
-        freeinv(obj);
-        break;
+            freeinv(obj);
+            break;
         case NHM.OBJ_MINVENT:
-        extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $monst_minvent));
-        cptr.stPtro(obj, $obj_v, null);  /* clear stale back-link */
-        break;
+            extract_nobj(obj, cptr.add(cptr.ldPtro(obj, $obj_v), $monst_minvent));
+            cptr.stPtro(obj, $obj_v, null);  /* clear stale back-link */
+            break;
         case NHM.OBJ_MIGRATING:
-        extract_nobj(obj, cptr.add(gm, $instance_globals_m_migrating_objs));
-        break;
+            extract_nobj(obj, cptr.add(gm, $instance_globals_m_migrating_objs));
+            break;
         case NHM.OBJ_BURIED:
-        extract_nobj(obj, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist));
-        break;
+            extract_nobj(
+                obj,
+                cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist)
+            );
+            break;
         case NHM.OBJ_ONBILL:
-        extract_nobj(obj, cptr.add(gb, $instance_globals_b_billobjs));
-        break;
+            extract_nobj(obj, cptr.add(gb, $instance_globals_b_billobjs));
+            break;
         default:
-        panic(__s_obj_extract_self_where_d, cptr.ld1so(obj, $obj_where));
-        break;
+            panic(__s_obj_extract_self_where_d, cptr.ld1so(obj, $obj_where));
+            break;
     }
 }
 
@@ -3764,7 +3780,8 @@ export function hornoplenty(horn, tipping, targetbox) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_magic
-            ) & 1)) {
+            ) &
+                    1)) {
                 do {
                     cptr.stI16o(obj, $obj_otyp, i16(rnd_class(NHC.POT_BOOZE, NHC.POT_WATER)));
                 } while (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_SICKNESS);
@@ -3794,8 +3811,7 @@ export function hornoplenty(horn, tipping, targetbox) {
             iflags,
             $instance_flags_suppress_price,
             cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1
-        )) -
-                (1);
+        )) - (1);
         if (!tipping) {
             obj = hold_another_object(
                 obj,
@@ -3904,8 +3920,7 @@ export function hornoplenty(horn, tipping, targetbox) {
             iflags,
             $instance_flags_suppress_price,
             cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1
-        )) -
-                (-1);
+        )) - (-1);
         if ((cptr.ldI32o(horn, $obj_dknown) & 1))
             discover_object(NHC.HORN_OF_PLENTY, 1, 1, 1);
     }
@@ -4105,30 +4120,30 @@ function objlist_sanity(objlist, wheretype, mesg) {
             switch (cptr.ld1so(obj, $obj_where)) {
                 case NHM.OBJ_INVENT:
                 case NHM.OBJ_MINVENT:
-                sanity_check_worn(obj);
-                break;
+                    sanity_check_worn(obj);
+                    break;
                 case NHM.OBJ_MIGRATING:
-                /* migrating objects overload the owornmask field
-                   with a destination code; skip attempt to check it */
-                break;
+                    /* migrating objects overload the owornmask field
+                       with a destination code; skip attempt to check it */
+                    break;
                 case NHM.OBJ_FLOOR:
-                /* note: ball and chain can also be OBJ_FREE, but not across
-                   turns so this sanity check shouldn't encounter that */
-                bc_ok = 1;
-                // @FallThrough
-                ;
+                    /* note: ball and chain can also be OBJ_FREE, but not across
+                       turns so this sanity check shouldn't encounter that */
+                    bc_ok = 1;
+                    // @FallThrough
+                    ;
                 default:
-                if ((!cptr.eq(obj, uchain.v) && !cptr.eq(obj, uball.v)) || !bc_ok) {
-                    /* discovered an object not in inventory which
-                       erroneously has worn mask set */
-                    void cptr.sprintf(
-                        cptr.decay(maskbuf),
-                        __s_worn_mask_0x_08lx,
-                        cptr.ldI64o(obj, $obj_owornmask)
-                    );
-                    insane_object(obj, cptr.decay(ofmt0), cptr.decay(maskbuf), null);
-                }
-                break;
+                    if ((!cptr.eq(obj, uchain.v) && !cptr.eq(obj, uball.v)) || !bc_ok) {
+                        /* discovered an object not in inventory which
+                           erroneously has worn mask set */
+                        void cptr.sprintf(
+                            cptr.decay(maskbuf),
+                            __s_worn_mask_0x_08lx,
+                            cptr.ldI64o(obj, $obj_owornmask)
+                        );
+                        insane_object(obj, cptr.decay(ofmt0), cptr.decay(maskbuf), null);
+                    }
+                    break;
             }
         }
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj, $obj_corpsenm)) {
@@ -4347,9 +4362,8 @@ function insane_obj_bits(obj, mon) {
     /* next_boulder is only for object name formatting when pushing
        boulders and should be reset by time of next sanity check */
     o_boulder = (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER && cptr.ldI32o(obj, $obj_corpsenm)
-        ? 1
-        : 0) >>>
-            0;
+            ? 1
+            : 0) >>> 0;
 
     if (o_in_use || o_bypass || o_nomerge || o_boulder) {
         let infobuf = new Uint8Array(128);
@@ -4427,15 +4441,13 @@ function insane_object(obj, fmt, mesg, mon) {
             iflags,
             $instance_flags_override_ID,
             cptr.ldI32o(iflags, $instance_flags_override_ID) + 1
-        )) -
-                (1);
+        )) - (1);
         objnm = doname(obj);
         (cptr.stI32o(
             iflags,
             $instance_flags_override_ID,
             cptr.ldI32o(iflags, $instance_flags_override_ID) + -1
-        )) -
-                (-1);
+        )) - (-1);
     }
     if (mon || (strstri(mesg, __s_minvent) && !strstri(mesg, __s_contained))) {
         void cptr.strcat(cptr.strcpy(cptr.decay(altfmt), fmt), __s_held_by_mon_s_s);
@@ -4481,12 +4493,8 @@ export function init_dummyobj(obj, otyp, oquan) {
             $obj_known,
             ((cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS)
                 ? (cptr.ldI32o(obj, $obj_known) & 1) | 0
-                : !(cptr.ldI32o2(
-                    objects,
-                    otyp,
-                    $sizeof_objclass,
-                    $objclass_oc_uses_known
-                ) & 1)) >>> 0
+                : !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_uses_known) &
+                    1)) >>> 0
         );
         cptr.stI64o(obj, $obj_quan, oquan ? oquan : 1n);
         cptr.stI32o(obj, $obj_corpsenm, NHC.NON_PM);  /* suppress statue and figurine details */
@@ -4667,71 +4675,73 @@ function sanity_check_worn(obj) {
            with owornmask of W_foo is the object pointed to by ufoo */
         switch (owornmask) {
             case 1n:
-            if (!cptr.eq(obj, (embedded ? uskin.v : uarm.v)))
-                what = embedded ? __s_skin : __s_suit;
-            break;
+                if (!cptr.eq(obj, (embedded ? uskin.v : uarm.v)))
+                    what = embedded ? __s_skin : __s_suit;
+                break;
             case 2n:
-            if (!cptr.eq(obj, uarmc.v))
-                what = __s_cloak;
-            break;
+                if (!cptr.eq(obj, uarmc.v))
+                    what = __s_cloak;
+                break;
             case 4n:
-            if (!cptr.eq(obj, uarmh.v))
-                what = __s_helm;
-            break;
+                if (!cptr.eq(obj, uarmh.v))
+                    what = __s_helm;
+                break;
             case 8n:
-            if (!cptr.eq(obj, uarms.v))
-                what = __s_shield;
-            break;
+                if (!cptr.eq(obj, uarms.v))
+                    what = __s_shield;
+                break;
             case 16n:
-            if (!cptr.eq(obj, uarmg.v))
-                what = __s_gloves;
-            break;
+                if (!cptr.eq(obj, uarmg.v))
+                    what = __s_gloves;
+                break;
             case 32n:
-            if (!cptr.eq(obj, uarmf.v))
-                what = __s_boots;
-            break;
+                if (!cptr.eq(obj, uarmf.v))
+                    what = __s_boots;
+                break;
             case 64n:
-            if (!cptr.eq(obj, uarmu.v))
-                what = __s_shirt;
-            break;
+                if (!cptr.eq(obj, uarmu.v))
+                    what = __s_shirt;
+                break;
             case 256n:
-            if (!cptr.eq(obj, uwep.v))
-                what = __s_primary_weapon;
-            break;
+                if (!cptr.eq(obj, uwep.v))
+                    what = __s_primary_weapon;
+                break;
             case 512n:
-            if (!cptr.eq(obj, uquiver.v))
-                what = __s_quiver;
-            break;
+                if (!cptr.eq(obj, uquiver.v))
+                    what = __s_quiver;
+                break;
             case 1024n:
-            if (!cptr.eq(obj, uswapwep.v))
-                what = cptr.ld1so(u, $you_twoweap) ? __s_secondary_weapon : __s_alternate_weapon;
-            break;
+                if (!cptr.eq(obj, uswapwep.v))
+                    what = cptr.ld1so(u, $you_twoweap)
+                            ? __s_secondary_weapon
+                            : __s_alternate_weapon;
+                break;
             case 65536n:
-            if (!cptr.eq(obj, uamul.v))
-                what = __s_amulet;
-            break;
+                if (!cptr.eq(obj, uamul.v))
+                    what = __s_amulet;
+                break;
             case 131072n:
-            if (!cptr.eq(obj, uleft.v))
-                what = __s_left_ring;
-            break;
+                if (!cptr.eq(obj, uleft.v))
+                    what = __s_left_ring;
+                break;
             case 262144n:
-            if (!cptr.eq(obj, uright.v))
-                what = __s_right_ring;
-            break;
+                if (!cptr.eq(obj, uright.v))
+                    what = __s_right_ring;
+                break;
             case 524288n:
-            if (!cptr.eq(obj, ublindf.v))
-                what = __s_blindfold;
-            break;
+                if (!cptr.eq(obj, ublindf.v))
+                    what = __s_blindfold;
+                break;
             case 2097152n:
-            if (!cptr.eq(obj, uball.v))
-                what = __s_ball;
-            break;
+                if (!cptr.eq(obj, uball.v))
+                    what = __s_ball;
+                break;
             case 4194304n:
-            if (!cptr.eq(obj, uchain.v))
-                what = __s_chain;
-            break;
+                if (!cptr.eq(obj, uchain.v))
+                    what = __s_chain;
+                break;
             default:
-            break;
+                break;
         }
         if (what) {
             void cptr.sprintf(
@@ -4917,13 +4927,11 @@ export function obj_absorb(obj1, obj2) {
                     (cptr.ldI32o(otmp2, $obj_oeroded) & 3) | 0)
                 cptr.stI32o(otmp1, $obj_oeroded, cptr.stI32o(otmp2, $obj_oeroded, 1));
             o1wt = (cptr.ldI32o(otmp1, $obj_oeaten)
-                ? cptr.ldI32o(otmp1, $obj_oeaten)
-                : cptr.ldI32o(otmp1, $obj_owt)) |
-                    0;
+                    ? cptr.ldI32o(otmp1, $obj_oeaten)
+                    : cptr.ldI32o(otmp1, $obj_owt)) | 0;
             o2wt = (cptr.ldI32o(otmp2, $obj_oeaten)
-                ? cptr.ldI32o(otmp2, $obj_oeaten)
-                : cptr.ldI32o(otmp2, $obj_owt)) |
-                    0;
+                    ? cptr.ldI32o(otmp2, $obj_oeaten)
+                    : cptr.ldI32o(otmp2, $obj_owt)) | 0;
             /* averaging the relative ages is less likely to overflow
                than averaging the absolute ages directly */
             agetmp = ((BigInt.asIntN(
@@ -5046,7 +5054,8 @@ export function pudding_merge_message(otmp, otmp2) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(otmp, $obj_oy), 8),
         cptr.ldI16o(otmp, $obj_ox)
     ) &
-        NHM.IN_SIGHT) != 0) ||
+        NHM.IN_SIGHT) !=
+        0) ||
         ((cptr.ld1uo(
             cptr.ldPtro(
                 cptr.ldPtro(gv, $instance_globals_v_viz_array),

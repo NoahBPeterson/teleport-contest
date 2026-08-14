@@ -96,24 +96,24 @@ const __s_gc = cptr.lit("__gc");
 function getgclist(o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
-        return cptr.add((((((o))))), $Table_gclist);
+            return cptr.add((((((o))))), $Table_gclist);
         case 6:
-        return cptr.add((((((o))))), $LClosure_gclist);
+            return cptr.add((((((o))))), $LClosure_gclist);
         case 38:
-        return cptr.add((((((o))))), $CClosure_gclist);
+            return cptr.add((((((o))))), $CClosure_gclist);
         case 8:
-        return cptr.add((((((o))))), $lua_State_gclist);
+            return cptr.add((((((o))))), $lua_State_gclist);
         case 10:
-        return cptr.add((((((o))))), $Proto_gclist);
+            return cptr.add((((((o))))), $Proto_gclist);
         case 7:
-        {
-            let u = (((((o)))));
-            (void 0);
-            return cptr.add(u, $Udata_gclist);
-        }
+            {
+                let u = (((((o)))));
+                (void 0);
+                return cptr.add(u, $Udata_gclist);
+            }
         default:
-        (void 0);
-        return null;
+            (void 0);
+            return null;
     }
 }
 
@@ -302,70 +302,73 @@ function reallymarkobject(g, o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 4:
         case 20:
-        {
-            (cptr.st1o(
-                o,
-                $GCObject_marked,
-                (uchar((((cptr.ld1uo(o, $GCObject_marked) & -25) | 32))))
-            ));  /* nothing to visit */
-            break;
-        }
-        case 9:
-        {
-            let uv = (((((o)))));
-            if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
-                (cptr.st1o(uv, $UpVal_marked, cptr.ld1uo(uv, $UpVal_marked) & 199));  /* open upvalues are kept gray */
-            else
-                (cptr.st1o(
-                    uv,
-                    $UpVal_marked,
-                    (uchar((((cptr.ld1uo(uv, $UpVal_marked) & -25) | 32))))
-                ));  /* closed upvalues are visited here */
             {
-                (void cptr.ldPtro(g, $global_State_mainthread), (void 0));  /* mark its content */
-                if ((((cptr.ld1uo((cptr.ldPtro(uv, $UpVal_v)), $TValue_tt_)) & 64) &&
-                        ((cptr.ld1uo(
-                            ((cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v)))))),
-                            $GCObject_marked
-                        )) & 24)))
-                    reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v))))));
-            }
-            ;
-            break;
-        }
-        case 7:
-        {
-            let u = (((((o)))));
-            if (cptr.ldU16o(u, $Udata_nuvalue) == 0) {
-                {
-                    if (cptr.ldPtro(u, $Udata_metatable)) {
-                        if (((cptr.ld1uo((cptr.ldPtro(u, $Udata_metatable)), $Table_marked)) & 24))
-                            reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));  /* mark its metatable */
-                    }
-                    ;
-                }
-                ;
                 (cptr.st1o(
-                    u,
-                    $Udata_marked,
-                    (uchar((((cptr.ld1uo(u, $Udata_marked) & -25) | 32))))
-                ));  /* nothing else to mark */
+                    o,
+                    $GCObject_marked,
+                    (uchar((((cptr.ld1uo(o, $GCObject_marked) & -25) | 32))))
+                ));  /* nothing to visit */
                 break;
             }
-            /* else... */
-        }  /* FALLTHROUGH */
+        case 9:
+            {
+                let uv = (((((o)))));
+                if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
+                    (cptr.st1o(uv, $UpVal_marked, cptr.ld1uo(uv, $UpVal_marked) & 199));  /* open upvalues are kept gray */
+                else
+                    (cptr.st1o(
+                        uv,
+                        $UpVal_marked,
+                        (uchar((((cptr.ld1uo(uv, $UpVal_marked) & -25) | 32))))
+                    ));  /* closed upvalues are visited here */
+                {
+                    (void cptr.ldPtro(g, $global_State_mainthread), (void 0));  /* mark its content */
+                    if ((((cptr.ld1uo((cptr.ldPtro(uv, $UpVal_v)), $TValue_tt_)) & 64) &&
+                            ((cptr.ld1uo(
+                                ((cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v)))))),
+                                $GCObject_marked
+                            )) & 24)))
+                        reallymarkobject(g, (cptr.ldPtr(((cptr.ldPtro(uv, $UpVal_v))))));
+                }
+                ;
+                break;
+            }
+        case 7:
+            {
+                let u = (((((o)))));
+                if (cptr.ldU16o(u, $Udata_nuvalue) == 0) {
+                    {
+                        if (cptr.ldPtro(u, $Udata_metatable)) {
+                            if (((cptr.ld1uo(
+                                (cptr.ldPtro(u, $Udata_metatable)),
+                                $Table_marked
+                            )) & 24))
+                                reallymarkobject(g, ((((cptr.ldPtro(u, $Udata_metatable))))));  /* mark its metatable */
+                        }
+                        ;
+                    }
+                    ;
+                    (cptr.st1o(
+                        u,
+                        $Udata_marked,
+                        (uchar((((cptr.ld1uo(u, $Udata_marked) & -25) | 32))))
+                    ));  /* nothing else to mark */
+                    break;
+                }
+                /* else... */
+            }  /* FALLTHROUGH */
         case 6:
         case 38:
         case 5:
         case 8:
         case 10:
-        {
-            linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_gray));  /* to be visited later */
-            break;
-        }
+            {
+                linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_gray));  /* to be visited later */
+                break;
+            }
         default:
-        (void 0);
-        break;
+            (void 0);
+            break;
     }
 }
 
@@ -596,11 +599,13 @@ function traverseephemeron(g, h, inv) {
         if ((((cptr.ld1uo(
             (cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)),
             $TValue_tt_
-        )) & 64) &&
+        )) &
+            64) &&
                 ((cptr.ld1uo(
                     ((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)))))),
                     $GCObject_marked
-                )) & 24))) {
+                )) &
+                    24))) {
             marked = 1;
             reallymarkobject(
                 g,
@@ -659,7 +664,8 @@ function traversestrongtable(g, h) {
         if ((((cptr.ld1uo(
             (cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)),
             $TValue_tt_
-        )) & 64) &&
+        )) &
+            64) &&
                 ((cptr.ld1uo(
                     ((cptr.ldPtr(((cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)))))),
                     $GCObject_marked
@@ -744,13 +750,15 @@ function traversetable(g, h) {
     } else
         traversestrongtable(g, h);
     return BigInt(((1 +
-            cptr.ldI32o(h, $Table_alimit) +
-            (Math.imul(
-                2,
-                ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null)))
-                    ? 0
-                    : ((1 << (cptr.ld1uo((h), $Table_lsizenode)))))
-            ) >>> 0)) >>> 0) >>> 0);
+        cptr.ldI32o(h, $Table_alimit) +
+        (Math.imul(
+            2,
+            ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null)))
+                ? 0
+                : ((1 << (cptr.ld1uo((h), $Table_lsizenode)))))
+        ) >>>
+            0)) >>>
+            0) >>> 0);
 }
 
 /** C ref: lgc.c:565 — @param {CPtr<global_State>} g @param {CPtr<Udata>} u @returns {CInt} */
@@ -766,10 +774,8 @@ function traverseudata(g, u) {
     ;
     for (i = 0; i < cptr.ldU16o(u, $Udata_nuvalue); i++) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo(
-            (cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue)),
-            $TValue_tt_
-        )) & 64) &&
+        if ((((cptr.ld1uo((cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue)), $TValue_tt_)) &
+            64) &&
                 ((cptr.ld1uo(
                     ((cptr.ldPtr(((cptr.add(cptr.add(u, $Udata_uv), i, $sizeof_UValue)))))),
                     $GCObject_marked
@@ -802,10 +808,8 @@ function traverseproto(g, f) {
     ;
     for (i = 0; i < cptr.ldI32o(f, $Proto_sizek); i++) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
-        if ((((cptr.ld1uo(
-            (cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)),
-            $TValue_tt_
-        )) & 64) &&
+        if ((((cptr.ld1uo((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)), $TValue_tt_)) &
+            64) &&
                 ((cptr.ld1uo(
                     ((cptr.ldPtr(((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)))))),
                     $GCObject_marked
@@ -853,11 +857,10 @@ function traverseproto(g, f) {
     }
     ;
     return (1 +
-        cptr.ldI32o(f, $Proto_sizek) +
-        cptr.ldI32o(f, $Proto_sizeupvalues) +
-        cptr.ldI32o(f, $Proto_sizep) +
-        cptr.ldI32o(f, $Proto_sizelocvars)) |
-            0;
+            cptr.ldI32o(f, $Proto_sizek) +
+            cptr.ldI32o(f, $Proto_sizeupvalues) +
+            cptr.ldI32o(f, $Proto_sizep) +
+            cptr.ldI32o(f, $Proto_sizelocvars)) | 0;
 }
 
 /** C ref: lgc.c:595 — @param {CPtr<global_State>} g @param {CPtr<CClosure>} cl @returns {CInt} */
@@ -868,7 +871,8 @@ function traverseCclosure(g, cl) {
         if ((((cptr.ld1uo(
             (cptr.add(cptr.add(cl, $CClosure_upvalue), i, $sizeof_TValue)),
             $TValue_tt_
-        )) & 64) &&
+        )) &
+            64) &&
                 ((cptr.ld1uo(
                     ((cptr.ldPtr(((cptr.add(
                         cptr.add(cl, $CClosure_upvalue),
@@ -974,14 +978,13 @@ function* traversethread(g, th) {
         }
     }
     return (1 +
-        (Number(BigInt.asIntN(
-            32,
-            ((cptr.diff(
-                cptr.ldPtro((th), $lua_State_stack_last),
-                cptr.ldPtro((th), $lua_State_stack)
-            ) / 16n))
-        )))) |
-            0;
+            (Number(BigInt.asIntN(
+                32,
+                ((cptr.diff(
+                    cptr.ldPtro((th), $lua_State_stack_last),
+                    cptr.ldPtro((th), $lua_State_stack)
+                ) / 16n))
+            )))) | 0;
 }
 
 /*
@@ -994,20 +997,20 @@ function* propagatemark(g) {
     cptr.stPtro(g, $global_State_gray, cptr.ldPtr(getgclist(o)));  /* remove from 'gray' list */
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
-        return traversetable(g, (((((o))))));
+            return traversetable(g, (((((o))))));
         case 7:
-        return BigInt.asUintN(64, BigInt(traverseudata(g, (((((o))))))));
+            return BigInt.asUintN(64, BigInt(traverseudata(g, (((((o))))))));
         case 6:
-        return BigInt.asUintN(64, BigInt(traverseLclosure(g, (((((o))))))));
+            return BigInt.asUintN(64, BigInt(traverseLclosure(g, (((((o))))))));
         case 38:
-        return BigInt.asUintN(64, BigInt(traverseCclosure(g, (((((o))))))));
+            return BigInt.asUintN(64, BigInt(traverseCclosure(g, (((((o))))))));
         case 10:
-        return BigInt.asUintN(64, BigInt(traverseproto(g, (((((o))))))));
+            return BigInt.asUintN(64, BigInt(traverseproto(g, (((((o))))))));
         case 8:
-        return BigInt.asUintN(64, BigInt((yield* traversethread(g, (((((o)))))))));
+            return BigInt.asUintN(64, BigInt((yield* traversethread(g, (((((o)))))))));
         default:
-        (void 0);
-        return 0n;
+            (void 0);
+            return 0n;
     }
 }
 
@@ -1140,92 +1143,90 @@ function* freeupval(L, uv) {
 function* freeobj(L, o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 10:
-        (yield* luaF_freeproto(L, (((((o)))))));
-        break;
+            (yield* luaF_freeproto(L, (((((o)))))));
+            break;
         case 9:
-        (yield* freeupval(L, (((((o)))))));
-        break;
+            (yield* freeupval(L, (((((o)))))));
+            break;
         case 6:
-        {
-            let cl = (((((o)))));
-            (yield* luaM_free_(
-                L,
-                (cl),
-                BigInt.asUintN(
-                    64,
-                    BigInt(((((32) + Math.imul(8, (cptr.ld1uo(cl, $LClosure_nupvalues)))) | 0)))
-                )
-            ));
-            break;
-        }
+            {
+                let cl = (((((o)))));
+                (yield* luaM_free_(
+                    L,
+                    (cl),
+                    BigInt.asUintN(
+                        64,
+                        BigInt(((((32) + Math.imul(8, (cptr.ld1uo(cl, $LClosure_nupvalues)))) | 0)))
+                    )
+                ));
+                break;
+            }
         case 38:
-        {
-            let cl = (((((o)))));
-            (yield* luaM_free_(
-                L,
-                (cl),
-                BigInt.asUintN(
-                    64,
-                    BigInt(((((32) + Math.imul(16, (cptr.ld1uo(cl, $CClosure_nupvalues)))) | 0)))
-                )
-            ));
-            break;
-        }
+            {
+                let cl = (((((o)))));
+                (yield* luaM_free_(
+                    L,
+                    (cl),
+                    BigInt.asUintN(
+                        64,
+                        BigInt(((((32) +
+                            Math.imul(16, (cptr.ld1uo(cl, $CClosure_nupvalues)))) | 0)))
+                    )
+                ));
+                break;
+            }
         case 5:
-        (yield* luaH_free(L, (((((o)))))));
-        break;
+            (yield* luaH_free(L, (((((o)))))));
+            break;
         case 8:
-        (yield* luaE_freethread(L, (((((o)))))));
-        break;
+            (yield* luaE_freethread(L, (((((o)))))));
+            break;
         case 7:
-        {
-            let u = (((((o)))));
-            (yield* luaM_free_(
-                L,
-                (o),
-                ((BigInt.asUintN(
-                    64,
-                    ((cptr.ldU16o(u, $Udata_nuvalue)) == 0
-                        ? 24n
-                        : BigInt.asUintN(
-                            64,
-                            24n + 16n * BigInt((cptr.ldU16o(u, $Udata_nuvalue)) >>> 0)
-                        )) +
-                        (cptr.ldU64o(u, $Udata_len))
-                )))
-            ));
-            break;
-        }
+            {
+                let u = (((((o)))));
+                (yield* luaM_free_(
+                    L,
+                    (o),
+                    ((BigInt.asUintN(
+                        64,
+                        ((cptr.ldU16o(u, $Udata_nuvalue)) == 0
+                            ? 24n
+                            : 24n + 16n * BigInt((cptr.ldU16o(u, $Udata_nuvalue)) >>> 0)) +
+                            (cptr.ldU64o(u, $Udata_len))
+                    )))
+                ));
+                break;
+            }
         case 4:
-        {
-            let ts = (((((o)))));
-            luaS_remove(L, ts);  /* remove it from hash table */
-            (yield* luaM_free_(
-                L,
-                (ts),
-                ((BigInt.asUintN(
-                    64,
-                    24n +
-                        BigInt.asUintN(
-                            64,
-                            BigInt((((cptr.ld1uo(ts, $TString_shrlen)) + 1) | 0))
-                        ) * 1n
-                )))
-            ));
-            break;
-        }
+            {
+                let ts = (((((o)))));
+                luaS_remove(L, ts);  /* remove it from hash table */
+                (yield* luaM_free_(
+                    L,
+                    (ts),
+                    ((BigInt.asUintN(
+                        64,
+                        24n +
+                            BigInt.asUintN(
+                                64,
+                                BigInt((((cptr.ld1uo(ts, $TString_shrlen)) + 1) | 0))
+                            ) * 1n
+                    )))
+                ));
+                break;
+            }
         case 20:
-        {
-            let ts = (((((o)))));
-            (yield* luaM_free_(
-                L,
-                (ts),
-                ((BigInt.asUintN(64, 24n + ((cptr.ldU64o(ts, $TString_u)) + 1n) * 1n)))
-            ));
-            break;
-        }
+            {
+                let ts = (((((o)))));
+                (yield* luaM_free_(
+                    L,
+                    (ts),
+                    ((BigInt.asUintN(64, 24n + ((cptr.ldU64o(ts, $TString_u)) + 1n) * 1n)))
+                ));
+                break;
+            }
         default:
-        (void 0);
+            (void 0);
     }
 }
 
@@ -2309,82 +2310,82 @@ function* singlestep(L) {
     cptr.st1o(g, $global_State_gcstopem, 1);  /* no emergency collections while collecting */
     switch (cptr.ld1uo(g, $global_State_gcstate)) {
         case 8:
-        {
-            restartcollection(g);
-            cptr.st1o(g, $global_State_gcstate, 0);
-            work = 1n;
-            break;
-        }
-        case 0:
-        {
-            if (cptr.eq(cptr.ldPtro(g, $global_State_gray), (null))) {
-                cptr.st1o(g, $global_State_gcstate, 1);  /* finish propagate phase */
-                work = 0n;
-            } else
-                work = (yield* propagatemark(g));  /* traverse one gray object */
-            break;
-        }
-        case 1:
-        {
-            work = (yield* atomic(L));  /* work is what was traversed by 'atomic' */
-            (yield* entersweep(L));
-            cptr.stU64o(
-                g,
-                $global_State_GCestimate,
-                (BigInt.asUintN(
-                    64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
-                ))
-            );  /* first estimate */
-            break;
-        }
-        case 3:
-        {
-            work = BigInt.asUintN(
-                64,
-                BigInt((yield* sweepstep(L, g, 4, cptr.add(g, $global_State_finobj))))
-            );
-            break;
-        }
-        case 4:
-        {
-            work = BigInt.asUintN(
-                64,
-                BigInt((yield* sweepstep(L, g, 5, cptr.add(g, $global_State_tobefnz))))
-            );
-            break;
-        }
-        case 5:
-        {
-            work = BigInt.asUintN(64, BigInt((yield* sweepstep(L, g, 6, null))));
-            break;
-        }
-        case 6:
-        {
-            (yield* checkSizes(L, g));
-            cptr.st1o(g, $global_State_gcstate, 7);
-            work = 0n;
-            break;
-        }
-        case 7:
-        {
-            if (cptr.ldPtro(g, $global_State_tobefnz) &&
-                    !cptr.ld1uo(g, $global_State_gcemergency)) {
-                cptr.st1o(g, $global_State_gcstopem, 0);  /* ok collections during finalizers */
-                work = BigInt.asUintN(64, BigInt(Math.imul((yield* runafewfinalizers(L, 10)), 50)));
-            } else {
-                cptr.st1o(g, $global_State_gcstate, 8);  /* finish collection */
-                work = 0n;
+            {
+                restartcollection(g);
+                cptr.st1o(g, $global_State_gcstate, 0);
+                work = 1n;
+                break;
             }
-            break;
-        }
+        case 0:
+            {
+                if (cptr.eq(cptr.ldPtro(g, $global_State_gray), (null))) {
+                    cptr.st1o(g, $global_State_gcstate, 1);  /* finish propagate phase */
+                    work = 0n;
+                } else
+                    work = (yield* propagatemark(g));  /* traverse one gray object */
+                break;
+            }
+        case 1:
+            {
+                work = (yield* atomic(L));  /* work is what was traversed by 'atomic' */
+                (yield* entersweep(L));
+                cptr.stU64o(
+                    g,
+                    $global_State_GCestimate,
+                    (BigInt.asUintN(
+                        64,
+                        (BigInt.asIntN(
+                            64,
+                            cptr.ldI64o((g), $global_State_totalbytes) +
+                                cptr.ldI64o((g), $global_State_GCdebt)
+                        ))
+                    ))
+                );  /* first estimate */
+                break;
+            }
+        case 3:
+            {
+                work = BigInt.asUintN(
+                    64,
+                    BigInt((yield* sweepstep(L, g, 4, cptr.add(g, $global_State_finobj))))
+                );
+                break;
+            }
+        case 4:
+            {
+                work = BigInt.asUintN(
+                    64,
+                    BigInt((yield* sweepstep(L, g, 5, cptr.add(g, $global_State_tobefnz))))
+                );
+                break;
+            }
+        case 5:
+            {
+                work = BigInt.asUintN(64, BigInt((yield* sweepstep(L, g, 6, null))));
+                break;
+            }
+        case 6:
+            {
+                (yield* checkSizes(L, g));
+                cptr.st1o(g, $global_State_gcstate, 7);
+                work = 0n;
+                break;
+            }
+        case 7:
+            {
+                if (cptr.ldPtro(g, $global_State_tobefnz) &&
+                        !cptr.ld1uo(g, $global_State_gcemergency)) {
+                    cptr.st1o(g, $global_State_gcstopem, 0);  /* ok collections during finalizers */
+                    work = BigInt.asUintN(64, BigInt(Math.imul((yield* runafewfinalizers(L, 10)), 50)));
+                } else {
+                    cptr.st1o(g, $global_State_gcstate, 8);  /* finish collection */
+                    work = 0n;
+                }
+                break;
+            }
         default:
-        (void 0);
-        return 0n;
+            (void 0);
+            return 0n;
     }
     cptr.st1o(g, $global_State_gcstopem, 0);
     return work;
@@ -2424,10 +2425,8 @@ function* incstep(L, g) {
         ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n)
             ? BigInt.asUintN(
                 64,
-                (BigInt.asUintN(
-                    64,
-                    (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))
-                ) / 16n) *
+                (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) /
+                    16n) *
                     BigInt.asUintN(64, BigInt(stepmul))
             )
             : 9223372036854775807n)

@@ -59,37 +59,37 @@ export let curttyb = cptr.alloc($sizeof_termios);
 function speednum(speed) {
     switch (speed) {
         case 0n:
-        return 0;
+            return 0;
         case 50n:
-        return 1;
+            return 1;
         case 75n:
-        return 2;
+            return 2;
         case 110n:
-        return 3;
+            return 3;
         case 134n:
-        return 4;
+            return 4;
         case 150n:
-        return 5;
+            return 5;
         case 200n:
-        return 6;
+            return 6;
         case 300n:
-        return 7;
+            return 7;
         case 600n:
-        return 8;
+            return 8;
         case 1200n:
-        return 9;
+            return 9;
         case 1800n:
-        return 10;
+            return 10;
         case 2400n:
-        return 11;
+            return 11;
         case 4800n:
-        return 12;
+            return 12;
         case 9600n:
-        return 13;
+            return 13;
         case 19200n:
-        return 14;
+            return 14;
         case 38400n:
-        return 15;
+            return 15;
     }
 
     return 0;

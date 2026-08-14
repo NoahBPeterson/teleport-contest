@@ -6843,8 +6843,7 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         program_state,
         $sinfo_in_parseoptions,
         cptr.ldI32o(program_state, $sinfo_in_parseoptions) + 1
-    )) -
-            (1);
+    )) - (1);
 
     if (got_match &&
             (matchidx >= 0 && matchidx < NHC.OPTCOUNT) &&
@@ -6882,8 +6881,7 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
             program_state,
             $sinfo_in_parseoptions,
             cptr.ldI32o(program_state, $sinfo_in_parseoptions) + -1
-        )) -
-                (-1);
+        )) - (-1);
 
     if (!got_match) {
         /* Is it a symbol? */
@@ -6949,15 +6947,15 @@ cptr.stI32o(roleopt2opt, 12, NHC.opt_alignment);
 function opt2roleopt(roleopt) {
     switch (roleopt) {
         case NHC.opt_role:
-        return 0;
+            return 0;
         case NHC.opt_race:
-        return 1;
+            return 1;
         case NHC.opt_gender:
-        return 2;
+            return 2;
         case NHC.opt_alignment:
-        return 3;
+            return 3;
         default:
-        break;
+            break;
     }
     return 0;
 }
@@ -7353,20 +7351,20 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
                     matched = 1;
                     switch (cptr.ld1s(op)) {
                         case 117:
-                        newflags |= NHM.AUTOUNLOCK_UNTRAP;
-                        break;
+                            newflags |= NHM.AUTOUNLOCK_UNTRAP;
+                            break;
                         case 97:
-                        newflags |= NHM.AUTOUNLOCK_APPLY_KEY;
-                        break;
+                            newflags |= NHM.AUTOUNLOCK_APPLY_KEY;
+                            break;
                         case 107:
-                        newflags |= NHM.AUTOUNLOCK_KICK;
-                        break;
+                            newflags |= NHM.AUTOUNLOCK_KICK;
+                            break;
                         case 102:
-                        newflags |= NHM.AUTOUNLOCK_FORCE;
-                        break;
+                            newflags |= NHM.AUTOUNLOCK_FORCE;
+                            break;
                         default:
-                        matched = 0;
-                        break;
+                            matched = 0;
+                            break;
                     }
                 }
             }
@@ -7483,16 +7481,16 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
              */
             cptr.st1o2(
                 go,
-                ((NHC.SYM_BOULDER +
-                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
+                ((NHC.SYM_BOULDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) |
+                    0),
                 1,
                 $instance_globals_o_ov_primary_syms,
                 uchar(cptr.ld1so(opts, 0))
             );
             cptr.st1o2(
                 go,
-                ((NHC.SYM_BOULDER +
-                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
+                ((NHC.SYM_BOULDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) |
+                    0),
                 1,
                 $instance_globals_o_ov_rogue_syms,
                 uchar(cptr.ld1so(opts, 0))
@@ -7530,7 +7528,8 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
                     cptr.st1o2(
                         gs,
                         ((NHC.SYM_BOULDER +
-                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) |
+                            0),
                         1,
                         $instance_globals_s_showsyms,
                         sym
@@ -7547,22 +7546,24 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
             __s_pct_c,
             cptr.ld1uo2(
                 go,
-                ((NHC.SYM_BOULDER +
-                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
+                ((NHC.SYM_BOULDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) |
+                    0),
                 1,
                 $instance_globals_o_ov_primary_syms
             )
                 ? cptr.ld1uo2(
                     go,
                     ((NHC.SYM_BOULDER +
-                        ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
+                        ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) |
+                        0),
                     1,
                     $instance_globals_o_ov_primary_syms
                 )
                 : cptr.ld1uo2(
                     gs,
                     (cptr.ld1so2(objects, NHC.BOULDER, $sizeof_objclass, $objclass_oc_class) +
-                        (((0) + NHC.MAXPCHARS) | 0)) | 0,
+                        (((0) + NHC.MAXPCHARS) | 0)) |
+                        0,
                     1,
                     $instance_globals_s_showsyms
                 )
@@ -8919,24 +8920,24 @@ function* optfn_menustyle(optidx, req, negated, opts, op) {
         switch (tmp) {
             case 110:
             case 116:
-            cptr.st1o(flags, $flag_menu_style, NHM.MENU_TRADITIONAL);
-            break;
+                cptr.st1o(flags, $flag_menu_style, NHM.MENU_TRADITIONAL);
+                break;
             case 99:
-            cptr.st1o(flags, $flag_menu_style, NHM.MENU_COMBINATION);
-            break;
+                cptr.st1o(flags, $flag_menu_style, NHM.MENU_COMBINATION);
+                break;
             case 102:
-            cptr.st1o(flags, $flag_menu_style, NHM.MENU_FULL);
-            break;
+                cptr.st1o(flags, $flag_menu_style, NHM.MENU_FULL);
+                break;
             case 112:
-            cptr.st1o(flags, $flag_menu_style, NHM.MENU_PARTIAL);
-            break;
+                cptr.st1o(flags, $flag_menu_style, NHM.MENU_PARTIAL);
+                break;
             default:
-            (yield* config_error_add(
-                __s_unknown_s_parameter_s,
-                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                op
-            ));
-            return NHC.optn_err;
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
+                return NHC.optn_err;
         }
         return NHC.optn_ok;
     }
@@ -9084,15 +9085,15 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             case 99:
             case 102:
             case 114:
-            cptr.st1o(iflags, $instance_flags_prevmsg_window, schar(tmp));
-            break;
+                cptr.st1o(iflags, $instance_flags_prevmsg_window, schar(tmp));
+                break;
             default:
-            (yield* config_error_add(
-                __s_unknown_s_parameter_s,
-                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                op
-            ));
-            retval = NHC.optn_err;
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
+                retval = NHC.optn_err;
         }
         return retval;
     }
@@ -9588,7 +9589,9 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
             if (((cptr.ldI32o(flags, $flag_paranoia_bits) &
-                cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) != 0 &&
+                cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>>
+                0) !=
+                0 &&
                     (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != NHM.PARANOID_BONES ||
                         wizard() ||
                         req == NHC.get_cnf_val))
@@ -9701,7 +9704,8 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
             )
         );
         if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != NHC.InvOptNone &&
-                !cptr.ld1so(iflags, $instance_flags_perm_invent) && op) {
+                !cptr.ld1so(iflags, $instance_flags_perm_invent) &&
+                op) {
             /* perminv_mode is set but isn't useful because perm_invent is
                Off; say so after squeezing out enough for it to barely fit */
             if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) == NHC.InvOptInUse)
@@ -9814,28 +9818,28 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
         )) {
             switch (lowc(cptr.ld1s(op))) {
                 case 100:
-                cptr.st1o(gp, $instance_globals_p_preferred_pet, 100);
-                break;
+                    cptr.st1o(gp, $instance_globals_p_preferred_pet, 100);
+                    break;
                 case 99:
                 case 102:
-                cptr.st1o(gp, $instance_globals_p_preferred_pet, 99);
-                break;
+                    cptr.st1o(gp, $instance_globals_p_preferred_pet, 99);
+                    break;
                 case 104:
                 case 113:
-                /* avoids giving "unrecognized type of pet" but
-                   pet_type(dog.c) won't actually honor this */
-                cptr.st1o(gp, $instance_globals_p_preferred_pet, 104);
-                break;
+                    /* avoids giving "unrecognized type of pet" but
+                       pet_type(dog.c) won't actually honor this */
+                    cptr.st1o(gp, $instance_globals_p_preferred_pet, 104);
+                    break;
                 case 110:
-                cptr.st1o(gp, $instance_globals_p_preferred_pet, 110);
-                break;
+                    cptr.st1o(gp, $instance_globals_p_preferred_pet, 110);
+                    break;
                 case 114:
                 case 42:
-                cptr.st1o(gp, $instance_globals_p_preferred_pet, 0);
-                break;
+                    cptr.st1o(gp, $instance_globals_p_preferred_pet, 0);
+                    break;
                 default:
-                (yield* config_error_add(__s_unrecognized_pet_type_s, op));
-                return NHC.optn_err;
+                    (yield* config_error_add(__s_unrecognized_pet_type_s, op));
+                    return NHC.optn_err;
             }
         } else if (negated)
             cptr.st1o(gp, $instance_globals_p_preferred_pet, 110);
@@ -9889,31 +9893,31 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
         )) {
             switch (lowc(cptr.ld1s(op))) {
                 case 117:
-                cptr.stI32o(flags, $flag_pickup_burden, NHC.UNENCUMBERED);
-                break;
+                    cptr.stI32o(flags, $flag_pickup_burden, NHC.UNENCUMBERED);
+                    break;
                 case 98:
-                cptr.stI32o(flags, $flag_pickup_burden, NHC.SLT_ENCUMBER);
-                break;
+                    cptr.stI32o(flags, $flag_pickup_burden, NHC.SLT_ENCUMBER);
+                    break;
                 case 115:
-                cptr.stI32o(flags, $flag_pickup_burden, NHC.MOD_ENCUMBER);
-                break;
+                    cptr.stI32o(flags, $flag_pickup_burden, NHC.MOD_ENCUMBER);
+                    break;
                 case 110:
-                cptr.stI32o(flags, $flag_pickup_burden, NHC.HVY_ENCUMBER);
-                break;
+                    cptr.stI32o(flags, $flag_pickup_burden, NHC.HVY_ENCUMBER);
+                    break;
                 case 111:
                 case 116:
-                cptr.stI32o(flags, $flag_pickup_burden, NHC.EXT_ENCUMBER);
-                break;
+                    cptr.stI32o(flags, $flag_pickup_burden, NHC.EXT_ENCUMBER);
+                    break;
                 case 108:
-                cptr.stI32o(flags, $flag_pickup_burden, NHC.OVERLOADED);
-                break;
+                    cptr.stI32o(flags, $flag_pickup_burden, NHC.OVERLOADED);
+                    break;
                 default:
-                (yield* config_error_add(
-                    __s_unknown_s_parameter_s,
-                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                    op
-                ));
-                return NHC.optn_err;
+                    (yield* config_error_add(
+                        __s_unknown_s_parameter_s,
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                        op
+                    ));
+                    return NHC.optn_err;
             }
         } else
             return NHC.optn_err;
@@ -10533,36 +10537,36 @@ function* optfn_scores(optidx, req, negated, opts, op) {
 
             switch (lowc(cptr.ld1s(op))) {
                 case 116:
-                cptr.stI32o(flags, $flag_end_top, negated ? 0 : inum);
-                break;
+                    cptr.stI32o(flags, $flag_end_top, negated ? 0 : inum);
+                    break;
                 case 97:
-                cptr.stI32o(flags, $flag_end_around, negated ? 0 : inum);
-                break;
+                    cptr.stI32o(flags, $flag_end_around, negated ? 0 : inum);
+                    break;
                 case 111:
-                cptr.st1o(flags, $flag_end_own, schar(((negated || !inum) ? 0 : 1)));
-                break;
+                    cptr.st1o(flags, $flag_end_own, schar(((negated || !inum) ? 0 : 1)));
+                    break;
                 case 110:
-                cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)),
-                        cptr.st1o(flags, $flag_end_own, 0);
-                break;
+                    cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)),
+                            cptr.st1o(flags, $flag_end_own, 0);
+                    break;
                 case 45:
-                if (digit(cptr.ld1s((cptr.add(op, 1))))) {
+                    if (digit(cptr.ld1s((cptr.add(op, 1))))) {
+                        (yield* config_error_add(
+                            __s_values_for_s_top_and_s_around_must_not,
+                            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                        ));
+                        return NHC.optn_silenterr;
+                    }
+                    // @FallThrough
+                    ;
+                default:
                     (yield* config_error_add(
-                        __s_values_for_s_top_and_s_around_must_not,
+                        __s_unknown_s_parameter_s,
                         cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                        op
                     ));
                     return NHC.optn_silenterr;
-                }
-                // @FallThrough
-                ;
-                default:
-                (yield* config_error_add(
-                    __s_unknown_s_parameter_s,
-                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                    op
-                ));
-                return NHC.optn_silenterr;
             }
             /* "3a" is sufficient but accept "3around" (or "3abracadabra") */
             while (letter(cptr.ld1s(op)))
@@ -10748,27 +10752,27 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
             switch (lowc(cptr.ld1s(op))) {
                 case 48:
                 case 111:
-                cptr.st1o(flags, $flag_discosort, 111);
-                break;
+                    cptr.st1o(flags, $flag_discosort, 111);
+                    break;
                 case 49:
                 case 115:
-                cptr.st1o(flags, $flag_discosort, 115);
-                break;
+                    cptr.st1o(flags, $flag_discosort, 115);
+                    break;
                 case 50:
                 case 99:
-                cptr.st1o(flags, $flag_discosort, 99);
-                break;
+                    cptr.st1o(flags, $flag_discosort, 99);
+                    break;
                 case 51:
                 case 97:
-                cptr.st1o(flags, $flag_discosort, 97);
-                break;
+                    cptr.st1o(flags, $flag_discosort, 97);
+                    break;
                 default:
-                (yield* config_error_add(
-                    __s_unknown_s_parameter_s,
-                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                    op
-                ));
-                return NHC.optn_silenterr;
+                    (yield* config_error_add(
+                        __s_unknown_s_parameter_s,
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                        op
+                    ));
+                    return NHC.optn_silenterr;
             }
         } else
             return NHC.optn_err;
@@ -10809,15 +10813,15 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
                 case 110:
                 case 108:
                 case 102:
-                cptr.st1o(flags, $flag_sortloot, c);
-                break;
+                    cptr.st1o(flags, $flag_sortloot, c);
+                    break;
                 default:
-                (yield* config_error_add(
-                    __s_unknown_s_parameter_s,
-                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                    op
-                ));
-                return NHC.optn_err;
+                    (yield* config_error_add(
+                        __s_unknown_s_parameter_s,
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                        op
+                    ));
+                    return NHC.optn_err;
             }
         } else
             return NHC.optn_err;
@@ -10866,7 +10870,8 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
             if ((p = cptr.strchr(
                 cptr.decay(__static_optfn_sortvanquished_vanqmodes),
                 cptr.ld1s(op)
-            )) !== null) {
+            )) !==
+                    null) {
                 vndx = Number(BigInt.asIntN(
                     32,
                     (cptr.diff(p, cptr.decay(__static_optfn_sortvanquished_vanqmodes)))
@@ -11684,23 +11689,23 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
 
             switch (c) {
                 case 110:
-                cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_NONE);
-                break;
+                    cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_NONE);
+                    break;
                 case 118:
-                cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_VIEW);
-                break;
+                    cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_VIEW);
+                    break;
                 case 97:
-                cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_AREA);
-                break;
+                    cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_AREA);
+                    break;
                 default:
-                {
-                    (yield* config_error_add(
-                        __s_unknown_s_parameter_s,
-                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
-                        op
-                    ));
-                    return NHC.optn_err;
-                }
+                    {
+                        (yield* config_error_add(
+                            __s_unknown_s_parameter_s,
+                            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                            op
+                        ));
+                        return NHC.optn_err;
+                    }
             }
         } else
             return NHC.optn_err;
@@ -11963,16 +11968,16 @@ function* pfxfn_cond_(optidx, req, negated, opts, op) {
 
         switch (reslt) {
             case 0:
-            cptr.st1o(cptr.decay(opt_set_in_config), NHC.pfx_cond_, 1, 1);
-            break;
+                cptr.st1o(cptr.decay(opt_set_in_config), NHC.pfx_cond_, 1, 1);
+                break;
             case 3:
-            (yield* config_error_add(__s_ambiguous_condition_option_s, opts));
-            break;
+                (yield* config_error_add(__s_ambiguous_condition_option_s, opts));
+                break;
             case 1:
             case 2:
             default:
-            (yield* config_error_add(__s_unknown_condition_option_s_d, opts, reslt));
-            break;
+                (yield* config_error_add(__s_unknown_condition_option_s_d, opts, reslt));
+                break;
         }
         if (reslt != 0)
             return NHC.optn_err;
@@ -12049,20 +12054,20 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
                     !cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
                 switch (opttype) {
                     case NHC.MAP_OPTION:
-                    cptr.stI32o(iflags, $instance_flags_wc_fontsiz_map, atoi(op));
-                    break;
+                        cptr.stI32o(iflags, $instance_flags_wc_fontsiz_map, atoi(op));
+                        break;
                     case NHC.MESSAGE_OPTION:
-                    cptr.stI32o(iflags, $instance_flags_wc_fontsiz_message, atoi(op));
-                    break;
+                        cptr.stI32o(iflags, $instance_flags_wc_fontsiz_message, atoi(op));
+                        break;
                     case NHC.TEXT_OPTION:
-                    cptr.stI32o(iflags, $instance_flags_wc_fontsiz_text, atoi(op));
-                    break;
+                        cptr.stI32o(iflags, $instance_flags_wc_fontsiz_text, atoi(op));
+                        break;
                     case NHC.MENU_OPTION:
-                    cptr.stI32o(iflags, $instance_flags_wc_fontsiz_menu, atoi(op));
-                    break;
+                        cptr.stI32o(iflags, $instance_flags_wc_fontsiz_menu, atoi(op));
+                        break;
                     case NHC.STATUS_OPTION:
-                    cptr.stI32o(iflags, $instance_flags_wc_fontsiz_status, atoi(op));
-                    break;
+                        cptr.stI32o(iflags, $instance_flags_wc_fontsiz_status, atoi(op));
+                        break;
                 }
             }
             return NHC.optn_ok;
@@ -12243,37 +12248,37 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
         /* Before the change */
         switch (optidx) {
             case NHC.opt_female:
-            if (!(yield* strncmpi(opts, __s_female, ((ln) > 3 ? (ln) : 3)))) {
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
-                        cptr.ld1so(flags, $flag_female) == negated) {
-                    nosexchange = 1;
-                } else {
-                    cptr.stI32o(
-                        flags,
-                        $flag_initgend,
-                        cptr.st1o(flags, $flag_female, schar((!negated)))
-                    );
-                    return NHC.optn_ok;
+                if (!(yield* strncmpi(opts, __s_female, ((ln) > 3 ? (ln) : 3)))) {
+                    if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                            cptr.ld1so(flags, $flag_female) == negated) {
+                        nosexchange = 1;
+                    } else {
+                        cptr.stI32o(
+                            flags,
+                            $flag_initgend,
+                            cptr.st1o(flags, $flag_female, schar((!negated)))
+                        );
+                        return NHC.optn_ok;
+                    }
                 }
-            }
-            if (!(yield* strncmpi(opts, __s_male, ((ln) > 3 ? (ln) : 3)))) {
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
-                        cptr.ld1so(flags, $flag_female) != negated) {
-                    nosexchange = 1;
-                } else {
-                    cptr.stI32o(flags, $flag_initgend, cptr.st1o(flags, $flag_female, negated));
-                    return NHC.optn_ok;
+                if (!(yield* strncmpi(opts, __s_male, ((ln) > 3 ? (ln) : 3)))) {
+                    if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                            cptr.ld1so(flags, $flag_female) != negated) {
+                        nosexchange = 1;
+                    } else {
+                        cptr.stI32o(flags, $flag_initgend, cptr.st1o(flags, $flag_female, negated));
+                        return NHC.optn_ok;
+                    }
                 }
-            }
-            break;
+                break;
             case NHC.opt_perm_invent:
-            if (!negated &&
-                    !cptr.ld1so(go, $instance_globals_o_opt_initial) &&
-                    !can_set_perm_invent())
-                return NHC.optn_silenterr;
-            break;
+                if (!negated &&
+                        !cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                        !can_set_perm_invent())
+                    return NHC.optn_silenterr;
+                break;
             default:
-            break;
+                break;
         }
         /* this dates from when 'O' prompted for a line of options text
            rather than use a menu to control access to which options can
@@ -12297,39 +12302,39 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
         /* After the change */
         switch (optidx) {
             case NHC.opt_pauper:
-            /* pauper implies nudist */
-            cptr.st1o(
-                u,
-                $you_uroleplay + $u_roleplay_nudist,
-                cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper)
-            );
-            break;
+                /* pauper implies nudist */
+                cptr.st1o(
+                    u,
+                    $you_uroleplay + $u_roleplay_nudist,
+                    cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper)
+                );
+                break;
             case NHC.opt_ascii_map:
-            cptr.st1o(iflags, $instance_flags_wc_tiled_map, negated);
-            break;
+                cptr.st1o(iflags, $instance_flags_wc_tiled_map, negated);
+                break;
             case NHC.opt_tiled_map:
-            cptr.st1o(iflags, $instance_flags_wc_ascii_map, negated);
-            break;
+                cptr.st1o(iflags, $instance_flags_wc_ascii_map, negated);
+                break;
             case NHC.opt_hilite_pet:
-            if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ||
-                    (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
-                /* if we're enabling hilite_pet and petattr isn't set,
-                   set it to Inverse; if we're disabling, leave petattr
-                   alone so that re-enabling will get current value back
-                 */
-                if (cptr.ld1so(iflags, $instance_flags_wc_hilite_pet) &&
-                        !cptr.ldI32o(iflags, $instance_flags_wc2_petattr))
-                    cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_INVERSE);
-            }
-            cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
-            break;
+                if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ||
+                        (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
+                    /* if we're enabling hilite_pet and petattr isn't set,
+                       set it to Inverse; if we're disabling, leave petattr
+                       alone so that re-enabling will get current value back
+                     */
+                    if (cptr.ld1so(iflags, $instance_flags_wc_hilite_pet) &&
+                            !cptr.ldI32o(iflags, $instance_flags_wc2_petattr))
+                        cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_INVERSE);
+                }
+                cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
+                break;
             case NHC.opt_idlecheckpoint:
-            (yield* pline(__s_there_is_no_underlying_support_for));
-            cptr.st1o(iflags, $instance_flags_idlecheckpoint, 0);
-            give_opt_msg = 0;
-            break;
+                (yield* pline(__s_there_is_no_underlying_support_for));
+                cptr.st1o(iflags, $instance_flags_idlecheckpoint, 0);
+                give_opt_msg = 0;
+                break;
             default:
-            break;
+                break;
         }
 
         /* only do processing below if setting with doset() */
@@ -12339,52 +12344,52 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
 
         switch (optidx) {
             case NHC.opt_terrainstatus:
-            classify_terrain();  /* bring iflags.terrain_typ up to date */
-            // @FallThrough
-            ;
+                classify_terrain();  /* bring iflags.terrain_typ up to date */
+                // @FallThrough
+                ;
             case NHC.opt_weaponstatus:
             case NHC.opt_armorstatus:
-            if (!wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))) {
-                /* not actually an error */
-                (yield* config_error_add(
-                    __s_s_is_not_supported,
-                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
-                ));
-                return NHC.optn_ok;
-            }
-            // @FallThrough
-            ;
+                if (!wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))) {
+                    /* not actually an error */
+                    (yield* config_error_add(
+                        __s_s_is_not_supported,
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                    ));
+                    return NHC.optn_ok;
+                }
+                // @FallThrough
+                ;
             case NHC.opt_showscore:
             case NHC.opt_showvers:
             case NHC.opt_showexp:
             case NHC.opt_time:
-            if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n))
-                (yield* status_initialize(1));
-            cptr.st1(disp, 1);
-            break;
+                if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n))
+                    (yield* status_initialize(1));
+                cptr.st1(disp, 1);
+                break;
             case NHC.opt_fixinv:
             case NHC.opt_price_quotes:
             case NHC.opt_sortpack:
             case NHC.opt_implicit_uncursed:
             case NHC.opt_wizweight:
-            if (!cptr.ld1so(flags, $flag_invlet_constant))
-                reassign();
-            (yield* update_inventory());
-            break;
+                if (!cptr.ld1so(flags, $flag_invlet_constant))
+                    reassign();
+                (yield* update_inventory());
+                break;
             case NHC.opt_lit_corridor:
             case NHC.opt_dark_room:
-            /*
-             * All corridor squares seen via night vision or
-             * candles & lamps change.  Update them by calling
-             * newsym() on them.  Don't do this if we are
-             * initializing the options --- the vision system
-             * isn't set up yet.
-             */
-            (yield* vision_recalc(2));  /* shut down vision */
-            cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* delayed recalc */
-            if (cptr.ld1so(iflags, $instance_flags_wc_color))
-                cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);  /* darkroom refresh */
-            break;
+                /*
+                 * All corridor squares seen via night vision or
+                 * candles & lamps change.  Update them by calling
+                 * newsym() on them.  Don't do this if we are
+                 * initializing the options --- the vision system
+                 * isn't set up yet.
+                 */
+                (yield* vision_recalc(2));  /* shut down vision */
+                cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* delayed recalc */
+                if (cptr.ld1so(iflags, $instance_flags_wc_color))
+                    cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);  /* darkroom refresh */
+                break;
             case NHC.opt_wizmgender:
             case NHC.opt_showrace:
             case NHC.opt_use_inverse:
@@ -12392,46 +12397,46 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             case NHC.opt_perm_invent:
             case NHC.opt_ascii_map:
             case NHC.opt_tiled_map:
-            cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
-            cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1);
-            break;
-            case NHC.opt_hitpointbar:
-            if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n)) {
-                /* [is reassessment really needed here?] */
-                (yield* status_initialize(1));
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
-            }
-            break;
+                cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1);
+                break;
+            case NHC.opt_hitpointbar:
+                if (((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 136n) != 0n)) {
+                    /* [is reassessment really needed here?] */
+                    (yield* status_initialize(1));
+                    cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
+                }
+                break;
             case NHC.opt_color:
-            cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
-            cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1);
-            break;
+                cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
+                cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1);
+                break;
             case NHC.opt_customcolors:
-            cptr.st1o(go, $instance_globals_o_opt_reset_customcolors, 1);
-            break;
+                cptr.st1o(go, $instance_globals_o_opt_reset_customcolors, 1);
+                break;
             case NHC.opt_customsymbols:
-            cptr.st1o(go, $instance_globals_o_opt_reset_customsymbols, 1);
-            break;
+                cptr.st1o(go, $instance_globals_o_opt_reset_customsymbols, 1);
+                break;
             case NHC.opt_menucolors:
             case NHC.opt_guicolor:
-            (yield* update_inventory());
-            cptr.st1o(go, $instance_globals_o_opt_need_promptstyle, 1);
-            break;
+                (yield* update_inventory());
+                cptr.st1o(go, $instance_globals_o_opt_need_promptstyle, 1);
+                break;
             case NHC.opt_mention_decor:
-            cptr.st1o(iflags, $instance_flags_prev_decor, NHC.STONE);
-            break;
+                cptr.st1o(iflags, $instance_flags_prev_decor, NHC.STONE);
+                break;
             case NHC.opt_rest_on_space:
-            (yield* update_rest_on_space());
-            break;
+                (yield* update_rest_on_space());
+                break;
             case NHC.opt_accessiblemsg:
-            cptr.stI16o(
-                a11y,
-                $accessibility_data_msg_loc,
-                cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, 0)
-            );
-            break;
+                cptr.stI16o(
+                    a11y,
+                    $accessibility_data_msg_loc,
+                    cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, 0)
+                );
+                break;
             default:
-            break;
+                break;
         }
 
         /* boolean value has been toggled but some option changes can
@@ -12710,7 +12715,7 @@ function* handler_autounlock(optidx) {
         let newflags = 0;
 
         for (i = 0; i < n; ++i)
-            newflags |= (1 << ((cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1) | 0)) >>> 0;
+            newflags |= (1 << cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1) >>> 0;
         cptr.stI32o(flags, $flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
@@ -12825,11 +12830,8 @@ function* handler_disclose() {
                 (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
             ));
             if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 ||
-                    cptr.ld1s(cptr.ldPtro(
-                        __static_handler_disclose_disclosure_names,
-                        i,
-                        8
-                    )) == 103) {
+                    cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) ==
+                        103) {
                 cptr.st1(any, 35);  /* '#' */
                 (yield* add_menu(
                     tmpwin,
@@ -12868,11 +12870,8 @@ function* handler_disclose() {
                 (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
             ));
             if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 ||
-                    cptr.ld1s(cptr.ldPtro(
-                        __static_handler_disclose_disclosure_names,
-                        i,
-                        8
-                    )) == 103) {
+                    cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) ==
+                        103) {
                 cptr.st1(any, 63);  /* '?' */
                 (yield* add_menu(
                     tmpwin,
@@ -13114,29 +13113,29 @@ function* handler_number_pad() {
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
         switch ((cptr.ldI32(mode_pick.v) - 1) | 0) {
             case 0:
-            cptr.st1o(iflags, $instance_flags_num_pad, 0);
-            cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
-            break;
+                cptr.st1o(iflags, $instance_flags_num_pad, 0);
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
+                break;
             case 1:
-            cptr.st1o(iflags, $instance_flags_num_pad, 1);
-            cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
-            break;
+                cptr.st1o(iflags, $instance_flags_num_pad, 1);
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
+                break;
             case 2:
-            cptr.st1o(iflags, $instance_flags_num_pad, 1);
-            cptr.st1o(iflags, $instance_flags_num_pad_mode, 1);
-            break;
+                cptr.st1o(iflags, $instance_flags_num_pad, 1);
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, 1);
+                break;
             case 3:
-            cptr.st1o(iflags, $instance_flags_num_pad, 1);
-            cptr.st1o(iflags, $instance_flags_num_pad_mode, 2);
-            break;
+                cptr.st1o(iflags, $instance_flags_num_pad, 1);
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, 2);
+                break;
             case 4:
-            cptr.st1o(iflags, $instance_flags_num_pad, 1);
-            cptr.st1o(iflags, $instance_flags_num_pad_mode, 3);
-            break;
+                cptr.st1o(iflags, $instance_flags_num_pad, 1);
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, 3);
+                break;
             case 5:
-            cptr.st1o(iflags, $instance_flags_num_pad, 0);
-            cptr.st1o(iflags, $instance_flags_num_pad_mode, 1);
-            break;
+                cptr.st1o(iflags, $instance_flags_num_pad, 0);
+                cptr.st1o(iflags, $instance_flags_num_pad_mode, 1);
+                break;
         }
         (yield* reset_commands(0));
         (yield* Y.icall(number_pad()(cptr.ld1so(iflags, $instance_flags_num_pad) ? 1 : 0)));
@@ -13891,11 +13890,8 @@ function* handler_menu_colors() {
             ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_menu_coloring((cptr.ldI32o(
-                        pick_list.v,
-                        pick_idx,
-                        $sizeof_menu_item
-                    ) - 1 -
+                    free_one_menu_coloring((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) -
+                            1 -
                             pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
@@ -14000,7 +13996,8 @@ function* handler_msgtype() {
             ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_msgtype((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1 -
+                    free_one_msgtype((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) -
+                            1 -
                             pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
@@ -14231,8 +14228,11 @@ function* determine_ambiguities() {
         }
     }
     for (i = 0; i < ((218 - 1) | 0); ++i) {
-        len = (yield* Strlen_(cptr.ldPtro(allopt, i, $sizeof_allopt_t), __s_determine_ambiguities, 6732)) |
-                0;
+        len = (yield* Strlen_(
+            cptr.ldPtro(allopt, i, $sizeof_allopt_t),
+            __s_determine_ambiguities,
+            6732
+        )) | 0;
         cptr.stI32o2(
             allopt,
             i,
@@ -14455,30 +14455,30 @@ function* escapes(cp, tp) {
             cp = cptr.add(cp, 2);  /* move past backslash and 'X' */
             do {
                 cval = ((Math.imul(cval, 16)) +
-                    ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) |
-                        0;
+                        ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) |
+                            0)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
                     (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null &&
                     ++dcount < 2);
         } else {
             switch (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; }))) {
                 case 92:
-                cval = 92;
-                break;
+                    cval = 92;
+                    break;
                 case 110:
-                cval = 10;
-                break;
+                    cval = 10;
+                    break;
                 case 116:
-                cval = 9;
-                break;
+                    cval = 9;
+                    break;
                 case 98:
-                cval = 8;
-                break;
+                    cval = 8;
+                    break;
                 case 114:
-                cval = 13;
-                break;
+                    cval = 13;
+                    break;
                 default:
-                cval = cptr.ld1s(cp);
+                    cval = cptr.ld1s(cp);
             }
             cp = cptr.add(cp, 1);
         }
@@ -15677,8 +15677,7 @@ export function* add_menu_cmd_alias(from_ch, to_ch) {
             gn,
             $instance_globals_n_n_menu_mapped,
             cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped) + 1
-        )) -
-                (1);
+        )) - (1);
         cptr.st1o2(
             gm,
             cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped),
@@ -15759,12 +15758,13 @@ export function* collect_menu_keys(outbuf, scrollmask, printable) {
     cptr.st1o(outbuf, 0, 0);
     for (i = 0; i < 6; ++i) {
         if ((scrollmask &
-                cptr.ld1uo2(
-                    __static_collect_menu_keys_scroll_keys,
-                    i,
-                    $sizeof_menuscrollinfo,
-                    $menuscrollinfo_maskindx
-                )) >>> 0) {
+            cptr.ld1uo2(
+                __static_collect_menu_keys_scroll_keys,
+                i,
+                $sizeof_menuscrollinfo,
+                $menuscrollinfo_maskindx
+            )) >>>
+                0) {
             let c = get_menu_cmd_key(cptr.ld1so(
                 __static_collect_menu_keys_scroll_keys,
                 i,
@@ -16359,73 +16359,73 @@ function* doset_simple_menu() {
                 cptr.stI32(any, (i + 1) | 0);
                 switch (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp)) {
                     case NHC.BoolOpt:
-                    bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
-                    if (!bool_p)
-                        continue;
-                    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) &&
-                            cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
-                                NHC.opt_color)
-                        continue;
-                    void cptr.sprintf(
-                        cptr.decay(buf),
-                        fmtstr,
-                        name,
-                        cptr.ld1s(bool_p) ? __s_x : __s_sp
-                    );
-                    break;
+                        bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
+                        if (!bool_p)
+                            continue;
+                        if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) &&
+                                cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
+                                    NHC.opt_color)
+                            continue;
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            fmtstr,
+                            name,
+                            cptr.ld1s(bool_p) ? __s_x : __s_sp
+                        );
+                        break;
                     case NHC.CompOpt:
                     case NHC.OthrOpt:
-                    k = i;
-                    if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn) ===
-                        optfn_symset &&
-                            (((cptr.ldI16o(
-                                (cptr.add(
-                                    svd,
-                                    $instance_globals_saved_d_dungeon_topology +
-                                        $dgn_topology_d_rogue_level
-                                )),
-                                $d_level_dlevel
-                            ) ||
-                                cptr.ldI16((cptr.add(
-                                    svd,
-                                    $instance_globals_saved_d_dungeon_topology +
-                                        $dgn_topology_d_rogue_level
-                                )))) &&
-                                on_level(
-                                    cptr.add(u, $you_uz),
-                                    cptr.add(
+                        k = i;
+                        if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn) ===
+                            optfn_symset &&
+                                (((cptr.ldI16o(
+                                    (cptr.add(
                                         svd,
                                         $instance_globals_saved_d_dungeon_topology +
                                             $dgn_topology_d_rogue_level
-                                    )
-                                )))) {
-                        k = NHC.opt_roguesymset;
-                        name = cptr.ldPtro(allopt, k, $sizeof_allopt_t);
-                        cptr.stI32(any, (k + 1) | 0);
-                    }
+                                    )),
+                                    $d_level_dlevel
+                                ) ||
+                                    cptr.ldI16((cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_rogue_level
+                                    )))) &&
+                                    on_level(
+                                        cptr.add(u, $you_uz),
+                                        cptr.add(
+                                            svd,
+                                            $instance_globals_saved_d_dungeon_topology +
+                                                $dgn_topology_d_rogue_level
+                                        )
+                                    )))) {
+                            k = NHC.opt_roguesymset;
+                            name = cptr.ldPtro(allopt, k, $sizeof_allopt_t);
+                            cptr.stI32(any, (k + 1) | 0);
+                        }
 
-                    cptr.st1o(cptr.decay(buf2), 0, 0, 1);
-                    reslt = NHC.optn_err;
-                    if (cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))
-                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(
-                            cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx),
-                            NHC.get_val,
-                            0,
-                            cptr.decay(buf2),
-                            cptr.decay(empty_optstr)
-                        )));
-                    void cptr.sprintf(
-                        cptr.decay(buf),
-                        fmtstr,
-                        name,
-                        ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
-                            ? cptr.decay(buf2)
-                            : __s_unknown)
-                    );
-                    break;
+                        cptr.st1o(cptr.decay(buf2), 0, 0, 1);
+                        reslt = NHC.optn_err;
+                        if (cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))
+                            reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(
+                                cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx),
+                                NHC.get_val,
+                                0,
+                                cptr.decay(buf2),
+                                cptr.decay(empty_optstr)
+                            )));
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            fmtstr,
+                            name,
+                            ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
+                                ? cptr.decay(buf2)
+                                : __s_unknown)
+                        );
+                        break;
                     default:
-                    void cptr.sprintf(cptr.decay(buf), __s_error);
-                    break;
+                        void cptr.sprintf(cptr.decay(buf), __s_error);
+                        break;
                 }
                 /* pickup_types is separated from autopickup due to the
                    spelling of their names; emphasize what it means */
@@ -16711,12 +16711,8 @@ export function* doset() {
         for (pass = 0; pass <= 1; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++)
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt &&
-                        (bool_p = cptr.ldPtro2(
-                            allopt,
-                            i,
-                            $sizeof_allopt_t,
-                            $allopt_t_addr
-                        )) !== null &&
+                        (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !==
+                            null &&
                         ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) <=
                             NHC.set_gameview &&
                             pass == 0) ||
@@ -17647,9 +17643,11 @@ function* all_options_conds(sbuf) {
            to edit resulting file manually and insert '!' in front of them */
         if (idx == 0) {
             void cptr.strcpy(cptr.decay(buf), __s_options__2);
-        } else if (((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1 +
+        } else if (((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) +
+            1 +
             (yield* Strlen_(cptr.decay(nextcond), __s_all_options_conds, 9568))) >>>
-                0 >= 75) {
+            0 >=
+                75) {
             /* finish off previous line */
             void cptr.strcat(cptr.decay(buf), __s_comma_bslash_nl);  /* comma and backslash+newline */
             (yield* strbuf_append(sbuf, cptr.decay(buf)));
@@ -17767,47 +17765,48 @@ export function* all_options_strbuf(sbuf) {
             continue;
         switch (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp)) {
             case NHC.BoolOpt:
-            bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
-            if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
-                break;  /* obsolete */
-            if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)) {
-                void cptr.sprintf(
-                    cptr.decay(tmp),
-                    __s_options_s_s,
-                    cptr.ld1s(bool_p) ? __s_empty : __s_bang,
-                    name
-                );
-                (yield* strbuf_append(sbuf, cptr.decay(tmp)));
-            }
-            break;
-            case NHC.CompOpt:
-            if (!(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
-                NHC.set_in_config ||
-                    cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
-                        NHC.set_gameview ||
-                    cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
-                        NHC.set_in_game))
+                bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
+                if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
+                    break;  /* obsolete */
+                if (cptr.ld1s(bool_p) !=
+                        cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)) {
+                    void cptr.sprintf(
+                        cptr.decay(tmp),
+                        __s_options_s_s,
+                        cptr.ld1s(bool_p) ? __s_empty : __s_bang,
+                        name
+                    );
+                    (yield* strbuf_append(sbuf, cptr.decay(tmp)));
+                }
                 break;
-            /* FIXME: get_option_value for:
-               - menu_deselect_all &c menu control keys,
-               - term_cols, term_rows */
-            buf2 = (yield* get_option_value(name, 1));
-            if (buf2) {
-                nh_snprintf(
-                    __s_all_options_strbuf,
-                    9714,
-                    cptr.decay(tmp),
-                    255n,
-                    __s_options_s_s__2,
-                    name,
-                    buf2
-                );
-                void cptr.strcat(cptr.decay(tmp), __s_nl);  /* guaranteed to fit */
-                (yield* strbuf_append(sbuf, cptr.decay(tmp)));
-            }
-            break;
+            case NHC.CompOpt:
+                if (!(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                    NHC.set_in_config ||
+                        cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                            NHC.set_gameview ||
+                        cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                            NHC.set_in_game))
+                    break;
+                /* FIXME: get_option_value for:
+                   - menu_deselect_all &c menu control keys,
+                   - term_cols, term_rows */
+                buf2 = (yield* get_option_value(name, 1));
+                if (buf2) {
+                    nh_snprintf(
+                        __s_all_options_strbuf,
+                        9714,
+                        cptr.decay(tmp),
+                        255n,
+                        __s_options_s_s__2,
+                        name,
+                        buf2
+                    );
+                    void cptr.strcat(cptr.decay(tmp), __s_nl);  /* guaranteed to fit */
+                    (yield* strbuf_append(sbuf, cptr.decay(tmp)));
+                }
+                break;
             case NHC.OthrOpt:
-            break;
+                break;
         }
     }
 
@@ -17852,8 +17851,8 @@ export function* next_opt(datawin, str) {
         i = NHM.COLNO;  /* (greater than COLNO - 2) */
     } else {
         i = (((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
-            (yield* Strlen_(str, __s_next_opt, 9770)) + 2) >>> 0) |
-                0;
+                (yield* Strlen_(str, __s_next_opt, 9770)) +
+                2) >>> 0) | 0;
     }
 
     if (i > 78) {
@@ -18117,22 +18116,22 @@ function* wc_set_font_name(opttype, fontname) {
         return;
     switch (opttype) {
         case NHC.MAP_OPTION:
-        fn = cptr.add(iflags, $instance_flags_wc_font_map);
-        break;
+            fn = cptr.add(iflags, $instance_flags_wc_font_map);
+            break;
         case NHC.MESSAGE_OPTION:
-        fn = cptr.add(iflags, $instance_flags_wc_font_message);
-        break;
+            fn = cptr.add(iflags, $instance_flags_wc_font_message);
+            break;
         case NHC.TEXT_OPTION:
-        fn = cptr.add(iflags, $instance_flags_wc_font_text);
-        break;
+            fn = cptr.add(iflags, $instance_flags_wc_font_text);
+            break;
         case NHC.MENU_OPTION:
-        fn = cptr.add(iflags, $instance_flags_wc_font_menu);
-        break;
+            fn = cptr.add(iflags, $instance_flags_wc_font_menu);
+            break;
         case NHC.STATUS_OPTION:
-        fn = cptr.add(iflags, $instance_flags_wc_font_status);
-        break;
+            fn = cptr.add(iflags, $instance_flags_wc_font_status);
+            break;
         default:
-        return;
+            return;
     }
     if (fn) {
         if (cptr.ldPtr(fn))

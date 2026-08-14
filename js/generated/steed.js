@@ -300,12 +300,10 @@ export function use_saddle(otmp) {
 
     /* Calculate your chance */
     chance = ((acurr(NHC.A_DEX)) +
-        (((acurr(NHC.A_CHA)) / 2) | 0) +
-        Math.imul(2, cptr.ld1so(mtmp, $monst_mtame))) |
-            0;
+            (((acurr(NHC.A_CHA)) / 2) | 0) +
+            Math.imul(2, cptr.ld1so(mtmp, $monst_mtame))) | 0;
     chance = (chance +
-        Math.imul(cptr.ldI32o(u, $you_ulevel), (cptr.ld1so(mtmp, $monst_mtame) ? 20 : 5))) |
-            0;
+            Math.imul(cptr.ldI32o(u, $you_ulevel), (cptr.ld1so(mtmp, $monst_mtame) ? 20 : 5))) | 0;
     if (!cptr.ld1so(mtmp, $monst_mtame))
         chance = (chance - Math.imul(10, cptr.ld1uo(mtmp, $monst_m_lev))) | 0;
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT))
@@ -314,16 +312,16 @@ export function use_saddle(otmp) {
         case NHC.P_ISRESTRICTED:
         case NHC.P_UNSKILLED:
         default:
-        chance = (chance - 20) | 0;
-        break;
+            chance = (chance - 20) | 0;
+            break;
         case NHC.P_BASIC:
-        break;
+            break;
         case NHC.P_SKILLED:
-        chance = (chance + 15) | 0;
-        break;
+            chance = (chance + 15) | 0;
+            break;
         case NHC.P_EXPERT:
-        chance = (chance + 30) | 0;
-        break;
+            chance = (chance + 30) | 0;
+            break;
     }
     if (HConfusion() || Fumbling() || Glib())
         chance = (chance - 20) | 0;
@@ -385,7 +383,8 @@ export function can_ride(mtmp) {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-            131072n) != 0n) &&
+            131072n) !=
+            0n) &&
         !(cptr.ld1uo(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_msize
@@ -487,7 +486,8 @@ export function mount_steed(mtmp, force) {
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                131072n) != 0n) ||
+                131072n) !=
+                0n) ||
                 (cptr.ld1uo(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_msize
@@ -502,7 +502,8 @@ export function mount_steed(mtmp, force) {
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    524288n) != 0n))) {
+                    524288n) !=
+                    0n))) {
         You(__s_won_t_fit_on_a_saddle);
         return 0;
     }
@@ -778,14 +779,14 @@ export function kick_steed() {
             cptr.ldPtro(u, $you_usteed),
             $monst_mtame,
             cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) + -1
-        )) -
-                (-1);
+        )) - (-1);
     if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) &&
             (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mleashed) & 1) | 0)
         m_unleash(cptr.ldPtro(u, $you_usteed), 1);
     if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) ||
             (((cptr.ldI32o(u, $you_ulevel) +
-                cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)) | 0) <
+                cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)) |
+                0) <
                 rnd(20))) {
         newsym(
             cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_mx),
@@ -944,7 +945,8 @@ function landing_spot(spot, reason, forceit) {
                         y,
                         8,
                         $instance_globals_saved_l_level + $dlevel_t_monsters
-                    ) !== null) &&
+                    ) !==
+                        null) &&
                     test_move(
                         cptr.ldI16(u),
                         cptr.ldI16o(u, $you_uy),
@@ -1039,66 +1041,66 @@ export function dismount_steed(reason) {
     otmp = which_armor(mtmp, 1048576n);
     switch (reason) {
         case NHC.DISMOUNT_THROWN:
-        verb = __s_are_thrown;
-        // @FallThrough
-        ;
+            verb = __s_are_thrown;
+            // @FallThrough
+            ;
         case NHC.DISMOUNT_KNOCKED:
         case NHC.DISMOUNT_FELL:
-        You(__s_s_off_of_s, verb, mon_nam(mtmp));
-        if (!have_spot)
-            have_spot = landing_spot(cc, reason, 1);
-        if (!ulev && !ufly) {
-            losehp(
-                ((Half_physical_damage())
-                    ? ((((rn2(10) + 10 + 1) | 0) / 2) | 0)
-                    : (((rn2(10) + 10) | 0))),
-                __s_riding_accident,
-                NHM.KILLED_BY_AN
-            );
-            set_wounded_legs(
-                393216n,
-                (Number(BigInt.asIntN(32, HWounded_legs())) + (rn2(5) + 5)) | 0
-            );
-            repair_leg_damage = 0;
-        }
-        break;
+            You(__s_s_off_of_s, verb, mon_nam(mtmp));
+            if (!have_spot)
+                have_spot = landing_spot(cc, reason, 1);
+            if (!ulev && !ufly) {
+                losehp(
+                    ((Half_physical_damage())
+                        ? ((((rn2(10) + 10 + 1) | 0) / 2) | 0)
+                        : (((rn2(10) + 10) | 0))),
+                    __s_riding_accident,
+                    NHM.KILLED_BY_AN
+                );
+                set_wounded_legs(
+                    393216n,
+                    (Number(BigInt.asIntN(32, HWounded_legs())) + (rn2(5) + 5)) | 0
+                );
+                repair_leg_damage = 0;
+            }
+            break;
         case NHC.DISMOUNT_POLY:
-        You(__s_can_no_longer_ride_s, mon_nam(cptr.ldPtro(u, $you_usteed)));
-        if (!have_spot)
-            have_spot = landing_spot(cc, reason, 1);
-        break;
+            You(__s_can_no_longer_ride_s, mon_nam(cptr.ldPtro(u, $you_usteed)));
+            if (!have_spot)
+                have_spot = landing_spot(cc, reason, 1);
+            break;
         case NHC.DISMOUNT_ENGULFED:
-        /* caller displays message */
-        break;
+            /* caller displays message */
+            break;
         case NHC.DISMOUNT_BONES:
-        /* hero has just died... */
-        break;
+            /* hero has just died... */
+            break;
         case NHC.DISMOUNT_GENERIC:
-        /* no messages, just make it so */
-        break;
+            /* no messages, just make it so */
+            break;
         case NHC.DISMOUNT_BYCHOICE:
         default:
-        if (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
-            You(
-                __s_can_t_the_saddle_s_cursed,
-                (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 ? __s_is : __s_seems_to_be
-            );
-            cptr.stI32o(otmp, $obj_bknown, 1);  /* ok to skip set_bknown() here */
-            return;
-        }
-        if (!have_spot) {
-            You(__s_can_t_there_isn_t_anywhere_for_you_to);
-            return;
-        }
-        if (!has_mgivenname(mtmp)) {
-            pline(
-                __s_you_ve_been_through_the_dungeon_on_s,
-                an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)))
-            );
-            if (Hallucination())
-                pline(__s_it_felt_good_to_get_out_of_the_rain);
-        } else
-            You(__s_dismount_s, mon_nam(mtmp));
+            if (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) {
+                You(
+                    __s_can_t_the_saddle_s_cursed,
+                    (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0 ? __s_is : __s_seems_to_be
+                );
+                cptr.stI32o(otmp, $obj_bknown, 1);  /* ok to skip set_bknown() here */
+                return;
+            }
+            if (!have_spot) {
+                You(__s_can_t_there_isn_t_anywhere_for_you_to);
+                return;
+            }
+            if (!has_mgivenname(mtmp)) {
+                pline(
+                    __s_you_ve_been_through_the_dungeon_on_s,
+                    an(pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp)))
+                );
+                if (Hallucination())
+                    pline(__s_it_felt_good_to_get_out_of_the_rain);
+            } else
+                You(__s_dismount_s, mon_nam(mtmp));
     }
     /* While riding, Wounded_legs refers to the steed's legs;
        after dismounting, it reverts to the hero's legs. */
@@ -1176,8 +1178,7 @@ export function dismount_steed(reason) {
             gi,
             $instance_globals_i_in_steed_dismounting,
             cptr.ld1so(gi, $instance_globals_i_in_steed_dismounting) + -1
-        )) -
-                (-1);
+        )) - (-1);
 
         /* if for bones, there's no reason to place the hero;
            we want to make room for potential ghost, so move steed */
@@ -1407,7 +1408,8 @@ export function place_monster(mon, x, y) {
         y,
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    )) !== null) {
+    )) !==
+            null) {
         describe_level(cptr.decay(buf), 0);
         monnm = minimal_monnam(mon, 0);
         othnm = (!cptr.eq(mon, othermon)) ? minimal_monnam(othermon, 1) : __s_itself;

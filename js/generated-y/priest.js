@@ -314,9 +314,9 @@ export function* move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy,
                  * as this function should return, so we need to translate. */
                 switch ((yield* m_move_aggress(mtmp, nix, niy))) {
                     case 2:
-                    return -2;  /* died making the attack */
+                        return -2;  /* died making the attack */
                     case 3:
-                    return 1;  /* attacked and spent this move */
+                        return 1;  /* attacked and spent this move */
                 }
             }
 
@@ -327,7 +327,8 @@ export function* move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy,
                 niy,
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
-            ) !== null) ||
+            ) !==
+                null) ||
                     ((nix) == cptr.ldI16(u) && (niy) == cptr.ldI16o(u, $you_uy)))
                 return 0;
             cptr.stPtro3(
@@ -449,7 +450,8 @@ export function* pri_move(priest) {
             if ((cptr.ldI32o(priest, $monst_mcansee) & 1) | 0 &&
                     ((!Invis() ||
                         ((cptr.ldU64o((cptr.ldPtro((priest), $monst_data)), $permonst_mflags1) &
-                            16777216n) != 0n)) &&
+                            16777216n) !=
+                            0n)) &&
                         !Underwater() &&
                         ((cptr.ld1uo(
                             cptr.ldPtro(
@@ -459,7 +461,8 @@ export function* pri_move(priest) {
                             ),
                             cptr.ldI16o((priest), $monst_mx)
                         ) &
-                            NHM.COULD_SEE) != 0))) {
+                            NHM.COULD_SEE) !=
+                            0))) {
                 ggx = cptr.ldI16(u);
                 ggy = cptr.ldI16o(u, $you_uy);
             }
@@ -496,19 +499,17 @@ export function* priestini(lvl, sroom, sx, sy, sanctum) {
 
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
         px = (sx +
-            cptr.ld1so(
-                cptr.decay(xdir),
-                (((i + si + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
-                1
-            )) |
-                0;
+                cptr.ld1so(
+                    cptr.decay(xdir),
+                    (((i + si + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
+                    1
+                )) | 0;
         py = (sy +
-            cptr.ld1so(
-                cptr.decay(ydir),
-                (((i + si + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
-                1
-            )) |
-                0;
+                cptr.ld1so(
+                    cptr.decay(ydir),
+                    (((i + si + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
+                    1
+                )) | 0;
         if ((yield* pm_good_location(i16(px), i16(py), prim)))
             break;
     }
@@ -552,7 +553,9 @@ export function* priestini(lvl, sroom, sx, sy, sanctum) {
                 sy,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31)) | 0) &
+            ) &
+                31)) |
+                0) &
                 NHM.AM_MASK) == 0)
                 ? -128
                 : ((((((cptr.ldI32o3(
@@ -562,7 +565,9 @@ export function* priestini(lvl, sroom, sx, sy, sanctum) {
                     sy,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_flags
-                ) & 31)) | 0) &
+                ) &
+                    31)) |
+                    0) &
                     NHM.AM_MASK) ==
                     NHM.AM_LAWFUL)
                     ? NHM.A_LAWFUL
@@ -573,8 +578,11 @@ export function* priestini(lvl, sroom, sx, sy, sanctum) {
                         sy,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_flags
-                    ) & 31)) | 0) &
-                        NHM.AM_MASK)) - 2) | 0))))
+                    ) &
+                        31)) |
+                        0) &
+                        NHM.AM_MASK)) -
+                        2) | 0))))
         );
         cptr.stI16o(
             (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)),
@@ -802,8 +810,8 @@ function has_shrine(pri) {
                 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) ==
                     NHM.AM_LAWFUL)
                     ? NHM.A_LAWFUL
-                    : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) &
-                        NHM.AM_MASK)) - 2) | 0)))))));
+                    : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) |
+                        0)))))));
 }
 
 /** C ref: priest.c:392 — @param {CInt} roomno @returns {CPtr<struct monst>} */
@@ -1005,16 +1013,16 @@ export function* intemple(roomno) {
 
         switch (rn2(4)) {
             case 0:
-            (yield* You(__s_have_an_eerie_feeling));
-            break;
+                (yield* You(__s_have_an_eerie_feeling));
+                break;
             case 1:
-            (yield* You_feel(__s_like_you_are_being_watched));
-            break;
+                (yield* You_feel(__s_like_you_are_being_watched));
+                break;
             case 2:
-            (yield* pline(__s_a_shiver_runs_down_your_s, (yield* body_part(NHC.SPINE))));
-            break;
+                (yield* pline(__s_a_shiver_runs_down_your_s, (yield* body_part(NHC.SPINE))));
+                break;
             default:
-            break;
+                break;
         }
         if (!rn2(5) &&
                 (mtmp = (yield* makemon(
@@ -1022,7 +1030,8 @@ export function* intemple(roomno) {
                     cptr.ldI16(u),
                     cptr.ldI16o(u, $you_uy),
                     NHM.MM_NOMSG
-                ))) !== null) {
+                ))) !==
+                    null) {
             let ngen = cptr.ld1uo2(
                 svm,
                 NHC.PM_GHOST,
@@ -1098,8 +1107,7 @@ export function* priest_talk(priest) {
         u,
         $you_uconduct + $u_conduct_gnostic,
         cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n
-    )) -
-            (1n)))
+    )) - (1n)))
         (yield* livelog_printf(32n, __s_rejected_atheism_by_consulting_with_s, (yield* mon_nam(priest))));
 
     if ((cptr.ldI32o(priest, $monst_mflee) & 1) | 0 ||
@@ -1177,7 +1185,8 @@ export function* priest_talk(priest) {
             (cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0,
             (rn2(101) >>> 0) +
                 (150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0))
-        ) >>> 0) >>> 0);
+        ) >>>
+                0) >>> 0);
         let quan = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) /
                 (BigInt.asIntN(64, suggested * 3n));
         let buf = new Uint8Array(256);
@@ -1465,21 +1474,21 @@ export function* ghod_hitsu(priest) {
         } else {
             switch (rn2(4)) {
                 case 0:
-                x = cptr.ldI16(u);
-                y = cptr.ldI16o(troom, $mkroom_ly);
-                break;
+                    x = cptr.ldI16(u);
+                    y = cptr.ldI16o(troom, $mkroom_ly);
+                    break;
                 case 1:
-                x = cptr.ldI16(u);
-                y = cptr.ldI16o(troom, $mkroom_hy);
-                break;
+                    x = cptr.ldI16(u);
+                    y = cptr.ldI16o(troom, $mkroom_hy);
+                    break;
                 case 2:
-                x = cptr.ldI16(troom);
-                y = cptr.ldI16o(u, $you_uy);
-                break;
+                    x = cptr.ldI16(troom);
+                    y = cptr.ldI16o(u, $you_uy);
+                    break;
                 default:
-                x = cptr.ldI16o(troom, $mkroom_hx);
-                y = cptr.ldI16o(u, $you_uy);
-                break;
+                    x = cptr.ldI16o(troom, $mkroom_hx);
+                    y = cptr.ldI16o(u, $you_uy);
+                    break;
             }
         }
         if (!linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1))
@@ -1488,14 +1497,14 @@ export function* ghod_hitsu(priest) {
 
     switch (rn2(3)) {
         case 0:
-        (yield* pline(__s_s_roars_in_anger_thou_shalt_suffer, (yield* a_gname_at(ax, ay))));
-        break;
+            (yield* pline(__s_s_roars_in_anger_thou_shalt_suffer, (yield* a_gname_at(ax, ay))));
+            break;
         case 1:
-        (yield* pline(__s_s_voice_booms_how_darest_thou_harm_my, (yield* s_suffix((yield* a_gname_at(ax, ay))))));
-        break;
+            (yield* pline(__s_s_voice_booms_how_darest_thou_harm_my, (yield* s_suffix((yield* a_gname_at(ax, ay))))));
+            break;
         default:
-        (yield* pline(__s_s_roars_thou_dost_profane_my_shrine, (yield* a_gname_at(ax, ay))));
-        break;
+            (yield* pline(__s_s_roars_thou_dost_profane_my_shrine, (yield* a_gname_at(ax, ay))));
+            break;
     }
 
     /* bolt of lightning cast by unspecified monster */
@@ -1550,7 +1559,9 @@ export function* angry_priest() {
                         NHM.AM_LAWFUL)
                         ? NHM.A_LAWFUL
                         : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.AM_MASK) &
-                            NHM.AM_MASK)) - 2) | 0)))) !=
+                            NHM.AM_MASK)) -
+                            2) |
+                            0)))) !=
                     cptr.ld1so(eprip, $epri_shralign))) {
             if (!(cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_emin)))
                 (yield* newemin(priest));

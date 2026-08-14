@@ -337,10 +337,8 @@ function* find_lev_obj() {
      * place the objects in the proper order.  Make all obj in chain
      * OBJ_FREE so place_object will work correctly.
      */
-    while ((otmp = cptr.ldPtro(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_objlist
-    )) !== null) {
+    while ((otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist)) !==
+            null) {
         cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist, cptr.ldPtr(otmp));
         cptr.stPtr(otmp, fobjtmp);
         cptr.st1o(otmp, $obj_where, NHM.OBJ_FREE);
@@ -679,7 +677,8 @@ function* restmon(nhfp, mtmp) {
             if (cptr.ldI32o(
                 (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
                 $edog_apport
-            ) <= 0) {
+            ) <=
+                    0) {
                 cptr.stI32o(
                     (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
                     $edog_apport,
@@ -1651,23 +1650,23 @@ export function* getlev(nhfp, pid, lev) {
                 case NHM.BR_STAIR:
                 case NHM.BR_NO_END1:
                 case NHM.BR_NO_END2:
-                stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
-                while (stway) {
-                    if (cptr.ldI16o(stway, $stairway_tolev) != cptr.ldI16o(u, $you_uz))
-                        break;
-                    stway = cptr.ldPtro(stway, $stairway_next);
-                }
-                if (stway)
-                    assign_level(cptr.add(stway, $stairway_tolev), ltmp);
-                break;
+                    stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
+                    while (stway) {
+                        if (cptr.ldI16o(stway, $stairway_tolev) != cptr.ldI16o(u, $you_uz))
+                            break;
+                        stway = cptr.ldPtro(stway, $stairway_next);
+                    }
+                    if (stway)
+                        assign_level(cptr.add(stway, $stairway_tolev), ltmp);
+                    break;
                 case NHM.BR_PORTAL:
-                for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
-                    if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
-                        break;
-                if (!trap)
-                    (yield* panic(__s_getlev_need_portal_but_none_found));
-                assign_level(cptr.add(trap, $trap_dst), ltmp);
-                break;
+                    for (trap = cptr.ldPtr(gf); trap; trap = cptr.ldPtr(trap))
+                        if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
+                            break;
+                    if (!trap)
+                        (yield* panic(__s_getlev_need_portal_but_none_found));
+                    assign_level(cptr.add(trap, $trap_dst), ltmp);
+                    break;
             }
         } else if (!br) {
             let ttmp = null;
@@ -1846,8 +1845,7 @@ function* add_id_mapping(gid, nid) {
         gn,
         $instance_globals_n_n_ids_mapped,
         cptr.ldI32o(gn, $instance_globals_n_n_ids_mapped) + 1
-    )) -
-            (1);
+    )) - (1);
 }
 
 /*

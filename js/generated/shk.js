@@ -821,10 +821,8 @@ export function shkgone(mtmp) {
 
         /* Make sure bill is set only when the
            dead shk is the resident shk. */
-        if ((p = cptr.strchr(
-            cptr.add(u, $you_ushops),
-            cptr.ld1so(eshk, $eshk_shoproom)
-        )) !== null) {
+        if ((p = cptr.strchr(cptr.add(u, $you_ushops), cptr.ld1so(eshk, $eshk_shoproom))) !==
+                null) {
             setpaid(mtmp);
             cptr.stPtro(eshk, $eshk_bill_p, null);
             /* remove eshk->shoproom from u.ushops */
@@ -847,7 +845,8 @@ export function set_residency(shkp, zero_out) {
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                 $eshk_shoproom
             ) -
-                NHM.ROOMOFFSET) | 0,
+                NHM.ROOMOFFSET) |
+                0,
             $sizeof_mkroom,
             $mkroom_resident,
             (zero_out) ? null : shkp
@@ -862,7 +861,8 @@ export function replshk(mtmp, mtmp2) {
             (cptr.ldPtro(cptr.ldPtro((mtmp2), $monst_mextra), $mextra_eshk)),
             $eshk_shoproom
         ) -
-            NHM.ROOMOFFSET) | 0,
+            NHM.ROOMOFFSET) |
+            0,
         $sizeof_mkroom,
         $mkroom_resident,
         mtmp2
@@ -970,7 +970,9 @@ function clear_no_charge_obj(shkp, otmp) {
                     y.v,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_roomno
-                ) & 63) | 0) <
+                ) &
+                    63) |
+                    0) <
                     NHM.ROOMOFFSET ||
                 !(cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) >=
                     NHC.SHOPBASE) ||
@@ -979,7 +981,8 @@ function clear_no_charge_obj(shkp, otmp) {
                     (rno - NHM.ROOMOFFSET) | 0,
                     $sizeof_mkroom,
                     $mkroom_resident
-                )) === null ||
+                )) ===
+                    null ||
                 cptr.eq(rm_shkp, shkp))
             cptr.stI32o(otmp, $obj_no_charge, 0);
     }
@@ -1204,19 +1207,22 @@ function call_kops(shkp, nearshop) {
         NHC.PM_KEYSTONE_KOP,
         $sizeof_mvitals,
         $instance_globals_saved_m_mvitals + $mvitals_mvflags
-    ) & 3) &&
+    ) &
+        3) &&
         (cptr.ld1uo2(
             svm,
             NHC.PM_KOP_SERGEANT,
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) & 3) &&
+        ) &
+            3) &&
         (cptr.ld1uo2(
             svm,
             NHC.PM_KOP_LIEUTENANT,
             $sizeof_mvitals,
             $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) & 3) &&
+        ) &
+            3) &&
         (cptr.ld1uo2(
             svm,
             NHC.PM_KOP_KAPTAIN,
@@ -1287,7 +1293,9 @@ export function inside_shop(x, y) {
                 y,
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) | 0 ||
+            ) &
+                1) |
+                0 ||
             !(cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) >=
                 NHC.SHOPBASE))
         rno = NHM.NO_ROOM;
@@ -1314,7 +1322,8 @@ export function u_left_shop(leavestring, newlev) {
                 cptr.ldI16o(u, $you_uy),
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_edge
-            ) & 1) ||
+            ) &
+                1) ||
                 (cptr.ldI32o3(
                     svl,
                     cptr.ldI16o(u, $you_ux0),
@@ -1322,7 +1331,8 @@ export function u_left_shop(leavestring, newlev) {
                     cptr.ldI16o(u, $you_uy0),
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_edge
-                ) & 1) | 0))
+                ) &
+                    1) | 0))
         return;
 
     shkp = shop_keeper(schar((cptr.ld1s(leavestring)
@@ -1563,7 +1573,8 @@ function deserted_shop(enterstring) {
                 y,
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
-            ))) !== null) {
+            ))) !==
+                    null) {
                 ++n;
                 if (sensemon(mtmp) ||
                         (((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
@@ -3026,7 +3037,8 @@ export function dopay() {
                 cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cy, 8),
                 cx
             ) &
-                NHM.IN_SIGHT) != 0) &&
+                NHM.IN_SIGHT) !=
+                0) &&
                     (!mtmp || !canspotmon(mtmp))) {
                 You(__s_can_t_s_anyone_there, !Blind() ? __s_see__2 : __s_sense);
                 return NHM.ECMD_OK;
@@ -3421,19 +3433,19 @@ function pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
         }
         switch (buy) {
             case 0:
-            return 0;
+                return 0;
             case -2:
-            cptr.st1(paid_p, 1);
-            return 1;
+                cptr.st1(paid_p, 1);
+                return 1;
             case -1:
-            continue;
+                continue;
             case 1:
-            cptr.st1(paid_p, 1);
-            if (itemize || queuedpay) {
-                update_inventory();
-                bot();
-            }
-            break;
+                cptr.st1(paid_p, 1);
+                if (itemize || queuedpay) {
+                    update_inventory();
+                    bot();
+                }
+                break;
         }
     }
     return 1;
@@ -3549,8 +3561,7 @@ function dopayobj(shkp, bp, obj, which, itemize, unseen) {
         iflags,
         $instance_flags_suppress_price,
         cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1
-    )) -
-            (1);  /* affects containers */
+    )) - (1);  /* affects containers */
     buy = 1;  /* flag; if changed then return early */
 
     if (itemize) {
@@ -3608,8 +3619,7 @@ function dopayobj(shkp, bp, obj, which, itemize, unseen) {
         iflags,
         $instance_flags_suppress_price,
         cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1
-    )) -
-            (-1);
+    )) - (-1);
 
     return buy;
 }
@@ -3999,12 +4009,13 @@ function inherits(shkp, numsk, croaked, silently) {
                 ),
                 cptr.ldI16o(shkp, $monst_mx)
             ) &
-                NHM.IN_SIGHT) != 0) &&
+                NHM.IN_SIGHT) !=
+                0) &&
                     croaked &&
                     !silently) {
                 cptr.st1o(cptr.decay(takes), 0, 0, 1);
-                if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) &
-                    32768n) == 0n) &&
+                if (((cptr.ldU64o((cptr.ldPtro(shkp, $monst_data)), $permonst_mflags1) & 32768n) ==
+                    0n) &&
                         !rn2(2))
                     void cptr.sprintf(
                         cptr.decay(takes),
@@ -4062,7 +4073,8 @@ function inherits(shkp, numsk, croaked, silently) {
         }
 
         if (cptr.ld1so(eshkp, $eshk_following) ||
-                (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) || take) {
+                (!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))) ||
+                take) {
             if (!cptr.ldPtro(gi, $instance_globals_i_invent))
                 { __go_skip = true; break __skip_skip; }
             umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
@@ -4389,14 +4401,17 @@ function get_cost(obj, shkp) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_name_known
-            ) & 1)) {
+            ) &
+                1)) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
                 ((cptr.ldI32o2(
                     objects,
                     cptr.ldI16o(obj, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_material
-                ) & 31) | 0) ==
+                ) &
+                    31) |
+                    0) ==
                     NHC.GLASS) {
             let i;
             /* get a value that's 'random' from game to game, but the
@@ -4408,36 +4423,36 @@ function get_cost(obj, shkp) {
             /* all gems are priced high - real or not */
             switch ((cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_GLASS_GEM) | 0) {
                 case 0:
-                i = pseudorand ? NHC.DIAMOND : NHC.OPAL;
-                break;
+                    i = pseudorand ? NHC.DIAMOND : NHC.OPAL;
+                    break;
                 case 1:
-                i = pseudorand ? NHC.SAPPHIRE : NHC.AQUAMARINE;
-                break;
+                    i = pseudorand ? NHC.SAPPHIRE : NHC.AQUAMARINE;
+                    break;
                 case 2:
-                i = pseudorand ? NHC.RUBY : NHC.JASPER;
-                break;
+                    i = pseudorand ? NHC.RUBY : NHC.JASPER;
+                    break;
                 case 3:
-                i = pseudorand ? NHC.AMBER : NHC.TOPAZ;
-                break;
+                    i = pseudorand ? NHC.AMBER : NHC.TOPAZ;
+                    break;
                 case 4:
-                i = pseudorand ? NHC.JACINTH : NHC.AGATE;
-                break;
+                    i = pseudorand ? NHC.JACINTH : NHC.AGATE;
+                    break;
                 case 5:
-                i = pseudorand ? NHC.CITRINE : NHC.CHRYSOBERYL;
-                break;
+                    i = pseudorand ? NHC.CITRINE : NHC.CHRYSOBERYL;
+                    break;
                 case 6:
-                i = pseudorand ? NHC.BLACK_OPAL : NHC.JET;
-                break;
+                    i = pseudorand ? NHC.BLACK_OPAL : NHC.JET;
+                    break;
                 case 7:
-                i = pseudorand ? NHC.EMERALD : NHC.JADE;
-                break;
+                    i = pseudorand ? NHC.EMERALD : NHC.JADE;
+                    break;
                 case 8:
-                i = pseudorand ? NHC.AMETHYST : NHC.FLUORITE;
-                break;
+                    i = pseudorand ? NHC.AMETHYST : NHC.FLUORITE;
+                    break;
                 default:
-                impossible(__s_bad_glass_gem_d, cptr.ldI16o(obj, $obj_otyp));
-                i = NHC.STRANGE_OBJECT;
-                break;
+                    impossible(__s_bad_glass_gem_d, cptr.ldI16o(obj, $obj_otyp));
+                    i = NHC.STRANGE_OBJECT;
+                    break;
             }
             tmp = BigInt(cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_cost));
         } else if (oid_price_adjustment(obj, cptr.ldI32o(obj, $obj_o_id)) > 0) {
@@ -4746,7 +4761,8 @@ function set_cost(obj, shkp) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_name_known
-            ) & 1)) {
+            ) &
+                1)) {
         if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS) {
             /* different shop keepers give different prices */
             if (((cptr.ldI32o2(
@@ -4754,14 +4770,18 @@ function set_cost(obj, shkp) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
+            ) &
+                31) |
+                0) ==
                 NHC.GEMSTONE ||
                     ((cptr.ldI32o2(
                         objects,
                         cptr.ldI16o(obj, $obj_otyp),
                         $sizeof_objclass,
                         $objclass_oc_material
-                    ) & 31) | 0) ==
+                    ) &
+                        31) |
+                        0) ==
                         NHC.GLASS) {
                 tmp = BigInt((u32mod(
                     ((cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_REAL_GEM) | 0) >>> 0,
@@ -5026,12 +5046,8 @@ function shk_names_obj(shkp, obj, fmt, amt, arg) {
      * scrolls/books (that is, blank and mail), but only if the
      * object is within the shk's area of interest/expertise.
      */
-    if (!(cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_magic
-    ) & 1) &&
+    if (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_magic) &
+        1) &&
             saleable(shkp, obj) &&
             (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS ||
@@ -5286,7 +5302,8 @@ function append_honorific(buf) {
             ? (((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags2
-            ) & 16n) != 0n))
+            ) &
+                16n) != 0n))
             : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
         void cptr.strcat(buf, (cptr.ld1so(flags, $flag_female)) ? __s_hiril : __s_hir);
     else
@@ -5295,7 +5312,8 @@ function append_honorific(buf) {
             !((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags2
-            ) & 8n) != 0n)
+            ) &
+                8n) != 0n)
                 ? __s_creature
                 : ((cptr.ld1so(flags, $flag_female)) ? __s_lady : __s_sir)
         );
@@ -5355,8 +5373,7 @@ export function splitbill(obj, otmp) {
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                 $eshk_billct
             ) + 1
-        )) -
-                (1);
+        )) - (1);
     }
 }
 
@@ -5578,8 +5595,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
                 cptr.ldI64o(
                     (cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)),
                     $eshk_robbed
-                ) +
-                    value
+                ) + value
             );
         else
             cptr.stI64o(
@@ -5588,8 +5604,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
                 cptr.ldI64o(
                     (cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)),
                     $eshk_debit
-                ) +
-                    value
+                ) + value
             );
 
         if (!silent) {
@@ -5650,8 +5665,7 @@ export function stolen_value(obj, x, y, peaceful, silent) {
             cptr.ldI64o(
                 (cptr.ldPtro(cptr.ldPtro((shkp.v), $monst_mextra), $mextra_eshk)),
                 $eshk_robbed
-            ) +
-                value
+            ) + value
         );
 
         if (!silent) {
@@ -6048,41 +6062,41 @@ export function sellobj(obj, x, y) {
                 ? cptr.ld1so(gs, $instance_globals_s_sell_response)
                 : yn_function(cptr.decay(qbuf), cptr.decay(ynaqchars), 110, 1)) {
             case 113:
-            cptr.st1o(gs, $instance_globals_s_sell_response, 110);
-            // @FallThrough
-            ;
+                cptr.st1o(gs, $instance_globals_s_sell_response, 110);
+                // @FallThrough
+                ;
             case 110:
-            if (container)
-                dropped_container(obj, shkp, 0);
-            if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
-                cptr.stI32o(obj, $obj_no_charge, 1);
-            subfrombill(obj, shkp);
-            break;
+                if (container)
+                    dropped_container(obj, shkp, 0);
+                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1))
+                    cptr.stI32o(obj, $obj_no_charge, 1);
+                subfrombill(obj, shkp);
+                break;
             case 97:
-            cptr.st1o(gs, $instance_globals_s_sell_response, 121);
-            // @FallThrough
-            ;
+                cptr.st1o(gs, $instance_globals_s_sell_response, 121);
+                // @FallThrough
+                ;
             case 121:
-            if (container)
-                dropped_container(obj, shkp, 1);
-            if (!(cptr.ldI32o(obj, $obj_unpaid) & 1) && !saleitem)
-                cptr.stI32o(obj, $obj_no_charge, 1);
-            subfrombill(obj, shkp);
-            pay(-offer, shkp);
-            shk_names_obj(
-                shkp,
-                obj,
-                (cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_NORMAL)
-                    ? ((!ltmp && cltmp && only_partially_your_contents)
-                        ? __s_sold_some_items_inside_s_for_ld_gold
-                        : __s_sold_s_for_ld_gold_piece_s_s)
-                    : __s_relinquish_s_and_receive_ld_gold_piece,
-                offer,
-                __s_empty
-            );
-            break;
+                if (container)
+                    dropped_container(obj, shkp, 1);
+                if (!(cptr.ldI32o(obj, $obj_unpaid) & 1) && !saleitem)
+                    cptr.stI32o(obj, $obj_no_charge, 1);
+                subfrombill(obj, shkp);
+                pay(-offer, shkp);
+                shk_names_obj(
+                    shkp,
+                    obj,
+                    (cptr.ldI32o(gs, $instance_globals_s_sell_how) != NHM.SELL_NORMAL)
+                        ? ((!ltmp && cltmp && only_partially_your_contents)
+                            ? __s_sold_some_items_inside_s_for_ld_gold
+                            : __s_sold_s_for_ld_gold_piece_s_s)
+                        : __s_relinquish_s_and_receive_ld_gold_piece,
+                    offer,
+                    __s_empty
+                );
+                break;
             default:
-            impossible(__s_invalid_sell_response);
+                impossible(__s_invalid_sell_response);
         }
     }
 }
@@ -6165,16 +6179,14 @@ export function doinvbill(mode) {
                     iflags,
                     $instance_flags_suppress_price,
                     cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1
-                )) -
-                        (1);  /* suppress "(unpaid)" suffix */
+                )) - (1);  /* suppress "(unpaid)" suffix */
                 /* Why 'x'?  To match `I x', more or less. */
                 buf_p = xprname(obj, null, 120, 0, thisused, uquan);
                 (cptr.stI32o(
                     iflags,
                     $instance_flags_suppress_price,
                     cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1
-                )) -
-                        (-1);
+                )) - (-1);
                 putstr()(datawin, 0, buf_p);
             }
         }
@@ -6279,44 +6291,44 @@ function getprice(obj, shk_buying) {
     }
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.FOOD_CLASS:
-        tmp += corpsenm_price_adj(obj);
+            tmp += corpsenm_price_adj(obj);
 
-        /* simpler hunger check, (2-4)*cost */
-        if (cptr.ldI32o(u, $you_uhs) >= NHC.HUNGRY && !shk_buying)
-            tmp *= BigInt(cptr.ldI32o(u, $you_uhs) >>> 0);
-        if (cptr.ldI32o(obj, $obj_oeaten))
-            tmp = 0n;
-        break;
+            /* simpler hunger check, (2-4)*cost */
+            if (cptr.ldI32o(u, $you_uhs) >= NHC.HUNGRY && !shk_buying)
+                tmp *= BigInt(cptr.ldI32o(u, $you_uhs) >>> 0);
+            if (cptr.ldI32o(obj, $obj_oeaten))
+                tmp = 0n;
+            break;
         case NHC.WAND_CLASS:
-        if (cptr.ld1so(obj, $obj_spe) == -1)
-            tmp = 0n;
-        break;
+            if (cptr.ld1so(obj, $obj_spe) == -1)
+                tmp = 0n;
+            break;
         case NHC.POTION_CLASS:
-        if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER &&
-                !(cptr.ldI32o(obj, $obj_blessed) & 1) &&
-                !(cptr.ldI32o(obj, $obj_cursed) & 1))
-            tmp = 0n;
-        break;
+            if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_WATER &&
+                    !(cptr.ldI32o(obj, $obj_blessed) & 1) &&
+                    !(cptr.ldI32o(obj, $obj_cursed) & 1))
+                tmp = 0n;
+            break;
         case NHC.ARMOR_CLASS:
         case NHC.WEAPON_CLASS:
-        if (cptr.ld1so(obj, $obj_spe) > 0)
-            tmp += BigInt.asIntN(64, 10n * BigInt(cptr.ld1so(obj, $obj_spe)));
-        break;
+            if (cptr.ld1so(obj, $obj_spe) > 0)
+                tmp += BigInt.asIntN(64, 10n * BigInt(cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.TOOL_CLASS:
-        if (Is_candle(obj) &&
-                cptr.ldI64o(obj, $obj_age) <
-                    BigInt.asIntN(
-                        64,
-                        20n *
-                            BigInt(cptr.ldI16o2(
-                                objects,
-                                cptr.ldI16o(obj, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_cost
-                            ))
-                    ))
-            tmp /= 2n;
-        break;
+            if (Is_candle(obj) &&
+                    cptr.ldI64o(obj, $obj_age) <
+                        BigInt.asIntN(
+                            64,
+                            20n *
+                                BigInt(cptr.ldI16o2(
+                                    objects,
+                                    cptr.ldI16o(obj, $obj_otyp),
+                                    $sizeof_objclass,
+                                    $objclass_oc_cost
+                                ))
+                        ))
+                tmp /= 2n;
+            break;
     }
     return tmp;
 }
@@ -6354,7 +6366,8 @@ export function shkcatch(obj, x, y) {
             verbalize(__s_out_of_my_way_scum);
         }
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-                NHM.IN_SIGHT) != 0)) {
+            NHM.IN_SIGHT) !=
+                0)) {
             pline(
                 __s_s_nimbly_s_catches_s,
                 Shknam(shkp),
@@ -6515,11 +6528,10 @@ function repairable_damage(dam, shkp) {
                     y,
                     8,
                     $instance_globals_saved_l_level + $dlevel_t_monsters
-                ))) !== null &&
-                    !((cptr.ldU64o(
-                        (cptr.ldPtro(mtmp, $monst_data)),
-                        $permonst_mflags1
-                    ) & 8n) != 0n)))
+                ))) !==
+                    null &&
+                    !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
+                        8n) != 0n)))
             return 0;
     }
     /* is it a trap? don't fix if hero or monster is in it */
@@ -6534,7 +6546,8 @@ function repairable_damage(dam, shkp) {
             y,
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ))) !== null &&
+        ))) !==
+            null &&
                 (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0)
             return 0;
     }
@@ -6761,7 +6774,8 @@ function litter_scatter(litter, x, y, shkp) {
             y,
             8,
             $instance_globals_saved_l_level + $dlevel_t_objects
-        )) !== null) {
+        )) !==
+                null) {
             /* Don't mess w/ boulders -- just merge into wall */
             if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER ||
                     cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK) {
@@ -6866,26 +6880,64 @@ function repair_damage(shkp, tmp_dam, catchup) {
         switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
             case NHC.LANDMINE:
             case NHC.BEAR_TRAP:
-            /* convert to an object */
-            otmp = mksobj(
-                (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE)
-                    ? NHC.LAND_MINE
-                    : NHC.BEARTRAP,
-                1,
-                0
-            );
-            cptr.stI64o(otmp, $obj_quan, 1n);
-            cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
-            if (!catchup) {
-                if (canseemon(shkp) &&
-                        dist2(
-                            x,
-                            y,
-                            cptr.ldI16o(shkp, $monst_mx),
-                            cptr.ldI16o(shkp, $monst_my)
-                        ) <= 2)
-                    pline(__s_s_untraps_s, Shknam(shkp), ansimpleoname(otmp));
-                else if ((cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                /* convert to an object */
+                otmp = mksobj(
+                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE)
+                        ? NHC.LAND_MINE
+                        : NHC.BEARTRAP,
+                    1,
+                    0
+                );
+                cptr.stI64o(otmp, $obj_quan, 1n);
+                cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
+                if (!catchup) {
+                    if (canseemon(shkp) &&
+                            dist2(
+                                x,
+                                y,
+                                cptr.ldI16o(shkp, $monst_mx),
+                                cptr.ldI16o(shkp, $monst_my)
+                            ) <= 2)
+                        pline(__s_s_untraps_s, Shknam(shkp), ansimpleoname(otmp));
+                    else if ((cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                            ((cptr.ld1uo(
+                                cptr.ldPtro(
+                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                    cptr.ldI16o(ttmp, $trap_ty),
+                                    8
+                                ),
+                                cptr.ldI16o(ttmp, $trap_tx)
+                            ) &
+                                NHM.IN_SIGHT) != 0))
+                        pline(
+                            __s_the_s_vanishes,
+                            trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
+                        );
+                }
+                void mpickobj(shkp, otmp);
+                break;
+            case NHC.HOLE:
+            case NHC.PIT:
+            case NHC.SPIKED_PIT:
+                if (!catchup &&
+                        (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                        ((cptr.ld1uo(
+                            cptr.ldPtro(
+                                cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                cptr.ldI16o(ttmp, $trap_ty),
+                                8
+                            ),
+                            cptr.ldI16o(ttmp, $trap_tx)
+                        ) &
+                            NHM.IN_SIGHT) != 0))
+                    pline(
+                        __s_the_s_is_filled_in,
+                        trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
+                    );
+                break;
+            default:
+                if (!catchup &&
+                        (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
                         ((cptr.ld1uo(
                             cptr.ldPtro(
                                 cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -6899,42 +6951,7 @@ function repair_damage(shkp, tmp_dam, catchup) {
                         __s_the_s_vanishes,
                         trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
                     );
-            }
-            void mpickobj(shkp, otmp);
-            break;
-            case NHC.HOLE:
-            case NHC.PIT:
-            case NHC.SPIKED_PIT:
-            if (!catchup &&
-                    (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
-                    ((cptr.ld1uo(
-                        cptr.ldPtro(
-                            cptr.ldPtro(gv, $instance_globals_v_viz_array),
-                            cptr.ldI16o(ttmp, $trap_ty),
-                            8
-                        ),
-                        cptr.ldI16o(ttmp, $trap_tx)
-                    ) &
-                        NHM.IN_SIGHT) != 0))
-                pline(
-                    __s_the_s_is_filled_in,
-                    trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1)
-                );
-            break;
-            default:
-            if (!catchup &&
-                    (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
-                    ((cptr.ld1uo(
-                        cptr.ldPtro(
-                            cptr.ldPtro(gv, $instance_globals_v_viz_array),
-                            cptr.ldI16o(ttmp, $trap_ty),
-                            8
-                        ),
-                        cptr.ldI16o(ttmp, $trap_tx)
-                    ) &
-                        NHM.IN_SIGHT) != 0))
-                pline(__s_the_s_vanishes, trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 1));
-            break;
+                break;
         }
         deltrap(ttmp);
         del_engr_at(x, y);
@@ -6961,7 +6978,9 @@ function repair_damage(shkp, tmp_dam, catchup) {
                         y,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_flags
-                    ) & 31) | 0) >
+                    ) &
+                        31) |
+                        0) >
                         NHM.D_BROKEN)))
         /* no terrain fix necessary (trap removal or manually repaired) */
         return disposition;
@@ -7203,7 +7222,8 @@ export function shk_move(shkp) {
         if ((cptr.ldI32o(shkp, $monst_mcansee) & 1) | 0 &&
                 ((!Invis() ||
                     ((cptr.ldU64o((cptr.ldPtro((shkp), $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n)) &&
+                        16777216n) !=
+                        0n)) &&
                     !Underwater() &&
                     ((cptr.ld1uo(
                         cptr.ldPtro(
@@ -7213,7 +7233,8 @@ export function shk_move(shkp) {
                         ),
                         cptr.ldI16o((shkp), $monst_mx)
                     ) &
-                        NHM.COULD_SEE) != 0))) {
+                        NHM.COULD_SEE) !=
+                        0))) {
             gtx = cptr.ldI16(u);
             gty = cptr.ldI16o(u, $you_uy);
         }
@@ -7536,8 +7557,7 @@ export function pay_for_damage(dmgstr, cant_mollify) {
                     (cptr.ldI16o(tmp_dam, $damage_place + $nhcoord_y)),
                     cptr.ldI16(u),
                     cptr.ldI16o(u, $you_uy)
-                ) >>>
-                        0;
+                ) >>> 0;
 
                 if (damage_distance < nearest_damage) {
                     nearest_damage = damage_distance;
@@ -7552,8 +7572,7 @@ export function pay_for_damage(dmgstr, cant_mollify) {
                 (cptr.ldI16o((tmp_shk), $monst_my)),
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy)
-            ) >>>
-                    0;
+            ) >>> 0;
             if (shk_distance > nearest_shk)
                 continue;
             if ((shk_distance == nearest_shk) && picks) {
@@ -7569,8 +7588,7 @@ export function pay_for_damage(dmgstr, cant_mollify) {
                 (cptr.ldI16o(tmp_dam, $damage_place + $nhcoord_y)),
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy)
-            ) >>>
-                    0;
+            ) >>> 0;
         }
     }
 
@@ -7652,7 +7670,8 @@ export function pay_for_damage(dmgstr, cant_mollify) {
             y,
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ) !== null)) {
+        ) !==
+                null)) {
             if (!animal) {
                 if (!Deaf() &&
                         !(helpless(shkp) ||
@@ -7799,7 +7818,9 @@ export function costly_adjacent(shkp, x, y) {
         y,
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_edge
-    ) & 1) | 0 ||
+    ) &
+        1) |
+        0 ||
         (x == cptr.ldI16o(eshkp, $eshk_shk) && y == cptr.ldI16o(eshkp, $eshk_shk + $nhcoord_y))
             ? 1
             : 0));
@@ -7933,42 +7954,42 @@ function shk_embellish(itm, cost) {
             choice = (cost < 100n ? 1 : (cost < 500n ? 2 : 3));
         switch (choice) {
             case 4:
-            if (cost < 10n)
-                break;
-            else
-                o = cptr.ld1so(itm, $obj_oclass);
-            if (o == NHC.FOOD_CLASS)
-                return __s_gourmets_delight;
-            if ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(itm, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_name_known
-            ) & 1) | 0
-                    ? (cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(itm, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_magic
-                    ) & 1) | 0
-                    : (o == NHC.AMULET_CLASS ||
-                        o == NHC.RING_CLASS ||
-                        o == NHC.WAND_CLASS ||
-                        o == NHC.POTION_CLASS ||
-                        o == NHC.SCROLL_CLASS ||
-                        o == NHC.SPBOOK_CLASS
-                        ? 1
-                        : 0))
-                return __s_painstakingly_developed;
-            return __s_superb_craftsmanship;
+                if (cost < 10n)
+                    break;
+                else
+                    o = cptr.ld1so(itm, $obj_oclass);
+                if (o == NHC.FOOD_CLASS)
+                    return __s_gourmets_delight;
+                if ((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(itm, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1) | 0
+                        ? (cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(itm, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_magic
+                        ) & 1) | 0
+                        : (o == NHC.AMULET_CLASS ||
+                            o == NHC.RING_CLASS ||
+                            o == NHC.WAND_CLASS ||
+                            o == NHC.POTION_CLASS ||
+                            o == NHC.SCROLL_CLASS ||
+                            o == NHC.SPBOOK_CLASS
+                            ? 1
+                            : 0))
+                    return __s_painstakingly_developed;
+                return __s_superb_craftsmanship;
             case 3:
-            return __s_finest_quality;
+                return __s_finest_quality;
             case 2:
-            return __s_an_excellent_choice;
+                return __s_an_excellent_choice;
             case 1:
-            return __s_a_real_bargain;
+                return __s_a_real_bargain;
             default:
-            break;
+                break;
         }
     } else if (cptr.ld1so(itm, $obj_oartifact)) {
         return __s_one_of_a_kind;
@@ -8249,7 +8270,8 @@ export function check_unpaid_usage(otmp, altusage) {
                     cptr.ldI16o(otmp, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_charged
-                ) & 1) | 0))
+                ) &
+                    1) | 0))
         return;
     shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
     if (!shkp || !inhishop(shkp))
@@ -8391,11 +8413,13 @@ export function block_door(x, y) {
             cptr.ldI16o(
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                 $eshk_shd
-            ) == x &&
+            ) ==
+                x &&
             cptr.ldI16o(
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
                 $eshk_shd + $nhcoord_y
-            ) == y &&
+            ) ==
+                y &&
             !helpless(shkp) &&
             (cptr.ldI64o(
                 (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
@@ -8444,7 +8468,9 @@ export function block_entry(x, y) {
                 cptr.ldI16o(u, $you_uy),
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_flags
-            ) & 31) | 0) ==
+            ) &
+                31) |
+                0) ==
                 NHM.D_BROKEN))
         return 0;
 
@@ -8586,25 +8612,26 @@ function cad(altusage) {
     switch (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags2
-    ) & 256n) != 0n)
+    ) &
+        256n) != 0n)
             ? 3
             : poly_gender()) {
         case 0:
-        res = __s_cad;
-        break;
+            res = __s_cad;
+            break;
         case 1:
-        res = __s_minx;
-        break;
+            res = __s_minx;
+            break;
         case 2:
-        res = __s_beast;
-        break;
+            res = __s_beast;
+            break;
         case 3:
-        res = __s_fiend;
-        break;
+            res = __s_fiend;
+            break;
         default:
-        impossible(__s_cad_unknown_gender);
-        res = __s_thing;
-        break;
+            impossible(__s_cad_unknown_gender);
+            res = __s_thing;
+            break;
     }
     if (altusage) {
         let cadbuf = mon_nam(cptr.add(gy, $instance_globals_y_youmonst));  /* snag an output buffer */

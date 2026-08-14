@@ -196,8 +196,7 @@ function def_raw_print(s) {
             iflags,
             $instance_flags_raw_printed,
             cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1
-        )) -
-                (1);
+        )) - (1);
 }
 
 /** C ref: windows.c:215 */
@@ -889,45 +888,45 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
             return;
         switch (idx) {
             case NHC.BL_CONDITION:
-            cond = condptr ? cptr.ldI64(condptr) : 0n;
-            nb = cptr.ldPtro(status_vals, idx, 8);
-            cptr.st1(nb, 0);
-            if (cond & 1048576n)
-                void cptr.strcpy(nb = eos(nb), __s_stone);
-            if (cond & 262144n)
-                void cptr.strcpy(nb = eos(nb), __s_slime);
-            if (cond & 2097152n)
-                void cptr.strcpy(nb = eos(nb), __s_strngl);
-            if (cond & 128n)
-                void cptr.strcpy(nb = eos(nb), __s_foodpois);
-            if (cond & 16777216n)
-                void cptr.strcpy(nb = eos(nb), __s_termill);
-            if (cond & 2n)
-                void cptr.strcpy(nb = eos(nb), __s_blind);
-            if (cond & 16n)
-                void cptr.strcpy(nb = eos(nb), __s_deaf);
-            if (cond & 4194304n)
-                void cptr.strcpy(nb = eos(nb), __s_stun);
-            if (cond & 8n)
-                void cptr.strcpy(nb = eos(nb), __s_conf);
-            if (cond & 1024n)
-                void cptr.strcpy(nb = eos(nb), __s_hallu);
-            if (cond & 16384n)
-                void cptr.strcpy(nb = eos(nb), __s_lev);
-            if (cond & 64n)
-                void cptr.strcpy(nb = eos(nb), __s_fly);
-            if (cond & 65536n)
-                void cptr.strcpy(nb = eos(nb), __s_ride);
-            break;
+                cond = condptr ? cptr.ldI64(condptr) : 0n;
+                nb = cptr.ldPtro(status_vals, idx, 8);
+                cptr.st1(nb, 0);
+                if (cond & 1048576n)
+                    void cptr.strcpy(nb = eos(nb), __s_stone);
+                if (cond & 262144n)
+                    void cptr.strcpy(nb = eos(nb), __s_slime);
+                if (cond & 2097152n)
+                    void cptr.strcpy(nb = eos(nb), __s_strngl);
+                if (cond & 128n)
+                    void cptr.strcpy(nb = eos(nb), __s_foodpois);
+                if (cond & 16777216n)
+                    void cptr.strcpy(nb = eos(nb), __s_termill);
+                if (cond & 2n)
+                    void cptr.strcpy(nb = eos(nb), __s_blind);
+                if (cond & 16n)
+                    void cptr.strcpy(nb = eos(nb), __s_deaf);
+                if (cond & 4194304n)
+                    void cptr.strcpy(nb = eos(nb), __s_stun);
+                if (cond & 8n)
+                    void cptr.strcpy(nb = eos(nb), __s_conf);
+                if (cond & 1024n)
+                    void cptr.strcpy(nb = eos(nb), __s_hallu);
+                if (cond & 16384n)
+                    void cptr.strcpy(nb = eos(nb), __s_lev);
+                if (cond & 64n)
+                    void cptr.strcpy(nb = eos(nb), __s_fly);
+                if (cond & 65536n)
+                    void cptr.strcpy(nb = eos(nb), __s_ride);
+                break;
             default:
-            void cptr.sprintf(
-                cptr.ldPtro(status_vals, idx, 8),
-                cptr.ldPtro(status_fieldfmt, idx, 8)
-                    ? cptr.ldPtro(status_fieldfmt, idx, 8)
-                    : __s_pct_s,
-                text ? text : __s_empty
-            );
-            break;
+                void cptr.sprintf(
+                    cptr.ldPtro(status_vals, idx, 8),
+                    cptr.ldPtro(status_fieldfmt, idx, 8)
+                        ? cptr.ldPtro(status_fieldfmt, idx, 8)
+                        : __s_pct_s,
+                    text ? text : __s_empty
+                );
+                break;
         }
         return;  /* processed one field other than BL_FLUSH */
     }  /* (idx >= 0, thus not BL_FLUSH, BL_RESET, BL_CHARACTERISTICS) */
@@ -957,9 +956,8 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
        single char; we want to subtract that 9 when checking display length */
     lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) &&
         cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __s_bslash_g))
-        ? 9
-        : 0) >>>
-            0;
+            ? 9
+            : 0) >>> 0;
     /* basic bot2 formats groups of second line fields into five buffers,
        then decides how to order those buffers based on comparing lengths
        of [sub]sets of them to the width of the map; we have more control
@@ -977,28 +975,28 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                     case NHC.BL_XP:
                     case NHC.BL_HD:
                     case NHC.BL_TIME:
-                    void cptr.strcpy(nb = eos(nb), __s_sp);
-                    break;
+                        void cptr.strcpy(nb = eos(nb), __s_sp);
+                        break;
                     case NHC.BL_LEVELDESC:
-                    /* leveldesc has no leading space, so if we've moved
-                       it past the first position, provide one */
-                    if (i != 0)
-                        void cptr.strcpy(nb = eos(nb), __s_sp);
-                    break;
+                        /* leveldesc has no leading space, so if we've moved
+                           it past the first position, provide one */
+                        if (i != 0)
+                            void cptr.strcpy(nb = eos(nb), __s_sp);
+                        break;
                     case NHC.BL_HUNGER:
-                    /* hunger==" " - keep it, end up with " ";
-                       hunger!=" " - insert space and get "  hunger" */
-                    if (strcmp(val, __s_sp))
-                        void cptr.strcpy(nb = eos(nb), __s_sp);
-                    break;
+                        /* hunger==" " - keep it, end up with " ";
+                           hunger!=" " - insert space and get "  hunger" */
+                        if (strcmp(val, __s_sp))
+                            void cptr.strcpy(nb = eos(nb), __s_sp);
+                        break;
                     case NHC.BL_CAP:
-                    /* cap==" " - suppress it, retain "  hunger" or " ";
-                       cap!=" " - use it, get "  hunger cap" or "  cap" */
-                    if (!strcmp(val, __s_sp))
-                        val = cptr.add(val, 1);
-                    break;
+                        /* cap==" " - suppress it, retain "  hunger" or " ";
+                           cap!=" " - use it, get "  hunger cap" or "  cap" */
+                        if (!strcmp(val, __s_sp))
+                            val = cptr.add(val, 1);
+                        break;
                     default:
-                    break;
+                        break;
                 }
                 void cptr.strcpy(nb = eos(nb), val);  /* status_vals[idx2] */
             }  /* status_activefields[idx2] */
@@ -1216,8 +1214,7 @@ export function decode_glyph(str, glyph_ptr) {
         if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
             retval++;
             rndchk = ((Math.imul(rndchk, 16)) +
-                ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) |
-                    0;
+                    ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
         } else
             break;
     }
@@ -1229,10 +1226,8 @@ export function decode_glyph(str, glyph_ptr) {
                 cptr.stI32(
                     glyph_ptr,
                     ((Math.imul(cptr.ldI32(glyph_ptr), 16)) +
-                        ((Number(BigInt.asIntN(
-                            32,
-                            (cptr.diff(dp, cptr.decay(hexdd)))
-                        )) / 2) | 0)) | 0
+                        ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) /
+                            2) | 0)) | 0
                 );
             } else
                 break;
@@ -1260,36 +1255,36 @@ export function* decode_mixed(buf, str) {
             save_str = cptr.postinc(() => str, (v) => { str = v; });
             switch (cptr.ld1s(str)) {
                 case 71:
-                if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
-                    str = cptr.add(str, ((dcount + 1) | 0));
-                    map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    so = cptr.ldI32o(
-                        glyphinfo,
-                        $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx
-                    );
-                    cptr.st1(
-                        cptr.postinc(() => put, (v) => { put = v; }),
-                        schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms))
-                    );
-                    /* 'str' is ready for the next loop iteration and '*str'
-                       should not be copied at the end of this iteration */
-                    continue;
-                } else {
-                    /* possible forgery - leave it the way it is */
-                    str = save_str;
-                }
-                break;
+                    if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
+                        str = cptr.add(str, ((dcount + 1) | 0));
+                        map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
+                        so = cptr.ldI32o(
+                            glyphinfo,
+                            $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx
+                        );
+                        cptr.st1(
+                            cptr.postinc(() => put, (v) => { put = v; }),
+                            schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms))
+                        );
+                        /* 'str' is ready for the next loop iteration and '*str'
+                           should not be copied at the end of this iteration */
+                        continue;
+                    } else {
+                        /* possible forgery - leave it the way it is */
+                        str = save_str;
+                    }
+                    break;
                 case 92:
-                break;
+                    break;
                 case 0:
-                /* String ended with '\\'.  This can happen when someone
-                   names an object with a name ending with '\\', drops the
-                   named object on the floor nearby and does a look at all
-                   nearby objects. */
-                /* brh - should we perhaps not allow things to have names
-                   that contain '\\' */
-                str = save_str;
-                break;
+                    /* String ended with '\\'.  This can happen when someone
+                       names an object with a name ending with '\\', drops the
+                       named object on the floor nearby and does a look at all
+                       nearby objects. */
+                    /* brh - should we perhaps not allow things to have names
+                       that contain '\\' */
+                    str = save_str;
+                    break;
             }
         }
         cptr.st1(
@@ -1469,27 +1464,27 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
         selected = 0;
         switch (category) {
             case 0:
-            idx = def_char_to_monclass(cptr.ld1s(class_list));
-            if (!((idx) >= 0 && (idx) < 61)) {
-                (yield* panic(__s_choose_classes_menu_invalid_monclass_c, cptr.ld1s(class_list)));
-                /*NOTREACHED*/
-            }
-            text = cptr.ldPtro2(def_monsyms, idx, $sizeof_class_sym, $class_sym_explain);
-            accelerator = cptr.ld1s(class_list);
-            void cptr.sprintf(cptr.decay(buf), __s_pct_s, text);
-            break;
+                idx = def_char_to_monclass(cptr.ld1s(class_list));
+                if (!((idx) >= 0 && (idx) < 61)) {
+                    (yield* panic(__s_choose_classes_menu_invalid_monclass_c, cptr.ld1s(class_list)));
+                    /*NOTREACHED*/
+                }
+                text = cptr.ldPtro2(def_monsyms, idx, $sizeof_class_sym, $class_sym_explain);
+                accelerator = cptr.ld1s(class_list);
+                void cptr.sprintf(cptr.decay(buf), __s_pct_s, text);
+                break;
             case 1:
-            idx = def_char_to_objclass(cptr.ld1s(class_list));
-            if (!((idx) >= 0 && (idx) < 18)) {
-                (yield* panic(__s_choose_classes_menu_invalid_objclass_c, cptr.ld1s(class_list)));
-                /*NOTREACHED*/
-            }
-            text = cptr.ldPtro2(def_oc_syms, idx, $sizeof_class_sym, $class_sym_explain);
-            accelerator = next_accelerator;
-            void cptr.sprintf(cptr.decay(buf), __s_c_s__2, cptr.ld1s(class_list), text);
-            break;
+                idx = def_char_to_objclass(cptr.ld1s(class_list));
+                if (!((idx) >= 0 && (idx) < 18)) {
+                    (yield* panic(__s_choose_classes_menu_invalid_objclass_c, cptr.ld1s(class_list)));
+                    /*NOTREACHED*/
+                }
+                text = cptr.ldPtro2(def_oc_syms, idx, $sizeof_class_sym, $class_sym_explain);
+                accelerator = next_accelerator;
+                void cptr.sprintf(cptr.decay(buf), __s_c_s__2, cptr.ld1s(class_list), text);
+                break;
             default:
-            (yield* panic(__s_choose_classes_menu_invalid_category_d, category));
+                (yield* panic(__s_choose_classes_menu_invalid_category_d, category));
         }
         if (way && cptr.ld1s(class_select)) {
             if (cptr.strchr(class_select, cptr.ld1s(class_list))) {

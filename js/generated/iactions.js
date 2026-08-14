@@ -371,139 +371,139 @@ function ia_addmenu(win, act, let$, txt) {
 function itemactions_pushkeys(otmp, act) {
     switch (act) {
         default:
-        impossible(__s_unknown_item_action_d, act);
-        break;
+            impossible(__s_unknown_item_action_d, act);
+            break;
         case NHC.IA_NONE:
-        break;
+            break;
         case NHC.IA_UNWIELD:
-        cmdq_add_ec(
-            NHC.CQ_CANNED,
-            (cptr.eq(otmp, uwep.v))
-                ? dowield
-                : ((cptr.eq(otmp, uswapwep.v))
-                    ? remarm_swapwep
-                    : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull))
-        );  /* can't happen */
-        cmdq_add_key(NHC.CQ_CANNED, 45);
-        break;
+            cmdq_add_ec(
+                NHC.CQ_CANNED,
+                (cptr.eq(otmp, uwep.v))
+                    ? dowield
+                    : ((cptr.eq(otmp, uswapwep.v))
+                        ? remarm_swapwep
+                        : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull))
+            );  /* can't happen */
+            cmdq_add_key(NHC.CQ_CANNED, 45);
+            break;
         case NHC.IA_APPLY_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, doapply);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, doapply);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_DIP_OBJ:
-        /* #altdip instead of normal #dip - takes potion to dip into
-           first (the inventory item instigating this) and item to
-           be dipped second, also ignores floor features such as
-           fountain/sink so we don't need to force m-prefix here */
-        cmdq_add_ec(NHC.CQ_CANNED, dip_into);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            /* #altdip instead of normal #dip - takes potion to dip into
+               first (the inventory item instigating this) and item to
+               be dipped second, also ignores floor features such as
+               fountain/sink so we don't need to force m-prefix here */
+            cmdq_add_ec(NHC.CQ_CANNED, dip_into);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_NAME_OBJ:
         case NHC.IA_NAME_OTYP:
-        cmdq_add_ec(NHC.CQ_CANNED, docallcmd);
-        cmdq_add_key(NHC.CQ_CANNED, schar(((act == NHC.IA_NAME_OBJ) ? 105 : 111)));
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, docallcmd);
+            cmdq_add_key(NHC.CQ_CANNED, schar(((act == NHC.IA_NAME_OBJ) ? 105 : 111)));
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_DROP_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dodrop);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dodrop);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_EAT_OBJ:
-        /* start with m-prefix; for #eat, it means ignore floor food
-           if present and eat food from invent */
-        cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu);
-        cmdq_add_ec(NHC.CQ_CANNED, doeat);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            /* start with m-prefix; for #eat, it means ignore floor food
+               if present and eat food from invent */
+            cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu);
+            cmdq_add_ec(NHC.CQ_CANNED, doeat);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_ENGRAVE_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, doengrave);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, doengrave);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_FIRE_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dofire);
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dofire);
+            break;
         case NHC.IA_ADJUST_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, doorganize);  /* #adjust */
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, doorganize);  /* #adjust */
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_ADJUST_STACK:
-        cmdq_add_ec(NHC.CQ_CANNED, adjust_split);  /* #altadjust */
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, adjust_split);  /* #altadjust */
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_SACRIFICE:
-        cmdq_add_ec(NHC.CQ_CANNED, dosacrifice);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dosacrifice);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_BUY_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dopay);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dopay);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_QUAFF_OBJ:
-        /* start with m-prefix; for #quaff, it means ignore fountain
-           or sink if present and drink a potion from invent */
-        cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu);
-        cmdq_add_ec(NHC.CQ_CANNED, dodrink);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            /* start with m-prefix; for #quaff, it means ignore fountain
+               or sink if present and drink a potion from invent */
+            cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu);
+            cmdq_add_ec(NHC.CQ_CANNED, dodrink);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_QUIVER_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dowieldquiver);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dowieldquiver);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_READ_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, doread);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, doread);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_RUB_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dorub);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dorub);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_THROW_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dothrow);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dothrow);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_TAKEOFF_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, ia_dotakeoff);  /* #altdotakeoff */
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, ia_dotakeoff);  /* #altdotakeoff */
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_TIP_CONTAINER:
-        /* start with m-prefix to skip floor containers;
-           for menustyle:Traditional when more than one floor container
-           is present, player will get a #tip menu and have to pick
-           the "tip something being carried" choice, then this item
-           will be already chosen from inventory; suboptimal but
-           possibly an acceptable tradeoff since combining item actions
-           with use of traditional ggetobj() is an unlikely scenario */
-        cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu);
-        cmdq_add_ec(NHC.CQ_CANNED, dotip);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            /* start with m-prefix to skip floor containers;
+               for menustyle:Traditional when more than one floor container
+               is present, player will get a #tip menu and have to pick
+               the "tip something being carried" choice, then this item
+               will be already chosen from inventory; suboptimal but
+               possibly an acceptable tradeoff since combining item actions
+               with use of traditional ggetobj() is an unlikely scenario */
+            cmdq_add_ec(NHC.CQ_CANNED, do_reqmenu);
+            cmdq_add_ec(NHC.CQ_CANNED, dotip);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_INVOKE_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, doinvoke);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, doinvoke);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_WIELD_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dowield);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dowield);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_WEAR_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dowear);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dowear);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_SWAPWEAPON:
-        cmdq_add_ec(NHC.CQ_CANNED, doswapweapon);
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, doswapweapon);
+            break;
         case NHC.IA_TWOWEAPON:
-        cmdq_add_ec(NHC.CQ_CANNED, dotwoweapon);
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dotwoweapon);
+            break;
         case NHC.IA_ZAP_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dozap);
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dozap);
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
         case NHC.IA_WHATIS_OBJ:
-        cmdq_add_ec(NHC.CQ_CANNED, dowhatis);  /* "/" command */
-        cmdq_add_key(NHC.CQ_CANNED, 105);  /* "i" == item from inventory */
-        cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
-        break;
+            cmdq_add_ec(NHC.CQ_CANNED, dowhatis);  /* "/" command */
+            cmdq_add_key(NHC.CQ_CANNED, 105);  /* "i" == item from inventory */
+            cmdq_add_key(NHC.CQ_CANNED, cptr.ld1so(otmp, $obj_invlet));
+            break;
     }
 }
 
@@ -624,7 +624,9 @@ export function itemactions(otmp) {
                 cptr.ldI16o(otmp, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_name_known
-            ) & 1) | 0) {
+            ) &
+                1) |
+                0) {
         void cptr.sprintf(cptr.decay(buf), __s_s_this_oil, light);
         ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
@@ -731,7 +733,8 @@ export function itemactions(otmp) {
                         cptr.ldI16o(otmp, $obj_otyp),
                         $sizeof_objclass,
                         $objclass_oc_tough
-                    ) & 1) | 0))
+                    ) &
+                        1) | 0))
                 ? __s_engrave
                 : __s_write,
             surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)),
@@ -794,7 +797,8 @@ export function itemactions(otmp) {
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy),
                 NHC.SHOPBASE
-            )))) !== null &&
+            )))) !==
+                null &&
             inhishop(mtmp)) {
         void cptr.sprintf(
             cptr.decay(buf),
@@ -941,7 +945,9 @@ export function itemactions(otmp) {
                 cptr.ldI16o(otmp, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_unique
-            ) & 1) | 0 ||
+            ) &
+                1) |
+                0 ||
             cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
         ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __s_try_to_invoke_a_unique_power_of_this);
 

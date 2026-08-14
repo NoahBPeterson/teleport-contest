@@ -301,77 +301,77 @@ function luaB_collectgarbage(L) {
     );
     switch (o) {
         case 3:
-        {
-            let k = lua_gc(L, o);
-            let b = lua_gc(L, 4);
             {
-                if (k == -1)
-                    break;
+                let k = lua_gc(L, o);
+                let b = lua_gc(L, 4);
+                {
+                    if (k == -1)
+                        break;
+                }
+                ;
+                lua_pushnumber(L, k + (b / 1024));
+                return 1;
             }
-            ;
-            lua_pushnumber(L, k + (b / 1024));
-            return 1;
-        }
         case 5:
-        {
-            let step = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
-            let res = lua_gc(L, o, step);
             {
-                if (res == -1)
-                    break;
+                let step = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
+                let res = lua_gc(L, o, step);
+                {
+                    if (res == -1)
+                        break;
+                }
+                ;
+                lua_pushboolean(L, res);
+                return 1;
             }
-            ;
-            lua_pushboolean(L, res);
-            return 1;
-        }
         case 6:
         case 7:
-        {
-            let p = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
-            let previous = lua_gc(L, o, p);
             {
-                if (previous == -1)
-                    break;
+                let p = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
+                let previous = lua_gc(L, o, p);
+                {
+                    if (previous == -1)
+                        break;
+                }
+                ;
+                lua_pushinteger(L, BigInt(previous));
+                return 1;
             }
-            ;
-            lua_pushinteger(L, BigInt(previous));
-            return 1;
-        }
         case 9:
-        {
-            let res = lua_gc(L, o);
             {
-                if (res == -1)
-                    break;
+                let res = lua_gc(L, o);
+                {
+                    if (res == -1)
+                        break;
+                }
+                ;
+                lua_pushboolean(L, res);
+                return 1;
             }
-            ;
-            lua_pushboolean(L, res);
-            return 1;
-        }
         case 10:
-        {
-            let minormul = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
-            let majormul = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, 0n)));
-            return pushmode(L, lua_gc(L, o, minormul, majormul));
-        }
-        case 11:
-        {
-            let pause = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
-            let stepmul = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, 0n)));
-            let stepsize = Number(BigInt.asIntN(32, luaL_optinteger(L, 4, 0n)));
-            return pushmode(L, lua_gc(L, o, pause, stepmul, stepsize));
-        }
-        default:
-        {
-            let res = lua_gc(L, o);
             {
-                if (res == -1)
-                    break;
+                let minormul = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
+                let majormul = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, 0n)));
+                return pushmode(L, lua_gc(L, o, minormul, majormul));
             }
-            ;
-            lua_pushinteger(L, BigInt(res));
-            return 1;
-        }
+        case 11:
+            {
+                let pause = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 0n)));
+                let stepmul = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, 0n)));
+                let stepsize = Number(BigInt.asIntN(32, luaL_optinteger(L, 4, 0n)));
+                return pushmode(L, lua_gc(L, o, pause, stepmul, stepsize));
+            }
+        default:
+            {
+                let res = lua_gc(L, o);
+                {
+                    if (res == -1)
+                        break;
+                }
+                ;
+                lua_pushinteger(L, BigInt(res));
+                return 1;
+            }
     }
     lua_pushnil(L);  /* invalid call (inside a finalizer) */
     return 1;

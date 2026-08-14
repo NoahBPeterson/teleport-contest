@@ -539,8 +539,7 @@ export function* Boots_on() {
         cptr.ld1uo2(objects, cptr.ldI16o(uarmf.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop),
         $sizeof_prop,
         $you_uprops
-    ) &
-            -33n;
+    ) & -33n;
 
     switch (cptr.ldI16o(uarmf.v, $obj_otyp)) {
         case NHC.LOW_BOOTS:
@@ -548,62 +547,69 @@ export function* Boots_on() {
         case NHC.HIGH_BOOTS:
         case NHC.JUMPING_BOOTS:
         case NHC.KICKING_BOOTS:
-        break;
+            break;
         case NHC.WATER_WALKING_BOOTS:
-        /*
-         * Sequencing issue?  If underwater (perhaps via magical breathing),
-         * putting on water walking boots produces "you slowly rise above
-         * the surface" then "you finish your dressing maneuver".
-         */
+            /*
+             * Sequencing issue?  If underwater (perhaps via magical breathing),
+             * putting on water walking boots produces "you slowly rise above
+             * the surface" then "you finish your dressing maneuver".
+             */
 
-        /* spoteffects() doesn't get called here; pooleffects() is called
-           during movement and u.uinwater is already False after setworn() */
-        if ((cptr.ldI32o(u, $you_uinwater) & 1))
-            (yield* spoteffects(1));
-        /* init'd in accessory_or_armor_on() and only used here */
-        if (cptr.ld1uo(gw, $instance_globals_w_wasinwater)) {
-            if (!(cptr.ldI32o(u, $you_uinwater) & 1))
-                (yield* discover_object(NHC.WATER_WALKING_BOOTS, 1, 1, 1));
-            cptr.st1o(gw, $instance_globals_w_wasinwater, 0);
-        }
-        /* (we don't need a lava check here since boots can't be
-           put on while feet are stuck) */
-        break;
+            /* spoteffects() doesn't get called here; pooleffects() is called
+               during movement and u.uinwater is already False after setworn() */
+            if ((cptr.ldI32o(u, $you_uinwater) & 1))
+                (yield* spoteffects(1));
+            /* init'd in accessory_or_armor_on() and only used here */
+            if (cptr.ld1uo(gw, $instance_globals_w_wasinwater)) {
+                if (!(cptr.ldI32o(u, $you_uinwater) & 1))
+                    (yield* discover_object(NHC.WATER_WALKING_BOOTS, 1, 1, 1));
+                cptr.st1o(gw, $instance_globals_w_wasinwater, 0);
+            }
+            /* (we don't need a lava check here since boots can't be
+               put on while feet are stuck) */
+            break;
         case NHC.SPEED_BOOTS:
-        /* Speed boots are still better than intrinsic speed, */
-        /* though not better than potion speed */
-        if (!oldprop && !(HFast() & 16777215n)) {
-            (yield* discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1));
-            (yield* You_feel(__s_yourself_speed_up_s, (oldprop || HFast()) ? __s_a_bit_more : __s_empty));
-        }
-        break;
+            /* Speed boots are still better than intrinsic speed, */
+            /* though not better than potion speed */
+            if (!oldprop && !(HFast() & 16777215n)) {
+                (yield* discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1));
+                (yield* You_feel(
+                    __s_yourself_speed_up_s,
+                    (oldprop || HFast()) ? __s_a_bit_more : __s_empty
+                ));
+            }
+            break;
         case NHC.ELVEN_BOOTS:
-        (yield* toggle_stealth(uarmf.v, oldprop, 1));
-        break;
+            (yield* toggle_stealth(uarmf.v, oldprop, 1));
+            break;
         case NHC.FUMBLE_BOOTS:
-        if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(
-                cptr.add(
-                    cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop),
-                    $prop_intrinsic
-                ),
-                rnd(20)
-            );
-        break;
+            if (!oldprop && !(HFumbling() & -16777216n))
+                incr_itimeout(
+                    cptr.add(
+                        cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop),
+                        $prop_intrinsic
+                    ),
+                    rnd(20)
+                );
+            break;
         case NHC.LEVITATION_BOOTS:
-        if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
-            cptr.stI32o(uarmf.v, $obj_known, 1);
-            cptr.st1(disp, 1);  /* status hilites might mark AC changed */
-            (yield* discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1));
-            (yield* float_up());
-            if (Levitation())
-                (yield* spoteffects(0));  /* for sink effect */
-        } else {
-            float_vs_flight();  /* maybe toggle BFlying's I_SPECIAL */
-        }
-        break;
+            if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
+                cptr.stI32o(uarmf.v, $obj_known, 1);
+                cptr.st1(disp, 1);  /* status hilites might mark AC changed */
+                (yield* discover_object((cptr.ldI16o(uarmf.v, $obj_otyp)), 1, 1, 1));
+                (yield* float_up());
+                if (Levitation())
+                    (yield* spoteffects(0));  /* for sink effect */
+            } else {
+                float_vs_flight();  /* maybe toggle BFlying's I_SPECIAL */
+            }
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_boots), cptr.ldI16o(uarmf.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_boots),
+                cptr.ldI16o(uarmf.v, $obj_otyp)
+            ));
     }
     /* uarmf could be Null here (levitation boots put on over a sink) */
     if (uarmf.v && !(cptr.ldI32o(uarmf.v, $obj_known) & 1)) {
@@ -622,8 +628,7 @@ export function* Boots_off() {
         cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop),
         $sizeof_prop,
         $you_uprops
-    ) &
-            -33n;
+    ) & -33n;
 
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-33n));
     /* For levitation, float_down() returns if Levitation, so we
@@ -632,64 +637,67 @@ export function* Boots_off() {
     (yield* setworn(null, 32n));
     switch (otyp) {
         case NHC.SPEED_BOOTS:
-        if (!Very_fast() && !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
-            (yield* discover_object((otyp), 1, 1, 1));
-            (yield* You_feel(__s_yourself_slow_down_s, Fast() ? __s_a_bit : __s_empty));
-        }
-        break;
+            if (!Very_fast() &&
+                    !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
+                (yield* discover_object((otyp), 1, 1, 1));
+                (yield* You_feel(__s_yourself_slow_down_s, Fast() ? __s_a_bit : __s_empty));
+            }
+            break;
         case NHC.WATER_WALKING_BOOTS:
-        /* check for lava since fireproofed boots make it viable */
-        if ((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
-            is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
-                !Levitation() &&
-                !Flying() &&
-                !(((cptr.ldU64o(
-                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-                    $permonst_mflags1
-                ) & 16n) != 0n) &&
-                    has_ceiling(cptr.add(u, $you_uz))) &&
-                !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don) &&
-                !cptr.ldI32o(iflags, $instance_flags_in_lava_effects)) {
-            /* make boots known in case you survive the drowning */
-            (yield* discover_object((otyp), 1, 1, 1));
-            (yield* spoteffects(1));
-        }
-        break;
+            /* check for lava since fireproofed boots make it viable */
+            if ((is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
+                is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
+                    !Levitation() &&
+                    !Flying() &&
+                    !(((cptr.ldU64o(
+                        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                        $permonst_mflags1
+                    ) &
+                        16n) !=
+                        0n) &&
+                        has_ceiling(cptr.add(u, $you_uz))) &&
+                    !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don) &&
+                    !cptr.ldI32o(iflags, $instance_flags_in_lava_effects)) {
+                /* make boots known in case you survive the drowning */
+                (yield* discover_object((otyp), 1, 1, 1));
+                (yield* spoteffects(1));
+            }
+            break;
         case NHC.ELVEN_BOOTS:
-        (yield* toggle_stealth(otmp, oldprop, 0));
-        break;
+            (yield* toggle_stealth(otmp, oldprop, 0));
+            break;
         case NHC.FUMBLE_BOOTS:
-        if (!oldprop && !(HFumbling() & -16777216n))
-            cptr.stI64o2(
-                u,
-                NHC.FUMBLING,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops, 0n)
-            );
-        break;
+            if (!oldprop && !(HFumbling() & -16777216n))
+                cptr.stI64o2(
+                    u,
+                    NHC.FUMBLING,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops, 0n)
+                );
+            break;
         case NHC.LEVITATION_BOOTS:
-        if (!oldprop &&
-                !HLevitation() &&
-                !(BLevitation() & 67108864n) &&
-                !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
-            /* lava_effects() sets in_lava_effects and calls Boots_off()
-               so hero is already in midst of floating down */
-            if (!cptr.ldI32o(iflags, $instance_flags_in_lava_effects))
-                void (yield* float_down(0n, 0n));
-            (yield* discover_object((otyp), 1, 1, 1));
-        } else {
-            float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
-        }
-        break;
+            if (!oldprop &&
+                    !HLevitation() &&
+                    !(BLevitation() & 67108864n) &&
+                    !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
+                /* lava_effects() sets in_lava_effects and calls Boots_off()
+                   so hero is already in midst of floating down */
+                if (!cptr.ldI32o(iflags, $instance_flags_in_lava_effects))
+                    void (yield* float_down(0n, 0n));
+                (yield* discover_object((otyp), 1, 1, 1));
+            } else {
+                float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
+            }
+            break;
         case NHC.LOW_BOOTS:
         case NHC.IRON_SHOES:
         case NHC.HIGH_BOOTS:
         case NHC.JUMPING_BOOTS:
         case NHC.KICKING_BOOTS:
-        break;
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_boots), otyp));
+            (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_boots), otyp));
     }
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, 0);
     return 0;
@@ -702,8 +710,7 @@ function* Cloak_on() {
         cptr.ld1uo2(objects, cptr.ldI16o(uarmc.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop),
         $sizeof_prop,
         $you_uprops
-    ) &
-            -3n;
+    ) & -3n;
 
     switch (cptr.ldI16o(uarmc.v, $obj_otyp)) {
         case NHC.ORCISH_CLOAK:
@@ -711,49 +718,56 @@ function* Cloak_on() {
         case NHC.CLOAK_OF_MAGIC_RESISTANCE:
         case NHC.ROBE:
         case NHC.LEATHER_CLOAK:
-        break;
+            break;
         case NHC.CLOAK_OF_PROTECTION:
-        (yield* discover_object((cptr.ldI16o(uarmc.v, $obj_otyp)), 1, 1, 1));
-        break;
-        case NHC.ELVEN_CLOAK:
-        (yield* toggle_stealth(uarmc.v, oldprop, 1));
-        break;
-        case NHC.CLOAK_OF_DISPLACEMENT:
-        (yield* toggle_displacement(uarmc.v, oldprop, 1));
-        break;
-        case NHC.MUMMY_WRAPPING:
-        /* Note: it's already being worn, so we have to cheat here. */
-        if ((HInvis() || EInvis()) && !Blind()) {
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* You(
-                __s_can_s,
-                See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself)
-            ));
-        }
-        break;
-        case NHC.CLOAK_OF_INVISIBILITY:
-        /* since cloak of invisibility was worn, we know mummy wrapping
-           wasn't, so no need to check `oldprop' against blocked */
-        if (!oldprop && !HInvis() && !Blind()) {
             (yield* discover_object((cptr.ldI16o(uarmc.v, $obj_otyp)), 1, 1, 1));
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__s_suddenly_you_can_s_yourself, See_invisible() ? __s_see_through : __s_not_see));
-        }
-        break;
+            break;
+        case NHC.ELVEN_CLOAK:
+            (yield* toggle_stealth(uarmc.v, oldprop, 1));
+            break;
+        case NHC.CLOAK_OF_DISPLACEMENT:
+            (yield* toggle_displacement(uarmc.v, oldprop, 1));
+            break;
+        case NHC.MUMMY_WRAPPING:
+            /* Note: it's already being worn, so we have to cheat here. */
+            if ((HInvis() || EInvis()) && !Blind()) {
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* You(
+                    __s_can_s,
+                    See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself)
+                ));
+            }
+            break;
+        case NHC.CLOAK_OF_INVISIBILITY:
+            /* since cloak of invisibility was worn, we know mummy wrapping
+               wasn't, so no need to check `oldprop' against blocked */
+            if (!oldprop && !HInvis() && !Blind()) {
+                (yield* discover_object((cptr.ldI16o(uarmc.v, $obj_otyp)), 1, 1, 1));
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline(
+                    __s_suddenly_you_can_s_yourself,
+                    See_invisible() ? __s_see_through : __s_not_see
+                ));
+            }
+            break;
         case NHC.OILSKIN_CLOAK:
-        (yield* pline(__s_s_very_tightly, (yield* Tobjnam(uarmc.v, __s_fit))));
-        break;
+            (yield* pline(__s_s_very_tightly, (yield* Tobjnam(uarmc.v, __s_fit))));
+            break;
         case NHC.ALCHEMY_SMOCK:
-        cptr.stI64o2(
-            u,
-            NHC.ACID_RES,
-            $sizeof_prop,
-            $you_uprops,
-            cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) | 2n
-        );
-        break;
+            cptr.stI64o2(
+                u,
+                NHC.ACID_RES,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) | 2n
+            );
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), cptr.ldI16o(uarmc.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_cloak),
+                cptr.ldI16o(uarmc.v, $obj_otyp)
+            ));
     }
     if (uarmc.v && !(cptr.ldI32o(uarmc.v, $obj_known) & 1)) {
         cptr.stI32o(uarmc.v, $obj_known, 1);  /* cloak's +/- evident because of status line AC */
@@ -771,8 +785,7 @@ export function* Cloak_off() {
         cptr.ld1uo2(objects, otyp, $sizeof_objclass, $objclass_oc_oprop),
         $sizeof_prop,
         $you_uprops
-    ) &
-            -3n;
+    ) & -3n;
 
     cptr.stI64o(svc, $context_info_takeoff, cptr.ldI64o(svc, $context_info_takeoff) & (-3n));
     /* For mummy wrapping, taking it off first resets `Invisible'. */
@@ -785,43 +798,43 @@ export function* Cloak_off() {
         case NHC.OILSKIN_CLOAK:
         case NHC.ROBE:
         case NHC.LEATHER_CLOAK:
-        break;
+            break;
         case NHC.ELVEN_CLOAK:
-        (yield* toggle_stealth(otmp, oldprop, 0));
-        break;
+            (yield* toggle_stealth(otmp, oldprop, 0));
+            break;
         case NHC.CLOAK_OF_DISPLACEMENT:
-        (yield* toggle_displacement(otmp, oldprop, 0));
-        break;
+            (yield* toggle_displacement(otmp, oldprop, 0));
+            break;
         case NHC.MUMMY_WRAPPING:
-        if (Invis() && !Blind()) {
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* You(
-                __s_can_s__2,
-                See_invisible() ? __s_see_through_yourself : __s_no_longer_see_yourself
-            ));
-        }
-        break;
+            if (Invis() && !Blind()) {
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* You(
+                    __s_can_s__2,
+                    See_invisible() ? __s_see_through_yourself : __s_no_longer_see_yourself
+                ));
+            }
+            break;
         case NHC.CLOAK_OF_INVISIBILITY:
-        if (!oldprop && !HInvis() && !Blind()) {
-            (yield* discover_object(NHC.CLOAK_OF_INVISIBILITY, 1, 1, 1));
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(
-                __s_suddenly_you_can_s,
-                See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself)
-            ));
-        }
-        break;
+            if (!oldprop && !HInvis() && !Blind()) {
+                (yield* discover_object(NHC.CLOAK_OF_INVISIBILITY, 1, 1, 1));
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline(
+                    __s_suddenly_you_can_s,
+                    See_invisible() ? __s_no_longer_see_through_yourself : cptr.decay(see_yourself)
+                ));
+            }
+            break;
         case NHC.ALCHEMY_SMOCK:
-        cptr.stI64o2(
-            u,
-            NHC.ACID_RES,
-            $sizeof_prop,
-            $you_uprops,
-            cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) & (-3n)
-        );
-        break;
+            cptr.stI64o2(
+                u,
+                NHC.ACID_RES,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.ACID_RES, $sizeof_prop, $you_uprops) & (-3n)
+            );
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), otyp));
+            (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_cloak), otyp));
     }
     return 0;
 }
@@ -830,94 +843,98 @@ export function* Cloak_off() {
 function* Helmet_on() {
     switch (cptr.ldI16o(uarmh.v, $obj_otyp)) {
         case NHC.FEDORA:
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST))
-            change_luck(1);
-        break;
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST))
+                change_luck(1);
+            break;
         case NHC.HELMET:
         case NHC.DENTED_POT:
         case NHC.ELVEN_LEATHER_HELM:
         case NHC.DWARVISH_IRON_HELM:
         case NHC.ORCISH_HELM:
         case NHC.HELM_OF_TELEPATHY:
-        break;
+            break;
         case NHC.HELM_OF_CAUTION:
-        (yield* see_monsters());
-        break;
+            (yield* see_monsters());
+            break;
         case NHC.HELM_OF_BRILLIANCE:
-        (yield* adj_abon(uarmh.v, cptr.ld1so(uarmh.v, $obj_spe)));
-        break;
+            (yield* adj_abon(uarmh.v, cptr.ld1so(uarmh.v, $obj_spe)));
+            break;
         case NHC.CORNUTHAUM:
-        /* people think marked wizards know what they're talking about,
-           but it takes trained arrogance to pull it off, and the actual
-           enchantment of the hat is irrelevant */
-        cptr.st1o2(
-            u,
-            NHC.A_CHA,
-            1,
-            $you_abon,
-            cptr.ld1so2(u, NHC.A_CHA, 1, $you_abon) +
-                ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
-                    ? 1
-                    : -1)
-        );
-        cptr.st1(disp, 1);
-        (yield* discover_object((cptr.ldI16o(uarmh.v, $obj_otyp)), 1, 1, 1));
-        break;
+            /* people think marked wizards know what they're talking about,
+               but it takes trained arrogance to pull it off, and the actual
+               enchantment of the hat is irrelevant */
+            cptr.st1o2(
+                u,
+                NHC.A_CHA,
+                1,
+                $you_abon,
+                cptr.ld1so2(u, NHC.A_CHA, 1, $you_abon) +
+                    ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
+                        ? 1
+                        : -1)
+            );
+            cptr.st1(disp, 1);
+            (yield* discover_object((cptr.ldI16o(uarmh.v, $obj_otyp)), 1, 1, 1));
+            break;
         case NHC.HELM_OF_OPPOSITE_ALIGNMENT:
-        cptr.stI32o(uarmh.v, $obj_known, 1);  /* do this here because uarmh could get cleared */
-        /* changing alignment can toggle off active artifact properties,
-           including levitation; uarmh could get dropped or destroyed here
-           by hero falling onto a polymorph trap or into water (emergency
-           disrobe) or maybe lava (probably not, helm isn't 'organic') */
-        (yield* uchangealign(
-            (cptr.ld1so(u, $you_ualign) != NHM.A_NEUTRAL)
-                ? -cptr.ld1so(u, $you_ualign)
-                : ((u32mod(cptr.ldI32o(uarmh.v, $obj_o_id), 2)) ? -1 : NHM.A_LAWFUL),
-            NHC.A_CG_HELM_ON
-        ));
-        // @FallThrough
-        /* makeknown(HELM_OF_OPPOSITE_ALIGNMENT); -- below, after Tobjnam() */
-        ;
-        case NHC.DUNCE_CAP:
-        if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_cursed) & 1)) {
-            if (Blind())
-                (yield* pline(__s_s_for_a_moment, (yield* Tobjnam(uarmh.v, __s_vibrate))));
-            else
-                (yield* pline(
-                    __s_s_s_for_a_moment,
-                    (yield* Tobjnam(uarmh.v, __s_glow)),
-                    hcolor(cptr.ldPtr(c_color_names))
-                ));
-            (yield* curse(uarmh.v));
-            /* curse() doesn't touch bknown so doesn't update persistent
-               inventory; do so now [set_bknown() calls update_inventory()] */
-            if (Blind())
-                (yield* set_bknown(uarmh.v, 0));  /* lose bknown if previously set */
-            else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
-                (yield* set_bknown(uarmh.v, 1));  /* (bknown should already be set) */
-            else if ((cptr.ldI32o(uarmh.v, $obj_bknown) & 1))
-                (yield* update_inventory());  /* keep bknown as-is; display the curse */
-        }
-        cptr.st1(disp, 1);  /* reveal new alignment or INT & WIS */
-        if (Hallucination()) {
-            (yield* pline(__s_my_brain_hurts));  /* Monty Python's Flying Circus */
-        } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP) {
-            (yield* You_feel(
-                __s_pct_s_dot,
-                (acurr(NHC.A_INT)) <=
-                    (((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) +
-                        (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon)) +
-                        (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0)
-                    ? __s_like_sitting_in_a_corner
-                    : __s_giddy
+            cptr.stI32o(uarmh.v, $obj_known, 1);  /* do this here because uarmh could get cleared */
+            /* changing alignment can toggle off active artifact properties,
+               including levitation; uarmh could get dropped or destroyed here
+               by hero falling onto a polymorph trap or into water (emergency
+               disrobe) or maybe lava (probably not, helm isn't 'organic') */
+            (yield* uchangealign(
+                (cptr.ld1so(u, $you_ualign) != NHM.A_NEUTRAL)
+                    ? -cptr.ld1so(u, $you_ualign)
+                    : ((u32mod(cptr.ldI32o(uarmh.v, $obj_o_id), 2)) ? -1 : NHM.A_LAWFUL),
+                NHC.A_CG_HELM_ON
             ));
-        } else {
-            /* [message formerly given here moved to uchangealign()] */
-            (yield* discover_object(NHC.HELM_OF_OPPOSITE_ALIGNMENT, 1, 1, 1));
-        }
-        break;
+            // @FallThrough
+            /* makeknown(HELM_OF_OPPOSITE_ALIGNMENT); -- below, after Tobjnam() */
+            ;
+        case NHC.DUNCE_CAP:
+            if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_cursed) & 1)) {
+                if (Blind())
+                    (yield* pline(__s_s_for_a_moment, (yield* Tobjnam(uarmh.v, __s_vibrate))));
+                else
+                    (yield* pline(
+                        __s_s_s_for_a_moment,
+                        (yield* Tobjnam(uarmh.v, __s_glow)),
+                        hcolor(cptr.ldPtr(c_color_names))
+                    ));
+                (yield* curse(uarmh.v));
+                /* curse() doesn't touch bknown so doesn't update persistent
+                   inventory; do so now [set_bknown() calls update_inventory()] */
+                if (Blind())
+                    (yield* set_bknown(uarmh.v, 0));  /* lose bknown if previously set */
+                else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
+                    (yield* set_bknown(uarmh.v, 1));  /* (bknown should already be set) */
+                else if ((cptr.ldI32o(uarmh.v, $obj_bknown) & 1))
+                    (yield* update_inventory());  /* keep bknown as-is; display the curse */
+            }
+            cptr.st1(disp, 1);  /* reveal new alignment or INT & WIS */
+            if (Hallucination()) {
+                (yield* pline(__s_my_brain_hurts));  /* Monty Python's Flying Circus */
+            } else if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP) {
+                (yield* You_feel(
+                    __s_pct_s_dot,
+                    (acurr(NHC.A_INT)) <=
+                        (((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) +
+                            (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon)) +
+                            (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0)
+                        ? __s_like_sitting_in_a_corner
+                        : __s_giddy
+                ));
+            } else {
+                /* [message formerly given here moved to uchangealign()] */
+                (yield* discover_object(NHC.HELM_OF_OPPOSITE_ALIGNMENT, 1, 1, 1));
+            }
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16o(uarmh.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_helmet),
+                cptr.ldI16o(uarmh.v, $obj_otyp)
+            ));
     }
     /* uarmh could be Null due to uchangealign() */
     if (uarmh.v && !(cptr.ldI32o(uarmh.v, $obj_known) & 1)) {
@@ -933,51 +950,55 @@ export function* Helmet_off() {
 
     switch (cptr.ldI16o(uarmh.v, $obj_otyp)) {
         case NHC.FEDORA:
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST))
-            change_luck(-1);
-        break;
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST))
+                change_luck(-1);
+            break;
         case NHC.HELMET:
         case NHC.DENTED_POT:
         case NHC.ELVEN_LEATHER_HELM:
         case NHC.DWARVISH_IRON_HELM:
         case NHC.ORCISH_HELM:
-        break;
+            break;
         case NHC.DUNCE_CAP:
-        cptr.st1(disp, 1);
-        break;
-        case NHC.CORNUTHAUM:
-        if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
-            cptr.st1o2(
-                u,
-                NHC.A_CHA,
-                1,
-                $you_abon,
-                cptr.ld1so2(u, NHC.A_CHA, 1, $you_abon) +
-                    ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
-                        ? -1
-                        : 1)
-            );
             cptr.st1(disp, 1);
-        }
-        break;
+            break;
+        case NHC.CORNUTHAUM:
+            if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don)) {
+                cptr.st1o2(
+                    u,
+                    NHC.A_CHA,
+                    1,
+                    $you_abon,
+                    cptr.ld1so2(u, NHC.A_CHA, 1, $you_abon) +
+                        ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
+                            ? -1
+                            : 1)
+                );
+                cptr.st1(disp, 1);
+            }
+            break;
         case NHC.HELM_OF_TELEPATHY:
         case NHC.HELM_OF_CAUTION:
-        /* need to update ability before calling see_monsters() */
-        (yield* setworn(null, 4n));
-        (yield* see_monsters());
-        return 0;
+            /* need to update ability before calling see_monsters() */
+            (yield* setworn(null, 4n));
+            (yield* see_monsters());
+            return 0;
         case NHC.HELM_OF_BRILLIANCE:
-        if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
-            (yield* adj_abon(uarmh.v, schar((-cptr.ld1so(uarmh.v, $obj_spe)))));
-        break;
+            if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
+                (yield* adj_abon(uarmh.v, schar((-cptr.ld1so(uarmh.v, $obj_spe)))));
+            break;
         case NHC.HELM_OF_OPPOSITE_ALIGNMENT:
-        /* changing alignment can toggle off active artifact
-           properties, including levitation; uarmh could get
-           dropped or destroyed here */
-        (yield* uchangealign(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase), NHC.A_CG_HELM_OFF));
-        break;
+            /* changing alignment can toggle off active artifact
+               properties, including levitation; uarmh could get
+               dropped or destroyed here */
+            (yield* uchangealign(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase), NHC.A_CG_HELM_OFF));
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_helmet), cptr.ldI16o(uarmh.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_helmet),
+                cptr.ldI16o(uarmh.v, $obj_otyp)
+            ));
     }
     (yield* setworn(null, 4n));
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, 0);
@@ -999,31 +1020,34 @@ function* Gloves_on() {
         cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop),
         $sizeof_prop,
         $you_uprops
-    ) &
-            -17n;
+    ) & -17n;
 
     switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
         case NHC.LEATHER_GLOVES:
-        break;
+            break;
         case NHC.GAUNTLETS_OF_FUMBLING:
-        if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(
-                cptr.add(
-                    cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop),
-                    $prop_intrinsic
-                ),
-                rnd(20)
-            );
-        break;
+            if (!oldprop && !(HFumbling() & -16777216n))
+                incr_itimeout(
+                    cptr.add(
+                        cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop),
+                        $prop_intrinsic
+                    ),
+                    rnd(20)
+                );
+            break;
         case NHC.GAUNTLETS_OF_POWER:
-        (yield* discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1));
-        cptr.st1(disp, 1);  /* taken care of in attrib.c */
-        break;
+            (yield* discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1));
+            cptr.st1(disp, 1);  /* taken care of in attrib.c */
+            break;
         case NHC.GAUNTLETS_OF_DEXTERITY:
-        (yield* adj_abon(uarmg.v, cptr.ld1so(uarmg.v, $obj_spe)));
-        break;
+            (yield* adj_abon(uarmg.v, cptr.ld1so(uarmg.v, $obj_spe)));
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16o(uarmg.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_gloves),
+                cptr.ldI16o(uarmg.v, $obj_otyp)
+            ));
     }
     if (!(cptr.ldI32o(uarmg.v, $obj_known) & 1)) {
         cptr.stI32o(uarmg.v, $obj_known, 1);  /* gloves' +/- evident because of status line AC */
@@ -1097,8 +1121,7 @@ export function* Gloves_off() {
         cptr.ld1uo2(objects, cptr.ldI16o(uarmg.v, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop),
         $sizeof_prop,
         $you_uprops
-    ) &
-            -17n;
+    ) & -17n;
     let on_purpose = schar((!cptr.ld1so(svc, $context_info_mon_moving) &&
         !(cptr.ldI32o(uarmg.v, $obj_in_use) & 1)
             ? 1
@@ -1108,27 +1131,31 @@ export function* Gloves_off() {
 
     switch (cptr.ldI16o(uarmg.v, $obj_otyp)) {
         case NHC.LEATHER_GLOVES:
-        break;
+            break;
         case NHC.GAUNTLETS_OF_FUMBLING:
-        if (!oldprop && !(HFumbling() & -16777216n))
-            cptr.stI64o2(
-                u,
-                NHC.FUMBLING,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops, 0n)
-            );
-        break;
+            if (!oldprop && !(HFumbling() & -16777216n))
+                cptr.stI64o2(
+                    u,
+                    NHC.FUMBLING,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops, 0n)
+                );
+            break;
         case NHC.GAUNTLETS_OF_POWER:
-        (yield* discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1));
-        cptr.st1(disp, 1);  /* taken care of in attrib.c */
-        break;
+            (yield* discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1));
+            cptr.st1(disp, 1);  /* taken care of in attrib.c */
+            break;
         case NHC.GAUNTLETS_OF_DEXTERITY:
-        if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
-            (yield* adj_abon(uarmg.v, schar((-cptr.ld1so(uarmg.v, $obj_spe)))));
-        break;
+            if (!cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
+                (yield* adj_abon(uarmg.v, schar((-cptr.ld1so(uarmg.v, $obj_spe)))));
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_gloves), cptr.ldI16o(uarmg.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_gloves),
+                cptr.ldI16o(uarmg.v, $obj_otyp)
+            ));
     }
     (yield* setworn(null, 16n));
     cptr.st1o(svc, $context_info_takeoff + $takeoff_info_cancelled_don, 0);
@@ -1179,9 +1206,13 @@ function* Shield_on() {
         case NHC.DWARVISH_ROUNDSHIELD:
         case NHC.LARGE_SHIELD:
         case NHC.SHIELD_OF_REFLECTION:
-        break;
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16o(uarms.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_shield),
+                cptr.ldI16o(uarms.v, $obj_otyp)
+            ));
     }
     if (!(cptr.ldI32o(uarms.v, $obj_known) & 1)) {
         cptr.stI32o(uarms.v, $obj_known, 1);  /* shield's +/- evident because of status line AC */
@@ -1206,9 +1237,13 @@ export function* Shield_off() {
         case NHC.DWARVISH_ROUNDSHIELD:
         case NHC.LARGE_SHIELD:
         case NHC.SHIELD_OF_REFLECTION:
-        break;
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_shield), cptr.ldI16o(uarms.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_shield),
+                cptr.ldI16o(uarms.v, $obj_otyp)
+            ));
     }
 
     (yield* setworn(null, 8n));
@@ -1222,9 +1257,13 @@ function* Shirt_on() {
     switch (cptr.ldI16o(uarmu.v, $obj_otyp)) {
         case NHC.HAWAIIAN_SHIRT:
         case NHC.T_SHIRT:
-        break;
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16o(uarmu.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_shirt),
+                cptr.ldI16o(uarmu.v, $obj_otyp)
+            ));
     }
     if (!(cptr.ldI32o(uarmu.v, $obj_known) & 1)) {
         cptr.stI32o(uarmu.v, $obj_known, 1);  /* shirt's +/- evident because of status line AC */
@@ -1242,9 +1281,13 @@ export function* Shirt_off() {
     switch (cptr.ldI16o(uarmu.v, $obj_otyp)) {
         case NHC.HAWAIIAN_SHIRT:
         case NHC.T_SHIRT:
-        break;
+            break;
         default:
-        (yield* impossible(cptr.decay(unknown_type), cptr.decay(c_shirt), cptr.ldI16o(uarmu.v, $obj_otyp)));
+            (yield* impossible(
+                cptr.decay(unknown_type),
+                cptr.decay(c_shirt),
+                cptr.ldI16o(uarmu.v, $obj_otyp)
+            ));
     }
 
     (yield* setworn(null, 64n));
@@ -1265,165 +1308,165 @@ function* dragon_armor_handling(otmp, puton, on_purpose) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.BLACK_DRAGON_SCALES:
         case NHC.BLACK_DRAGON_SCALE_MAIL:
-        if (puton) {
-            cptr.stI64o2(
-                u,
-                NHC.DRAIN_RES,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.DRAIN_RES,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) & (-2n)
-            );
-        }
-        break;
+            if (puton) {
+                cptr.stI64o2(
+                    u,
+                    NHC.DRAIN_RES,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.DRAIN_RES,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.DRAIN_RES, $sizeof_prop, $you_uprops) & (-2n)
+                );
+            }
+            break;
         case NHC.BLUE_DRAGON_SCALES:
         case NHC.BLUE_DRAGON_SCALE_MAIL:
-        if (puton) {
-            if (!Very_fast())
-                (yield* You(__s_speed_up_s, Fast() ? __s_a_bit_more : __s_empty));
-            cptr.stI64o2(
-                u,
-                NHC.FAST,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.FAST,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) & (-2n)
-            );
-            if (!Very_fast() &&
-                    !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
-                (yield* You(__s_slow_down));
-        }
-        break;
+            if (puton) {
+                if (!Very_fast())
+                    (yield* You(__s_speed_up_s, Fast() ? __s_a_bit_more : __s_empty));
+                cptr.stI64o2(
+                    u,
+                    NHC.FAST,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.FAST,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops) & (-2n)
+                );
+                if (!Very_fast() &&
+                        !cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
+                    (yield* You(__s_slow_down));
+            }
+            break;
         case NHC.GREEN_DRAGON_SCALES:
         case NHC.GREEN_DRAGON_SCALE_MAIL:
-        if (puton) {
-            cptr.stI64o2(
-                u,
-                NHC.SICK_RES,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.SICK_RES,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) & (-2n)
-            );
-        }
-        break;
+            if (puton) {
+                cptr.stI64o2(
+                    u,
+                    NHC.SICK_RES,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.SICK_RES,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) & (-2n)
+                );
+            }
+            break;
         case NHC.RED_DRAGON_SCALES:
         case NHC.RED_DRAGON_SCALE_MAIL:
-        if (puton) {
-            cptr.stI64o2(
-                u,
-                NHC.INFRAVISION,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.INFRAVISION,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) & (-2n)
-            );
-        }
-        (yield* see_monsters());
-        break;
+            if (puton) {
+                cptr.stI64o2(
+                    u,
+                    NHC.INFRAVISION,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.INFRAVISION,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.INFRAVISION, $sizeof_prop, $you_uprops) & (-2n)
+                );
+            }
+            (yield* see_monsters());
+            break;
         case NHC.GOLD_DRAGON_SCALES:
         case NHC.GOLD_DRAGON_SCALE_MAIL:
-        void (yield* make_hallucinated(
-            BigInt((!puton)),
-            schar((cptr.ldI32o(program_state, $sinfo_restoring) ? 0 : 1)),
-            1n
-        ));
-        break;
+            void (yield* make_hallucinated(
+                BigInt((!puton)),
+                schar((cptr.ldI32o(program_state, $sinfo_restoring) ? 0 : 1)),
+                1n
+            ));
+            break;
         case NHC.ORANGE_DRAGON_SCALES:
         case NHC.ORANGE_DRAGON_SCALE_MAIL:
-        if (puton) {
-            cptr.stI64o2(
-                u,
-                NHC.FREE_ACTION,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.FREE_ACTION,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops) & (-2n)
-            );
-        }
-        break;
+            if (puton) {
+                cptr.stI64o2(
+                    u,
+                    NHC.FREE_ACTION,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.FREE_ACTION,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.FREE_ACTION, $sizeof_prop, $you_uprops) & (-2n)
+                );
+            }
+            break;
         case NHC.YELLOW_DRAGON_SCALES:
         case NHC.YELLOW_DRAGON_SCALE_MAIL:
-        if (puton) {
-            cptr.stI64o2(
-                u,
-                NHC.STONE_RES,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.STONE_RES,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) & (-2n)
-            );
+            if (puton) {
+                cptr.stI64o2(
+                    u,
+                    NHC.STONE_RES,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.STONE_RES,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.STONE_RES, $sizeof_prop, $you_uprops) & (-2n)
+                );
 
-            /* prevent wielding cockatrice after losing stoning resistance
-               when not wearing gloves; the uswapwep case is always a no-op */
-            (yield* wielding_corpse(uwep.v, otmp, on_purpose));
-            (yield* wielding_corpse(uswapwep.v, otmp, on_purpose));
-        }
-        break;
+                /* prevent wielding cockatrice after losing stoning resistance
+                   when not wearing gloves; the uswapwep case is always a no-op */
+                (yield* wielding_corpse(uwep.v, otmp, on_purpose));
+                (yield* wielding_corpse(uswapwep.v, otmp, on_purpose));
+            }
+            break;
         case NHC.WHITE_DRAGON_SCALES:
         case NHC.WHITE_DRAGON_SCALE_MAIL:
-        if (puton) {
-            cptr.stI64o2(
-                u,
-                NHC.SLOW_DIGESTION,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) | 1n
-            );
-        } else {
-            cptr.stI64o2(
-                u,
-                NHC.SLOW_DIGESTION,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) & (-2n)
-            );
-        }
-        break;
+            if (puton) {
+                cptr.stI64o2(
+                    u,
+                    NHC.SLOW_DIGESTION,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) | 1n
+                );
+            } else {
+                cptr.stI64o2(
+                    u,
+                    NHC.SLOW_DIGESTION,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.SLOW_DIGESTION, $sizeof_prop, $you_uprops) & (-2n)
+                );
+            }
+            break;
         default:
-        break;
+            break;
     }
 }
 
@@ -1525,149 +1568,149 @@ function* Amulet_on(amul) {
         case NHC.AMULET_VERSUS_POISON:
         case NHC.AMULET_OF_REFLECTION:
         case NHC.FAKE_AMULET_OF_YENDOR:
-        break;
+            break;
         case NHC.AMULET_OF_MAGICAL_BREATHING:
-        {
-            let was_in_poison_gas;
+            {
+                let was_in_poison_gas;
 
-            /* amulet is already on; we need to check hero's gas-cloud status
-               when it was off */
-            cptr.stI64o2(
-                u,
-                NHC.MAGICAL_BREATHING,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) & (-65537n)
-            );
-            was_in_poison_gas = region_danger();
-            cptr.stI64o2(
-                u,
-                NHC.MAGICAL_BREATHING,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) | 65536n
-            );
-            if (was_in_poison_gas) {
-                (yield* discover_object(NHC.AMULET_OF_MAGICAL_BREATHING, 1, 1, 1));
-                (yield* on_msg(uamul.v));
-                on_msg_done = 1;
-                (yield* You(__s_are_no_longer_bothered_by_the_poison_gas));
-            }
-            /* no need to check for becoming able to breathe underwater;
-               if we are underwater, we already can or we would have drowned */
-            break;
-        }
-        case NHC.AMULET_OF_UNCHANGING:
-        if (Slimed())
-            (yield* make_slimed(0n, null));
-        break;
-        case NHC.AMULET_OF_CHANGE:
-        {
-            let call_it = 0;
-            let new_sex;
-            let orig_sex = poly_gender();
-
-            /* in normal play it's not possible to put on an amulet of change
-               while already wearing an amulet of unchanging, but in wizard
-               mode the Unchanging attribute can be set via #wizintrinsic */
-            if (!Unchanging())
-                (yield* change_sex());
-
-            new_sex = poly_gender();
-            if (new_sex != orig_sex)
-                (yield* discover_object(NHC.AMULET_OF_CHANGE, 1, 1, 1));
-            (yield* on_msg(uamul.v));  /* show 'z - amulet of change (being worn)' */
-            on_msg_done = 1;
-
-            /* Don't use same message as polymorph */
-            if (new_sex != orig_sex) {
-                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* glyphmon flag and tile have changed */
-                cptr.st1(disp, 1);  /* role name or rank title might have changed */
-                (yield* You(
-                    __s_are_suddenly_very_s,
-                    cptr.ld1so(flags, $flag_female) ? __s_feminine : __s_masculine
-                ));
-            } else {
-                /* already polymorphed into single-gender monster; only
-                   changed the character's base sex */
-                (yield* You(__s_don_t_feel_like_yourself));
-                /* checking dknown is redundant--amulets always have dknown set */
-                call_it = schar((((cptr.ldI32o(uamul.v, $obj_dknown) & 1) | 0) != 0));
-            }
-            (yield* livelog_newform(0, orig_sex, new_sex));
-            (yield* pline_The(__s_amulet_disintegrates));
-            if (call_it)
-                (yield* trycall(uamul.v));
-            (yield* useup(uamul.v));
-            break;
-        }
-        case NHC.AMULET_OF_STRANGULATION:
-        /* note: might already be Strangled (via #wizintrinsic) */
-        if ((yield* can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst))) && !Strangled()) {
-            (yield* discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1));
-            cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 6n);
-            cptr.st1(disp, 1);
-            (yield* on_msg(uamul.v));
-            on_msg_done = 1;
-            (yield* pline(__s_it_constricts_your_throat));
-        }
-        break;
-        case NHC.AMULET_OF_RESTFUL_SLEEP:
-        {
-            let newnap = BigInt.asIntN(64, BigInt(rnd(98)) + 2n);
-            let oldnap = (HSleepy() & 16777215n);
-
-            if (newnap < oldnap || oldnap == 0n)
-                /* avoid clobbering FROMOUTSIDE bit, which might have
-                   gotten set by previously eating one of these amulets */
+                /* amulet is already on; we need to check hero's gas-cloud status
+                   when it was off */
                 cptr.stI64o2(
                     u,
-                    NHC.SLEEPY,
+                    NHC.MAGICAL_BREATHING,
                     $sizeof_prop,
-                    $you_uprops + $prop_intrinsic,
-                    (HSleepy() & -16777216n) | newnap
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) & (-65537n)
                 );
+                was_in_poison_gas = region_danger();
+                cptr.stI64o2(
+                    u,
+                    NHC.MAGICAL_BREATHING,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.MAGICAL_BREATHING, $sizeof_prop, $you_uprops) | 65536n
+                );
+                if (was_in_poison_gas) {
+                    (yield* discover_object(NHC.AMULET_OF_MAGICAL_BREATHING, 1, 1, 1));
+                    (yield* on_msg(uamul.v));
+                    on_msg_done = 1;
+                    (yield* You(__s_are_no_longer_bothered_by_the_poison_gas));
+                }
+                /* no need to check for becoming able to breathe underwater;
+                   if we are underwater, we already can or we would have drowned */
+                break;
+            }
+        case NHC.AMULET_OF_UNCHANGING:
+            if (Slimed())
+                (yield* make_slimed(0n, null));
             break;
-        }
-        case NHC.AMULET_OF_FLYING:
-        /* setworn() has already set extrinsic flying */
-        float_vs_flight();  /* block flying if levitating */
-        if (Flying()) {
-            let already_flying;
+        case NHC.AMULET_OF_CHANGE:
+            {
+                let call_it = 0;
+                let new_sex;
+                let orig_sex = poly_gender();
 
-            /* to determine whether this flight is new we have to muck
-               about in the Flying intrinsic (actually extrinsic) */
-            cptr.stI64o2(
-                u,
-                NHC.FLYING,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) & (-65537n)
-            );
-            already_flying = schar((!!Flying()));
-            cptr.stI64o2(
-                u,
-                NHC.FLYING,
-                $sizeof_prop,
-                $you_uprops,
-                cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) | 65536n
-            );
+                /* in normal play it's not possible to put on an amulet of change
+                   while already wearing an amulet of unchanging, but in wizard
+                   mode the Unchanging attribute can be set via #wizintrinsic */
+                if (!Unchanging())
+                    (yield* change_sex());
 
-            if (!already_flying) {
-                (yield* discover_object(NHC.AMULET_OF_FLYING, 1, 1, 1));
+                new_sex = poly_gender();
+                if (new_sex != orig_sex)
+                    (yield* discover_object(NHC.AMULET_OF_CHANGE, 1, 1, 1));
+                (yield* on_msg(uamul.v));  /* show 'z - amulet of change (being worn)' */
+                on_msg_done = 1;
+
+                /* Don't use same message as polymorph */
+                if (new_sex != orig_sex) {
+                    (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* glyphmon flag and tile have changed */
+                    cptr.st1(disp, 1);  /* role name or rank title might have changed */
+                    (yield* You(
+                        __s_are_suddenly_very_s,
+                        cptr.ld1so(flags, $flag_female) ? __s_feminine : __s_masculine
+                    ));
+                } else {
+                    /* already polymorphed into single-gender monster; only
+                       changed the character's base sex */
+                    (yield* You(__s_don_t_feel_like_yourself));
+                    /* checking dknown is redundant--amulets always have dknown set */
+                    call_it = schar((((cptr.ldI32o(uamul.v, $obj_dknown) & 1) | 0) != 0));
+                }
+                (yield* livelog_newform(0, orig_sex, new_sex));
+                (yield* pline_The(__s_amulet_disintegrates));
+                if (call_it)
+                    (yield* trycall(uamul.v));
+                (yield* useup(uamul.v));
+                break;
+            }
+        case NHC.AMULET_OF_STRANGULATION:
+            /* note: might already be Strangled (via #wizintrinsic) */
+            if ((yield* can_be_strangled(cptr.add(gy, $instance_globals_y_youmonst))) && !Strangled()) {
+                (yield* discover_object(NHC.AMULET_OF_STRANGULATION, 1, 1, 1));
+                cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 6n);
+                cptr.st1(disp, 1);
                 (yield* on_msg(uamul.v));
                 on_msg_done = 1;
-                cptr.st1(disp, 1);  /* status: 'Fly' On */
-                (yield* You(__s_are_now_in_flight));
+                (yield* pline(__s_it_constricts_your_throat));
             }
-        }
-        break;
+            break;
+        case NHC.AMULET_OF_RESTFUL_SLEEP:
+            {
+                let newnap = BigInt.asIntN(64, BigInt(rnd(98)) + 2n);
+                let oldnap = (HSleepy() & 16777215n);
+
+                if (newnap < oldnap || oldnap == 0n)
+                    /* avoid clobbering FROMOUTSIDE bit, which might have
+                       gotten set by previously eating one of these amulets */
+                    cptr.stI64o2(
+                        u,
+                        NHC.SLEEPY,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        (HSleepy() & -16777216n) | newnap
+                    );
+                break;
+            }
+        case NHC.AMULET_OF_FLYING:
+            /* setworn() has already set extrinsic flying */
+            float_vs_flight();  /* block flying if levitating */
+            if (Flying()) {
+                let already_flying;
+
+                /* to determine whether this flight is new we have to muck
+                   about in the Flying intrinsic (actually extrinsic) */
+                cptr.stI64o2(
+                    u,
+                    NHC.FLYING,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) & (-65537n)
+                );
+                already_flying = schar((!!Flying()));
+                cptr.stI64o2(
+                    u,
+                    NHC.FLYING,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops) | 65536n
+                );
+
+                if (!already_flying) {
+                    (yield* discover_object(NHC.AMULET_OF_FLYING, 1, 1, 1));
+                    (yield* on_msg(uamul.v));
+                    on_msg_done = 1;
+                    cptr.st1(disp, 1);  /* status: 'Fly' On */
+                    (yield* You(__s_are_now_in_flight));
+                }
+            }
+            break;
         case NHC.AMULET_OF_GUARDING:
-        (yield* discover_object(NHC.AMULET_OF_GUARDING, 1, 1, 1));
-        find_ac();
-        break;
+            (yield* discover_object(NHC.AMULET_OF_GUARDING, 1, 1, 1));
+            find_ac();
+            break;
         case NHC.AMULET_OF_YENDOR:
-        break;
+            break;
     }
 
     if (!on_msg_done)
@@ -1684,140 +1727,140 @@ export function* Amulet_off() {
 
     switch (cptr.ldI16o(uamul.v, $obj_otyp)) {
         case NHC.AMULET_OF_ESP:
-        /* need to update ability before calling see_monsters() */
-        (yield* setworn(null, 65536n));
-        (yield* off_msg(amul));
-        early_off_msg = 1;
+            /* need to update ability before calling see_monsters() */
+            (yield* setworn(null, 65536n));
+            (yield* off_msg(amul));
+            early_off_msg = 1;
 
-        (yield* see_monsters());
-        break;
+            (yield* see_monsters());
+            break;
         case NHC.AMULET_OF_LIFE_SAVING:
         case NHC.AMULET_VERSUS_POISON:
         case NHC.AMULET_OF_REFLECTION:
         case NHC.AMULET_OF_CHANGE:
         case NHC.AMULET_OF_UNCHANGING:
         case NHC.FAKE_AMULET_OF_YENDOR:
-        break;
+            break;
         case NHC.AMULET_OF_MAGICAL_BREATHING:
-        /* amulet is currently still on; take it off before calling drown()
-           and region_danger(); call off_msg() before specific messages */
-        (yield* setworn(null, 65536n));
-        (yield* off_msg(amul));  /* 'uamul' has been set to Null */
-        early_off_msg = 1;
+            /* amulet is currently still on; take it off before calling drown()
+               and region_danger(); call off_msg() before specific messages */
+            (yield* setworn(null, 65536n));
+            (yield* off_msg(amul));  /* 'uamul' has been set to Null */
+            early_off_msg = 1;
 
-        if (Underwater()) {
-            if (!cant_drown(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
-                    !Swimming()) {
-                (yield* You(__s_suddenly_inhale_an_unhealthy_amount_of_s, hliquid(__s_water)));
-                mkn = 1;  /* in case of life-saving */
-                void (yield* drown());
+            if (Underwater()) {
+                if (!cant_drown(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
+                        !Swimming()) {
+                    (yield* You(__s_suddenly_inhale_an_unhealthy_amount_of_s, hliquid(__s_water)));
+                    mkn = 1;  /* in case of life-saving */
+                    void (yield* drown());
+                }
             }
-        }
-        if (region_danger()) {
-            /* "breathing": wouldn't get here otherwise */
-            (yield* You(__s_are_breathing_poison_gas));
-            mkn = 1;
-        }
-        break;
+            if (region_danger()) {
+                /* "breathing": wouldn't get here otherwise */
+                (yield* You(__s_are_breathing_poison_gas));
+                mkn = 1;
+            }
+            break;
         case NHC.AMULET_OF_STRANGULATION:
-        (yield* setworn(null, 65536n));
-        (yield* off_msg(amul));
-        early_off_msg = 1;
-
-        if (Strangled()) {
-            cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
-            cptr.st1(disp, 1);
-            if (Breathless())
-                (yield* Your(__s_s_is_no_longer_constricted, (yield* body_part(NHC.NECK))));
-            else
-                (yield* You(__s_can_breathe_more_easily));
-            mkn = 1;
-        }
-        break;
-        case NHC.AMULET_OF_RESTFUL_SLEEP:
-        (yield* setworn(null, 65536n));
-        /* HSleepy = 0L; -- avoid clobbering FROMOUTSIDE bit */
-        if (!ESleepy() && !(HSleepy() & -16777216n))
-            cptr.stI64o2(
-                u,
-                NHC.SLEEPY,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-16777216n)
-            );  /* clear timeout bits */
-        break;
-        case NHC.AMULET_OF_FLYING:
-        {
-            let was_flying = schar((!!Flying()));
-
-            /* remove amulet 'early' to determine whether Flying changes;
-               also in case spoteffects() does something with the amulet */
             (yield* setworn(null, 65536n));
             (yield* off_msg(amul));
             early_off_msg = 1;
 
-            float_vs_flight();  /* probably not needed here */
-            if (was_flying && !Flying()) {
-                cptr.st1(disp, 1);  /* status: 'Fly' Off */
-                (yield* You(
-                    __s_pct_s_dot,
-                    (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
-                        (((cptr.ldI16o(
-                            (cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_water_level
-                            )),
-                            $d_level_dlevel
-                        ) ||
-                            cptr.ldI16((cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_water_level
-                            )))) &&
-                            on_level(
-                                cptr.add(u, $you_uz),
-                                cptr.add(
+            if (Strangled()) {
+                cptr.stI64o2(u, NHC.STRANGLED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n);
+                cptr.st1(disp, 1);
+                if (Breathless())
+                    (yield* Your(__s_s_is_no_longer_constricted, (yield* body_part(NHC.NECK))));
+                else
+                    (yield* You(__s_can_breathe_more_easily));
+                mkn = 1;
+            }
+            break;
+        case NHC.AMULET_OF_RESTFUL_SLEEP:
+            (yield* setworn(null, 65536n));
+            /* HSleepy = 0L; -- avoid clobbering FROMOUTSIDE bit */
+            if (!ESleepy() && !(HSleepy() & -16777216n))
+                cptr.stI64o2(
+                    u,
+                    NHC.SLEEPY,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-16777216n)
+                );  /* clear timeout bits */
+            break;
+        case NHC.AMULET_OF_FLYING:
+            {
+                let was_flying = schar((!!Flying()));
+
+                /* remove amulet 'early' to determine whether Flying changes;
+                   also in case spoteffects() does something with the amulet */
+                (yield* setworn(null, 65536n));
+                (yield* off_msg(amul));
+                early_off_msg = 1;
+
+                float_vs_flight();  /* probably not needed here */
+                if (was_flying && !Flying()) {
+                    cptr.st1(disp, 1);  /* status: 'Fly' Off */
+                    (yield* You(
+                        __s_pct_s_dot,
+                        (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
+                            (((cptr.ldI16o(
+                                (cptr.add(
                                     svd,
                                     $instance_globals_saved_d_dungeon_topology +
                                         $dgn_topology_d_water_level
-                                )
-                            ))) ||
-                        (((cptr.ldI16o(
-                            (cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_air_level
-                            )),
-                            $d_level_dlevel
-                        ) ||
-                            cptr.ldI16((cptr.add(
-                                svd,
-                                $instance_globals_saved_d_dungeon_topology +
-                                    $dgn_topology_d_air_level
-                            )))) &&
-                            on_level(
-                                cptr.add(u, $you_uz),
-                                cptr.add(
+                                )),
+                                $d_level_dlevel
+                            ) ||
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_water_level
+                                )))) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_water_level
+                                    )
+                                ))) ||
+                            (((cptr.ldI16o(
+                                (cptr.add(
                                     svd,
                                     $instance_globals_saved_d_dungeon_topology +
                                         $dgn_topology_d_air_level
-                                )
-                            ))))
-                        ? __s_stop_flying
-                        : __s_land
-                ));
-                mkn = 1;  /* makeknown(AMULET_OF_FLYING) */
-                (yield* spoteffects(1));
+                                )),
+                                $d_level_dlevel
+                            ) ||
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_air_level
+                                )))) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_air_level
+                                    )
+                                ))))
+                            ? __s_stop_flying
+                            : __s_land
+                    ));
+                    mkn = 1;  /* makeknown(AMULET_OF_FLYING) */
+                    (yield* spoteffects(1));
+                }
+                break;
             }
-            break;
-        }
         case NHC.AMULET_OF_GUARDING:
-        find_ac();
-        break;
+            find_ac();
+            break;
         case NHC.AMULET_OF_YENDOR:
-        break;
+            break;
     }
 
     (yield* setworn(null, 65536n));
@@ -1914,71 +1957,71 @@ export function* Ring_on(obj) {
         case NHC.RIN_FREE_ACTION:
         case NHC.RIN_SLOW_DIGESTION:
         case NHC.RIN_SUSTAIN_ABILITY:
-        break;
+            break;
         case NHC.MEAT_RING:
-        /* wearing a meat ring does not affect vegan conduct */
-        break;
+            /* wearing a meat ring does not affect vegan conduct */
+            break;
         case NHC.RIN_STEALTH:
-        (yield* toggle_stealth(obj, oldprop, 1));
-        break;
+            (yield* toggle_stealth(obj, oldprop, 1));
+            break;
         case NHC.RIN_WARNING:
-        (yield* see_monsters());
-        break;
+            (yield* see_monsters());
+            break;
         case NHC.RIN_SEE_INVISIBLE:
-        /* can now see invisible monsters */
-        (yield* set_mimic_blocking());  /* do special mimic handling */
-        (yield* see_monsters());
+            /* can now see invisible monsters */
+            (yield* set_mimic_blocking());  /* do special mimic handling */
+            (yield* see_monsters());
 
-        if (Invis() && !oldprop && !HSee_invisible() && !Blind()) {
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__s_suddenly_you_are_transparent_but_there));
-            (yield* learnring(obj, 1));
-        }
-        break;
+            if (Invis() && !oldprop && !HSee_invisible() && !Blind()) {
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline(__s_suddenly_you_are_transparent_but_there));
+                (yield* learnring(obj, 1));
+            }
+            break;
         case NHC.RIN_INVISIBILITY:
-        if (!oldprop && !HInvis() && !BInvis() && !Blind()) {
-            (yield* learnring(obj, 1));
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* self_invis_message());
-        }
-        break;
+            if (!oldprop && !HInvis() && !BInvis() && !Blind()) {
+                (yield* learnring(obj, 1));
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* self_invis_message());
+            }
+            break;
         case NHC.RIN_LEVITATION:
-        if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
-            (yield* float_up());
-            (yield* learnring(obj, 1));
-            if (Levitation())
-                (yield* spoteffects(0));  /* for sinks */
-        } else {
-            float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
-        }
-        break;
+            if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
+                (yield* float_up());
+                (yield* learnring(obj, 1));
+                if (Levitation())
+                    (yield* spoteffects(0));  /* for sinks */
+            } else {
+                float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
+            }
+            break;
         case NHC.RIN_GAIN_STRENGTH:
-        (yield* adjust_attrib(obj, NHC.A_STR, cptr.ld1so(obj, $obj_spe)));
-        break;
+            (yield* adjust_attrib(obj, NHC.A_STR, cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.RIN_GAIN_CONSTITUTION:
-        (yield* adjust_attrib(obj, NHC.A_CON, cptr.ld1so(obj, $obj_spe)));
-        break;
+            (yield* adjust_attrib(obj, NHC.A_CON, cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.RIN_ADORNMENT:
-        (yield* adjust_attrib(obj, NHC.A_CHA, cptr.ld1so(obj, $obj_spe)));
-        break;
+            (yield* adjust_attrib(obj, NHC.A_CHA, cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.RIN_INCREASE_ACCURACY:
-        cptr.st1o(u, $you_uhitinc, cptr.ld1so(u, $you_uhitinc) + cptr.ld1so(obj, $obj_spe));
-        break;
+            cptr.st1o(u, $you_uhitinc, cptr.ld1so(u, $you_uhitinc) + cptr.ld1so(obj, $obj_spe));
+            break;
         case NHC.RIN_INCREASE_DAMAGE:
-        cptr.st1o(u, $you_udaminc, cptr.ld1so(u, $you_udaminc) + cptr.ld1so(obj, $obj_spe));
-        break;
+            cptr.st1o(u, $you_udaminc, cptr.ld1so(u, $you_udaminc) + cptr.ld1so(obj, $obj_spe));
+            break;
         case NHC.RIN_PROTECTION_FROM_SHAPE_CHAN:
-        (yield* rescham());
-        break;
+            (yield* rescham());
+            break;
         case NHC.RIN_PROTECTION:
-        /* usually learn enchantment and discover type;
-           won't happen if ring is unseen or if it's +0
-           and the type hasn't been discovered yet */
-        observable = schar((cptr.ld1so(obj, $obj_spe) != 0));
-        (yield* learnring(obj, observable));
-        if (cptr.ld1so(obj, $obj_spe))
-            find_ac();  /* updates botl */
-        break;
+            /* usually learn enchantment and discover type;
+               won't happen if ring is unseen or if it's +0
+               and the type hasn't been discovered yet */
+            observable = schar((cptr.ld1so(obj, $obj_spe) != 0));
+            (yield* learnring(obj, observable));
+            if (cptr.ld1so(obj, $obj_spe))
+                find_ac();  /* updates botl */
+            break;
     }
 }
 
@@ -2022,72 +2065,72 @@ function* Ring_off_or_gone(obj, gone) {
         case NHC.RIN_SLOW_DIGESTION:
         case NHC.RIN_SUSTAIN_ABILITY:
         case NHC.MEAT_RING:
-        break;
+            break;
         case NHC.RIN_STEALTH:
-        (yield* toggle_stealth(obj, (EStealth() & BigInt.asIntN(64, ~mask)), 0));
-        break;
+            (yield* toggle_stealth(obj, (EStealth() & BigInt.asIntN(64, ~mask)), 0));
+            break;
         case NHC.RIN_WARNING:
-        (yield* see_monsters());
-        break;
-        case NHC.RIN_SEE_INVISIBLE:
-        /* Make invisible monsters go away */
-        if (!See_invisible()) {
-            (yield* set_mimic_blocking());  /* do special mimic handling */
             (yield* see_monsters());
-        }
+            break;
+        case NHC.RIN_SEE_INVISIBLE:
+            /* Make invisible monsters go away */
+            if (!See_invisible()) {
+                (yield* set_mimic_blocking());  /* do special mimic handling */
+                (yield* see_monsters());
+            }
 
-        if (Invisible() && !Blind()) {
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* pline(__s_suddenly_you_cannot_see_yourself));
-            (yield* learnring(obj, 1));
-        }
-        break;
-        case NHC.RIN_INVISIBILITY:
-        if (!Invis() && !BInvis() && !Blind()) {
-            (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-            (yield* Your(__s_body_seems_to_unfade_s, See_invisible() ? __s_completely : __s_dot2));
-            (yield* learnring(obj, 1));
-        }
-        break;
-        case NHC.RIN_LEVITATION:
-        if (!(BLevitation() & 67108864n)) {
-            void (yield* float_down(0n, 0n));
-            if (!Levitation())
+            if (Invisible() && !Blind()) {
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* pline(__s_suddenly_you_cannot_see_yourself));
                 (yield* learnring(obj, 1));
-        } else {
-            float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
-        }
-        break;
+            }
+            break;
+        case NHC.RIN_INVISIBILITY:
+            if (!Invis() && !BInvis() && !Blind()) {
+                (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                (yield* Your(__s_body_seems_to_unfade_s, See_invisible() ? __s_completely : __s_dot2));
+                (yield* learnring(obj, 1));
+            }
+            break;
+        case NHC.RIN_LEVITATION:
+            if (!(BLevitation() & 67108864n)) {
+                void (yield* float_down(0n, 0n));
+                if (!Levitation())
+                    (yield* learnring(obj, 1));
+            } else {
+                float_vs_flight();  /* maybe toggle (BFlying & I_SPECIAL) */
+            }
+            break;
         case NHC.RIN_GAIN_STRENGTH:
-        (yield* adjust_attrib(obj, NHC.A_STR, -cptr.ld1so(obj, $obj_spe)));
-        break;
+            (yield* adjust_attrib(obj, NHC.A_STR, -cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.RIN_GAIN_CONSTITUTION:
-        (yield* adjust_attrib(obj, NHC.A_CON, -cptr.ld1so(obj, $obj_spe)));
-        break;
+            (yield* adjust_attrib(obj, NHC.A_CON, -cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.RIN_ADORNMENT:
-        (yield* adjust_attrib(obj, NHC.A_CHA, -cptr.ld1so(obj, $obj_spe)));
-        break;
+            (yield* adjust_attrib(obj, NHC.A_CHA, -cptr.ld1so(obj, $obj_spe)));
+            break;
         case NHC.RIN_INCREASE_ACCURACY:
-        cptr.st1o(u, $you_uhitinc, cptr.ld1so(u, $you_uhitinc) - cptr.ld1so(obj, $obj_spe));
-        break;
+            cptr.st1o(u, $you_uhitinc, cptr.ld1so(u, $you_uhitinc) - cptr.ld1so(obj, $obj_spe));
+            break;
         case NHC.RIN_INCREASE_DAMAGE:
-        cptr.st1o(u, $you_udaminc, cptr.ld1so(u, $you_udaminc) - cptr.ld1so(obj, $obj_spe));
-        break;
+            cptr.st1o(u, $you_udaminc, cptr.ld1so(u, $you_udaminc) - cptr.ld1so(obj, $obj_spe));
+            break;
         case NHC.RIN_PROTECTION:
-        /* might have been put on while blind and we can now see
-           or perhaps been forgotten due to amnesia */
-        observable = schar((cptr.ld1so(obj, $obj_spe) != 0));
-        (yield* learnring(obj, observable));
-        if (cptr.ld1so(obj, $obj_spe))
-            find_ac();  /* updates botl */
-        break;
+            /* might have been put on while blind and we can now see
+               or perhaps been forgotten due to amnesia */
+            observable = schar((cptr.ld1so(obj, $obj_spe) != 0));
+            (yield* learnring(obj, observable));
+            if (cptr.ld1so(obj, $obj_spe))
+                find_ac();  /* updates botl */
+            break;
         case NHC.RIN_PROTECTION_FROM_SHAPE_CHAN:
-        /* if you're no longer protected, let the chameleons change
-           shape again; however, might still be protected if wearing
-           2nd ring of this type (or via #wizintrinsic) */
-        if (!Protection_from_shape_changers())
-            (yield* restartcham());
-        break;
+            /* if you're no longer protected, let the chameleons change
+               shape again; however, might still be protected if wearing
+               2nd ring of this type (or via #wizintrinsic) */
+            if (!Protection_from_shape_changers())
+                (yield* restartcham());
+            break;
     }
 }
 
@@ -2670,46 +2713,46 @@ export function* armoroff(otmp) {
             $objclass_oc_subtyp
         )) {
             case NHC.ARM_SUIT:
-            what = suit_simple_name(otmp);
-            cptr.stPtr(ga, Armor_off);
-            break;
+                what = suit_simple_name(otmp);
+                cptr.stPtr(ga, Armor_off);
+                break;
             case NHC.ARM_SHIELD:
-            what = shield_simple_name(otmp);
-            cptr.stPtr(ga, Shield_off);
-            break;
+                what = shield_simple_name(otmp);
+                cptr.stPtr(ga, Shield_off);
+                break;
             case NHC.ARM_HELM:
-            what = helm_simple_name(otmp);
-            cptr.stPtr(ga, Helmet_off);
-            break;
+                what = helm_simple_name(otmp);
+                cptr.stPtr(ga, Helmet_off);
+                break;
             case NHC.ARM_GLOVES:
-            what = (yield* gloves_simple_name(otmp));
-            cptr.stPtr(ga, Gloves_off);
-            break;
+                what = (yield* gloves_simple_name(otmp));
+                cptr.stPtr(ga, Gloves_off);
+                break;
             case NHC.ARM_BOOTS:
-            what = (yield* boots_simple_name(otmp));
-            cptr.stPtr(ga, Boots_off);
-            break;
+                what = (yield* boots_simple_name(otmp));
+                cptr.stPtr(ga, Boots_off);
+                break;
             case NHC.ARM_CLOAK:
-            what = cloak_simple_name(otmp);
-            cptr.stPtr(ga, Cloak_off);
-            break;
+                what = cloak_simple_name(otmp);
+                cptr.stPtr(ga, Cloak_off);
+                break;
             case NHC.ARM_SHIRT:
-            what = shirt_simple_name(otmp);
-            cptr.stPtr(ga, Shirt_off);
-            break;
+                what = shirt_simple_name(otmp);
+                cptr.stPtr(ga, Shirt_off);
+                break;
             default:
-            (yield* impossible(
-                __s_taking_off_unknown_armor_d_d_delay_d,
-                cptr.ldI16o(otmp, $obj_otyp),
-                cptr.ld1so2(
-                    objects,
+                (yield* impossible(
+                    __s_taking_off_unknown_armor_d_d_delay_d,
                     cptr.ldI16o(otmp, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_subtyp
-                ),
-                delay
-            ));
-            break;
+                    cptr.ld1so2(
+                        objects,
+                        cptr.ldI16o(otmp, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_subtyp
+                    ),
+                    delay
+                ));
+                break;
         }
         if (what) {
             /* sizeof offdelaybuf == 60; increase it if this becomes longer */
@@ -2736,38 +2779,38 @@ export function* armoroff(otmp) {
             $objclass_oc_subtyp
         )) {
             case NHC.ARM_SUIT:
-            void (yield* Armor_off());
-            break;
+                void (yield* Armor_off());
+                break;
             case NHC.ARM_SHIELD:
-            void (yield* Shield_off());
-            break;
+                void (yield* Shield_off());
+                break;
             case NHC.ARM_HELM:
-            void (yield* Helmet_off());
-            break;
+                void (yield* Helmet_off());
+                break;
             case NHC.ARM_GLOVES:
-            void (yield* Gloves_off());
-            break;
+                void (yield* Gloves_off());
+                break;
             case NHC.ARM_BOOTS:
-            void (yield* Boots_off());
-            break;
+                void (yield* Boots_off());
+                break;
             case NHC.ARM_CLOAK:
-            void (yield* Cloak_off());
-            break;
+                void (yield* Cloak_off());
+                break;
             case NHC.ARM_SHIRT:
-            void (yield* Shirt_off());
-            break;
+                void (yield* Shirt_off());
+                break;
             default:
-            (yield* impossible(
-                __s_taking_off_unknown_armor_d_d_no_delay,
-                cptr.ldI16o(otmp, $obj_otyp),
-                cptr.ld1so2(
-                    objects,
+                (yield* impossible(
+                    __s_taking_off_unknown_armor_d_d_no_delay,
                     cptr.ldI16o(otmp, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_subtyp
-                )
-            ));
-            break;
+                    cptr.ld1so2(
+                        objects,
+                        cptr.ldI16o(otmp, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_subtyp
+                    )
+                ));
+                break;
         }
         /* We want off_msg() after removing the item to
            avoid "You were wearing ____ (being worn)." */
@@ -2820,7 +2863,8 @@ export function* canwearobj(otmp, mask, noisy) {
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                8192n) != 0n)) {
+                8192n) !=
+                0n)) {
         if (noisy)
             (yield* You(__s_can_t_wear_any_armor_in_your_current));
         return 0;
@@ -2913,7 +2957,8 @@ export function* canwearobj(otmp, mask, noisy) {
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    524288n) != 0n)) {
+                    524288n) !=
+                    0n)) {
             if (noisy)
                 (yield* You(__s_have_no_feet));  /* not body_part(FOOT) */
             err++;
@@ -3135,15 +3180,15 @@ function* accessory_or_armor_on(obj) {
                     switch (answer) {
                         case 0:
                         case 27:
-                        return NHM.ECMD_OK;
+                            return NHM.ECMD_OK;
                         case 108:
                         case 76:
-                        mask.v = 131072n;
-                        break;
+                            mask.v = 131072n;
+                            break;
                         case 114:
                         case 82:
-                        mask.v = 262144n;
-                        break;
+                            mask.v = 262144n;
+                            break;
                     }
                 } while (!mask.v);
             }
@@ -3184,7 +3229,8 @@ function* accessory_or_armor_on(obj) {
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                    32768n) == 0n)) {
+                32768n) ==
+                    0n)) {
                 (yield* You(__s_have_no_head_to_wear_s_on, (yield* ansimpleoname(obj.v))));
                 return NHM.ECMD_OK;
             }
@@ -3316,7 +3362,8 @@ export function* dowear() {
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                8192n) != 0n)) {
+                8192n) !=
+                0n)) {
         (yield* pline(__s_don_t_even_bother));
         return NHM.ECMD_OK;
     }
@@ -3885,8 +3932,11 @@ function* take_off() {
 
     if (cptr.ldI64o(doff, $takeoff_info_what)) {
         if (cptr.ldI32o(doff, $takeoff_info_delay) > 0) {
-            (cptr.stI32o(doff, $takeoff_info_delay, cptr.ldI32o(doff, $takeoff_info_delay) + -1)) -
-                    (-1);
+            (cptr.stI32o(
+                doff,
+                $takeoff_info_delay,
+                cptr.ldI32o(doff, $takeoff_info_delay) + -1
+            )) - (-1);
             return 1;  /* still busy */
         }
         if ((otmp = (yield* do_takeoff())) !== null)
@@ -4013,8 +4063,11 @@ function* take_off() {
      * 1 here to account for it.
      */
     if (cptr.ldI32o(doff, $takeoff_info_delay) > 0)
-        (cptr.stI32o(doff, $takeoff_info_delay, cptr.ldI32o(doff, $takeoff_info_delay) + -1)) -
-                (-1);
+        (cptr.stI32o(
+            doff,
+            $takeoff_info_delay,
+            cptr.ldI32o(doff, $takeoff_info_delay) + -1
+        )) - (-1);
 
     set_occupation(take_off, cptr.add(doff, $takeoff_info_disrobing), 0n);
     return 1;  /* get busy */
@@ -4333,7 +4386,9 @@ function obj_erode_type(otmp) {
         cptr.ldI16o(otmp, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_material
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
             NHC.IRON))
         return NHM.ERODE_RUST;
     else if (is_crackable(otmp))

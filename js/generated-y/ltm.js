@@ -168,18 +168,18 @@ export function luaT_gettmbyobj(L, o, event) {
     let mt;
     switch (((((cptr.ld1uo((o), $TValue_tt_))) & 15))) {
         case 5:
-        mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Table_metatable);
-        break;
+            mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Table_metatable);
+            break;
         case 7:
-        mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Udata_metatable);
-        break;
+            mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Udata_metatable);
+            break;
         default:
-        mt = cptr.ldPtro2(
-            (cptr.ldPtro(L, $lua_State_l_G)),
-            ((((cptr.ld1uo((o), $TValue_tt_))) & 15)),
-            8,
-            $global_State_mt
-        );
+            mt = cptr.ldPtro2(
+                (cptr.ldPtro(L, $lua_State_l_G)),
+                ((((cptr.ld1uo((o), $TValue_tt_))) & 15)),
+                8,
+                $global_State_mt
+            );
     }
     return (mt
             ? luaH_getshortstr(
@@ -360,15 +360,15 @@ export function* luaT_trybinTM(L, p1, p2, res, event) {
             case NHC.TM_SHL:
             case NHC.TM_SHR:
             case NHC.TM_BNOT:
-            {
-                if ((((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3) &&
-                        (((((cptr.ld1uo(((p2)), $TValue_tt_))) & 15)) == 3))
-                    (yield* luaG_tointerror(L, p1, p2));
-                else
-                    (yield* luaG_opinterror(L, p1, p2, __s_perform_bitwise_operation_on));
-            }
+                {
+                    if ((((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3) &&
+                            (((((cptr.ld1uo(((p2)), $TValue_tt_))) & 15)) == 3))
+                        (yield* luaG_tointerror(L, p1, p2));
+                    else
+                        (yield* luaG_opinterror(L, p1, p2, __s_perform_bitwise_operation_on));
+                }
             default:
-            (yield* luaG_opinterror(L, p1, p2, __s_perform_arithmetic_on));
+                (yield* luaG_opinterror(L, p1, p2, __s_perform_arithmetic_on));
         }
     }
 }
@@ -383,7 +383,8 @@ export function* luaT_tryconcatTM(L) {
             ((cptr.add(top, -(1), 16))),
             cptr.add(top, -(2), 16),
             NHC.TM_CONCAT
-        ))) != 0)),
+        ))) !=
+            0)),
         0n
     )))
         (yield* luaG_concaterror(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16)))));
@@ -445,10 +446,8 @@ export function* luaT_trybiniTM(L, p1, i2, flip, res, event) {
 export function* luaT_callorderTM(L, p1, p2, event) {
     if ((yield* callbinTM(L, p1, p2, cptr.ldPtro(L, $lua_State_top), event)))
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(
-                    ((((cptr.ldPtro(L, $lua_State_top))))),
-                    $TValue_tt_
-                ))) & 15)) == 0));
+                (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) &
+                    15)) == 0));
     (yield* luaG_ordererror(L, p1, p2));  /* no metamethod found */
     return 0;  /* to avoid warnings */
 }
@@ -499,16 +498,14 @@ export function* luaT_adjustvarargs(L, nfixparams, ci, p) {
     let actual = ((Number(BigInt.asIntN(
         32,
         ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtr(ci)) / 16n))
-    ))) - 1) |
-            0;  /* number of arguments */
+    ))) - 1) | 0;  /* number of arguments */
     let nextra = (actual - nfixparams) | 0;  /* number of extra arguments */
     cptr.stI32o(ci, $CallInfo_u + 12, nextra);
     if ((__builtin_expect(
-        BigInt(((cptr.diff(
-            cptr.ldPtro(L, $lua_State_stack_last),
-            cptr.ldPtro(L, $lua_State_top)
-        ) / 16n <=
-            BigInt(((cptr.ld1uo(p, $Proto_maxstacksize) + 1) | 0))) != 0)),
+        BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) /
+            16n <=
+            BigInt(((cptr.ld1uo(p, $Proto_maxstacksize) + 1) | 0))) !=
+            0)),
         0n
     ))) {
         void 0;
@@ -570,8 +567,10 @@ export function* luaT_getvarargs(L, ci, where, wanted) {
             BigInt(((cptr.diff(
                 cptr.ldPtro(L, $lua_State_stack_last),
                 cptr.ldPtro(L, $lua_State_top)
-            ) / 16n <=
-                BigInt((nextra))) != 0)),
+            ) /
+                16n <=
+                BigInt((nextra))) !=
+                0)),
             0n
         ))) {
             let t__ = (cptr.diff((((where))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* ensure stack space */

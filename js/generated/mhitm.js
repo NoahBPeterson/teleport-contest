@@ -245,7 +245,8 @@ function noises(magr, mattk) {
                     64,
                     cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
                         cptr.ldI64o(gn, $instance_globals_n_noisetime)
-                ) > 10n)) {
+                ) >
+                    10n)) {
         cptr.st1o(gf, $instance_globals_f_far_noise, farq);
         cptr.stI64o(
             gn,
@@ -685,7 +686,8 @@ export function mattackm(magr, mdef) {
             ),
             cptr.ldI16o(magr, $monst_mx)
         ) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
             canspotmon(magr)) ||
             (((cptr.ld1uo(
                 cptr.ldPtro(
@@ -695,7 +697,8 @@ export function mattackm(magr, mdef) {
                 ),
                 cptr.ldI16o(mdef, $monst_mx)
             ) &
-                NHM.IN_SIGHT) != 0) &&
+                NHM.IN_SIGHT) !=
+                0) &&
                 canspotmon(mdef))
             ? 1
             : 0))
@@ -748,37 +751,38 @@ export function mattackm(magr, mdef) {
 
         switch (cptr.ld1u(mattk)) {
             case NHM.AT_WEAP:
-            if (distmin(
-                cptr.ldI16o(magr, $monst_mx),
-                cptr.ldI16o(magr, $monst_my),
-                cptr.ldI16o(mdef, $monst_mx),
-                cptr.ldI16o(mdef, $monst_my)
-            ) > 1) {
-                /* D: Do a ranged attack here! */
-                strike = (thrwmm(magr, mdef) == NHM.M_ATTK_MISS) ? 0 : 1;
-                if (strike)
-                    /* don't really know if we hit or not; pretend we did */
-                    cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_HIT, 4);
-                if ((cptr.ldI32o((mdef), $monst_mhp) < 1))
-                    cptr.stI32o(res, i, NHM.M_ATTK_DEF_DIED, 4);
-                if ((cptr.ldI32o((magr), $monst_mhp) < 1))
-                    cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_AGR_DIED, 4);
-                break;
-            }
-            if (cptr.ldI16o(magr, $monst_weapon_check) == NHC.NEED_WEAPON ||
-                    !(cptr.ldPtro((magr), $monst_mw))) {
-                cptr.stI16o(magr, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
-                if (mon_wield_item(magr) != 0)
-                    return NHM.M_ATTK_MISS;
-            }
-            possibly_unwield(magr, 0);
-            if ((mwep = (cptr.ldPtro((magr), $monst_mw))) !== null) {
-                if (cptr.ld1so(gv, $instance_globals_v_vis))
-                    mswingsm(magr, mdef, mwep);
-                tmp = (tmp + hitval(mwep, mdef)) | 0;
-            }
-            // @FallThrough
-            ;
+                if (distmin(
+                    cptr.ldI16o(magr, $monst_mx),
+                    cptr.ldI16o(magr, $monst_my),
+                    cptr.ldI16o(mdef, $monst_mx),
+                    cptr.ldI16o(mdef, $monst_my)
+                ) >
+                        1) {
+                    /* D: Do a ranged attack here! */
+                    strike = (thrwmm(magr, mdef) == NHM.M_ATTK_MISS) ? 0 : 1;
+                    if (strike)
+                        /* don't really know if we hit or not; pretend we did */
+                        cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_HIT, 4);
+                    if ((cptr.ldI32o((mdef), $monst_mhp) < 1))
+                        cptr.stI32o(res, i, NHM.M_ATTK_DEF_DIED, 4);
+                    if ((cptr.ldI32o((magr), $monst_mhp) < 1))
+                        cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_AGR_DIED, 4);
+                    break;
+                }
+                if (cptr.ldI16o(magr, $monst_weapon_check) == NHC.NEED_WEAPON ||
+                        !(cptr.ldPtro((magr), $monst_mw))) {
+                    cptr.stI16o(magr, $monst_weapon_check, NHC.NEED_HTH_WEAPON);
+                    if (mon_wield_item(magr) != 0)
+                        return NHM.M_ATTK_MISS;
+                }
+                possibly_unwield(magr, 0);
+                if ((mwep = (cptr.ldPtro((magr), $monst_mw))) !== null) {
+                    if (cptr.ld1so(gv, $instance_globals_v_vis))
+                        mswingsm(magr, mdef, mwep);
+                    tmp = (tmp + hitval(mwep, mdef)) | 0;
+                }
+                // @FallThrough
+                ;
             case NHM.AT_CLAW:
             case NHM.AT_KICK:
             case NHM.AT_BITE:
@@ -786,192 +790,203 @@ export function mattackm(magr, mdef) {
             case NHM.AT_TUCH:
             case NHM.AT_BUTT:
             case NHM.AT_TENT:
-            if (cptr.ld1u(mattk) == NHM.AT_KICK && mtrapped_in_pit(magr))
-                continue;
-            /* Nymph that teleported away on first attack? */
-            if (distmin(
-                cptr.ldI16o(magr, $monst_mx),
-                cptr.ldI16o(magr, $monst_my),
-                cptr.ldI16o(mdef, $monst_mx),
-                cptr.ldI16o(mdef, $monst_my)
-            ) > 1)
-                /* Continue because the monster may have a ranged attack. */
-                continue;
-            /* Monsters won't attack cockatrices physically if they
-             * have a weapon instead.  This instinct doesn't work for
-             * players, or under conflict or confusion.
-             */
-            if (!(cptr.ldI32o(magr, $monst_mconf) & 1) &&
-                    !Conflict() && mwep &&
-                    cptr.ld1u(mattk) != NHM.AT_WEAP &&
-                    touch_petrifies(cptr.ldPtro(mdef, $monst_data))) {
-                strike = 0;
-                break;
-            }
-            dieroll = rnd((20 + i) | 0);
-            strike = (tmp > dieroll);
-            /* KMH -- don't accumulate to-hit bonuses */
-            if (mwep)
-                tmp = (tmp - hitval(mwep, mdef)) | 0;
-            if (strike) {
-                /* for eel AT_TUCH+AD_WRAP attack: can't grab an unsolid
-                   target; the unsolid test is redundant since failed_grab
-                   checks it too, but is cheap and avoids calling failed_grab
-                   for ordinary targets */
-                if (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) &
-                    1048576n) != 0n) &&
-                        failed_grab(magr, mdef, mattk)) {
+                if (cptr.ld1u(mattk) == NHM.AT_KICK && mtrapped_in_pit(magr))
+                    continue;
+                /* Nymph that teleported away on first attack? */
+                if (distmin(
+                    cptr.ldI16o(magr, $monst_mx),
+                    cptr.ldI16o(magr, $monst_my),
+                    cptr.ldI16o(mdef, $monst_mx),
+                    cptr.ldI16o(mdef, $monst_my)
+                ) > 1)
+                    /* Continue because the monster may have a ranged attack. */
+                    continue;
+                /* Monsters won't attack cockatrices physically if they
+                 * have a weapon instead.  This instinct doesn't work for
+                 * players, or under conflict or confusion.
+                 */
+                if (!(cptr.ldI32o(magr, $monst_mconf) & 1) &&
+                        !Conflict() &&
+                        mwep &&
+                        cptr.ld1u(mattk) != NHM.AT_WEAP &&
+                        touch_petrifies(cptr.ldPtro(mdef, $monst_data))) {
                     strike = 0;
                     break;
                 }
-                cptr.stI32o(res, i, hitmm(magr, mdef, mattk, mwep, dieroll), 4);
-                if ((cptr.eq(
-                    cptr.ldPtro(mdef, $monst_data),
-                    cptr.add(mons, NHC.PM_BLACK_PUDDING, $sizeof_permonst)
-                ) ||
-                    cptr.eq(
+                dieroll = rnd((20 + i) | 0);
+                strike = (tmp > dieroll);
+                /* KMH -- don't accumulate to-hit bonuses */
+                if (mwep)
+                    tmp = (tmp - hitval(mwep, mdef)) | 0;
+                if (strike) {
+                    /* for eel AT_TUCH+AD_WRAP attack: can't grab an unsolid
+                       target; the unsolid test is redundant since failed_grab
+                       checks it too, but is cheap and avoids calling failed_grab
+                       for ordinary targets */
+                    if (((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) &
+                        1048576n) !=
+                        0n) &&
+                            failed_grab(magr, mdef, mattk)) {
+                        strike = 0;
+                        break;
+                    }
+                    cptr.stI32o(res, i, hitmm(magr, mdef, mattk, mwep, dieroll), 4);
+                    if ((cptr.eq(
                         cptr.ldPtro(mdef, $monst_data),
-                        cptr.add(mons, NHC.PM_BROWN_PUDDING, $sizeof_permonst)
-                    )) &&
-                        (mwep &&
-                            (((cptr.ldI32o2(
-                                objects,
-                                cptr.ldI16o(mwep, $obj_otyp),
-                                $sizeof_objclass,
-                                $objclass_oc_material
-                            ) & 31) | 0) ==
-                                NHC.IRON ||
-                                ((cptr.ldI32o2(
+                        cptr.add(mons, NHC.PM_BLACK_PUDDING, $sizeof_permonst)
+                    ) ||
+                        cptr.eq(
+                            cptr.ldPtro(mdef, $monst_data),
+                            cptr.add(mons, NHC.PM_BROWN_PUDDING, $sizeof_permonst)
+                        )) &&
+                            (mwep &&
+                                (((cptr.ldI32o2(
                                     objects,
                                     cptr.ldI16o(mwep, $obj_otyp),
                                     $sizeof_objclass,
                                     $objclass_oc_material
-                                ) & 31) | 0) ==
-                                    NHC.METAL)) &&
-                        cptr.ldI32o(mdef, $monst_mhp) > 1 &&
-                        !(cptr.ldI32o(mdef, $monst_mcan) & 1)) {
-                    let mclone;
+                                ) &
+                                    31) |
+                                    0) ==
+                                    NHC.IRON ||
+                                    ((cptr.ldI32o2(
+                                        objects,
+                                        cptr.ldI16o(mwep, $obj_otyp),
+                                        $sizeof_objclass,
+                                        $objclass_oc_material
+                                    ) &
+                                        31) |
+                                        0) ==
+                                        NHC.METAL)) &&
+                            cptr.ldI32o(mdef, $monst_mhp) > 1 &&
+                            !(cptr.ldI32o(mdef, $monst_mcan) & 1)) {
+                        let mclone;
 
-                    if ((mclone = clone_mon(mdef, 0, 0)) !== null) {
-                        if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef))
-                            pline(__s_s_divides_as_s_hits_it, Monnam(mdef), mon_nam(magr));
-                        void mintrap(mclone, NHM.NO_TRAP_FLAGS);
-                        if ((cptr.ldI32o((magr), $monst_mhp) < 1))
-                            cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_AGR_DIED, 4);
+                        if ((mclone = clone_mon(mdef, 0, 0)) !== null) {
+                            if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef))
+                                pline(__s_s_divides_as_s_hits_it, Monnam(mdef), mon_nam(magr));
+                            void mintrap(mclone, NHM.NO_TRAP_FLAGS);
+                            if ((cptr.ldI32o((magr), $monst_mhp) < 1))
+                                cptr.stI32o(
+                                    res,
+                                    i,
+                                    cptr.ldI32o(res, i, 4) | NHM.M_ATTK_AGR_DIED,
+                                    4
+                                );
+                        }
                     }
-                }
-            } else
-                missmm(magr, mdef, mattk);
-            break;
+                } else
+                    missmm(magr, mdef, mattk);
+                break;
             case NHM.AT_HUGS:
-            strike = (i >= 2 &&
-                cptr.ldI32o(res, (i - 1) | 0, 4) == NHM.M_ATTK_HIT &&
-                cptr.ldI32o(res, (i - 2) | 0, 4) == NHM.M_ATTK_HIT
-                    ? 1
-                    : 0);
-            if (strike) {
-                /* note: monsters with hug attacks don't wear cloaks or gloves
-                   so this doesn't need a special case for hugging a shade
-                   while covered by blessed armor (which does damage but does
-                   not achieve a successful hold); likewise, rope golems can't
-                   wield weapons so ability to choke isn't affected by such */
-                if (failed_grab(magr, mdef, mattk))
-                    strike = 0;
-                else
-                    cptr.stI32o(res, i, hitmm(magr, mdef, mattk, null, 0), 4);
-            }
-            break;
+                strike = (i >= 2 &&
+                    cptr.ldI32o(res, (i - 1) | 0, 4) == NHM.M_ATTK_HIT &&
+                    cptr.ldI32o(res, (i - 2) | 0, 4) == NHM.M_ATTK_HIT
+                        ? 1
+                        : 0);
+                if (strike) {
+                    /* note: monsters with hug attacks don't wear cloaks or gloves
+                       so this doesn't need a special case for hugging a shade
+                       while covered by blessed armor (which does damage but does
+                       not achieve a successful hold); likewise, rope golems can't
+                       wield weapons so ability to choke isn't affected by such */
+                    if (failed_grab(magr, mdef, mattk))
+                        strike = 0;
+                    else
+                        cptr.stI32o(res, i, hitmm(magr, mdef, mattk, null, 0), 4);
+                }
+                break;
             case NHM.AT_GAZE:
-            strike = 0;
-            cptr.stI32o(res, i, gazemm(magr, mdef, mattk), 4);
-            break;
+                strike = 0;
+                cptr.stI32o(res, i, gazemm(magr, mdef, mattk), 4);
+                break;
             case NHM.AT_EXPL:
-            /* D: Prevent explosions from a distance */
-            if (distmin(
-                cptr.ldI16o(magr, $monst_mx),
-                cptr.ldI16o(magr, $monst_my),
-                cptr.ldI16o(mdef, $monst_mx),
-                cptr.ldI16o(mdef, $monst_my)
-            ) > 1)
-                continue;
+                /* D: Prevent explosions from a distance */
+                if (distmin(
+                    cptr.ldI16o(magr, $monst_mx),
+                    cptr.ldI16o(magr, $monst_my),
+                    cptr.ldI16o(mdef, $monst_mx),
+                    cptr.ldI16o(mdef, $monst_my)
+                ) > 1)
+                    continue;
 
-            cptr.stI32o(res, i, explmm(magr, mdef, mattk), 4);
-            if (cptr.ldI32o(res, i, 4) == NHM.M_ATTK_MISS) {
-                strike = 0;
-                attk = 0;
-            } else
-                strike = 1;  /* automatic hit */
-            break;
+                cptr.stI32o(res, i, explmm(magr, mdef, mattk), 4);
+                if (cptr.ldI32o(res, i, 4) == NHM.M_ATTK_MISS) {
+                    strike = 0;
+                    attk = 0;
+                } else
+                    strike = 1;  /* automatic hit */
+                break;
             case NHM.AT_ENGL:
-            if (cptr.eq(
-                cptr.ldPtro(mdef, $monst_data),
-                cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
-            )) {
-                if (cptr.ld1so(gv, $instance_globals_v_vis))
-                    pline(
-                        __s_s_attempt_to_engulf_s_is_futile,
-                        s_suffix(Monnam(magr)),
-                        mon_nam(mdef)
-                    );
-                strike = 0;
+                if (cptr.eq(
+                    cptr.ldPtro(mdef, $monst_data),
+                    cptr.add(mons, NHC.PM_SHADE, $sizeof_permonst)
+                )) {
+                    if (cptr.ld1so(gv, $instance_globals_v_vis))
+                        pline(
+                            __s_s_attempt_to_engulf_s_is_futile,
+                            s_suffix(Monnam(magr)),
+                            mon_nam(mdef)
+                        );
+                    strike = 0;
+                    break;
+                }
+                if (cptr.ldPtro(u, $you_usteed) && cptr.eq(mdef, cptr.ldPtro(u, $you_usteed))) {
+                    strike = 0;
+                    break;
+                }
+                /* D: Prevent engulf from a distance */
+                if (distmin(
+                    cptr.ldI16o(magr, $monst_mx),
+                    cptr.ldI16o(magr, $monst_my),
+                    cptr.ldI16o(mdef, $monst_mx),
+                    cptr.ldI16o(mdef, $monst_my)
+                ) > 1)
+                    continue;
+                /* Engulfing attacks are directed at the hero if possible. -dlc */
+                if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                        (cptr.eq(cptr.ldPtro(u, $you_ustuck), (magr))))) {
+                    strike = 0;
+                } else if ((strike = (tmp > rnd((20 + i) | 0))) != 0) {
+                    if (failed_grab(magr, mdef, mattk))
+                        strike = 0;  /* purple worm can't swallow unsolid mons */
+                    else
+                        cptr.stI32o(res, i, gulpmm(magr, mdef, mattk), 4);
+                } else {
+                    missmm(magr, mdef, mattk);
+                }
                 break;
-            }
-            if (cptr.ldPtro(u, $you_usteed) && cptr.eq(mdef, cptr.ldPtro(u, $you_usteed))) {
-                strike = 0;
-                break;
-            }
-            /* D: Prevent engulf from a distance */
-            if (distmin(
-                cptr.ldI16o(magr, $monst_mx),
-                cptr.ldI16o(magr, $monst_my),
-                cptr.ldI16o(mdef, $monst_mx),
-                cptr.ldI16o(mdef, $monst_my)
-            ) > 1)
-                continue;
-            /* Engulfing attacks are directed at the hero if possible. -dlc */
-            if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
-                    (cptr.eq(cptr.ldPtro(u, $you_ustuck), (magr))))) {
-                strike = 0;
-            } else if ((strike = (tmp > rnd((20 + i) | 0))) != 0) {
-                if (failed_grab(magr, mdef, mattk))
-                    strike = 0;  /* purple worm can't swallow unsolid mons */
-                else
-                    cptr.stI32o(res, i, gulpmm(magr, mdef, mattk), 4);
-            } else {
-                missmm(magr, mdef, mattk);
-            }
-            break;
             case NHM.AT_BREA:
             case NHM.AT_SPIT:
-            /*
-             * Ranged attacks aren't allowed at point blank range.
-             *
-             * That impacts pet use of ranged attacks.  It's rather arbitrary
-             * but various parts of the code assume it to be the case, not to
-             * mention a part of player tactics when fighting dragons.
-             */
-            if (!monnear(magr, cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my))) {
-                let mmtmp = ((cptr.ld1u(mattk) == NHM.AT_BREA)
-                        ? breamm(magr, mattk, mdef)
-                        : spitmm(magr, mattk, mdef));
+                /*
+                 * Ranged attacks aren't allowed at point blank range.
+                 *
+                 * That impacts pet use of ranged attacks.  It's rather arbitrary
+                 * but various parts of the code assume it to be the case, not to
+                 * mention a part of player tactics when fighting dragons.
+                 */
+                if (!monnear(magr, cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my))) {
+                    let mmtmp = ((cptr.ld1u(mattk) == NHM.AT_BREA)
+                            ? breamm(magr, mattk, mdef)
+                            : spitmm(magr, mattk, mdef));
 
-                strike = (mmtmp == NHM.M_ATTK_MISS) ? 0 : 1;
-                /* We don't really know if we hit or not; pretend we did. */
-                if (strike)
-                    cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_HIT, 4);
-                if ((cptr.ldI32o((mdef), $monst_mhp) < 1))
-                    cptr.stI32o(res, i, NHM.M_ATTK_DEF_DIED, 4);
-                if ((cptr.ldI32o((magr), $monst_mhp) < 1))
-                    cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_AGR_DIED, 4);
-            } else {
+                    strike = (mmtmp == NHM.M_ATTK_MISS) ? 0 : 1;
+                    /* We don't really know if we hit or not; pretend we did. */
+                    if (strike)
+                        cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_HIT, 4);
+                    if ((cptr.ldI32o((mdef), $monst_mhp) < 1))
+                        cptr.stI32o(res, i, NHM.M_ATTK_DEF_DIED, 4);
+                    if ((cptr.ldI32o((magr), $monst_mhp) < 1))
+                        cptr.stI32o(res, i, cptr.ldI32o(res, i, 4) | NHM.M_ATTK_AGR_DIED, 4);
+                } else {
+                    strike = 0;
+                    attk = 0;
+                }
+                break;
+            default:
                 strike = 0;
                 attk = 0;
-            }
-            break;
-            default:
-            strike = 0;
-            attk = 0;
-            break;
+                break;
         }
 
         if (attk &&
@@ -1091,13 +1106,16 @@ function hitmm(magr, mdef, mattk, mwep, dieroll) {
         (cptr.ld1u(mattk) == NHM.AT_CLAW && mwep)
             ? 1
             : 0));
-    let silverhit = schar((weaponhit && mwep &&
+    let silverhit = schar((weaponhit &&
+        mwep &&
         ((cptr.ldI32o2(
             objects,
             cptr.ldI16o(mwep, $obj_otyp),
             $sizeof_objclass,
             $objclass_oc_material
-        ) & 31) | 0) ==
+        ) &
+            31) |
+            0) ==
             NHC.SILVER
             ? 1
             : 0));
@@ -1133,80 +1151,80 @@ function hitmm(magr, mdef, mattk, mwep, dieroll) {
             cptr.st1o(cptr.decay(buf), 0, 0, 1);
             switch (cptr.ld1u(mattk)) {
                 case NHM.AT_BITE:
-                nh_snprintf(
-                    __s_hitmm,
-                    676,
-                    cptr.decay(buf),
-                    256n,
-                    __s_s_bites,
-                    cptr.decay(magr_name)
-                );
-                break;
-                case NHM.AT_STNG:
-                nh_snprintf(
-                    __s_hitmm,
-                    679,
-                    cptr.decay(buf),
-                    256n,
-                    __s_s_stings,
-                    cptr.decay(magr_name)
-                );
-                break;
-                case NHM.AT_BUTT:
-                nh_snprintf(
-                    __s_hitmm,
-                    682,
-                    cptr.decay(buf),
-                    256n,
-                    __s_s_butts,
-                    cptr.decay(magr_name)
-                );
-                break;
-                case NHM.AT_TUCH:
-                nh_snprintf(
-                    __s_hitmm,
-                    685,
-                    cptr.decay(buf),
-                    256n,
-                    __s_s_touches,
-                    cptr.decay(magr_name)
-                );
-                break;
-                case NHM.AT_TENT:
-                nh_snprintf(
-                    __s_hitmm,
-                    689,
-                    cptr.decay(buf),
-                    256n,
-                    __s_s_tentacles_suck,
-                    s_suffix(cptr.decay(magr_name))
-                );
-                break;
-                case NHM.AT_HUGS:
-                if (!cptr.eq(magr, cptr.ldPtro(u, $you_ustuck))) {
                     nh_snprintf(
                         __s_hitmm,
-                        693,
+                        676,
                         cptr.decay(buf),
                         256n,
-                        __s_s_squeezes,
+                        __s_s_bites,
                         cptr.decay(magr_name)
                     );
                     break;
-                }
-                // @FallThrough
-                ;
-                default:
-                if (!weaponhit || !mwep || !cptr.ld1so(mwep, $obj_oartifact))
+                case NHM.AT_STNG:
                     nh_snprintf(
                         __s_hitmm,
-                        700,
+                        679,
                         cptr.decay(buf),
                         256n,
-                        __s_s_hits,
+                        __s_s_stings,
                         cptr.decay(magr_name)
                     );
-                break;
+                    break;
+                case NHM.AT_BUTT:
+                    nh_snprintf(
+                        __s_hitmm,
+                        682,
+                        cptr.decay(buf),
+                        256n,
+                        __s_s_butts,
+                        cptr.decay(magr_name)
+                    );
+                    break;
+                case NHM.AT_TUCH:
+                    nh_snprintf(
+                        __s_hitmm,
+                        685,
+                        cptr.decay(buf),
+                        256n,
+                        __s_s_touches,
+                        cptr.decay(magr_name)
+                    );
+                    break;
+                case NHM.AT_TENT:
+                    nh_snprintf(
+                        __s_hitmm,
+                        689,
+                        cptr.decay(buf),
+                        256n,
+                        __s_s_tentacles_suck,
+                        s_suffix(cptr.decay(magr_name))
+                    );
+                    break;
+                case NHM.AT_HUGS:
+                    if (!cptr.eq(magr, cptr.ldPtro(u, $you_ustuck))) {
+                        nh_snprintf(
+                            __s_hitmm,
+                            693,
+                            cptr.decay(buf),
+                            256n,
+                            __s_s_squeezes,
+                            cptr.decay(magr_name)
+                        );
+                        break;
+                    }
+                    // @FallThrough
+                    ;
+                default:
+                    if (!weaponhit || !mwep || !cptr.ld1so(mwep, $obj_oartifact))
+                        nh_snprintf(
+                            __s_hitmm,
+                            700,
+                            cptr.decay(buf),
+                            256n,
+                            __s_s_hits,
+                            cptr.decay(magr_name)
+                        );
+                    break;
             }
             if (cptr.ld1s(cptr.decay(buf)))
                 pline(__s_s_s__3, cptr.decay(buf), mon_nam_too(mdef, magr));
@@ -1220,10 +1238,8 @@ function hitmm(magr, mdef, mattk, mwep, dieroll) {
                 void cptr.strcpy(cptr.decay(magr_name), s_suffix(cptr.decay(magr_name)));
                 if (!(cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) ==
                     NHC.S_GHOST) &&
-                        !((cptr.ldU64o(
-                            (cptr.ldPtro(mdef, $monst_data)),
-                            $permonst_mflags1
-                        ) & 4n) != 0n)) {
+                        !((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 4n) !=
+                            0n)) {
                     if (!cptr.eq(mdef, magr)) {
                         mdef_name = s_suffix(mdef_name);
                     } else {
@@ -1284,8 +1300,8 @@ function gazemm(magr, mdef, mattk) {
             !(cptr.ldI32o(mdef, $monst_mcansee) & 1) ||
             (archon ? resists_blnd(mdef) : !(cptr.ldI32o(magr, $monst_mcansee) & 1)) ||
             ((cptr.ldI32o(magr, $monst_minvis) & 1) | 0 &&
-                !((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) &
-                    16777216n) != 0n)) ||
+                !((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                    0n)) ||
             (cptr.ldI32o(mdef, $monst_msleeping) & 1) | 0) {
         if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef))
             pline(__s_but_nothing_happens);
@@ -1304,7 +1320,8 @@ function gazemm(magr, mdef, mattk) {
             }
             if ((cptr.ldI32o(mdef, $monst_minvis) & 1) | 0 &&
                     !((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n)) {
+                        16777216n) !=
+                        0n)) {
                 if (canseemon(magr)) {
                     pline(
                         __s_s_doesn_t_seem_to_notice_that_s_gaze,
@@ -1573,7 +1590,8 @@ function gulpmm(magr, mdef, mattk) {
         newsym(dx, dy);
     } else {
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), dy, 8), dx) &
-                NHM.IN_SIGHT) != 0)) {
+            NHM.IN_SIGHT) !=
+                0)) {
             pline(
                 __s_s_is_s,
                 Monnam(mdef),
@@ -1903,8 +1921,8 @@ export function mon_poly(magr, mdef, dmg) {
                     );
             }
             dmg = 0;
-            if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) &
-                    33554432n) != 0n)) {
+            if (((cptr.ldU64o((cptr.ldPtro(magr, $monst_data)), $permonst_mflags1) & 33554432n) !=
+                    0n)) {
                 if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)))
                     tele();
                 else if (!tele_restrict(magr))
@@ -2088,35 +2106,35 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
         /* These affect the enemy even if defender killed */
         switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
             case NHM.AD_ACID:
-            if (mhitb && !rn2(2)) {
-                void cptr.strcpy(cptr.decay(buf), Monnam(magr));
-                if (canseemon(magr))
-                    pline(
-                        __s_s_is_splashed_by_s_s,
-                        cptr.decay(buf),
-                        s_suffix(mon_nam(mdef)),
-                        hliquid(__s_acid)
-                    );
-                if (Resists_Elem(magr, NHC.ACID_RES)) {
+                if (mhitb && !rn2(2)) {
+                    void cptr.strcpy(cptr.decay(buf), Monnam(magr));
                     if (canseemon(magr))
-                        pline(__s_s_is_not_affected, Monnam(magr));
+                        pline(
+                            __s_s_is_splashed_by_s_s,
+                            cptr.decay(buf),
+                            s_suffix(mon_nam(mdef)),
+                            hliquid(__s_acid)
+                        );
+                    if (Resists_Elem(magr, NHC.ACID_RES)) {
+                        if (canseemon(magr))
+                            pline(__s_s_is_not_affected, Monnam(magr));
+                        tmp = 0;
+                    }
+                } else
                     tmp = 0;
-                }
-            } else
-                tmp = 0;
-            if (!rn2(30))
-                erode_armor(magr, NHM.ERODE_CORRODE);
-            if (!rn2(6))
-                acid_damage((cptr.ldPtro((magr), $monst_mw)));
-            break __lbl_assess_dmg;
+                if (!rn2(30))
+                    erode_armor(magr, NHM.ERODE_CORRODE);
+                if (!rn2(6))
+                    acid_damage((cptr.ldPtro((magr), $monst_mw)));
+                break __lbl_assess_dmg;
             case NHM.AD_ENCH:
-            if (mhitb && !(cptr.ldI32o(mdef, $monst_mcan) & 1) && mwep) {
-                void drain_item(mwep, 0);
-                /* No message */
-            }
-            break;
+                if (mhitb && !(cptr.ldI32o(mdef, $monst_mcan) & 1) && mwep) {
+                    void drain_item(mwep, 0);
+                    /* No message */
+                }
+                break;
             default:
-            break;
+                break;
         }
         if (mdead || (cptr.ldI32o(mdef, $monst_mcan) & 1) | 0)
             return (mdead | mhit);
@@ -2125,96 +2143,96 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
         if (rn2(3))
             switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                 case NHM.AD_PLYS:
-                if (tmp > 127)
-                    tmp = 127;
-                if (cptr.eq(mddat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
-                    if (!rn2(4))
+                    if (tmp > 127)
                         tmp = 127;
-                    if ((cptr.ldI32o(magr, $monst_mcansee) & 1) | 0 &&
-                            ((cptr.ldU64o((madat), $permonst_mflags1) & 4096n) == 0n) &&
-                            (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 &&
-                            (((cptr.ldU64o((madat), $permonst_mflags1) & 16777216n) != 0n) ||
-                                !(cptr.ldI32o(mdef, $monst_minvis) & 1))) {
-                        /* construct format string; guard against '%' in Monnam */
-                        void cptr.strcpy(cptr.decay(buf), s_suffix(Monnam(mdef)));
-                        void strNsubst(cptr.decay(buf), __s_pct, __s_pct2, 0);
-                        void cptr.strcat(cptr.decay(buf), __s_gaze_is_reflected_by_s_s);
-                        if (mon_reflects(magr, canseemon(magr) ? cptr.decay(buf) : null))
+                    if (cptr.eq(mddat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
+                        if (!rn2(4))
+                            tmp = 127;
+                        if ((cptr.ldI32o(magr, $monst_mcansee) & 1) | 0 &&
+                                ((cptr.ldU64o((madat), $permonst_mflags1) & 4096n) == 0n) &&
+                                (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 &&
+                                (((cptr.ldU64o((madat), $permonst_mflags1) & 16777216n) != 0n) ||
+                                    !(cptr.ldI32o(mdef, $monst_minvis) & 1))) {
+                            /* construct format string; guard against '%' in Monnam */
+                            void cptr.strcpy(cptr.decay(buf), s_suffix(Monnam(mdef)));
+                            void strNsubst(cptr.decay(buf), __s_pct, __s_pct2, 0);
+                            void cptr.strcat(cptr.decay(buf), __s_gaze_is_reflected_by_s_s);
+                            if (mon_reflects(magr, canseemon(magr) ? cptr.decay(buf) : null))
+                                return (mdead | mhit);
+                            void cptr.strcpy(cptr.decay(buf), Monnam(magr));
+                            if (canseemon(magr))
+                                pline(
+                                    __s_s_is_frozen_by_s_gaze,
+                                    cptr.decay(buf),
+                                    s_suffix(mon_nam(mdef))
+                                );
+                            paralyze_monst(magr, tmp);
                             return (mdead | mhit);
+                        }
+                    } else {
                         void cptr.strcpy(cptr.decay(buf), Monnam(magr));
                         if (canseemon(magr))
-                            pline(
-                                __s_s_is_frozen_by_s_gaze,
-                                cptr.decay(buf),
-                                s_suffix(mon_nam(mdef))
-                            );
+                            pline(__s_s_is_frozen_by_s, cptr.decay(buf), mon_nam(mdef));
                         paralyze_monst(magr, tmp);
                         return (mdead | mhit);
                     }
-                } else {
-                    void cptr.strcpy(cptr.decay(buf), Monnam(magr));
-                    if (canseemon(magr))
-                        pline(__s_s_is_frozen_by_s, cptr.decay(buf), mon_nam(mdef));
-                    paralyze_monst(magr, tmp);
-                    return (mdead | mhit);
-                }
-                return 1;
+                    return 1;
                 case NHM.AD_COLD:
-                if (Resists_Elem(magr, NHC.COLD_RES)) {
-                    if (canseemon(magr)) {
-                        pline_mon(magr, __s_s_is_mildly_chilly, Monnam(magr));
-                        golemeffects(magr, NHM.AD_COLD, tmp);
+                    if (Resists_Elem(magr, NHC.COLD_RES)) {
+                        if (canseemon(magr)) {
+                            pline_mon(magr, __s_s_is_mildly_chilly, Monnam(magr));
+                            golemeffects(magr, NHM.AD_COLD, tmp);
+                        }
+                        tmp = 0;
+                        break;
                     }
-                    tmp = 0;
-                    break;
-                }
-                if (canseemon(magr))
-                    pline_mon(magr, __s_s_is_suddenly_very_cold, Monnam(magr));
-                healmon(mdef, (tmp / 2) | 0, (tmp / 2) | 0);
-                if (cptr.ldI32o(mdef, $monst_mhpmax) >
-                        (Math.imul(cptr.ld1uo(mdef, $monst_m_lev) + 1, 8)))
-                    void split_mon(mdef, magr);
-                break;
-                case NHM.AD_STUN:
-                if (!(cptr.ldI32o(magr, $monst_mstun) & 1)) {
-                    cptr.stI32o(magr, $monst_mstun, 1);
                     if (canseemon(magr))
-                        pline_mon(
-                            magr,
-                            __s_s_s__4,
-                            Monnam(magr),
-                            makeplural(stagger(cptr.ldPtro(magr, $monst_data), __s_stagger))
-                        );
-                }
-                tmp = 0;
-                break;
+                        pline_mon(magr, __s_s_is_suddenly_very_cold, Monnam(magr));
+                    healmon(mdef, (tmp / 2) | 0, (tmp / 2) | 0);
+                    if (cptr.ldI32o(mdef, $monst_mhpmax) >
+                            (Math.imul(cptr.ld1uo(mdef, $monst_m_lev) + 1, 8)))
+                        void split_mon(mdef, magr);
+                    break;
+                case NHM.AD_STUN:
+                    if (!(cptr.ldI32o(magr, $monst_mstun) & 1)) {
+                        cptr.stI32o(magr, $monst_mstun, 1);
+                        if (canseemon(magr))
+                            pline_mon(
+                                magr,
+                                __s_s_s__4,
+                                Monnam(magr),
+                                makeplural(stagger(cptr.ldPtro(magr, $monst_data), __s_stagger))
+                            );
+                    }
+                    tmp = 0;
+                    break;
                 case NHM.AD_FIRE:
-                if (Resists_Elem(magr, NHC.FIRE_RES)) {
-                    if (canseemon(magr)) {
-                        pline_mon(magr, __s_s_is_mildly_warmed, Monnam(magr));
-                        golemeffects(magr, NHM.AD_FIRE, tmp);
+                    if (Resists_Elem(magr, NHC.FIRE_RES)) {
+                        if (canseemon(magr)) {
+                            pline_mon(magr, __s_s_is_mildly_warmed, Monnam(magr));
+                            golemeffects(magr, NHM.AD_FIRE, tmp);
+                        }
+                        tmp = 0;
+                        break;
                     }
-                    tmp = 0;
+                    if (canseemon(magr))
+                        pline_mon(magr, __s_s_is_suddenly_very_hot, Monnam(magr));
                     break;
-                }
-                if (canseemon(magr))
-                    pline_mon(magr, __s_s_is_suddenly_very_hot, Monnam(magr));
-                break;
                 case NHM.AD_ELEC:
-                if (Resists_Elem(magr, NHC.SHOCK_RES)) {
-                    if (canseemon(magr)) {
-                        pline_mon(magr, __s_s_is_mildly_tingled, Monnam(magr));
-                        golemeffects(magr, NHM.AD_ELEC, tmp);
+                    if (Resists_Elem(magr, NHC.SHOCK_RES)) {
+                        if (canseemon(magr)) {
+                            pline_mon(magr, __s_s_is_mildly_tingled, Monnam(magr));
+                            golemeffects(magr, NHM.AD_ELEC, tmp);
+                        }
+                        tmp = 0;
+                        break;
                     }
+                    if (canseemon(magr))
+                        pline_mon(magr, __s_s_is_jolted_with_electricity, Monnam(magr));
+                    break;
+                default:
                     tmp = 0;
                     break;
-                }
-                if (canseemon(magr))
-                    pline_mon(magr, __s_s_is_jolted_with_electricity, Monnam(magr));
-                break;
-                default:
-                tmp = 0;
-                break;
             }
         else
             tmp = 0;
@@ -2256,29 +2274,29 @@ export function attk_protection(aatyp) {
         case NHM.AT_GAZE:
         case NHM.AT_BREA:
         case NHM.AT_MAGC:
-        w_mask = -1n;  /* special case; no defense needed */
-        break;
+            w_mask = -1n;  /* special case; no defense needed */
+            break;
         case NHM.AT_CLAW:
         case NHM.AT_TUCH:
         case NHM.AT_WEAP:
-        w_mask = 16n;  /* caller needs to check for weapon */
-        break;
+            w_mask = 16n;  /* caller needs to check for weapon */
+            break;
         case NHM.AT_KICK:
-        w_mask = 32n;
-        break;
+            w_mask = 32n;
+            break;
         case NHM.AT_BUTT:
-        w_mask = 4n;
-        break;
+            w_mask = 4n;
+            break;
         case NHM.AT_HUGS:
-        w_mask = 18n;  /* attacker needs both to be protected */
-        break;
+            w_mask = 18n;  /* attacker needs both to be protected */
+            break;
         case NHM.AT_BITE:
         case NHM.AT_STNG:
         case NHM.AT_ENGL:
         case NHM.AT_TENT:
         default:
-        w_mask = 0n;  /* no defense available */
-        break;
+            w_mask = 0n;  /* no defense available */
+            break;
     }
     return w_mask;
 }

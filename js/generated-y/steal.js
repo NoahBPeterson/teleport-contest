@@ -570,418 +570,423 @@ export function* steal(mtmp, objnambuf) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        Monnambuf = new Uint8Array(256);
-        named = 0;
-        retrycnt = 0;
-        monkey_business = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                262144n) != 0n));
-        seen = schar(canspotmon(mtmp));
-        was_punished = schar((uball.v !== null));
+            Monnambuf = new Uint8Array(256);
+            named = 0;
+            retrycnt = 0;
+            monkey_business = schar(((cptr.ldU64o(
+                (cptr.ldPtro(mtmp, $monst_data)),
+                $permonst_mflags1
+            ) &
+                    262144n) != 0n));
+            seen = schar(canspotmon(mtmp));
+            was_punished = schar((uball.v !== null));
 
-        if (objnambuf)
-            cptr.st1(objnambuf, 0);
-        /* the following is true if successful on first of two attacks. */
-        if (!monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-            return 0;
+            if (objnambuf)
+                cptr.st1(objnambuf, 0);
+            /* the following is true if successful on first of two attacks. */
+            if (!monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
+                return 0;
 
-        /* stealing a worn item might drop hero into water or lava where
-           teleporting to safety could result in a previously visible thief
-           no longer being visible; it could also be a case of a blinded
-           hero being able to see via wearing the Eyes of the Overworld and
-           having those stolen; remember the name as it is now; if unseen,
-           nymphs will be "Someone" and monkeys will be "Something" */
-        void cptr.strcpy(cptr.decay(Monnambuf), (yield* Some_Monnam(mtmp)));
+            /* stealing a worn item might drop hero into water or lava where
+               teleporting to safety could result in a previously visible thief
+               no longer being visible; it could also be a case of a blinded
+               hero being able to see via wearing the Eyes of the Overworld and
+               having those stolen; remember the name as it is now; if unseen,
+               nymphs will be "Someone" and monkeys will be "Something" */
+            void cptr.strcpy(cptr.decay(Monnambuf), (yield* Some_Monnam(mtmp)));
 
-        /* food being eaten might already be used up but will not have
-           been removed from inventory yet; we don't want to steal that,
-           so this will cause it to be removed now */
-        if (cptr.ldPtro(go, $instance_globals_o_occupation))
-            void (yield* maybe_finished_meal(0));
+            /* food being eaten might already be used up but will not have
+               been removed from inventory yet; we don't want to steal that,
+               so this will cause it to be removed now */
+            if (cptr.ldPtro(go, $instance_globals_o_occupation))
+                void (yield* maybe_finished_meal(0));
 
-        icnt = inv_cnt(0);  /* don't include gold */
-        if (!icnt || (icnt == 1 && uskin.v)) { __pc = 6; continue; }
-        __pc = 5; continue;
+            icnt = inv_cnt(0);  /* don't include gold */
+            if (!icnt || (icnt == 1 && uskin.v)) { __pc = 6; continue; }
+            __pc = 5; continue;
         }
         case 6: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* nothing_to_steal: */: {
-        /* nymphs might target uchain if invent is empty; monkeys won't;
-           hero becomes unpunished but nymph ends up empty handed */
-        if (Punished() && !monkey_business && rn2(4)) {
-            /* uball is not carried (uchain never is) */
-            (__builtin_expect(
-                BigInt((!(!cptr.eq(uball.v, (null)) &&
-                    cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR))),
-                0n
-            )
-                    ? __assert_rtn(
-                        __s_steal,
-                        __s_steal_c,
-                        381,
-                        __s_uball_null_uball_where_obj_floor
-                    )
-                    : void 0);
-            (yield* worn_item_removal(mtmp, uchain.v));
-        } else if (cptr.ldI32o(u, $you_utrap) &&
-                cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL &&
-                !monkey_business &&
-                !rn2(4)) {
+            /* nymphs might target uchain if invent is empty; monkeys won't;
+               hero becomes unpunished but nymph ends up empty handed */
+            if (Punished() && !monkey_business && rn2(4)) {
+                /* uball is not carried (uchain never is) */
+                (__builtin_expect(
+                    BigInt((!(!cptr.eq(uball.v, (null)) &&
+                        cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR))),
+                    0n
+                )
+                        ? __assert_rtn(
+                            __s_steal,
+                            __s_steal_c,
+                            381,
+                            __s_uball_null_uball_where_obj_floor
+                        )
+                        : void 0);
+                (yield* worn_item_removal(mtmp, uchain.v));
+            } else if (cptr.ldI32o(u, $you_utrap) &&
+                    cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL &&
+                    !monkey_business &&
+                    !rn2(4)) {
 
-            /* buried ball is not tracked via 'uball' and there is no chain
-               at all (hence no uchain to take off) */
-            (yield* pline(__s_s_takes_off_your_unseen_chain, cptr.decay(Monnambuf)));
-            void (yield* openholdingtrap(cptr.add(gy, $instance_globals_y_youmonst), dummy));
-        } else if (Blind()) {
-            (yield* pline(__s_somebody_tries_to_rob_you_but_finds));
-        } else if (inv_cnt(1) > inv_cnt(0)) {
-            (yield* pline(__s_s_tries_to_rob_you_but_isn_t_interested, cptr.decay(Monnambuf)));
-        } else {
-            (yield* pline(__s_s_tries_to_rob_you_but_there_is_nothing, cptr.decay(Monnambuf)));
-        }
-        return 1;  /* let her flee */
+                /* buried ball is not tracked via 'uball' and there is no chain
+                   at all (hence no uchain to take off) */
+                (yield* pline(__s_s_takes_off_your_unseen_chain, cptr.decay(Monnambuf)));
+                void (yield* openholdingtrap(cptr.add(gy, $instance_globals_y_youmonst), dummy));
+            } else if (Blind()) {
+                (yield* pline(__s_somebody_tries_to_rob_you_but_finds));
+            } else if (inv_cnt(1) > inv_cnt(0)) {
+                (yield* pline(__s_s_tries_to_rob_you_but_isn_t_interested, cptr.decay(Monnambuf)));
+            } else {
+                (yield* pline(__s_s_tries_to_rob_you_but_there_is_nothing, cptr.decay(Monnambuf)));
+            }
+            return 1;  /* let her flee */
         }
         case 5: {
-        if (monkey_business || uarmg.v) { __pc = 8; continue; }
-        __pc = 9; continue;
+            if (monkey_business || uarmg.v) { __pc = 8; continue; }
+            __pc = 9; continue;
         }
         case 8: {
-        ;  /* skip ring special cases */
-        __pc = 7;
-        continue;
+            ;  /* skip ring special cases */
+            __pc = 7;
+            continue;
         }
         case 9: {
-        if (Adornment() & 131072n) { __pc = 11; continue; }
-        __pc = 12; continue;
+            if (Adornment() & 131072n) { __pc = 11; continue; }
+            __pc = 12; continue;
         }
         case 11: {
-        otmp = uleft.v;
-        { __pc = 3; continue; }
+            otmp = uleft.v;
+            { __pc = 3; continue; }
         }
         case 12: {
-        if (Adornment() & 262144n) { __pc = 14; continue; }
-        __pc = 13; continue;
+            if (Adornment() & 262144n) { __pc = 14; continue; }
+            __pc = 13; continue;
         }
         case 14: {
-        otmp = uright.v;
-        { __pc = 3; continue; }
+            otmp = uright.v;
+            { __pc = 3; continue; }
         }
         case 13: {
-        __pc = 10;
-        continue;
+            __pc = 10;
+            continue;
         }
         case 10: {
-        __pc = 7;
-        continue;
+            __pc = 7;
+            continue;
         }
         case 7: {
-        __pc = 2;
-        continue;
+            __pc = 2;
+            continue;
         }
         case 2 /* retry: */: {
-        tmp = 0;
-        for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
-            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) &&
-                    !cptr.eq(otmp, uskin.v) &&
-                    cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
-                tmp = (tmp + ((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) ? 5 : 1)) | 0;
-        if (!tmp) { __pc = 16; continue; }
-        __pc = 15; continue;
+            tmp = 0;
+            for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+                if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) &&
+                        !cptr.eq(otmp, uskin.v) &&
+                        cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
+                    tmp = (tmp + ((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) ? 5 : 1)) | 0;
+            if (!tmp) { __pc = 16; continue; }
+            __pc = 15; continue;
         }
         case 16: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 15: {
-        tmp = rn2(tmp);
-        for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
-            if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) &&
-                    !cptr.eq(otmp, uskin.v) &&
-                    cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS) {
-                tmp = (tmp - ((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) ? 5 : 1)) | 0;
-                if (tmp < 0)
-                    break;
+            tmp = rn2(tmp);
+            for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+                if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) &&
+                        !cptr.eq(otmp, uskin.v) &&
+                        cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS) {
+                    tmp = (tmp - ((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) ? 5 : 1)) | 0;
+                    if (tmp < 0)
+                        break;
+                }
+            if (!otmp) {
+                (yield* impossible(__s_steal_fails));
+                return 0;
             }
-        if (!otmp) {
-            (yield* impossible(__s_steal_fails));
-            return 0;
-        }
-        /* can't steal ring(s) while wearing gloves */
-        if ((cptr.eq(otmp, uleft.v) || cptr.eq(otmp, uright.v)) && uarmg.v)
-            otmp = uarmg.v;
-        /* can't steal gloves while wielding - so steal the wielded item. */
-        if (cptr.eq(otmp, uarmg.v) && uwep.v)
-            otmp = uwep.v;
-        else if (cptr.eq(otmp, uarm.v) && uarmc.v)
-            otmp = uarmc.v;
-        else if (cptr.eq(otmp, uarmu.v) && uarmc.v)
-            otmp = uarmc.v;
-        else if (cptr.eq(otmp, uarmu.v) && uarm.v)
-            otmp = uarm.v;
-        __pc = 3;
-        continue;
+            /* can't steal ring(s) while wearing gloves */
+            if ((cptr.eq(otmp, uleft.v) || cptr.eq(otmp, uright.v)) && uarmg.v)
+                otmp = uarmg.v;
+            /* can't steal gloves while wielding - so steal the wielded item. */
+            if (cptr.eq(otmp, uarmg.v) && uwep.v)
+                otmp = uwep.v;
+            else if (cptr.eq(otmp, uarm.v) && uarmc.v)
+                otmp = uarmc.v;
+            else if (cptr.eq(otmp, uarmu.v) && uarmc.v)
+                otmp = uarmc.v;
+            else if (cptr.eq(otmp, uarmu.v) && uarm.v)
+                otmp = uarm.v;
+            __pc = 3;
+            continue;
         }
         case 3 /* gotobj: */: {
-        if (cptr.ldI32o(otmp, $obj_o_id) == cptr.ldI32o(gs, $instance_globals_s_stealoid))
-            return 0;
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER &&
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                    134217728n) != 0n)) { __pc = 18; continue; }
-        __pc = 17; continue;
+            if (cptr.ldI32o(otmp, $obj_o_id) == cptr.ldI32o(gs, $instance_globals_s_stealoid))
+                return 0;
+            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER &&
+                    !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
+                        134217728n) !=
+                        0n)) { __pc = 18; continue; }
+            __pc = 17; continue;
         }
         case 18: {
-        if (!retrycnt++) { __pc = 20; continue; }
-        __pc = 19; continue;
+            if (!retrycnt++) { __pc = 20; continue; }
+            __pc = 19; continue;
         }
         case 20: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 19: {
-        { __pc = 4; continue; }
+            { __pc = 4; continue; }
         }
         case 17: {
-        if (monkey_business) { __pc = 22; continue; }
-        __pc = 21; continue;
+            if (monkey_business) { __pc = 22; continue; }
+            __pc = 21; continue;
         }
         case 22: {
 
-        /* is the player prevented from voluntarily giving up this item?
-           (ignores loadstones; the !can_carry() check will catch those) */
-        if (cptr.eq(otmp, uball.v))
-            ostuck = 1;  /* effectively worn; curse is implicit */
-        else if (cptr.eq(otmp, uquiver.v) ||
-                (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, $you_twoweap)))
-            ostuck = 0;  /* not really worn; curse doesn't matter */
-        else
-            ostuck = schar((((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
-                cptr.ldI64o(otmp, $obj_owornmask)) ||
-                (cptr.eq(
-                    otmp,
-                    ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
-                        ? uleft.v
-                        : uright.v)
-                ) &&
-                    (yield* welded(uwep.v))) ||
-                (cptr.eq(
-                    otmp,
-                    ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
-                        ? uright.v
-                        : uleft.v)
-                ) &&
-                    (yield* welded(uwep.v)) &&
-                    bimanual(uwep.v))
-                    ? 1
-                    : 0));
-        if (ostuck || (yield* can_carry(mtmp, otmp)) == 0) { __pc = 24; continue; }
-        __pc = 23; continue;
+            /* is the player prevented from voluntarily giving up this item?
+               (ignores loadstones; the !can_carry() check will catch those) */
+            if (cptr.eq(otmp, uball.v))
+                ostuck = 1;  /* effectively worn; curse is implicit */
+            else if (cptr.eq(otmp, uquiver.v) ||
+                    (cptr.eq(otmp, uswapwep.v) && !cptr.ld1so(u, $you_twoweap)))
+                ostuck = 0;  /* not really worn; curse doesn't matter */
+            else
+                ostuck = schar((((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
+                    cptr.ldI64o(otmp, $obj_owornmask)) ||
+                    (cptr.eq(
+                        otmp,
+                        ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
+                            ? uleft.v
+                            : uright.v)
+                    ) &&
+                        (yield* welded(uwep.v))) ||
+                    (cptr.eq(
+                        otmp,
+                        ((((cptr.ldI32o(u, $you_uhandedness) & 1) | 0) == NHM.LEFT_HANDED)
+                            ? uright.v
+                            : uleft.v)
+                    ) &&
+                        (yield* welded(uwep.v)) &&
+                        bimanual(uwep.v))
+                        ? 1
+                        : 0));
+            if (ostuck || (yield* can_carry(mtmp, otmp)) == 0) { __pc = 24; continue; }
+            __pc = 23; continue;
         }
         case 24: {
-        __pc = 4;
-        continue;
+            __pc = 4;
+            continue;
         }
         case 4 /* cant_take: */: {
-        (yield* pline(
-            __s_s_tries_to_s_s_s_but_gives_up,
-            cptr.decay(Monnambuf),
-            cptr.ldPtro(__static_steal_how, rn2(4), 8),
-            (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __s_your__2 : __s_empty,
-            (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? (yield* armor_simple_name(otmp)) : (yield* yname(otmp))
-        ));
-        /* the fewer items you have, the less likely the thief
-           is going to stick around to try again (0) instead of
-           running away (1) */
-        return !rn2((((inv_cnt(0) / 5) | 0) + 2) | 0);
+            (yield* pline(
+                __s_s_tries_to_s_s_s_but_gives_up,
+                cptr.decay(Monnambuf),
+                cptr.ldPtro(__static_steal_how, rn2(4), 8),
+                (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __s_your__2 : __s_empty,
+                (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? (yield* armor_simple_name(otmp)) : (yield* yname(otmp))
+            ));
+            /* the fewer items you have, the less likely the thief
+               is going to stick around to try again (0) instead of
+               running away (1) */
+            return !rn2((((inv_cnt(0) / 5) | 0) + 2) | 0);
         }
         case 23: {
-        __pc = 21;
-        continue;
+            __pc = 21;
+            continue;
         }
         case 21: {
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LEASH &&
-                cptr.ldI32o(otmp, $obj_corpsenm)) { __pc = 26; continue; }
-        __pc = 25; continue;
+            if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LEASH &&
+                    cptr.ldI32o(otmp, $obj_corpsenm)) { __pc = 26; continue; }
+            __pc = 25; continue;
         }
         case 26: {
-        if (monkey_business && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) { __pc = 28; continue; }
-        __pc = 27; continue;
+            if (monkey_business &&
+                    (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) { __pc = 28; continue; }
+            __pc = 27; continue;
         }
         case 28: {
-        { __pc = 4; continue; }
+            { __pc = 4; continue; }
         }
         case 27: {
-        (yield* o_unleash(otmp));
-        __pc = 25;
-        continue;
+            (yield* o_unleash(otmp));
+            __pc = 25;
+            continue;
         }
         case 25: {
 
-        was_doffing = doffing(otmp);
-        /* stop donning/doffing now so that afternmv won't be clobbered
-           below; stop_occupation doesn't handle donning/doffing */
-        olddelay = (yield* stop_donning(otmp));
-        /* you're going to notice the theft... */
-        (yield* stop_occupation());
-        if (cptr.ldI64o(otmp, $obj_owornmask) & 983167n) { __pc = 30; continue; }
-        __pc = 31; continue;
+            was_doffing = doffing(otmp);
+            /* stop donning/doffing now so that afternmv won't be clobbered
+               below; stop_occupation doesn't handle donning/doffing */
+            olddelay = (yield* stop_donning(otmp));
+            /* you're going to notice the theft... */
+            (yield* stop_occupation());
+            if (cptr.ldI64o(otmp, $obj_owornmask) & 983167n) { __pc = 30; continue; }
+            __pc = 31; continue;
         }
         case 30: {
-        let __sw33 = cptr.ld1so(otmp, $obj_oclass);
-        if (__sw33 === (NHC.TOOL_CLASS)) { __pc = 34; continue; }
-        if (__sw33 === (NHC.AMULET_CLASS)) { __pc = 35; continue; }
-        if (__sw33 === (NHC.RING_CLASS)) { __pc = 36; continue; }
-        if (__sw33 === (NHC.FOOD_CLASS)) { __pc = 37; continue; }
-        if (__sw33 === (NHC.ARMOR_CLASS)) { __pc = 38; continue; }
-        __pc = 39; continue;
+            let __sw33 = cptr.ld1so(otmp, $obj_oclass);
+            if (__sw33 === (NHC.TOOL_CLASS)) { __pc = 34; continue; }
+            if (__sw33 === (NHC.AMULET_CLASS)) { __pc = 35; continue; }
+            if (__sw33 === (NHC.RING_CLASS)) { __pc = 36; continue; }
+            if (__sw33 === (NHC.FOOD_CLASS)) { __pc = 37; continue; }
+            if (__sw33 === (NHC.ARMOR_CLASS)) { __pc = 38; continue; }
+            __pc = 39; continue;
         }
         case 34: {
-        __pc = 35;
-        continue;
+            __pc = 35;
+            continue;
         }
         case 35: {
-        __pc = 36;
-        continue;
+            __pc = 36;
+            continue;
         }
         case 36: {
-        __pc = 37;
-        continue;
+            __pc = 37;
+            continue;
         }
         case 37: {
-        (yield* worn_item_removal(mtmp, otmp));
-        { __pc = 32; continue; }
+            (yield* worn_item_removal(mtmp, otmp));
+            { __pc = 32; continue; }
         }
         case 38: {
-        armordelay = cptr.ld1so2(
-            objects,
-            cptr.ldI16o(otmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_delay
-        );
-        if (olddelay > 0 && olddelay < armordelay)
-            armordelay = olddelay;
-        if (monkey_business || unresponsive()) { __pc = 41; continue; }
-        __pc = 42; continue;
+            armordelay = cptr.ld1so2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_delay
+            );
+            if (olddelay > 0 && olddelay < armordelay)
+                armordelay = olddelay;
+            if (monkey_business || unresponsive()) { __pc = 41; continue; }
+            __pc = 42; continue;
         }
         case 41: {
-        if (armordelay >= 1 && !olddelay && rn2(10)) { __pc = 44; continue; }
-        __pc = 43; continue;
+            if (armordelay >= 1 && !olddelay && rn2(10)) { __pc = 44; continue; }
+            __pc = 43; continue;
         }
         case 44: {
-        { __pc = 4; continue; }
+            { __pc = 4; continue; }
         }
         case 43: {
-        (yield* worn_item_removal(mtmp, otmp));
-        { __pc = 32; continue; }
+            (yield* worn_item_removal(mtmp, otmp));
+            { __pc = 32; continue; }
         }
         case 42: {
-        curssv = (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0;
+            curssv = (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0;
 
-        cptr.stI32o(otmp, $obj_cursed, 0);
-        slowly = (armordelay >= 1 || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n ? 1 : 0);
-        if (cptr.ld1so(flags, $flag_female))
-            (yield* urgent_pline(
-                __s_s_charms_you_you_gladly_s_your_s,
-                !seen ? __s_she : cptr.decay(Monnambuf),
-                curssv
-                    ? __s_let_her_take
-                    : (!slowly
-                        ? __s_hand_over
-                        : (was_doffing ? __s_continue_removing : __s_start_removing)),
-                (yield* armor_simple_name(otmp))
-            ));
-        else
-            (yield* urgent_pline(
-                __s_s_seduces_you_and_s_off_your_s,
-                !seen ? __s_she : (yield* Adjmonnam(mtmp, __s_beautiful)),
-                curssv
-                    ? __s_helps_you_to_take
-                    : (!slowly
-                        ? __s_you_take
-                        : (was_doffing ? __s_you_continue_taking : __s_you_start_taking)),
-                (yield* armor_simple_name(otmp))
-            ));
-        named++;
-        /* the following is to set multi for later on */
-        nomul(-armordelay);
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_taking_off_clothes);
-        cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
-        (yield* remove_worn_item(otmp, 1));
-        cptr.stI32o(otmp, $obj_cursed, curssv >>> 0);
-        if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
-            cptr.stI32o(gs, $instance_globals_s_stealoid, cptr.ldI32o(otmp, $obj_o_id));
-            cptr.stI32o(gs, $instance_globals_s_stealmid, cptr.ldI32o(mtmp, $monst_m_id));
-            cptr.stPtr(ga, stealarm);
-            return 0;
-        }
-        __pc = 40;
-        continue;
+            cptr.stI32o(otmp, $obj_cursed, 0);
+            slowly = (armordelay >= 1 || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n ? 1 : 0);
+            if (cptr.ld1so(flags, $flag_female))
+                (yield* urgent_pline(
+                    __s_s_charms_you_you_gladly_s_your_s,
+                    !seen ? __s_she : cptr.decay(Monnambuf),
+                    curssv
+                        ? __s_let_her_take
+                        : (!slowly
+                            ? __s_hand_over
+                            : (was_doffing ? __s_continue_removing : __s_start_removing)),
+                    (yield* armor_simple_name(otmp))
+                ));
+            else
+                (yield* urgent_pline(
+                    __s_s_seduces_you_and_s_off_your_s,
+                    !seen ? __s_she : (yield* Adjmonnam(mtmp, __s_beautiful)),
+                    curssv
+                        ? __s_helps_you_to_take
+                        : (!slowly
+                            ? __s_you_take
+                            : (was_doffing ? __s_you_continue_taking : __s_you_start_taking)),
+                    (yield* armor_simple_name(otmp))
+                ));
+            named++;
+            /* the following is to set multi for later on */
+            nomul(-armordelay);
+            cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_taking_off_clothes);
+            cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
+            (yield* remove_worn_item(otmp, 1));
+            cptr.stI32o(otmp, $obj_cursed, curssv >>> 0);
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
+                cptr.stI32o(gs, $instance_globals_s_stealoid, cptr.ldI32o(otmp, $obj_o_id));
+                cptr.stI32o(gs, $instance_globals_s_stealmid, cptr.ldI32o(mtmp, $monst_m_id));
+                cptr.stPtr(ga, stealarm);
+                return 0;
+            }
+            __pc = 40;
+            continue;
         }
         case 40: {
-        { __pc = 32; continue; }
+            { __pc = 32; continue; }
         }
         case 39: {
-        (yield* impossible(__s_tried_to_steal_a_strange_worn_thing_d, cptr.ld1so(otmp, $obj_oclass)));
-        __pc = 32;
-        continue;
+            (yield* impossible(__s_tried_to_steal_a_strange_worn_thing_d, cptr.ld1so(otmp, $obj_oclass)));
+            __pc = 32;
+            continue;
         }
         case 32: {
-        /* hero's blindfold might have just been stolen; if so, replace
-           cached "Someone" or "Something" with Monnam */
-        if (!seen && canspotmon(mtmp))
-            void cptr.strcpy(cptr.decay(Monnambuf), (yield* Monnam(mtmp)));
-        __pc = 29;
-        continue;
+            /* hero's blindfold might have just been stolen; if so, replace
+               cached "Someone" or "Something" with Monnam */
+            if (!seen && canspotmon(mtmp))
+                void cptr.strcpy(cptr.decay(Monnambuf), (yield* Monnam(mtmp)));
+            __pc = 29;
+            continue;
         }
         case 31: {
-        if (cptr.ldI64o(otmp, $obj_owornmask)) {
-            item = otmp;
+            if (cptr.ldI64o(otmp, $obj_owornmask)) {
+                item = otmp;
 
-            if (cptr.eq(otmp, uball.v))
-                item = uchain.v;  /* yields a more accurate 'takes off' message */
-            (yield* worn_item_removal(mtmp, item));
-            /* if we switched from uball to uchain for the preface message,
-               then unpunish() took place and both those pointers are now Null,
-               with 'item' a stale pointer to freed chain; the ball is still
-               present though and 'otmp' is still valid; if uball was also
-               wielded or quivered, the corresponding weapon pointer hasn't
-               been cleared yet; do that, with no preface message this time */
-            if ((cptr.ldI64o(otmp, $obj_owornmask) & 1792n) != 0n)
-                (yield* remove_worn_item(otmp, 0));
-        }
-        __pc = 29;
-        continue;
+                if (cptr.eq(otmp, uball.v))
+                    item = uchain.v;  /* yields a more accurate 'takes off' message */
+                (yield* worn_item_removal(mtmp, item));
+                /* if we switched from uball to uchain for the preface message,
+                   then unpunish() took place and both those pointers are now Null,
+                   with 'item' a stale pointer to freed chain; the ball is still
+                   present though and 'otmp' is still valid; if uball was also
+                   wielded or quivered, the corresponding weapon pointer hasn't
+                   been cleared yet; do that, with no preface message this time */
+                if ((cptr.ldI64o(otmp, $obj_owornmask) & 1792n) != 0n)
+                    (yield* remove_worn_item(otmp, 0));
+            }
+            __pc = 29;
+            continue;
         }
         case 29: {
 
-        /* do this before removing it from inventory */
-        if (objnambuf)
-            void cptr.strcpy(objnambuf, (yield* yname(otmp)));
-        /* usually set mavenge bit so knights won't suffer an alignment penalty
-           during retaliation; not applicable for removing attached iron ball */
-        if (!Conflict() && !(was_punished && !Punished()))
-            cptr.stI32o(mtmp, $monst_mavenge, 1);
+            /* do this before removing it from inventory */
+            if (objnambuf)
+                void cptr.strcpy(objnambuf, (yield* yname(otmp)));
+            /* usually set mavenge bit so knights won't suffer an alignment penalty
+               during retaliation; not applicable for removing attached iron ball */
+            if (!Conflict() && !(was_punished && !Punished()))
+                cptr.stI32o(mtmp, $monst_mavenge, 1);
 
-        if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
-            (yield* subfrombill(otmp, (yield* shop_keeper(cptr.ld1so(u, $you_ushops)))));
-        (yield* freeinv(otmp));
+            if ((cptr.ldI32o(otmp, $obj_unpaid) & 1))
+                (yield* subfrombill(otmp, (yield* shop_keeper(cptr.ld1so(u, $you_ushops)))));
+            (yield* freeinv(otmp));
 
-        /* if we just gave a message about removing a worn item and there have
-           been no intervening messages, shorten '<mon> stole <item>' message */
-        if (cptr.ldI32o(iflags, $instance_flags_last_msg) == NHC.PLNMSG_MON_TAKES_OFF_ITEM &&
-                cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH)
-            ++named;
-        (yield* urgent_pline(__s_s_stole_s, named ? __s_she : cptr.decay(Monnambuf), (yield* doname(otmp))));
-        (yield* encumber_msg());
-        could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE &&
-            touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))
-                ? 1
-                : 0);
-        cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
-        void (yield* mpickobj(mtmp, otmp));  /* may free otmp */
-        if (could_petrify && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n)) {
-            (yield* minstapetrify(mtmp, 1));
-            return -1;
-        }
-        return (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) ? 0 : 1;
+            /* if we just gave a message about removing a worn item and there have
+               been no intervening messages, shorten '<mon> stole <item>' message */
+            if (cptr.ldI32o(iflags, $instance_flags_last_msg) == NHC.PLNMSG_MON_TAKES_OFF_ITEM &&
+                    cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH)
+                ++named;
+            (yield* urgent_pline(__s_s_stole_s, named ? __s_she : cptr.decay(Monnambuf), (yield* doname(otmp))));
+            (yield* encumber_msg());
+            could_petrify = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE &&
+                touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))
+                    ? 1
+                    : 0);
+            cptr.stI32o(otmp, $obj_how_lost, NHM.LOST_STOLEN);
+            void (yield* mpickobj(mtmp, otmp));  /* may free otmp */
+            if (could_petrify && !(cptr.ldI64o(mtmp, $monst_misc_worn_check) & 16n)) {
+                (yield* minstapetrify(mtmp, 1));
+                return -1;
+            }
+            return (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) ? 0 : 1;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -1122,9 +1127,8 @@ export function* stealamulet(mtmp) {
             n = rnd(n);
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if ((cptr.ldI16o(otmp, $obj_otyp) == real ||
-                    (cptr.ldI16o(otmp, $obj_otyp) == fake &&
-                        !(cptr.ldI32o(mtmp, $monst_iswiz) & 1))) &&
-                        !--n)
+                        (cptr.ldI16o(otmp, $obj_otyp) == fake &&
+                            !(cptr.ldI32o(mtmp, $monst_iswiz) & 1))) && !--n)
                     break;
         }
     }
@@ -1157,8 +1161,8 @@ export function* stealamulet(mtmp) {
         void cptr.strcpy(cptr.decay(buf), (yield* doname(otmp)));
         void (yield* mpickobj(mtmp, otmp));  /* could merge and free otmp but won't */
         (yield* pline(__s_s_steals_s, (yield* Some_Monnam(mtmp)), cptr.decay(buf)));
-        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-            33554432n) != 0n) &&
+        if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 33554432n) !=
+            0n) &&
                 !(yield* tele_restrict(mtmp)))
             void (yield* rloc(mtmp, NHM.RLOC_MSG));
         (yield* encumber_msg());
@@ -1195,7 +1199,8 @@ export function* maybe_absorb_item(mon, obj, ochance, achance) {
             ),
             cptr.ldI16o(mon, $monst_mx)
         ) &
-                NHM.IN_SIGHT) != 0)) {
+            NHM.IN_SIGHT) !=
+                0)) {
             /* Some_Monnam() avoids "It pulls ... and absorbs it!"
                if hero can see the location but not the monster */
             (yield* pline(

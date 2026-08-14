@@ -481,8 +481,7 @@ export function* add_region(reg) {
         svn,
         $instance_globals_saved_n_n_regions,
         cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) + 1
-    )) -
-            (1);
+    )) - (1);
     /* Check for monsters inside the region */
     for (i = cptr.ldI16(reg); i <= cptr.ldI16o(reg, $nhrect_hx); i++)
         for (j = cptr.ldI16o(reg, $nhrect_ly); j <= cptr.ldI16o(reg, $nhrect_hy); j++) {
@@ -502,7 +501,8 @@ export function* add_region(reg) {
                     j,
                     8,
                     $instance_globals_saved_l_level + $dlevel_t_monsters
-                ))) !== null) {
+                ))) !==
+                        null) {
                     (yield* add_mon_to_reg(reg, mtmp));
                 }
             }
@@ -654,7 +654,8 @@ export function* run_regions() {
         if (cptr.ldI64o(
             cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
             $NhRegion_ttl
-        ) == 0n) {
+        ) ==
+                0n) {
             if ((f_indx = cptr.ldI16o(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                 $NhRegion_expire_f
@@ -681,10 +682,8 @@ export function* run_regions() {
                 cptr.ldI64o(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     $NhRegion_ttl
-                ) +
-                    -1n
-            )) -
-                    (-1n);
+                ) + -1n
+            )) - (-1n);
         /* Check if player is inside region */
         f_indx = cptr.ldI16o(
             cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
@@ -807,24 +806,24 @@ export function* in_out_region(x, y) {
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
                 ) &
-                    NHM.REG_HERO_INSIDE) >>> 0) &&
+                    NHM.REG_HERO_INSIDE) >>>
+                    0) &&
                     (f_indx = cptr.ldI16o(
                         cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                         $NhRegion_can_enter_f
-                    )) !=
-                        -1
+                    )) != -1
                     ? 1
                     : 0)
                 : (((cptr.ldI32o(
                     (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
                     $NhRegion_player_flags
                 ) &
-                    NHM.REG_HERO_INSIDE) >>> 0) &&
+                    NHM.REG_HERO_INSIDE) >>>
+                    0) &&
                     (f_indx = cptr.ldI16o(
                         cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                         $NhRegion_can_leave_f
-                    )) !=
-                        -1
+                    )) != -1
                     ? 1
                     : 0)) {
             if (!(yield* Y.icall((callbacks[f_indx])(
@@ -846,7 +845,8 @@ export function* in_out_region(x, y) {
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
         ) &
-            NHM.REG_HERO_INSIDE) >>> 0) &&
+            NHM.REG_HERO_INSIDE) >>>
+            0) &&
                 !inside_region(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     x,
@@ -875,8 +875,7 @@ export function* in_out_region(x, y) {
             if ((f_indx = cptr.ldI16o(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                 $NhRegion_leave_f
-            )) !=
-                    -1)
+            )) != -1)
                 void (yield* Y.icall((callbacks[f_indx])(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     null
@@ -895,7 +894,8 @@ export function* in_out_region(x, y) {
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
         ) &
-            NHM.REG_HERO_INSIDE) >>> 0) &&
+            NHM.REG_HERO_INSIDE) >>>
+            0) &&
                 inside_region(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     x,
@@ -924,8 +924,7 @@ export function* in_out_region(x, y) {
             if ((f_indx = cptr.ldI16o(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                 $NhRegion_enter_f
-            )) !=
-                    -1)
+            )) != -1)
                 void (yield* Y.icall((callbacks[f_indx])(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     null
@@ -966,8 +965,7 @@ export function* m_in_out_region(mon, x, y) {
                     (f_indx = cptr.ldI16o(
                         cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                         $NhRegion_can_enter_f
-                    )) !=
-                        -1
+                    )) != -1
                     ? 1
                     : 0)
                 : (mon_in_region(
@@ -977,8 +975,7 @@ export function* m_in_out_region(mon, x, y) {
                     (f_indx = cptr.ldI16o(
                         cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                         $NhRegion_can_leave_f
-                    )) !=
-                        -1
+                    )) != -1
                     ? 1
                     : 0)) {
             if (!(yield* Y.icall((callbacks[f_indx])(
@@ -1010,8 +1007,7 @@ export function* m_in_out_region(mon, x, y) {
             if ((f_indx = cptr.ldI16o(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                 $NhRegion_leave_f
-            )) !=
-                    -1)
+            )) != -1)
                 void (yield* Y.icall((callbacks[f_indx])(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     mon
@@ -1037,8 +1033,7 @@ export function* m_in_out_region(mon, x, y) {
             if ((f_indx = cptr.ldI16o(
                 cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                 $NhRegion_enter_f
-            )) !=
-                    -1)
+            )) != -1)
                 void (yield* Y.icall((callbacks[f_indx])(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     mon
@@ -1141,8 +1136,7 @@ export function any_visible_region() {
                 cptr.ldI64o(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     $NhRegion_ttl
-                ) ==
-                    -2n)
+                ) == -2n)
             continue;
         return 1;
     }
@@ -1218,8 +1212,7 @@ export function visible_region_at(x, y) {
                 cptr.ldI64o(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     $NhRegion_ttl
-                ) ==
-                    -2n)
+                ) == -2n)
             continue;
         if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y))
             return cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8);
@@ -1605,8 +1598,7 @@ export function* expire_gas_cloud(p1, p2) {
                                     gg,
                                     $instance_globals_g_gas_cloud_diss_seen,
                                     cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen) + 1
-                                )) -
-                                        (1);
+                                )) - (1);
                         }
                     }
                 }
@@ -1631,7 +1623,8 @@ export function* inside_gas_cloud(p1, p2) {
      */
 
     /* fog clouds maintain gas clouds, even poisonous ones */
-    if (cptr.ldI64o(reg, $NhRegion_ttl) < 20n && umon &&
+    if (cptr.ldI64o(reg, $NhRegion_ttl) < 20n &&
+            umon &&
             cptr.eq(
                 cptr.ldPtro(umon, $monst_data),
                 cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)
@@ -1684,7 +1677,8 @@ export function* inside_gas_cloud(p1, p2) {
                     ),
                     cptr.ldI16o(mtmp, $monst_mx)
                 ) &
-                    NHM.IN_SIGHT) != 0) ||
+                    NHM.IN_SIGHT) !=
+                    0) ||
                         (dist2(
                             (cptr.ldI16o(mtmp, $monst_mx)),
                             (cptr.ldI16o(mtmp, $monst_my)),
@@ -1696,8 +1690,8 @@ export function* inside_gas_cloud(p1, p2) {
             }
             if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
                 (yield* setmangry(mtmp, 1));
-            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                4096n) == 0n) &&
+            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
+                0n) &&
                     (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) {
                 cptr.stI32o(mtmp, $monst_mblinded, 1);
                 cptr.stI32o(mtmp, $monst_mcansee, 0);
@@ -1728,7 +1722,8 @@ function is_hero_inside_gas_cloud() {
             (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
             $NhRegion_player_flags
         ) &
-            NHM.REG_HERO_INSIDE) >>> 0) &&
+            NHM.REG_HERO_INSIDE) >>>
+            0) &&
                 cptr.ldI16o(
                     cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
                     $NhRegion_inside_f

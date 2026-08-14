@@ -864,58 +864,58 @@ function* use_towel(obj) {
 
         switch (rn2(3)) {
             case 2:
-            old = (Glib() & 16777215n);
-            (yield* make_glib((Number(BigInt.asIntN(32, old)) + (rn2(10) + 3)) | 0));  /* + 3..12 */
-            (yield* Your(
-                __s_s_s,
-                (yield* makeplural((yield* body_part(NHC.HAND)))),
-                (old ? __s_are_filthier_than_ever : __s_get_slimy)
-            ));
-            if (is_wet_towel(obj))
-                (yield* dry_a_towel(obj, -1, drying_feedback));
-            return NHM.ECMD_TIME;
+                old = (Glib() & 16777215n);
+                (yield* make_glib((Number(BigInt.asIntN(32, old)) + (rn2(10) + 3)) | 0));  /* + 3..12 */
+                (yield* Your(
+                    __s_s_s,
+                    (yield* makeplural((yield* body_part(NHC.HAND)))),
+                    (old ? __s_are_filthier_than_ever : __s_get_slimy)
+                ));
+                if (is_wet_towel(obj))
+                    (yield* dry_a_towel(obj, -1, drying_feedback));
+                return NHM.ECMD_TIME;
             case 1:
-            if (!ublindf.v) {
-                old = BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0);
-                cptr.stI32o(
-                    u,
-                    $you_ucreamed,
-                    (cptr.ldI32o(u, $you_ucreamed) + (((rn2(10) + 3) | 0) >>> 0)) | 0
-                );
-                (yield* pline(
-                    __s_yecch_your_s_s_gunk_on_it,
-                    (yield* body_part(NHC.FACE)),
-                    (old ? __s_has_more : __s_now_has)
-                ));
-                (yield* make_blinded(
-                    BigInt.asIntN(
-                        64,
-                        BlindedTimeout() + BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) - old
-                    ),
-                    1
-                ));
-            } else {
-                let what;
-
-                what = (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES)
-                        ? __s_lenses
-                        : ((cptr.ldI16o(obj, $obj_otyp) == cptr.ldI16o(ublindf.v, $obj_otyp))
-                            ? __s_other_towel
-                            : __s_blindfold);
-                if ((cptr.ldI32o(ublindf.v, $obj_cursed) & 1)) {
-                    (yield* You(__s_push_your_s_s, what, rn2(2) ? __s_cock_eyed : __s_crooked));
+                if (!ublindf.v) {
+                    old = BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0);
+                    cptr.stI32o(
+                        u,
+                        $you_ucreamed,
+                        (cptr.ldI32o(u, $you_ucreamed) + (((rn2(10) + 3) | 0) >>> 0)) | 0
+                    );
+                    (yield* pline(
+                        __s_yecch_your_s_s_gunk_on_it,
+                        (yield* body_part(NHC.FACE)),
+                        (old ? __s_has_more : __s_now_has)
+                    ));
+                    (yield* make_blinded(
+                        BigInt.asIntN(
+                            64,
+                            BlindedTimeout() + BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) - old
+                        ),
+                        1
+                    ));
                 } else {
-                    let saved_ublindf = ublindf.v;
-                    (yield* You(__s_push_your_s_off, what));
-                    (yield* Blindf_off(ublindf.v));
-                    (yield* dropx(saved_ublindf));
+                    let what;
+
+                    what = (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES)
+                            ? __s_lenses
+                            : ((cptr.ldI16o(obj, $obj_otyp) == cptr.ldI16o(ublindf.v, $obj_otyp))
+                                ? __s_other_towel
+                                : __s_blindfold);
+                    if ((cptr.ldI32o(ublindf.v, $obj_cursed) & 1)) {
+                        (yield* You(__s_push_your_s_s, what, rn2(2) ? __s_cock_eyed : __s_crooked));
+                    } else {
+                        let saved_ublindf = ublindf.v;
+                        (yield* You(__s_push_your_s_off, what));
+                        (yield* Blindf_off(ublindf.v));
+                        (yield* dropx(saved_ublindf));
+                    }
                 }
-            }
-            if (is_wet_towel(obj))
-                (yield* dry_a_towel(obj, -1, drying_feedback));
-            return NHM.ECMD_TIME;
+                if (is_wet_towel(obj))
+                    (yield* dry_a_towel(obj, -1, drying_feedback));
+                return NHM.ECMD_TIME;
             case 0:
-            break;
+                break;
         }
     }
 
@@ -1072,7 +1072,8 @@ function* its_dead(rx, ry, resp) {
                                         ),
                                         $obj_v
                                     )
-                                )) !== null) &&
+                                )) !==
+                                    null) &&
                                 (cptr.ldI16o((corpse), $obj_otyp) != NHC.BOULDER ||
                                     cptr.ldI16o(
                                         cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1096,7 +1097,8 @@ function* its_dead(rx, ry, resp) {
                                         ),
                                         $obj_v
                                     )
-                                )) !== null) &&
+                                )) !==
+                                    null) &&
                                 (cptr.ldI16o((corpse), $obj_otyp) != NHC.BOULDER ||
                                     cptr.ldI16o(
                                         cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1131,7 +1133,8 @@ function* its_dead(rx, ry, resp) {
                                         ),
                                         $obj_v
                                     )
-                                )) !== null) &&
+                                )) !==
+                                    null) &&
                                 (cptr.ldI16o((corpse), $obj_otyp) != NHC.BOULDER ||
                                     cptr.ldI16o(
                                         cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1157,7 +1160,8 @@ function* its_dead(rx, ry, resp) {
                                             ),
                                             $obj_v
                                         )
-                                    )) !== null) &&
+                                    )) !==
+                                        null) &&
                                     (cptr.ldI16o((corpse), $obj_otyp) != NHC.BOULDER ||
                                         cptr.ldI16o(
                                             cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1182,7 +1186,8 @@ function* its_dead(rx, ry, resp) {
                                             ),
                                             $obj_v
                                         )
-                                    )) !== null) &&
+                                    )) !==
+                                        null) &&
                                     (cptr.ldI16o((corpse), $obj_otyp) != NHC.BOULDER ||
                                         cptr.ldI16o(
                                             cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1190,7 +1195,8 @@ function* its_dead(rx, ry, resp) {
                                         ) ==
                                             NHC.BOULDER))
                                     ? NHC.GLYPH_OBJ_PILETOP_OFF
-                                    : NHC.GLYPH_OBJ_OFF)) | 0))))));
+                                    : NHC.GLYPH_OBJ_OFF)) |
+                                0))))));
 
         if (Blind() && (visglyph != corpseglyph))
             (yield* map_object(corpse, 1));
@@ -1275,7 +1281,8 @@ function* use_stethoscope(obj) {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         (yield* You(__s_have_no_hands));  /* not `body_part(HAND)' */
         return NHM.ECMD_OK;
     } else if (Deaf()) {
@@ -1375,7 +1382,8 @@ function* use_stethoscope(obj) {
         ry,
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null) {
+    ))) !==
+            null) {
         let mnm = (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, 3, 0));
 
         /* gb.bhitpos needed by mstatusline() iff mtmp is a long worm */
@@ -1402,43 +1410,50 @@ function* use_stethoscope(obj) {
 
             switch ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
                 case NHC.M_AP_OBJECT:
-                /* FIXME?
-                 *  we should probably be using object_from_map() here
-                 */
-                odummy = init_dummyobj(dummyobj, i16(cptr.ldI32o(mtmp, $monst_mappearance)), 1n);
-                /* simple_typename() yields "fruit" for any named fruit;
-                   we want the same thing '//' or ';' shows: "slime mold"
-                   or "grape" or "slice of pizza" */
-                if (cptr.ldI16o(odummy, $obj_otyp) == NHC.SLIME_MOLD && has_mcorpsenm(mtmp)) {
-                    cptr.st1o(
-                        odummy,
-                        $obj_spe,
-                        schar((cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)))
+                    /* FIXME?
+                     *  we should probably be using object_from_map() here
+                     */
+                    odummy = init_dummyobj(
+                        dummyobj,
+                        i16(cptr.ldI32o(mtmp, $monst_mappearance)),
+                        1n
                     );
-                    what = (yield* simpleonames(odummy));
-                } else {
-                    what = (yield* simple_typename(cptr.ldI16o(odummy, $obj_otyp)));
-                }
-                use_plural = schar((is_boots(odummy) ||
-                    is_gloves(odummy) ||
-                    cptr.ldI16o(odummy, $obj_otyp) == NHC.LENSES
-                        ? 1
-                        : 0));
-                break;
+                    /* simple_typename() yields "fruit" for any named fruit;
+                       we want the same thing '//' or ';' shows: "slime mold"
+                       or "grape" or "slice of pizza" */
+                    if (cptr.ldI16o(odummy, $obj_otyp) == NHC.SLIME_MOLD && has_mcorpsenm(mtmp)) {
+                        cptr.st1o(
+                            odummy,
+                            $obj_spe,
+                            schar((cptr.ldI32o(
+                                cptr.ldPtro((mtmp), $monst_mextra),
+                                $mextra_mcorpsenm
+                            )))
+                        );
+                        what = (yield* simpleonames(odummy));
+                    } else {
+                        what = (yield* simple_typename(cptr.ldI16o(odummy, $obj_otyp)));
+                    }
+                    use_plural = schar((is_boots(odummy) ||
+                        is_gloves(odummy) ||
+                        cptr.ldI16o(odummy, $obj_otyp) == NHC.LENSES
+                            ? 1
+                            : 0));
+                    break;
                 case NHC.M_AP_MONSTER:
-                what = pmname(
-                    cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_permonst),
-                    Mgender(mtmp)
-                );
-                break;
+                    what = pmname(
+                        cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_permonst),
+                        Mgender(mtmp)
+                    );
+                    break;
                 case NHC.M_AP_FURNITURE:
-                what = cptr.ldPtro2(
-                    defsyms,
-                    cptr.ldI32o(mtmp, $monst_mappearance),
-                    $sizeof_symdef,
-                    $symdef_explanation
-                );
-                break;
+                    what = cptr.ldPtro2(
+                        defsyms,
+                        cptr.ldI32o(mtmp, $monst_mappearance),
+                        $sizeof_symdef,
+                        $symdef_explanation
+                    );
+                    break;
             }
             (yield* seemimic(mtmp));
             (yield* pline(
@@ -1467,18 +1482,18 @@ function* use_stethoscope(obj) {
     );
     switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.SDOOR:
-        ;
-        (yield* You_hear(cptr.decay(hollow_str), __s_door));
-        cvt_sdoor_to_door(lev);  /* ->typ = DOOR */
-        (yield* recalc_block_point(rx, ry));
-        (yield* feel_newsym(rx, ry));
-        return res.v;
+            ;
+            (yield* You_hear(cptr.decay(hollow_str), __s_door));
+            cvt_sdoor_to_door(lev);  /* ->typ = DOOR */
+            (yield* recalc_block_point(rx, ry));
+            (yield* feel_newsym(rx, ry));
+            return res.v;
         case NHC.SCORR:
-        (yield* You_hear(cptr.decay(hollow_str), __s_passage));
-        cptr.st1o(lev, $rm_typ, NHC.CORR), cptr.stI32o(lev, $rm_flags, 0);
-        unblock_point(rx, ry);
-        (yield* feel_newsym(rx, ry));
-        return res.v;
+            (yield* You_hear(cptr.decay(hollow_str), __s_passage));
+            cptr.st1o(lev, $rm_typ, NHC.CORR), cptr.stI32o(lev, $rm_flags, 0);
+            unblock_point(rx, ry);
+            (yield* feel_newsym(rx, ry));
+            return res.v;
     }
 
     if (!(yield* its_dead(rx, ry, res)))
@@ -1558,7 +1573,9 @@ function* magic_whistled(obj) {
         cptr.ldI16o(obj, $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_name_known
-    ) & 1) | 0) != 0));
+    ) &
+        1) |
+            0) != 0));
     let omx;
     let omy;
     let shift = 0;
@@ -1962,13 +1979,13 @@ function* use_leash_core(obj, mtmp, cc, spotmon) {
         /* applying a leash which isn't currently in use */
         if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
             (yield* pline(__s_this_s_is_already_leashed, spotmon ? (yield* l_monnam(mtmp)) : __s_creature));
-        } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                1048576n) != 0n)) {
+        } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1048576n) !=
+                0n)) {
             (yield* pline(__s_the_leash_would_just_fall_off));
         } else if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) ==
             24576n) &&
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    32768n) == 0n)) {
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32768n) ==
+                    0n)) {
             (yield* pline(__s_s_has_no_extremities_the_leash_would_fit, (yield* Monnam(mtmp))));
         } else if (!leashable(mtmp)) {
             let lmonbuf = new Uint8Array(256);
@@ -2074,14 +2091,15 @@ export function* check_leash(x, y) {
             if (!um_dist(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 3)) {
                 ;  /* still close enough */
             } else if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
-                    !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                        1024n) != 0n)) {
+                    !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1024n) !=
+                        0n)) {
                 if (um_dist(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 5) ||
                         (cptr.stI32o(
                             mtmp,
                             $monst_mhp,
                             (cptr.ldI32o(mtmp, $monst_mhp) - rnd(2)) | 0
-                        )) <= 0) {
+                        )) <=
+                            0) {
                     let save_pacifism = cptr.ldI64o(u, $you_uconduct + $u_conduct_killer);
 
                     (yield* Your(__s_leash_chokes_s_to_death, (yield* mon_nam(mtmp))));
@@ -2109,14 +2127,14 @@ export function* check_leash(x, y) {
                             NHC.MS_SILENT)
                         switch (rn2(3)) {
                             case 0:
-                            (yield* growl(mtmp));
-                            break;
+                                (yield* growl(mtmp));
+                                break;
                             case 1:
-                            (yield* yelp(mtmp));
-                            break;
+                                (yield* yelp(mtmp));
+                                break;
                             default:
-                            (yield* whimper(mtmp));
-                            break;
+                                (yield* whimper(mtmp));
+                                break;
                         }
                 }
             }
@@ -2300,8 +2318,8 @@ function* use_mirror(obj) {
         if (vis)
             (yield* pline(__s_s_can_t_see_anything_right_now, (yield* Monnam(mtmp))));
     } else if (invis_mirror &&
-            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                16777216n) != 0n)) {
+            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                0n)) {
         if (vis)
             (yield* pline(__s_s_fails_to_notice_your_s, (yield* Monnam(mtmp)), mirror));
         /* infravision doesn't produce an image in the mirror */
@@ -2391,8 +2409,8 @@ function* use_mirror(obj) {
             !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) &&
             !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) &&
             (!(cptr.ldI32o(mtmp, $monst_minvis) & 1) ||
-                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    16777216n) != 0n)) &&
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                    0n)) &&
             rn2(5)) {
         let do_react = 1;
 
@@ -2412,10 +2430,10 @@ function* use_mirror(obj) {
         if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible())
             ;
         else if (((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 &&
-            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                16777216n) != 0n)) ||
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    4096n) == 0n) ||
+            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                0n)) ||
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
+                    0n) ||
                 cptr.ld1so(gn, $instance_globals_n_notonhead) ||
                 !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
             (yield* pline(
@@ -2479,25 +2497,29 @@ function* use_bell(optr) {
                     NHC.PM_WOOD_NYMPH,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3) &&
+                ) &
+                    3) &&
                 !(cptr.ld1uo2(
                     svm,
                     NHC.PM_WATER_NYMPH,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3) &&
+                ) &
+                    3) &&
                 !(cptr.ld1uo2(
                     svm,
                     NHC.PM_MOUNTAIN_NYMPH,
                     $sizeof_mvitals,
                     $instance_globals_saved_m_mvitals + $mvitals_mvflags
-                ) & 3) &&
+                ) &
+                    3) &&
                 (mtmp = (yield* makemon(
                     (yield* mkclass(NHC.S_NYMPH, 0)),
                     cptr.ldI16(u),
                     cptr.ldI16o(u, $you_uy),
                     131073
-                ))) !== null) {
+                ))) !==
+                    null) {
             (yield* You(__s_summon_s, (yield* a_monnam(mtmp))));
             if (!obj_resists(obj, 93, 100)) {
                 (yield* pline(__s_s_shattered, (yield* Tobjnam(obj, __s_have))));
@@ -2506,15 +2528,15 @@ function* use_bell(optr) {
             } else
                 switch (rn2(3)) {
                     default:
-                    break;
+                        break;
                     case 1:
-                    (yield* mon_adjust_speed(mtmp, 2, null));
-                    break;
+                        (yield* mon_adjust_speed(mtmp, 2, null));
+                        break;
                     case 2:
-                    cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
-                    cptr.stPtro(gm, $instance_globals_m_multi_reason, null);
-                    nomul(-rnd(2));
-                    break;
+                        cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
+                        cptr.stPtro(gm, $instance_globals_m_multi_reason, null);
+                        nomul(-rnd(2));
+                        break;
                 }
         }
         wakem = 1;
@@ -2557,16 +2579,19 @@ function* use_bell(optr) {
             res = (res + (yield* openit())) | 0;
             switch (res) {
                 case 0:
-                (yield* pline(__s_pct_s, cptr.ldPtr(c_common_strings)));
-                break;
+                    (yield* pline(__s_pct_s, cptr.ldPtr(c_common_strings)));
+                    break;
                 case 1:
-                (yield* pline(__s_s_opens, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something)));
-                learno = 1;
-                break;
+                    (yield* pline(
+                        __s_s_opens,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_Something)
+                    ));
+                    learno = 1;
+                    break;
                 default:
-                (yield* pline(__s_things_open_around_you));
-                learno = 1;
-                break;
+                    (yield* pline(__s_things_open_around_you));
+                    learno = 1;
+                    break;
             }
 
         } else {
@@ -2702,14 +2727,13 @@ function* use_candle(optr) {
         cptr.decay(ynchars),
         110,
         1
-    )) == 110) {
+    )) ==
+            110) {
         (yield* use_lamp(obj));
         return;
     } else {
-        if (BigInt.asIntN(
-            64,
-            BigInt(cptr.ld1so(otmp, $obj_spe)) + cptr.ldI64o(obj, $obj_quan)
-        ) > 7n) {
+        if (BigInt.asIntN(64, BigInt(cptr.ld1so(otmp, $obj_spe)) + cptr.ldI64o(obj, $obj_quan)) >
+                7n) {
             obj = (yield* splitobj(obj, BigInt.asIntN(64, 7n - BigInt(cptr.ld1so(otmp, $obj_spe)))));
             /* avoid a grammatical error if obj->quan gets
                reduced to 1 candle from more than one */
@@ -2933,15 +2957,14 @@ export function* splash_lit(obj) {
                 cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8),
                 x.v
             ) &
-                NHM.COULD_SEE) != 0) &&
+                NHM.COULD_SEE) !=
+                0) &&
                 dist2((x.v), (y.v), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 25
                     ? 1
                     : 0));
             dunk = schar((is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) &&
-                ((!((cptr.ldU64o(
-                    (cptr.ldPtro(mtmp, $monst_data)),
-                    $permonst_mflags1
-                ) & 1n) != 0n) &&
+                ((!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) !=
+                    0n) &&
                     !is_floater(cptr.ldPtro(mtmp, $monst_data))) ||
                     (((cptr.ldI16o(
                         (cptr.add(
@@ -3024,7 +3047,8 @@ export function* catch_lit(obj) {
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8),
                     x.v
                 ) &
-                    NHM.IN_SIGHT) != 0)) {
+                    NHM.IN_SIGHT) !=
+                    0)) {
             if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR &&
                     ((cptr.ld1uo(
                         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8),
@@ -3263,7 +3287,8 @@ export function* dorub() {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         (yield* You(__s_aren_t_able_to_rub_anything_without));
         return NHM.ECMD_OK;
     }
@@ -3400,7 +3425,8 @@ function* is_valid_jump_pos(x, y, magic, showmsg) {
             (yield* You(__s_cannot_jump_there));
         return 0;
     } else if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-            NHM.IN_SIGHT) != 0)) {
+        NHM.IN_SIGHT) !=
+            0)) {
         if (showmsg)
             (yield* You(__s_cannot_see_where_to_land));
         return 0;
@@ -3521,7 +3547,8 @@ export function* jump(magic) {
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    524288n) != 0n))) {
+                    524288n) !=
+                    0n))) {
         /* normally (nolimbs || slithy) implies !Jumping,
            but that isn't necessarily the case for knights */
         (yield* You_cant(__s_jump_you_have_no_legs));
@@ -3646,41 +3673,42 @@ export function* jump(magic) {
             wastrapped = 1;
             switch (cptr.ldI32o(u, $you_utraptype)) {
                 case NHC.TT_BEARTRAP:
-                side = rn2(3) ? 131072n : 262144n;
-                (yield* You(__s_rip_yourself_free_of_the_bear_trap_ouch));
-                (yield* losehp(
-                    ((Half_physical_damage()) ? ((((rnd(10) + 1) | 0) / 2) | 0) : rnd(10)),
-                    __s_jumping_out_of_a_bear_trap,
-                    NHM.KILLED_BY
-                ));
-                (yield* set_wounded_legs(side, ((rn2(1000) + 500) | 0)));
-                break;
+                    side = rn2(3) ? 131072n : 262144n;
+                    (yield* You(__s_rip_yourself_free_of_the_bear_trap_ouch));
+                    (yield* losehp(
+                        ((Half_physical_damage()) ? ((((rnd(10) + 1) | 0) / 2) | 0) : rnd(10)),
+                        __s_jumping_out_of_a_bear_trap,
+                        NHM.KILLED_BY
+                    ));
+                    (yield* set_wounded_legs(side, ((rn2(1000) + 500) | 0)));
+                    break;
                 case NHC.TT_PIT:
-                (yield* You(__s_leap_from_the_pit));
-                break;
+                    (yield* You(__s_leap_from_the_pit));
+                    break;
                 case NHC.TT_WEB:
-                (yield* You(__s_tear_the_web_apart_as_you_pull_yourself));
-                (yield* deltrap(t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
-                break;
+                    (yield* You(__s_tear_the_web_apart_as_you_pull_yourself));
+                    (yield* deltrap(t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+                    break;
                 case NHC.TT_LAVA:
-                (yield* You(__s_pull_yourself_above_the_s, hliquid(__s_lava)));
-                cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* take u_at() 'if' below */
-                break;
+                    (yield* You(__s_pull_yourself_above_the_s, hliquid(__s_lava)));
+                    cptr.stI16(cc, cptr.ldI16(u)),
+                            cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* take u_at() 'if' below */
+                    break;
                 case NHC.TT_BURIEDBALL:
                 case NHC.TT_INFLOOR:
-                (yield* You(
-                    __s_strain_your_s_but_you_re_still_s,
-                    (yield* makeplural((yield* body_part(NHC.LEG)))),
-                    (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR)
-                        ? __s_stuck_in_the_floor
-                        : __s_attached_to_the_buried_ball
-                ));
-                (yield* set_wounded_legs(131072n, ((rn2(10) + 11) | 0)));
-                (yield* set_wounded_legs(262144n, ((rn2(10) + 11) | 0)));
-                return NHM.ECMD_TIME;
+                    (yield* You(
+                        __s_strain_your_s_but_you_re_still_s,
+                        (yield* makeplural((yield* body_part(NHC.LEG)))),
+                        (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR)
+                            ? __s_stuck_in_the_floor
+                            : __s_attached_to_the_buried_ball
+                    ));
+                    (yield* set_wounded_legs(131072n, ((rn2(10) + 11) | 0)));
+                    (yield* set_wounded_legs(262144n, ((rn2(10) + 11) | 0)));
+                    return NHM.ECMD_TIME;
                 default:
-                (yield* impossible(__s_jumping_out_of_strange_trap_d, cptr.ldI32o(u, $you_utraptype)));
-                break;
+                    (yield* impossible(__s_jumping_out_of_strange_trap_d, cptr.ldI32o(u, $you_utraptype)));
+                    break;
             }
             /* if we reach here, hero is no longer trapped */
             (yield* reset_utrap(1));
@@ -3861,47 +3889,47 @@ export function* use_unicorn_horn(optr) {
 
         switch ((rn2(13) / 2) | 0) {
             case 0:
-            (yield* make_sick(
-                (Sick() & 16777215n)
-                    ? BigInt.asIntN(64, (Sick() & 16777215n) / 3n + 1n)
-                    : BigInt(((rn2((acurr(NHC.A_CON))) + 20) | 0)),
-                (yield* xname(obj)),
-                1,
-                NHM.SICK_NONVOMITABLE
-            ));
-            break;
-            case 1:
-            (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + lcount), 1));
-            break;
-            case 2:
-            if (!HConfusion())
-                (yield* You(__s_suddenly_feel_s, Hallucination() ? __s_trippy : __s_confused));
-            (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + lcount), 1));
-            break;
-            case 3:
-            (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + lcount), 1));
-            break;
-            case 4:
-            if (Vomiting())
-                (yield* vomit());
-            else
-                (yield* make_vomiting(14n, 0));
-            break;
-            case 5:
-            void (yield* make_hallucinated(
-                BigInt.asIntN(64, (HHallucination() & 16777215n) + lcount),
-                1,
-                0n
-            ));
-            break;
-            case 6:
-            if (Deaf())
-                (yield* pline(
-                    __s_pct_s,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+                (yield* make_sick(
+                    (Sick() & 16777215n)
+                        ? BigInt.asIntN(64, (Sick() & 16777215n) / 3n + 1n)
+                        : BigInt(((rn2((acurr(NHC.A_CON))) + 20) | 0)),
+                    (yield* xname(obj)),
+                    1,
+                    NHM.SICK_NONVOMITABLE
                 ));
-            (yield* make_deaf(BigInt.asIntN(64, (HDeaf() & 16777215n) + lcount), 1));
-            break;
+                break;
+            case 1:
+                (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + lcount), 1));
+                break;
+            case 2:
+                if (!HConfusion())
+                    (yield* You(__s_suddenly_feel_s, Hallucination() ? __s_trippy : __s_confused));
+                (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + lcount), 1));
+                break;
+            case 3:
+                (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + lcount), 1));
+                break;
+            case 4:
+                if (Vomiting())
+                    (yield* vomit());
+                else
+                    (yield* make_vomiting(14n, 0));
+                break;
+            case 5:
+                void (yield* make_hallucinated(
+                    BigInt.asIntN(64, (HHallucination() & 16777215n) + lcount),
+                    1,
+                    0n
+                ));
+                break;
+            case 6:
+                if (Deaf())
+                    (yield* pline(
+                        __s_pct_s,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+                    ));
+                (yield* make_deaf(BigInt.asIntN(64, (HDeaf() & 16777215n) + lcount), 1));
+                break;
         }
         return;
     }
@@ -3955,36 +3983,36 @@ export function* use_unicorn_horn(optr) {
 
         switch (idx) {
             case NHC.SICK:
-            (yield* make_sick(0n, null, 1, NHM.SICK_ALL));
-            did_prop++;
-            break;
+                (yield* make_sick(0n, null, 1, NHM.SICK_ALL));
+                did_prop++;
+                break;
             case NHC.BLINDED:
-            (yield* make_blinded(BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0), 1));
-            did_prop++;
-            break;
+                (yield* make_blinded(BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0), 1));
+                did_prop++;
+                break;
             case NHC.HALLUC:
-            void (yield* make_hallucinated(0n, 1, 0n));
-            did_prop++;
-            break;
+                void (yield* make_hallucinated(0n, 1, 0n));
+                did_prop++;
+                break;
             case NHC.VOMITING:
-            (yield* make_vomiting(0n, 1));
-            did_prop++;
-            break;
+                (yield* make_vomiting(0n, 1));
+                did_prop++;
+                break;
             case NHC.CONFUSION:
-            (yield* make_confused(0n, 1));
-            did_prop++;
-            break;
+                (yield* make_confused(0n, 1));
+                did_prop++;
+                break;
             case NHC.STUNNED:
-            (yield* make_stunned(0n, 1));
-            did_prop++;
-            break;
+                (yield* make_stunned(0n, 1));
+                did_prop++;
+                break;
             case NHC.DEAF:
-            (yield* make_deaf(0n, 1));
-            did_prop++;
-            break;
+                (yield* make_deaf(0n, 1));
+                did_prop++;
+                break;
             default:
-            (yield* impossible(__s_use_unicorn_horn_bad_trouble_d, idx));
-            break;
+                (yield* impossible(__s_use_unicorn_horn_bad_trouble_d, idx));
+                break;
         }
     }
 
@@ -4081,68 +4109,72 @@ export function* fig_transform(arg, timeout) {
 
         switch (cptr.ld1so(figurine, $obj_where)) {
             case NHM.OBJ_INVENT:
-            if (Blind() || suppress_see)
-                (yield* You_feel(
-                    __s_s_s_from_your_pack,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_something),
-                    locomotion(cptr.ldPtro(mtmp, $monst_data), __s_drop)
-                ));
-            else
-                (yield* You_see(
-                    __s_s_s_out_of_your_pack_s,
-                    cptr.decay(monnambuf),
-                    locomotion(cptr.ldPtro(mtmp, $monst_data), __s_drop),
-                    cptr.decay(and_vanish)
-                ));
-            break;
-            case NHM.OBJ_FLOOR:
-            if (cansee_spot && !silent) {
-                set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-                if (suppress_see)
-                    (yield* pline(__s_s_suddenly_vanishes, (yield* an((yield* xname(figurine))))));
+                if (Blind() || suppress_see)
+                    (yield* You_feel(
+                        __s_s_s_from_your_pack,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_something),
+                        locomotion(cptr.ldPtro(mtmp, $monst_data), __s_drop)
+                    ));
                 else
                     (yield* You_see(
-                        __s_a_figurine_transform_into_s_s,
+                        __s_s_s_out_of_your_pack_s,
                         cptr.decay(monnambuf),
+                        locomotion(cptr.ldPtro(mtmp, $monst_data), __s_drop),
                         cptr.decay(and_vanish)
                     ));
-                redraw = 1;  /* update figurine's map location */
-            }
-            break;
+                break;
+            case NHM.OBJ_FLOOR:
+                if (cansee_spot && !silent) {
+                    set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
+                    if (suppress_see)
+                        (yield* pline(__s_s_suddenly_vanishes, (yield* an((yield* xname(figurine))))));
+                    else
+                        (yield* You_see(
+                            __s_a_figurine_transform_into_s_s,
+                            cptr.decay(monnambuf),
+                            cptr.decay(and_vanish)
+                        ));
+                    redraw = 1;  /* update figurine's map location */
+                }
+                break;
             case NHM.OBJ_MINVENT:
-            if (cansee_spot && !silent && !suppress_see) {
-                let mon;
+                if (cansee_spot && !silent && !suppress_see) {
+                    let mon;
 
-                mon = cptr.ldPtro(figurine, $obj_v);
-                /* figurine carrying monster might be invisible */
-                if (canseemon(cptr.ldPtro(figurine, $obj_v)) &&
-                        (!(cptr.ldI32o(mon, $monst_wormno) & 31) ||
-                            ((cptr.ld1uo(
-                                cptr.ldPtro(
-                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
-                                    cptr.ldI16o(mon, $monst_my),
-                                    8
-                                ),
-                                cptr.ldI16o(mon, $monst_mx)
-                            ) &
-                                NHM.IN_SIGHT) != 0)))
-                    void cptr.sprintf(cptr.decay(carriedby), __s_s_pack, (yield* s_suffix((yield* a_monnam(mon)))));
-                else if (is_pool(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)))
-                    void cptr.strcpy(cptr.decay(carriedby), __s_empty_water);
-                else
-                    void cptr.strcpy(cptr.decay(carriedby), __s_thin_air);
-                (yield* You_see(
-                    __s_s_s_out_of_s_s,
-                    cptr.decay(monnambuf),
-                    locomotion(cptr.ldPtro(mtmp, $monst_data), __s_drop),
-                    cptr.decay(carriedby),
-                    cptr.decay(and_vanish)
-                ));
-            }
-            break;
+                    mon = cptr.ldPtro(figurine, $obj_v);
+                    /* figurine carrying monster might be invisible */
+                    if (canseemon(cptr.ldPtro(figurine, $obj_v)) &&
+                            (!(cptr.ldI32o(mon, $monst_wormno) & 31) ||
+                                ((cptr.ld1uo(
+                                    cptr.ldPtro(
+                                        cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                        cptr.ldI16o(mon, $monst_my),
+                                        8
+                                    ),
+                                    cptr.ldI16o(mon, $monst_mx)
+                                ) &
+                                    NHM.IN_SIGHT) != 0)))
+                        void cptr.sprintf(
+                            cptr.decay(carriedby),
+                            __s_s_pack,
+                            (yield* s_suffix((yield* a_monnam(mon))))
+                        );
+                    else if (is_pool(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)))
+                        void cptr.strcpy(cptr.decay(carriedby), __s_empty_water);
+                    else
+                        void cptr.strcpy(cptr.decay(carriedby), __s_thin_air);
+                    (yield* You_see(
+                        __s_s_s_out_of_s_s,
+                        cptr.decay(monnambuf),
+                        locomotion(cptr.ldPtro(mtmp, $monst_data), __s_drop),
+                        cptr.decay(carriedby),
+                        cptr.decay(and_vanish)
+                    ));
+                }
+                break;
             default:
-            (yield* impossible(__s_figurine_came_to_life_where_d, cptr.ld1so(figurine, $obj_where)));
-            break;
+                (yield* impossible(__s_figurine_came_to_life_where_d, cptr.ld1so(figurine, $obj_where)));
+                break;
         }
     }
     /* free figurine now */
@@ -4192,7 +4224,9 @@ function* figurine_location_checks(obj, cc, quietly) {
             !(((cptr.ldU64o(
                 (cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)),
                 $permonst_mflags1
-            ) & 8n) != 0n) &&
+            ) &
+                8n) !=
+                0n) &&
                 may_passwall(x, y))) {
         if (!quietly)
             (yield* You(
@@ -4209,7 +4243,9 @@ function* figurine_location_checks(obj, cc, quietly) {
                     ((cptr.ldI32o(
                         svl,
                         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-                    ) & 1) | 0 &&
+                    ) &
+                        1) |
+                        0 &&
                         (cptr.ld1so3(
                             svl,
                             x,
@@ -4228,12 +4264,15 @@ function* figurine_location_checks(obj, cc, quietly) {
             !((cptr.ldU64o(
                 (cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)),
                 $permonst_mflags1
-            ) & 8n) != 0n) &&
+            ) &
+                8n) !=
+                0n) &&
             !((cptr.ldU64o(
                 (cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)),
                 $permonst_mflags2
             ) &
-                134217728n) != 0n)) {
+                134217728n) !=
+                0n)) {
         if (!quietly)
             (yield* You(__s_cannot_fit_the_figurine_on_the_boulder));
         return 0;
@@ -4379,7 +4418,8 @@ function* use_grease(obj) {
                         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                         $permonst_mflags1
                     ) &
-                        8192n) != 0n)) {
+                        8192n) !=
+                        0n)) {
                 (yield* make_glib((oldglib + (rn2(6) + 10)) | 0));  /* + 10..15 */
                 (yield* pline(__s_some_of_the_grease_gets_all_over_your_s, (yield* fingers_or_gloves(1))));
             }
@@ -4417,7 +4457,8 @@ function touchstone_ok(obj) {
                     cptr.ldI16o(obj, $obj_otyp),
                     $sizeof_objclass,
                     $objclass_oc_name_known
-                ) & 1) | 0))
+                ) &
+                    1) | 0))
         return NHC.GETOBJ_SUGGEST;
 
     return NHC.GETOBJ_DOWNPLAY;
@@ -4500,102 +4541,115 @@ function* use_stone(tstone) {
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) !=
+            ) &
+                31) |
+                0) !=
                 NHC.GEMSTONE &&
             ((cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) !=
+            ) &
+                31) |
+                0) !=
                 NHC.MINERAL)
         oclass = NHC.RANDOM_CLASS;  /* something that's neither gem nor ring */
 
     switch (oclass) {
         case NHC.GEM_CLASS:
         case NHC.RING_CLASS:
-        if (cptr.ldI16o(tstone, $obj_otyp) != NHC.TOUCHSTONE) {
-            do_scratch = 1;
-        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
-                ((cptr.ldI32o(tstone, $obj_blessed) & 1) | 0 ||
-                    (!(cptr.ldI32o(tstone, $obj_cursed) & 1) &&
-                        ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
-                            NHC.PM_ARCHEOLOGIST) ||
-                            (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) ==
-                                NHC.PM_GNOME))))) {
-            (yield* discover_object(NHC.TOUCHSTONE, 1, 1, 1));
-            (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
-            (yield* prinv(null, obj, 0n));
-            return NHM.ECMD_TIME;
-        } else {
-            /* either a ring or the touchstone was not effective */
-            if (((cptr.ldI32o2(
+            if (cptr.ldI16o(tstone, $obj_otyp) != NHC.TOUCHSTONE) {
+                do_scratch = 1;
+            } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
+                    ((cptr.ldI32o(tstone, $obj_blessed) & 1) | 0 ||
+                        (!(cptr.ldI32o(tstone, $obj_cursed) & 1) &&
+                            ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                                NHC.PM_ARCHEOLOGIST) ||
+                                (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) ==
+                                    NHC.PM_GNOME))))) {
+                (yield* discover_object(NHC.TOUCHSTONE, 1, 1, 1));
+                (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
+                (yield* prinv(null, obj, 0n));
+                return NHM.ECMD_TIME;
+            } else {
+                /* either a ring or the touchstone was not effective */
+                if (((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) &
+                    31) |
+                    0) ==
+                        NHC.GLASS) {
+                    do_scratch = 1;
+                    break;
+                }
+            }
+            streak_color = cptr.ldPtro(
+                c_obj_colors,
+                cptr.ld1uo2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_color
+                ),
+                8
+            );
+            break;  /* gem or ring */
+        default:
+            switch ((cptr.ldI32o2(
                 objects,
                 cptr.ldI16o(obj, $obj_otyp),
                 $sizeof_objclass,
                 $objclass_oc_material
-            ) & 31) | 0) ==
-                    NHC.GLASS) {
-                do_scratch = 1;
-                break;
+            ) &
+                31) |
+                    0) {
+                case NHC.CLOTH:
+                    (yield* pline(__s_s_a_little_more_polished_now, (yield* Tobjnam(tstone, __s_look))));
+                    return NHM.ECMD_TIME;
+                case NHC.LIQUID:
+                    if (!(cptr.ldI32o(obj, $obj_known) & 1))
+                        (yield* You(__s_must_think_this_is_a_wetstone_do_you));
+                    else
+                        (yield* pline(__s_s_a_little_wetter_now, (yield* Tobjnam(tstone, __s_are))));
+                    return NHM.ECMD_TIME;
+                case NHC.WAX:
+                    streak_color = __s_waxy;
+                    break;  /* okay even if not touchstone */
+                case NHC.WOOD:
+                    streak_color = __s_wooden;
+                    break;  /* okay even if not touchstone */
+                case NHC.GOLD:
+                    do_scratch = 1;  /* scratching and streaks */
+                    streak_color = __s_golden;
+                    break;
+                case NHC.SILVER:
+                    do_scratch = 1;  /* scratching and streaks */
+                    streak_color = __s_silvery;
+                    break;
+                default:
+                    /* Objects passing the is_flimsy() test will not
+                       scratch a stone.  They will leave streaks on
+                       non-touchstones and touchstones alike. */
+                    if (is_flimsy(obj))
+                        streak_color = cptr.ldPtro(
+                            c_obj_colors,
+                            cptr.ld1uo2(
+                                objects,
+                                cptr.ldI16o(obj, $obj_otyp),
+                                $sizeof_objclass,
+                                $objclass_oc_color
+                            ),
+                            8
+                        );
+                    else
+                        do_scratch = schar((cptr.ldI16o(tstone, $obj_otyp) != NHC.TOUCHSTONE));
+                    break;
             }
-        }
-        streak_color = cptr.ldPtro(
-            c_obj_colors,
-            cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_color),
-            8
-        );
-        break;  /* gem or ring */
-        default:
-        switch ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_material
-        ) & 31) | 0) {
-            case NHC.CLOTH:
-            (yield* pline(__s_s_a_little_more_polished_now, (yield* Tobjnam(tstone, __s_look))));
-            return NHM.ECMD_TIME;
-            case NHC.LIQUID:
-            if (!(cptr.ldI32o(obj, $obj_known) & 1))
-                (yield* You(__s_must_think_this_is_a_wetstone_do_you));
-            else
-                (yield* pline(__s_s_a_little_wetter_now, (yield* Tobjnam(tstone, __s_are))));
-            return NHM.ECMD_TIME;
-            case NHC.WAX:
-            streak_color = __s_waxy;
-            break;  /* okay even if not touchstone */
-            case NHC.WOOD:
-            streak_color = __s_wooden;
-            break;  /* okay even if not touchstone */
-            case NHC.GOLD:
-            do_scratch = 1;  /* scratching and streaks */
-            streak_color = __s_golden;
-            break;
-            case NHC.SILVER:
-            do_scratch = 1;  /* scratching and streaks */
-            streak_color = __s_silvery;
-            break;
-            default:
-            /* Objects passing the is_flimsy() test will not
-               scratch a stone.  They will leave streaks on
-               non-touchstones and touchstones alike. */
-            if (is_flimsy(obj))
-                streak_color = cptr.ldPtro(
-                    c_obj_colors,
-                    cptr.ld1uo2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_color
-                    ),
-                    8
-                );
-            else
-                do_scratch = schar((cptr.ldI16o(tstone, $obj_otyp) != NHC.TOUCHSTONE));
-            break;
-        }
-        break;  /* default oclass */
+            break;  /* default oclass */
     }
 
     void cptr.sprintf(
@@ -4756,14 +4810,14 @@ function* use_trap(otmp) {
             if (chance) {
                 switch (ttyp) {
                     case NHC.LANDMINE:
-                    cptr.stI32o(gt, $trapinfo_time_needed, 0);
-                    cptr.st1o(gt, $trapinfo_force_bungle, 1);
-                    break;
+                        cptr.stI32o(gt, $trapinfo_time_needed, 0);
+                        cptr.st1o(gt, $trapinfo_force_bungle, 1);
+                        break;
                     case NHC.BEAR_TRAP:
-                    reset_trapset();
-                    (yield* You(__s_drop_s, (yield* the((yield* trapname(ttyp, 0))))));
-                    (yield* dropx(otmp));
-                    return;
+                        reset_trapset();
+                        (yield* You(__s_drop_s, (yield* the((yield* trapname(ttyp, 0))))));
+                        (yield* dropx(otmp));
+                        return;
                 }
             }
         } else {
@@ -5211,64 +5265,68 @@ export function* use_whip(obj) {
 
                 switch (rn2((proficient + 1) | 0)) {
                     case 2:
-                    /* to floor near you */
-                    (yield* You(
-                        __s_yank_s_to_the_s,
-                        (yield* yname(otmp)),
-                        surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                    ));
-                    (yield* place_object(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-                    (yield* stackobj(otmp));
-                    break;
+                        /* to floor near you */
+                        (yield* You(
+                            __s_yank_s_to_the_s,
+                            (yield* yname(otmp)),
+                            surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                        ));
+                        (yield* place_object(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                        (yield* stackobj(otmp));
+                        break;
                     case 3:
-                    /* right into your inventory */
-                    (yield* You(__s_snatch_s, (yield* yname(otmp))));
-                    if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE &&
-                            touch_petrifies(cptr.add(
-                                mons,
-                                cptr.ldI32o(otmp, $obj_corpsenm),
-                                $sizeof_permonst
-                            )) &&
-                            !uarmg.v &&
-                            !Stone_resistance() &&
-                            !(poly_when_stoned(cptr.ldPtro(
-                                gy,
-                                $instance_globals_y_youmonst + $monst_data
-                            )) &&
-                                (yield* polymon(NHC.PM_STONE_GOLEM)))) {
-                        let kbuf = new Uint8Array(256);
+                        /* right into your inventory */
+                        (yield* You(__s_snatch_s, (yield* yname(otmp))));
+                        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE &&
+                                touch_petrifies(cptr.add(
+                                    mons,
+                                    cptr.ldI32o(otmp, $obj_corpsenm),
+                                    $sizeof_permonst
+                                )) &&
+                                !uarmg.v &&
+                                !Stone_resistance() &&
+                                !(poly_when_stoned(cptr.ldPtro(
+                                    gy,
+                                    $instance_globals_y_youmonst + $monst_data
+                                )) &&
+                                    (yield* polymon(NHC.PM_STONE_GOLEM)))) {
+                            let kbuf = new Uint8Array(256);
 
-                        void cptr.strcpy(
-                            cptr.decay(kbuf),
-                            (cptr.ldI64o(otmp, $obj_quan) == 1n)
-                                ? (yield* an(cptr.decay(onambuf)))
-                                : cptr.decay(onambuf)
-                        );
-                        (yield* pline(__s_snatching_s_is_a_fatal_mistake, cptr.decay(kbuf)));
-                        /* corpse probably has a rot timer but is now
-                           OBJ_FREE; end of game cleanup will panic if
-                           it isn't part of current level; plus it would
-                           be missing from bones, so put it on the floor */
-                        (yield* place_object(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* but don't stack */
+                            void cptr.strcpy(
+                                cptr.decay(kbuf),
+                                (cptr.ldI64o(otmp, $obj_quan) == 1n)
+                                    ? (yield* an(cptr.decay(onambuf)))
+                                    : cptr.decay(onambuf)
+                            );
+                            (yield* pline(__s_snatching_s_is_a_fatal_mistake, cptr.decay(kbuf)));
+                            /* corpse probably has a rot timer but is now
+                               OBJ_FREE; end of game cleanup will panic if
+                               it isn't part of current level; plus it would
+                               be missing from bones, so put it on the floor */
+                            (yield* place_object(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* but don't stack */
 
-                        (yield* instapetrify(cptr.decay(kbuf)));
-                        /* life-saved; free the corpse again */
-                        (yield* obj_extract_self(otmp));
-                    }
-                    void (yield* hold_another_object(otmp, __s_you_drop_s, (yield* doname(otmp)), null));
-                    break;
+                            (yield* instapetrify(cptr.decay(kbuf)));
+                            /* life-saved; free the corpse again */
+                            (yield* obj_extract_self(otmp));
+                        }
+                        void (yield* hold_another_object(otmp, __s_you_drop_s, (yield* doname(otmp)), null));
+                        break;
                     default:
-                    /* to floor beneath mon */
-                    (yield* You(
-                        __s_yank_s_from_s_s,
-                        (yield* the(cptr.decay(onambuf))),
-                        (yield* s_suffix((yield* mon_nam(mtmp)))),
-                        mon_hand
-                    ));
-                    (yield* obj_no_longer_held(otmp));
-                    (yield* place_object(otmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
-                    (yield* stackobj(otmp));
-                    break;
+                        /* to floor beneath mon */
+                        (yield* You(
+                            __s_yank_s_from_s_s,
+                            (yield* the(cptr.decay(onambuf))),
+                            (yield* s_suffix((yield* mon_nam(mtmp)))),
+                            mon_hand
+                        ));
+                        (yield* obj_no_longer_held(otmp));
+                        (yield* place_object(
+                            otmp,
+                            cptr.ldI16o(mtmp, $monst_mx),
+                            cptr.ldI16o(mtmp, $monst_my)
+                        ));
+                        (yield* stackobj(otmp));
+                        break;
                 }
             } else {
                 (yield* pline(__s_pct_s, msg_slipsfree));
@@ -5346,7 +5404,8 @@ function find_poleable_mon(pos) {
                         y,
                         8,
                         $instance_globals_saved_l_level + $dlevel_t_monsters
-                    ))) !== null &&
+                    ))) !==
+                        null &&
                     (cptr.ld1so(mtmp, $monst_mtame) ||
                         ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
                             cptr.ld1so(flags, $flag_confirm))))
@@ -5378,9 +5437,11 @@ function get_valid_polearm_position(x, y) {
         dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <=
             cptr.ldI32o(gp, $instance_globals_p_polearm_range_max) &&
         (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-            NHM.IN_SIGHT) != 0) ||
+            NHM.IN_SIGHT) !=
+            0) ||
             (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-                NHM.COULD_SEE) != 0) &&
+                NHM.COULD_SEE) !=
+                0) &&
                 (glyph_is_monster(glyph) ||
                     ((glyph) == NHC.GLYPH_INVIS_OFF) ||
                     glyph_is_statue(glyph))))
@@ -5533,7 +5594,8 @@ export function* use_pole(obj, autohit) {
         (yield* pline(cptr.decay(where_to_hit)));
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-    if (!find_poleable_mon(cc) && hitm &&
+    if (!find_poleable_mon(cc) &&
+            hitm &&
             !(cptr.ldI32o((hitm), $monst_mhp) < 1) &&
             sensemon(hitm) &&
             dist2(
@@ -5588,7 +5650,8 @@ export function* use_pole(obj, autohit) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8),
         cptr.ldI16(cc)
     ) &
-        NHM.IN_SIGHT) != 0) &&
+        NHM.IN_SIGHT) !=
+        0) &&
             !(glyph_is_monster(glyph) ||
                 ((glyph) == NHC.GLYPH_INVIS_OFF) ||
                 glyph_is_statue(glyph))) {
@@ -5598,7 +5661,8 @@ export function* use_pole(obj, autohit) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8),
         cptr.ldI16(cc)
     ) &
-            NHM.COULD_SEE) != 0)) {
+        NHM.COULD_SEE) !=
+            0)) {
         (yield* You(cptr.decay(cant_reach)));
         return NHM.ECMD_FAIL;
     }
@@ -5613,7 +5677,8 @@ export function* use_pole(obj, autohit) {
         cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y),
         8,
         $instance_globals_saved_l_level + $dlevel_t_monsters
-    ))) !== null) {
+    ))) !==
+            null) {
         if ((yield* attack_checks(mtmp, uwep.v)))
             /* no, abort the attack attempt; result depends on
                res: 1 => polearm became wielded, 0 => already wielded;
@@ -5921,7 +5986,8 @@ function grapple_range() {
 function can_grapple_location(x, y) {
     return schar((isok(x, y) &&
         ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
         dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= grapple_range()
             ? 1
             : 0));
@@ -6002,14 +6068,16 @@ function* use_grapple(obj) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8),
         cptr.ldI16(cc)
     ) &
-            NHM.IN_SIGHT) != 0)) {
+        NHM.IN_SIGHT) !=
+            0)) {
         (yield* You(cptr.decay(cant_see_spot)));
         return res;
     } else if (!((cptr.ld1uo(
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(cc, $nhcoord_y), 8),
         cptr.ldI16(cc)
     ) &
-            NHM.COULD_SEE) != 0)) {
+        NHM.COULD_SEE) !=
+            0)) {
         (yield* You(cptr.decay(cant_reach)));
         return res;
     }
@@ -6092,84 +6160,77 @@ function* use_grapple(obj) {
     /* What did you hit? */
     switch (tohit) {
         case 0:
-        /* FIXME -- untrap needs to deal with non-adjacent traps */
-        break;
-        case 1:
-        if ((otmp = cptr.ldPtro3(
-            svl,
-            cptr.ldI16(cc),
-            168,
-            cptr.ldI16o(cc, $nhcoord_y),
-            8,
-            $instance_globals_saved_l_level + $dlevel_t_objects
-        )) !== null) {
-            (yield* You(
-                __s_snag_an_object_from_the_s,
-                surface(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))
-            ));
-            void (yield* pickup_object(otmp, 1n, 0));
-            /* If pickup fails, leave it alone */
-            (yield* newsym(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
-            return NHM.ECMD_TIME;
-        }
-        break;
-        case 2:
-        cptr.memcpy(cptr.add(gb, $instance_globals_b_bhitpos), cc, 4);
-        if ((mtmp = (cptr.ldPtro3(
-            svl,
-            cptr.ldI16(cc),
-            168,
-            cptr.ldI16o(cc, $nhcoord_y),
-            8,
-            $instance_globals_saved_l_level + $dlevel_t_monsters
-        ))) === null)
+            /* FIXME -- untrap needs to deal with non-adjacent traps */
             break;
-        cptr.st1o(
-            gn,
-            $instance_globals_n_notonhead,
-            schar((cptr.ldI16o(gb, $instance_globals_b_bhitpos) != cptr.ldI16o(mtmp, $monst_mx) ||
-                cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) !=
-                    cptr.ldI16o(mtmp, $monst_my)
-                ? 1
-                : 0))
-        );
-        save_confirm = cptr.ld1so(flags, $flag_confirm);
-        if ((cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) &&
-                !rn2(4) &&
-                (yield* enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), null))) {
-            cptr.st1o(flags, $flag_confirm, 0);
-            void (yield* attack_checks(mtmp, uwep.v));
-            cptr.st1o(flags, $flag_confirm, save_confirm);
-            (yield* check_caitiff(mtmp));  /* despite fact there's no damage */
-            (yield* You(__s_pull_in_s, (yield* mon_nam(mtmp))));
-            cptr.stI32o(mtmp, $monst_mundetected, 0);
-            (yield* rloc_to(mtmp, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
-            return NHM.ECMD_TIME;
-        } else if ((!(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) >=
-            NHM.MZ_LARGE) &&
-            !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
-                67108864n) != 0n)) ||
-                rn2(4)) {
-            cptr.st1o(flags, $flag_confirm, 0);
-            void (yield* attack_checks(mtmp, uwep.v));
-            cptr.st1o(flags, $flag_confirm, save_confirm);
-            (yield* check_caitiff(mtmp));
-            void (yield* thitmonst(mtmp, uwep.v));
-            return NHM.ECMD_TIME;
-        }
-        // @FallThrough
-        ;
+        case 1:
+            if ((otmp = cptr.ldPtro3(
+                svl,
+                cptr.ldI16(cc),
+                168,
+                cptr.ldI16o(cc, $nhcoord_y),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_objects
+            )) !==
+                    null) {
+                (yield* You(
+                    __s_snag_an_object_from_the_s,
+                    surface(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))
+                ));
+                void (yield* pickup_object(otmp, 1n, 0));
+                /* If pickup fails, leave it alone */
+                (yield* newsym(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
+                return NHM.ECMD_TIME;
+            }
+            break;
+        case 2:
+            cptr.memcpy(cptr.add(gb, $instance_globals_b_bhitpos), cc, 4);
+            if ((mtmp = (cptr.ldPtro3(
+                svl,
+                cptr.ldI16(cc),
+                168,
+                cptr.ldI16o(cc, $nhcoord_y),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
+            ))) === null)
+                break;
+            cptr.st1o(
+                gn,
+                $instance_globals_n_notonhead,
+                schar((cptr.ldI16o(gb, $instance_globals_b_bhitpos) !=
+                    cptr.ldI16o(mtmp, $monst_mx) ||
+                    cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) !=
+                        cptr.ldI16o(mtmp, $monst_my)
+                    ? 1
+                    : 0))
+            );
+            save_confirm = cptr.ld1so(flags, $flag_confirm);
+            if ((cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) &&
+                    !rn2(4) &&
+                    (yield* enexto(cc, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), null))) {
+                cptr.st1o(flags, $flag_confirm, 0);
+                void (yield* attack_checks(mtmp, uwep.v));
+                cptr.st1o(flags, $flag_confirm, save_confirm);
+                (yield* check_caitiff(mtmp));  /* despite fact there's no damage */
+                (yield* You(__s_pull_in_s, (yield* mon_nam(mtmp))));
+                cptr.stI32o(mtmp, $monst_mundetected, 0);
+                (yield* rloc_to(mtmp, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
+                return NHM.ECMD_TIME;
+            } else if ((!(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) >=
+                NHM.MZ_LARGE) &&
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 67108864n) !=
+                    0n)) ||
+                    rn2(4)) {
+                cptr.st1o(flags, $flag_confirm, 0);
+                void (yield* attack_checks(mtmp, uwep.v));
+                cptr.st1o(flags, $flag_confirm, save_confirm);
+                (yield* check_caitiff(mtmp));
+                void (yield* thitmonst(mtmp, uwep.v));
+                return NHM.ECMD_TIME;
+            }
+            // @FallThrough
+            ;
         case 3:
-        if (((cptr.ld1so3(
-            svl,
-            cptr.ldI16(cc),
-            $sizeof_rm_x21,
-            cptr.ldI16o(cc, $nhcoord_y),
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_typ
-        )) ==
-            NHC.AIR ||
-            (cptr.ld1so3(
+            if (((cptr.ld1so3(
                 svl,
                 cptr.ldI16(cc),
                 $sizeof_rm_x21,
@@ -6177,36 +6238,48 @@ function* use_grapple(obj) {
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_typ
             )) ==
-                NHC.CLOUD) ||
-                is_pool(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
-            (yield* pline_The(
-                __s_hook_slices_through_the_s,
-                surface(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))
-            ));
-        else {
-            (yield* You(__s_are_yanked_toward_the_s, surface(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))));
-            (yield* hurtle(
-                sgn((cptr.ldI16(cc) - cptr.ldI16(u)) | 0),
-                sgn((cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0),
-                1,
-                0
-            ));
-            (yield* spoteffects(1));
-        }
-        return NHM.ECMD_TIME;
-        default:
-        if ((cptr.ldI16o2(u, typ, $sizeof_skills, $you_weapon_skills)) <= NHC.P_BASIC) {
-            (yield* You(__s_hook_yourself));
-            (yield* losehp(
-                ((Half_physical_damage())
-                    ? ((((rn2(10) + 10 + 1) | 0) / 2) | 0)
-                    : (((rn2(10) + 10) | 0))),
-                __s_a_grappling_hook,
-                NHM.KILLED_BY
-            ));
+                NHC.AIR ||
+                (cptr.ld1so3(
+                    svl,
+                    cptr.ldI16(cc),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(cc, $nhcoord_y),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) ==
+                    NHC.CLOUD) ||
+                    is_pool(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
+                (yield* pline_The(
+                    __s_hook_slices_through_the_s,
+                    surface(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))
+                ));
+            else {
+                (yield* You(
+                    __s_are_yanked_toward_the_s,
+                    surface(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y))
+                ));
+                (yield* hurtle(
+                    sgn((cptr.ldI16(cc) - cptr.ldI16(u)) | 0),
+                    sgn((cptr.ldI16o(cc, $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0),
+                    1,
+                    0
+                ));
+                (yield* spoteffects(1));
+            }
             return NHM.ECMD_TIME;
-        }
-        break;
+        default:
+            if ((cptr.ldI16o2(u, typ, $sizeof_skills, $you_weapon_skills)) <= NHC.P_BASIC) {
+                (yield* You(__s_hook_yourself));
+                (yield* losehp(
+                    ((Half_physical_damage())
+                        ? ((((rn2(10) + 10 + 1) | 0) / 2) | 0)
+                        : (((rn2(10) + 10) | 0))),
+                    __s_a_grappling_hook,
+                    NHM.KILLED_BY
+                ));
+                return NHM.ECMD_TIME;
+            }
+            break;
     }
     (yield* pline(__s_pct_s, cptr.ldPtr(c_common_strings)));
     return NHM.ECMD_TIME;
@@ -6270,7 +6343,8 @@ function* do_break_wand(obj) {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         (yield* You_cant(__s_break_s_without_hands, (yield* yname(obj))));
         return NHM.ECMD_OK;
     } else if (!(yield* freehand())) {
@@ -6334,15 +6408,15 @@ function* do_break_wand(obj) {
 
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.WAN_OPENING:
-        if (cptr.ldPtro(u, $you_ustuck)) {
-            (yield* release_hold());
-            if ((cptr.ldI32o(obj, $obj_dknown) & 1))
-                (yield* discover_object(NHC.WAN_OPENING, 1, 1, 1));
-            (yield* discard_broken_wand());
-            return NHM.ECMD_TIME;
-        }
-        // @FallThrough
-        ;
+            if (cptr.ldPtro(u, $you_ustuck)) {
+                (yield* release_hold());
+                if ((cptr.ldI32o(obj, $obj_dknown) & 1))
+                    (yield* discover_object(NHC.WAN_OPENING, 1, 1, 1));
+                (yield* discard_broken_wand());
+                return NHM.ECMD_TIME;
+            }
+            // @FallThrough
+            ;
         case NHC.WAN_WISHING:
         case NHC.WAN_NOTHING:
         case NHC.WAN_LOCKING:
@@ -6350,37 +6424,37 @@ function* do_break_wand(obj) {
         case NHC.WAN_ENLIGHTENMENT:
         case NHC.WAN_SECRET_DOOR_DETECTION:
         case NHC.WAN_STASIS:
-        (yield* pline(cptr.decay(__static_do_break_wand_nothing_else_happens)));
-        (yield* discard_broken_wand());
-        return NHM.ECMD_TIME;
+            (yield* pline(cptr.decay(__static_do_break_wand_nothing_else_happens)));
+            (yield* discard_broken_wand());
+            return NHM.ECMD_TIME;
         case NHC.WAN_DEATH:
         case NHC.WAN_LIGHTNING:
-        (yield* broken_wand_explode(obj, Math.imul(dmg, 4), NHC.EXPL_MAGICAL));
-        return NHM.ECMD_TIME;
+            (yield* broken_wand_explode(obj, Math.imul(dmg, 4), NHC.EXPL_MAGICAL));
+            return NHM.ECMD_TIME;
         case NHC.WAN_FIRE:
-        (yield* broken_wand_explode(obj, Math.imul(dmg, 2), NHC.EXPL_FIERY));
-        return NHM.ECMD_TIME;
+            (yield* broken_wand_explode(obj, Math.imul(dmg, 2), NHC.EXPL_FIERY));
+            return NHM.ECMD_TIME;
         case NHC.WAN_COLD:
-        (yield* broken_wand_explode(obj, Math.imul(dmg, 2), NHC.EXPL_FROSTY));
-        return NHM.ECMD_TIME;
+            (yield* broken_wand_explode(obj, Math.imul(dmg, 2), NHC.EXPL_FROSTY));
+            return NHM.ECMD_TIME;
         case NHC.WAN_MAGIC_MISSILE:
-        (yield* broken_wand_explode(obj, dmg, NHC.EXPL_MAGICAL));
-        return NHM.ECMD_TIME;
+            (yield* broken_wand_explode(obj, dmg, NHC.EXPL_MAGICAL));
+            return NHM.ECMD_TIME;
         case NHC.WAN_STRIKING:
-        /* we want this before the explosion instead of at the very end */
-        ;
-        (yield* pline(__s_a_wall_of_force_smashes_down_around_you));
-        dmg = d(((1 + cptr.ld1so(obj, $obj_spe)) | 0), 6);  /* normally 2d12 */
-        // @FallThrough
-        ;
+            /* we want this before the explosion instead of at the very end */
+            ;
+            (yield* pline(__s_a_wall_of_force_smashes_down_around_you));
+            dmg = d(((1 + cptr.ld1so(obj, $obj_spe)) | 0), 6);  /* normally 2d12 */
+            // @FallThrough
+            ;
         case NHC.WAN_CANCELLATION:
         case NHC.WAN_POLYMORPH:
         case NHC.WAN_TELEPORTATION:
         case NHC.WAN_UNDEAD_TURNING:
-        affects_objects = 1;
-        break;
+            affects_objects = 1;
+            break;
         default:
-        break;
+            break;
     }
 
     /* magical explosion and its visual effect occur before specific effects
@@ -6540,7 +6614,8 @@ function* do_break_wand(obj) {
                 y,
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
-            ))) !== null) {
+            ))) !==
+                    null) {
                 void (yield* bhitm(mon, obj));
                 /* if (disp.botl) bot(); */
             }
@@ -6681,18 +6756,16 @@ function apply_ok(obj) {
             return NHC.GETOBJ_SUGGEST;
 
         if (cptr.ldI16o(obj, $obj_otyp) != NHC.TOUCHSTONE &&
-                ((cptr.ldI32o2(
-                    objects,
-                    NHC.TOUCHSTONE,
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) & 1) | 0 ||
+                ((cptr.ldI32o2(objects, NHC.TOUCHSTONE, $sizeof_objclass, $objclass_oc_name_known) &
+                    1) |
+                    0 ||
                     (cptr.ldI32o2(
                         objects,
                         cptr.ldI16o(obj, $obj_otyp),
                         $sizeof_objclass,
                         $objclass_oc_name_known
-                    ) & 1) | 0))
+                    ) &
+                        1) | 0))
             return NHC.GETOBJ_EXCLUDE_SELECTABLE;
 
         return NHC.GETOBJ_SUGGEST;
@@ -6714,7 +6787,8 @@ export function* doapply() {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         (yield* You(__s_aren_t_able_to_use_or_apply_tools_in));
         return NHM.ECMD_OK;
     }
@@ -6740,137 +6814,137 @@ export function* doapply() {
     switch (cptr.ldI16o(obj.v, $obj_otyp)) {
         case NHC.BLINDFOLD:
         case NHC.LENSES:
-        if (cptr.eq(obj.v, ublindf.v)) {
-            if (!(yield* cursed(obj.v)))
-                (yield* Blindf_off(obj.v));
-        } else if (!ublindf.v) {
-            (yield* Blindf_on(obj.v));
-        } else {
-            (yield* You(
-                __s_are_already_s,
-                (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.TOWEL)
-                    ? __s_covered_by_a_towel
-                    : ((cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.BLINDFOLD)
-                        ? __s_wearing_a_blindfold
-                        : __s_wearing_lenses)
-            ));
-        }
-        break;
+            if (cptr.eq(obj.v, ublindf.v)) {
+                if (!(yield* cursed(obj.v)))
+                    (yield* Blindf_off(obj.v));
+            } else if (!ublindf.v) {
+                (yield* Blindf_on(obj.v));
+            } else {
+                (yield* You(
+                    __s_are_already_s,
+                    (cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.TOWEL)
+                        ? __s_covered_by_a_towel
+                        : ((cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.BLINDFOLD)
+                            ? __s_wearing_a_blindfold
+                            : __s_wearing_lenses)
+                ));
+            }
+            break;
         case NHC.CREAM_PIE:
-        res = (yield* use_cream_pie(obj.v));
-        obj.v = null;
-        break;
+            res = (yield* use_cream_pie(obj.v));
+            obj.v = null;
+            break;
         case NHC.LUMP_OF_ROYAL_JELLY:
-        res = (yield* use_royal_jelly(obj));
-        break;
+            res = (yield* use_royal_jelly(obj));
+            break;
         case NHC.BULLWHIP:
-        res = (yield* use_whip(obj.v));
-        break;
+            res = (yield* use_whip(obj.v));
+            break;
         case NHC.GRAPPLING_HOOK:
-        res = (yield* use_grapple(obj.v));
-        break;
+            res = (yield* use_grapple(obj.v));
+            break;
         case NHC.LARGE_BOX:
         case NHC.CHEST:
         case NHC.ICE_BOX:
         case NHC.SACK:
         case NHC.BAG_OF_HOLDING:
         case NHC.OILSKIN_SACK:
-        res = (yield* use_container(obj, 1, 0));
-        break;
+            res = (yield* use_container(obj, 1, 0));
+            break;
         case NHC.BAG_OF_TRICKS:
-        void (yield* bagotricks(obj.v, 0, null));
-        break;
+            void (yield* bagotricks(obj.v, 0, null));
+            break;
         case NHC.CAN_OF_GREASE:
-        res = (yield* use_grease(obj.v));
-        break;
+            res = (yield* use_grease(obj.v));
+            break;
         case NHC.LOCK_PICK:
         case NHC.CREDIT_CARD:
         case NHC.SKELETON_KEY:
-        res = ((yield* pick_lock(obj.v, 0, 0, null)) != 0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
-        break;
+            res = ((yield* pick_lock(obj.v, 0, 0, null)) != 0) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+            break;
         case NHC.PICK_AXE:
         case NHC.DWARVISH_MATTOCK:
-        res = (yield* use_pick_axe(obj.v));
-        break;
+            res = (yield* use_pick_axe(obj.v));
+            break;
         case NHC.TINNING_KIT:
-        (yield* use_tinning_kit(obj.v));
-        break;
+            (yield* use_tinning_kit(obj.v));
+            break;
         case NHC.LEASH:
-        res = (yield* use_leash(obj.v));
-        break;
+            res = (yield* use_leash(obj.v));
+            break;
         case NHC.SADDLE:
-        res = (yield* use_saddle(obj.v));
-        break;
+            res = (yield* use_saddle(obj.v));
+            break;
         case NHC.MAGIC_WHISTLE:
-        (yield* use_magic_whistle(obj.v));
-        break;
-        case NHC.TIN_WHISTLE:
-        (yield* use_whistle(obj.v));
-        break;
-        case NHC.EUCALYPTUS_LEAF:
-        /* MRKR: Every Australian knows that a gum leaf makes an excellent
-         * whistle, especially if your pet is a tame kangaroo named Skippy.
-         */
-        if ((cptr.ldI32o(obj.v, $obj_blessed) & 1)) {
             (yield* use_magic_whistle(obj.v));
-            /* sometimes the blessing will be worn off */
-            if (!rn2(49)) {
-                if (!Blind()) {
-                    (yield* pline(__s_s_s__3, (yield* Yobjnam2(obj.v, __s_glow)), hcolor(__s_brown)));
-                    (yield* set_bknown(obj.v, 1));
-                }
-                (yield* unbless(obj.v));
-            }
-        } else {
+            break;
+        case NHC.TIN_WHISTLE:
             (yield* use_whistle(obj.v));
-        }
-        break;
+            break;
+        case NHC.EUCALYPTUS_LEAF:
+            /* MRKR: Every Australian knows that a gum leaf makes an excellent
+             * whistle, especially if your pet is a tame kangaroo named Skippy.
+             */
+            if ((cptr.ldI32o(obj.v, $obj_blessed) & 1)) {
+                (yield* use_magic_whistle(obj.v));
+                /* sometimes the blessing will be worn off */
+                if (!rn2(49)) {
+                    if (!Blind()) {
+                        (yield* pline(__s_s_s__3, (yield* Yobjnam2(obj.v, __s_glow)), hcolor(__s_brown)));
+                        (yield* set_bknown(obj.v, 1));
+                    }
+                    (yield* unbless(obj.v));
+                }
+            } else {
+                (yield* use_whistle(obj.v));
+            }
+            break;
         case NHC.STETHOSCOPE:
-        res = (yield* use_stethoscope(obj.v));
-        break;
+            res = (yield* use_stethoscope(obj.v));
+            break;
         case NHC.MIRROR:
-        res = (yield* use_mirror(obj.v));
-        break;
+            res = (yield* use_mirror(obj.v));
+            break;
         case NHC.BELL:
         case NHC.BELL_OF_OPENING:
-        (yield* use_bell(obj));
-        break;
+            (yield* use_bell(obj));
+            break;
         case NHC.CANDELABRUM_OF_INVOCATION:
-        (yield* use_candelabrum(obj.v));
-        break;
+            (yield* use_candelabrum(obj.v));
+            break;
         case NHC.WAX_CANDLE:
         case NHC.TALLOW_CANDLE:
-        (yield* use_candle(obj));
-        break;
+            (yield* use_candle(obj));
+            break;
         case NHC.OIL_LAMP:
         case NHC.MAGIC_LAMP:
         case NHC.BRASS_LANTERN:
-        (yield* use_lamp(obj.v));
-        break;
+            (yield* use_lamp(obj.v));
+            break;
         case NHC.POT_OIL:
-        (yield* light_cocktail(obj));
-        break;
+            (yield* light_cocktail(obj));
+            break;
         case NHC.EXPENSIVE_CAMERA:
-        res = (yield* use_camera(obj.v));
-        break;
+            res = (yield* use_camera(obj.v));
+            break;
         case NHC.TOWEL:
-        res = (yield* use_towel(obj.v));
-        break;
+            res = (yield* use_towel(obj.v));
+            break;
         case NHC.CRYSTAL_BALL:
-        (yield* use_crystal_ball(obj));
-        break;
+            (yield* use_crystal_ball(obj));
+            break;
         case NHC.MAGIC_MARKER:
-        res = (yield* dowrite(obj.v));
-        break;
+            res = (yield* dowrite(obj.v));
+            break;
         case NHC.TIN_OPENER:
-        res = (yield* use_tin_opener(obj.v));
-        break;
+            res = (yield* use_tin_opener(obj.v));
+            break;
         case NHC.FIGURINE:
-        res = (yield* use_figurine(obj));
-        break;
+            res = (yield* use_figurine(obj));
+            break;
         case NHC.UNICORN_HORN:
-        (yield* use_unicorn_horn(obj));
-        break;
+            (yield* use_unicorn_horn(obj));
+            break;
         case NHC.WOODEN_FLUTE:
         case NHC.MAGIC_FLUTE:
         case NHC.TOOLED_HORN:
@@ -6881,41 +6955,41 @@ export function* doapply() {
         case NHC.BUGLE:
         case NHC.LEATHER_DRUM:
         case NHC.DRUM_OF_EARTHQUAKE:
-        res = (yield* do_play_instrument(obj.v));
-        break;
+            res = (yield* do_play_instrument(obj.v));
+            break;
         case NHC.HORN_OF_PLENTY:
-        void (yield* hornoplenty(obj.v, 0, null));
-        break;
+            void (yield* hornoplenty(obj.v, 0, null));
+            break;
         case NHC.LAND_MINE:
         case NHC.BEARTRAP:
-        (yield* use_trap(obj.v));
-        if (cptr.ldPtro(go, $instance_globals_o_occupation) === set_trap)
-            obj.v = null;  /* not gone yet but behave as if it was */
-        break;
+            (yield* use_trap(obj.v));
+            if (cptr.ldPtro(go, $instance_globals_o_occupation) === set_trap)
+                obj.v = null;  /* not gone yet but behave as if it was */
+            break;
         case NHC.FLINT:
         case NHC.LUCKSTONE:
         case NHC.LOADSTONE:
         case NHC.TOUCHSTONE:
-        res = (yield* use_stone(obj.v));
-        break;
+            res = (yield* use_stone(obj.v));
+            break;
         case NHC.BANANA:
-        if (Hallucination()) {
-            (yield* pline(__s_it_rings_but_no_one_answers));
-            break;
-        }
-        // @FallThrough
-        ;
+            if (Hallucination()) {
+                (yield* pline(__s_it_rings_but_no_one_answers));
+                break;
+            }
+            // @FallThrough
+            ;
         default:
-        /* Pole-weapons can strike at a distance */
-        if (is_pole(obj.v)) {
-            res = (yield* use_pole(obj.v, 0));
-            break;
-        } else if (is_pick(obj.v) || is_axe(obj.v)) {
-            res = (yield* use_pick_axe(obj.v));
-            break;
-        }
-        (yield* pline(__s_sorry_i_don_t_know_how_to_use_that));
-        return NHM.ECMD_FAIL;
+            /* Pole-weapons can strike at a distance */
+            if (is_pole(obj.v)) {
+                res = (yield* use_pole(obj.v, 0));
+                break;
+            } else if (is_pick(obj.v) || is_axe(obj.v)) {
+                res = (yield* use_pick_axe(obj.v));
+                break;
+            }
+            (yield* pline(__s_sorry_i_don_t_know_how_to_use_that));
+            return NHM.ECMD_FAIL;
     }
     /* This assumes that anything that potentially destroyed obj has kept
      * track of it and set obj to null before this point. */

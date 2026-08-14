@@ -286,175 +286,182 @@ function throne_sit_effect() {
 
         switch (effect) {
             case 1:
-            void adjattrib(rn2(NHC.A_MAX), -((rn2(4) + 3) | 0), 0);
-            losehp(rnd(10), __s_cursed_throne, NHM.KILLED_BY_AN);
-            break;
+                void adjattrib(rn2(NHC.A_MAX), -((rn2(4) + 3) | 0), 0);
+                losehp(rnd(10), __s_cursed_throne, NHM.KILLED_BY_AN);
+                break;
             case 2:
-            void adjattrib(rn2(NHC.A_MAX), 1, 0);
-            break;
+                void adjattrib(rn2(NHC.A_MAX), 1, 0);
+                break;
             case 3:
-            pline(
-                __s_a_s_electric_shock_shoots_through_your,
-                (Shock_resistance()) ? __s_n : __s_massive
-            );
-            losehp(Shock_resistance() ? rnd(6) : rnd(30), __s_electric_chair, NHM.KILLED_BY_AN);
-            exercise(NHC.A_CON, 0);
-            break;
+                pline(
+                    __s_a_s_electric_shock_shoots_through_your,
+                    (Shock_resistance()) ? __s_n : __s_massive
+                );
+                losehp(Shock_resistance() ? rnd(6) : rnd(30), __s_electric_chair, NHM.KILLED_BY_AN);
+                exercise(NHC.A_CON, 0);
+                break;
             case 4:
-            You_feel(__s_much_much_better);
-            if (Upolyd()) {
-                if (cptr.ldI32o(u, $you_mh) >= ((cptr.ldI32o(u, $you_mhmax) - 5) | 0))
-                    cptr.stI32o(u, $you_mhmax, (cptr.ldI32o(u, $you_mhmax) + 4) | 0);
-                cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
-            }
-            if (cptr.ldI32o(u, $you_uhp) >= ((cptr.ldI32o(u, $you_uhpmax) - 5) | 0)) {
-                cptr.stI32o(u, $you_uhpmax, (cptr.ldI32o(u, $you_uhpmax) + 4) | 0);
-                if (cptr.ldI32o(u, $you_uhpmax) > cptr.ldI32o(u, $you_uhppeak))
-                    cptr.stI32o(u, $you_uhppeak, cptr.ldI32o(u, $you_uhpmax));
-            }
-            cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
-            cptr.stI32o(u, $you_ucreamed, 0);
-            make_blinded(0n, 1);
-            make_sick(0n, null, 0, NHM.SICK_ALL);
-            heal_legs(0);
-            cptr.st1(disp, 1);
-            break;
+                You_feel(__s_much_much_better);
+                if (Upolyd()) {
+                    if (cptr.ldI32o(u, $you_mh) >= ((cptr.ldI32o(u, $you_mhmax) - 5) | 0))
+                        cptr.stI32o(u, $you_mhmax, (cptr.ldI32o(u, $you_mhmax) + 4) | 0);
+                    cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
+                }
+                if (cptr.ldI32o(u, $you_uhp) >= ((cptr.ldI32o(u, $you_uhpmax) - 5) | 0)) {
+                    cptr.stI32o(u, $you_uhpmax, (cptr.ldI32o(u, $you_uhpmax) + 4) | 0);
+                    if (cptr.ldI32o(u, $you_uhpmax) > cptr.ldI32o(u, $you_uhppeak))
+                        cptr.stI32o(u, $you_uhppeak, cptr.ldI32o(u, $you_uhpmax));
+                }
+                cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
+                cptr.stI32o(u, $you_ucreamed, 0);
+                make_blinded(0n, 1);
+                make_sick(0n, null, 0, NHM.SICK_ALL);
+                heal_legs(0);
+                cptr.st1(disp, 1);
+                break;
             case 5:
-            take_gold();
-            break;
+                take_gold();
+                break;
             case 6:
-            if (((cptr.ld1so(u, $you_uluck) + rn2(5)) | 0) < 0) {
-                You_feel(__s_your_luck_is_changing);
-                change_luck(1);
-            } else
-                makewish();
-            break;
+                if (((cptr.ld1so(u, $you_uluck) + rn2(5)) | 0) < 0) {
+                    You_feel(__s_your_luck_is_changing);
+                    change_luck(1);
+                } else
+                    makewish();
+                break;
             case 7:
-            {
-                let cnt = rnd(10);
+                {
+                    let cnt = rnd(10);
 
+                    /* Magical voice not affected by deafness */
+                    pline(__s_a_voice_echoes);
+                    ;
+                    verbalize(
+                        __s_thine_audience_hath_been_summoned_s,
+                        cptr.ld1so(flags, $flag_female) ? __s_dame : __s_sire
+                    );
+                    while (cnt--)
+                        void makemon(courtmon(), tx, ty, NHM.NO_MM_FLAGS);
+                    break;
+                }
+            case 8:
                 /* Magical voice not affected by deafness */
                 pline(__s_a_voice_echoes);
                 ;
                 verbalize(
-                    __s_thine_audience_hath_been_summoned_s,
+                    __s_by_thine_imperious_order_s,
                     cptr.ld1so(flags, $flag_female) ? __s_dame : __s_sire
                 );
-                while (cnt--)
-                    void makemon(courtmon(), tx, ty, NHM.NO_MM_FLAGS);
+                do_genocide(5);  /* REALLY|ONTHRONE, see do_genocide() */
                 break;
-            }
-            case 8:
-            /* Magical voice not affected by deafness */
-            pline(__s_a_voice_echoes);
-            ;
-            verbalize(
-                __s_by_thine_imperious_order_s,
-                cptr.ld1so(flags, $flag_female) ? __s_dame : __s_sire
-            );
-            do_genocide(5);  /* REALLY|ONTHRONE, see do_genocide() */
-            break;
             case 9:
-            /* Magical voice not affected by deafness */
-            pline(__s_a_voice_echoes);
-            ;
-            verbalize(__s_a_curse_upon_thee_for_sitting_upon_this);
-            if (Luck() > 0) {
-                make_blinded(
-                    BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2(100) + 250) | 0))),
-                    1
-                );
-                change_luck(schar(((Luck() > 1) ? -rnd(2) : -1)));
-            } else
-                rndcurse();
-            break;
-            case 10:
-            if (Luck() < 0 || (HSee_invisible() & 117440512n)) {
-                if ((cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
-                ) & 1)) {
-                    pline(__s_a_terrible_drone_fills_your_head);
-                    make_confused(
-                        BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd(30))),
-                        0
+                /* Magical voice not affected by deafness */
+                pline(__s_a_voice_echoes);
+                ;
+                verbalize(__s_a_curse_upon_thee_for_sitting_upon_this);
+                if (Luck() > 0) {
+                    make_blinded(
+                        BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2(100) + 250) | 0))),
+                        1
                     );
-                } else {
-                    pline(__s_an_image_forms_in_your_mind);
-                    do_mapping();
-                }
-            } else {
-                /* avoid "vision clears" if hero can't see */
-                if (!Blind()) {
-                    Your(__s_vision_becomes_clear);
-                } else {
-                    let num_of_eyes = eyecount(cptr.ldPtro(
-                        gy,
-                        $instance_globals_y_youmonst + $monst_data
-                    ));
-                    let eye = body_part(NHC.EYE);
-
-                    /* note: 1 eye case won't actually happen--can't
-                       sit on throne when poly'd into always-levitating
-                       floating eye and can't polymorph into Cyclops */
-                    switch (num_of_eyes) {
-                        default:
-                        case 2:
-                        eye = makeplural(eye);
-                        // @FallThrough
-                        ;
-                        case 1:
-                        Your(__s_s_s, eye, vtense(eye, __s_tingle));
-                        break;
-                        case 0:
-                        You(__s_have_a_very_strange_feeling_in_your_s, body_part(NHC.HEAD));
-                        break;
+                    change_luck(schar(((Luck() > 1) ? -rnd(2) : -1)));
+                } else
+                    rndcurse();
+                break;
+            case 10:
+                if (Luck() < 0 || (HSee_invisible() & 117440512n)) {
+                    if ((cptr.ldI32o(
+                        svl,
+                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
+                    ) &
+                            1)) {
+                        pline(__s_a_terrible_drone_fills_your_head);
+                        make_confused(
+                            BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd(30))),
+                            0
+                        );
+                    } else {
+                        pline(__s_an_image_forms_in_your_mind);
+                        do_mapping();
                     }
+                } else {
+                    /* avoid "vision clears" if hero can't see */
+                    if (!Blind()) {
+                        Your(__s_vision_becomes_clear);
+                    } else {
+                        let num_of_eyes = eyecount(cptr.ldPtro(
+                            gy,
+                            $instance_globals_y_youmonst + $monst_data
+                        ));
+                        let eye = body_part(NHC.EYE);
+
+                        /* note: 1 eye case won't actually happen--can't
+                           sit on throne when poly'd into always-levitating
+                           floating eye and can't polymorph into Cyclops */
+                        switch (num_of_eyes) {
+                            default:
+                            case 2:
+                                eye = makeplural(eye);
+                                // @FallThrough
+                                ;
+                            case 1:
+                                Your(__s_s_s, eye, vtense(eye, __s_tingle));
+                                break;
+                            case 0:
+                                You(__s_have_a_very_strange_feeling_in_your_s, body_part(NHC.HEAD));
+                                break;
+                        }
+                    }
+                    cptr.stI64o2(
+                        u,
+                        NHC.SEE_INVIS,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        cptr.ldI64o2(
+                            u,
+                            NHC.SEE_INVIS,
+                            $sizeof_prop,
+                            $you_uprops + $prop_intrinsic
+                        ) |
+                            67108864n
+                    );
+                    newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
                 }
-                cptr.stI64o2(
-                    u,
-                    NHC.SEE_INVIS,
-                    $sizeof_prop,
-                    $you_uprops + $prop_intrinsic,
-                    cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) |
-                        67108864n
-                );
-                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-            }
-            break;
+                break;
             case 11:
-            if (Luck() < 0) {
-                You_feel(__s_threatened);
-                aggravate();
-            } else {
-                You_feel(__s_a_wrenching_sensation);
-                tele();  /* teleport him */
-            }
-            break;
+                if (Luck() < 0) {
+                    You_feel(__s_threatened);
+                    aggravate();
+                } else {
+                    You_feel(__s_a_wrenching_sensation);
+                    tele();  /* teleport him */
+                }
+                break;
             case 12:
-            You(__s_are_granted_an_insight);
-            if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
-                /* rn2(5) agrees w/seffects() */
-                identify_pack(rn2(5), 0);
-            }
-            break;
+                You(__s_are_granted_an_insight);
+                if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
+                    /* rn2(5) agrees w/seffects() */
+                    identify_pack(rn2(5), 0);
+                }
+                break;
             case 13:
-            Your(__s_mind_turns_into_a_pretzel);
-            make_confused(
-                BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(((rn2(7) + 16) | 0))),
-                0
-            );
-            break;
+                Your(__s_mind_turns_into_a_pretzel);
+                make_confused(
+                    BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(((rn2(7) + 16) | 0))),
+                    0
+                );
+                break;
             default:
-            impossible(__s_throne_effect);
-            break;
+                impossible(__s_throne_effect);
+                break;
         }
     } else {
         if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags2
         ) &
-            2048n) != 0n) ||
+            2048n) !=
+            0n) ||
                 (cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0)
             You_feel(__s_very_comfortable_here);
         else
@@ -514,151 +521,156 @@ function special_throne_effect(effect) {
         case 2:
         case 3:
         case 4:
-        /* 4 chances of a wish, but then the throne disappears.
+            /* 4 chances of a wish, but then the throne disappears.
 
-           This is the only way the throne can disappear from sitting
-           on it, so if you sit on it enough (enduring the negative
-           effects) you are guaranteed an eventual wish. */
-        makewish();
-        cptr.st1o3(
-            svl,
-            tx,
-            $sizeof_rm_x21,
-            ty,
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_typ,
-            NHC.ROOM
-        ),
-                cptr.stI32o3(
-                    svl,
-                    tx,
-                    $sizeof_rm_x21,
-                    ty,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_flags,
-                    0
-                );
-        map_background(tx, ty, 0);
-        newsym_force(tx, ty);
-        pline_The(__s_throne_disintegrates_having_spent_its);
-        break;
+               This is the only way the throne can disappear from sitting
+               on it, so if you sit on it enough (enduring the negative
+               effects) you are guaranteed an eventual wish. */
+            makewish();
+            cptr.st1o3(
+                svl,
+                tx,
+                $sizeof_rm_x21,
+                ty,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                NHC.ROOM
+            ),
+                    cptr.stI32o3(
+                        svl,
+                        tx,
+                        $sizeof_rm_x21,
+                        ty,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags,
+                        0
+                    );
+            map_background(tx, ty, 0);
+            newsym_force(tx, ty);
+            pline_The(__s_throne_disintegrates_having_spent_its);
+            break;
         case 5:
-        /* permanent level drain */
-        pline(__s_sitting_on_the_throne_was_a_terrible);
-        if (!Drain_resistance()) {
-            losexp(__s_a_bad_experience_sitting_on_a_throne);
-            if (cptr.ldI32o(u, $you_ulevelmax) > cptr.ldI32o(u, $you_ulevel))
-                cptr.stI32o(u, $you_ulevelmax, (cptr.ldI32o(u, $you_ulevelmax) - 1) | 0);
-        }
-        break;
-        case 6:
-        {
-            /* grease hands and inventory
-
-               Same rules for which items can be affected as grease_ok in apply.c */
-            let otmp;
-
-            pline(__s_a_greasy_liquid_sprays_all_over_you);
-            for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
-                if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
-                    cptr.stI32o(otmp, $obj_greased, 1);
-            make_glib(((rn2(101) + 100) | 0));
-            update_inventory();
-            break;
-        }
-        case 7:
-        /* lose an intrinsic */
-        attrcurse();
-        pline_The(__s_throne_somehow_seems_to_be_amused);
-        break;
-        case 8:
-        {
-            /* level teleport to Vibrating Square level */
-            let vs_level = cptr.alloc(4);
-            find_hell(vs_level);
-            cptr.stI16o(
-                vs_level,
-                $d_level_dlevel,
-                i16(((cptr.ldI16o2(
-                    svd,
-                    cptr.ldI16(vs_level),
-                    $sizeof_dungeon,
-                    $dungeon_num_dunlevs
-                ) - 1) | 0))
-            );
-            if ((cptr.ldI32o(u, $you_uhave) & 1))
-                You_feel(__s_extremely_disoriented_for_a_moment);
-            else
-                schedule_goto(
-                    vs_level,
-                    NHC.UTOTYPE_NONE,
-                    null,
-                    __s_you_feel_extremely_out_of_place
-                );
-            break;
-        }
-        case 9:
-        {
-            /* summon demons; a NULL argument to msummon summons demons as
-               though they were summoned by the Wizard of Yendor */
-            pline_The(__s_throne_seeems_to_be_calling_for_help);
-            msummon(null);
-            msummon(null);
-            msummon(null);
-            break;
-        }
-        case 10:
-        {
-            /* confused blessed remove curse effect */
-            let fake_spellbook = cptr.alloc(216);
-            let save_confusion = HConfusion();
-
-            cptr.memcpy(fake_spellbook, cg, 216);
-            cptr.stI16o(fake_spellbook, $obj_otyp, NHC.SPE_REMOVE_CURSE);
-            cptr.st1o(fake_spellbook, $obj_oclass, NHC.SPBOOK_CLASS);
-            cptr.stI32o(fake_spellbook, $obj_blessed, 1);
-            cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);
-            void seffects(fake_spellbook);
-            cptr.stI64o2(
-                u,
-                NHC.CONFUSION,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                save_confusion
-            );
-            break;
-        }
-        case 11:
-        /* polymorph effect (not blocked by magic resistance, but other things
-           that protect from polymorphs work) */
-        if ((cptr.ld1so(
-            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-            $permonst_mlet
-        ) ==
-                NHC.S_VAMPIRE)) {
-            You_feel(__s_unworthy);
-        } else {
-            pline(__s_this_throne_was_not_meant_for_those);
-            You_feel(__s_a_change_coming_over_you);
-            polyself(NHC.POLY_NOFLAGS);
-        }
-        break;
-        case 12:
-        /* acid damage */
-        pline(__s_the_throne_is_covered_in_acid);
-        losehp(Acid_resistance() ? rnd(16) : rnd(80), __s_acidic_chair, NHM.KILLED_BY_AN);
-        exercise(NHC.A_CON, 0);
-        break;
-        case 13:
-        {
-            /* ability shuffle */
-            let ability;
-            pline(__s_as_you_sit_on_the_throne_your_body_and);
-            for (ability = 0; ability < NHC.A_MAX; ++ability) {
-                adjattrib(ability, (rn2(5) - 2) | 0, -1);
+            /* permanent level drain */
+            pline(__s_sitting_on_the_throne_was_a_terrible);
+            if (!Drain_resistance()) {
+                losexp(__s_a_bad_experience_sitting_on_a_throne);
+                if (cptr.ldI32o(u, $you_ulevelmax) > cptr.ldI32o(u, $you_ulevel))
+                    cptr.stI32o(u, $you_ulevelmax, (cptr.ldI32o(u, $you_ulevelmax) - 1) | 0);
             }
             break;
-        }
+        case 6:
+            {
+                /* grease hands and inventory
+
+                   Same rules for which items can be affected as grease_ok in apply.c */
+                let otmp;
+
+                pline(__s_a_greasy_liquid_sprays_all_over_you);
+                for (
+                    otmp = cptr.ldPtro(gi, $instance_globals_i_invent);
+                    otmp;
+                    otmp = cptr.ldPtr(otmp)
+                )
+                    if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
+                        cptr.stI32o(otmp, $obj_greased, 1);
+                make_glib(((rn2(101) + 100) | 0));
+                update_inventory();
+                break;
+            }
+        case 7:
+            /* lose an intrinsic */
+            attrcurse();
+            pline_The(__s_throne_somehow_seems_to_be_amused);
+            break;
+        case 8:
+            {
+                /* level teleport to Vibrating Square level */
+                let vs_level = cptr.alloc(4);
+                find_hell(vs_level);
+                cptr.stI16o(
+                    vs_level,
+                    $d_level_dlevel,
+                    i16(((cptr.ldI16o2(
+                        svd,
+                        cptr.ldI16(vs_level),
+                        $sizeof_dungeon,
+                        $dungeon_num_dunlevs
+                    ) -
+                        1) | 0))
+                );
+                if ((cptr.ldI32o(u, $you_uhave) & 1))
+                    You_feel(__s_extremely_disoriented_for_a_moment);
+                else
+                    schedule_goto(
+                        vs_level,
+                        NHC.UTOTYPE_NONE,
+                        null,
+                        __s_you_feel_extremely_out_of_place
+                    );
+                break;
+            }
+        case 9:
+            {
+                /* summon demons; a NULL argument to msummon summons demons as
+                   though they were summoned by the Wizard of Yendor */
+                pline_The(__s_throne_seeems_to_be_calling_for_help);
+                msummon(null);
+                msummon(null);
+                msummon(null);
+                break;
+            }
+        case 10:
+            {
+                /* confused blessed remove curse effect */
+                let fake_spellbook = cptr.alloc(216);
+                let save_confusion = HConfusion();
+
+                cptr.memcpy(fake_spellbook, cg, 216);
+                cptr.stI16o(fake_spellbook, $obj_otyp, NHC.SPE_REMOVE_CURSE);
+                cptr.st1o(fake_spellbook, $obj_oclass, NHC.SPBOOK_CLASS);
+                cptr.stI32o(fake_spellbook, $obj_blessed, 1);
+                cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, 1n);
+                void seffects(fake_spellbook);
+                cptr.stI64o2(
+                    u,
+                    NHC.CONFUSION,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    save_confusion
+                );
+                break;
+            }
+        case 11:
+            /* polymorph effect (not blocked by magic resistance, but other things
+               that protect from polymorphs work) */
+            if ((cptr.ld1so(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mlet
+            ) ==
+                    NHC.S_VAMPIRE)) {
+                You_feel(__s_unworthy);
+            } else {
+                pline(__s_this_throne_was_not_meant_for_those);
+                You_feel(__s_a_change_coming_over_you);
+                polyself(NHC.POLY_NOFLAGS);
+            }
+            break;
+        case 12:
+            /* acid damage */
+            pline(__s_the_throne_is_covered_in_acid);
+            losehp(Acid_resistance() ? rnd(16) : rnd(80), __s_acidic_chair, NHM.KILLED_BY_AN);
+            exercise(NHC.A_CON, 0);
+            break;
+        case 13:
+            {
+                /* ability shuffle */
+                let ability;
+                pline(__s_as_you_sit_on_the_throne_your_body_and);
+                for (ability = 0; ability < NHC.A_MAX; ++ability) {
+                    adjattrib(ability, (rn2(5) - 2) | 0, -1);
+                }
+                break;
+            }
     }
 }
 
@@ -758,7 +770,9 @@ export function dosit() {
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
-                ) & 256n) != 0n) &&
+                ) &
+                    256n) !=
+                    0n) &&
                 cptr.ldI32o(u, $you_umonnum) != NHC.PM_TRAPPER)
             cptr.stI32o(u, $you_uundetected, 0);  /* no longer on the ceiling */
 
@@ -816,7 +830,8 @@ export function dosit() {
             cptr.ldI16o(u, $you_uy),
             8,
             $instance_globals_saved_l_level + $dlevel_t_objects
-        ) !== null) &&
+        ) !==
+            null) &&
                 !(uteetering_at_seen_pit(trap) || uescaped_shaft(trap))) {
             let obj;
 
@@ -860,7 +875,8 @@ export function dosit() {
                         ((cptr.ldU64o(
                             (cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)),
                             $permonst_mflags1
-                        ) & 4n) != 0n))
+                        ) &
+                            4n) != 0n))
                     pline(__s_it_s_squishy);
                 else if (cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE) {
                     if (!Deaf()) {
@@ -874,7 +890,9 @@ export function dosit() {
                             cptr.ldI16o(obj, $obj_otyp),
                             $sizeof_objclass,
                             $objclass_oc_material
-                        ) & 31) | 0) ==
+                        ) &
+                            31) |
+                            0) ==
                             NHC.CLOTH))
                     pline(__s_it_s_not_very_comfortable);
             }
@@ -1026,7 +1044,8 @@ export function dosit() {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-                4194304n) != 0n)) {
+            4194304n) !=
+                0n)) {
             return lay_an_egg();
         } else {
             pline(__s_having_fun_sitting_on_the_s, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -1151,200 +1170,200 @@ export function attrcurse() {
 
     switch (rnd(11)) {
         case 1:
-        if (HFire_resistance() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.FIRE_RES,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_warmer);
-            ret = NHC.FIRE_RES;
-            break;
-        }
-        // @FallThrough
-        ;
-        case 2:
-        if (HTeleportation() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.TELEPORT,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_less_jumpy);
-            ret = NHC.TELEPORT;
-            break;
-        }
-        // @FallThrough
-        ;
-        case 3:
-        if (HPoison_resistance() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.POISON_RES,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_a_little_sick);
-            ret = NHC.POISON_RES;
-            break;
-        }
-        // @FallThrough
-        ;
-        case 4:
-        if (HTelepat() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.TELEPAT,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            if (Blind() && !Blind_telepat())
-                see_monsters();  /* Can't sense mons anymore! */
-            Your(__s_senses_fail);
-            ret = NHC.TELEPAT;
-            break;
-        }
-        // @FallThrough
-        ;
-        case 5:
-        if (HCold_resistance() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.COLD_RES,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_cooler);
-            ret = NHC.COLD_RES;
-            break;
-        }
-        // @FallThrough
-        ;
-        case 6:
-        if (HInvis() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.INVIS,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_paranoid);
-            ret = NHC.INVIS;
-            break;
-        }
-        // @FallThrough
-        ;
-        case 7:
-        if (HSee_invisible() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.SEE_INVIS,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            if (!See_invisible()) {
-                set_mimic_blocking();
-                see_monsters();
-                /* might not be able to see self anymore */
-                newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+            if (HFire_resistance() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.FIRE_RES,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_warmer);
+                ret = NHC.FIRE_RES;
+                break;
             }
-            You(
-                __s_pct_s_bang,
-                Hallucination() ? __s_tawt_you_taw_a_puttie_tat : __s_thought_you_saw_something
-            );
-            ret = NHC.SEE_INVIS;
-            break;
-        }
-        // @FallThrough
-        ;
+            // @FallThrough
+            ;
+        case 2:
+            if (HTeleportation() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.TELEPORT,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_less_jumpy);
+                ret = NHC.TELEPORT;
+                break;
+            }
+            // @FallThrough
+            ;
+        case 3:
+            if (HPoison_resistance() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.POISON_RES,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_a_little_sick);
+                ret = NHC.POISON_RES;
+                break;
+            }
+            // @FallThrough
+            ;
+        case 4:
+            if (HTelepat() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.TELEPAT,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                if (Blind() && !Blind_telepat())
+                    see_monsters();  /* Can't sense mons anymore! */
+                Your(__s_senses_fail);
+                ret = NHC.TELEPAT;
+                break;
+            }
+            // @FallThrough
+            ;
+        case 5:
+            if (HCold_resistance() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.COLD_RES,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_cooler);
+                ret = NHC.COLD_RES;
+                break;
+            }
+            // @FallThrough
+            ;
+        case 6:
+            if (HInvis() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.INVIS,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_paranoid);
+                ret = NHC.INVIS;
+                break;
+            }
+            // @FallThrough
+            ;
+        case 7:
+            if (HSee_invisible() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.SEE_INVIS,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                if (!See_invisible()) {
+                    set_mimic_blocking();
+                    see_monsters();
+                    /* might not be able to see self anymore */
+                    newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                }
+                You(
+                    __s_pct_s_bang,
+                    Hallucination() ? __s_tawt_you_taw_a_puttie_tat : __s_thought_you_saw_something
+                );
+                ret = NHC.SEE_INVIS;
+                break;
+            }
+            // @FallThrough
+            ;
         case 8:
-        if (HFast() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.FAST,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_slower);
-            ret = NHC.FAST;
-            break;
-        }
-        // @FallThrough
-        ;
+            if (HFast() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.FAST,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_slower);
+                ret = NHC.FAST;
+                break;
+            }
+            // @FallThrough
+            ;
         case 9:
-        if (HStealth() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.STEALTH,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_clumsy);
-            ret = NHC.STEALTH;
-            break;
-        }
-        // @FallThrough
-        ;
+            if (HStealth() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.STEALTH,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_clumsy);
+                ret = NHC.STEALTH;
+                break;
+            }
+            // @FallThrough
+            ;
         case 10:
-        /* intrinsic protection is just disabled, not set back to 0 */
-        if (HProtection() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.PROTECTION,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-                    (-117440513n)
-            );
-            You_feel(__s_vulnerable);
-            ret = NHC.PROTECTION;
-            break;
-        }
-        // @FallThrough
-        ;
+            /* intrinsic protection is just disabled, not set back to 0 */
+            if (HProtection() & 117440512n) {
+                cptr.stI64o2(
+                    u,
+                    NHC.PROTECTION,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                        (-117440513n)
+                );
+                You_feel(__s_vulnerable);
+                ret = NHC.PROTECTION;
+                break;
+            }
+            // @FallThrough
+            ;
         case 11:
-        if (HAggravate_monster() & 117440512n) {
-            cptr.stI64o2(
-                u,
-                NHC.AGGRAVATE_MONSTER,
-                $sizeof_prop,
-                $you_uprops + $prop_intrinsic,
-                cptr.ldI64o2(
+            if (HAggravate_monster() & 117440512n) {
+                cptr.stI64o2(
                     u,
                     NHC.AGGRAVATE_MONSTER,
                     $sizeof_prop,
-                    $you_uprops + $prop_intrinsic
-                ) &
-                    (-117440513n)
-            );
-            You_feel(__s_less_attractive);
-            ret = NHC.AGGRAVATE_MONSTER;
-            break;
-        }
-        // @FallThrough
-        ;
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(
+                        u,
+                        NHC.AGGRAVATE_MONSTER,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic
+                    ) &
+                        (-117440513n)
+                );
+                You_feel(__s_less_attractive);
+                ret = NHC.AGGRAVATE_MONSTER;
+                break;
+            }
+            // @FallThrough
+            ;
         default:
-        break;
+            break;
     }
     return ret;
 }

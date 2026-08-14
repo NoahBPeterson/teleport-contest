@@ -1189,8 +1189,8 @@ function shkveg() {
 
     j = 0;
     i = cptr.ldI32o(ok, 0, 4);
-    while ((prob = (prob -
-            cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0) > 0) {
+    while ((prob = (prob - cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0) >
+            0) {
         j++;
         i = cptr.ldI32o(ok, j, 4);
     }
@@ -1247,7 +1247,8 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
                 sy,
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
-            ) !== null) &&
+            ) !==
+                null) &&
             (ptr = mkclass(NHC.S_MIMIC, 0)) !== null &&
             (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
         /* nothing */
@@ -1288,8 +1289,7 @@ function nameshk(shk, nlp) {
         let nseed = Number(BigInt.asIntN(32, (ubirthday.v / 257n)));
 
         name_wanted = (name_wanted +
-            (ledger_no(cptr.add(u, $you_uz)) + (nseed % 13) - (nseed % 5))) |
-                0;
+                (ledger_no(cptr.add(u, $you_uz)) + (nseed % 13) - (nseed % 5))) | 0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + 18) | 0;
         cptr.stI32o(shk, $monst_female, (name_wanted & 1) >>> 0);
@@ -1446,7 +1446,8 @@ function good_shopdoor(sroom, sx, sy) {
                         cptr.ldI16(sy),
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_edge
-                    ) & 1) &&
+                    ) &
+                        1) &&
                     ((cptr.ldI32o3(
                         svl,
                         (cptr.ldI16(sx) - 1) | 0,
@@ -1454,7 +1455,9 @@ function good_shopdoor(sroom, sx, sy) {
                         cptr.ldI16(sy),
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_roomno
-                    ) & 63) | 0) == rmno)
+                    ) &
+                        63) |
+                        0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + -1)) - (-1);
             else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) &&
                     !(cptr.ldI32o3(
@@ -1464,7 +1467,8 @@ function good_shopdoor(sroom, sx, sy) {
                         cptr.ldI16(sy),
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_edge
-                    ) & 1) &&
+                    ) &
+                        1) &&
                     ((cptr.ldI32o3(
                         svl,
                         (cptr.ldI16(sx) + 1) | 0,
@@ -1472,7 +1476,9 @@ function good_shopdoor(sroom, sx, sy) {
                         cptr.ldI16(sy),
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_roomno
-                    ) & 63) | 0) == rmno)
+                    ) &
+                        63) |
+                        0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + 1)) - (1);
             else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) - 1) | 0))) &&
                     !(cptr.ldI32o3(
@@ -1482,7 +1488,8 @@ function good_shopdoor(sroom, sx, sy) {
                         (cptr.ldI16(sy) - 1) | 0,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_edge
-                    ) & 1) &&
+                    ) &
+                        1) &&
                     ((cptr.ldI32o3(
                         svl,
                         cptr.ldI16(sx),
@@ -1490,7 +1497,9 @@ function good_shopdoor(sroom, sx, sy) {
                         (cptr.ldI16(sy) - 1) | 0,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_roomno
-                    ) & 63) | 0) == rmno)
+                    ) &
+                        63) |
+                        0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + -1)) - (-1);
             else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) + 1) | 0))) &&
                     !(cptr.ldI32o3(
@@ -1500,7 +1509,8 @@ function good_shopdoor(sroom, sx, sy) {
                         (cptr.ldI16(sy) + 1) | 0,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_edge
-                    ) & 1) &&
+                    ) &
+                        1) &&
                     ((cptr.ldI32o3(
                         svl,
                         cptr.ldI16(sx),
@@ -1508,7 +1518,9 @@ function good_shopdoor(sroom, sx, sy) {
                         (cptr.ldI16(sy) + 1) | 0,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_roomno
-                    ) & 63) | 0) == rmno)
+                    ) &
+                        63) |
+                        0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + 1)) - (1);
             else
                 continue;
@@ -1682,7 +1694,9 @@ function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
             sy,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_edge
-        ) & 1) | 0 ||
+        ) &
+            1) |
+            0 ||
                 ((cptr.ldI32o3(
                     svl,
                     sx,
@@ -1690,7 +1704,10 @@ function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
                     sy,
                     $sizeof_rm,
                     $instance_globals_saved_l_level + $rm_roomno
-                ) & 63) | 0) != rmno ||
+                ) &
+                    63) |
+                    0) !=
+                    rmno ||
                 distmin(
                     i16(sx),
                     i16(sy),
@@ -1788,7 +1805,9 @@ export function stock_room(shp_indx, sroom) {
         sy,
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_flags
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
             NHM.D_NODOOR) {
         cptr.stI32o3(
             svl,
@@ -1824,7 +1843,9 @@ export function stock_room(shp_indx, sroom) {
         sy,
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_flags
-    ) & 31) | 0) &
+    ) &
+        31) |
+        0) &
             NHM.D_TRAPPED)
         cptr.stI32o3(
             svl,
@@ -1843,7 +1864,9 @@ export function stock_room(shp_indx, sroom) {
         sy,
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_flags
-    ) & 31) | 0) ==
+    ) &
+        31) |
+        0) ==
             NHM.D_LOCKED) {
         let m = sx;
         let n = sy;
@@ -1945,8 +1968,7 @@ export function saleable(shkp, obj) {
         (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
         $eshk_shoptype
     ) -
-        NHC.SHOPBASE) |
-            0;
+            NHC.SHOPBASE) | 0;
     let shp = cptr.add(shtypes, shp_indx, $sizeof_shclass);
 
     if (cptr.ld1so(shp, $shclass_symb) == NHC.RANDOM_CLASS)

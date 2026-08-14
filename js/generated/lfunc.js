@@ -248,7 +248,8 @@ export function luaF_newtbcupval(L, level) {
     while (BigInt((Number(BigInt.asUintN(
         32,
         ((cptr.diff(level, cptr.ldPtro(L, $lua_State_tbclist)) / 16n))
-    ))) >>> 0) >
+    ))) >>>
+        0) >
             65535n) {
         cptr.stPtro(
             L,

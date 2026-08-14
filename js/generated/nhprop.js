@@ -107,7 +107,8 @@ export function Amphibious() {
         ((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
-        ) & 512n) != 0n)
+        ) &
+            512n) != 0n)
         ? 1
         : 0);
 }
@@ -451,7 +452,9 @@ export function Flying() {
             ((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)),
                 $permonst_mflags1
-            ) & 1n) != 0n))) &&
+            ) &
+                1n) !=
+                0n))) &&
         !cptr.ldI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked)
         ? 1
         : 0);
@@ -739,10 +742,12 @@ export function LI() {
 /** C: include/youprop.h — the `Lev_at_will` macro body */
 export function Lev_at_will() {
     return (((cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-        536870912n) != 0n ||
+        536870912n) !=
+        0n ||
         (cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & 8192n) != 0n) &&
         (cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) &
-            -553648128n) == 0n &&
+            -553648128n) ==
+            0n &&
         (cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & -8193n) == 0n
         ? 1
         : 0);
@@ -981,7 +986,8 @@ export function Swimming() {
             ((cptr.ldU64o(
                 (cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data)),
                 $permonst_mflags1
-            ) & 2n) != 0n))
+            ) &
+                2n) != 0n))
         ? 1
         : 0);
 }

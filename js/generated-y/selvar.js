@@ -243,7 +243,8 @@ export function selection_getpoint(x, y, sel) {
     return i16(((cptr.ld1so(
         cptr.ldPtro(sel, $selectionvar_map),
         (Math.imul(cptr.ldI32(sel), y) + x) | 0
-    ) - 1) | 0));
+    ) -
+            1) | 0));
 }
 
 /**
@@ -274,7 +275,8 @@ export function selection_setpoint(x, y, sel, c) {
     } else if (cptr.ld1so(
         cptr.ldPtro(sel, $selectionvar_map),
         (Math.imul(cptr.ldI32(sel), y) + x) | 0
-    ) != 0) {
+    ) !=
+            0) {
         cptr.st1o(sel, $selectionvar_bounds_dirty, 1);
     }
 
@@ -369,24 +371,25 @@ export function* selection_filter_mapchar(ov, typ, lit) {
                 switch (lit) {
                     default:
                     case -2:
-                    selection_setpoint(i16(x), i16(y), ret, 1);
-                    break;
+                        selection_setpoint(i16(x), i16(y), ret, 1);
+                        break;
                     case -1:
-                    selection_setpoint(i16(x), i16(y), ret, rn2(2));
-                    break;
+                        selection_setpoint(i16(x), i16(y), ret, rn2(2));
+                        break;
                     case 0:
                     case 1:
-                    if ((cptr.ldI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_lit
-                    ) & 1) ==
-                            lit >>> 0)
-                        selection_setpoint(i16(x), i16(y), ret, 1);
-                    break;
+                        if ((cptr.ldI32o3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_lit
+                        ) &
+                            1) ==
+                                lit >>> 0)
+                            selection_setpoint(i16(x), i16(y), ret, 1);
+                        break;
                 }
             }
     return ret;
@@ -900,56 +903,58 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
 
     switch (gtyp) {
         default:
-        (yield* impossible(__s_unrecognized_gradient_type_defaulting));
-        // @FallThrough
-        ;
+            (yield* impossible(__s_unrecognized_gradient_type_defaulting));
+            // @FallThrough
+            ;
         case 0n:
-        /* FALLTHRU */
-        {
-            for (dx = 0n; dx < 80n; dx++)
-                for (dy = 0n; dy < 21n; dy++) {
-                    let d0 = line_dist_coord(x, y, x2, y2, dx, dy);
+            /* FALLTHRU */
+            {
+                for (dx = 0n; dx < 80n; dx++)
+                    for (dy = 0n; dy < 21n; dy++) {
+                        let d0 = line_dist_coord(x, y, x2, y2, dx, dy);
 
-                    if (d0 <= BigInt.asIntN(64, mind * mind) ||
-                            (d0 <= BigInt.asIntN(64, maxd * maxd) &&
-                                BigInt.asIntN(64, d0 - mind * mind) <
-                                    BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
-                        selection_setpoint(
-                            Number(BigInt.asIntN(16, dx)),
-                            Number(BigInt.asIntN(16, dy)),
-                            ov,
-                            1
-                        );
-                }
-            break;
-        }
+                        if (d0 <= BigInt.asIntN(64, mind * mind) ||
+                                (d0 <= BigInt.asIntN(64, maxd * maxd) &&
+                                    BigInt.asIntN(64, d0 - mind * mind) <
+                                        BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
+                            selection_setpoint(
+                                Number(BigInt.asIntN(16, dx)),
+                                Number(BigInt.asIntN(16, dy)),
+                                ov,
+                                1
+                            );
+                    }
+                break;
+            }
         case 1n:
-        {
-            for (dx = 0n; dx < 80n; dx++)
-                for (dy = 0n; dy < 21n; dy++) {
-                    let d1 = line_dist_coord(x, y, x2, y2, x, dy);
-                    let d2 = line_dist_coord(x, y, x2, y2, dx, y);
-                    let d3 = line_dist_coord(x, y, x2, y2, x2, dy);
-                    let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
-                    let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
-                    let d0 = ((d5) <
-                        (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4))))
-                            ? (d5)
-                            : (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))));
+            {
+                for (dx = 0n; dx < 80n; dx++)
+                    for (dy = 0n; dy < 21n; dy++) {
+                        let d1 = line_dist_coord(x, y, x2, y2, x, dy);
+                        let d2 = line_dist_coord(x, y, x2, y2, dx, y);
+                        let d3 = line_dist_coord(x, y, x2, y2, x2, dy);
+                        let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
+                        let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
+                        let d0 = ((d5) <
+                            (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4))))
+                                ? (d5)
+                                : (((max(d1, d2)) < (max(d3, d4))
+                                    ? (max(d1, d2))
+                                    : (max(d3, d4)))));
 
-                    if (d0 <= BigInt.asIntN(64, mind * mind) ||
-                            (d0 <= BigInt.asIntN(64, maxd * maxd) &&
-                                BigInt.asIntN(64, d0 - mind * mind) <
-                                    BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
-                        selection_setpoint(
-                            Number(BigInt.asIntN(16, dx)),
-                            Number(BigInt.asIntN(16, dy)),
-                            ov,
-                            1
-                        );
-                }
-            break;
-        }  /*case*/
+                        if (d0 <= BigInt.asIntN(64, mind * mind) ||
+                                (d0 <= BigInt.asIntN(64, maxd * maxd) &&
+                                    BigInt.asIntN(64, d0 - mind * mind) <
+                                        BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
+                            selection_setpoint(
+                                Number(BigInt.asIntN(16, dx)),
+                                Number(BigInt.asIntN(16, dy)),
+                                ov,
+                                1
+                            );
+                    }
+                break;
+            }  /*case*/
     }  /*switch*/
 }
 
@@ -1167,7 +1172,8 @@ export function* selection_from_mkroom(croom) {
                         y,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_edge
-                    ) & 1) &&
+                    ) &
+                        1) &&
                     (cptr.ldI32o3(
                         svl,
                         x,
@@ -1175,7 +1181,8 @@ export function* selection_from_mkroom(croom) {
                         y,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_roomno
-                    ) & 63) == rmno)
+                    ) &
+                        63) == rmno)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }

@@ -588,9 +588,10 @@ function rogue_vision(next, rmin, rmax) {
         cptr.ldI16o(u, $you_uy),
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_roomno
-    ) & 63) | 0) -
-        NHM.ROOMOFFSET) |
-            0;  /* no SHARED... */
+    ) &
+        63) |
+        0) -
+            NHM.ROOMOFFSET) | 0;  /* no SHARED... */
     let start;
     let stop;
     let in_door;
@@ -2953,7 +2954,8 @@ export function do_clear_area(scol, srow, range, func, arg) {
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
                     x
                 ) &
-                    NHM.COULD_SEE) != 0) ||
+                    NHM.COULD_SEE) !=
+                    0) ||
                         override_vision)
                     (func)(i16(x), i16(y), arg);
         }
@@ -2983,7 +2985,8 @@ export function howmonseen(mon) {
             ),
             cptr.ldI16o(mon, $monst_mx)
         ) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
             ((cptr.ld1uo(
                 cptr.ldPtro(
                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -3024,9 +3027,11 @@ export function howmonseen(mon) {
     /* class-/type-specific warning */
     if ((Warn_of_mon() &&
             ((cptr.ldU64o(svc, $context_info_warntype) &
-                cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n ||
+                cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) !=
+                0n ||
                 (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) &
-                    cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n ||
+                    cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) !=
+                    0n ||
                 (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) &&
                     (cptr.eq(
                         cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species),

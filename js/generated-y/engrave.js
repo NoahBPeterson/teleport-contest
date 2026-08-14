@@ -709,14 +709,14 @@ export function engr_can_be_felt(ep) {
         case NHM.ENGRAVE:
         case NHM.HEADSTONE:
         case NHM.BURN:
-        canfeel = 1;
-        break;
+            canfeel = 1;
+            break;
         case NHM.DUST:
         case NHM.MARK:
         case NHM.ENGR_BLOOD:
         default:
-        canfeel = 0;
-        break;
+            canfeel = 0;
+            break;
     }
     return canfeel;
 }
@@ -733,58 +733,58 @@ export function* read_engr_at(x, y) {
     if (ep && cptr.ld1so(cptr.ldPtro2(ep, NHC.actual_text, 8, $engr_engr_txt), 0)) {
         switch (cptr.ld1so(ep, $engr_engr_type)) {
             case NHM.DUST:
-            if (!Blind()) {
-                sensed = 1;
-                (yield* pline(
-                    __s_s_is_written_here_in_the_s,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_Something),
-                    is_ice(x, y) ? __s_frost : __s_dust
-                ));
-            }
-            break;
+                if (!Blind()) {
+                    sensed = 1;
+                    (yield* pline(
+                        __s_s_is_written_here_in_the_s,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_Something),
+                        is_ice(x, y) ? __s_frost : __s_dust
+                    ));
+                }
+                break;
             case NHM.ENGRAVE:
             case NHM.HEADSTONE:
-            if (!Blind() || can_reach_floor(1)) {
-                sensed = 1;
-                (yield* pline(
-                    __s_s_is_engraved_here_on_the_s,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_Something),
-                    eloc
-                ));
-            }
-            break;
+                if (!Blind() || can_reach_floor(1)) {
+                    sensed = 1;
+                    (yield* pline(
+                        __s_s_is_engraved_here_on_the_s,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_Something),
+                        eloc
+                    ));
+                }
+                break;
             case NHM.BURN:
-            if (!Blind() || can_reach_floor(1)) {
-                sensed = 1;
-                (yield* pline(
-                    __s_some_text_has_been_s_into_the_s_here,
-                    is_ice(x, y) ? __s_melted : __s_burned,
-                    eloc
-                ));
-            }
-            break;
+                if (!Blind() || can_reach_floor(1)) {
+                    sensed = 1;
+                    (yield* pline(
+                        __s_some_text_has_been_s_into_the_s_here,
+                        is_ice(x, y) ? __s_melted : __s_burned,
+                        eloc
+                    ));
+                }
+                break;
             case NHM.MARK:
-            if (!Blind()) {
-                sensed = 1;
-                (yield* pline(__s_there_s_some_graffiti_on_the_s_here, eloc));
-            }
-            break;
+                if (!Blind()) {
+                    sensed = 1;
+                    (yield* pline(__s_there_s_some_graffiti_on_the_s_here, eloc));
+                }
+                break;
             case NHM.ENGR_BLOOD:
-            /* "It's a message!  Scrawled in blood!"
-             * "What's it say?"
-             * "It says... `See you next Wednesday.'" -- Thriller
-             */
-            if (!Blind()) {
-                sensed = 1;
-                (yield* You_see(__s_a_message_scrawled_in_blood_here));
-            }
-            break;
+                /* "It's a message!  Scrawled in blood!"
+                 * "What's it say?"
+                 * "It says... `See you next Wednesday.'" -- Thriller
+                 */
+                if (!Blind()) {
+                    sensed = 1;
+                    (yield* You_see(__s_a_message_scrawled_in_blood_here));
+                }
+                break;
             default:
-            (yield* impossible(
-                __s_s_is_written_in_a_very_strange_way,
-                cptr.ldPtro(c_common_strings, $c_common_strings_c_Something)
-            ));
-            sensed = 1;
+                (yield* impossible(
+                    __s_s_is_written_in_a_very_strange_way,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_Something)
+                ));
+                sensed = 1;
         }
 
         if (sensed) {
@@ -966,7 +966,8 @@ function* u_can_engrave() {
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
             $permonst_mflags1
         ) &
-                262144n) != 0n)) {
+            262144n) !=
+                0n)) {
             (yield* pline(__s_what_would_you_write_jonah_was_here));
             return 0;
         } else if (is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data))) {
@@ -1036,7 +1037,9 @@ function doengrave_ctx_init(de) {
     if (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags2
-    ) & 256n) != 0n) ||
+    ) &
+        256n) !=
+        0n) ||
             (cptr.ld1so(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mlet
@@ -1052,7 +1055,8 @@ function doengrave_ctx_init(de) {
                 (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
                 $permonst_mflags1
             ) &
-                262144n) != 0n) ||
+                262144n) !=
+                0n) ||
                 is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)))
             ? 1
             : 0))
@@ -1065,215 +1069,225 @@ function doengrave_ctx_init(de) {
 function* doengrave_sfx_item_WAN(de) {
     switch (cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp)) {
         default:
-        break;
+            break;
         case NHC.WAN_LIGHT:
         case NHC.WAN_SECRET_DOOR_DETECTION:
         case NHC.WAN_STASIS:
         case NHC.WAN_CREATE_MONSTER:
         case NHC.WAN_WISHING:
         case NHC.WAN_ENLIGHTENMENT:
-        (yield* zapnodir(cptr.ldPtro(de, $_doengrave_ctx_otmp)));
-        break;
+            (yield* zapnodir(cptr.ldPtro(de, $_doengrave_ctx_otmp)));
+            break;
         case NHC.WAN_STRIKING:
-        void cptr.strcpy(
-            cptr.add(de, $_doengrave_ctx_post_engr_text),
-            __s_the_wand_unsuccessfully_fights_your
-        );
-        break;
+            void cptr.strcpy(
+                cptr.add(de, $_doengrave_ctx_post_engr_text),
+                __s_the_wand_unsuccessfully_fights_your
+            );
+            break;
         case NHC.WAN_SLOW_MONSTER:
-        if (!Blind()) {
-            void cptr.sprintf(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                __s_the_bugs_on_the_s_slow_down,
-                surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-            );
-        }
-        break;
-        case NHC.WAN_SPEED_MONSTER:
-        if (!Blind()) {
-            void cptr.sprintf(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                __s_the_bugs_on_the_s_speed_up,
-                surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-            );
-        }
-        break;
-        case NHC.WAN_POLYMORPH:
-        if (cptr.ldPtro(de, $_doengrave_ctx_oep)) {
             if (!Blind()) {
-                cptr.stI32o(de, $_doengrave_ctx_type, 0);  /* random */
-                void (yield* random_engraving(
-                    cptr.add(de, $_doengrave_ctx_buf),
-                    cptr.add(de, $_doengrave_ctx_ebuf)
-                ));
-            } else {
-                /* keep the same type so that feels don't
-                   change and only the text is altered,
-                   but you won't know anyway because
-                   you're a _blind writer_ */
-                if (cptr.ldI32o(de, $_doengrave_ctx_oetype))
-                    cptr.stI32o(de, $_doengrave_ctx_type, cptr.ldI32o(de, $_doengrave_ctx_oetype));
-                (yield* xcrypt(blengr(), cptr.add(de, $_doengrave_ctx_buf)));
+                void cptr.sprintf(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    __s_the_bugs_on_the_s_slow_down,
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
             }
-            cptr.st1(de, 1);
-        }
-        break;
+            break;
+        case NHC.WAN_SPEED_MONSTER:
+            if (!Blind()) {
+                void cptr.sprintf(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    __s_the_bugs_on_the_s_speed_up,
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
+            }
+            break;
+        case NHC.WAN_POLYMORPH:
+            if (cptr.ldPtro(de, $_doengrave_ctx_oep)) {
+                if (!Blind()) {
+                    cptr.stI32o(de, $_doengrave_ctx_type, 0);  /* random */
+                    void (yield* random_engraving(
+                        cptr.add(de, $_doengrave_ctx_buf),
+                        cptr.add(de, $_doengrave_ctx_ebuf)
+                    ));
+                } else {
+                    /* keep the same type so that feels don't
+                       change and only the text is altered,
+                       but you won't know anyway because
+                       you're a _blind writer_ */
+                    if (cptr.ldI32o(de, $_doengrave_ctx_oetype))
+                        cptr.stI32o(
+                            de,
+                            $_doengrave_ctx_type,
+                            cptr.ldI32o(de, $_doengrave_ctx_oetype)
+                        );
+                    (yield* xcrypt(blengr(), cptr.add(de, $_doengrave_ctx_buf)));
+                }
+                cptr.st1(de, 1);
+            }
+            break;
         case NHC.WAN_NOTHING:
         case NHC.WAN_UNDEAD_TURNING:
         case NHC.WAN_OPENING:
         case NHC.WAN_LOCKING:
         case NHC.WAN_PROBING:
-        break;
+            break;
         case NHC.WAN_MAGIC_MISSILE:
-        cptr.st1o(de, $_doengrave_ctx_ptext, 1);
-        if (!Blind()) {
-            void cptr.sprintf(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                __s_the_s_is_riddled_by_bullet_holes,
-                surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-            );
-        }
-        break;
+            cptr.st1o(de, $_doengrave_ctx_ptext, 1);
+            if (!Blind()) {
+                void cptr.sprintf(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    __s_the_s_is_riddled_by_bullet_holes,
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
+            }
+            break;
         case NHC.WAN_SLEEP:
         case NHC.WAN_DEATH:
-        if (!Blind()) {
-            void cptr.sprintf(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                __s_the_bugs_on_the_s_stop_moving,
-                surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-            );
-        }
-        break;
-        case NHC.WAN_COLD:
-        if (!Blind())
-            void cptr.strcpy(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                __s_a_few_ice_cubes_drop_from_the_wand
-            );
-        if (!cptr.ldPtro(de, $_doengrave_ctx_oep) ||
-                (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) != NHM.BURN))
+            if (!Blind()) {
+                void cptr.sprintf(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    __s_the_bugs_on_the_s_stop_moving,
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
+            }
             break;
-        // @FallThrough
-        ;
+        case NHC.WAN_COLD:
+            if (!Blind())
+                void cptr.strcpy(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    __s_a_few_ice_cubes_drop_from_the_wand
+                );
+            if (!cptr.ldPtro(de, $_doengrave_ctx_oep) ||
+                    (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) != NHM.BURN))
+                break;
+            // @FallThrough
+            ;
         case NHC.WAN_CANCELLATION:
         case NHC.WAN_MAKE_INVISIBLE:
-        if (cptr.ldPtro(de, $_doengrave_ctx_oep) &&
-                cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) !=
-                    NHM.HEADSTONE) {
-            if (!Blind())
-                (yield* pline_The(
-                    __s_engraving_on_the_s_vanishes,
-                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                ));
-            cptr.st1(de, 1);
-        }
-        break;
+            if (cptr.ldPtro(de, $_doengrave_ctx_oep) &&
+                    cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) !=
+                        NHM.HEADSTONE) {
+                if (!Blind())
+                    (yield* pline_The(
+                        __s_engraving_on_the_s_vanishes,
+                        surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                    ));
+                cptr.st1(de, 1);
+            }
+            break;
         case NHC.WAN_TELEPORTATION:
-        if (cptr.ldPtro(de, $_doengrave_ctx_oep) &&
-                cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) !=
-                    NHM.HEADSTONE) {
-            if (!Blind())
-                (yield* pline_The(
-                    __s_engraving_on_the_s_vanishes,
-                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                ));
-            cptr.st1o(de, $_doengrave_ctx_teleengr, 1);
-        }
-        break;
+            if (cptr.ldPtro(de, $_doengrave_ctx_oep) &&
+                    cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) !=
+                        NHM.HEADSTONE) {
+                if (!Blind())
+                    (yield* pline_The(
+                        __s_engraving_on_the_s_vanishes,
+                        surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                    ));
+                cptr.st1o(de, $_doengrave_ctx_teleengr, 1);
+            }
+            break;
         case NHC.WAN_DIGGING:
-        cptr.st1o(de, $_doengrave_ctx_ptext, 1);
-        cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
-        if (!(cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_name_known
-        ) & 1)) {
-            if (cptr.ld1so(flags, $flag_verbose))
-                (yield* pline(
-                    __s_this_s_is_a_wand_of_digging,
-                    (yield* xname(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
-                ));
-            cptr.st1o(de, $_doengrave_ctx_doknown, 1);
-        }
-        void cptr.strcpy(
-            cptr.add(de, $_doengrave_ctx_post_engr_text),
-            (Blind() && !Deaf())
-                ? __s_you_hear_drilling
-                : (Blind()
-                    ? __s_you_feel_tremors
-                    : (((cptr.ld1so3(
-                        svl,
-                        cptr.ldI16(u),
-                        $sizeof_rm_x21,
-                        cptr.ldI16o(u, $you_uy),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_typ
-                    )) ==
-                        NHC.GRAVE)
-                        ? __s_chips_fly_out_from_the_headstone
-                        : (cptr.ld1so(de, $_doengrave_ctx_frosted)
-                            ? __s_ice_chips_fly_up_from_the_ice_surface
-                            : ((cptr.ld1so3(
-                                svl,
-                                cptr.ldI16(u),
-                                $sizeof_rm_x21,
-                                cptr.ldI16o(u, $you_uy),
-                                $sizeof_rm,
-                                $instance_globals_saved_l_level + $rm_typ
-                            ) ==
-                                NHC.DRAWBRIDGE_DOWN)
-                                ? __s_splinters_fly_up_from_the_bridge
-                                : __s_gravel_flies_up_from_the_floor))))
-        );
-        break;
+            cptr.st1o(de, $_doengrave_ctx_ptext, 1);
+            cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                    1)) {
+                if (cptr.ld1so(flags, $flag_verbose))
+                    (yield* pline(
+                        __s_this_s_is_a_wand_of_digging,
+                        (yield* xname(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
+                    ));
+                cptr.st1o(de, $_doengrave_ctx_doknown, 1);
+            }
+            void cptr.strcpy(
+                cptr.add(de, $_doengrave_ctx_post_engr_text),
+                (Blind() && !Deaf())
+                    ? __s_you_hear_drilling
+                    : (Blind()
+                        ? __s_you_feel_tremors
+                        : (((cptr.ld1so3(
+                            svl,
+                            cptr.ldI16(u),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(u, $you_uy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.GRAVE)
+                            ? __s_chips_fly_out_from_the_headstone
+                            : (cptr.ld1so(de, $_doengrave_ctx_frosted)
+                                ? __s_ice_chips_fly_up_from_the_ice_surface
+                                : ((cptr.ld1so3(
+                                    svl,
+                                    cptr.ldI16(u),
+                                    $sizeof_rm_x21,
+                                    cptr.ldI16o(u, $you_uy),
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                ) ==
+                                    NHC.DRAWBRIDGE_DOWN)
+                                    ? __s_splinters_fly_up_from_the_bridge
+                                    : __s_gravel_flies_up_from_the_floor))))
+            );
+            break;
         case NHC.WAN_FIRE:
-        cptr.st1o(de, $_doengrave_ctx_ptext, 1);
-        cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
-        if (!(cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_name_known
-        ) & 1)) {
-            if (cptr.ld1so(flags, $flag_verbose))
-                (yield* pline(__s_this_s_is_a_wand_of_fire, (yield* xname(cptr.ldPtro(de, $_doengrave_ctx_otmp)))));
-            cptr.st1o(de, $_doengrave_ctx_doknown, 1);
-        }
-        void cptr.strcpy(
-            cptr.add(de, $_doengrave_ctx_post_engr_text),
-            Blind() ? __s_you_feel_the_wand_heat_up : __s_flames_fly_from_the_wand
-        );
-        break;
+            cptr.st1o(de, $_doengrave_ctx_ptext, 1);
+            cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                    1)) {
+                if (cptr.ld1so(flags, $flag_verbose))
+                    (yield* pline(
+                        __s_this_s_is_a_wand_of_fire,
+                        (yield* xname(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
+                    ));
+                cptr.st1o(de, $_doengrave_ctx_doknown, 1);
+            }
+            void cptr.strcpy(
+                cptr.add(de, $_doengrave_ctx_post_engr_text),
+                Blind() ? __s_you_feel_the_wand_heat_up : __s_flames_fly_from_the_wand
+            );
+            break;
         case NHC.WAN_LIGHTNING:
-        cptr.st1o(de, $_doengrave_ctx_ptext, 1);
-        cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
-        if (!(cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_name_known
-        ) & 1)) {
-            if (cptr.ld1so(flags, $flag_verbose))
-                (yield* pline(
-                    __s_this_s_is_a_wand_of_lightning,
-                    (yield* xname(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
-                ));
-            cptr.st1o(de, $_doengrave_ctx_doknown, 1);
-        }
-        if (!Blind()) {
-            void cptr.strcpy(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                __s_lightning_arcs_from_the_wand
-            );
-            cptr.st1o(de, $_doengrave_ctx_doblind, 1);
-        } else {
-            void cptr.strcpy(
-                cptr.add(de, $_doengrave_ctx_post_engr_text),
-                !Deaf() ? __s_you_hear_crackling : __s_your_hair_stands_up
-            );
-        }
-        break;
+            cptr.st1o(de, $_doengrave_ctx_ptext, 1);
+            cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);
+            if (!(cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) &
+                    1)) {
+                if (cptr.ld1so(flags, $flag_verbose))
+                    (yield* pline(
+                        __s_this_s_is_a_wand_of_lightning,
+                        (yield* xname(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
+                    ));
+                cptr.st1o(de, $_doengrave_ctx_doknown, 1);
+            }
+            if (!Blind()) {
+                void cptr.strcpy(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    __s_lightning_arcs_from_the_wand
+                );
+                cptr.st1o(de, $_doengrave_ctx_doblind, 1);
+            } else {
+                void cptr.strcpy(
+                    cptr.add(de, $_doengrave_ctx_post_engr_text),
+                    !Deaf() ? __s_you_hear_crackling : __s_your_hair_stands_up
+                );
+            }
+            break;
     }
 }
 
@@ -1286,152 +1300,154 @@ function* doengrave_sfx_item(de) {
         case NHC.CHAIN_CLASS:
         case NHC.POTION_CLASS:
         case NHC.COIN_CLASS:
-        break;
+            break;
         case NHC.RING_CLASS:
         case NHC.GEM_CLASS:
-        /* diamonds & other hard gems should work */
-        if ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_tough
-        ) & 1)) {
-            cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
+            /* diamonds & other hard gems should work */
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_tough
+            ) &
+                    1)) {
+                cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
+                break;
+            }
             break;
-        }
-        break;
         case NHC.ARMOR_CLASS:
-        if (is_boots(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
-            cptr.stI32o(de, $_doengrave_ctx_type, NHM.DUST);
-            break;
-        }
-        // @FallThrough
-        ;
+            if (is_boots(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
+                cptr.stI32o(de, $_doengrave_ctx_type, NHM.DUST);
+                break;
+            }
+            // @FallThrough
+            ;
         case NHC.BALL_CLASS:
         case NHC.ROCK_CLASS:
-        (yield* You_cant(__s_engrave_with_such_a_large_object));
-        cptr.st1o(de, $_doengrave_ctx_ptext, 0);
-        break;
+            (yield* You_cant(__s_engrave_with_such_a_large_object));
+            cptr.st1o(de, $_doengrave_ctx_ptext, 0);
+            break;
         case NHC.FOOD_CLASS:
         case NHC.SCROLL_CLASS:
         case NHC.SPBOOK_CLASS:
-        (yield* pline(
-            __s_s_would_get_s,
-            (yield* Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp))),
-            cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_all_frosty : __s_too_dirty
-        ));
-        cptr.st1o(de, $_doengrave_ctx_ptext, 0);
-        break;
+            (yield* pline(
+                __s_s_would_get_s,
+                (yield* Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp))),
+                cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_all_frosty : __s_too_dirty
+            ));
+            cptr.st1o(de, $_doengrave_ctx_ptext, 0);
+            break;
         case NHC.RANDOM_CLASS:
-        break;
+            break;
         case NHC.WAND_CLASS:
-        if ((yield* zappable(cptr.ldPtro(de, $_doengrave_ctx_otmp)))) {
-            (yield* check_unpaid(cptr.ldPtro(de, $_doengrave_ctx_otmp)));
-            if ((cptr.ldI32o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_cursed) & 1) | 0 &&
-                    !rn2(NHM.WAND_BACKFIRE_CHANCE)) {
-                (yield* wand_explode(cptr.ldPtro(de, $_doengrave_ctx_otmp), 0));
-                cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_TIME);
+            if ((yield* zappable(cptr.ldPtro(de, $_doengrave_ctx_otmp)))) {
+                (yield* check_unpaid(cptr.ldPtro(de, $_doengrave_ctx_otmp)));
+                if ((cptr.ldI32o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_cursed) & 1) | 0 &&
+                        !rn2(NHM.WAND_BACKFIRE_CHANCE)) {
+                    (yield* wand_explode(cptr.ldPtro(de, $_doengrave_ctx_otmp), 0));
+                    cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_TIME);
+                    return 0;
+                }
+                cptr.st1o(de, $_doengrave_ctx_zapwand, 1);
+                if (!can_reach_floor(1))
+                    cptr.st1o(de, $_doengrave_ctx_ptext, 0);
+                (yield* doengrave_sfx_item_WAN(de));
+            } else {
+                /* failing to wrest one last charge takes time */
+                cptr.st1o(de, $_doengrave_ctx_ptext, 0);  /* use "early exit" below, return 1 */
+                /* give feedback here if we won't be getting the
+                   "can't reach floor" message below */
+                if (can_reach_floor(1)) {
+                    /* cancelled wand turns to dust */
+                    if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) < 0)
+                        cptr.st1o(de, $_doengrave_ctx_zapwand, 1);
+                    else
+                        (yield* pline_The(__s_wand_is_too_worn_out_to_engrave));
+                }
+            }
+            break;
+        case NHC.WEAPON_CLASS:
+            if (is_art(cptr.ldPtro(de, $_doengrave_ctx_otmp), NHC.ART_FIRE_BRAND)) {
+                cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);  /* doesn't dull weapon */
+            } else if (is_blade(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
+                /* if non-blade or welded or too dull, engraving type stays set
+                   to DUST; feedback for that is only given for bladed weapons */
+                if ((yield* welded(cptr.ldPtro(de, $_doengrave_ctx_otmp))))
+                    (yield* pline(
+                        __s_s_can_only_scratch_the_s,
+                        (yield* Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp))),
+                        surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                    ));
+                else if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) <= -3)
+                    (yield* pline(
+                        __s_s_too_dull_for_engraving,
+                        (yield* Yobjnam2(cptr.ldPtro(de, $_doengrave_ctx_otmp), __s_are))
+                    ));
+                else
+                    cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
+            }
+            break;
+        case NHC.TOOL_CLASS:
+            if (cptr.eq(cptr.ldPtro(de, $_doengrave_ctx_otmp), ublindf.v)) {
+                (yield* pline(__s_that_is_a_bit_difficult_to_engrave_with));
+                cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_FAIL);
                 return 0;
             }
-            cptr.st1o(de, $_doengrave_ctx_zapwand, 1);
-            if (!can_reach_floor(1))
-                cptr.st1o(de, $_doengrave_ctx_ptext, 0);
-            (yield* doengrave_sfx_item_WAN(de));
-        } else {
-            /* failing to wrest one last charge takes time */
-            cptr.st1o(de, $_doengrave_ctx_ptext, 0);  /* use "early exit" below, return 1 */
-            /* give feedback here if we won't be getting the
-               "can't reach floor" message below */
-            if (can_reach_floor(1)) {
-                /* cancelled wand turns to dust */
-                if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) < 0)
-                    cptr.st1o(de, $_doengrave_ctx_zapwand, 1);
-                else
-                    (yield* pline_The(__s_wand_is_too_worn_out_to_engrave));
-            }
-        }
-        break;
-        case NHC.WEAPON_CLASS:
-        if (is_art(cptr.ldPtro(de, $_doengrave_ctx_otmp), NHC.ART_FIRE_BRAND)) {
-            cptr.stI32o(de, $_doengrave_ctx_type, NHM.BURN);  /* doesn't dull weapon */
-        } else if (is_blade(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
-            /* if non-blade or welded or too dull, engraving type stays set
-               to DUST; feedback for that is only given for bladed weapons */
-            if ((yield* welded(cptr.ldPtro(de, $_doengrave_ctx_otmp))))
-                (yield* pline(
-                    __s_s_can_only_scratch_the_s,
-                    (yield* Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp))),
-                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                ));
-            else if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) <= -3)
-                (yield* pline(
-                    __s_s_too_dull_for_engraving,
-                    (yield* Yobjnam2(cptr.ldPtro(de, $_doengrave_ctx_otmp), __s_are))
-                ));
-            else
-                cptr.stI32o(de, $_doengrave_ctx_type, NHM.ENGRAVE);
-        }
-        break;
-        case NHC.TOOL_CLASS:
-        if (cptr.eq(cptr.ldPtro(de, $_doengrave_ctx_otmp), ublindf.v)) {
-            (yield* pline(__s_that_is_a_bit_difficult_to_engrave_with));
-            cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_FAIL);
-            return 0;
-        }
-        switch (cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp)) {
-            case NHC.MAGIC_MARKER:
-            if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) <= 0)
-                (yield* Your(__s_marker_has_dried_out));
-            else
-                cptr.stI32o(de, $_doengrave_ctx_type, NHM.MARK);
-            break;
-            case NHC.TOWEL:
-            /* Can't really engrave with a towel */
-            cptr.st1o(de, $_doengrave_ctx_ptext, 0);
-            if (cptr.ldPtro(de, $_doengrave_ctx_oep)) {
-                if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) == NHM.DUST ||
-                        cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) ==
-                            NHM.ENGR_BLOOD ||
-                        cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) ==
-                            NHM.MARK) {
-                    if (is_wet_towel(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
-                        (yield* dry_a_towel(cptr.ldPtro(de, $_doengrave_ctx_otmp), -1, 1));
-                    if (!Blind())
-                        (yield* You(__s_wipe_out_the_message_here));
+            switch (cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp)) {
+                case NHC.MAGIC_MARKER:
+                    if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_spe) <= 0)
+                        (yield* Your(__s_marker_has_dried_out));
                     else
+                        cptr.stI32o(de, $_doengrave_ctx_type, NHM.MARK);
+                    break;
+                case NHC.TOWEL:
+                    /* Can't really engrave with a towel */
+                    cptr.st1o(de, $_doengrave_ctx_ptext, 0);
+                    if (cptr.ldPtro(de, $_doengrave_ctx_oep)) {
+                        if (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) ==
+                            NHM.DUST ||
+                                cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) ==
+                                    NHM.ENGR_BLOOD ||
+                                cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_oep), $engr_engr_type) ==
+                                    NHM.MARK) {
+                            if (is_wet_towel(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
+                                (yield* dry_a_towel(cptr.ldPtro(de, $_doengrave_ctx_otmp), -1, 1));
+                            if (!Blind())
+                                (yield* You(__s_wipe_out_the_message_here));
+                            else
+                                (yield* pline(
+                                    __s_s_s,
+                                    (yield* Yobjnam2(cptr.ldPtro(de, $_doengrave_ctx_otmp), __s_get)),
+                                    cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_frosty : __s_dusty
+                                ));
+                            cptr.st1(de, 1);
+                        } else {
+                            (yield* pline(
+                                __s_s_can_t_wipe_out_this_engraving,
+                                (yield* Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
+                            ));
+                        }
+                    } else {
                         (yield* pline(
                             __s_s_s,
                             (yield* Yobjnam2(cptr.ldPtro(de, $_doengrave_ctx_otmp), __s_get)),
                             cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_frosty : __s_dusty
                         ));
-                    cptr.st1(de, 1);
-                } else {
-                    (yield* pline(
-                        __s_s_can_t_wipe_out_this_engraving,
-                        (yield* Yname2(cptr.ldPtro(de, $_doengrave_ctx_otmp)))
-                    ));
-                }
-            } else {
-                (yield* pline(
-                    __s_s_s,
-                    (yield* Yobjnam2(cptr.ldPtro(de, $_doengrave_ctx_otmp), __s_get)),
-                    cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_frosty : __s_dusty
-                ));
+                    }
+                    break;
+                default:
+                    break;
             }
             break;
-            default:
-            break;
-        }
-        break;
         case NHC.VENOM_CLASS:
-        /* this used to be ``if (wizard)'' and fall through to ILLOBJ_CLASS
-           for normal play, but splash of venom isn't "illegal" because it
-           could occur in normal play via wizard mode bones */
-        (yield* pline(__s_writing_a_poison_pen_letter));
-        break;
+            /* this used to be ``if (wizard)'' and fall through to ILLOBJ_CLASS
+               for normal play, but splash of venom isn't "illegal" because it
+               could occur in normal play via wizard mode bones */
+            (yield* pline(__s_writing_a_poison_pen_letter));
+            break;
         case NHC.ILLOBJ_CLASS:
-        (yield* impossible(__s_you_re_engraving_with_an_illegal_object));
-        break;
+            (yield* impossible(__s_you_re_engraving_with_an_illegal_object));
+            break;
     }
 
     return 1;
@@ -1442,65 +1458,69 @@ function* doengrave_sfx_item(de) {
 function doengrave_ctx_verb(de) {
     switch (cptr.ldI32o(de, $_doengrave_ctx_type)) {
         default:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding)
-                ? __s_add_to_the_weird_writing_on
-                : __s_write_strangely_on
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding)
+                    ? __s_add_to_the_weird_writing_on
+                    : __s_write_strangely_on
+            );
+            break;
         case NHM.DUST:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_writing_in : __s_write_in
-        );
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_eloc,
-            cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_frost : __s_dust
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_writing_in : __s_write_in
+            );
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_eloc,
+                cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_frost : __s_dust
+            );
+            break;
         case NHM.HEADSTONE:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_epitaph_on : __s_engrave_on
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_epitaph_on : __s_engrave_on
+            );
+            break;
         case NHM.ENGRAVE:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_engraving_in : __s_engrave_in
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding)
+                    ? __s_add_to_the_engraving_in
+                    : __s_engrave_in
+            );
+            break;
         case NHM.BURN:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding)
-                ? (cptr.ld1so(de, $_doengrave_ctx_frosted)
-                    ? __s_add_to_the_text_melted_into
-                    : __s_add_to_the_text_burned_into)
-                : (cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_melt_into : __s_burn_into)
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding)
+                    ? (cptr.ld1so(de, $_doengrave_ctx_frosted)
+                        ? __s_add_to_the_text_melted_into
+                        : __s_add_to_the_text_burned_into)
+                    : (cptr.ld1so(de, $_doengrave_ctx_frosted) ? __s_melt_into : __s_burn_into)
+            );
+            break;
         case NHM.MARK:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_graffiti_on : __s_scribble_on
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding)
+                    ? __s_add_to_the_graffiti_on
+                    : __s_scribble_on
+            );
+            break;
         case NHM.ENGR_BLOOD:
-        cptr.stPtro(
-            de,
-            $_doengrave_ctx_everb,
-            cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_scrawl_on : __s_scrawl_on
-        );
-        break;
+            cptr.stPtro(
+                de,
+                $_doengrave_ctx_everb,
+                cptr.ld1so(de, $_doengrave_ctx_adding) ? __s_add_to_the_scrawl_on : __s_scrawl_on
+            );
+            break;
     }
 }
 
@@ -1640,7 +1660,8 @@ export function* doengrave() {
                 cptr.ldI16o(u, $you_uy),
                 $sizeof_rm,
                 $instance_globals_saved_l_level + $rm_horizontal
-            ) & 1)) {
+            ) &
+                    1)) {
                 /* disturb the grave: summon a ghoul, same as sometimes
                    happens when kicking; sets levl[ux][uy]->disturbed so
                    that it'll only happen once */
@@ -1849,7 +1870,8 @@ export function* doengrave() {
                         ),
                         __s_doengrave,
                         1163
-                    )) >= 255) {
+                    )) >=
+                        255) {
                 (yield* There(__s_is_no_room_to_add_anything_else_here));
                 cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_TIME);
                 break __lbl_doengr_exit;
@@ -1928,8 +1950,7 @@ export function* doengrave() {
                 u,
                 $you_uconduct + $u_conduct_literate,
                 cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
-            )) -
-                    (1n)))
+            )) - (1n)))
                 (yield* livelog_printf(
                     32n,
                     __s_became_literate_by_engraving_s,
@@ -2070,8 +2091,7 @@ function* engrave() {
         svc,
         $context_info_engraving + $engrave_info_actionct,
         cptr.ldI32o(svc, $context_info_engraving + $engrave_info_actionct) + 1
-    )) -
-            (1);
+    )) - (1);
 
     /* sanity checks */
     if (dulling_wep && !is_blade(stylus)) {
@@ -2185,27 +2205,27 @@ function* engrave() {
 
     switch (cptr.ld1so(svc, $context_info_engraving + $engrave_info_type)) {
         default:
-        finishverb = __s_your_weird_engraving;
-        break;
+            finishverb = __s_your_weird_engraving;
+            break;
         case NHM.DUST:
-        finishverb = is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                ? __s_writing_in_the_frost
-                : __s_writing_in_the_dust;
-        break;
+            finishverb = is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                    ? __s_writing_in_the_frost
+                    : __s_writing_in_the_dust;
+            break;
         case NHM.HEADSTONE:
         case NHM.ENGRAVE:
-        finishverb = __s_engraving;
-        break;
+            finishverb = __s_engraving;
+            break;
         case NHM.BURN:
-        finishverb = is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                ? __s_melting_your_message_into_the_ice
-                : __s_burning_your_message_into_the_floor;
-        break;
+            finishverb = is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                    ? __s_melting_your_message_into_the_ice
+                    : __s_burning_your_message_into_the_floor;
+            break;
         case NHM.MARK:
-        finishverb = __s_defacing_the_dungeon;
-        break;
+            finishverb = __s_defacing_the_dungeon;
+            break;
         case NHM.ENGR_BLOOD:
-        finishverb = __s_scrawling;
+            finishverb = __s_scrawling;
     }
 
     /* actions that happen at the end of every engraving action go here */

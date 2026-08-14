@@ -446,8 +446,8 @@ function mon_in_room(mon, rmtyp) {
         cptr.ldI16o(mon, $monst_my),
         $sizeof_rm,
         $instance_globals_saved_l_level + $rm_roomno
-    ) & 63) |
-            0;
+    ) &
+            63) | 0;
     if (rno >= NHM.ROOMOFFSET)
         return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == rmtyp;
     return 0;
@@ -500,17 +500,17 @@ function beehive_mon_sound(mtmp) {
 
         switch ((rn2(2) + hallu) | 0) {
             case 0:
-            ;
-            You_hear(__s_a_low_buzzing);
-            break;
+                ;
+                You_hear(__s_a_low_buzzing);
+                break;
             case 1:
-            ;
-            You_hear(__s_an_angry_drone);
-            break;
+                ;
+                You_hear(__s_an_angry_drone);
+                break;
             case 2:
-            ;
-            You_hear(__s_bees_in_your_sbonnet, uarmh.v ? __s_empty : __s_nonexistent);
-            break;
+                ;
+                You_hear(__s_bees_in_your_sbonnet, uarmh.v ? __s_empty : __s_nonexistent);
+                break;
         }
         return 1;
     }
@@ -527,24 +527,24 @@ function morgue_mon_sound(mtmp) {
 
         switch ((rn2(2) + hallu) | 0) {
             case 0:
-            You(__s_suddenly_realize_it_is_unnaturally_quiet);
-            break;
+                You(__s_suddenly_realize_it_is_unnaturally_quiet);
+                break;
             case 1:
-            pline_The(
-                __s_s_on_the_back_of_your_s_s_up,
-                hair,
-                body_part(NHC.NECK),
-                vtense(hair, __s_stand)
-            );
-            break;
+                pline_The(
+                    __s_s_on_the_back_of_your_s_s_up,
+                    hair,
+                    body_part(NHC.NECK),
+                    vtense(hair, __s_stand)
+                );
+                break;
             case 2:
-            pline_The(
-                __s_s_on_your_s_s_to_stand_up,
-                hair,
-                body_part(NHC.HEAD),
-                vtense(hair, __s_seem)
-            );
-            break;
+                pline_The(
+                    __s_s_on_your_s_s_to_stand_up,
+                    hair,
+                    body_part(NHC.HEAD),
+                    vtense(hair, __s_seem)
+                );
+                break;
         }
         return 1;
     }
@@ -701,7 +701,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         if (get_iter_mons(throne_mon_sound))
             return;
@@ -709,7 +711,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         You(__s_pct_s, cptr.ldPtro(__static_dosounds_swamp_msg, (rn2(2) + hallu) | 0, 8));
         return;
@@ -717,7 +721,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         if (!(sroom = search_special(NHC.VAULT))) {
             /* strange ... */
@@ -731,46 +737,48 @@ export function dosounds() {
         if (gd_sound())
             switch ((rn2(2) + hallu) | 0) {
                 case 1:
-                {
-                    let gold_in_vault = 0;
+                    {
+                        let gold_in_vault = 0;
 
-                    for (vx = cptr.ldI16(sroom); vx <= cptr.ldI16o(sroom, $mkroom_hx); vx++)
-                        for (
-                            vy = cptr.ldI16o(sroom, $mkroom_ly);
-                            vy <= cptr.ldI16o(sroom, $mkroom_hy);
-                            vy++
-                        )
-                            if (g_at(i16(vx), i16(vy)))
-                                gold_in_vault = 1;
-                    if (BigInt(vault_occupied(cptr.add(u, $you_urooms))) !=
-                            (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n))) {
-                        if (gold_in_vault) {
-                            You_hear(!hallu
-                                    ? __s_someone_counting_gold_coins
-                                    : __s_the_quarterback_calling_the_play);
-                        } else {
-                            ;
-                            You_hear(__s_someone_searching);
+                        for (vx = cptr.ldI16(sroom); vx <= cptr.ldI16o(sroom, $mkroom_hx); vx++)
+                            for (
+                                vy = cptr.ldI16o(sroom, $mkroom_ly);
+                                vy <= cptr.ldI16o(sroom, $mkroom_hy);
+                                vy++
+                            )
+                                if (g_at(i16(vx), i16(vy)))
+                                    gold_in_vault = 1;
+                        if (BigInt(vault_occupied(cptr.add(u, $you_urooms))) !=
+                                (BigInt.asIntN(64, (cptr.diff((sroom), svr) / 224n) + 3n))) {
+                            if (gold_in_vault) {
+                                You_hear(!hallu
+                                        ? __s_someone_counting_gold_coins
+                                        : __s_the_quarterback_calling_the_play);
+                            } else {
+                                ;
+                                You_hear(__s_someone_searching);
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
-                // @FallThrough
-                ;
+                    // @FallThrough
+                    ;
                 case 0:
-                ;
-                You_hear(__s_the_footsteps_of_a_guard_on_patrol);
-                break;
+                    ;
+                    You_hear(__s_the_footsteps_of_a_guard_on_patrol);
+                    break;
                 case 2:
-                You_hear(__s_ebenezer_scrooge);
-                break;
+                    You_hear(__s_ebenezer_scrooge);
+                    break;
             }
         return;
     }
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         if (get_iter_mons(beehive_mon_sound))
             return;
@@ -778,7 +786,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         if (get_iter_mons(morgue_mon_sound))
             return;
@@ -786,7 +796,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         let count = 0;
 
@@ -808,10 +820,9 @@ export function dosounds() {
             }
         }
     }
-    if ((cptr.ldI32o(
-        svl,
-        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo
-    ) & 1) | 0 &&
+    if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo) &
+        1) |
+        0 &&
             !rn2(200)) {
         if (get_iter_mons(zoo_mon_sound))
             return;
@@ -819,7 +830,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200)) {
         if (!(sroom = search_special(-2))) {
             /* strange... */
@@ -846,7 +859,9 @@ export function dosounds() {
     if ((cptr.ldI32o(
         svl,
         $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
-    ) & 1) | 0 &&
+    ) &
+        1) |
+        0 &&
             !rn2(200) &&
             !((((cptr.ldI16o(
                 (cptr.add(
@@ -948,44 +963,44 @@ export function growl_sound(mtmp) {
     switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
         case NHC.MS_MEW:
         case NHC.MS_HISS:
-        ret = __s_hiss;
-        break;
+            ret = __s_hiss;
+            break;
         case NHC.MS_BARK:
         case NHC.MS_GROWL:
-        ret = __s_growl;
-        break;
+            ret = __s_growl;
+            break;
         case NHC.MS_ROAR:
-        ret = __s_roar;
-        break;
+            ret = __s_roar;
+            break;
         case NHC.MS_BELLOW:
-        ret = __s_bellow;
-        break;
+            ret = __s_bellow;
+            break;
         case NHC.MS_BUZZ:
-        ret = __s_buzz;
-        break;
+            ret = __s_buzz;
+            break;
         case NHC.MS_SQEEK:
-        ret = __s_squeal;
-        break;
+            ret = __s_squeal;
+            break;
         case NHC.MS_SQAWK:
-        ret = __s_screech;
-        break;
+            ret = __s_screech;
+            break;
         case NHC.MS_NEIGH:
-        ret = __s_neigh;
-        break;
+            ret = __s_neigh;
+            break;
         case NHC.MS_WAIL:
-        ret = __s_wail;
-        break;
+            ret = __s_wail;
+            break;
         case NHC.MS_GROAN:
-        ret = __s_groan;
-        break;
+            ret = __s_groan;
+            break;
         case NHC.MS_MOO:
-        ret = __s_low;
-        break;
+            ret = __s_low;
+            break;
         case NHC.MS_SILENT:
-        ret = __s_commotion;
-        break;
+            ret = __s_commotion;
+            break;
         default:
-        ret = __s_scream;
+            ret = __s_scream;
     }
     return ret;
 }
@@ -1034,29 +1049,29 @@ export function yelp(mtmp) {
     else
         switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
             case NHC.MS_MEW:
-            se = NHC.se_feline_yelp;
-            yelp_verb = (!Deaf()) ? __s_yowl : __s_arch;
-            break;
+                se = NHC.se_feline_yelp;
+                yelp_verb = (!Deaf()) ? __s_yowl : __s_arch;
+                break;
             case NHC.MS_BARK:
             case NHC.MS_GROWL:
-            se = NHC.se_canine_yelp;
-            yelp_verb = (!Deaf()) ? __s_yelp : __s_recoil;
-            break;
+                se = NHC.se_canine_yelp;
+                yelp_verb = (!Deaf()) ? __s_yelp : __s_recoil;
+                break;
             case NHC.MS_ROAR:
-            yelp_verb = (!Deaf()) ? __s_snarl : __s_bluff;
-            break;
+                yelp_verb = (!Deaf()) ? __s_snarl : __s_bluff;
+                break;
             case NHC.MS_SQEEK:
-            se = NHC.se_squeal;
-            yelp_verb = (!Deaf()) ? __s_squeal : __s_quiver;
-            break;
+                se = NHC.se_squeal;
+                yelp_verb = (!Deaf()) ? __s_squeal : __s_quiver;
+                break;
             case NHC.MS_SQAWK:
-            se = NHC.se_avian_screak;
-            yelp_verb = (!Deaf()) ? __s_screak : __s_thrash;
-            break;
+                se = NHC.se_avian_screak;
+                yelp_verb = (!Deaf()) ? __s_screak : __s_thrash;
+                break;
             case NHC.MS_WAIL:
-            se = NHC.se_wail;
-            yelp_verb = (!Deaf()) ? __s_wail : __s_cringe;
-            break;
+                se = NHC.se_wail;
+                yelp_verb = (!Deaf()) ? __s_wail : __s_cringe;
+                break;
         }
     if (yelp_verb) {
         ;  /* Soundeffect() handles Deaf or not Deaf */
@@ -1087,15 +1102,15 @@ export function whimper(mtmp) {
         switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
             case NHC.MS_MEW:
             case NHC.MS_GROWL:
-            whimper_verb = __s_whimper;
-            break;
+                whimper_verb = __s_whimper;
+                break;
             case NHC.MS_BARK:
-            whimper_verb = __s_whine;
-            break;
+                whimper_verb = __s_whine;
+                break;
             case NHC.MS_SQEEK:
-            se = NHC.se_squeal;
-            whimper_verb = __s_squeal;
-            break;
+                se = NHC.se_squeal;
+                whimper_verb = __s_squeal;
+                break;
         }
     if (whimper_verb) {
         if (!Hallucination()) {
@@ -1117,8 +1132,8 @@ export function whimper(mtmp) {
 /** C ref: sounds.c:519 — @param {CPtr<struct monst>} mtmp */
 export function beg(mtmp) {
     if (helpless(mtmp) ||
-            !(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                536870912n) != 0n) ||
+            !(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) !=
+                0n) ||
                 ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
                     1073741824n) != 0n)))
         return;
@@ -1199,8 +1214,8 @@ export function maybe_gasp(mon) {
         case NHC.MS_PRIEST:
         case NHC.MS_BOAST:
         case NHC.MS_IMITATE:
-        dogasp = 1;
-        break;
+            dogasp = 1;
+            break;
         case NHC.MS_ORC:
         case NHC.MS_GRUNT:
         case NHC.MS_LAUGH:
@@ -1210,19 +1225,19 @@ export function maybe_gasp(mon) {
         case NHC.MS_VAMPIRE:
         case NHC.MS_WERE:
         case NHC.MS_SPELL:
-        dogasp = schar((cptr.ld1so(mptr, $permonst_mlet) ==
-                cptr.ld1so(
-                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                    $permonst_mlet
-                )));
-        break;
+            dogasp = schar((cptr.ld1so(mptr, $permonst_mlet) ==
+                    cptr.ld1so(
+                        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                        $permonst_mlet
+                    )));
+            break;
         case NHC.MS_BRIBE:
         case NHC.MS_CUSS:
         case NHC.MS_RIDER:
         case NHC.MS_NEMESIS:
         case NHC.MS_SILENT:
         default:
-        break;
+            break;
     }
     if (dogasp) {
         return cptr.ldPtro(__static_maybe_gasp_Exclam, rn2(5), 8);  /* [mon->m_id % SIZE(Exclam)]; */
@@ -1244,32 +1259,32 @@ export function cry_sound(mtmp) {
     switch (cptr.ld1uo(ptr, $permonst_msound)) {
         default:
         case NHC.MS_SILENT:
-        /* "chitter": have silent critters make some noise
-           or the mommy/daddy gag when hatching doesn't work */
-        ret = (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL) ? __s_gurgle : __s_chitter;
-        break;
+            /* "chitter": have silent critters make some noise
+               or the mommy/daddy gag when hatching doesn't work */
+            ret = (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL) ? __s_gurgle : __s_chitter;
+            break;
         case NHC.MS_HISS:
-        ret = __s_hiss;
-        break;
+            ret = __s_hiss;
+            break;
         case NHC.MS_ROAR:
         case NHC.MS_GROWL:
-        ret = __s_growl;
-        break;
+            ret = __s_growl;
+            break;
         case NHC.MS_CHIRP:
-        ret = __s_chirp;
-        break;
+            ret = __s_chirp;
+            break;
         case NHC.MS_BUZZ:
-        ret = __s_buzz;
-        break;
+            ret = __s_buzz;
+            break;
         case NHC.MS_SQAWK:
-        ret = __s_screech;
-        break;
+            ret = __s_screech;
+            break;
         case NHC.MS_GRUNT:
-        ret = __s_grunt;
-        break;
+            ret = __s_grunt;
+            break;
         case NHC.MS_MUMBLE:
-        ret = __s_mumble;
-        break;
+            ret = __s_mumble;
+            break;
     }
     return ret;
 }
@@ -1370,593 +1385,615 @@ export function domonnoise(mtmp) {
 
     switch (msound) {
         case NHC.MS_ORACLE:
-        return doconsult(mtmp);  /* check this */
+            return doconsult(mtmp);  /* check this */
         case NHC.MS_PRIEST:
-        priest_talk(mtmp);
-        break;
+            priest_talk(mtmp);
+            break;
         case NHC.MS_LEADER:
         case NHC.MS_NEMESIS:
         case NHC.MS_GUARDIAN:
-        quest_chat(mtmp);
-        break;
+            quest_chat(mtmp);
+            break;
         case NHC.MS_SELL:
-        if (!Hallucination() ||
-                (cptr.ld1uo((ptr), $permonst_msound) == NHC.MS_SILENT) ||
-                ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !rn2(2))) {
-            shk_chat(mtmp);
-        } else {
-            /* approximation of GEICO's advertising slogan (it actually
-               concludes with "save you 15% or more on car insurance.") */
-            void cptr.sprintf(
-                cptr.decay(verbuf),
-                __s_15_minutes_could_save_you_15_s,
-                currency(15n)
-            );
-            verbl_msg = cptr.decay(verbuf);
-        }
-        break;
-        case NHC.MS_VAMPIRE:
-        {
-            /* vampire messages are varied by tameness, peacefulness, and time of
-               night */
-            let isnight = schar(night());
-            let kindred = schar((Upolyd() &&
-                (cptr.ldI32o(u, $you_umonnum) == NHC.PM_VAMPIRE ||
-                    cptr.ldI32o(u, $you_umonnum) == NHC.PM_VAMPIRE_LEADER)
-                    ? 1
-                    : 0));
-            let nightchild = schar((Upolyd() &&
-                (cptr.ldI32o(u, $you_umonnum) == NHC.PM_WOLF ||
-                    cptr.ldI32o(u, $you_umonnum) == NHC.PM_WINTER_WOLF ||
-                    cptr.ldI32o(u, $you_umonnum) == NHC.PM_WINTER_WOLF_CUB)
-                    ? 1
-                    : 0));
-            let racenoun = (cptr.ld1so(flags, $flag_female) &&
-                cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f))
-                    ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f)
-                    : ((cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual))
-                        ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual)
-                        : cptr.ldPtro(gu, $instance_globals_u_urace));
-
-            if (cptr.ld1so(mtmp, $monst_mtame)) {
-                if (kindred) {
-                    void cptr.sprintf(
-                        cptr.decay(verbuf),
-                        __s_good_s_to_you_master_s,
-                        isnight ? __s_evening : __s_day,
-                        isnight ? __s_bang : __s_why_do_we_not_rest
-                    );
-                    verbl_msg = cptr.decay(verbuf);
-                } else {
-                    void cptr.sprintf(
-                        cptr.decay(verbuf),
-                        __s_s_s__3,
-                        nightchild ? __s_child_of_the_night : __s_empty,
-                        midnight()
-                            ? __s_i_can_stand_this_craving_no_longer
-                            : (isnight
-                                ? __s_i_beg_you_help_me_satisfy_this_growing
-                                : __s_i_find_myself_growing_a_little_weary)
-                    );
-                    verbl_msg = cptr.decay(verbuf);
-                }
-            } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-                if (kindred && isnight) {
-                    void cptr.sprintf(
-                        cptr.decay(verbuf),
-                        __s_good_feeding_s,
-                        cptr.ld1so(flags, $flag_female) ? __s_sister : __s_brother
-                    );
-                    verbl_msg = cptr.decay(verbuf);
-                } else if (nightchild && isnight) {
-                    void cptr.sprintf(
-                        cptr.decay(verbuf),
-                        __s_how_nice_to_hear_you_child_of_the_night
-                    );
-                    verbl_msg = cptr.decay(verbuf);
-                } else
-                    verbl_msg = __s_i_only_drink_potions;
+            if (!Hallucination() ||
+                    (cptr.ld1uo((ptr), $permonst_msound) == NHC.MS_SILENT) ||
+                    ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && !rn2(2))) {
+                shk_chat(mtmp);
             } else {
-                let vampindex;
+                /* approximation of GEICO's advertising slogan (it actually
+                   concludes with "save you 15% or more on car insurance.") */
+                void cptr.sprintf(
+                    cptr.decay(verbuf),
+                    __s_15_minutes_could_save_you_15_s,
+                    currency(15n)
+                );
+                verbl_msg = cptr.decay(verbuf);
+            }
+            break;
+        case NHC.MS_VAMPIRE:
+            {
+                /* vampire messages are varied by tameness, peacefulness, and time of
+                   night */
+                let isnight = schar(night());
+                let kindred = schar((Upolyd() &&
+                    (cptr.ldI32o(u, $you_umonnum) == NHC.PM_VAMPIRE ||
+                        cptr.ldI32o(u, $you_umonnum) == NHC.PM_VAMPIRE_LEADER)
+                        ? 1
+                        : 0));
+                let nightchild = schar((Upolyd() &&
+                    (cptr.ldI32o(u, $you_umonnum) == NHC.PM_WOLF ||
+                        cptr.ldI32o(u, $you_umonnum) == NHC.PM_WINTER_WOLF ||
+                        cptr.ldI32o(u, $you_umonnum) == NHC.PM_WINTER_WOLF_CUB)
+                        ? 1
+                        : 0));
+                let racenoun = (cptr.ld1so(flags, $flag_female) &&
+                    cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual + $RoleName_f))
+                        ? cptr.ldPtro(
+                            gu,
+                            $instance_globals_u_urace + $Race_individual + $RoleName_f
+                        )
+                        : ((cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual))
+                            ? cptr.ldPtro(gu, $instance_globals_u_urace + $Race_individual)
+                            : cptr.ldPtro(gu, $instance_globals_u_urace));
 
-                if (kindred) {
-                    verbl_msg = __s_this_is_my_hunting_ground_that_you_dare;
-                } else if (cptr.eq(
-                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                    cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst)
-                ) ||
-                        cptr.eq(
-                            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                            cptr.add(mons, NHC.PM_BABY_SILVER_DRAGON, $sizeof_permonst)
-                        )) {
-                    /* Silver dragons are silver in color, not made of silver */
-                    void cptr.sprintf(
-                        cptr.decay(verbuf),
-                        __s_s_your_silver_sheen_does_not_frighten_me,
-                        (cptr.eq(
-                            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                            cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst)
-                        ))
-                            ? __s_fool
-                            : __s_young_fool
-                    );
-                    verbl_msg = cptr.decay(verbuf);
-                } else {
-                    vampindex = rn2(2);
-                    if (vampindex == 0) {
+                if (cptr.ld1so(mtmp, $monst_mtame)) {
+                    if (kindred) {
                         void cptr.sprintf(
                             cptr.decay(verbuf),
-                            cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8),
-                            body_part(NHC.BLOOD)
+                            __s_good_s_to_you_master_s,
+                            isnight ? __s_evening : __s_day,
+                            isnight ? __s_bang : __s_why_do_we_not_rest
                         );
                         verbl_msg = cptr.decay(verbuf);
-                    } else if (vampindex == 1) {
+                    } else {
                         void cptr.sprintf(
                             cptr.decay(verbuf),
-                            cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8),
-                            Upolyd()
-                                ? an(pmname(
-                                    cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst),
-                                    cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
-                                ))
-                                : an(racenoun)
+                            __s_s_s__3,
+                            nightchild ? __s_child_of_the_night : __s_empty,
+                            midnight()
+                                ? __s_i_can_stand_this_craving_no_longer
+                                : (isnight
+                                    ? __s_i_beg_you_help_me_satisfy_this_growing
+                                    : __s_i_find_myself_growing_a_little_weary)
+                        );
+                        verbl_msg = cptr.decay(verbuf);
+                    }
+                } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                    if (kindred && isnight) {
+                        void cptr.sprintf(
+                            cptr.decay(verbuf),
+                            __s_good_feeding_s,
+                            cptr.ld1so(flags, $flag_female) ? __s_sister : __s_brother
+                        );
+                        verbl_msg = cptr.decay(verbuf);
+                    } else if (nightchild && isnight) {
+                        void cptr.sprintf(
+                            cptr.decay(verbuf),
+                            __s_how_nice_to_hear_you_child_of_the_night
                         );
                         verbl_msg = cptr.decay(verbuf);
                     } else
-                        verbl_msg = cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8);
+                        verbl_msg = __s_i_only_drink_potions;
+                } else {
+                    let vampindex;
+
+                    if (kindred) {
+                        verbl_msg = __s_this_is_my_hunting_ground_that_you_dare;
+                    } else if (cptr.eq(
+                        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                        cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst)
+                    ) ||
+                            cptr.eq(
+                                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                                cptr.add(mons, NHC.PM_BABY_SILVER_DRAGON, $sizeof_permonst)
+                            )) {
+                        /* Silver dragons are silver in color, not made of silver */
+                        void cptr.sprintf(
+                            cptr.decay(verbuf),
+                            __s_s_your_silver_sheen_does_not_frighten_me,
+                            (cptr.eq(
+                                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                                cptr.add(mons, NHC.PM_SILVER_DRAGON, $sizeof_permonst)
+                            ))
+                                ? __s_fool
+                                : __s_young_fool
+                        );
+                        verbl_msg = cptr.decay(verbuf);
+                    } else {
+                        vampindex = rn2(2);
+                        if (vampindex == 0) {
+                            void cptr.sprintf(
+                                cptr.decay(verbuf),
+                                cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8),
+                                body_part(NHC.BLOOD)
+                            );
+                            verbl_msg = cptr.decay(verbuf);
+                        } else if (vampindex == 1) {
+                            void cptr.sprintf(
+                                cptr.decay(verbuf),
+                                cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8),
+                                Upolyd()
+                                    ? an(pmname(
+                                        cptr.add(
+                                            mons,
+                                            cptr.ldI32o(u, $you_umonnum),
+                                            $sizeof_permonst
+                                        ),
+                                        cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+                                    ))
+                                    : an(racenoun)
+                            );
+                            verbl_msg = cptr.decay(verbuf);
+                        } else
+                            verbl_msg = cptr.ldPtro(__static_domonnoise_vampmsg, vampindex, 8);
+                    }
                 }
+                break;
             }
-            break;
-        }
         case NHC.MS_WERE:
-        if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && (night() ^ !rn2(13))) {
-            pline(
-                __s_s_throws_back_s_head_and_lets_out_a,
-                Monnam(mtmp),
-                (cptr.ldPtro2(
-                    genders,
-                    pronoun_gender(mtmp, NHM.PRONOUN_HALLU),
-                    $sizeof_Gender,
-                    $Gender_his
-                )),
-                (cptr.eq(ptr, cptr.add(mons, NHC.PM_HUMAN_WERERAT, $sizeof_permonst)))
-                    ? __s_shriek
-                    : __s_howl
-            );
-            ;
-            wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121);
-        } else {
-            pline_msg = __s_whispers_inaudibly_all_you_can_make_out;
-        }
-        break;
-        case NHC.MS_BARK:
-        if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && night()) {
-            pline_msg = __s_howls;
-        } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            if (cptr.ld1so(mtmp, $monst_mtame) &&
-                    ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ||
-                        (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 ||
-                        (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 ||
-                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
-                            cptr.ldI64o(
-                                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
-                                $edog_hungrytime
-                            ) ||
-                        cptr.ld1so(mtmp, $monst_mtame) < 5))
-                pline_msg = __s_whines;
-            else if (cptr.ld1so(mtmp, $monst_mtame) &&
-                    cptr.ldI64o(
-                        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
-                        $edog_hungrytime
-                    ) >
-                        BigInt.asIntN(
-                            64,
-                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n
-                        ))
-                pline_msg = __s_yips;
-            else {
-                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_DINGO, $sizeof_permonst)))
-                    pline_msg = __s_barks;
-            }
-        } else {
-            pline_msg = __s_growls;
-        }
-        break;
-        case NHC.MS_MEW:
-        if (cptr.ld1so(mtmp, $monst_mtame)) {
-            if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ||
-                    (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 ||
-                    (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 ||
-                    cptr.ld1so(mtmp, $monst_mtame) < 5) {
-                ;
-                pline_msg = __s_yowls;
-            } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
-                    cptr.ldI64o(
-                        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
-                        $edog_hungrytime
-                    )) {
-                ;
-                pline_msg = __s_meows;
-            } else if (cptr.ldI64o(
-                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
-                $edog_hungrytime
-            ) >
-                    BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n)) {
-                ;
-                pline_msg = __s_purrs;
-            } else {
-                ;
-                pline_msg = __s_mews;
-            }
-            break;
-        }
-        // @FallThrough
-        ;
-        case NHC.MS_GROWL:
-        ;
-        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_snarls : __s_growls__2;
-        break;
-        case NHC.MS_ROAR:
-        ;
-        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_snarls : __s_roars;
-        break;
-        case NHC.MS_SQEEK:
-        ;
-        pline_msg = __s_squeaks;
-        break;
-        case NHC.MS_SQAWK:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_RAVEN, $sizeof_permonst)) &&
-                !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            verbl_msg = __s_nevermore;
-        } else {
-            ;
-            pline_msg = __s_squawks;
-        }
-        break;
-        case NHC.MS_HISS:
-        if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            ;
-            pline_msg = __s_hisses;
-        } else {
-            return NHM.ECMD_OK;  /* no sound */
-        }
-        break;
-        case NHC.MS_BUZZ:
-        ;
-        pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_drones : __s_buzzes_angrily;
-        break;
-        case NHC.MS_GRUNT:
-        ;
-        pline_msg = __s_grunts;
-        break;
-        case NHC.MS_NEIGH:
-        if (cptr.ld1so(mtmp, $monst_mtame) < 5) {
-            ;
-            pline_msg = __s_neighs;
-        } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
-                cptr.ldI64o(
-                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
-                    $edog_hungrytime
-                )) {
-            ;
-            pline_msg = __s_whinnies;
-        } else {
-            ;
-            pline_msg = __s_whickers;
-        }
-        break;
-        case NHC.MS_MOO:
-        ;
-        pline_msg = __s_moos;
-        break;
-        case NHC.MS_BELLOW:
-        ;
-        pline_msg = __s_bellows;
-        break;
-        case NHC.MS_CHIRP:
-        ;
-        pline_msg = __s_chirps;
-        break;
-        case NHC.MS_WAIL:
-        ;
-        pline_msg = __s_wails_mournfully;
-        break;
-        case NHC.MS_GROAN:
-        if (!rn2(3)) {
-            ;
-            pline_msg = __s_groans;
-        }
-        break;
-        case NHC.MS_GURGLE:
-        ;
-        pline_msg = __s_gurgles;
-        break;
-        case NHC.MS_BURBLE:
-        ;
-        pline_msg = __s_burbles;
-        break;
-        case NHC.MS_TRUMPET:
-        ;
-        pline_msg = __s_trumpets;
-        wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121);
-        break;
-        case NHC.MS_SHRIEK:
-        ;
-        pline_msg = __s_shrieks;
-        aggravate();
-        break;
-        case NHC.MS_IMITATE:
-        pline_msg = __s_imitates_you;
-        break;
-        case NHC.MS_BONES:
-        ;
-        pline(__s_s_rattles_noisily, Monnam(mtmp));
-        You(__s_freeze_for_a_moment);
-        nomul(-2);
-        cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_scared_by_rattling);
-        cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
-        break;
-        case NHC.MS_LAUGH:
-        {
-            ;
-            pline_msg = cptr.ldPtro(__static_domonnoise_laugh_msg, rn2(4), 8);
-            break;
-        }
-        case NHC.MS_MUMBLE:
-        pline_msg = __s_mumbles_incomprehensibly;
-        break;
-        case NHC.MS_ORC:
-        ;
-        pline_msg = __s_grunts;
-        break;
-        case NHC.MS_DJINNI:
-        if (cptr.ld1so(mtmp, $monst_mtame)) {
-            verbl_msg = __s_sorry_i_m_all_out_of_wishes;
-        } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATER_DEMON, $sizeof_permonst)))
-                pline_msg = __s_gurgles;
-            else
-                verbl_msg = __s_i_m_free;
-        } else {
-            if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)))
-                verbl_msg = __s_this_will_teach_you_not_to_disturb_me;
-            else
-                verbl_msg = __s_get_me_out_of_here;
-        }
-        break;
-        case NHC.MS_BOAST:
-        if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            switch (rn2(4)) {
-                case 0:
+            if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && (night() ^ !rn2(13))) {
                 pline(
-                    __s_s_boasts_about_s_gem_collection,
+                    __s_s_throws_back_s_head_and_lets_out_a,
                     Monnam(mtmp),
                     (cptr.ldPtro2(
                         genders,
                         pronoun_gender(mtmp, NHM.PRONOUN_HALLU),
                         $sizeof_Gender,
                         $Gender_his
-                    ))
+                    )),
+                    (cptr.eq(ptr, cptr.add(mons, NHC.PM_HUMAN_WERERAT, $sizeof_permonst)))
+                        ? __s_shriek
+                        : __s_howl
                 );
-                break;
-                case 1:
-                pline_msg = __s_complains_about_a_diet_of_mutton;
-                break;
-                default:
-                pline_msg = __s_shouts_fee_fie_foe_foo_and_guffaws;
-                wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 49);
-                break;
+                ;
+                wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121);
+            } else {
+                pline_msg = __s_whispers_inaudibly_all_you_can_make_out;
             }
             break;
-        }
-        // @FallThrough
-        ;
-        case NHC.MS_HUMANOID:
-        if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
-            if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
-                cptr.ldI16((cptr.add(
-                    svd,
-                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
-                )))) &&
-                    is_mplayer(ptr))
-                mplayer_talk(mtmp);
-            else
-                pline_msg = __s_threatens_you;
+        case NHC.MS_BARK:
+            if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON && night()) {
+                pline_msg = __s_howls;
+            } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                if (cptr.ld1so(mtmp, $monst_mtame) &&
+                        ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ||
+                            (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 ||
+                            (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 ||
+                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
+                                cptr.ldI64o(
+                                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                                    $edog_hungrytime
+                                ) ||
+                            cptr.ld1so(mtmp, $monst_mtame) < 5))
+                    pline_msg = __s_whines;
+                else if (cptr.ld1so(mtmp, $monst_mtame) &&
+                        cptr.ldI64o(
+                            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                            $edog_hungrytime
+                        ) >
+                            BigInt.asIntN(
+                                64,
+                                cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n
+                            ))
+                    pline_msg = __s_yips;
+                else {
+                    if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_DINGO, $sizeof_permonst)))
+                        pline_msg = __s_barks;
+                }
+            } else {
+                pline_msg = __s_growls;
+            }
             break;
-        }
-        /* Generic peaceful humanoid behavior. */
-        if ((cptr.ldI32o(mtmp, $monst_mflee) & 1))
-            pline_msg = __s_wants_nothing_to_do_with_you;
-        else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 4) | 0))
-            pline_msg = __s_moans;
-        else if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ||
-                (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0)
-            verbl_msg = !rn2(3) ? __s_huh : (rn2(2) ? __s_what : __s_eh);
-        else if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
-            verbl_msg = __s_i_can_t_see;
-        else if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
-            let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
-
-            if (t)
-                cptr.stI32o(t, $trap_tseen, 1);
-            verbl_msg = __s_i_m_trapped;
-        } else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 2) | 0))
-            pline_msg = __s_asks_for_a_potion_of_healing;
-        else if (cptr.ld1so(mtmp, $monst_mtame) &&
-                !(cptr.ldI32o(mtmp, $monst_isminion) & 1) &&
-                cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
+        case NHC.MS_MEW:
+            if (cptr.ld1so(mtmp, $monst_mtame)) {
+                if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ||
+                        (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0 ||
+                        (cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 ||
+                        cptr.ld1so(mtmp, $monst_mtame) < 5) {
+                    ;
+                    pline_msg = __s_yowls;
+                } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
+                        cptr.ldI64o(
+                            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                            $edog_hungrytime
+                        )) {
+                    ;
+                    pline_msg = __s_meows;
+                } else if (cptr.ldI64o(
+                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                    $edog_hungrytime
+                ) >
+                        BigInt.asIntN(
+                            64,
+                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n
+                        )) {
+                    ;
+                    pline_msg = __s_purrs;
+                } else {
+                    ;
+                    pline_msg = __s_mews;
+                }
+                break;
+            }
+            // @FallThrough
+            ;
+        case NHC.MS_GROWL:
+            ;
+            pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_snarls : __s_growls__2;
+            break;
+        case NHC.MS_ROAR:
+            ;
+            pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 ? __s_snarls : __s_roars;
+            break;
+        case NHC.MS_SQEEK:
+            ;
+            pline_msg = __s_squeaks;
+            break;
+        case NHC.MS_SQAWK:
+            if (cptr.eq(ptr, cptr.add(mons, NHC.PM_RAVEN, $sizeof_permonst)) &&
+                    !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                verbl_msg = __s_nevermore;
+            } else {
+                ;
+                pline_msg = __s_squawks;
+            }
+            break;
+        case NHC.MS_HISS:
+            if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                ;
+                pline_msg = __s_hisses;
+            } else {
+                return NHM.ECMD_OK;  /* no sound */
+            }
+            break;
+        case NHC.MS_BUZZ:
+            ;
+            pline_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0
+                    ? __s_drones
+                    : __s_buzzes_angrily;
+            break;
+        case NHC.MS_GRUNT:
+            ;
+            pline_msg = __s_grunts;
+            break;
+        case NHC.MS_NEIGH:
+            if (cptr.ld1so(mtmp, $monst_mtame) < 5) {
+                ;
+                pline_msg = __s_neighs;
+            } else if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
                     cptr.ldI64o(
                         (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
                         $edog_hungrytime
-                    ))
-            verbl_msg = __s_i_m_hungry;
-        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n))
-            pline_msg = __s_curses_orcs;
-        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n))
-            pline_msg = __s_talks_about_mining;
-        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2147483648n) != 0n))
-            pline_msg = __s_talks_about_spellcraft;
-        else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR)
-            pline_msg = __s_discusses_hunting;
-        else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 64n) != 0n)) {
-            if (Hallucination() && (gnomeplan = rn2(4)) % 2) {
-                /* skipped for rn2(4) result of 0 or 2;
-                   gag from an early episode of South Park called "Gnomes";
-                   initially, Tweek (introduced in that episode) is the only
-                   one aware of the tiny gnomes after spotting them sneaking
-                   about; they are embarked upon a three-step business plan;
-                   a diagram of the plan shows:
-                               Phase 1         Phase 2      Phase 3
-                         Collect underpants       ?          Profit
-                   and they never verbalize step 2 so we don't either */
-                verbl_msg = (gnomeplan == 1)
-                        ? __s_phase_one_collect_underpants
-                        : __s_phase_three_profit;
+                    )) {
+                ;
+                pline_msg = __s_whinnies;
             } else {
-                verbl_msg = __s_many_enter_the_dungeon_and_few_return;
+                ;
+                pline_msg = __s_whickers;
             }
-        } else
-            switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
-                case NHC.PM_HOBBIT:
-                /* 5.0: the 'complains' message used to be given if the
-                   hobbit's current hit points were at 10 below max or
-                   less, but their max is normally less than 10 so it
-                   would almost never occur */
-                pline_msg = (cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax) &&
-                    (cptr.ldI32o(mtmp, $monst_mhpmax) <= 10 ||
-                        cptr.ldI32o(mtmp, $monst_mhp) <=
-                            ((cptr.ldI32o(mtmp, $monst_mhpmax) - 10) | 0)))
-                        ? __s_complains_about_unpleasant_dungeon
-                        : __s_asks_you_about_the_one_ring;
-                break;
-                case NHC.PM_ARCHEOLOGIST:
-                pline_msg = __s_describes_a_recent_article_in_spelunker;
-                break;
-                case NHC.PM_TOURIST:
-                verbl_msg = __s_aloha;
-                break;
-                default:
-                pline_msg = __s_discusses_dungeon_exploration;
-                break;
-            }
-        break;
-        case NHC.MS_SEDUCE:
-        {
-            let swval;
-
-            if (SYSOPT_SEDUCE()) {
-                if (cptr.ld1so(ptr, $permonst_mlet) != NHC.S_NYMPH &&
-                        (could_seduce(
-                            mtmp,
-                            cptr.add(gy, $instance_globals_y_youmonst),
-                            null
-                        ) == 1)) {
-                    void doseduce(mtmp);
-                    break;
-                }
-                swval = ((poly_gender() != ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0))
-                        ? rn2(3)
-                        : 0);
-            } else
-                swval = ((poly_gender() == 0) ? rn2(3) : 0);
-            switch (swval) {
-                case 2:
-                verbl_msg = __s_hello_sailor;
-                break;
-                case 1:
-                pline_msg = __s_comes_on_to_you;
-                break;
-                default:
-                pline_msg = __s_cajoles_you;
-            }
-        }
-        break;
-        case NHC.MS_ARREST:
-        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+            break;
+        case NHC.MS_MOO:
             ;
-            verbalize(__s_just_the_facts_s, cptr.ld1so(flags, $flag_female) ? __s_ma_am : __s_sir);
-        } else {
-            verbl_msg = cptr.ldPtro(__static_domonnoise_arrest_msg, rn2(3), 8);
-        }
-        break;
-        case NHC.MS_BRIBE:
-        if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !cptr.ld1so(mtmp, $monst_mtame)) {
-            void demon_talk(mtmp);
+            pline_msg = __s_moos;
             break;
-        }
-        // @FallThrough
-        ;
-        case NHC.MS_CUSS:
-        if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
-            cuss(mtmp);
-        else if (is_lminion(mtmp))
-            verbl_msg = __s_it_s_not_too_late;
-        else
-            verbl_msg = __s_we_re_all_doomed;
-        break;
-        case NHC.MS_SPELL:
-        /* deliberately vague, since it's not actually casting any spell */
-        pline_msg = __s_seems_to_mutter_a_cantrip;
-        break;
-        case NHC.MS_NURSE:
-        verbl_msg_mcan = __s_i_hate_this_job;
-        if (uwep.v && (cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)))
-            verbl_msg = __s_put_that_weapon_away_before_you_hurt;
-        else if (uarmc.v || uarm.v || uarmh.v || uarms.v || uarmg.v || uarmf.v)
-            verbl_msg = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_HEALER)
-                    ? __s_doc_i_can_t_help_you_unless_you
-                    : __s_please_undress_so_i_can_examine_you;
-        else if (uarmu.v)
-            verbl_msg = __s_take_off_your_shirt_please;
-        else
-            verbl_msg = __s_relax_this_won_t_hurt_a_bit;
-        break;
-        case NHC.MS_GUARD:
-        if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)))
-            verbl_msg = __s_please_drop_that_gold_and_follow_me;
-        else
-            verbl_msg = __s_please_follow_me;
-        break;
-        case NHC.MS_SOLDIER:
-        {
-            verbl_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0
-                    ? cptr.ldPtro(__static_domonnoise_soldier_pax_msg, rn2(3), 8)
-                    : cptr.ldPtro(__static_domonnoise_soldier_foe_msg, rn2(3), 8);
+        case NHC.MS_BELLOW:
+            ;
+            pline_msg = __s_bellows;
             break;
-        }
-        case NHC.MS_RIDER:
-        {
-            let tribtitle;
-            let book = null;
-            let ms_Death = schar((cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, $sizeof_permonst))));
-
-            /* 3.6 tribute */
-            if (ms_Death &&
-                    !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_Deathnotice) & 1) &&
-                    (book = u_have_novel()) !== null) {
-                if ((tribtitle = noveltitle(cptr.add(book, $obj_corpsenm))) !== null) {
-                    void cptr.sprintf(
-                        cptr.decay(verbuf),
-                        __s_ah_so_you_have_a_copy_of_s,
-                        tribtitle
-                    );
-                    /* no Death featured in these two, so exclude them */
-                    if (strncmpi((tribtitle), (__s_snuff), -1) &&
-                            strncmpi((tribtitle), (__s_the_wee_free_men), -1))
-                        void cptr.strcat(cptr.decay(verbuf), __s_i_may_have_been_misquoted_there);
-                    verbl_msg = cptr.decay(verbuf);
+        case NHC.MS_CHIRP:
+            ;
+            pline_msg = __s_chirps;
+            break;
+        case NHC.MS_WAIL:
+            ;
+            pline_msg = __s_wails_mournfully;
+            break;
+        case NHC.MS_GROAN:
+            if (!rn2(3)) {
+                ;
+                pline_msg = __s_groans;
+            }
+            break;
+        case NHC.MS_GURGLE:
+            ;
+            pline_msg = __s_gurgles;
+            break;
+        case NHC.MS_BURBLE:
+            ;
+            pline_msg = __s_burbles;
+            break;
+        case NHC.MS_TRUMPET:
+            ;
+            pline_msg = __s_trumpets;
+            wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 121);
+            break;
+        case NHC.MS_SHRIEK:
+            ;
+            pline_msg = __s_shrieks;
+            aggravate();
+            break;
+        case NHC.MS_IMITATE:
+            pline_msg = __s_imitates_you;
+            break;
+        case NHC.MS_BONES:
+            ;
+            pline(__s_s_rattles_noisily, Monnam(mtmp));
+            You(__s_freeze_for_a_moment);
+            nomul(-2);
+            cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_scared_by_rattling);
+            cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
+            break;
+        case NHC.MS_LAUGH:
+            {
+                ;
+                pline_msg = cptr.ldPtro(__static_domonnoise_laugh_msg, rn2(4), 8);
+                break;
+            }
+        case NHC.MS_MUMBLE:
+            pline_msg = __s_mumbles_incomprehensibly;
+            break;
+        case NHC.MS_ORC:
+            ;
+            pline_msg = __s_grunts;
+            break;
+        case NHC.MS_DJINNI:
+            if (cptr.ld1so(mtmp, $monst_mtame)) {
+                verbl_msg = __s_sorry_i_m_all_out_of_wishes;
+            } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATER_DEMON, $sizeof_permonst)))
+                    pline_msg = __s_gurgles;
+                else
+                    verbl_msg = __s_i_m_free;
+            } else {
+                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)))
+                    verbl_msg = __s_this_will_teach_you_not_to_disturb_me;
+                else
+                    verbl_msg = __s_get_me_out_of_here;
+            }
+            break;
+        case NHC.MS_BOAST:
+            if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                switch (rn2(4)) {
+                    case 0:
+                        pline(
+                            __s_s_boasts_about_s_gem_collection,
+                            Monnam(mtmp),
+                            (cptr.ldPtro2(
+                                genders,
+                                pronoun_gender(mtmp, NHM.PRONOUN_HALLU),
+                                $sizeof_Gender,
+                                $Gender_his
+                            ))
+                        );
+                        break;
+                    case 1:
+                        pline_msg = __s_complains_about_a_diet_of_mutton;
+                        break;
+                    default:
+                        pline_msg = __s_shouts_fee_fie_foe_foo_and_guffaws;
+                        wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 49);
+                        break;
                 }
-                cptr.stI32o(svc, $context_info_tribute + $tribute_info_Deathnotice, 1);
-            } else if (ms_Death && rn2(3) && Death_quote(cptr.decay(verbuf), 256)) {
-                verbl_msg = cptr.decay(verbuf);
-                /* end of tribute addition */
+                break;
+            }
+            // @FallThrough
+            ;
+        case NHC.MS_HUMANOID:
+            if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))) &&
+                        is_mplayer(ptr))
+                    mplayer_talk(mtmp);
+                else
+                    pline_msg = __s_threatens_you;
+                break;
+            }
+            /* Generic peaceful humanoid behavior. */
+            if ((cptr.ldI32o(mtmp, $monst_mflee) & 1))
+                pline_msg = __s_wants_nothing_to_do_with_you;
+            else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 4) | 0))
+                pline_msg = __s_moans;
+            else if ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ||
+                    (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0)
+                verbl_msg = !rn2(3) ? __s_huh : (rn2(2) ? __s_what : __s_eh);
+            else if (!(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
+                verbl_msg = __s_i_can_t_see;
+            else if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1)) {
+                let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
 
-            } else if (ms_Death && !rn2(10)) {
-                pline_msg = __s_is_busy_reading_a_copy_of_sandman_8;
+                if (t)
+                    cptr.stI32o(t, $trap_tseen, 1);
+                verbl_msg = __s_i_m_trapped;
+            } else if (cptr.ldI32o(mtmp, $monst_mhp) < ((cptr.ldI32o(mtmp, $monst_mhpmax) / 2) | 0))
+                pline_msg = __s_asks_for_a_potion_of_healing;
+            else if (cptr.ld1so(mtmp, $monst_mtame) &&
+                    !(cptr.ldI32o(mtmp, $monst_isminion) & 1) &&
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
+                        cptr.ldI64o(
+                            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                            $edog_hungrytime
+                        ))
+                verbl_msg = __s_i_m_hungry;
+            else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n))
+                pline_msg = __s_curses_orcs;
+            else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n))
+                pline_msg = __s_talks_about_mining;
+            else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2147483648n) != 0n))
+                pline_msg = __s_talks_about_spellcraft;
+            else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR)
+                pline_msg = __s_discusses_hunting;
+            else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 64n) != 0n)) {
+                if (Hallucination() && (gnomeplan = rn2(4)) % 2) {
+                    /* skipped for rn2(4) result of 0 or 2;
+                       gag from an early episode of South Park called "Gnomes";
+                       initially, Tweek (introduced in that episode) is the only
+                       one aware of the tiny gnomes after spotting them sneaking
+                       about; they are embarked upon a three-step business plan;
+                       a diagram of the plan shows:
+                                   Phase 1         Phase 2      Phase 3
+                             Collect underpants       ?          Profit
+                       and they never verbalize step 2 so we don't either */
+                    verbl_msg = (gnomeplan == 1)
+                            ? __s_phase_one_collect_underpants
+                            : __s_phase_three_profit;
+                } else {
+                    verbl_msg = __s_many_enter_the_dungeon_and_few_return;
+                }
             } else
-                verbl_msg = __s_who_do_you_think_you_are_war;
+                switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
+                    case NHC.PM_HOBBIT:
+                        /* 5.0: the 'complains' message used to be given if the
+                           hobbit's current hit points were at 10 below max or
+                           less, but their max is normally less than 10 so it
+                           would almost never occur */
+                        pline_msg = (cptr.ldI32o(mtmp, $monst_mhp) <
+                            cptr.ldI32o(mtmp, $monst_mhpmax) &&
+                            (cptr.ldI32o(mtmp, $monst_mhpmax) <= 10 ||
+                                cptr.ldI32o(mtmp, $monst_mhp) <=
+                                    ((cptr.ldI32o(mtmp, $monst_mhpmax) - 10) | 0)))
+                                ? __s_complains_about_unpleasant_dungeon
+                                : __s_asks_you_about_the_one_ring;
+                        break;
+                    case NHC.PM_ARCHEOLOGIST:
+                        pline_msg = __s_describes_a_recent_article_in_spelunker;
+                        break;
+                    case NHC.PM_TOURIST:
+                        verbl_msg = __s_aloha;
+                        break;
+                    default:
+                        pline_msg = __s_discusses_dungeon_exploration;
+                        break;
+                }
             break;
-        }  /* case MS_RIDER */
+        case NHC.MS_SEDUCE:
+            {
+                let swval;
+
+                if (SYSOPT_SEDUCE()) {
+                    if (cptr.ld1so(ptr, $permonst_mlet) != NHC.S_NYMPH &&
+                            (could_seduce(mtmp, cptr.add(gy, $instance_globals_y_youmonst), null) ==
+                                1)) {
+                        void doseduce(mtmp);
+                        break;
+                    }
+                    swval = ((poly_gender() != ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0))
+                            ? rn2(3)
+                            : 0);
+                } else
+                    swval = ((poly_gender() == 0) ? rn2(3) : 0);
+                switch (swval) {
+                    case 2:
+                        verbl_msg = __s_hello_sailor;
+                        break;
+                    case 1:
+                        pline_msg = __s_comes_on_to_you;
+                        break;
+                    default:
+                        pline_msg = __s_cajoles_you;
+                }
+            }
+            break;
+        case NHC.MS_ARREST:
+            if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
+                ;
+                verbalize(
+                    __s_just_the_facts_s,
+                    cptr.ld1so(flags, $flag_female) ? __s_ma_am : __s_sir
+                );
+            } else {
+                verbl_msg = cptr.ldPtro(__static_domonnoise_arrest_msg, rn2(3), 8);
+            }
+            break;
+        case NHC.MS_BRIBE:
+            if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && !cptr.ld1so(mtmp, $monst_mtame)) {
+                void demon_talk(mtmp);
+                break;
+            }
+            // @FallThrough
+            ;
+        case NHC.MS_CUSS:
+            if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
+                cuss(mtmp);
+            else if (is_lminion(mtmp))
+                verbl_msg = __s_it_s_not_too_late;
+            else
+                verbl_msg = __s_we_re_all_doomed;
+            break;
+        case NHC.MS_SPELL:
+            /* deliberately vague, since it's not actually casting any spell */
+            pline_msg = __s_seems_to_mutter_a_cantrip;
+            break;
+        case NHC.MS_NURSE:
+            verbl_msg_mcan = __s_i_hate_this_job;
+            if (uwep.v &&
+                    (cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)))
+                verbl_msg = __s_put_that_weapon_away_before_you_hurt;
+            else if (uarmc.v || uarm.v || uarmh.v || uarms.v || uarmg.v || uarmf.v)
+                verbl_msg = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                    NHC.PM_HEALER)
+                        ? __s_doc_i_can_t_help_you_unless_you
+                        : __s_please_undress_so_i_can_examine_you;
+            else if (uarmu.v)
+                verbl_msg = __s_take_off_your_shirt_please;
+            else
+                verbl_msg = __s_relax_this_won_t_hurt_a_bit;
+            break;
+        case NHC.MS_GUARD:
+            if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)))
+                verbl_msg = __s_please_drop_that_gold_and_follow_me;
+            else
+                verbl_msg = __s_please_follow_me;
+            break;
+        case NHC.MS_SOLDIER:
+            {
+                verbl_msg = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0
+                        ? cptr.ldPtro(__static_domonnoise_soldier_pax_msg, rn2(3), 8)
+                        : cptr.ldPtro(__static_domonnoise_soldier_foe_msg, rn2(3), 8);
+                break;
+            }
+        case NHC.MS_RIDER:
+            {
+                let tribtitle;
+                let book = null;
+                let ms_Death = schar((cptr.eq(
+                    ptr,
+                    cptr.add(mons, NHC.PM_DEATH, $sizeof_permonst)
+                )));
+
+                /* 3.6 tribute */
+                if (ms_Death &&
+                        !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_Deathnotice) &
+                            1) &&
+                        (book = u_have_novel()) !== null) {
+                    if ((tribtitle = noveltitle(cptr.add(book, $obj_corpsenm))) !== null) {
+                        void cptr.sprintf(
+                            cptr.decay(verbuf),
+                            __s_ah_so_you_have_a_copy_of_s,
+                            tribtitle
+                        );
+                        /* no Death featured in these two, so exclude them */
+                        if (strncmpi((tribtitle), (__s_snuff), -1) &&
+                                strncmpi((tribtitle), (__s_the_wee_free_men), -1))
+                            void cptr.strcat(
+                                cptr.decay(verbuf),
+                                __s_i_may_have_been_misquoted_there
+                            );
+                        verbl_msg = cptr.decay(verbuf);
+                    }
+                    cptr.stI32o(svc, $context_info_tribute + $tribute_info_Deathnotice, 1);
+                } else if (ms_Death && rn2(3) && Death_quote(cptr.decay(verbuf), 256)) {
+                    verbl_msg = cptr.decay(verbuf);
+                    /* end of tribute addition */
+
+                } else if (ms_Death && !rn2(10)) {
+                    pline_msg = __s_is_busy_reading_a_copy_of_sandman_8;
+                } else
+                    verbl_msg = __s_who_do_you_think_you_are_war;
+                break;
+            }  /* case MS_RIDER */
     }  /* switch */
 
     if (pline_msg) {
@@ -2103,7 +2140,8 @@ function dochat() {
             ty,
             8,
             $instance_globals_saved_l_level + $dlevel_t_objects
-        ))) !== null &&
+        ))) !==
+            null &&
                 cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) {
             /* Talking to a statue */
             if (!Blind())
@@ -2225,11 +2263,12 @@ function responsive_mon_at(x, y) {
     if (mtmp &&
             (helpless(mtmp) ||
                 !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ||
-                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    4096n) == 0n) ||
+                !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
+                    0n) ||
                 (Invis() &&
                     !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n)) ||
+                        16777216n) !=
+                        0n)) ||
                 (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my))))
         mtmp = null;
     return mtmp;
@@ -2296,7 +2335,8 @@ export function tiphat() {
                         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
                         x
                     ) &
-                        NHM.COULD_SEE) != 0))) {
+                        NHM.COULD_SEE) !=
+                        0))) {
             /* switch back to coordinates for previous iteration's 'mtmp' */
             x = (x - cptr.ldI32o(u, $you_dx)) | 0, y = (y - cptr.ldI32o(u, $you_dy)) | 0;
             break;
@@ -2322,7 +2362,8 @@ export function tiphat() {
                     y,
                     8,
                     $instance_globals_saved_l_level + $dlevel_t_objects
-                ))) !== null &&
+                ))) !==
+                    null &&
                 cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE)
                 ? 1
                 : 0);  /* or actual statue */
@@ -2333,7 +2374,8 @@ export function tiphat() {
         if (vismon ||
                 unseen ||
                 (statue && Hallucination()) ||
-                (range == 1 && mtmp &&
+                (range == 1 &&
+                    mtmp &&
                     responsive_mon_at(x, y) &&
                     !(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) ==
                         NHC.MS_SILENT)) ||
@@ -2369,8 +2411,8 @@ export function tiphat() {
         );
 
         if (vismon &&
-                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    131072n) != 0n) &&
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) !=
+                    0n) &&
                 (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 &&
                 !Conflict()) {
             if ((otmp = which_armor(mtmp, 4n)) === null) {
@@ -2402,8 +2444,8 @@ export function tiphat() {
                 );
             }
         } else if (vismon &&
-                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    131072n) != 0n)) {
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) !=
+                    0n)) {
             let which = !Deaf() ? rn2(3) : ((rn2(2) + 1) | 0);
             let twice = (Deaf() || which > 0 || rn2(3)) ? 0 : ((rn2(2) + 1) | 0);
 

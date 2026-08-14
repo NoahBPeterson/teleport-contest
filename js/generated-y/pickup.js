@@ -980,17 +980,17 @@ export function add_valid_menu_class(c) {
             case 85:
             case 67:
             case 88:
-            cptr.st1o(gb, $instance_globals_b_bucx_filter, 1);
-            break;
+                cptr.st1o(gb, $instance_globals_b_bucx_filter, 1);
+                break;
             case 80:
-            cptr.st1o(gp, $instance_globals_p_picked_filter, 1);
-            break;
+                cptr.st1o(gp, $instance_globals_p_picked_filter, 1);
+                break;
             case 117:
-            cptr.st1o(gs, $instance_globals_s_shop_filter, 1);
-            break;
+                cptr.st1o(gs, $instance_globals_s_shop_filter, 1);
+                break;
             default:
-            cptr.st1o(gc, $instance_globals_c_class_filter, 1);
-            break;
+                cptr.st1o(gc, $instance_globals_c_class_filter, 1);
+                break;
         }
     }
     cptr.st1o2(
@@ -1208,7 +1208,8 @@ export function* pickup(what) {
                             cptr.ldI16o(u, $you_uy),
                             8,
                             $instance_globals_saved_l_level + $dlevel_t_objects
-                        ) !== null) ||
+                        ) !==
+                            null) ||
                         (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !Underwater()) ||
                         is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
                 if (cptr.ld1so(flags, $flag_mention_decor))
@@ -1238,13 +1239,15 @@ export function* pickup(what) {
                         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                         $permonst_mflags1
                     ) &
-                        2048n) != 0n)) {
+                        2048n) !=
+                        0n)) {
                 (yield* check_here(0));
                 if (((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    2048n) != 0n) &&
+                    2048n) !=
+                    0n) &&
                         (cptr.ldPtro3(
                             svl,
                             cptr.ldI16(u),
@@ -1252,7 +1255,8 @@ export function* pickup(what) {
                             cptr.ldI16o(u, $you_uy),
                             8,
                             $instance_globals_saved_l_level + $dlevel_t_objects
-                        ) !== null) &&
+                        ) !==
+                            null) &&
                         (autopickup || cptr.ld1so(flags, $flag_pickup)))
                     (yield* You(__s_are_physically_incapable_of_picking));
                 return 0;
@@ -1266,7 +1270,8 @@ export function* pickup(what) {
                 cptr.ldI16o(u, $you_uy),
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_objects
-            ) !== null) &&
+            ) !==
+                null) &&
                     cptr.ldI32o(svc, $context_info_run) &&
                     cptr.ldI32o(svc, $context_info_run) != 8 &&
                     !cptr.ld1so(svc, $context_info_nopick))
@@ -1438,27 +1443,32 @@ export function* pickup(what) {
                                 ? (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynaqchars), 121, 1))
                                 : (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynNaqchars), 121, 1))) {
                             case 113:
-                            break __lbl_end_query;  /* out 2 levels */
+                                break __lbl_end_query;  /* out 2 levels */
                             case 110:
-                            continue;
+                                continue;
                             case 97:
-                            all_of_a_type.v = 1;
-                            if (selective.v) {
-                                selective.v = 0;
-                                cptr.st1o(cptr.decay(oclasses), 0, cptr.ld1so(obj, $obj_oclass), 1);
-                                cptr.st1o(cptr.decay(oclasses), 1, 0, 1);
-                            }
-                            break;
+                                all_of_a_type.v = 1;
+                                if (selective.v) {
+                                    selective.v = 0;
+                                    cptr.st1o(
+                                        cptr.decay(oclasses),
+                                        0,
+                                        cptr.ld1so(obj, $obj_oclass),
+                                        1
+                                    );
+                                    cptr.st1o(cptr.decay(oclasses), 1, 0, 1);
+                                }
+                                break;
                             case 35:
-                            if (!yn_number.v)
-                                continue;  /* 0 count => No */
-                            lcount = yn_number.v;
-                            if (lcount > cptr.ldI64o(obj, $obj_quan))
-                                lcount = cptr.ldI64o(obj, $obj_quan);
-                            // @FallThrough
-                            ;
+                                if (!yn_number.v)
+                                    continue;  /* 0 count => No */
+                                lcount = yn_number.v;
+                                if (lcount > cptr.ldI64o(obj, $obj_quan))
+                                    lcount = cptr.ldI64o(obj, $obj_quan);
+                                // @FallThrough
+                                ;
                             default:
-                            break;
+                                break;
                         }
                     }
                     if (lcount == -1n)
@@ -1498,7 +1508,8 @@ export function* pickup(what) {
         if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
-        ) & 128n) != 0n))
+        ) &
+                128n) != 0n))
             void (yield* hideunder(cptr.add(gy, $instance_globals_y_youmonst)));
 
         /* position may need updating (invisible hero) */
@@ -1740,9 +1751,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
         (cptr.ld1so(flags, $flag_sortloot) == 108 && !(qflags & NHM.USE_INVLET)))
         ? NHM.SORTLOOT_LOOT
         : ((qflags & NHM.USE_INVLET) ? NHM.SORTLOOT_INVLET : 0)) |
-        (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0) |
-        ((qflags & NHM.FEEL_COCKATRICE) ? NHM.SORTLOOT_PETRIFY : 0)) >>>
-            0;
+            (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0) |
+            ((qflags & NHM.FEEL_COCKATRICE) ? NHM.SORTLOOT_PETRIFY : 0)) >>> 0;
     sortedolist.v = (yield* sortloot(olist, sortflags, schar(((qflags & NHM.BY_NEXTHERE) ? 1 : 0)), allow));
 
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
@@ -1819,7 +1829,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                                                 ),
                                                 $obj_v
                                             )
-                                        )) !== null) &&
+                                        )) !==
+                                            null) &&
                                         (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER ||
                                             cptr.ldI16o(
                                                 cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1844,7 +1855,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                                                 ),
                                                 $obj_v
                                             )
-                                        )) !== null) &&
+                                        )) !==
+                                            null) &&
                                         (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER ||
                                             cptr.ldI16o(
                                                 cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1882,7 +1894,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                                                 ),
                                                 $obj_v
                                             )
-                                        )) !== null) &&
+                                        )) !==
+                                            null) &&
                                         (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER ||
                                             cptr.ldI16o(
                                                 cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1909,7 +1922,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                                                     ),
                                                     $obj_v
                                                 )
-                                            )) !== null) &&
+                                            )) !==
+                                                null) &&
                                             (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER ||
                                                 cptr.ldI16o(
                                                     cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1935,7 +1949,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                                                     ),
                                                     $obj_v
                                                 )
-                                            )) !== null) &&
+                                            )) !==
+                                                null) &&
                                             (cptr.ldI16o((curr), $obj_otyp) != NHC.BOULDER ||
                                                 cptr.ldI16o(
                                                     cptr.ldPtro(go, $instance_globals_o_otg_otmp),
@@ -1943,7 +1958,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                                                 ) ==
                                                     NHC.BOULDER))
                                             ? NHC.GLYPH_OBJ_PILETOP_OFF
-                                            : NHC.GLYPH_OBJ_OFF)) | 0))))));
+                                            : NHC.GLYPH_OBJ_OFF)) |
+                                        0))))));
                 map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
                 (yield* add_menu(
                     win,
@@ -2001,10 +2017,8 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
                 (cptr.ldPtro((cptr.add(gy, $instance_globals_y_youmonst)), $monst_data)),
                 $permonst_pmidx
             ))) +
-                ((((cptr.ldI32o(
-                    (cptr.add(gy, $instance_globals_y_youmonst)),
-                    $monst_female
-                ) & 1) | 0) == 0)
+                ((((cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_female) & 1) |
+                    0) == 0)
                     ? NHC.GLYPH_MON_MALE_OFF
                     : NHC.GLYPH_MON_FEM_OFF)) | 0);
         map_glyphinfo(0, 0, tmpglyph, 0, tmpglyphinfo);
@@ -2458,45 +2472,46 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
                        just "y" to accept (and "no" rather than "n" to decline;
                        accepts "quit" and ESC without converting them to 'n') */
                     switch ((yield* paranoid_ynq(
-                        schar((((cptr.ldI32o(flags, $flag_paranoia_bits) &
-                            NHM.PARANOID_CONFIRM) >>> 0) != 0)),
+                        schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>>
+                            0) !=
+                            0)),
                         __s_really_autoselect_all,
                         1
                     ))) {
                         case 121:
-                        /* yes => honor Auto-select All */
-                        break;
+                            /* yes => honor Auto-select All */
+                            break;
                         case 110:
-                        /* no => remove 'A' from the list; if that would make
-                           it empty then replace with 'a' */
-                        if (n > 1) {
-                            for (j = (i + 1) | 0; j < n; ++j)
-                                cptr.memcpy(
-                                    cptr.add(
-                                        (cptr.ldPtr(pick_list)),
-                                        (j - 1) | 0,
-                                        $sizeof_menu_item
-                                    ),
-                                    cptr.add((cptr.ldPtr(pick_list)), j, $sizeof_menu_item),
-                                    24
-                                );
-                            --n;
-                            break;  /* from switch */
-                        } else if ((qflags & NHM.ALL_TYPES) != 0) {
-                            /* 'A' was the only choice; convert it to 'a' and
-                               then let the next menu offer a choice of all */
-                            cptr.stI32o((cptr.ldPtr(pick_list)), 0, -2, $sizeof_menu_item);
-                            /* assert( n == 1 ); */
-                            break;  /* from switch */
-                        }
-                        // @FallThrough
-                        ;
+                            /* no => remove 'A' from the list; if that would make
+                               it empty then replace with 'a' */
+                            if (n > 1) {
+                                for (j = (i + 1) | 0; j < n; ++j)
+                                    cptr.memcpy(
+                                        cptr.add(
+                                            (cptr.ldPtr(pick_list)),
+                                            (j - 1) | 0,
+                                            $sizeof_menu_item
+                                        ),
+                                        cptr.add((cptr.ldPtr(pick_list)), j, $sizeof_menu_item),
+                                        24
+                                    );
+                                --n;
+                                break;  /* from switch */
+                            } else if ((qflags & NHM.ALL_TYPES) != 0) {
+                                /* 'A' was the only choice; convert it to 'a' and
+                                   then let the next menu offer a choice of all */
+                                cptr.stI32o((cptr.ldPtr(pick_list)), 0, -2, $sizeof_menu_item);
+                                /* assert( n == 1 ); */
+                                break;  /* from switch */
+                            }
+                            // @FallThrough
+                            ;
                         case 113:
                         default:
-                        /* quit | ESC => cancel, no Auto-select and no 2nd menu */
-                        n = 0;
-                        cptr.free(cptr.ldPtr(pick_list)), cptr.stPtr(pick_list, null);
-                        break;
+                            /* quit | ESC => cancel, no Auto-select and no 2nd menu */
+                            n = 0;
+                            cptr.free(cptr.ldPtr(pick_list)), cptr.stPtr(pick_list, null);
+                            break;
                     }
                     break;  /* from for => goto query_done; */
                 }
@@ -2778,7 +2793,9 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
             (cptr.ldI32o(
                 svl,
                 $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-            ) & 1) | 0) {
+            ) &
+                1) |
+                0) {
         (yield* You(__s_cannot_get_your_s_around_this_s, (yield* body_part(NHC.HAND)), (yield* xname(obj))));
         return -1;
     }
@@ -2791,7 +2808,8 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags2
                 ) &
-                    134217728n) != 0n))) {
+                    134217728n) !=
+                    0n))) {
         if (inv_cnt(0) < NHC.invlet_basic ||
                 !carrying(cptr.ldI16o(obj, $obj_otyp)) ||
                 (yield* merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj)))
@@ -2864,13 +2882,13 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
                 cptr.stI64o(obj, $obj_quan, savequan);
                 switch ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1))) {
                     case 113:
-                    result = -1;
-                    break;
+                        result = -1;
+                        break;
                     case 110:
-                    result = 0;
-                    break;
+                        result = 0;
+                        break;
                     default:
-                    break;  /* 'y' => result == 1 */
+                        break;  /* 'y' => result == 1 */
                 }
                 (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
             }
@@ -3095,42 +3113,48 @@ export function* encumber_msg() {
     if (cptr.ldI32o(go, $instance_globals_o_oldcap) < newcap) {
         switch (newcap) {
             case 1:
-            (yield* Your(__s_movements_are_slowed_slightly_because));
-            break;
+                (yield* Your(__s_movements_are_slowed_slightly_because));
+                break;
             case 2:
-            (yield* You(__s_rebalance_your_load_movement_is));
-            break;
+                (yield* You(__s_rebalance_your_load_movement_is));
+                break;
             case 3:
-            (yield* You(
-                __s_s_under_your_heavy_load_movement_is,
-                stagger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), __s_stagger)
-            ));
-            break;
+                (yield* You(
+                    __s_s_under_your_heavy_load_movement_is,
+                    stagger(
+                        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                        __s_stagger
+                    )
+                ));
+                break;
             default:
-            (yield* You(
-                __s_s_move_a_handspan_with_this_load,
-                newcap == 4 ? __s_can_barely : __s_can_t_even
-            ));
-            break;
+                (yield* You(
+                    __s_s_move_a_handspan_with_this_load,
+                    newcap == 4 ? __s_can_barely : __s_can_t_even
+                ));
+                break;
         }
         cptr.st1(disp, 1);
     } else if (cptr.ldI32o(go, $instance_globals_o_oldcap) > newcap) {
         switch (newcap) {
             case 0:
-            (yield* Your(__s_movements_are_now_unencumbered));
-            break;
+                (yield* Your(__s_movements_are_now_unencumbered));
+                break;
             case 1:
-            (yield* Your(__s_movements_are_only_slowed_slightly_by));
-            break;
+                (yield* Your(__s_movements_are_only_slowed_slightly_by));
+                break;
             case 2:
-            (yield* You(__s_rebalance_your_load_movement_is_still));
-            break;
+                (yield* You(__s_rebalance_your_load_movement_is_still));
+                break;
             case 3:
-            (yield* You(
-                __s_s_under_your_load_movement_is_still,
-                stagger(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), __s_stagger)
-            ));
-            break;
+                (yield* You(
+                    __s_s_under_your_load_movement_is_still,
+                    stagger(
+                        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                        __s_stagger
+                    )
+                ));
+                break;
         }
         cptr.st1(disp, 1);
     }
@@ -3346,263 +3370,264 @@ function* doloot_core() {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        c = -1;
-        timepassed = 0;
-        cc = cptr.alloc(4);
-        underfoot = 1;
-        dont_find_anything = __s_don_t_find_anything;
-        prev_inquiry.v = 0;
-        prev_loot.v = 0;
-        num_conts = 0;
-        clr = NHM.NO_COLOR;
+            c = -1;
+            timepassed = 0;
+            cc = cptr.alloc(4);
+            underfoot = 1;
+            dont_find_anything = __s_don_t_find_anything;
+            prev_inquiry.v = 0;
+            prev_loot.v = 0;
+            num_conts = 0;
+            clr = NHM.NO_COLOR;
 
-        cptr.st1o(ga, $instance_globals_a_abort_looting, 0);
+            cptr.st1o(ga, $instance_globals_a_abort_looting, 0);
 
-        if ((yield* check_capacity(null))) {
-            /* "Can't do that while carrying so much stuff." */
-            return NHM.ECMD_OK;
-        }
-        if (((cptr.ldU64o(
-            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-            $permonst_mflags1
-        ) &
-                8192n) != 0n)) {
-            (yield* You(__s_have_no_hands));  /* not `body_part(HAND)' */
-            return NHM.ECMD_OK;
-        }
-        if (HConfusion()) {
-            if (rn2(6) && (yield* reverse_loot()))
-                return NHM.ECMD_TIME;
-            if (rn2(2)) {
-                (yield* pline(__s_being_confused_you_find_nothing_to_loot));
-                return NHM.ECMD_TIME;  /* costs a turn */
-            }  /* else fallthrough to normal looting */
-        }
-        cptr.stI16(cc, cptr.ldI16(u));
-        cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
-        if (cptr.ld1so(iflags, $instance_flags_menu_requested)) { __pc = 4; continue; }
-        __pc = 3; continue;
+            if ((yield* check_capacity(null))) {
+                /* "Can't do that while carrying so much stuff." */
+                return NHM.ECMD_OK;
+            }
+            if (((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags1
+            ) &
+                8192n) !=
+                    0n)) {
+                (yield* You(__s_have_no_hands));  /* not `body_part(HAND)' */
+                return NHM.ECMD_OK;
+            }
+            if (HConfusion()) {
+                if (rn2(6) && (yield* reverse_loot()))
+                    return NHM.ECMD_TIME;
+                if (rn2(2)) {
+                    (yield* pline(__s_being_confused_you_find_nothing_to_loot));
+                    return NHM.ECMD_TIME;  /* costs a turn */
+                }  /* else fallthrough to normal looting */
+            }
+            cptr.stI16(cc, cptr.ldI16(u));
+            cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
+            if (cptr.ld1so(iflags, $instance_flags_menu_requested)) { __pc = 4; continue; }
+            __pc = 3; continue;
         }
         case 4: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 3: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* lootcont: */: {
-        if ((num_conts = container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1)) > 0) {
-            anyfound = 0;
+            if ((num_conts = container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1)) > 0) {
+                anyfound = 0;
 
-            if (!(yield* able_to_loot(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1)))
-                return NHM.ECMD_OK;
+                if (!(yield* able_to_loot(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 1)))
+                    return NHM.ECMD_OK;
 
-            if (Blind() && !uarmg.v) {
-                /* if blind and without gloves, attempting to #loot at the
-                   location of a cockatrice corpse is fatal before asking
-                   whether to manipulate any containers */
-                for (
-                    nobj = sobj_at(NHC.CORPSE, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
-                    nobj;
-                    nobj = nxtobj(nobj, NHC.CORPSE, 1)
-                )
-                    if (will_feel_cockatrice(nobj, 0)) {
-                        (yield* feel_cockatrice(nobj, 0));
-                        /* if life-saved (or poly'd into stone golem),
-                           terminate attempt to loot */
-                        return NHM.ECMD_TIME;
+                if (Blind() && !uarmg.v) {
+                    /* if blind and without gloves, attempting to #loot at the
+                       location of a cockatrice corpse is fatal before asking
+                       whether to manipulate any containers */
+                    for (
+                        nobj = sobj_at(NHC.CORPSE, cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
+                        nobj;
+                        nobj = nxtobj(nobj, NHC.CORPSE, 1)
+                    )
+                        if (will_feel_cockatrice(nobj, 0)) {
+                            (yield* feel_cockatrice(nobj, 0));
+                            /* if life-saved (or poly'd into stone golem),
+                               terminate attempt to loot */
+                            return NHM.ECMD_TIME;
+                        }
+                }
+
+                if (num_conts > 1) {
+                    any = cptr.alloc(8);
+                    pick_list.v = null;
+
+                    cptr.stPtr(any, null);
+                    win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
+                    (yield* Y.icall(start_menu()(win, 0n)));
+
+                    for (
+                        cobj.v = cptr.ldPtro3(
+                            svl,
+                            cptr.ldI16(cc),
+                            168,
+                            cptr.ldI16o(cc, $nhcoord_y),
+                            8,
+                            $instance_globals_saved_l_level + $dlevel_t_objects
+                        );
+                        cobj.v;
+                        cobj.v = cptr.ldPtro(cobj.v, $obj_v)
+                    )
+                        if (Is_container(cobj.v)) {
+                            cptr.stPtr(any, cobj.v);
+                            (yield* add_menu(
+                                win,
+                                nul_glyphinfo.v,
+                                any,
+                                0,
+                                0,
+                                NHM.ATR_NONE,
+                                clr,
+                                (yield* doname(cobj.v)),
+                                NHM.MENU_ITEMFLAGS_NONE
+                            ));
+                        }
+                    (yield* Y.icall(end_menu()(win, __s_loot_which_containers)));
+                    n = (yield* select_menu(win, NHM.PICK_ANY, pick_list));
+                    (yield* Y.icall(destroy_nhwindow()(win)));
+
+                    if (n > 0) {
+                        for (i = 1; i <= n; i++) {
+                            cobj.v = cptr.ldPtro(pick_list.v, (i - 1) | 0, $sizeof_menu_item);
+                            timepassed |= (yield* do_loot_cont(cobj, i, n));
+                            if (cptr.ld1so(ga, $instance_globals_a_abort_looting)) {
+                                /* chest trap or magic bag explosion or <esc> */
+                                cptr.free(pick_list.v);
+                                return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
+                            }
+                        }
+                        cptr.free(pick_list.v);
                     }
-            }
+                    if (n != 0)
+                        c = 121;
+                } else {
+                    for (
+                        cobj.v = cptr.ldPtro3(
+                            svl,
+                            cptr.ldI16(cc),
+                            168,
+                            cptr.ldI16o(cc, $nhcoord_y),
+                            8,
+                            $instance_globals_saved_l_level + $dlevel_t_objects
+                        );
+                        cobj.v;
+                        cobj.v = nobj
+                    ) {
+                        nobj = cptr.ldPtro(cobj.v, $obj_v);
 
-            if (num_conts > 1) {
-                any = cptr.alloc(8);
-                pick_list.v = null;
-
-                cptr.stPtr(any, null);
-                win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
-                (yield* Y.icall(start_menu()(win, 0n)));
-
-                for (
-                    cobj.v = cptr.ldPtro3(
-                        svl,
-                        cptr.ldI16(cc),
-                        168,
-                        cptr.ldI16o(cc, $nhcoord_y),
-                        8,
-                        $instance_globals_saved_l_level + $dlevel_t_objects
-                    );
-                    cobj.v;
-                    cobj.v = cptr.ldPtro(cobj.v, $obj_v)
-                )
-                    if (Is_container(cobj.v)) {
-                        cptr.stPtr(any, cobj.v);
-                        (yield* add_menu(
-                            win,
-                            nul_glyphinfo.v,
-                            any,
-                            0,
-                            0,
-                            NHM.ATR_NONE,
-                            clr,
-                            (yield* doname(cobj.v)),
-                            NHM.MENU_ITEMFLAGS_NONE
-                        ));
-                    }
-                (yield* Y.icall(end_menu()(win, __s_loot_which_containers)));
-                n = (yield* select_menu(win, NHM.PICK_ANY, pick_list));
-                (yield* Y.icall(destroy_nhwindow()(win)));
-
-                if (n > 0) {
-                    for (i = 1; i <= n; i++) {
-                        cobj.v = cptr.ldPtro(pick_list.v, (i - 1) | 0, $sizeof_menu_item);
-                        timepassed |= (yield* do_loot_cont(cobj, i, n));
-                        if (cptr.ld1so(ga, $instance_globals_a_abort_looting)) {
-                            /* chest trap or magic bag explosion or <esc> */
-                            cptr.free(pick_list.v);
-                            return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
+                        if (Is_container(cobj.v)) {
+                            anyfound = 1;
+                            timepassed |= (yield* do_loot_cont(cobj, 1, 1));
+                            if (cptr.ld1so(ga, $instance_globals_a_abort_looting))
+                                /* chest trap or magic bag explosion or <esc> */
+                                return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
                         }
                     }
-                    cptr.free(pick_list.v);
+                    if (anyfound)
+                        c = 121;
                 }
-                if (n != 0)
-                    c = 121;
-            } else {
-                for (
-                    cobj.v = cptr.ldPtro3(
-                        svl,
-                        cptr.ldI16(cc),
-                        168,
-                        cptr.ldI16o(cc, $nhcoord_y),
-                        8,
-                        $instance_globals_saved_l_level + $dlevel_t_objects
-                    );
-                    cobj.v;
-                    cobj.v = nobj
-                ) {
-                    nobj = cptr.ldPtro(cobj.v, $obj_v);
-
-                    if (Is_container(cobj.v)) {
-                        anyfound = 1;
-                        timepassed |= (yield* do_loot_cont(cobj, 1, 1));
-                        if (cptr.ld1so(ga, $instance_globals_a_abort_looting))
-                            /* chest trap or magic bag explosion or <esc> */
-                            return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
-                    }
-                }
-                if (anyfound)
-                    c = 121;
+            } else if (((cptr.ld1so3(
+                svl,
+                cptr.ldI16(cc),
+                $sizeof_rm_x21,
+                cptr.ldI16o(cc, $nhcoord_y),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) ==
+                    NHC.GRAVE)) {
+                (yield* You(__s_need_to_dig_up_the_grave_to_effectively));
             }
-        } else if (((cptr.ld1so3(
-            svl,
-            cptr.ldI16(cc),
-            $sizeof_rm_x21,
-            cptr.ldI16o(cc, $nhcoord_y),
-            $sizeof_rm,
-            $instance_globals_saved_l_level + $rm_typ
-        )) ==
-                NHC.GRAVE)) {
-            (yield* You(__s_need_to_dig_up_the_grave_to_effectively));
-        }
-        __pc = 2;
-        continue;
+            __pc = 2;
+            continue;
         }
         case 2 /* lootmon: */: {
-        if (c != 121 &&
-                (mon_beside(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
-                    cptr.ld1so(iflags, $instance_flags_menu_requested))) { __pc = 6; continue; }
-        __pc = 7; continue;
+            if (c != 121 &&
+                    (mon_beside(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
+                        cptr.ld1so(iflags, $instance_flags_menu_requested))) { __pc = 6; continue; }
+            __pc = 7; continue;
         }
         case 6: {
-        looted_mon = 0;
-        if (!(yield* get_adjacent_loc(
-            __s_loot_in_what_direction,
-            __s_invalid_loot_location,
-            cptr.ldI16(u),
-            cptr.ldI16o(u, $you_uy),
-            cc
-        )))
-            return NHM.ECMD_OK;
-        underfoot = schar(((cptr.ldI16(cc)) == cptr.ldI16(u) &&
-            (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)
-                ? 1
-                : 0));
-        if (underfoot &&
-                container_at(
-                    cptr.ldI16(cc),
-                    cptr.ldI16o(cc, $nhcoord_y),
-                    0
-                )) { __pc = 9; continue; }
-        __pc = 8; continue;
+            looted_mon = 0;
+            if (!(yield* get_adjacent_loc(
+                __s_loot_in_what_direction,
+                __s_invalid_loot_location,
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                cc
+            )))
+                return NHM.ECMD_OK;
+            underfoot = schar(((cptr.ldI16(cc)) == cptr.ldI16(u) &&
+                (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)
+                    ? 1
+                    : 0));
+            if (underfoot &&
+                    container_at(
+                        cptr.ldI16(cc),
+                        cptr.ldI16o(cc, $nhcoord_y),
+                        0
+                    )) { __pc = 9; continue; }
+            __pc = 8; continue;
         }
         case 9: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 8: {
-        if (cptr.ldI32o(u, $you_dz) < 0) {
-            (yield* You(
-                __s_s_to_loot_on_the_s,
-                dont_find_anything,
-                (yield* ceiling(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
+            if (cptr.ldI32o(u, $you_dz) < 0) {
+                (yield* You(
+                    __s_s_to_loot_on_the_s,
+                    dont_find_anything,
+                    (yield* ceiling(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)))
+                ));
+                return NHM.ECMD_TIME;
+            }
+            mtmp = (cptr.ldPtro3(
+                svl,
+                cptr.ldI16(cc),
+                168,
+                cptr.ldI16o(cc, $nhcoord_y),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
             ));
-            return NHM.ECMD_TIME;
-        }
-        mtmp = (cptr.ldPtro3(
-            svl,
-            cptr.ldI16(cc),
-            168,
-            cptr.ldI16o(cc, $nhcoord_y),
-            8,
-            $instance_globals_saved_l_level + $dlevel_t_monsters
-        ));
-        if (mtmp) {
-            timepassed = (yield* loot_mon(mtmp, prev_inquiry, prev_loot));
-            if (timepassed)
-                looted_mon = 1;
-        }
-        /* always use a turn when choosing a direction is impaired,
-           even if you've successfully targeted a saddled creature
-           and then answered "no" to the "remove its saddle?" prompt */
-        if (HConfusion() || HStun())
-            timepassed = 1;
+            if (mtmp) {
+                timepassed = (yield* loot_mon(mtmp, prev_inquiry, prev_loot));
+                if (timepassed)
+                    looted_mon = 1;
+            }
+            /* always use a turn when choosing a direction is impaired,
+               even if you've successfully targeted a saddled creature
+               and then answered "no" to the "remove its saddle?" prompt */
+            if (HConfusion() || HStun())
+                timepassed = 1;
 
-        /* Preserve pre-3.3.1 behavior for containers.
-         * Adjust this if-block to allow container looting
-         * from one square away to change that in the future.
-         */
-        if (!looted_mon) {
-            if (!underfoot && container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) {
-                if (mtmp) {
-                    (yield* You_cant(
-                        __s_loot_anything_sthere_with_s_in_the_way,
-                        prev_inquiry.v ? __s_else : __s_empty,
-                        (yield* mon_nam(mtmp))
+            /* Preserve pre-3.3.1 behavior for containers.
+             * Adjust this if-block to allow container looting
+             * from one square away to change that in the future.
+             */
+            if (!looted_mon) {
+                if (!underfoot && container_at(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0)) {
+                    if (mtmp) {
+                        (yield* You_cant(
+                            __s_loot_anything_sthere_with_s_in_the_way,
+                            prev_inquiry.v ? __s_else : __s_empty,
+                            (yield* mon_nam(mtmp))
+                        ));
+                        return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
+                    } else {
+                        (yield* You(__s_have_to_be_at_a_container_to_loot_it));
+                    }
+                } else {
+                    (yield* You(
+                        __s_s_s_shere_to_loot,
+                        dont_find_anything,
+                        (prev_inquiry.v || prev_loot.v) ? __s_else : __s_empty,
+                        !underfoot ? __s_t : __s_empty
                     ));
                     return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
-                } else {
-                    (yield* You(__s_have_to_be_at_a_container_to_loot_it));
                 }
-            } else {
-                (yield* You(
-                    __s_s_s_shere_to_loot,
-                    dont_find_anything,
-                    (prev_inquiry.v || prev_loot.v) ? __s_else : __s_empty,
-                    !underfoot ? __s_t : __s_empty
-                ));
-                return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
             }
-        }
-        __pc = 5;
-        continue;
+            __pc = 5;
+            continue;
         }
         case 7: {
-        if (c != 121 && c != 110) {
-            (yield* You(__s_s_s_to_loot, dont_find_anything, underfoot ? __s_here : __s_there));
-        }
-        __pc = 5;
-        continue;
+            if (c != 121 && c != 110) {
+                (yield* You(__s_s_s_to_loot, dont_find_anything, underfoot ? __s_here : __s_there));
+            }
+            __pc = 5;
+            continue;
         }
         case 5: {
-        return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
+            return (timepassed ? NHM.ECMD_TIME : NHM.ECMD_OK);
         }
         }
         if (__pc === -1) break __dispatch;
@@ -3644,8 +3669,7 @@ function* reverse_loot() {
             contribution = (BigInt.asIntN(
                 64,
                 BigInt(rnd(5)) * cptr.ldI64o(goldob, $obj_quan) + 4n
-            )) /
-                    5n;
+            )) / 5n;
             if (contribution < cptr.ldI64o(goldob, $obj_quan))
                 goldob = (yield* splitobj(goldob, contribution));
             break;
@@ -3718,7 +3742,9 @@ function* reverse_loot() {
             y,
             $sizeof_rm,
             $instance_globals_saved_l_level + $rm_flags
-        ) & 31) | 0) !=
+        ) &
+            31) |
+            0) !=
             NHM.T_LOOTED &&
                 (mon = (yield* makemon((yield* courtmon()), i16(x), i16(y), NHM.NO_MM_FLAGS))) !== null) {
             (yield* freeinv(goldob));
@@ -4444,7 +4470,8 @@ export function* u_handsy() {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            8192n) != 0n)) {
+        8192n) !=
+            0n)) {
         (yield* You(__s_have_no_hands));  /* not `body_part(HAND)' */
         return 0;
     } else if (!(yield* freehand())) {
@@ -4544,10 +4571,8 @@ export function* use_container(objp, held, more_containers) {
         }
 
         cursed_mbag = schar((Is_mbag(cptr.ldPtro(gc, $instance_globals_c_current_container)) &&
-            (cptr.ldI32o(
-                cptr.ldPtro(gc, $instance_globals_c_current_container),
-                $obj_cursed
-            ) & 1) | 0 &&
+            (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_cursed) & 1) |
+                0 &&
             (cptr.ldPtro(
                 (cptr.ldPtro(gc, $instance_globals_c_current_container)),
                 $obj_cobj
@@ -4555,10 +4580,8 @@ export function* use_container(objp, held, more_containers) {
                 ? 1
                 : 0));
         if (cursed_mbag &&
-                (loss = (yield* boh_loss(
-                    cptr.ldPtro(gc, $instance_globals_c_current_container),
-                    held
-                ))) != 0n) {
+                (loss = (yield* boh_loss(cptr.ldPtro(gc, $instance_globals_c_current_container), held))) !=
+                    0n) {
             used = NHM.ECMD_TIME;
             (yield* You(__s_owe_ld_s_for_lost_merchandise, loss, (yield* currency(loss))));
             cptr.stI32o(
@@ -4715,7 +4738,8 @@ export function* use_container(objp, held, more_containers) {
             if (!(cptr.ldPtro(
                 (cptr.ldPtro(gc, $instance_globals_c_current_container)),
                 $obj_cobj
-            ) !== null)) {
+            ) !==
+                    null)) {
                 (yield* pline(__s_pct_s, cptr.decay(emptymsg)));  /* <whatever> is empty. */
                 if (!(cptr.ldI32o(
                     cptr.ldPtro(gc, $instance_globals_c_current_container),
@@ -4784,7 +4808,8 @@ export function* use_container(objp, held, more_containers) {
             if (!(cptr.ldPtro(
                 (cptr.ldPtro(gc, $instance_globals_c_current_container)),
                 $obj_cobj
-            ) !== null)) {
+            ) !==
+                    null)) {
                 (yield* pline(__s_pct_s, cptr.decay(emptymsg)));  /* <whatever> is empty. */
                 if (!(cptr.ldI32o(
                     cptr.ldPtro(gc, $instance_globals_c_current_container),
@@ -5605,8 +5630,7 @@ function* tipcontainer(box) {
                     iflags,
                     $instance_flags_suppress_price,
                     cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1
-                )) -
-                        (1);  /* doname formatting */
+                )) - (1);  /* doname formatting */
             }
 
             if (targetbox) {
@@ -5679,8 +5703,7 @@ function* tipcontainer(box) {
                     iflags,
                     $instance_flags_suppress_price,
                     cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1
-                )) -
-                        (-1);  /* reset */
+                )) - (-1);  /* reset */
         }
         if (loss)
             (yield* You(__s_owe_ld_s_for_lost_merchandise, loss, (yield* currency(loss))));
@@ -5751,7 +5774,8 @@ function* tipcontainer_gettarget(box, cancelled) {
                         cptr.ldI16o(otmp, $obj_otyp),
                         $sizeof_objclass,
                         $objclass_oc_name_known
-                    ) & 1) | 0))
+                    ) &
+                        1) | 0))
             continue;
         if (!n_conts++)
             hands_available = (yield* u_handsy());  /* might issue message */

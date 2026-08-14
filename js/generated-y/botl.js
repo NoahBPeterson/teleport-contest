@@ -1320,24 +1320,24 @@ export function* weapon_status(outbuf) {
             /* shorten several */
             switch (skill) {
                 case NHC.P_QUARTERSTAFF:
-                res = __s_staff;
-                break;
+                    res = __s_staff;
+                    break;
                 case NHC.P_MORNING_STAR:
-                res = __s_mrng_star;  /* still pretty long */
-                break;
+                    res = __s_mrng_star;  /* still pretty long */
+                    break;
                 case NHC.P_POLEARMS:
-                res = __s_pole;
-                break;
+                    res = __s_pole;
+                    break;
                 case NHC.P_UNICORN_HORN:
-                res = __s_unihorn;
-                break;
+                    res = __s_unihorn;
+                    break;
                 default:
-                res = (yield* weapon_descr(uwep.v));
-                /* [should this be moved into weapon_descr()?] */
-                if (!(yield* strncmpi((res), (__s_food), -1)) &&
-                        cptr.ldI16o(uwep.v, $obj_otyp) == NHC.CREAM_PIE)
-                    res = __s_pie;
-                break;
+                    res = (yield* weapon_descr(uwep.v));
+                    /* [should this be moved into weapon_descr()?] */
+                    if (!(yield* strncmpi((res), (__s_food), -1)) &&
+                            cptr.ldI16o(uwep.v, $obj_otyp) == NHC.CREAM_PIE)
+                        res = __s_pie;
+                    break;
             }
         }
 
@@ -3149,7 +3149,8 @@ function* bot_via_windowport() {
             NHC.BL_TERRAIN,
             $sizeof_istat_s,
             $istat_s_a
-        ) != i) {
+        ) !=
+                i) {
             void cptr.strcpy(
                 cptr.ldPtro3(
                     gb,
@@ -4000,53 +4001,53 @@ function* compare_blstats(bl1, bl2) {
 
     switch (anytype) {
         case NHC.ANY_INT:
-        result = (cptr.ldI32(a1) < cptr.ldI32(a2))
-                ? 1
-                : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
-        break;
+            result = (cptr.ldI32(a1) < cptr.ldI32(a2))
+                    ? 1
+                    : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
+            break;
         case NHC.ANY_IPTR:
-        result = (cptr.ldI32(cptr.ldPtr(a1)) < cptr.ldI32(cptr.ldPtr(a2)))
-                ? 1
-                : ((cptr.ldI32(cptr.ldPtr(a1)) > cptr.ldI32(cptr.ldPtr(a2))) ? -1 : 0);
-        break;
+            result = (cptr.ldI32(cptr.ldPtr(a1)) < cptr.ldI32(cptr.ldPtr(a2)))
+                    ? 1
+                    : ((cptr.ldI32(cptr.ldPtr(a1)) > cptr.ldI32(cptr.ldPtr(a2))) ? -1 : 0);
+            break;
         case NHC.ANY_LONG:
-        result = (cptr.ldI64(a1) < cptr.ldI64(a2))
-                ? 1
-                : ((cptr.ldI64(a1) > cptr.ldI64(a2)) ? -1 : 0);
-        break;
+            result = (cptr.ldI64(a1) < cptr.ldI64(a2))
+                    ? 1
+                    : ((cptr.ldI64(a1) > cptr.ldI64(a2)) ? -1 : 0);
+            break;
         case NHC.ANY_LPTR:
-        result = (cptr.ldI64(cptr.ldPtr(a1)) < cptr.ldI64(cptr.ldPtr(a2)))
-                ? 1
-                : ((cptr.ldI64(cptr.ldPtr(a1)) > cptr.ldI64(cptr.ldPtr(a2))) ? -1 : 0);
-        break;
+            result = (cptr.ldI64(cptr.ldPtr(a1)) < cptr.ldI64(cptr.ldPtr(a2)))
+                    ? 1
+                    : ((cptr.ldI64(cptr.ldPtr(a1)) > cptr.ldI64(cptr.ldPtr(a2))) ? -1 : 0);
+            break;
         case NHC.ANY_UINT:
-        result = (cptr.ldI32(a1) < cptr.ldI32(a2))
-                ? 1
-                : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
-        break;
+            result = (cptr.ldI32(a1) < cptr.ldI32(a2))
+                    ? 1
+                    : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
+            break;
         case NHC.ANY_UPTR:
-        result = (cptr.ldI32(cptr.ldPtr(a1)) < cptr.ldI32(cptr.ldPtr(a2)))
-                ? 1
-                : ((cptr.ldI32(cptr.ldPtr(a1)) > cptr.ldI32(cptr.ldPtr(a2))) ? -1 : 0);
-        break;
+            result = (cptr.ldI32(cptr.ldPtr(a1)) < cptr.ldI32(cptr.ldPtr(a2)))
+                    ? 1
+                    : ((cptr.ldI32(cptr.ldPtr(a1)) > cptr.ldI32(cptr.ldPtr(a2))) ? -1 : 0);
+            break;
         case NHC.ANY_ULONG:
-        result = (cptr.ldU64(a1) < cptr.ldU64(a2))
-                ? 1
-                : ((cptr.ldU64(a1) > cptr.ldU64(a2)) ? -1 : 0);
-        break;
+            result = (cptr.ldU64(a1) < cptr.ldU64(a2))
+                    ? 1
+                    : ((cptr.ldU64(a1) > cptr.ldU64(a2)) ? -1 : 0);
+            break;
         case NHC.ANY_ULPTR:
-        result = (cptr.ldU64(cptr.ldPtr(a1)) < cptr.ldU64(cptr.ldPtr(a2)))
-                ? 1
-                : ((cptr.ldU64(cptr.ldPtr(a1)) > cptr.ldU64(cptr.ldPtr(a2))) ? -1 : 0);
-        break;
+            result = (cptr.ldU64(cptr.ldPtr(a1)) < cptr.ldU64(cptr.ldPtr(a2)))
+                    ? 1
+                    : ((cptr.ldU64(cptr.ldPtr(a1)) > cptr.ldU64(cptr.ldPtr(a2))) ? -1 : 0);
+            break;
         case NHC.ANY_STR:
-        result = sgn(strcmp(cptr.ldPtro(bl1, $istat_s_val), cptr.ldPtro(bl2, $istat_s_val)));
-        break;
+            result = sgn(strcmp(cptr.ldPtro(bl1, $istat_s_val), cptr.ldPtro(bl2, $istat_s_val)));
+            break;
         case NHC.ANY_MASK32:
-        result = (cptr.ldU64(a1) != cptr.ldU64(a2));
-        break;
+            result = (cptr.ldU64(a1) != cptr.ldU64(a2));
+            break;
         default:
-        result = 1;
+            result = 1;
     }
     return result;
 }
@@ -4064,37 +4065,37 @@ function anything_to_s(buf, a, anytype) {
 
     switch (anytype) {
         case NHC.ANY_ULONG:
-        void cptr.sprintf(buf, __s_lu, cptr.ldU64(a));
-        break;
+            void cptr.sprintf(buf, __s_lu, cptr.ldU64(a));
+            break;
         case NHC.ANY_MASK32:
-        void cptr.sprintf(buf, __s_lx, cptr.ldU64(a));
-        break;
+            void cptr.sprintf(buf, __s_lx, cptr.ldU64(a));
+            break;
         case NHC.ANY_LONG:
-        void cptr.sprintf(buf, __s_ld, cptr.ldI64(a));
-        break;
+            void cptr.sprintf(buf, __s_ld, cptr.ldI64(a));
+            break;
         case NHC.ANY_INT:
-        void cptr.sprintf(buf, __s_pct_d, cptr.ldI32(a));
-        break;
+            void cptr.sprintf(buf, __s_pct_d, cptr.ldI32(a));
+            break;
         case NHC.ANY_UINT:
-        void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(a));
-        break;
+            void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(a));
+            break;
         case NHC.ANY_IPTR:
-        void cptr.sprintf(buf, __s_pct_d, cptr.ldI32(cptr.ldPtr(a)));
-        break;
+            void cptr.sprintf(buf, __s_pct_d, cptr.ldI32(cptr.ldPtr(a)));
+            break;
         case NHC.ANY_LPTR:
-        void cptr.sprintf(buf, __s_ld, cptr.ldI64(cptr.ldPtr(a)));
-        break;
+            void cptr.sprintf(buf, __s_ld, cptr.ldI64(cptr.ldPtr(a)));
+            break;
         case NHC.ANY_ULPTR:
-        void cptr.sprintf(buf, __s_lu, cptr.ldU64(cptr.ldPtr(a)));
-        break;
+            void cptr.sprintf(buf, __s_lu, cptr.ldU64(cptr.ldPtr(a)));
+            break;
         case NHC.ANY_UPTR:
-        void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(cptr.ldPtr(a)));
-        break;
+            void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(cptr.ldPtr(a)));
+            break;
         case NHC.ANY_STR:
-        ;
-        break;
+            ;
+            break;
         default:
-        cptr.st1o(buf, 0, 0);
+            cptr.st1o(buf, 0, 0);
     }
     return buf;
 }
@@ -4106,39 +4107,39 @@ function s_to_anything(a, buf, anytype) {
 
     switch (anytype) {
         case NHC.ANY_LONG:
-        cptr.stI64(a, atol(buf));
-        break;
+            cptr.stI64(a, atol(buf));
+            break;
         case NHC.ANY_INT:
-        cptr.stI32(a, atoi(buf));
-        break;
+            cptr.stI32(a, atoi(buf));
+            break;
         case NHC.ANY_UINT:
-        cptr.stI32(a, atoi(buf) >>> 0);
-        break;
+            cptr.stI32(a, atoi(buf) >>> 0);
+            break;
         case NHC.ANY_ULONG:
-        cptr.stU64(a, BigInt.asUintN(64, atol(buf)));
-        break;
+            cptr.stU64(a, BigInt.asUintN(64, atol(buf)));
+            break;
         case NHC.ANY_IPTR:
-        if (cptr.ldPtr(a))
-            cptr.stI32(cptr.ldPtr(a), atoi(buf));
-        break;
+            if (cptr.ldPtr(a))
+                cptr.stI32(cptr.ldPtr(a), atoi(buf));
+            break;
         case NHC.ANY_UPTR:
-        if (cptr.ldPtr(a))
-            cptr.stI32(cptr.ldPtr(a), atoi(buf) >>> 0);
-        break;
+            if (cptr.ldPtr(a))
+                cptr.stI32(cptr.ldPtr(a), atoi(buf) >>> 0);
+            break;
         case NHC.ANY_LPTR:
-        if (cptr.ldPtr(a))
-            cptr.stI64(cptr.ldPtr(a), atol(buf));
-        break;
+            if (cptr.ldPtr(a))
+                cptr.stI64(cptr.ldPtr(a), atol(buf));
+            break;
         case NHC.ANY_ULPTR:
-        if (cptr.ldPtr(a))
-            cptr.stU64(cptr.ldPtr(a), BigInt.asUintN(64, atol(buf)));
-        break;
+            if (cptr.ldPtr(a))
+                cptr.stU64(cptr.ldPtr(a), BigInt.asUintN(64, atol(buf)));
+            break;
         case NHC.ANY_MASK32:
-        cptr.stU64(a, BigInt.asUintN(64, atol(buf)));
-        break;
+            cptr.stU64(a, BigInt.asUintN(64, atol(buf)));
+            break;
         default:
-        cptr.stPtr(a, null);
-        break;
+            cptr.stPtr(a, null);
+            break;
     }
     return;
 }
@@ -4173,59 +4174,61 @@ function* percentage(bl, maxbl) {
     if (cptr.ldPtro(maxbl, $istat_s_a)) {
         switch (anytype) {
             case NHC.ANY_INT:
-            /* HP and energy are int so this is the only case that cares
-               about 'rawval'; for them, we use that rather than their
-               potentially truncated (to 9999) display value */
-            ival = use_rawval ? cptr.ldI32o(bl, $istat_s_rawval) : cptr.ldI32o(bl, $istat_s_a);
-            mval = use_rawval
-                    ? cptr.ldI32o(maxbl, $istat_s_rawval)
-                    : cptr.ldI32o(maxbl, $istat_s_a);
-            result = (((Math.imul(100, ival)) / mval) | 0);
-            break;
+                /* HP and energy are int so this is the only case that cares
+                   about 'rawval'; for them, we use that rather than their
+                   potentially truncated (to 9999) display value */
+                ival = use_rawval ? cptr.ldI32o(bl, $istat_s_rawval) : cptr.ldI32o(bl, $istat_s_a);
+                mval = use_rawval
+                        ? cptr.ldI32o(maxbl, $istat_s_rawval)
+                        : cptr.ldI32o(maxbl, $istat_s_a);
+                result = (((Math.imul(100, ival)) / mval) | 0);
+                break;
             case NHC.ANY_LONG:
-            lval = cptr.ldI64o(bl, $istat_s_a);
-            result = Number(BigInt.asIntN(
-                32,
-                ((BigInt.asIntN(64, 100n * lval)) / cptr.ldI64o(maxbl, $istat_s_a))
-            ));
-            break;
+                lval = cptr.ldI64o(bl, $istat_s_a);
+                result = Number(BigInt.asIntN(
+                    32,
+                    ((BigInt.asIntN(64, 100n * lval)) / cptr.ldI64o(maxbl, $istat_s_a))
+                ));
+                break;
             case NHC.ANY_UINT:
-            uval = cptr.ldI32o(bl, $istat_s_a);
-            result = (u32div((Math.imul(100, uval) >>> 0), cptr.ldI32o(maxbl, $istat_s_a))) | 0;
-            break;
+                uval = cptr.ldI32o(bl, $istat_s_a);
+                result = (u32div((Math.imul(100, uval) >>> 0), cptr.ldI32o(maxbl, $istat_s_a))) | 0;
+                break;
             case NHC.ANY_ULONG:
-            ulval = cptr.ldU64o(bl, $istat_s_a);
-            result = Number(BigInt.asIntN(
-                32,
-                ((BigInt.asUintN(64, 100n * ulval)) / cptr.ldU64o(maxbl, $istat_s_a))
-            ));
-            break;
+                ulval = cptr.ldU64o(bl, $istat_s_a);
+                result = Number(BigInt.asIntN(
+                    32,
+                    ((BigInt.asUintN(64, 100n * ulval)) / cptr.ldU64o(maxbl, $istat_s_a))
+                ));
+                break;
             case NHC.ANY_IPTR:
-            ival = cptr.ldI32(cptr.ldPtro(bl, $istat_s_a));
-            result = (((Math.imul(100, ival)) / (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))) | 0);
-            break;
+                ival = cptr.ldI32(cptr.ldPtro(bl, $istat_s_a));
+                result = (((Math.imul(100, ival)) /
+                        (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))) | 0);
+                break;
             case NHC.ANY_LPTR:
-            lval = cptr.ldI64(cptr.ldPtro(bl, $istat_s_a));
-            result = Number(BigInt.asIntN(
-                32,
-                ((BigInt.asIntN(64, 100n * lval)) / (cptr.ldI64(cptr.ldPtro(maxbl, $istat_s_a))))
-            ));
-            break;
+                lval = cptr.ldI64(cptr.ldPtro(bl, $istat_s_a));
+                result = Number(BigInt.asIntN(
+                    32,
+                    ((BigInt.asIntN(64, 100n * lval)) /
+                        (cptr.ldI64(cptr.ldPtro(maxbl, $istat_s_a))))
+                ));
+                break;
             case NHC.ANY_UPTR:
-            uval = cptr.ldI32(cptr.ldPtro(bl, $istat_s_a));
-            result = (u32div(
-                (Math.imul(100, uval) >>> 0),
-                (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))
-            )) |
-                    0;
-            break;
+                uval = cptr.ldI32(cptr.ldPtro(bl, $istat_s_a));
+                result = (u32div(
+                    (Math.imul(100, uval) >>> 0),
+                    (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))
+                )) | 0;
+                break;
             case NHC.ANY_ULPTR:
-            ulval = cptr.ldU64(cptr.ldPtro(bl, $istat_s_a));
-            result = Number(BigInt.asIntN(
-                32,
-                ((BigInt.asUintN(64, 100n * ulval)) / (cptr.ldU64(cptr.ldPtro(maxbl, $istat_s_a))))
-            ));
-            break;
+                ulval = cptr.ldU64(cptr.ldPtro(bl, $istat_s_a));
+                result = Number(BigInt.asIntN(
+                    32,
+                    ((BigInt.asUintN(64, 100n * ulval)) /
+                        (cptr.ldU64(cptr.ldPtro(maxbl, $istat_s_a))))
+                ));
+                break;
         }
     }
     /* don't let truncation from integer division produce a zero result
@@ -4696,172 +4699,174 @@ function* get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
 
             switch (cptr.ldI32o(hl, $hilite_s_behavior)) {
                 case NHM.BL_TH_VAL_PERCENTAGE:
-                if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
-                        pc == cptr.ldI32o(hl, $hilite_s_value)) {
-                    rule = hl;
-                    min_pc = (max_pc = cptr.ldI32o(hl, $hilite_s_value));
-                    exactmatch = (perc_or_abs = 1);
-                } else if (exactmatch) {
-                    ;  /* already found best fit, skip lt,ge,&c */
-                } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE &&
-                        (pc < cptr.ldI32o(hl, $hilite_s_value)) &&
-                        (cptr.ldI32o(hl, $hilite_s_value) <= min_pc)) {
-                    rule = hl;
-                    min_pc = cptr.ldI32o(hl, $hilite_s_value);
-                    perc_or_abs = 1;
-                } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LE_VALUE &&
-                        (pc <= cptr.ldI32o(hl, $hilite_s_value)) &&
-                        (cptr.ldI32o(hl, $hilite_s_value) <= min_pc)) {
-                    rule = hl;
-                    min_pc = cptr.ldI32o(hl, $hilite_s_value);
-                    perc_or_abs = 1;
-                } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE &&
-                        (pc > cptr.ldI32o(hl, $hilite_s_value)) &&
-                        (cptr.ldI32o(hl, $hilite_s_value) >= max_pc)) {
-                    rule = hl;
-                    max_pc = cptr.ldI32o(hl, $hilite_s_value);
-                    perc_or_abs = 1;
-                } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GE_VALUE &&
-                        (pc >= cptr.ldI32o(hl, $hilite_s_value)) &&
-                        (cptr.ldI32o(hl, $hilite_s_value) >= max_pc)) {
-                    rule = hl;
-                    max_pc = cptr.ldI32o(hl, $hilite_s_value);
-                    perc_or_abs = 1;
-                }
-                break;
+                    if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
+                            pc == cptr.ldI32o(hl, $hilite_s_value)) {
+                        rule = hl;
+                        min_pc = (max_pc = cptr.ldI32o(hl, $hilite_s_value));
+                        exactmatch = (perc_or_abs = 1);
+                    } else if (exactmatch) {
+                        ;  /* already found best fit, skip lt,ge,&c */
+                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE &&
+                            (pc < cptr.ldI32o(hl, $hilite_s_value)) &&
+                            (cptr.ldI32o(hl, $hilite_s_value) <= min_pc)) {
+                        rule = hl;
+                        min_pc = cptr.ldI32o(hl, $hilite_s_value);
+                        perc_or_abs = 1;
+                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LE_VALUE &&
+                            (pc <= cptr.ldI32o(hl, $hilite_s_value)) &&
+                            (cptr.ldI32o(hl, $hilite_s_value) <= min_pc)) {
+                        rule = hl;
+                        min_pc = cptr.ldI32o(hl, $hilite_s_value);
+                        perc_or_abs = 1;
+                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE &&
+                            (pc > cptr.ldI32o(hl, $hilite_s_value)) &&
+                            (cptr.ldI32o(hl, $hilite_s_value) >= max_pc)) {
+                        rule = hl;
+                        max_pc = cptr.ldI32o(hl, $hilite_s_value);
+                        perc_or_abs = 1;
+                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GE_VALUE &&
+                            (pc >= cptr.ldI32o(hl, $hilite_s_value)) &&
+                            (cptr.ldI32o(hl, $hilite_s_value) >= max_pc)) {
+                        rule = hl;
+                        max_pc = cptr.ldI32o(hl, $hilite_s_value);
+                        perc_or_abs = 1;
+                    }
+                    break;
                 case NHM.BL_TH_UPDOWN:
-                /* specific 'up' or 'down' takes precedence over general
-                   'changed' regardless of their order in the rule set */
-                if (chg < 0 && cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE) {
-                    rule = hl;
-                    updown = 1;
-                } else if (chg > 0 && cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE) {
-                    rule = hl;
-                    updown = 1;
-                } else if (chg != 0 && cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE && !updown) {
-                    rule = hl;
-                    changed = 1;
-                }
-                break;
+                    /* specific 'up' or 'down' takes precedence over general
+                       'changed' regardless of their order in the rule set */
+                    if (chg < 0 && cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE) {
+                        rule = hl;
+                        updown = 1;
+                    } else if (chg > 0 && cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE) {
+                        rule = hl;
+                        updown = 1;
+                    } else if (chg != 0 &&
+                            cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
+                            !updown) {
+                        rule = hl;
+                        changed = 1;
+                    }
+                    break;
                 case NHM.BL_TH_VAL_ABSOLUTE:
-                /*
-                 * The int and long variations here are identical aside from
-                 * union field and min_/max_ variable names.  If you change
-                 * one, be sure to make a corresponding change in the other.
-                 */
-                if (dt == NHC.ANY_INT) {
-                    if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
-                            cptr.ldI32o(hl, $hilite_s_value) == cptr.ldI32(value)) {
-                        rule = hl;
-                        min_ival = (max_ival = cptr.ldI32o(hl, $hilite_s_value));
-                        exactmatch = (perc_or_abs = 1);
-                    } else if (exactmatch) {
-                        ;  /* already found best fit, skip lt,ge,&c */
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE &&
-                            (cptr.ldI32(value) < cptr.ldI32o(hl, $hilite_s_value)) &&
-                            (cptr.ldI32o(hl, $hilite_s_value) <= min_ival)) {
-                        rule = hl;
-                        min_ival = cptr.ldI32o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LE_VALUE &&
-                            (cptr.ldI32(value) <= cptr.ldI32o(hl, $hilite_s_value)) &&
-                            (cptr.ldI32o(hl, $hilite_s_value) <= min_ival)) {
-                        rule = hl;
-                        min_ival = cptr.ldI32o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE &&
-                            (cptr.ldI32(value) > cptr.ldI32o(hl, $hilite_s_value)) &&
-                            (cptr.ldI32o(hl, $hilite_s_value) >= max_ival)) {
-                        rule = hl;
-                        max_ival = cptr.ldI32o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GE_VALUE &&
-                            (cptr.ldI32(value) >= cptr.ldI32o(hl, $hilite_s_value)) &&
-                            (cptr.ldI32o(hl, $hilite_s_value) >= max_ival)) {
-                        rule = hl;
-                        max_ival = cptr.ldI32o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
+                    /*
+                     * The int and long variations here are identical aside from
+                     * union field and min_/max_ variable names.  If you change
+                     * one, be sure to make a corresponding change in the other.
+                     */
+                    if (dt == NHC.ANY_INT) {
+                        if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
+                                cptr.ldI32o(hl, $hilite_s_value) == cptr.ldI32(value)) {
+                            rule = hl;
+                            min_ival = (max_ival = cptr.ldI32o(hl, $hilite_s_value));
+                            exactmatch = (perc_or_abs = 1);
+                        } else if (exactmatch) {
+                            ;  /* already found best fit, skip lt,ge,&c */
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE &&
+                                (cptr.ldI32(value) < cptr.ldI32o(hl, $hilite_s_value)) &&
+                                (cptr.ldI32o(hl, $hilite_s_value) <= min_ival)) {
+                            rule = hl;
+                            min_ival = cptr.ldI32o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LE_VALUE &&
+                                (cptr.ldI32(value) <= cptr.ldI32o(hl, $hilite_s_value)) &&
+                                (cptr.ldI32o(hl, $hilite_s_value) <= min_ival)) {
+                            rule = hl;
+                            min_ival = cptr.ldI32o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE &&
+                                (cptr.ldI32(value) > cptr.ldI32o(hl, $hilite_s_value)) &&
+                                (cptr.ldI32o(hl, $hilite_s_value) >= max_ival)) {
+                            rule = hl;
+                            max_ival = cptr.ldI32o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GE_VALUE &&
+                                (cptr.ldI32(value) >= cptr.ldI32o(hl, $hilite_s_value)) &&
+                                (cptr.ldI32o(hl, $hilite_s_value) >= max_ival)) {
+                            rule = hl;
+                            max_ival = cptr.ldI32o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        }
+                    } else {
+                        if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
+                                cptr.ldI64o(hl, $hilite_s_value) == cptr.ldI64(value)) {
+                            rule = hl;
+                            min_lval = (max_lval = cptr.ldI64o(hl, $hilite_s_value));
+                            exactmatch = (perc_or_abs = 1);
+                        } else if (exactmatch) {
+                            ;  /* already found best fit, skip lt,ge,&c */
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE &&
+                                (cptr.ldI64(value) < cptr.ldI64o(hl, $hilite_s_value)) &&
+                                (cptr.ldI64o(hl, $hilite_s_value) <= min_lval)) {
+                            rule = hl;
+                            min_lval = cptr.ldI64o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LE_VALUE &&
+                                (cptr.ldI64(value) <= cptr.ldI64o(hl, $hilite_s_value)) &&
+                                (cptr.ldI64o(hl, $hilite_s_value) <= min_lval)) {
+                            rule = hl;
+                            min_lval = cptr.ldI64o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE &&
+                                (cptr.ldI64(value) > cptr.ldI64o(hl, $hilite_s_value)) &&
+                                (cptr.ldI64o(hl, $hilite_s_value) >= max_lval)) {
+                            rule = hl;
+                            max_lval = cptr.ldI64o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GE_VALUE &&
+                                (cptr.ldI64(value) >= cptr.ldI64o(hl, $hilite_s_value)) &&
+                                (cptr.ldI64o(hl, $hilite_s_value) >= max_lval)) {
+                            rule = hl;
+                            max_lval = cptr.ldI64o(hl, $hilite_s_value);
+                            perc_or_abs = 1;
+                        }
                     }
-                } else {
-                    if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE &&
-                            cptr.ldI64o(hl, $hilite_s_value) == cptr.ldI64(value)) {
-                        rule = hl;
-                        min_lval = (max_lval = cptr.ldI64o(hl, $hilite_s_value));
-                        exactmatch = (perc_or_abs = 1);
-                    } else if (exactmatch) {
-                        ;  /* already found best fit, skip lt,ge,&c */
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE &&
-                            (cptr.ldI64(value) < cptr.ldI64o(hl, $hilite_s_value)) &&
-                            (cptr.ldI64o(hl, $hilite_s_value) <= min_lval)) {
-                        rule = hl;
-                        min_lval = cptr.ldI64o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LE_VALUE &&
-                            (cptr.ldI64(value) <= cptr.ldI64o(hl, $hilite_s_value)) &&
-                            (cptr.ldI64o(hl, $hilite_s_value) <= min_lval)) {
-                        rule = hl;
-                        min_lval = cptr.ldI64o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE &&
-                            (cptr.ldI64(value) > cptr.ldI64o(hl, $hilite_s_value)) &&
-                            (cptr.ldI64o(hl, $hilite_s_value) >= max_lval)) {
-                        rule = hl;
-                        max_lval = cptr.ldI64o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    } else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GE_VALUE &&
-                            (cptr.ldI64(value) >= cptr.ldI64o(hl, $hilite_s_value)) &&
-                            (cptr.ldI64o(hl, $hilite_s_value) >= max_lval)) {
-                        rule = hl;
-                        max_lval = cptr.ldI64o(hl, $hilite_s_value);
-                        perc_or_abs = 1;
-                    }
-                }
-                break;
+                    break;
                 case NHM.BL_TH_TEXTMATCH:
-                txtstr = cptr.ldPtro3(
-                    gb,
-                    idx,
-                    $sizeof_istat_s_x27,
-                    fldidx,
-                    $sizeof_istat_s,
-                    $istat_s_val
-                );
-                if (fldidx == NHC.BL_TITLE)
-                    /* "<name> the <rank-title>", skip past "<name> the " */
-                    txtstr = cptr.add(txtstr, BigInt.asUintN(64, cptr.strlen(svp) + 6n - 1n));
-                if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.TXT_VALUE &&
-                        cptr.ld1so2(hl, 0, 1, $hilite_s_textmatch)) {
-                    if ((yield* fuzzymatch(
-                        cptr.add(hl, $hilite_s_textmatch),
-                        txtstr,
-                        __s_quot_sp_dash_us,
-                        1
-                    ))) {
-                        rule = hl;
-                        exactmatch = 1;
-                    } else if (exactmatch) {
-                        ;  /* already found best fit, skip "noneoftheabove" */
-                    } else if (fldidx == NHC.BL_TITLE &&
-                            Upolyd() &&
-                            (yield* noneoftheabove(cptr.add(hl, $hilite_s_textmatch)))) {
-                        rule = hl;
+                    txtstr = cptr.ldPtro3(
+                        gb,
+                        idx,
+                        $sizeof_istat_s_x27,
+                        fldidx,
+                        $sizeof_istat_s,
+                        $istat_s_val
+                    );
+                    if (fldidx == NHC.BL_TITLE)
+                        /* "<name> the <rank-title>", skip past "<name> the " */
+                        txtstr = cptr.add(txtstr, BigInt.asUintN(64, cptr.strlen(svp) + 6n - 1n));
+                    if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.TXT_VALUE &&
+                            cptr.ld1so2(hl, 0, 1, $hilite_s_textmatch)) {
+                        if ((yield* fuzzymatch(
+                            cptr.add(hl, $hilite_s_textmatch),
+                            txtstr,
+                            __s_quot_sp_dash_us,
+                            1
+                        ))) {
+                            rule = hl;
+                            exactmatch = 1;
+                        } else if (exactmatch) {
+                            ;  /* already found best fit, skip "noneoftheabove" */
+                        } else if (fldidx == NHC.BL_TITLE &&
+                                Upolyd() &&
+                                (yield* noneoftheabove(cptr.add(hl, $hilite_s_textmatch)))) {
+                            rule = hl;
+                        }
                     }
-                }
-                break;
+                    break;
                 case NHM.BL_TH_ALWAYS_HILITE:
-                rule = hl;
-                break;
-                case NHM.BL_TH_CRITICALHP:
-                if (fldidx == NHC.BL_HP && critically_low_hp(0)) {
                     rule = hl;
-                    crit_hp = 1;
-                    updown = (changed = (perc_or_abs = 0));
-                }
-                break;
+                    break;
+                case NHM.BL_TH_CRITICALHP:
+                    if (fldidx == NHC.BL_HP && critically_low_hp(0)) {
+                        rule = hl;
+                        crit_hp = 1;
+                        updown = (changed = (perc_or_abs = 0));
+                    }
+                    break;
                 case NHM.BL_TH_NONE:
-                break;
+                    break;
                 default:
-                break;
+                    break;
             }
         }
     }
@@ -5330,9 +5335,8 @@ function* parse_status_hl2(s, from_configfile) {
             tmp = (yield* stripchars(cptr.decay(tmpbuf), __s_pct_lt_gt_eq_plus, tmp));
             numeric = 1;
             dt = (percent
-                ? NHC.ANY_INT
-                : cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype)) |
-                    0;
+                    ? NHC.ANY_INT
+                    : cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype)) | 0;
             void s_to_anything(cptr.add(hilite, $hilite_s_value), tmp, dt);
 
             op = grt ? __s_gt : (gte ? __s_gt_eq : (lt ? __s_lt : (le ? __s_lt_eq : __s_eq)));
@@ -5589,7 +5593,9 @@ function conditionbitmask2str(ul) {
         if ((BigInt.asUintN(
             64,
             cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)
-        ) & ul) != 0n) {
+        ) &
+            ul) !=
+                0n) {
             void cptr.sprintf(
                 eos(cptr.decay(__static_conditionbitmask2str_buf)),
                 __s_s_s__2,
@@ -6255,59 +6261,68 @@ function* status_hilite2str(hl) {
 
     switch (cptr.ldI32o(hl, $hilite_s_behavior)) {
         case NHM.BL_TH_VAL_PERCENTAGE:
-        if (op)
-            void cptr.sprintf(cptr.decay(behavebuf), __s_s_d, op, cptr.ldI32o(hl, $hilite_s_value));
-        else
-            (yield* impossible(__s_hl_behavior_percentage_rel_error));
-        break;
+            if (op)
+                void cptr.sprintf(
+                    cptr.decay(behavebuf),
+                    __s_s_d,
+                    op,
+                    cptr.ldI32o(hl, $hilite_s_value)
+                );
+            else
+                (yield* impossible(__s_hl_behavior_percentage_rel_error));
+            break;
         case NHM.BL_TH_UPDOWN:
-        if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE)
-            void cptr.sprintf(cptr.decay(behavebuf), __s_down);
-        else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE)
-            void cptr.sprintf(cptr.decay(behavebuf), __s_up);
-        else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE)
-            void cptr.sprintf(cptr.decay(behavebuf), __s_changed);
-        else
-            (yield* impossible(__s_hl_behavior_updown_rel_error));
-        break;
+            if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.LT_VALUE)
+                void cptr.sprintf(cptr.decay(behavebuf), __s_down);
+            else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.GT_VALUE)
+                void cptr.sprintf(cptr.decay(behavebuf), __s_up);
+            else if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE)
+                void cptr.sprintf(cptr.decay(behavebuf), __s_changed);
+            else
+                (yield* impossible(__s_hl_behavior_updown_rel_error));
+            break;
         case NHM.BL_TH_VAL_ABSOLUTE:
-        if (op)
-            void cptr.sprintf(
-                cptr.decay(behavebuf),
-                __s_s_d__2,
-                op,
-                cptr.ldI32o(hl, $hilite_s_value)
-            );
-        else
-            (yield* impossible(__s_hl_behavior_absolute_rel_error));
-        break;
+            if (op)
+                void cptr.sprintf(
+                    cptr.decay(behavebuf),
+                    __s_s_d__2,
+                    op,
+                    cptr.ldI32o(hl, $hilite_s_value)
+                );
+            else
+                (yield* impossible(__s_hl_behavior_absolute_rel_error));
+            break;
         case NHM.BL_TH_TEXTMATCH:
-        if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.TXT_VALUE &&
-                cptr.ld1so2(hl, 0, 1, $hilite_s_textmatch))
-            void cptr.sprintf(cptr.decay(behavebuf), __s_pct_s, cptr.add(hl, $hilite_s_textmatch));
-        else
-            (yield* impossible(__s_hl_behavior_textmatch_rel_or_textmatch));
-        break;
+            if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.TXT_VALUE &&
+                    cptr.ld1so2(hl, 0, 1, $hilite_s_textmatch))
+                void cptr.sprintf(
+                    cptr.decay(behavebuf),
+                    __s_pct_s,
+                    cptr.add(hl, $hilite_s_textmatch)
+                );
+            else
+                (yield* impossible(__s_hl_behavior_textmatch_rel_or_textmatch));
+            break;
         case NHM.BL_TH_CONDITION:
-        if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE)
-            void cptr.sprintf(
-                cptr.decay(behavebuf),
-                __s_pct_s,
-                conditionbitmask2str(cptr.ldU64o(hl, $hilite_s_value))
-            );
-        else
-            (yield* impossible(__s_hl_behavior_condition_rel_error));
-        break;
+            if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.EQ_VALUE)
+                void cptr.sprintf(
+                    cptr.decay(behavebuf),
+                    __s_pct_s,
+                    conditionbitmask2str(cptr.ldU64o(hl, $hilite_s_value))
+                );
+            else
+                (yield* impossible(__s_hl_behavior_condition_rel_error));
+            break;
         case NHM.BL_TH_ALWAYS_HILITE:
-        void cptr.sprintf(cptr.decay(behavebuf), __s_always);
-        break;
+            void cptr.sprintf(cptr.decay(behavebuf), __s_always);
+            break;
         case NHM.BL_TH_CRITICALHP:
-        void cptr.sprintf(cptr.decay(behavebuf), __s_criticalhp);
-        break;
+            void cptr.sprintf(cptr.decay(behavebuf), __s_criticalhp);
+            break;
         case NHM.BL_TH_NONE:
-        break;
+            break;
         default:
-        break;
+            break;
     }
 
     split_clridx(cptr.ldI32o(hl, $hilite_s_coloridx), clr, attr);
@@ -6856,9 +6871,13 @@ function* status_hilite_menu_add(origfld) {
 
                     cptr.memcpy(aval, cptr.add(cg, $const_globals_zeroany), 8);
                     dt = (percent
-                        ? NHC.ANY_INT
-                        : cptr.ldI32o2(initblstats, fld, $sizeof_istat_s, $istat_s_anytype)) |
-                            0;
+                            ? NHC.ANY_INT
+                            : cptr.ldI32o2(
+                                initblstats,
+                                fld,
+                                $sizeof_istat_s,
+                                $istat_s_anytype
+                            )) | 0;
                     void s_to_anything(aval, numstart, dt);
 
                     if (percent) {
@@ -7358,10 +7377,8 @@ function* status_hilite_menu_add(origfld) {
                         );
 
                         if (fld == NHC.BL_TITLE &&
-                                (p = (yield* strstri(
-                                    cptr.add(hilite, $hilite_s_textmatch),
-                                    __s_or
-                                ))) !== null) {
+                                (p = (yield* strstri(cptr.add(hilite, $hilite_s_textmatch), __s_or))) !==
+                                    null) {
                             /* split menu choice "male-rank or female-rank" into two distinct
                                but otherwise identical rules, "male-rank" and "female-rank" */
                             cptr.st1(p, 0);  /* chop off " or female-rank" */

@@ -56,8 +56,8 @@ export function unicode_val(cp) {
             cp = cptr.add(cp, 2);  /* move past the 'U' and '+' */
             do {
                 cval = ((Math.imul(cval, 16)) +
-                    ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) |
-                        0;
+                        ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) |
+                            0)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
                     (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null &&
                     ++dcount < 7);
@@ -162,59 +162,61 @@ export function mixed_to_utf8(buf, bufsz, str, retflags) {
             save_str = cptr.postinc(() => str, (v) => { str = v; });
             switch (cptr.ld1s(str)) {
                 case 71:
-                if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
-                    str = cptr.add(str, ((dcount + 1) | 0));
-                    map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    if (cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u) &&
-                            cptr.ldPtro(
+                    if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
+                        str = cptr.add(str, ((dcount + 1) | 0));
+                        map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
+                        if (cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u) &&
+                                cptr.ldPtro(
+                                    cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u),
+                                    $unicode_representation_utf8str
+                                )) {
+                            let ucp = cptr.ldPtro(
                                 cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u),
                                 $unicode_representation_utf8str
-                            )) {
-                        let ucp = cptr.ldPtro(
-                            cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u),
-                            $unicode_representation_utf8str
-                        );
+                            );
 
-                        while (cptr.ld1u(ucp) &&
-                                cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
+                            while (cptr.ld1u(ucp) &&
+                                    cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
+                                cptr.st1(
+                                    cptr.postinc(() => put, (v) => { put = v; }),
+                                    schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; })))
+                                );
+                            if (retflags)
+                                cptr.stI32(retflags, 1);
+                        } else {
+                            so = cptr.ldI32o(
+                                glyphinfo,
+                                $glyphinfo_gm +
+                                    $glyph_map_entry_sym +
+                                    $classic_representation_symidx
+                            );
                             cptr.st1(
                                 cptr.postinc(() => put, (v) => { put = v; }),
-                                schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; })))
+                                schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms))
                             );
-                        if (retflags)
-                            cptr.stI32(retflags, 1);
+                            if (retflags)
+                                cptr.stI32(retflags, 0);
+                        }
+                        /* 'str' is ready for the next loop iteration and
+                            '*str' should not be copied at the end of this
+                            iteration */
+                        continue;
                     } else {
-                        so = cptr.ldI32o(
-                            glyphinfo,
-                            $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx
-                        );
-                        cptr.st1(
-                            cptr.postinc(() => put, (v) => { put = v; }),
-                            schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms))
-                        );
-                        if (retflags)
-                            cptr.stI32(retflags, 0);
+                        /* possible forgery - leave it the way it is */
+                        str = save_str;
                     }
-                    /* 'str' is ready for the next loop iteration and
-                        '*str' should not be copied at the end of this
-                        iteration */
-                    continue;
-                } else {
-                    /* possible forgery - leave it the way it is */
-                    str = save_str;
-                }
-                break;
+                    break;
                 case 92:
-                break;
+                    break;
                 case 0:
-                /* String ended with '\\'.  This can happen when someone
-                    names an object with a name ending with '\\', drops the
-                    named object on the floor nearby and does a look at all
-                    nearby objects. */
-                /* brh - should we perhaps not allow things to have names
-                    that contain '\\' */
-                str = save_str;
-                break;
+                    /* String ended with '\\'.  This can happen when someone
+                        names an object with a name ending with '\\', drops the
+                        named object on the floor nearby and does a look at all
+                        nearby objects. */
+                    /* brh - should we perhaps not allow things to have names
+                        that contain '\\' */
+                    str = save_str;
+                    break;
             }
         }
         if (cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
@@ -304,8 +306,7 @@ export function add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf
         gdc,
         $symset_customization_count,
         cptr.ldI32o(gdc, $symset_customization_count) + 1
-    )) -
-            (1);
+    )) - (1);
     return 1;
 }
 

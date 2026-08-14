@@ -130,15 +130,15 @@ const __s_common = cptr.lit("common");
 export function quest_info(typ) {
     switch (typ) {
         case 0:
-        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti);
+            return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti);
         case NHC.MS_LEADER:
-        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
+            return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
         case NHC.MS_NEMESIS:
-        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
+            return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
         case NHC.MS_GUARDIAN:
-        return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
+            return cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
         default:
-        impossible(__s_quest_info_d, typ);
+            impossible(__s_quest_info_d, typ);
     }
     return 0;
 }
@@ -355,89 +355,93 @@ function convert_arg(c) {
 
     switch (c) {
         case 112:
-        str = svp;
-        break;
+            str = svp;
+            break;
         case 99:
-        str = (cptr.ld1so(flags, $flag_female) &&
-            cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
-                ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
-                : cptr.ldPtro(gu, $instance_globals_u_urole);
-        break;
+            str = (cptr.ld1so(flags, $flag_female) &&
+                cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
+                    ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
+                    : cptr.ldPtro(gu, $instance_globals_u_urole);
+            break;
         case 114:
-        str = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), cptr.ld1so(flags, $flag_female));
-        break;
+            str = rank_of(
+                cptr.ldI32o(u, $you_ulevel),
+                Role_switch(),
+                cptr.ld1so(flags, $flag_female)
+            );
+            break;
         case 82:
-        str = rank_of(NHM.MIN_QUEST_LEVEL, Role_switch(), cptr.ld1so(flags, $flag_female));
-        break;
+            str = rank_of(NHM.MIN_QUEST_LEVEL, Role_switch(), cptr.ld1so(flags, $flag_female));
+            break;
         case 115:
-        str = (cptr.ld1so(flags, $flag_female)) ? __s_sister : __s_brother;
-        break;
+            str = (cptr.ld1so(flags, $flag_female)) ? __s_sister : __s_brother;
+            break;
         case 83:
-        str = (cptr.ld1so(flags, $flag_female)) ? __s_daughter : __s_son;
-        break;
+            str = (cptr.ld1so(flags, $flag_female)) ? __s_daughter : __s_son;
+            break;
         case 108:
-        str = ldrname();
-        break;
+            str = ldrname();
+            break;
         case 105:
-        str = intermed();
-        break;
+            str = intermed();
+            break;
         case 79:
         case 111:
-        str = the(artiname(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)));
-        if (c == 79) {
-            /* shorten "the Foo of Bar" to "the Foo"
-               (buffer returned by the() is modifiable) */
-            let p = strstri(str, __s_of);
+            str = the(artiname(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)));
+            if (c == 79) {
+                /* shorten "the Foo of Bar" to "the Foo"
+                   (buffer returned by the() is modifiable) */
+                let p = strstri(str, __s_of);
 
-            if (p)
-                cptr.st1(p, 0);
-        }
-        break;
+                if (p)
+                    cptr.st1(p, 0);
+            }
+            break;
         case 110:
-        str = neminame();
-        break;
+            str = neminame();
+            break;
         case 103:
-        str = guardname();
-        break;
+            str = guardname();
+            break;
         case 71:
-        str = align_gtitle(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
-        break;
+            str = align_gtitle(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
+            break;
         case 72:
-        str = homebase();
-        break;
+            str = homebase();
+            break;
         case 97:
-        str = align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
-        break;
+            str = align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
+            break;
         case 65:
-        str = align_str(cptr.ld1so(u, $you_ualign));
-        break;
+            str = align_str(cptr.ld1so(u, $you_ualign));
+            break;
         case 100:
-        str = align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
-        break;
+            str = align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase));
+            break;
         case 68:
-        str = align_gname(NHM.A_LAWFUL);
-        break;
+            str = align_gname(NHM.A_LAWFUL);
+            break;
         case 67:
-        str = __s_chaotic;
-        break;
+            str = __s_chaotic;
+            break;
         case 78:
-        str = __s_neutral;
-        break;
+            str = __s_neutral;
+            break;
         case 76:
-        str = __s_lawful;
-        break;
+            str = __s_lawful;
+            break;
         case 120:
-        str = Blind() ? __s_sense : __s_see;
-        break;
+            str = Blind() ? __s_sense : __s_see;
+            break;
         case 90:
-        str = cptr.add(svd, 0, $sizeof_dungeon);
-        break;
+            str = cptr.add(svd, 0, $sizeof_dungeon);
+            break;
         case 37:
-        str = __s_pct;
-        break;
+            str = __s_pct;
+            break;
         default:
-        str = __s_empty;
-        break;
+            str = __s_empty;
+            break;
     }
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), str);
 }
@@ -453,95 +457,95 @@ function convert_line(in_line, out_line) {
         switch (cptr.ld1s(c)) {
             case 13:
             case 10:
-            cptr.st1((cptr.preinc(() => cc, (v) => { cc = v; })), 0);
-            return;
+                cptr.st1((cptr.preinc(() => cc, (v) => { cc = v; })), 0);
+                return;
             case 37:
-            if (cptr.ld1s((cptr.add(c, 1)))) {
-                convert_arg(cptr.ld1s((cptr.preinc(() => c, (v) => { c = v; }))));
-                switch (cptr.ld1s((cptr.preinc(() => c, (v) => { c = v; })))) {
-                    case 65:
-                    void cptr.strcat(cc, An(cptr.add(gc, $instance_globals_c_cvt_buf)));
-                    cc = cptr.add(cc, cptr.strlen(cc));
-                    continue;  /* for */
-                    case 97:
-                    void cptr.strcat(cc, an(cptr.add(gc, $instance_globals_c_cvt_buf)));
-                    cc = cptr.add(cc, cptr.strlen(cc));
-                    continue;  /* for */
-                    case 67:
-                    cptr.st1o2(
-                        gc,
-                        0,
-                        1,
-                        $instance_globals_c_cvt_buf,
-                        highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
-                    );
-                    break;
-                    case 104:
-                    case 72:
-                    case 105:
-                    case 73:
-                    case 106:
-                    case 74:
-                    if (cptr.strchr(__s_dlno, lowc(cptr.ld1s((cptr.add(c, -(1)))))))
-                        qtext_pronoun(cptr.ld1s((cptr.add(c, -(1)))), cptr.ld1s(c));
-                    else
-                        c = cptr.add(c, -1);  /* default action */
-                    break;
-                    case 80:
-                    cptr.st1o2(
-                        gc,
-                        0,
-                        1,
-                        $instance_globals_c_cvt_buf,
-                        highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
-                    );
-                    // @FallThrough
-                    ;
-                    case 112:
-                    void cptr.strcpy(
-                        cptr.add(gc, $instance_globals_c_cvt_buf),
-                        makeplural(cptr.add(gc, $instance_globals_c_cvt_buf))
-                    );
-                    break;
-                    case 83:
-                    cptr.st1o2(
-                        gc,
-                        0,
-                        1,
-                        $instance_globals_c_cvt_buf,
-                        highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
-                    );
-                    // @FallThrough
-                    ;
-                    case 115:
-                    void cptr.strcpy(
-                        cptr.add(gc, $instance_globals_c_cvt_buf),
-                        s_suffix(cptr.add(gc, $instance_globals_c_cvt_buf))
-                    );
-                    break;
-                    case 116:
-                    if (!strncmpi(cptr.add(gc, $instance_globals_c_cvt_buf), __s_the, 4)) {
-                        void cptr.strcat(
-                            cc,
-                            cptr.add(cptr.add(gc, $instance_globals_c_cvt_buf), 4, 1)
-                        );
-                        cc = cptr.add(cc, cptr.strlen(cc));
-                        continue;  /* for */
+                if (cptr.ld1s((cptr.add(c, 1)))) {
+                    convert_arg(cptr.ld1s((cptr.preinc(() => c, (v) => { c = v; }))));
+                    switch (cptr.ld1s((cptr.preinc(() => c, (v) => { c = v; })))) {
+                        case 65:
+                            void cptr.strcat(cc, An(cptr.add(gc, $instance_globals_c_cvt_buf)));
+                            cc = cptr.add(cc, cptr.strlen(cc));
+                            continue;  /* for */
+                        case 97:
+                            void cptr.strcat(cc, an(cptr.add(gc, $instance_globals_c_cvt_buf)));
+                            cc = cptr.add(cc, cptr.strlen(cc));
+                            continue;  /* for */
+                        case 67:
+                            cptr.st1o2(
+                                gc,
+                                0,
+                                1,
+                                $instance_globals_c_cvt_buf,
+                                highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+                            );
+                            break;
+                        case 104:
+                        case 72:
+                        case 105:
+                        case 73:
+                        case 106:
+                        case 74:
+                            if (cptr.strchr(__s_dlno, lowc(cptr.ld1s((cptr.add(c, -(1)))))))
+                                qtext_pronoun(cptr.ld1s((cptr.add(c, -(1)))), cptr.ld1s(c));
+                            else
+                                c = cptr.add(c, -1);  /* default action */
+                            break;
+                        case 80:
+                            cptr.st1o2(
+                                gc,
+                                0,
+                                1,
+                                $instance_globals_c_cvt_buf,
+                                highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+                            );
+                            // @FallThrough
+                            ;
+                        case 112:
+                            void cptr.strcpy(
+                                cptr.add(gc, $instance_globals_c_cvt_buf),
+                                makeplural(cptr.add(gc, $instance_globals_c_cvt_buf))
+                            );
+                            break;
+                        case 83:
+                            cptr.st1o2(
+                                gc,
+                                0,
+                                1,
+                                $instance_globals_c_cvt_buf,
+                                highc(cptr.ld1so2(gc, 0, 1, $instance_globals_c_cvt_buf))
+                            );
+                            // @FallThrough
+                            ;
+                        case 115:
+                            void cptr.strcpy(
+                                cptr.add(gc, $instance_globals_c_cvt_buf),
+                                s_suffix(cptr.add(gc, $instance_globals_c_cvt_buf))
+                            );
+                            break;
+                        case 116:
+                            if (!strncmpi(cptr.add(gc, $instance_globals_c_cvt_buf), __s_the, 4)) {
+                                void cptr.strcat(
+                                    cc,
+                                    cptr.add(cptr.add(gc, $instance_globals_c_cvt_buf), 4, 1)
+                                );
+                                cc = cptr.add(cc, cptr.strlen(cc));
+                                continue;  /* for */
+                            }
+                            break;
+                        default:
+                            c = cptr.add(c, -1);  /* undo switch increment */
+                            break;
                     }
-                    break;
-                    default:
-                    c = cptr.add(c, -1);  /* undo switch increment */
+                    void cptr.strcat(cc, cptr.add(gc, $instance_globals_c_cvt_buf));
+                    cc = cptr.add(cc, cptr.strlen(cptr.add(gc, $instance_globals_c_cvt_buf)));
                     break;
                 }
-                void cptr.strcat(cc, cptr.add(gc, $instance_globals_c_cvt_buf));
-                cc = cptr.add(cc, cptr.strlen(cptr.add(gc, $instance_globals_c_cvt_buf)));
-                break;
-            }
-            // @FallThrough
-            ;
+                // @FallThrough
+                ;
             default:
-            cptr.st1(cptr.postinc(() => cc, (v) => { cc = v; }), cptr.ld1s(c));
-            break;
+                cptr.st1(cptr.postinc(() => cc, (v) => { cc = v; }), cptr.ld1s(c));
+                break;
         }
         if (cptr.cmp(cc, cptr.add(out_line, 255)) > 0)
             panic(__s_convert_line_overflow);

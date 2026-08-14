@@ -243,43 +243,43 @@ function loadConstants(S, f) {
         let t = loadByte(S);
         switch (t) {
             case 0:
-            (cptr.st1o((o), $TValue_tt_, 0));
-            break;
+                (cptr.st1o((o), $TValue_tt_, 0));
+                break;
             case 1:
-            (cptr.st1o((o), $TValue_tt_, 1));
-            break;
+                (cptr.st1o((o), $TValue_tt_, 1));
+                break;
             case 17:
-            (cptr.st1o((o), $TValue_tt_, 17));
-            break;
+                (cptr.st1o((o), $TValue_tt_, 17));
+                break;
             case 19:
-            {
-                let io = (o);
-                cptr.stF64(((io)), (loadNumber(S)));
-                (cptr.st1o((io), $TValue_tt_, 19));
-            }
-            ;
-            break;
+                {
+                    let io = (o);
+                    cptr.stF64(((io)), (loadNumber(S)));
+                    (cptr.st1o((io), $TValue_tt_, 19));
+                }
+                ;
+                break;
             case 3:
-            {
-                let io = (o);
-                cptr.stI64(((io)), (loadInteger(S)));
-                (cptr.st1o((io), $TValue_tt_, 3));
-            }
-            ;
-            break;
+                {
+                    let io = (o);
+                    cptr.stI64(((io)), (loadInteger(S)));
+                    (cptr.st1o((io), $TValue_tt_, 3));
+                }
+                ;
+                break;
             case 4:
             case 20:
-            {
-                let io = (o);
-                let x_ = (loadString(S, f));
-                cptr.stPtr(((io)), ((((x_)))));
-                (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
-                (void cptr.ldPtr(S), (void 0));
-            }
-            ;
-            break;
+                {
+                    let io = (o);
+                    let x_ = (loadString(S, f));
+                    cptr.stPtr(((io)), ((((x_)))));
+                    (cptr.st1o((io), $TValue_tt_, uchar((((cptr.ld1uo(x_, $TString_tt)) | 64)))));
+                    (void cptr.ldPtr(S), (void 0));
+                }
+                ;
+                break;
             default:
-            (void 0);
+                (void 0);
         }
     }
 }

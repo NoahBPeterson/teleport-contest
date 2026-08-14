@@ -1376,12 +1376,14 @@ export function* change_sex() {
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags2
             ) &
-                65536n) != 0n) &&
+                65536n) !=
+                0n) &&
                 !((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags2
                 ) &
-                    131072n) != 0n) &&
+                    131072n) !=
+                    0n) &&
                 !((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags2
@@ -1635,486 +1637,504 @@ export function* polyself(psflags) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        buf = new Uint8Array(256);
-        gvariant.v = NHC.NEUTRAL;
-        forcecontrol = schar(((psflags & NHC.POLY_CONTROLLED) != 0));
-        low_control = schar(((psflags & NHC.POLY_LOW_CTRL) != 0));
-        monsterpoly = schar(((psflags & NHC.POLY_MONSTER) != 0));
-        formrevert = schar(((psflags & NHC.POLY_REVERT) != 0));
-        draconian = schar((uarm.v && Is_dragon_armor(uarm.v) ? 1 : 0));
-        iswere = schar((ismnum(cptr.ldI32o(u, $you_ulycn))));
-        isvamp = schar(((cptr.ld1so(
-            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-            $permonst_mlet
-        ) ==
-            NHC.S_VAMPIRE) ||
-            is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))
-                ? 1
-                : 0));
-        controllable_poly = schar((Polymorph_control() &&
-            !(HStun() ||
-                (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
-                    (unconscious() || is_fainted())))
-                ? 1
-                : 0));
+            buf = new Uint8Array(256);
+            gvariant.v = NHC.NEUTRAL;
+            forcecontrol = schar(((psflags & NHC.POLY_CONTROLLED) != 0));
+            low_control = schar(((psflags & NHC.POLY_LOW_CTRL) != 0));
+            monsterpoly = schar(((psflags & NHC.POLY_MONSTER) != 0));
+            formrevert = schar(((psflags & NHC.POLY_REVERT) != 0));
+            draconian = schar((uarm.v && Is_dragon_armor(uarm.v) ? 1 : 0));
+            iswere = schar((ismnum(cptr.ldI32o(u, $you_ulycn))));
+            isvamp = schar(((cptr.ld1so(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mlet
+            ) ==
+                NHC.S_VAMPIRE) ||
+                is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))
+                    ? 1
+                    : 0));
+            controllable_poly = schar((Polymorph_control() &&
+                !(HStun() ||
+                    (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
+                        (unconscious() || is_fainted())))
+                    ? 1
+                    : 0));
 
-        if (Unchanging()) {
-            (yield* You(__s_fail_to_transform));
-            return;
-        }
-        /* being Stunned|Unaware doesn't negate this aspect of Poly_control */
-        if (!Polymorph_control() && !forcecontrol && !draconian && !iswere && !isvamp) {
-            if (rn2(20) > (acurr(NHC.A_CON))) {
-                (yield* You(
-                    __s_pct_s,
-                    cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)
-                ));
-                (yield* losehp(rnd(30), __s_system_shock, NHM.KILLED_BY_AN));
-                (yield* exercise(NHC.A_CON, 0));
+            if (Unchanging()) {
+                (yield* You(__s_fail_to_transform));
                 return;
             }
-        }
-        old_light = emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
-        mntmp.v = NHC.NON_PM;
+            /* being Stunned|Unaware doesn't negate this aspect of Poly_control */
+            if (!Polymorph_control() && !forcecontrol && !draconian && !iswere && !isvamp) {
+                if (rn2(20) > (acurr(NHC.A_CON))) {
+                    (yield* You(
+                        __s_pct_s,
+                        cptr.ldPtro(c_common_strings, $c_common_strings_c_shudder_for_moment)
+                    ));
+                    (yield* losehp(rnd(30), __s_system_shock, NHM.KILLED_BY_AN));
+                    (yield* exercise(NHC.A_CON, 0));
+                    return;
+                }
+            }
+            old_light = emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
+            mntmp.v = NHC.NON_PM;
 
-        if (formrevert) {
-            mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
-            monsterpoly = 1;
-            controllable_poly = 0;
-        }
+            if (formrevert) {
+                mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
+                monsterpoly = 1;
+                controllable_poly = 0;
+            }
 
-        if (forcecontrol && low_control && (draconian || monsterpoly || isvamp || iswere))
-            forcecontrol = 0;
-        if (monsterpoly && isvamp) { __pc = 7; continue; }
-        __pc = 6; continue;
+            if (forcecontrol && low_control && (draconian || monsterpoly || isvamp || iswere))
+                forcecontrol = 0;
+            if (monsterpoly && isvamp) { __pc = 7; continue; }
+            __pc = 6; continue;
         }
         case 7: {
-        { __pc = 4; continue; }
+            { __pc = 4; continue; }
         }
         case 6: {
-        if (controllable_poly || forcecontrol) { __pc = 9; continue; }
-        __pc = 10; continue;
+            if (controllable_poly || forcecontrol) { __pc = 9; continue; }
+            __pc = 10; continue;
         }
         case 9: {
-        cptr.st1o(cptr.decay(buf), 0, 0, 1);
-        tryct = 5;
-        __pc = 12; continue;
+            cptr.st1o(cptr.decay(buf), 0, 0, 1);
+            tryct = 5;
+            __pc = 12; continue;
         }
         case 12: {
-        __pc = 13; continue;
+            __pc = 13; continue;
         }
         case 13: {
-        mntmp.v = NHC.NON_PM;
-        (yield* getlin(__s_become_what_kind_of_monster_type_the, cptr.decay(buf)));
-        void (yield* mungspaces(cptr.decay(buf)));
-        if (cptr.ld1s(cptr.decay(buf)) == 27) {
-            /* user is cancelling controlled poly */
-            if (forcecontrol) {
-                (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
-                return;
+            mntmp.v = NHC.NON_PM;
+            (yield* getlin(__s_become_what_kind_of_monster_type_the, cptr.decay(buf)));
+            void (yield* mungspaces(cptr.decay(buf)));
+            if (cptr.ld1s(cptr.decay(buf)) == 27) {
+                /* user is cancelling controlled poly */
+                if (forcecontrol) {
+                    (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind)));
+                    return;
+                }
+                void cptr.strcpy(cptr.decay(buf), __s_star);  /* resort to random */
             }
-            void cptr.strcpy(cptr.decay(buf), __s_star);  /* resort to random */
-        }
-        if (!strcmp(cptr.decay(buf), __s_star) ||
-                !strcmp(cptr.decay(buf), __s_random)) { __pc = 15; continue; }
-        __pc = 14; continue;
+            if (!strcmp(cptr.decay(buf), __s_star) ||
+                    !strcmp(cptr.decay(buf), __s_random)) { __pc = 15; continue; }
+            __pc = 14; continue;
         }
         case 15: {
-        /* explicitly requesting random result */
-        tryct = 0;  /* will skip thats_enough_tries */
-        { __pc = 12; continue; }
+            /* explicitly requesting random result */
+            tryct = 0;  /* will skip thats_enough_tries */
+            { __pc = 12; continue; }
         }
         case 14: {
-        class$ = 0;
-        mntmp.v = (yield* name_to_mon(cptr.decay(buf), gvariant));
-        if (mntmp.v < NHC.LOW_PM) { __pc = 17; continue; }
-        __pc = 18; continue;
+            class$ = 0;
+            mntmp.v = (yield* name_to_mon(cptr.decay(buf), gvariant));
+            if (mntmp.v < NHC.LOW_PM) { __pc = 17; continue; }
+            __pc = 18; continue;
         }
         case 17: {
-        __pc = 1;
-        continue;
+            __pc = 1;
+            continue;
         }
         case 1 /* by_class: */: {
-        class$ = (yield* name_to_monclass(cptr.decay(buf), mntmp));
-        if (class$ && mntmp.v == NHC.NON_PM)
-            mntmp.v = (draconian && class$ == NHC.S_DRAGON)
-                    ? armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp))
-                    : mkclass_poly(class$);
-        __pc = 16;
-        continue;
+            class$ = (yield* name_to_monclass(cptr.decay(buf), mntmp));
+            if (class$ && mntmp.v == NHC.NON_PM)
+                mntmp.v = (draconian && class$ == NHC.S_DRAGON)
+                        ? armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp))
+                        : mkclass_poly(class$);
+            __pc = 16;
+            continue;
         }
         case 18: {
 
-        /* placeholder monsters are for corpses and all flagged
-           M2_NOPOLY but they are reasonable polymorph targets;
-           pick a suitable substitute (which might be geno'd) */
-        if (is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)) &&
-                !((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
-                    BigInt.asUintN(
-                        64,
-                        BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
-                    )) != 0n) &&
-                mntmp.v != NHC.PM_HUMAN) {
-            /* far less general than mkclass() */
-            if (mntmp.v == NHC.PM_ORC)
-                mntmp.v = rn2(3) ? NHC.PM_HILL_ORC : NHC.PM_MORDOR_ORC;
-            else if (mntmp.v == NHC.PM_ELF)
-                mntmp.v = rn2(3) ? NHC.PM_GREEN_ELF : NHC.PM_GREY_ELF;
-            else if (mntmp.v == NHC.PM_GIANT)
-                mntmp.v = rn2(3) ? NHC.PM_STONE_GIANT : NHC.PM_HILL_GIANT;
-            /* note: PM_DWARF and PM_GNOME are ordinary monsters and
-               no longer flagged no-poly so have no need for placeholder
-               handling; PM_HUMAN is a placeholder without a suitable
-               substitute so gets handled differently below */
-        }
-        __pc = 16;
-        continue;
-        }
-        case 16: {
-        if (mntmp.v < NHC.LOW_PM) { __pc = 20; continue; }
-        __pc = 21; continue;
-        }
-        case 20: {
-        if (!class$)
-            (yield* pline(__s_i_ve_never_heard_of_such_monsters));
-        else
-            (yield* You_cant(__s_polymorph_into_any_of_those));
-        __pc = 19;
-        continue;
-        }
-        case 21: {
-        if (wizard() &&
-                Upolyd() &&
-                (mntmp.v == cptr.ldI32o(u, $you_umonster) ||
-                    (cptr.ldI32o(u, $you_umonster) == NHC.PM_CLERIC &&
-                        mntmp.v == NHC.PM_ALIGNED_CLERIC &&
-                        !(yield* strstri(cptr.decay(buf), __s_aligned))))) { __pc = 23; continue; }
-        __pc = 24; continue;
-        }
-        case 23: {
-        /* in wizard mode, picking own role while poly'd reverts to
-           normal without newman()'s chance of level or sex change */
-        (yield* rehumanize());
-        old_light = 0;  /* rehumanize() extinguishes u-as-mon light */
-        { __pc = 5; continue; }
-        }
-        case 24: {
-        if (iswere &&
-                (were_beastie(mntmp.v) == cptr.ldI32o(u, $you_ulycn) ||
-                    mntmp.v == counter_were(cptr.ldI32o(u, $you_ulycn)) ||
-                    (Upolyd() && mntmp.v == NHC.PM_HUMAN))) { __pc = 26; continue; }
-        __pc = 27; continue;
-        }
-        case 26: {
-        { __pc = 3; continue; }
-        }
-        case 27: {
-        if (!((cptr.ldU64o(
-            (cptr.add(mons, mntmp.v, $sizeof_permonst)),
-            $permonst_mflags2
-        ) & 1n) == 0n) &&
-                !(mntmp.v == NHC.PM_HUMAN ||
-                    (((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
+            /* placeholder monsters are for corpses and all flagged
+               M2_NOPOLY but they are reasonable polymorph targets;
+               pick a suitable substitute (which might be geno'd) */
+            if (is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)) &&
+                    !((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
                         BigInt.asUintN(
                             64,
                             BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
-                        )) != 0n) &&
-                        (cptr.ldU16o2(mons, mntmp.v, $sizeof_permonst, $permonst_geno) &
-                            NHM.G_UNIQ) == 0) ||
-                    mntmp.v ==
-                        cptr.ldI16o(
-                            gu,
-                            $instance_globals_u_urole + $Role_mnum
-                        ))) { __pc = 29; continue; }
-        __pc = 30; continue;
+                        )) !=
+                        0n) &&
+                    mntmp.v != NHC.PM_HUMAN) {
+                /* far less general than mkclass() */
+                if (mntmp.v == NHC.PM_ORC)
+                    mntmp.v = rn2(3) ? NHC.PM_HILL_ORC : NHC.PM_MORDOR_ORC;
+                else if (mntmp.v == NHC.PM_ELF)
+                    mntmp.v = rn2(3) ? NHC.PM_GREEN_ELF : NHC.PM_GREY_ELF;
+                else if (mntmp.v == NHC.PM_GIANT)
+                    mntmp.v = rn2(3) ? NHC.PM_STONE_GIANT : NHC.PM_HILL_GIANT;
+                /* note: PM_DWARF and PM_GNOME are ordinary monsters and
+                   no longer flagged no-poly so have no need for placeholder
+                   handling; PM_HUMAN is a placeholder without a suitable
+                   substitute so gets handled differently below */
+            }
+            __pc = 16;
+            continue;
+        }
+        case 16: {
+            if (mntmp.v < NHC.LOW_PM) { __pc = 20; continue; }
+            __pc = 21; continue;
+        }
+        case 20: {
+            if (!class$)
+                (yield* pline(__s_i_ve_never_heard_of_such_monsters));
+            else
+                (yield* You_cant(__s_polymorph_into_any_of_those));
+            __pc = 19;
+            continue;
+        }
+        case 21: {
+            if (wizard() &&
+                    Upolyd() &&
+                    (mntmp.v == cptr.ldI32o(u, $you_umonster) ||
+                        (cptr.ldI32o(u, $you_umonster) == NHC.PM_CLERIC &&
+                            mntmp.v == NHC.PM_ALIGNED_CLERIC &&
+                            !(yield* strstri(cptr.decay(buf), __s_aligned))))) { __pc = 23; continue; }
+            __pc = 24; continue;
+        }
+        case 23: {
+            /* in wizard mode, picking own role while poly'd reverts to
+               normal without newman()'s chance of level or sex change */
+            (yield* rehumanize());
+            old_light = 0;  /* rehumanize() extinguishes u-as-mon light */
+            { __pc = 5; continue; }
+        }
+        case 24: {
+            if (iswere &&
+                    (were_beastie(mntmp.v) == cptr.ldI32o(u, $you_ulycn) ||
+                        mntmp.v == counter_were(cptr.ldI32o(u, $you_ulycn)) ||
+                        (Upolyd() && mntmp.v == NHC.PM_HUMAN))) { __pc = 26; continue; }
+            __pc = 27; continue;
+        }
+        case 26: {
+            { __pc = 3; continue; }
+        }
+        case 27: {
+            if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
+                1n) ==
+                0n) &&
+                    !(mntmp.v == NHC.PM_HUMAN ||
+                        (((cptr.ldU64o(
+                            (cptr.add(mons, mntmp.v, $sizeof_permonst)),
+                            $permonst_mflags2
+                        ) &
+                            BigInt.asUintN(
+                                64,
+                                BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
+                            )) !=
+                            0n) &&
+                            (cptr.ldU16o2(mons, mntmp.v, $sizeof_permonst, $permonst_geno) &
+                                NHM.G_UNIQ) ==
+                                0) ||
+                        mntmp.v ==
+                            cptr.ldI16o(
+                                gu,
+                                $instance_globals_u_urole + $Role_mnum
+                            ))) { __pc = 29; continue; }
+            __pc = 30; continue;
         }
         case 29: {
-        if (class$) { __pc = 32; continue; }
-        __pc = 31; continue;
+            if (class$) { __pc = 32; continue; }
+            __pc = 31; continue;
         }
         case 32: {
-        if (rn2(3) || --tryct > 0) { __pc = 34; continue; }
-        __pc = 33; continue;
+            if (rn2(3) || --tryct > 0) { __pc = 34; continue; }
+            __pc = 33; continue;
         }
         case 34: {
-        { __pc = 1; continue; }
+            { __pc = 1; continue; }
         }
         case 33: {
-        /* no retries left; put one back on counter
-           so that end of loop decrement will yield
-           0 and trigger thats_enough_tries message */
-        ++tryct;
-        __pc = 31;
-        continue;
+            /* no retries left; put one back on counter
+               so that end of loop decrement will yield
+               0 and trigger thats_enough_tries message */
+            ++tryct;
+            __pc = 31;
+            continue;
         }
         case 31: {
-        pm_name = pmname(
-            cptr.add(mons, mntmp.v, $sizeof_permonst),
-            cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
-        );
-        if (the_unique_pm(cptr.add(mons, mntmp.v, $sizeof_permonst)))
-            pm_name = (yield* the(pm_name));
-        else if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
-                524288n) != 0n))
-            pm_name = (yield* an(pm_name));
-        (yield* You_cant(__s_polymorph_into_s, pm_name));
-        __pc = 28;
-        continue;
+            pm_name = pmname(
+                cptr.add(mons, mntmp.v, $sizeof_permonst),
+                cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+            );
+            if (the_unique_pm(cptr.add(mons, mntmp.v, $sizeof_permonst)))
+                pm_name = (yield* the(pm_name));
+            else if (!((cptr.ldU64o(
+                (cptr.add(mons, mntmp.v, $sizeof_permonst)),
+                $permonst_mflags2
+            ) &
+                    524288n) != 0n))
+                pm_name = (yield* an(pm_name));
+            (yield* You_cant(__s_polymorph_into_s, pm_name));
+            __pc = 28;
+            continue;
         }
         case 30: {
-        { __pc = 11; continue; }
+            { __pc = 11; continue; }
         }
         case 28: {
-        __pc = 25;
-        continue;
+            __pc = 25;
+            continue;
         }
         case 25: {
-        __pc = 22;
-        continue;
+            __pc = 22;
+            continue;
         }
         case 22: {
-        __pc = 19;
-        continue;
+            __pc = 19;
+            continue;
         }
         case 19: {
-        if (--tryct > 0) { __pc = 13; continue; }
-        __pc = 11;
-        continue;
+            if (--tryct > 0) { __pc = 13; continue; }
+            __pc = 11;
+            continue;
         }
         case 11: {
 
-        if (!tryct)
-            (yield* pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries)));
-        if (draconian &&
-                (tryct <= 0 ||
-                    mntmp.v ==
-                        armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp)))) { __pc = 36; continue; }
-        __pc = 35; continue;
+            if (!tryct)
+                (yield* pline(
+                    __s_pct_s,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_thats_enough_tries)
+                ));
+            if (draconian &&
+                    (tryct <= 0 ||
+                        mntmp.v ==
+                            armor_to_dragon(cptr.ldI16o(
+                                uarm.v,
+                                $obj_otyp
+                            )))) { __pc = 36; continue; }
+            __pc = 35; continue;
         }
         case 36: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 35: {
-        if (isvamp &&
-                (tryct <= 0 ||
-                    mntmp.v == NHC.PM_WOLF ||
-                    mntmp.v == NHC.PM_FOG_CLOUD ||
-                    is_bat(cptr.add(mons, mntmp.v, $sizeof_permonst)))) { __pc = 38; continue; }
-        __pc = 37; continue;
+            if (isvamp &&
+                    (tryct <= 0 ||
+                        mntmp.v == NHC.PM_WOLF ||
+                        mntmp.v == NHC.PM_FOG_CLOUD ||
+                        is_bat(cptr.add(mons, mntmp.v, $sizeof_permonst)))) { __pc = 38; continue; }
+            __pc = 37; continue;
         }
         case 38: {
-        { __pc = 4; continue; }
+            { __pc = 4; continue; }
         }
         case 37: {
-        __pc = 8;
-        continue;
+            __pc = 8;
+            continue;
         }
         case 10: {
-        if (draconian || iswere || isvamp) { __pc = 40; continue; }
-        __pc = 39; continue;
+            if (draconian || iswere || isvamp) { __pc = 40; continue; }
+            __pc = 39; continue;
         }
         case 40: {
-        if (draconian) { __pc = 42; continue; }
-        __pc = 43; continue;
+            if (draconian) { __pc = 42; continue; }
+            __pc = 43; continue;
         }
         case 42: {
-        __pc = 2;
-        continue;
+            __pc = 2;
+            continue;
         }
         case 2 /* do_merge: */: {
-        mntmp.v = armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp));
-        if (!(cptr.ld1uo2(
-            svm,
-            mntmp.v,
-            $sizeof_mvitals,
-            $instance_globals_saved_m_mvitals + $mvitals_mvflags
-        ) &
-                NHM.G_GENOD)) {
-            was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
-            arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
+            mntmp.v = armor_to_dragon(cptr.ldI16o(uarm.v, $obj_otyp));
+            if (!(cptr.ld1uo2(
+                svm,
+                mntmp.v,
+                $sizeof_mvitals,
+                $instance_globals_saved_m_mvitals + $mvitals_mvflags
+            ) &
+                    NHM.G_GENOD)) {
+                was_lit = (cptr.ldI32o(uarm.v, $obj_lamplit) & 1);
+                arm_light = artifact_light(uarm.v) ? arti_light_radius(uarm.v) : 0;
 
-            /* allow G_EXTINCT */
-            if (Is_dragon_scales(uarm.v)) {
-                /* dragon scales remain intact as uskin */
-                (yield* You(__s_merge_with_your_scaly_armor));
-            } else {
-                /* similar to noarmor(invent.c),
-                   shorten to "<color> scale mail" */
-                void cptr.strcpy(cptr.decay(buf), (yield* simpleonames(uarm.v)));
-                strsubst(cptr.decay(buf), __s_dragon, __s_sp);
-                /* tricky phrasing; dragon scale mail is singular, dragon
-                   scales are plural (note: we don't use "set of scales",
-                   which usually overrides the distinction, here) */
-                (yield* Your(__s_s_reverts_to_scales_as_you_merge_with, cptr.decay(buf)));
-                /* uarm->spe enchantment remains unchanged;
-                   re-converting scales to mail poses risk
-                   of evaporation due to over enchanting */
-                cptr.stI16o(
-                    uarm.v,
-                    $obj_otyp,
-                    cptr.ldI16o(uarm.v, $obj_otyp) +
-                        ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0)
+                /* allow G_EXTINCT */
+                if (Is_dragon_scales(uarm.v)) {
+                    /* dragon scales remain intact as uskin */
+                    (yield* You(__s_merge_with_your_scaly_armor));
+                } else {
+                    /* similar to noarmor(invent.c),
+                       shorten to "<color> scale mail" */
+                    void cptr.strcpy(cptr.decay(buf), (yield* simpleonames(uarm.v)));
+                    strsubst(cptr.decay(buf), __s_dragon, __s_sp);
+                    /* tricky phrasing; dragon scale mail is singular, dragon
+                       scales are plural (note: we don't use "set of scales",
+                       which usually overrides the distinction, here) */
+                    (yield* Your(__s_s_reverts_to_scales_as_you_merge_with, cptr.decay(buf)));
+                    /* uarm->spe enchantment remains unchanged;
+                       re-converting scales to mail poses risk
+                       of evaporation due to over enchanting */
+                    cptr.stI16o(
+                        uarm.v,
+                        $obj_otyp,
+                        cptr.ldI16o(uarm.v, $obj_otyp) +
+                            ((NHC.GRAY_DRAGON_SCALES - NHC.GRAY_DRAGON_SCALE_MAIL) | 0)
+                    );
+                    (yield* observe_object(uarm.v));
+                    cptr.st1(disp, 1);  /* AC is changing */
+                }
+                uskin.v = uarm.v;
+                uarm.v = null;
+                /* save/restore hack */
+                cptr.stI64o(
+                    uskin.v,
+                    $obj_owornmask,
+                    cptr.ldI64o(uskin.v, $obj_owornmask) | 536870912n
                 );
-                (yield* observe_object(uarm.v));
-                cptr.st1(disp, 1);  /* AC is changing */
+                if (was_lit)
+                    (yield* maybe_adjust_light(uskin.v, arm_light));
+                (yield* update_inventory());
             }
-            uskin.v = uarm.v;
-            uarm.v = null;
-            /* save/restore hack */
-            cptr.stI64o(uskin.v, $obj_owornmask, cptr.ldI64o(uskin.v, $obj_owornmask) | 536870912n);
-            if (was_lit)
-                (yield* maybe_adjust_light(uskin.v, arm_light));
-            (yield* update_inventory());
-        }
-        __pc = 41;
-        continue;
+            __pc = 41;
+            continue;
         }
         case 43: {
-        if (iswere) { __pc = 45; continue; }
-        __pc = 46; continue;
+            if (iswere) { __pc = 45; continue; }
+            __pc = 46; continue;
         }
         case 45: {
-        __pc = 3;
-        continue;
+            __pc = 3;
+            continue;
         }
         case 3 /* do_shift: */: {
-        if (Upolyd() && were_beastie(mntmp.v) != cptr.ldI32o(u, $you_ulycn))
-            mntmp.v = NHC.PM_HUMAN;  /* Illegal; force newman() */
-        else
-            mntmp.v = cptr.ldI32o(u, $you_ulycn);
-        __pc = 44;
-        continue;
+            if (Upolyd() && were_beastie(mntmp.v) != cptr.ldI32o(u, $you_ulycn))
+                mntmp.v = NHC.PM_HUMAN;  /* Illegal; force newman() */
+            else
+                mntmp.v = cptr.ldI32o(u, $you_ulycn);
+            __pc = 44;
+            continue;
         }
         case 46: {
-        if (isvamp) { __pc = 48; continue; }
-        __pc = 47; continue;
+            if (isvamp) { __pc = 48; continue; }
+            __pc = 47; continue;
         }
         case 48: {
-        __pc = 4;
-        continue;
+            __pc = 4;
+            continue;
         }
         case 4 /* do_vampyr: */: {
-        if (mntmp.v < NHC.LOW_PM ||
-                (cptr.ldU16o2(mons, mntmp.v, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ)) {
-            mntmp.v = (cptr.eq(
-                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
-                cptr.add(mons, NHC.PM_VAMPIRE_LEADER, $sizeof_permonst)
-            ) &&
-                !rn2(10))
-                    ? NHC.PM_WOLF
-                    : (!rn2(4) ? NHC.PM_FOG_CLOUD : NHC.PM_VAMPIRE_BAT);
-            if (ismnum(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)) &&
-                    !(cptr.ld1so(
-                        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
-                        $permonst_mlet
-                    ) ==
-                        NHC.S_VAMPIRE) &&
-                    !rn2(2))
-                mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
-        }
-        if (controllable_poly) {
-            void cptr.sprintf(
-                cptr.decay(buf),
-                __s_become_s,
-                (yield* an(pmname(cptr.add(mons, mntmp.v, $sizeof_permonst), gvariant.v)))
-            );
-            if ((yield* yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1)) != 121)
-                return;
-        }
-        __pc = 47;
-        continue;
+            if (mntmp.v < NHC.LOW_PM ||
+                    (cptr.ldU16o2(mons, mntmp.v, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ)) {
+                mntmp.v = (cptr.eq(
+                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                    cptr.add(mons, NHC.PM_VAMPIRE_LEADER, $sizeof_permonst)
+                ) &&
+                    !rn2(10))
+                        ? NHC.PM_WOLF
+                        : (!rn2(4) ? NHC.PM_FOG_CLOUD : NHC.PM_VAMPIRE_BAT);
+                if (ismnum(cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham)) &&
+                        !(cptr.ld1so(
+                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                            $permonst_mlet
+                        ) ==
+                            NHC.S_VAMPIRE) &&
+                        !rn2(2))
+                    mntmp.v = cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham);
+            }
+            if (controllable_poly) {
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_become_s,
+                    (yield* an(pmname(cptr.add(mons, mntmp.v, $sizeof_permonst), gvariant.v)))
+                );
+                if ((yield* yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1)) != 121)
+                    return;
+            }
+            __pc = 47;
+            continue;
         }
         case 47: {
-        __pc = 44;
-        continue;
+            __pc = 44;
+            continue;
         }
         case 44: {
-        __pc = 41;
-        continue;
+            __pc = 41;
+            continue;
         }
         case 41: {
-        /* if polymon fails, "you feel" message has been given
-           so don't follow up with another polymon or newman;
-           sex_change_ok left disabled here */
-        if (mntmp.v == NHC.PM_HUMAN)
-            (yield* newman());  /* werecritter */
-        else
-            void (yield* polymon(mntmp.v));
-        { __pc = 5; continue; }
+            /* if polymon fails, "you feel" message has been given
+               so don't follow up with another polymon or newman;
+               sex_change_ok left disabled here */
+            if (mntmp.v == NHC.PM_HUMAN)
+                (yield* newman());  /* werecritter */
+            else
+                void (yield* polymon(mntmp.v));
+            { __pc = 5; continue; }
         }
         case 39: {
-        __pc = 8;
-        continue;
+            __pc = 8;
+            continue;
         }
         case 8: {
 
-        if (mntmp.v < NHC.LOW_PM) {
-            tryct = 200;
-            do {
-                /* randomly pick an "ordinary" monster */
-                mntmp.v = ((rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0);
-                if (((cptr.ldU64o(
-                    (cptr.add(mons, mntmp.v, $sizeof_permonst)),
-                    $permonst_mflags2
-                ) & 1n) == 0n) &&
-                        !is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)))
-                    break;
-            } while (--tryct > 0);
-        }
+            if (mntmp.v < NHC.LOW_PM) {
+                tryct = 200;
+                do {
+                    /* randomly pick an "ordinary" monster */
+                    mntmp.v = ((rn2(((NHC.SPECIAL_PM - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0);
+                    if (((cptr.ldU64o(
+                        (cptr.add(mons, mntmp.v, $sizeof_permonst)),
+                        $permonst_mflags2
+                    ) &
+                        1n) ==
+                        0n) &&
+                            !is_placeholder(cptr.add(mons, mntmp.v, $sizeof_permonst)))
+                        break;
+                } while (--tryct > 0);
+            }
 
-        /* The below polyok() fails either if everything is genocided, or if
-         * we deliberately chose something illegal to force newman().
-         */
-        (cptr.stI32o(
-            gs,
-            $instance_globals_s_sex_change_ok,
-            cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + 1
-        )) -
-                (1);
-        if (!((cptr.ldU64o(
-            (cptr.add(mons, mntmp.v, $sizeof_permonst)),
-            $permonst_mflags2
-        ) & 1n) == 0n) ||
-                (!forcecontrol && !rn2(5)) ||
-                ((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
-                    BigInt.asUintN(
-                        64,
-                        BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
-                    )) != 0n)) {
-            (yield* newman());
-        } else {
-            void (yield* polymon(mntmp.v));
-        }
-        (cptr.stI32o(
-            gs,
-            $instance_globals_s_sex_change_ok,
-            cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + -1
-        )) -
-                (-1);  /* reset */
-        __pc = 5;
-        continue;
+            /* The below polyok() fails either if everything is genocided, or if
+             * we deliberately chose something illegal to force newman().
+             */
+            (cptr.stI32o(
+                gs,
+                $instance_globals_s_sex_change_ok,
+                cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + 1
+            )) - (1);
+            if (!((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
+                1n) ==
+                0n) ||
+                    (!forcecontrol && !rn2(5)) ||
+                    ((cptr.ldU64o((cptr.add(mons, mntmp.v, $sizeof_permonst)), $permonst_mflags2) &
+                        BigInt.asUintN(
+                            64,
+                            BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
+                        )) !=
+                        0n)) {
+                (yield* newman());
+            } else {
+                void (yield* polymon(mntmp.v));
+            }
+            (cptr.stI32o(
+                gs,
+                $instance_globals_s_sex_change_ok,
+                cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) + -1
+            )) - (-1);  /* reset */
+            __pc = 5;
+            continue;
         }
         case 5 /* made_change: */: {
-        new_light = emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
-        if (old_light != new_light) {
-            if (old_light)
-                (yield* del_light_source(
-                    NHC.LS_MONSTER,
-                    monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))
-                ));
-            if (new_light == 1)
-                ++new_light;  /* otherwise it's undetectable */
-            if (new_light)
-                (yield* new_light_source(
-                    cptr.ldI16(u),
-                    cptr.ldI16o(u, $you_uy),
-                    new_light,
-                    NHC.LS_MONSTER,
-                    monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))
-                ));
-        }
-        __pc = -1;
-        continue;
+            new_light = emits_light(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
+            if (old_light != new_light) {
+                if (old_light)
+                    (yield* del_light_source(
+                        NHC.LS_MONSTER,
+                        monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))
+                    ));
+                if (new_light == 1)
+                    ++new_light;  /* otherwise it's undetectable */
+                if (new_light)
+                    (yield* new_light_source(
+                        cptr.ldI16(u),
+                        cptr.ldI16o(u, $you_uy),
+                        new_light,
+                        NHC.LS_MONSTER,
+                        monst_to_any(cptr.add(gy, $instance_globals_y_youmonst))
+                    ));
+            }
+            __pc = -1;
+            continue;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -2141,7 +2161,8 @@ export function* polymon(mntmp) {
         ((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
-        ) & 128n) != 0n)
+        ) &
+            128n) != 0n)
             ? 1
             : 0));
     let mlvl;
@@ -2170,8 +2191,7 @@ export function* polymon(mntmp) {
         u,
         $you_uconduct + $u_conduct_polyselfs,
         cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs) + 1n
-    )) -
-            (1n)))
+    )) - (1n)))
         (yield* livelog_printf(
             32n,
             __s_changed_form_for_the_first_time,
@@ -2215,16 +2235,18 @@ export function* polymon(mntmp) {
         cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_NOTHING);
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, 0);
     }
-    if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) &
-            65536n) != 0n)) {
+    if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 65536n) !=
+            0n)) {
         if (cptr.ld1so(flags, $flag_female))
             dochange = 1;
     } else if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) &
-            131072n) != 0n)) {
+        131072n) !=
+            0n)) {
         if (!cptr.ld1so(flags, $flag_female))
             dochange = 1;
     } else if (!((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) &
-        262144n) != 0n) &&
+        262144n) !=
+        0n) &&
             mntmp != cptr.ldI32o(u, $you_ulycn)) {
         if (cptr.ldI32o(gs, $instance_globals_s_sex_change_ok) && !rn2(10))
             dochange = 1;
@@ -2244,7 +2266,8 @@ export function* polymon(mntmp) {
         void cptr.strcat(
             cptr.decay(buf),
             (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) &
-                65536n) != 0n) ||
+                65536n) !=
+                0n) ||
                 ((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) &
                     131072n) != 0n))
                 ? __s_empty
@@ -2278,8 +2301,8 @@ export function* polymon(mntmp) {
      * Currently only strength gets changed.
      */
     newMaxStr = uasmon_maxStr();
-    if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) &
-            67108864n) != 0n)) {
+    if (((cptr.ldU64o((cptr.add(mons, mntmp, $sizeof_permonst)), $permonst_mflags2) & 67108864n) !=
+            0n)) {
         cptr.st1o2(
             u,
             NHC.A_STR,
@@ -2399,7 +2422,8 @@ export function* polymon(mntmp) {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
     ) &
-            4194304n) != 0n)) {
+        4194304n) !=
+            0n)) {
         (yield* learn_egg_type(cptr.ldI32o(u, $you_umonnum)));
         /* make queen bees recognize killer bee eggs */
         (yield* learn_egg_type(egg_type_from_parent(cptr.ldI32o(u, $you_umonnum), 1)));
@@ -2413,7 +2437,8 @@ export function* polymon(mntmp) {
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
             $permonst_mflags1
         ) &
-            1048576n) != 0n) ||
+            1048576n) !=
+            0n) ||
                 (usiz = cptr.ld1uo(
                     cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                     $permonst_msize
@@ -2422,7 +2447,8 @@ export function* polymon(mntmp) {
                 (cptr.ld1uo(
                     cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
                     $permonst_msize
-                ) < usiz &&
+                ) <
+                    usiz &&
                     !is_whirly(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)))) {
             let expels_mesg = 1;
 
@@ -2430,7 +2456,8 @@ export function* polymon(mntmp) {
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                    1048576n) != 0n)) {
+                1048576n) !=
+                    0n)) {
                 if (canspotmon(cptr.ldPtro(u, $you_ustuck)))
                     void cptr.strcpy(cptr.decay(ustuckNam), (yield* Monnam(cptr.ldPtro(u, $you_ustuck))));
                 (yield* pline(__s_s_can_no_longer_contain_you, cptr.decay(ustuckNam)));
@@ -2456,7 +2483,8 @@ export function* polymon(mntmp) {
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    1048576n) != 0n))) {
+                    1048576n) !=
+                    0n))) {
         /* u.ustuck name was saved above in case we're changing from can-see
            to can't-see; but might have changed from can't-see to can-see so
            override here if hero knows who u.ustuck is */
@@ -2523,13 +2551,16 @@ export function* polymon(mntmp) {
     if (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
-    ) & 4n) != 0n) ||
+    ) &
+        4n) !=
+        0n) ||
             is_whirly(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ||
             ((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
             ) &
-                1048576n) != 0n)) {
+                1048576n) !=
+                0n)) {
         if (Punished()) {
             (yield* You(__s_slip_out_of_the_iron_chain));
             (yield* unpunish());
@@ -2545,13 +2576,16 @@ export function* polymon(mntmp) {
             (((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
-            ) & 4n) != 0n) ||
+            ) &
+                4n) !=
+                0n) ||
                 is_whirly(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ||
                 ((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
                 ) &
-                    1048576n) != 0n) ||
+                    1048576n) !=
+                    0n) ||
                 (cptr.ld1uo(
                     cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                     $permonst_msize
@@ -3122,15 +3156,15 @@ export function* dospit() {
         switch (cptr.ld1uo(mattk, $attack_adtyp)) {
             case NHM.AD_BLND:
             case NHM.AD_DRST:
-            otmp = (yield* mksobj(NHC.BLINDING_VENOM, 1, 0));
-            break;
+                otmp = (yield* mksobj(NHC.BLINDING_VENOM, 1, 0));
+                break;
             default:
-            (yield* impossible(__s_bad_attack_type_in_dospit));
-            // @FallThrough
-            ;
+                (yield* impossible(__s_bad_attack_type_in_dospit));
+                // @FallThrough
+                ;
             case NHM.AD_ACID:
-            otmp = (yield* mksobj(NHC.ACID_VENOM, 1, 0));
-            break;
+                otmp = (yield* mksobj(NHC.ACID_VENOM, 1, 0));
+                break;
         }
         cptr.st1o(otmp, $obj_spe, 1);  /* to indicate it's yours */
         (yield* throwit(otmp, 0n, 0, null));
@@ -3196,7 +3230,8 @@ export function* dospinweb() {
             (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
             $permonst_mflags1
         ) &
-                262144n) != 0n)) {
+            262144n) !=
+                0n)) {
             (yield* expels(
                 cptr.ldPtro(u, $you_ustuck),
                 cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
@@ -3229,14 +3264,14 @@ export function* dospinweb() {
                     $permonst_mattk + $attack_adtyp
                 )) {
                     case NHM.AD_FIRE:
-                    void cptr.strcpy(cptr.decay(sweep), __s_ignites_and);
-                    break;
+                        void cptr.strcpy(cptr.decay(sweep), __s_ignites_and);
+                        break;
                     case NHM.AD_ELEC:
-                    void cptr.strcpy(cptr.decay(sweep), __s_fries_and);
-                    break;
+                        void cptr.strcpy(cptr.decay(sweep), __s_fries_and);
+                        break;
                     case NHM.AD_COLD:
-                    void cptr.strcpy(cptr.decay(sweep), __s_freezes_shatters_and);
-                    break;
+                        void cptr.strcpy(cptr.decay(sweep), __s_freezes_shatters_and);
+                        break;
                 }
                 (yield* pline_The(__s_web_sis_swept_away, cptr.decay(sweep)));
             }
@@ -3254,41 +3289,41 @@ export function* dospinweb() {
         switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
             case NHC.PIT:
             case NHC.SPIKED_PIT:
-            (yield* You(__s_spin_a_web_covering_up_the_pit));
-            (yield* deltrap(ttmp));
-            (yield* bury_objs(x, y));
-            (yield* newsym(x, y));
-            return NHM.ECMD_TIME;
+                (yield* You(__s_spin_a_web_covering_up_the_pit));
+                (yield* deltrap(ttmp));
+                (yield* bury_objs(x, y));
+                (yield* newsym(x, y));
+                return NHM.ECMD_TIME;
             case NHC.SQKY_BOARD:
-            (yield* pline_The(__s_squeaky_board_is_muffled));
-            (yield* deltrap(ttmp));
-            (yield* newsym(x, y));
-            return NHM.ECMD_TIME;
+                (yield* pline_The(__s_squeaky_board_is_muffled));
+                (yield* deltrap(ttmp));
+                (yield* newsym(x, y));
+                return NHM.ECMD_TIME;
             case NHC.TELEP_TRAP:
             case NHC.LEVEL_TELEP:
             case NHC.MAGIC_PORTAL:
             case NHC.VIBRATING_SQUARE:
-            (yield* Your(__s_webbing_vanishes));
-            return NHM.ECMD_OK;
+                (yield* Your(__s_webbing_vanishes));
+                return NHM.ECMD_OK;
             case NHC.WEB:
-            (yield* You(__s_make_the_web_thicker));
-            return NHM.ECMD_TIME;
+                (yield* You(__s_make_the_web_thicker));
+                return NHM.ECMD_TIME;
             case NHC.HOLE:
             case NHC.TRAPDOOR:
-            (yield* You(
-                __s_web_over_the_s,
-                (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
-                    ? __s_trap_door
-                    : __s_hole
-            ));
-            (yield* deltrap(ttmp));
-            (yield* newsym(x, y));
-            return NHM.ECMD_TIME;
+                (yield* You(
+                    __s_web_over_the_s,
+                    (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TRAPDOOR)
+                        ? __s_trap_door
+                        : __s_hole
+                ));
+                (yield* deltrap(ttmp));
+                (yield* newsym(x, y));
+                return NHM.ECMD_TIME;
             case NHC.ROLLING_BOULDER_TRAP:
-            (yield* You(__s_spin_a_web_jamming_the_trigger));
-            (yield* deltrap(ttmp));
-            (yield* newsym(x, y));
-            return NHM.ECMD_TIME;
+                (yield* You(__s_spin_a_web_jamming_the_trigger));
+                (yield* deltrap(ttmp));
+                (yield* newsym(x, y));
+                return NHM.ECMD_TIME;
             case NHC.ARROW_TRAP:
             case NHC.DART_TRAP:
             case NHC.BEAR_TRAP:
@@ -3300,12 +3335,12 @@ export function* dospinweb() {
             case NHC.MAGIC_TRAP:
             case NHC.ANTI_MAGIC:
             case NHC.POLY_TRAP:
-            (yield* You(__s_have_triggered_a_trap));
-            (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
-            return NHM.ECMD_TIME;
+                (yield* You(__s_have_triggered_a_trap));
+                (yield* dotrap(ttmp, NHM.NO_TRAP_FLAGS));
+                return NHM.ECMD_TIME;
             default:
-            (yield* impossible(__s_webbing_over_trap_type_d, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0));
-            return NHM.ECMD_OK;
+                (yield* impossible(__s_webbing_over_trap_type_d, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0));
+                return NHM.ECMD_OK;
         }
     } else if (On_stairs(x, y)) {
         /* cop out: don't let them hide the stairs */
@@ -3418,11 +3453,13 @@ export function* dogaze() {
                     ),
                     cptr.ldI16o(mtmp, $monst_mx)
                 ) &
-                    NHM.COULD_SEE) != 0)) {
+                    NHM.COULD_SEE) !=
+                    0)) {
             looked++;
             if (Invis() &&
                     !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                        16777216n) != 0n)) {
+                        16777216n) !=
+                        0n)) {
                 (yield* pline(__s_s_seems_not_to_notice_your_gaze, (yield* Monnam(mtmp))));
             } else if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && !See_invisible()) {
                 (yield* You_cant(__s_see_where_to_gaze_at_s, (yield* Monnam(mtmp))));
@@ -3453,7 +3490,8 @@ export function* dogaze() {
                         (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0 ||
                         !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) ||
                         !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                            4096n) == 0n)) {
+                            4096n) ==
+                            0n)) {
                     looked--;
                     continue;
                 }
@@ -3558,7 +3596,9 @@ export function* dohide() {
     let on_ceiling = schar((((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
-    ) & 16n) != 0n) ||
+    ) &
+        16n) !=
+        0n) ||
         Flying()
             ? 1
             : 0));
@@ -3621,7 +3661,9 @@ export function* dohide() {
     if (((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
-    ) & 128n) != 0n)) {
+    ) &
+        128n) !=
+            0n)) {
         let ct = 0n;
         let otmp;
         let otop = cptr.ldPtro3(
@@ -3684,7 +3726,9 @@ export function* dohide() {
     if ((((cptr.ldU64o(
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags1
-    ) & 256n) != 0n) &&
+    ) &
+        256n) !=
+        0n) &&
         !Flying()) &&
             ((((cptr.ldI16o(
                 (cptr.add(
@@ -4136,16 +4180,16 @@ export function* mbodypart(mon, part) {
             cptr.eq(mptr, cptr.add(mons, NHC.PM_OWLBEAR, $sizeof_permonst))) {
         switch (part) {
             case NHC.HAND:
-            return __s_paw;
+                return __s_paw;
             case NHC.HANDED:
-            return __s_pawed;
+                return __s_pawed;
             case NHC.FOOT:
-            return __s_rear_paw;
+                return __s_rear_paw;
             case NHC.ARM:
             case NHC.LEG:
-            return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);  /* "foreleg", "rear leg" */
+                return cptr.ldPtro(__static_mbodypart_horse_parts, part, 8);  /* "foreleg", "rear leg" */
             default:
-            break;  /* for other parts, use animal_parts[] below */
+                break;  /* for other parts, use animal_parts[] below */
         }
     } else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_YETI) {
         /* opposable thumbs, hence "hands", "arms", "legs", &c */
@@ -4246,7 +4290,8 @@ export function poly_gender() {
         (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
         $permonst_mflags2
     ) &
-        262144n) != 0n) ||
+        262144n) !=
+        0n) ||
             !((cptr.ldU64o(
                 (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                 $permonst_mflags1
@@ -4269,13 +4314,13 @@ export function* ugolemeffects(damtype, dam) {
         return;
     switch (damtype) {
         case NHM.AD_ELEC:
-        if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_FLESH_GOLEM)
-            heal = (((dam + 5) | 0) / 6) | 0;  /* Approx 1 per die */
-        break;
+            if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_FLESH_GOLEM)
+                heal = (((dam + 5) | 0) / 6) | 0;  /* Approx 1 per die */
+            break;
         case NHM.AD_FIRE:
-        if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_IRON_GOLEM)
-            heal = dam;
-        break;
+            if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_IRON_GOLEM)
+                heal = dam;
+            break;
     }
     if (heal && (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax))) {
         cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + heal) | 0);
@@ -4292,36 +4337,36 @@ function armor_to_dragon(atyp) {
     switch (atyp) {
         case NHC.GRAY_DRAGON_SCALE_MAIL:
         case NHC.GRAY_DRAGON_SCALES:
-        return NHC.PM_GRAY_DRAGON;
+            return NHC.PM_GRAY_DRAGON;
         case NHC.SILVER_DRAGON_SCALE_MAIL:
         case NHC.SILVER_DRAGON_SCALES:
-        return NHC.PM_SILVER_DRAGON;
+            return NHC.PM_SILVER_DRAGON;
         case NHC.GOLD_DRAGON_SCALE_MAIL:
         case NHC.GOLD_DRAGON_SCALES:
-        return NHC.PM_GOLD_DRAGON;
+            return NHC.PM_GOLD_DRAGON;
         case NHC.RED_DRAGON_SCALE_MAIL:
         case NHC.RED_DRAGON_SCALES:
-        return NHC.PM_RED_DRAGON;
+            return NHC.PM_RED_DRAGON;
         case NHC.ORANGE_DRAGON_SCALE_MAIL:
         case NHC.ORANGE_DRAGON_SCALES:
-        return NHC.PM_ORANGE_DRAGON;
+            return NHC.PM_ORANGE_DRAGON;
         case NHC.WHITE_DRAGON_SCALE_MAIL:
         case NHC.WHITE_DRAGON_SCALES:
-        return NHC.PM_WHITE_DRAGON;
+            return NHC.PM_WHITE_DRAGON;
         case NHC.BLACK_DRAGON_SCALE_MAIL:
         case NHC.BLACK_DRAGON_SCALES:
-        return NHC.PM_BLACK_DRAGON;
+            return NHC.PM_BLACK_DRAGON;
         case NHC.BLUE_DRAGON_SCALE_MAIL:
         case NHC.BLUE_DRAGON_SCALES:
-        return NHC.PM_BLUE_DRAGON;
+            return NHC.PM_BLUE_DRAGON;
         case NHC.GREEN_DRAGON_SCALE_MAIL:
         case NHC.GREEN_DRAGON_SCALES:
-        return NHC.PM_GREEN_DRAGON;
+            return NHC.PM_GREEN_DRAGON;
         case NHC.YELLOW_DRAGON_SCALE_MAIL:
         case NHC.YELLOW_DRAGON_SCALES:
-        return NHC.PM_YELLOW_DRAGON;
+            return NHC.PM_YELLOW_DRAGON;
         default:
-        return NHC.NON_PM;
+            return NHC.NON_PM;
     }
 }
 
@@ -4344,20 +4389,20 @@ function polysense() {
     switch (cptr.ldI32o(u, $you_umonnum)) {
         case NHC.PM_PURPLE_WORM:
         case NHC.PM_BABY_PURPLE_WORM:
-        warnidx = NHC.PM_SHRIEKER;
-        break;
+            warnidx = NHC.PM_SHRIEKER;
+            break;
         case NHC.PM_VAMPIRE:
         case NHC.PM_VAMPIRE_LEADER:
-        cptr.stU64o(svc, $context_info_warntype + $warntype_info_polyd, 24n);
-        cptr.stI64o2(
-            u,
-            NHC.WARN_OF_MON,
-            $sizeof_prop,
-            $you_uprops + $prop_intrinsic,
-            cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) |
-                33554432n
-        );
-        return;
+            cptr.stU64o(svc, $context_info_warntype + $warntype_info_polyd, 24n);
+            cptr.stI64o2(
+                u,
+                NHC.WARN_OF_MON,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    33554432n
+            );
+            return;
     }
     if (ismnum(warnidx)) {
         cptr.stI16o(svc, $context_info_warntype + $warntype_info_speciesidx, warnidx);

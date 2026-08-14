@@ -1768,134 +1768,135 @@ function* u_init_role() {
 
     switch (Role_switch()) {
         case NHC.PM_ARCHEOLOGIST:
-        (yield* ini_inv(Archeologist));
-        if (!rn2(10))
-            (yield* ini_inv(Tinopener));
-        else if (!rn2(4))
-            (yield* ini_inv(Lamp));
-        else if (!rn2(5))
-            (yield* ini_inv(Magicmarker));
-        (yield* knows_object(NHC.SACK, 0));
-        (yield* knows_object(NHC.TOUCHSTONE, 0));
-        break;
+            (yield* ini_inv(Archeologist));
+            if (!rn2(10))
+                (yield* ini_inv(Tinopener));
+            else if (!rn2(4))
+                (yield* ini_inv(Lamp));
+            else if (!rn2(5))
+                (yield* ini_inv(Magicmarker));
+            (yield* knows_object(NHC.SACK, 0));
+            (yield* knows_object(NHC.TOUCHSTONE, 0));
+            break;
         case NHC.PM_BARBARIAN:
-        if (rn2(100) >= 50) {
-            (yield* ini_inv(Barbarian_0));
-        } else {
-            (yield* ini_inv(Barbarian_1));
-        }
-        if (!rn2(6))
-            (yield* ini_inv(Lamp));
-        (yield* knows_class(NHC.WEAPON_CLASS));  /* excluding polearms */
-        (yield* knows_class(NHC.ARMOR_CLASS));
-        break;
+            if (rn2(100) >= 50) {
+                (yield* ini_inv(Barbarian_0));
+            } else {
+                (yield* ini_inv(Barbarian_1));
+            }
+            if (!rn2(6))
+                (yield* ini_inv(Lamp));
+            (yield* knows_class(NHC.WEAPON_CLASS));  /* excluding polearms */
+            (yield* knows_class(NHC.ARMOR_CLASS));
+            break;
         case NHC.PM_CAVE_DWELLER:
-        (yield* ini_inv(Cave_man));
-        break;
+            (yield* ini_inv(Cave_man));
+            break;
         case NHC.PM_HEALER:
-        cptr.stI64o(u, $you_umoney0, BigInt(((rn2(1000) + 1001) | 0)));
-        (yield* ini_inv(Healer));
-        if (!rn2(25))
-            (yield* ini_inv(Lamp));
-        (yield* knows_object(NHC.POT_FULL_HEALING, 0));
-        break;
+            cptr.stI64o(u, $you_umoney0, BigInt(((rn2(1000) + 1001) | 0)));
+            (yield* ini_inv(Healer));
+            if (!rn2(25))
+                (yield* ini_inv(Lamp));
+            (yield* knows_object(NHC.POT_FULL_HEALING, 0));
+            break;
         case NHC.PM_KNIGHT:
-        (yield* ini_inv(Knight));
-        (yield* knows_class(NHC.WEAPON_CLASS));  /* all weapons */
-        (yield* knows_class(NHC.ARMOR_CLASS));
-        /* give knights chess-like mobility--idea from wooledge@..cwru.edu */
-        cptr.stI64o2(
-            u,
-            NHC.JUMPING,
-            $sizeof_prop,
-            $you_uprops + $prop_intrinsic,
-            cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
-        );
-        break;
+            (yield* ini_inv(Knight));
+            (yield* knows_class(NHC.WEAPON_CLASS));  /* all weapons */
+            (yield* knows_class(NHC.ARMOR_CLASS));
+            /* give knights chess-like mobility--idea from wooledge@..cwru.edu */
+            cptr.stI64o2(
+                u,
+                NHC.JUMPING,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
+            break;
         case NHC.PM_MONK:
-        {
+            {
 
-            (yield* ini_inv(Monk));
-            (yield* ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2(90) / 30) | 0, 8)));  /* [0..2] */
-            if (!rn2(4))
+                (yield* ini_inv(Monk));
+                (yield* ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2(90) / 30) | 0, 8)));  /* [0..2] */
+                if (!rn2(4))
+                    (yield* ini_inv(Magicmarker));
+                else if (!rn2(10))
+                    (yield* ini_inv(Lamp));
+                (yield* knows_class(NHC.ARMOR_CLASS));
+                /* sufficiently martial-arts oriented item to ignore language issue */
+                (yield* knows_object(NHC.SHURIKEN, 0));
+                break;
+            }
+        case NHC.PM_CLERIC:
+            (yield* ini_inv(Priest));
+            if (!rn2(5))
                 (yield* ini_inv(Magicmarker));
             else if (!rn2(10))
                 (yield* ini_inv(Lamp));
-            (yield* knows_class(NHC.ARMOR_CLASS));
-            /* sufficiently martial-arts oriented item to ignore language issue */
-            (yield* knows_object(NHC.SHURIKEN, 0));
+            (yield* knows_object(NHC.POT_WATER, 1));  /* override pauper */
+            /* KMH, conduct --
+             * Some may claim that this isn't agnostic, since they
+             * are literally "priests" and they have holy water.
+             * But we don't count it as such.  Purists can always
+             * avoid playing priests and/or confirm another player's
+             * role in their YAAP.
+             */
             break;
-        }
-        case NHC.PM_CLERIC:
-        (yield* ini_inv(Priest));
-        if (!rn2(5))
-            (yield* ini_inv(Magicmarker));
-        else if (!rn2(10))
-            (yield* ini_inv(Lamp));
-        (yield* knows_object(NHC.POT_WATER, 1));  /* override pauper */
-        /* KMH, conduct --
-         * Some may claim that this isn't agnostic, since they
-         * are literally "priests" and they have holy water.
-         * But we don't count it as such.  Purists can always
-         * avoid playing priests and/or confirm another player's
-         * role in their YAAP.
-         */
-        break;
         case NHC.PM_RANGER:
-        (yield* ini_inv(Ranger));
-        (yield* knows_class(NHC.WEAPON_CLASS));  /* bows, arrows, spears only */
-        break;
+            (yield* ini_inv(Ranger));
+            (yield* knows_class(NHC.WEAPON_CLASS));  /* bows, arrows, spears only */
+            break;
         case NHC.PM_ROGUE:
-        cptr.stI64o(u, $you_umoney0, 0n);
-        (yield* ini_inv(Rogue));
-        if (!rn2(5))
-            (yield* ini_inv(Blindfold));
-        (yield* knows_object(NHC.SACK, 0));
-        (yield* knows_class(NHC.WEAPON_CLASS));  /* daggers only */
-        break;
+            cptr.stI64o(u, $you_umoney0, 0n);
+            (yield* ini_inv(Rogue));
+            if (!rn2(5))
+                (yield* ini_inv(Blindfold));
+            (yield* knows_object(NHC.SACK, 0));
+            (yield* knows_class(NHC.WEAPON_CLASS));  /* daggers only */
+            break;
         case NHC.PM_SAMURAI:
-        (yield* ini_inv(Samurai));
-        if (!rn2(5))
-            (yield* ini_inv(Blindfold));
-        (yield* knows_class(NHC.WEAPON_CLASS));  /* all weapons */
-        (yield* knows_class(NHC.ARMOR_CLASS));
-        /* in order to assist non-Japanese speakers, pre-discover items
-           that switch to Japanese names when playing as a Samurai */
-        for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-            if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
-                continue;
-            if (Japanese_item_name(i, null))
-                /* we don't override pauper here because that would give
-                   samarai an advantage of knowing several items in advance */
-                (yield* knows_object(i, 0));
-        }
-        break;
+            (yield* ini_inv(Samurai));
+            if (!rn2(5))
+                (yield* ini_inv(Blindfold));
+            (yield* knows_class(NHC.WEAPON_CLASS));  /* all weapons */
+            (yield* knows_class(NHC.ARMOR_CLASS));
+            /* in order to assist non-Japanese speakers, pre-discover items
+               that switch to Japanese names when playing as a Samurai */
+            for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
+                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
+                    continue;
+                if (Japanese_item_name(i, null))
+                    /* we don't override pauper here because that would give
+                       samarai an advantage of knowing several items in advance */
+                    (yield* knows_object(i, 0));
+            }
+            break;
         case NHC.PM_TOURIST:
-        cptr.stI64o(u, $you_umoney0, BigInt(rnd(1000)));
-        (yield* ini_inv(Tourist));
-        if (!rn2(25))
-            (yield* ini_inv(Tinopener));
-        else if (!rn2(25))
-            (yield* ini_inv(Leash));
-        else if (!rn2(25))
-            (yield* ini_inv(Towel));
-        else if (!rn2(20))
-            (yield* ini_inv(Magicmarker));
-        break;
+            cptr.stI64o(u, $you_umoney0, BigInt(rnd(1000)));
+            (yield* ini_inv(Tourist));
+            if (!rn2(25))
+                (yield* ini_inv(Tinopener));
+            else if (!rn2(25))
+                (yield* ini_inv(Leash));
+            else if (!rn2(25))
+                (yield* ini_inv(Towel));
+            else if (!rn2(20))
+                (yield* ini_inv(Magicmarker));
+            break;
         case NHC.PM_VALKYRIE:
-        (yield* ini_inv(Valkyrie));
-        if (!rn2(6))
-            (yield* ini_inv(Lamp));
-        (yield* knows_class(NHC.WEAPON_CLASS));  /* excludes polearms */
-        (yield* knows_class(NHC.ARMOR_CLASS));
-        break;
+            (yield* ini_inv(Valkyrie));
+            if (!rn2(6))
+                (yield* ini_inv(Lamp));
+            (yield* knows_class(NHC.WEAPON_CLASS));  /* excludes polearms */
+            (yield* knows_class(NHC.ARMOR_CLASS));
+            break;
         case NHC.PM_WIZARD:
-        (yield* ini_inv(Wizard));
-        if (!rn2(5))
-            (yield* ini_inv(Blindfold));
-        break;
+            (yield* ini_inv(Wizard));
+            if (!rn2(5))
+                (yield* ini_inv(Blindfold));
+            break;
         default:
-        break;
+            break;
     }
 
     cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.STRANGE_OBJECT);
@@ -1917,76 +1918,80 @@ cptr.stI32o(__static_u_init_race_trotyp, 20, NHC.LEATHER_DRUM); /** C ref: u_ini
 function* u_init_race() {
     switch (Race_switch()) {
         case NHC.PM_HUMAN:
-        /* Nothing special */
-        break;
+            /* Nothing special */
+            break;
         case NHC.PM_ELF:
-        /*
-         * Elves are people of music and song, or they are warriors.
-         * Non-warriors get an instrument.  We use a kludge to
-         * get only non-magic instruments.
-         */
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) ||
-                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
-            let Instrument = cptr.alloc(2 * $sizeof_trobj);
-            cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2(6), 4)));
-            cptr.st1o(Instrument, 0 + $trobj_trspe, 0);
-            cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS);
-            cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1);
-            cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1);
-            cptr.st1o(Instrument, 0 + $trobj_trbless, 0);
-            cptr.stI16o(Instrument, 8, 0);
-            cptr.st1o(Instrument, 8 + $trobj_trspe, 0);
-            cptr.st1o(Instrument, 8 + $trobj_trclass, 0);
-            cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0);
-            cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0);
-            cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
-            (yield* ini_inv(Instrument));
-        }
+            /*
+             * Elves are people of music and song, or they are warriors.
+             * Non-warriors get an instrument.  We use a kludge to
+             * get only non-magic instruments.
+             */
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) ||
+                    (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
+                let Instrument = cptr.alloc(2 * $sizeof_trobj);
+                cptr.stI16o(
+                    Instrument,
+                    0,
+                    i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2(6), 4))
+                );
+                cptr.st1o(Instrument, 0 + $trobj_trspe, 0);
+                cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS);
+                cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1);
+                cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1);
+                cptr.st1o(Instrument, 0 + $trobj_trbless, 0);
+                cptr.stI16o(Instrument, 8, 0);
+                cptr.st1o(Instrument, 8 + $trobj_trspe, 0);
+                cptr.st1o(Instrument, 8 + $trobj_trclass, 0);
+                cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0);
+                cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0);
+                cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
+                (yield* ini_inv(Instrument));
+            }
 
-        /* Elves can recognize all elvish objects */
-        (yield* knows_object(NHC.ELVEN_SHORT_SWORD, 0));
-        (yield* knows_object(NHC.ELVEN_ARROW, 0));
-        (yield* knows_object(NHC.ELVEN_BOW, 0));
-        (yield* knows_object(NHC.ELVEN_SPEAR, 0));
-        (yield* knows_object(NHC.ELVEN_DAGGER, 0));
-        (yield* knows_object(NHC.ELVEN_BROADSWORD, 0));
-        (yield* knows_object(NHC.ELVEN_MITHRIL_COAT, 0));
-        (yield* knows_object(NHC.ELVEN_LEATHER_HELM, 0));
-        (yield* knows_object(NHC.ELVEN_SHIELD, 0));
-        (yield* knows_object(NHC.ELVEN_BOOTS, 0));
-        (yield* knows_object(NHC.ELVEN_CLOAK, 0));
-        break;
+            /* Elves can recognize all elvish objects */
+            (yield* knows_object(NHC.ELVEN_SHORT_SWORD, 0));
+            (yield* knows_object(NHC.ELVEN_ARROW, 0));
+            (yield* knows_object(NHC.ELVEN_BOW, 0));
+            (yield* knows_object(NHC.ELVEN_SPEAR, 0));
+            (yield* knows_object(NHC.ELVEN_DAGGER, 0));
+            (yield* knows_object(NHC.ELVEN_BROADSWORD, 0));
+            (yield* knows_object(NHC.ELVEN_MITHRIL_COAT, 0));
+            (yield* knows_object(NHC.ELVEN_LEATHER_HELM, 0));
+            (yield* knows_object(NHC.ELVEN_SHIELD, 0));
+            (yield* knows_object(NHC.ELVEN_BOOTS, 0));
+            (yield* knows_object(NHC.ELVEN_CLOAK, 0));
+            break;
         case NHC.PM_DWARF:
-        /* Dwarves can recognize all dwarvish objects */
-        (yield* knows_object(NHC.DWARVISH_SPEAR, 0));
-        (yield* knows_object(NHC.DWARVISH_SHORT_SWORD, 0));
-        (yield* knows_object(NHC.DWARVISH_MATTOCK, 0));
-        (yield* knows_object(NHC.DWARVISH_IRON_HELM, 0));
-        (yield* knows_object(NHC.DWARVISH_MITHRIL_COAT, 0));
-        (yield* knows_object(NHC.DWARVISH_CLOAK, 0));
-        (yield* knows_object(NHC.DWARVISH_ROUNDSHIELD, 0));
-        break;
+            /* Dwarves can recognize all dwarvish objects */
+            (yield* knows_object(NHC.DWARVISH_SPEAR, 0));
+            (yield* knows_object(NHC.DWARVISH_SHORT_SWORD, 0));
+            (yield* knows_object(NHC.DWARVISH_MATTOCK, 0));
+            (yield* knows_object(NHC.DWARVISH_IRON_HELM, 0));
+            (yield* knows_object(NHC.DWARVISH_MITHRIL_COAT, 0));
+            (yield* knows_object(NHC.DWARVISH_CLOAK, 0));
+            (yield* knows_object(NHC.DWARVISH_ROUNDSHIELD, 0));
+            break;
         case NHC.PM_GNOME:
-        break;
+            break;
         case NHC.PM_ORC:
-        /* compensate for generally inferior equipment */
-        if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
-            (yield* ini_inv(Xtra_food));
-        /* Orcs can recognize all orcish objects */
-        (yield* knows_object(NHC.ORCISH_SHORT_SWORD, 0));
-        (yield* knows_object(NHC.ORCISH_ARROW, 0));
-        (yield* knows_object(NHC.ORCISH_BOW, 0));
-        (yield* knows_object(NHC.ORCISH_SPEAR, 0));
-        (yield* knows_object(NHC.ORCISH_DAGGER, 0));
-        (yield* knows_object(NHC.ORCISH_CHAIN_MAIL, 0));
-        (yield* knows_object(NHC.ORCISH_RING_MAIL, 0));
-        (yield* knows_object(NHC.ORCISH_HELM, 0));
-        (yield* knows_object(NHC.ORCISH_SHIELD, 0));
-        (yield* knows_object(NHC.URUK_HAI_SHIELD, 0));
-        (yield* knows_object(NHC.ORCISH_CLOAK, 0));
-        break;
+            /* compensate for generally inferior equipment */
+            if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
+                (yield* ini_inv(Xtra_food));
+            /* Orcs can recognize all orcish objects */
+            (yield* knows_object(NHC.ORCISH_SHORT_SWORD, 0));
+            (yield* knows_object(NHC.ORCISH_ARROW, 0));
+            (yield* knows_object(NHC.ORCISH_BOW, 0));
+            (yield* knows_object(NHC.ORCISH_SPEAR, 0));
+            (yield* knows_object(NHC.ORCISH_DAGGER, 0));
+            (yield* knows_object(NHC.ORCISH_CHAIN_MAIL, 0));
+            (yield* knows_object(NHC.ORCISH_RING_MAIL, 0));
+            (yield* knows_object(NHC.ORCISH_HELM, 0));
+            (yield* knows_object(NHC.ORCISH_SHIELD, 0));
+            (yield* knows_object(NHC.URUK_HAI_SHIELD, 0));
+            (yield* knows_object(NHC.ORCISH_CLOAK, 0));
+            break;
         default:
-        break;
+            break;
     }
 }
 
@@ -2016,36 +2021,36 @@ function* pauper_reinit() {
        high chance to find the book; some other roles know a non-book item */
     switch (Role_switch()) {
         case NHC.PM_HEALER:
-        preknown = NHC.SPE_HEALING;
-        break;
+            preknown = NHC.SPE_HEALING;
+            break;
         case NHC.PM_CLERIC:
         case NHC.PM_KNIGHT:
         case NHC.PM_MONK:
-        preknown = NHC.SPE_PROTECTION;
-        break;
+            preknown = NHC.SPE_PROTECTION;
+            break;
         case NHC.PM_WIZARD:
-        preknown = NHC.SPE_FORCE_BOLT;
-        break;
+            preknown = NHC.SPE_FORCE_BOLT;
+            break;
         case NHC.PM_ARCHEOLOGIST:
-        preknown = NHC.TOUCHSTONE;
-        break;
+            preknown = NHC.TOUCHSTONE;
+            break;
         case NHC.PM_CAVE_DWELLER:
-        preknown = NHC.FLINT;
-        break;
+            preknown = NHC.FLINT;
+            break;
         case NHC.PM_ROGUE:
         case NHC.PM_TOURIST:
-        preknown = NHC.SACK;
-        break;
+            preknown = NHC.SACK;
+            break;
         case NHC.PM_SAMURAI:
-        /* food ration isn't interesting to discover, but put "gunyoki" into
-           discoveries list for players who might not recognize what it is */
-        preknown = NHC.FOOD_RATION;
-        break;
+            /* food ration isn't interesting to discover, but put "gunyoki" into
+               discoveries list for players who might not recognize what it is */
+            preknown = NHC.FOOD_RATION;
+            break;
         default:
         case NHC.PM_BARBARIAN:
         case NHC.PM_RANGER:
         case NHC.PM_VALKYRIE:
-        break;
+            break;
     }
     if (preknown != NHC.STRANGE_OBJECT)
         (yield* knows_object(preknown, 1));
@@ -2173,47 +2178,47 @@ function* skills_for_role() {
 
     switch (Role_switch()) {
         case NHC.PM_ARCHEOLOGIST:
-        skills = Skill_A;
-        break;
+            skills = Skill_A;
+            break;
         case NHC.PM_BARBARIAN:
-        skills = Skill_B;
-        break;
+            skills = Skill_B;
+            break;
         case NHC.PM_CAVE_DWELLER:
-        skills = Skill_C;
-        break;
+            skills = Skill_C;
+            break;
         case NHC.PM_HEALER:
-        skills = Skill_H;
-        break;
+            skills = Skill_H;
+            break;
         case NHC.PM_KNIGHT:
-        skills = Skill_K;
-        break;
+            skills = Skill_K;
+            break;
         case NHC.PM_MONK:
-        skills = Skill_Mon;
-        break;
+            skills = Skill_Mon;
+            break;
         case NHC.PM_CLERIC:
-        skills = Skill_P;
-        break;
+            skills = Skill_P;
+            break;
         case NHC.PM_RANGER:
-        skills = Skill_Ran;
-        break;
+            skills = Skill_Ran;
+            break;
         case NHC.PM_ROGUE:
-        skills = Skill_R;
-        break;
+            skills = Skill_R;
+            break;
         case NHC.PM_SAMURAI:
-        skills = Skill_S;
-        break;
+            skills = Skill_S;
+            break;
         case NHC.PM_TOURIST:
-        skills = Skill_T;
-        break;
+            skills = Skill_T;
+            break;
         case NHC.PM_VALKYRIE:
-        skills = Skill_V;
-        break;
+            skills = Skill_V;
+            break;
         case NHC.PM_WIZARD:
-        skills = Skill_W;
-        break;
+            skills = Skill_W;
+            break;
         default:
-        (yield* panic(__s_no_skills_found_for_role));
-        break;
+            (yield* panic(__s_no_skills_found_for_role));
+            break;
     }
 
     return skills;
@@ -2239,8 +2244,8 @@ function trquan(trop) {
     if (!cptr.ld1so(trop, $trobj_trquan_min))
         return 1n;
     return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) +
-            rn2((cptr.ld1so(trop, $trobj_trquan_max) -
-                cptr.ld1so(trop, $trobj_trquan_min) + 1) | 0)) | 0));
+            rn2((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min) + 1) |
+                0)) | 0));
 }
 
 /* create random object of certain class, filtering out too powerful items */
@@ -2432,7 +2437,9 @@ function* ini_inv_adjust_obj(trop, obj) {
                         cptr.ldI16o(obj, $obj_otyp),
                         $sizeof_objclass,
                         $objclass_oc_charged
-                    ) & 1) | 0 &&
+                    ) &
+                        1) |
+                        0 &&
                     cptr.ld1so(obj, $obj_spe) <= 0)
                 cptr.st1o(obj, $obj_spe, schar(rne(3)));
         }
@@ -2532,12 +2539,12 @@ function* ini_inv(trop) {
                 case NHC.WAN_POLYMORPH:
                 case NHC.RIN_POLYMORPH:
                 case NHC.POT_POLYMORPH:
-                cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.RIN_POLYMORPH_CONTROL);
-                break;
+                    cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.RIN_POLYMORPH_CONTROL);
+                    break;
                 case NHC.RIN_POLYMORPH_CONTROL:
-                cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.RIN_POLYMORPH);
-                cptr.stI16o(gn, $instance_globals_n_nocreate2, NHC.SPE_POLYMORPH);
-                cptr.stI16o(gn, $instance_globals_n_nocreate3, NHC.POT_POLYMORPH);
+                    cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.RIN_POLYMORPH);
+                    cptr.stI16o(gn, $instance_globals_n_nocreate2, NHC.SPE_POLYMORPH);
+                    cptr.stI16o(gn, $instance_globals_n_nocreate3, NHC.POT_POLYMORPH);
             }
             /* Don't have 2 of the same ring or spellbook */
             if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS ||

@@ -566,8 +566,7 @@ export function get_saved_pline(lineno) {
     p = u32mod(
         ((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) - 1) >>> 0),
         NHM.DUMPLOG_MSG_COUNT
-    ) |
-            0;
+    ) | 0;
 
     while (limit--) {
         if (cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines)) {

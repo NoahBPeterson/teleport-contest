@@ -258,7 +258,8 @@ function* clear_fcorr(grd, forceshow) {
                         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), fcy, 8),
                         fcx
                     ) &
-                        NHM.COULD_SEE) != 0)) ||
+                        NHM.COULD_SEE) !=
+                        0)) ||
                 (Punished() &&
                     !(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) &&
                     cptr.ldI16o(uball.v, $obj_ox) == fcx &&
@@ -272,7 +273,8 @@ function* clear_fcorr(grd, forceshow) {
             fcy,
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ))) !== null) {
+        ))) !==
+                null) {
             if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
                 return 0;
             } else {
@@ -937,7 +939,8 @@ export function* invault() {
             NHC.BOULDER,
             cptr.ldI16o(guard, $monst_mx),
             cptr.ldI16o(guard, $monst_my)
-        )) !== null) {
+        )) !==
+                null) {
             let func;
             let bname = (yield* simpleonames(otmp));
             let bcnt = 0;
@@ -1337,7 +1340,8 @@ function* wallify_vault(grd) {
                     y,
                     8,
                     $instance_globals_saved_l_level + $dlevel_t_monsters
-                ))) !== null &&
+                ))) !==
+                    null &&
                         !cptr.eq(mon, grd)) {
                     if (cptr.ld1so(mon, $monst_mtame))
                         (yield* yelp(mon));
@@ -1646,7 +1650,8 @@ function* gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     if (!semi_dead &&
             (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
                 ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
-                    NHM.IN_SIGHT) != 0))) {
+                    NHM.IN_SIGHT) !=
+                    0))) {
         if (!disappear_msg_seen && see_guard)
             (yield* pline(__s_suddenly_s_disappears, (yield* noit_mon_nam(grd))));
         return 1;
@@ -1660,7 +1665,8 @@ function* gd_letknow(grd) {
         cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8),
         cptr.ldI16o(grd, $monst_mx)
     ) &
-        NHM.IN_SIGHT) != 0) ||
+        NHM.IN_SIGHT) !=
+        0) ||
             !mon_visible(grd))
         (yield* You_hear(
             __s_pct_s_dot,
@@ -1712,587 +1718,611 @@ export function* gd_move(grd) {
     __dispatch: while (true) {
         switch (__pc) {
         case 0: {
-        ggx = 0;
-        ggy = 0;
-        egrd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
-        umoney = 0n;
-        goldincorridor = 0;
-        u_in_vault = 0;
-        grd_in_vault = 0;
-        semi_dead = schar((cptr.ldI32o((grd), $monst_mhp) < 1));
-        u_carry_gold = 0;
-        newspot = 0;
+            ggx = 0;
+            ggy = 0;
+            egrd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
+            umoney = 0n;
+            goldincorridor = 0;
+            u_in_vault = 0;
+            grd_in_vault = 0;
+            semi_dead = schar((cptr.ldI32o((grd), $monst_mhp) < 1));
+            u_carry_gold = 0;
+            newspot = 0;
 
-        if (!on_level(cptr.add(egrd, $egd_gdlevel), cptr.add(u, $you_uz)))
-            return -1;
+            if (!on_level(cptr.add(egrd, $egd_gdlevel), cptr.add(u, $you_uz)))
+                return -1;
 
-        if (semi_dead || !cptr.ldI16o(grd, $monst_mx) || (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
-            cptr.stI32o(egrd, $egd_gddone, 1);
-            return (yield* gd_move_cleanup(grd, semi_dead, 0));
-        }
-        {
-            if ((yield* debugcore(__s_vault_c, 1))) {
-                save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                (yield* pline(
-                    __s_gd_move_s_guard,
-                    (cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 ? __s_peaceful : __s_hostile
-                ));
-                cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
+            if (semi_dead ||
+                    !cptr.ldI16o(grd, $monst_mx) ||
+                    (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
+                cptr.stI32o(egrd, $egd_gddone, 1);
+                return (yield* gd_move_cleanup(grd, semi_dead, 0));
             }
-        }
+            {
+                if ((yield* debugcore(__s_vault_c, 1))) {
+                    save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
+                    (yield* pline(
+                        __s_gd_move_s_guard,
+                        (cptr.ldI32o(grd, $monst_mpeaceful) & 1) | 0 ? __s_peaceful : __s_hostile
+                    ));
+                    cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
+                }
+            }
 
-        u_in_vault = schar((vault_occupied(cptr.add(u, $you_urooms)) ? 1 : 0));
-        grd_in_vault = schar((cptr.ld1s((yield* in_rooms(
-            cptr.ldI16o(grd, $monst_mx),
-            cptr.ldI16o(grd, $monst_my),
-            NHC.VAULT
-        )))
-                ? 1
-                : 0));
-        if (!u_in_vault && !grd_in_vault)
-            (yield* wallify_vault(grd));
+            u_in_vault = schar((vault_occupied(cptr.add(u, $you_urooms)) ? 1 : 0));
+            grd_in_vault = schar((cptr.ld1s((yield* in_rooms(
+                cptr.ldI16o(grd, $monst_mx),
+                cptr.ldI16o(grd, $monst_my),
+                NHC.VAULT
+            )))
+                    ? 1
+                    : 0));
+            if (!u_in_vault && !grd_in_vault)
+                (yield* wallify_vault(grd));
 
-        if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1)) {
-            if (!u_in_vault &&
-                    (grd_in_vault ||
-                        (in_fcorridor(
+            if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1)) {
+                if (!u_in_vault &&
+                        (grd_in_vault ||
+                            (in_fcorridor(
+                                grd,
+                                cptr.ldI16o(grd, $monst_mx),
+                                cptr.ldI16o(grd, $monst_my)
+                            ) &&
+                                !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))) {
+                    void (yield* rloc(grd, NHM.RLOC_MSG));
+                    (yield* wallify_vault(grd));
+                    if (!in_fcorridor(
+                        grd,
+                        cptr.ldI16o(grd, $monst_mx),
+                        cptr.ldI16o(grd, $monst_my)
+                    ))
+                        void (yield* clear_fcorr(grd, 1));
+                    (yield* gd_letknow(grd));
+                    return -1;
+                }
+                if (!in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)))
+                    void (yield* clear_fcorr(grd, 1));
+                return -1;
+            }
+            if (Math.abs((cptr.ldI16o(egrd, $egd_ogx) - cptr.ldI16o(grd, $monst_mx)) | 0) > 1 ||
+                    Math.abs((cptr.ldI16o(egrd, $egd_ogy) - cptr.ldI16o(grd, $monst_my)) | 0) > 1)
+                return -1;  /* teleported guard - treat as monster */
+
+            if ((cptr.ldI32o(egrd, $egd_witness) & 3)) {
+                if (!Deaf()) {
+                    ;
+                    (yield* verbalize(
+                        __s_how_dare_you_s_that_gold_scoundrel,
+                        (((cptr.ldI32o(egrd, $egd_witness) & 3) | 0) & NHM.GD_EATGOLD)
+                            ? __s_consume
+                            : __s_destroy
+                    ));
+                }
+                cptr.stI32o(egrd, $egd_witness, 0);
+                cptr.stI32o(grd, $monst_mpeaceful, 0);
+                return -1;
+            }
+
+            umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
+            u_carry_gold = schar((umoney > 0n || hidden_gold(1) > 0n ? 1 : 0));
+            if (cptr.ldI32o(egrd, $egd_fcend) == 1) {
+                if (u_in_vault &&
+                        (u_carry_gold ||
+                            um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1))) {
+                    if (cptr.ld1so(egrd, $egd_warncnt) == 3 && !Deaf()) {
+                        buf = new Uint8Array(256);
+
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            __s_sfollow_me,
+                            u_carry_gold
+                                ? (!umoney ? __s_drop_that_hidden_gold_and : __s_drop_that_gold_and)
+                                : __s_empty
+                        );
+                        ;
+                        if (cptr.ld1so(egrd, $egd_dropgoldcnt) || !u_carry_gold)
+                            (yield* verbalize(__s_i_repeat_s, cptr.decay(buf)));
+                        else
+                            (yield* verbalize(__s_pct_s, upstart(cptr.decay(buf))));
+                        if (u_carry_gold)
+                            cptr.postinc1(cptr.add(egrd, $egd_dropgoldcnt));
+                    }
+                    if (cptr.ld1so(egrd, $egd_warncnt) == 7) {
+                        m = cptr.ldI16o(grd, $monst_mx);
+                        n = cptr.ldI16o(grd, $monst_my);
+                        if (!Deaf()) {
+                            ;
+                            (yield* verbalize(__s_you_ve_been_warned_knave));
+                        }
+                        cptr.stI32o(grd, $monst_mpeaceful, 0);
+                        (yield* mnexto(grd, NHM.RLOC_NOMSG));
+                        cptr.st1o3(
+                            svl,
+                            m,
+                            $sizeof_rm_x21,
+                            n,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ,
+                            cptr.ld1so2(
+                                egrd,
+                                0,
+                                $sizeof_fakecorridor,
+                                $egd_fakecorr + $fakecorridor_ftyp
+                            )
+                        );
+                        cptr.stI32o3(
+                            svl,
+                            m,
+                            $sizeof_rm_x21,
+                            n,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags,
+                            cptr.ld1uo2(
+                                egrd,
+                                0,
+                                $sizeof_fakecorridor,
+                                $egd_fakecorr + $fakecorridor_flags
+                            )
+                        );
+                        (yield* recalc_block_point(m, n));
+                        (yield* del_engr_at(m, n));
+                        (yield* newsym(m, n));
+                        return -1;
+                    }
+                    /* not fair to get mad when (s)he's fainted or paralyzed */
+                    if (!is_fainted() && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
+                        cptr.postinc1(cptr.add(egrd, $egd_warncnt));
+                    return 0;
+                }
+
+                if (!u_in_vault) {
+                    if (u_carry_gold) {
+                        m = cptr.ldI16o(grd, $monst_mx);
+                        n = cptr.ldI16o(grd, $monst_my);
+                        void (yield* rloc(grd, NHM.RLOC_MSG));
+                        cptr.st1o3(
+                            svl,
+                            m,
+                            $sizeof_rm_x21,
+                            n,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ,
+                            cptr.ld1so2(
+                                egrd,
+                                0,
+                                $sizeof_fakecorridor,
+                                $egd_fakecorr + $fakecorridor_ftyp
+                            )
+                        );
+                        cptr.stI32o3(
+                            svl,
+                            m,
+                            $sizeof_rm_x21,
+                            n,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags,
+                            cptr.ld1uo2(
+                                egrd,
+                                0,
+                                $sizeof_fakecorridor,
+                                $egd_fakecorr + $fakecorridor_flags
+                            )
+                        );
+                        (yield* recalc_block_point(m, n));  /* guard corridor goes away */
+                        (yield* del_engr_at(m, n));
+                        (yield* newsym(m, n));
+                        cptr.stI32o(grd, $monst_mpeaceful, 0);
+                        (yield* gd_letknow(grd));
+                        return -1;
+                    } else {
+                        if (!Deaf()) {
+                            ;
+                            (yield* verbalize(__s_well_begone));
+                        }
+                        cptr.stI32o(egrd, $egd_gddone, 1);
+                        return (yield* gd_move_cleanup(grd, semi_dead, 0));
+                    }
+                }
+            }
+
+            if (cptr.ldI32o(egrd, $egd_fcend) > 1) {
+                if (cptr.ldI32o(egrd, $egd_fcend) > 2 &&
+                        in_fcorridor(
                             grd,
                             cptr.ldI16o(grd, $monst_mx),
                             cptr.ldI16o(grd, $monst_my)
                         ) &&
-                            !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))) {
-                void (yield* rloc(grd, NHM.RLOC_MSG));
-                (yield* wallify_vault(grd));
-                if (!in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)))
-                    void (yield* clear_fcorr(grd, 1));
-                (yield* gd_letknow(grd));
-                return -1;
-            }
-            if (!in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)))
-                void (yield* clear_fcorr(grd, 1));
-            return -1;
-        }
-        if (Math.abs((cptr.ldI16o(egrd, $egd_ogx) - cptr.ldI16o(grd, $monst_mx)) | 0) > 1 ||
-                Math.abs((cptr.ldI16o(egrd, $egd_ogy) - cptr.ldI16o(grd, $monst_my)) | 0) > 1)
-            return -1;  /* teleported guard - treat as monster */
-
-        if ((cptr.ldI32o(egrd, $egd_witness) & 3)) {
-            if (!Deaf()) {
-                ;
-                (yield* verbalize(
-                    __s_how_dare_you_s_that_gold_scoundrel,
-                    (((cptr.ldI32o(egrd, $egd_witness) & 3) | 0) & NHM.GD_EATGOLD)
-                        ? __s_consume
-                        : __s_destroy
-                ));
-            }
-            cptr.stI32o(egrd, $egd_witness, 0);
-            cptr.stI32o(grd, $monst_mpeaceful, 0);
-            return -1;
-        }
-
-        umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
-        u_carry_gold = schar((umoney > 0n || hidden_gold(1) > 0n ? 1 : 0));
-        if (cptr.ldI32o(egrd, $egd_fcend) == 1) {
-            if (u_in_vault &&
-                    (u_carry_gold ||
-                        um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1))) {
-                if (cptr.ld1so(egrd, $egd_warncnt) == 3 && !Deaf()) {
-                    buf = new Uint8Array(256);
-
-                    void cptr.sprintf(
-                        cptr.decay(buf),
-                        __s_sfollow_me,
-                        u_carry_gold
-                            ? (!umoney ? __s_drop_that_hidden_gold_and : __s_drop_that_gold_and)
-                            : __s_empty
-                    );
-                    ;
-                    if (cptr.ld1so(egrd, $egd_dropgoldcnt) || !u_carry_gold)
-                        (yield* verbalize(__s_i_repeat_s, cptr.decay(buf)));
-                    else
-                        (yield* verbalize(__s_pct_s, upstart(cptr.decay(buf))));
-                    if (u_carry_gold)
-                        cptr.postinc1(cptr.add(egrd, $egd_dropgoldcnt));
+                        !(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
+                        !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
+                        (cptr.ld1so3(
+                            svl,
+                            cptr.ldI16o2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o2(
+                                egrd,
+                                0,
+                                $sizeof_fakecorridor,
+                                $egd_fakecorr + $fakecorridor_fy
+                            ),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ) ==
+                            cptr.ld1so2(
+                                egrd,
+                                0,
+                                $sizeof_fakecorridor,
+                                $egd_fakecorr + $fakecorridor_ftyp
+                            ))) {
+                    (yield* pline(__s_s_confused_disappears, (yield* noit_Monnam(grd))));
+                    return (yield* gd_move_cleanup(grd, semi_dead, 1));
                 }
-                if (cptr.ld1so(egrd, $egd_warncnt) == 7) {
-                    m = cptr.ldI16o(grd, $monst_mx);
-                    n = cptr.ldI16o(grd, $monst_my);
-                    if (!Deaf()) {
-                        ;
-                        (yield* verbalize(__s_you_ve_been_warned_knave));
+                if (u_carry_gold &&
+                        (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
+                            (cptr.ldI32o(egrd, $egd_fcend) > 1 && u_in_vault))) {
+                    if (!cptr.ldI16o(grd, $monst_mx)) {
+                        (yield* restfakecorr(grd));
+                        return -2;
                     }
-                    cptr.stI32o(grd, $monst_mpeaceful, 0);
-                    (yield* mnexto(grd, NHM.RLOC_NOMSG));
-                    cptr.st1o3(
-                        svl,
-                        m,
-                        $sizeof_rm_x21,
-                        n,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_typ,
-                        cptr.ld1so2(
-                            egrd,
-                            0,
-                            $sizeof_fakecorridor,
-                            $egd_fakecorr + $fakecorridor_ftyp
-                        )
-                    );
-                    cptr.stI32o3(
-                        svl,
-                        m,
-                        $sizeof_rm_x21,
-                        n,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
-                        cptr.ld1uo2(
-                            egrd,
-                            0,
-                            $sizeof_fakecorridor,
-                            $egd_fakecorr + $fakecorridor_flags
-                        )
-                    );
-                    (yield* recalc_block_point(m, n));
-                    (yield* del_engr_at(m, n));
-                    (yield* newsym(m, n));
-                    return -1;
+                    if (cptr.ld1so(egrd, $egd_warncnt) < 6) {
+                        cptr.st1o(egrd, $egd_warncnt, 6);
+                        if (Deaf()) {
+                            if (!Blind())
+                                (yield* pline(
+                                    __s_s_holds_out_s_palm_demandingly,
+                                    (yield* noit_Monnam(grd)),
+                                    (cptr.ldPtro2(
+                                        genders,
+                                        pronoun_gender(grd, 3),
+                                        $sizeof_Gender,
+                                        $Gender_his
+                                    ))
+                                ));
+                        } else {
+                            ;
+                            (yield* verbalize(__s_drop_all_your_gold_scoundrel));
+                        }
+                        return 0;
+                    } else {
+                        if (Deaf()) {
+                            if (!Blind())
+                                (yield* pline(
+                                    __s_s_rubs_s_hands_with_enraged_delight,
+                                    (yield* noit_Monnam(grd)),
+                                    (cptr.ldPtro2(
+                                        genders,
+                                        pronoun_gender(grd, 3),
+                                        $sizeof_Gender,
+                                        $Gender_his
+                                    ))
+                                ));
+                        } else {
+                            ;
+                            (yield* verbalize(__s_so_be_it_rogue));
+                        }
+                        cptr.stI32o(grd, $monst_mpeaceful, 0);
+                        return -1;
+                    }
                 }
-                /* not fair to get mad when (s)he's fainted or paralyzed */
-                if (!is_fainted() && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
-                    cptr.postinc1(cptr.add(egrd, $egd_warncnt));
+            }
+            m = (n = 0);
+            for (
+                fci = i16(cptr.ldI32o(egrd, $egd_fcbeg));
+                fci < cptr.ldI32o(egrd, $egd_fcend);
+                fci++
+            )
+                if (g_at(
+                    cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr),
+                    cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy)
+                )) {
+                    m = cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr);
+                    n = cptr.ldI16o2(
+                        egrd,
+                        fci,
+                        $sizeof_fakecorridor,
+                        $egd_fakecorr + $fakecorridor_fy
+                    );
+                    goldincorridor = 1;
+                    break;
+                }
+            /* new gold can appear if it was embedded in stone and hero kicks it
+               (on even via wish and drop) so don't assume hero has been warned */
+            if (goldincorridor && !(cptr.ldI32o(egrd, $egd_gddone) & 1)) {
+                (yield* gd_pick_corridor_gold(grd, m, n));
+                if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1))
+                    return -1;
+                cptr.st1o(egrd, $egd_warncnt, 5);
                 return 0;
             }
-
-            if (!u_in_vault) {
-                if (u_carry_gold) {
-                    m = cptr.ldI16o(grd, $monst_mx);
-                    n = cptr.ldI16o(grd, $monst_my);
-                    void (yield* rloc(grd, NHM.RLOC_MSG));
-                    cptr.st1o3(
-                        svl,
-                        m,
-                        $sizeof_rm_x21,
-                        n,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_typ,
-                        cptr.ld1so2(
-                            egrd,
-                            0,
-                            $sizeof_fakecorridor,
-                            $egd_fakecorr + $fakecorridor_ftyp
-                        )
-                    );
-                    cptr.stI32o3(
-                        svl,
-                        m,
-                        $sizeof_rm_x21,
-                        n,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
-                        cptr.ld1uo2(
-                            egrd,
-                            0,
-                            $sizeof_fakecorridor,
-                            $egd_fakecorr + $fakecorridor_flags
-                        )
-                    );
-                    (yield* recalc_block_point(m, n));  /* guard corridor goes away */
-                    (yield* del_engr_at(m, n));
-                    (yield* newsym(m, n));
-                    cptr.stI32o(grd, $monst_mpeaceful, 0);
-                    (yield* gd_letknow(grd));
-                    return -1;
-                } else {
-                    if (!Deaf()) {
-                        ;
-                        (yield* verbalize(__s_well_begone));
-                    }
-                    cptr.stI32o(egrd, $egd_gddone, 1);
-                    return (yield* gd_move_cleanup(grd, semi_dead, 0));
+            if (um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1) ||
+                    (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
+                if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
+                        !rn2(10) &&
+                        !Deaf() &&
+                        !(cptr.ldI32o(u, $you_uswallow) & 1) &&
+                        !(cptr.ldPtro(u, $you_ustuck) &&
+                            !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+                    ;
+                    (yield* verbalize(__s_move_along));
                 }
+                (yield* restfakecorr(grd));
+                return 0;  /* didn't move */
             }
-        }
-
-        if (cptr.ldI32o(egrd, $egd_fcend) > 1) {
-            if (cptr.ldI32o(egrd, $egd_fcend) > 2 &&
-                    in_fcorridor(grd, cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)) &&
-                    !(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
-                    !in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
-                    (cptr.ld1so3(
-                        svl,
-                        cptr.ldI16o2(egrd, 0, $sizeof_fakecorridor, $egd_fakecorr),
-                        $sizeof_rm_x21,
-                        cptr.ldI16o2(
-                            egrd,
-                            0,
-                            $sizeof_fakecorridor,
-                            $egd_fakecorr + $fakecorridor_fy
-                        ),
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_typ
-                    ) ==
-                        cptr.ld1so2(
-                            egrd,
-                            0,
-                            $sizeof_fakecorridor,
-                            $egd_fakecorr + $fakecorridor_ftyp
-                        ))) {
-                (yield* pline(__s_s_confused_disappears, (yield* noit_Monnam(grd))));
-                return (yield* gd_move_cleanup(grd, semi_dead, 1));
-            }
-            if (u_carry_gold &&
-                    (in_fcorridor(grd, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
-                        (cptr.ldI32o(egrd, $egd_fcend) > 1 && u_in_vault))) {
-                if (!cptr.ldI16o(grd, $monst_mx)) {
-                    (yield* restfakecorr(grd));
-                    return -2;
-                }
-                if (cptr.ld1so(egrd, $egd_warncnt) < 6) {
-                    cptr.st1o(egrd, $egd_warncnt, 6);
-                    if (Deaf()) {
-                        if (!Blind())
-                            (yield* pline(
-                                __s_s_holds_out_s_palm_demandingly,
-                                (yield* noit_Monnam(grd)),
-                                (cptr.ldPtro2(
-                                    genders,
-                                    pronoun_gender(grd, 3),
-                                    $sizeof_Gender,
-                                    $Gender_his
-                                ))
-                            ));
-                    } else {
-                        ;
-                        (yield* verbalize(__s_drop_all_your_gold_scoundrel));
-                    }
-                    return 0;
-                } else {
-                    if (Deaf()) {
-                        if (!Blind())
-                            (yield* pline(
-                                __s_s_rubs_s_hands_with_enraged_delight,
-                                (yield* noit_Monnam(grd)),
-                                (cptr.ldPtro2(
-                                    genders,
-                                    pronoun_gender(grd, 3),
-                                    $sizeof_Gender,
-                                    $Gender_his
-                                ))
-                            ));
-                    } else {
-                        ;
-                        (yield* verbalize(__s_so_be_it_rogue));
-                    }
-                    cptr.stI32o(grd, $monst_mpeaceful, 0);
-                    return -1;
-                }
-            }
-        }
-        m = (n = 0);
-        for (fci = i16(cptr.ldI32o(egrd, $egd_fcbeg)); fci < cptr.ldI32o(egrd, $egd_fcend); fci++)
-            if (g_at(
-                cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr),
-                cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy)
-            )) {
-                m = cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr);
-                n = cptr.ldI16o2(egrd, fci, $sizeof_fakecorridor, $egd_fakecorr + $fakecorridor_fy);
-                goldincorridor = 1;
-                break;
-            }
-        /* new gold can appear if it was embedded in stone and hero kicks it
-           (on even via wish and drop) so don't assume hero has been warned */
-        if (goldincorridor && !(cptr.ldI32o(egrd, $egd_gddone) & 1)) {
-            (yield* gd_pick_corridor_gold(grd, m, n));
-            if (!(cptr.ldI32o(grd, $monst_mpeaceful) & 1))
-                return -1;
-            cptr.st1o(egrd, $egd_warncnt, 5);
-            return 0;
-        }
-        if (um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1) ||
-                (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
-            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) &&
-                    !rn2(10) &&
-                    !Deaf() &&
-                    !(cptr.ldI32o(u, $you_uswallow) & 1) &&
-                    !(cptr.ldPtro(u, $you_ustuck) &&
-                        !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
-                ;
-                (yield* verbalize(__s_move_along));
-            }
-            (yield* restfakecorr(grd));
-            return 0;  /* didn't move */
-        }
-        x = cptr.ldI16o(grd, $monst_mx);
-        y = cptr.ldI16o(grd, $monst_my);
-        if (u_in_vault) { __pc = 6; continue; }
-        __pc = 5; continue;
+            x = cptr.ldI16o(grd, $monst_mx);
+            y = cptr.ldI16o(grd, $monst_my);
+            if (u_in_vault) { __pc = 6; continue; }
+            __pc = 5; continue;
         }
         case 6: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 5: {
-        nx = i16(((x - 1) | 0));
-        __pc = 8; continue;
+            nx = i16(((x - 1) | 0));
+            __pc = 8; continue;
         }
         case 8: {
-        if (!(nx <= ((x + 1) | 0))) { __pc = 7; continue; }
-        __pc = 9; continue;
+            if (!(nx <= ((x + 1) | 0))) { __pc = 7; continue; }
+            __pc = 9; continue;
         }
         case 9: {
-        ny = i16(((y - 1) | 0));
-        __pc = 12; continue;
+            ny = i16(((y - 1) | 0));
+            __pc = 12; continue;
         }
         case 12: {
-        if (!(ny <= ((y + 1) | 0))) { __pc = 11; continue; }
-        __pc = 13; continue;
+            if (!(ny <= ((y + 1) | 0))) { __pc = 11; continue; }
+            __pc = 13; continue;
         }
         case 13: {
-        if ((nx == x || ny == y) && (nx != x || ny != y) && isok(nx, ny)) { __pc = 16; continue; }
-        __pc = 15; continue;
+            if ((nx == x || ny == y) &&
+                    (nx != x || ny != y) &&
+                    isok(nx, ny)) { __pc = 16; continue; }
+            __pc = 15; continue;
         }
         case 16: {
-        crm = cptr.add(
-            cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, $sizeof_rm_x21),
-            ny,
-            $sizeof_rm
-        );
-        typ = uchar(cptr.ld1so(crm, $rm_typ));
-        if (!((typ) <= NHC.DBWALL) && !IS_POOL(typ)) { __pc = 18; continue; }
-        __pc = 17; continue;
-        }
-        case 18: {
-        if (in_fcorridor(grd, nx, ny)) { __pc = 20; continue; }
-        __pc = 19; continue;
-        }
-        case 20: {
-        { __pc = 1; continue; }
-        }
-        case 19: {
-        if (cptr.ld1s((yield* in_rooms(nx, ny, NHC.VAULT)))) { __pc = 22; continue; }
-        __pc = 21; continue;
-        }
-        case 22: {
-        { __pc = 14; continue; }
-        }
-        case 21: {
-
-        /* seems we found a good place to leave him alone */
-        cptr.stI32o(egrd, $egd_gddone, 1);
-        if (((typ) >= NHC.DOOR)) { __pc = 24; continue; }
-        __pc = 23; continue;
-        }
-        case 24: {
-        { __pc = 4; continue; }
-        }
-        case 23: {
-        cptr.st1o(crm, $rm_typ, schar(((typ == NHC.SCORR) ? NHC.CORR : NHC.DOOR)));
-        if (cptr.ld1so(crm, $rm_typ) == NHC.DOOR)
-            cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
-        else
-            cptr.stI32o(crm, $rm_flags, 0);
-        (yield* del_engr_at(nx, ny));
-        { __pc = 3; continue; }
-        }
-        case 17: {
-        __pc = 15;
-        continue;
-        }
-        case 15: {
-        __pc = 1;
-        continue;
-        }
-        case 1 /* nextnxy: */: {
-        ;
-        __pc = 14;
-        continue;
-        }
-        case 14: {
-        ny++;
-        __pc = 12;
-        continue;
-        }
-        case 11: {
-        __pc = 10;
-        continue;
-        }
-        case 10: {
-        nx++;
-        __pc = 8;
-        continue;
-        }
-        case 7: {
-        __pc = 2;
-        continue;
-        }
-        case 2 /* nextpos: */: {
-        nx = x;
-        ny = y;
-        ggx = cptr.ldI16o(egrd, $egd_gdx);
-        ggy = cptr.ldI16o(egrd, $egd_gdy);
-        dx = i16(((ggx > x) ? 1 : ((ggx < x) ? -1 : 0)));
-        dy = i16(((ggy > y) ? 1 : ((ggy < y) ? -1 : 0)));
-        if (Math.abs((ggx - x) | 0) >= Math.abs((ggy - y) | 0))
-            nx = i16(nx + dx);
-        else
-            ny = i16(ny + dy);
-        __pc = 26; continue;
-        }
-        case 26: {
-        if (!((typ = uchar(cptr.ld1so(
-            (crm = cptr.add(
+            crm = cptr.add(
                 cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, $sizeof_rm_x21),
                 ny,
                 $sizeof_rm
-            )),
-            $rm_typ
-        ))) !=
-                NHC.STONE)) { __pc = 25; continue; }
-        __pc = 27; continue;
+            );
+            typ = uchar(cptr.ld1so(crm, $rm_typ));
+            if (!((typ) <= NHC.DBWALL) && !IS_POOL(typ)) { __pc = 18; continue; }
+            __pc = 17; continue;
+        }
+        case 18: {
+            if (in_fcorridor(grd, nx, ny)) { __pc = 20; continue; }
+            __pc = 19; continue;
+        }
+        case 20: {
+            { __pc = 1; continue; }
+        }
+        case 19: {
+            if (cptr.ld1s((yield* in_rooms(nx, ny, NHC.VAULT)))) { __pc = 22; continue; }
+            __pc = 21; continue;
+        }
+        case 22: {
+            { __pc = 14; continue; }
+        }
+        case 21: {
+
+            /* seems we found a good place to leave him alone */
+            cptr.stI32o(egrd, $egd_gddone, 1);
+            if (((typ) >= NHC.DOOR)) { __pc = 24; continue; }
+            __pc = 23; continue;
+        }
+        case 24: {
+            { __pc = 4; continue; }
+        }
+        case 23: {
+            cptr.st1o(crm, $rm_typ, schar(((typ == NHC.SCORR) ? NHC.CORR : NHC.DOOR)));
+            if (cptr.ld1so(crm, $rm_typ) == NHC.DOOR)
+                cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
+            else
+                cptr.stI32o(crm, $rm_flags, 0);
+            (yield* del_engr_at(nx, ny));
+            { __pc = 3; continue; }
+        }
+        case 17: {
+            __pc = 15;
+            continue;
+        }
+        case 15: {
+            __pc = 1;
+            continue;
+        }
+        case 1 /* nextnxy: */: {
+            ;
+            __pc = 14;
+            continue;
+        }
+        case 14: {
+            ny++;
+            __pc = 12;
+            continue;
+        }
+        case 11: {
+            __pc = 10;
+            continue;
+        }
+        case 10: {
+            nx++;
+            __pc = 8;
+            continue;
+        }
+        case 7: {
+            __pc = 2;
+            continue;
+        }
+        case 2 /* nextpos: */: {
+            nx = x;
+            ny = y;
+            ggx = cptr.ldI16o(egrd, $egd_gdx);
+            ggy = cptr.ldI16o(egrd, $egd_gdy);
+            dx = i16(((ggx > x) ? 1 : ((ggx < x) ? -1 : 0)));
+            dy = i16(((ggy > y) ? 1 : ((ggy < y) ? -1 : 0)));
+            if (Math.abs((ggx - x) | 0) >= Math.abs((ggy - y) | 0))
+                nx = i16(nx + dx);
+            else
+                ny = i16(ny + dy);
+            __pc = 26; continue;
+        }
+        case 26: {
+            if (!((typ = uchar(cptr.ld1so(
+                (crm = cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), nx, $sizeof_rm_x21),
+                    ny,
+                    $sizeof_rm
+                )),
+                $rm_typ
+            ))) !=
+                    NHC.STONE)) { __pc = 25; continue; }
+            __pc = 27; continue;
         }
         case 27: {
-        ex = i16(((nx + nx - x) | 0));
-        ey = i16(((ny + ny - y) | 0));
-        if (isok(ex, ey) &&
-                ((cptr.ld1so3(
-                    svl,
-                    ex,
-                    $sizeof_rm_x21,
-                    ey,
-                    $sizeof_rm,
-                    $instance_globals_saved_l_level + $rm_typ
-                )) >=
-                    NHC.ROOM)) { __pc = 29; continue; }
-        __pc = 28; continue;
+            ex = i16(((nx + nx - x) | 0));
+            ey = i16(((ny + ny - y) | 0));
+            if (isok(ex, ey) &&
+                    ((cptr.ld1so3(
+                        svl,
+                        ex,
+                        $sizeof_rm_x21,
+                        ey,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) >=
+                        NHC.ROOM)) { __pc = 29; continue; }
+            __pc = 28; continue;
         }
         case 29: {
-        cptr.st1o(crm, $rm_typ, NHC.DOOR);
-        cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
-        (yield* del_engr_at(ex, ey));
-        { __pc = 3; continue; }
+            cptr.st1o(crm, $rm_typ, NHC.DOOR);
+            cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
+            (yield* del_engr_at(ex, ey));
+            { __pc = 3; continue; }
         }
         case 28: {
-        if (dy && nx != x) { __pc = 31; continue; }
-        __pc = 30; continue;
+            if (dy && nx != x) { __pc = 31; continue; }
+            __pc = 30; continue;
         }
         case 31: {
-        nx = x;
-        ny = i16(((y + dy) | 0));
-        { __pc = 26; continue; }
+            nx = x;
+            ny = i16(((y + dy) | 0));
+            { __pc = 26; continue; }
         }
         case 30: {
-        if (dx && ny != y) { __pc = 33; continue; }
-        __pc = 32; continue;
+            if (dx && ny != y) { __pc = 33; continue; }
+            __pc = 32; continue;
         }
         case 33: {
-        ny = y;
-        nx = i16(((x + dx) | 0));
-        dy = 0;
-        { __pc = 26; continue; }
+            ny = y;
+            nx = i16(((x + dx) | 0));
+            dy = 0;
+            { __pc = 26; continue; }
         }
         case 32: {
-        if (((typ) >= NHC.ROOM)) { __pc = 35; continue; }
-        __pc = 34; continue;
+            if (((typ) >= NHC.ROOM)) { __pc = 35; continue; }
+            __pc = 34; continue;
         }
         case 35: {
-        cptr.st1o(crm, $rm_typ, NHC.DOOR);
-        cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
-        (yield* del_engr_at(ex, ey));
-        { __pc = 3; continue; }
+            cptr.st1o(crm, $rm_typ, NHC.DOOR);
+            cptr.stI32o(crm, $rm_flags, NHM.D_NODOOR);
+            (yield* del_engr_at(ex, ey));
+            { __pc = 3; continue; }
         }
         case 34: {
-        { __pc = 25; continue; }
+            { __pc = 25; continue; }
         }
         case 25: {
-        cptr.st1o(crm, $rm_typ, NHC.CORR);
-        cptr.stI32o(crm, $rm_flags, 0);
-        __pc = 3;
-        continue;
+            cptr.st1o(crm, $rm_typ, NHC.CORR);
+            cptr.stI32o(crm, $rm_flags, 0);
+            __pc = 3;
+            continue;
         }
         case 3 /* proceed: */: {
-        newspot = 1;
-        unblock_point(nx, ny);  /* doesn't block light */
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ny, 8), nx) &
-                NHM.IN_SIGHT) != 0))
-            (yield* newsym(nx, ny));
-        if ((nx != ggx || ny != ggy) ||
-                (cptr.ldI16o(grd, $monst_mx) != ggx ||
-                    cptr.ldI16o(grd, $monst_my) != ggy)) { __pc = 37; continue; }
-        __pc = 38; continue;
+            newspot = 1;
+            unblock_point(nx, ny);  /* doesn't block light */
+            if (((cptr.ld1uo(
+                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ny, 8),
+                nx
+            ) &
+                    NHM.IN_SIGHT) != 0))
+                (yield* newsym(nx, ny));
+            if ((nx != ggx || ny != ggy) ||
+                    (cptr.ldI16o(grd, $monst_mx) != ggx ||
+                        cptr.ldI16o(grd, $monst_my) != ggy)) { __pc = 37; continue; }
+            __pc = 38; continue;
         }
         case 37: {
-        fcp = cptr.add(
-            cptr.add(egrd, $egd_fakecorr),
-            cptr.ldI32o(egrd, $egd_fcend),
-            $sizeof_fakecorridor
-        );
-        /* fakecorr overflow does not occur because egrd->fakecorr[]
-           is too small, but it has occurred when the same <x,y> are
-           put into it repeatedly for some as yet unexplained reason */
-        if ((cptr.stI32o(egrd, $egd_fcend, cptr.ldI32o(egrd, $egd_fcend) + 1)) - (1) == 101)
-            (yield* panic(__s_fakecorr_overflow));
-        cptr.stI16(fcp, nx);
-        cptr.stI16o(fcp, $fakecorridor_fy, ny);
-        cptr.st1o(fcp, $fakecorridor_ftyp, schar(typ));
-        cptr.st1o(fcp, $fakecorridor_flags, uchar((cptr.ldI32o(crm, $rm_flags) & 31)));
-        __pc = 36;
-        continue;
+            fcp = cptr.add(
+                cptr.add(egrd, $egd_fakecorr),
+                cptr.ldI32o(egrd, $egd_fcend),
+                $sizeof_fakecorridor
+            );
+            /* fakecorr overflow does not occur because egrd->fakecorr[]
+               is too small, but it has occurred when the same <x,y> are
+               put into it repeatedly for some as yet unexplained reason */
+            if ((cptr.stI32o(egrd, $egd_fcend, cptr.ldI32o(egrd, $egd_fcend) + 1)) - (1) == 101)
+                (yield* panic(__s_fakecorr_overflow));
+            cptr.stI16(fcp, nx);
+            cptr.stI16o(fcp, $fakecorridor_fy, ny);
+            cptr.st1o(fcp, $fakecorridor_ftyp, schar(typ));
+            cptr.st1o(fcp, $fakecorridor_flags, uchar((cptr.ldI32o(crm, $rm_flags) & 31)));
+            __pc = 36;
+            continue;
         }
         case 38: {
-        if (!(cptr.ldI32o(egrd, $egd_gddone) & 1)) { __pc = 40; continue; }
-        __pc = 39; continue;
+            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1)) { __pc = 40; continue; }
+            __pc = 39; continue;
         }
         case 40: {
-        if (!(yield* find_guard_dest(grd, cptr.add(egrd, $egd_gdx), cptr.add(egrd, $egd_gdy))) ||
-                (cptr.ldI16o(egrd, $egd_gdx) == ggx &&
-                    cptr.ldI16o(egrd, $egd_gdy) == ggy)) { __pc = 42; continue; }
-        __pc = 43; continue;
+            if (!(yield* find_guard_dest(grd, cptr.add(egrd, $egd_gdx), cptr.add(egrd, $egd_gdy))) ||
+                    (cptr.ldI16o(egrd, $egd_gdx) == ggx &&
+                        cptr.ldI16o(egrd, $egd_gdy) == ggy)) { __pc = 42; continue; }
+            __pc = 43; continue;
         }
         case 42: {
-        (yield* pline(__s_s_confused_disappears, (yield* Monnam(grd))));
-        return (yield* gd_move_cleanup(grd, semi_dead, 1));
+            (yield* pline(__s_s_confused_disappears, (yield* Monnam(grd))));
+            return (yield* gd_move_cleanup(grd, semi_dead, 1));
         }
         case 43: {
-        { __pc = 2; continue; }
+            { __pc = 2; continue; }
         }
         case 41: {
-        __pc = 39;
-        continue;
+            __pc = 39;
+            continue;
         }
         case 39: {
-        __pc = 36;
-        continue;
+            __pc = 36;
+            continue;
         }
         case 36: {
-        __pc = 4;
-        continue;
+            __pc = 4;
+            continue;
         }
         case 4 /* newpos: */: {
-        (yield* gd_mv_monaway(grd, nx, ny));
-        if ((cptr.ldI32o(egrd, $egd_gddone) & 1))
-            return (yield* gd_move_cleanup(grd, semi_dead, 0));
-        cptr.stI16o(egrd, $egd_ogx, cptr.ldI16o(grd, $monst_mx));  /* update old positions */
-        cptr.stI16o(egrd, $egd_ogy, cptr.ldI16o(grd, $monst_my));
-        cptr.stPtro3(
-            svl,
-            cptr.ldI16o(grd, $monst_mx),
-            168,
-            cptr.ldI16o(grd, $monst_my),
-            8,
-            $instance_globals_saved_l_level + $dlevel_t_monsters,
-            null
-        );
-        (yield* place_monster(grd, nx, ny));
-        if (newspot && g_at(nx, ny)) {
-            /* if there's gold already here (most likely from mineralize()),
-               pick it up now so that guard doesn't later think hero dropped
-               it and give an inappropriate message */
-            (yield* mpickgold(grd));
-            if (canspotmon(grd))
-                (yield* pline(__s_s_picks_up_some_gold, (yield* Monnam(grd))));
-        } else
-            (yield* newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)));
-        (yield* restfakecorr(grd));
-        return 1;
+            (yield* gd_mv_monaway(grd, nx, ny));
+            if ((cptr.ldI32o(egrd, $egd_gddone) & 1))
+                return (yield* gd_move_cleanup(grd, semi_dead, 0));
+            cptr.stI16o(egrd, $egd_ogx, cptr.ldI16o(grd, $monst_mx));  /* update old positions */
+            cptr.stI16o(egrd, $egd_ogy, cptr.ldI16o(grd, $monst_my));
+            cptr.stPtro3(
+                svl,
+                cptr.ldI16o(grd, $monst_mx),
+                168,
+                cptr.ldI16o(grd, $monst_my),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                null
+            );
+            (yield* place_monster(grd, nx, ny));
+            if (newspot && g_at(nx, ny)) {
+                /* if there's gold already here (most likely from mineralize()),
+                   pick it up now so that guard doesn't later think hero dropped
+                   it and give an inappropriate message */
+                (yield* mpickgold(grd));
+                if (canspotmon(grd))
+                    (yield* pline(__s_s_picks_up_some_gold, (yield* Monnam(grd))));
+            } else
+                (yield* newsym(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my)));
+            (yield* restfakecorr(grd));
+            return 1;
         }
         }
         if (__pc === -1) break __dispatch;
@@ -2334,8 +2364,7 @@ export function* paygd(silently) {
                 ),
                 $sizeof_mkroom
             ) +
-                rn2(2)) |
-                    0;
+                    rn2(2)) | 0;
             gdy = (cptr.ldI16o2(
                 svr,
                 cptr.ldI32o(
@@ -2345,8 +2374,7 @@ export function* paygd(silently) {
                 $sizeof_mkroom,
                 $mkroom_ly
             ) +
-                rn2(2)) |
-                    0;
+                    rn2(2)) | 0;
             void cptr.sprintf(
                 cptr.decay(buf),
                 __s_to_croesus_here_s_the_gold_recovered,
@@ -2413,7 +2441,8 @@ export function* vault_gd_watching(activity) {
             (cptr.ldI32o(guard, $monst_mcansee) & 1) | 0 &&
             ((!Invis() ||
                 ((cptr.ldU64o((cptr.ldPtro((guard), $monst_data)), $permonst_mflags1) &
-                    16777216n) != 0n)) &&
+                    16777216n) !=
+                    0n)) &&
                 !Underwater() &&
                 ((cptr.ld1uo(
                     cptr.ldPtro(
@@ -2423,7 +2452,8 @@ export function* vault_gd_watching(activity) {
                     ),
                     cptr.ldI16o((guard), $monst_mx)
                 ) &
-                    NHM.COULD_SEE) != 0))) {
+                    NHM.COULD_SEE) !=
+                    0))) {
         if (activity == NHM.GD_EATGOLD || activity == NHM.GD_DESTROYGOLD)
             cptr.stI32o(
                 (cptr.ldPtro(cptr.ldPtro((guard), $monst_mextra), $mextra_egd)),

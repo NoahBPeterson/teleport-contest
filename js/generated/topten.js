@@ -317,25 +317,25 @@ export function formatkiller(buf, siz, how, incl_helpless) {
     cptr.st1o(buf, 0, 0);  /* lint suppression */
     switch (cptr.ldI32o(svk, $kinfo_format)) {
         default:
-        impossible(__s_bad_killer_format_d, cptr.ldI32o(svk, $kinfo_format));
-        // @FallThrough
-        ;
+            impossible(__s_bad_killer_format_d, cptr.ldI32o(svk, $kinfo_format));
+            // @FallThrough
+            ;
         case NHM.NO_KILLER_PREFIX:
-        break;
+            break;
         case NHM.KILLED_BY_AN:
-        kname = an(kname);
-        // @FallThrough
-        ;
+            kname = an(kname);
+            // @FallThrough
+            ;
         case NHM.KILLED_BY:
-        void __builtin___strncat_chk(
-            buf,
-            cptr.ldPtro(__static_formatkiller_killed_by_prefix, how, 8),
-            BigInt(((siz - 1) >>> 0) >>> 0),
-            __builtin_object_size(buf, 1)
-        );
-        l = Strlen_(buf, __s_formatkiller, 123);
-        buf = cptr.add(buf, l), siz = (siz - l) | 0;
-        break;
+            void __builtin___strncat_chk(
+                buf,
+                cptr.ldPtro(__static_formatkiller_killed_by_prefix, how, 8),
+                BigInt(((siz - 1) >>> 0) >>> 0),
+                __builtin_object_size(buf, 1)
+            );
+            l = Strlen_(buf, __s_formatkiller, 123);
+            buf = cptr.add(buf, l), siz = (siz - l) | 0;
+            break;
     }
     /* Copy kname into buf[].
      * Object names and named fruit have already been sanitized, but
@@ -432,7 +432,8 @@ function readentry(rfile, tt) {
         cptr.add(tt, $toptenentry_deathdate),
         cptr.add(tt, $toptenentry_birthdate),
         cptr.add(tt, $toptenentry_uid)
-    ) != 13) {
+    ) !=
+            13) {
         cptr.stI64o(tt, $toptenentry_points, 0n);
         discardexcess(rfile);
     } else {
@@ -459,7 +460,8 @@ function readentry(rfile, tt) {
                 cptr.add(tt, $toptenentry_plgend),
                 cptr.decay(s1),
                 cptr.decay(s2)
-            ) == 4) {
+            ) ==
+                    4) {
                 cptr.st1o2(
                     tt,
                     1,
@@ -492,7 +494,8 @@ function readentry(rfile, tt) {
             cptr.decay(s4),
             cptr.decay(s5),
             cptr.decay(s6)
-        ) == 6) {
+        ) ==
+                6) {
             copynchars(cptr.add(tt, $toptenentry_plrole), cptr.decay(s1), 3);
             copynchars(cptr.add(tt, $toptenentry_plrace), cptr.decay(s2), 3);
             copynchars(cptr.add(tt, $toptenentry_plgend), cptr.decay(s3), 3);
@@ -819,68 +822,68 @@ function encode_extended_achievements(buf) {
         absidx = Math.abs(achidx);
         switch (absidx) {
             case NHC.ACH_UWIN:
-            achievement = __s_ascended;
-            break;
+                achievement = __s_ascended;
+                break;
             case NHC.ACH_ASTR:
-            achievement = __s_entered_astral_plane;
-            break;
+                achievement = __s_entered_astral_plane;
+                break;
             case NHC.ACH_ENDG:
-            achievement = __s_entered_elemental_planes;
-            break;
+                achievement = __s_entered_elemental_planes;
+                break;
             case NHC.ACH_AMUL:
-            achievement = __s_obtained_the_amulet_of_yendor;
-            break;
+                achievement = __s_obtained_the_amulet_of_yendor;
+                break;
             case NHC.ACH_INVK:
-            achievement = __s_performed_the_invocation_ritual;
-            break;
+                achievement = __s_performed_the_invocation_ritual;
+                break;
             case NHC.ACH_BOOK:
-            achievement = __s_obtained_the_book_of_the_dead;
-            break;
+                achievement = __s_obtained_the_book_of_the_dead;
+                break;
             case NHC.ACH_BELL:
-            achievement = __s_obtained_the_bell_of_opening;
-            break;
+                achievement = __s_obtained_the_bell_of_opening;
+                break;
             case NHC.ACH_CNDL:
-            achievement = __s_obtained_the_candelabrum_of_invocation;
-            break;
+                achievement = __s_obtained_the_candelabrum_of_invocation;
+                break;
             case NHC.ACH_HELL:
-            achievement = __s_entered_gehennom;
-            break;
+                achievement = __s_entered_gehennom;
+                break;
             case NHC.ACH_MEDU:
-            achievement = __s_defeated_medusa;
-            break;
+                achievement = __s_defeated_medusa;
+                break;
             case NHC.ACH_MINE_PRIZE:
-            achievement = __s_obtained_the_luckstone_from_the_mines;
-            break;
+                achievement = __s_obtained_the_luckstone_from_the_mines;
+                break;
             case NHC.ACH_SOKO_PRIZE:
-            achievement = __s_obtained_the_sokoban_prize;
-            break;
+                achievement = __s_obtained_the_sokoban_prize;
+                break;
             case NHC.ACH_ORCL:
-            achievement = __s_consulted_the_oracle;
-            break;
+                achievement = __s_consulted_the_oracle;
+                break;
             case NHC.ACH_NOVL:
-            achievement = __s_read_a_discworld_novel;
-            break;
+                achievement = __s_read_a_discworld_novel;
+                break;
             case NHC.ACH_MINE:
-            achievement = __s_entered_the_gnomish_mines;
-            break;
+                achievement = __s_entered_the_gnomish_mines;
+                break;
             case NHC.ACH_TOWN:
-            achievement = __s_entered_mine_town;
-            break;
+                achievement = __s_entered_mine_town;
+                break;
             case NHC.ACH_SHOP:
-            achievement = __s_entered_a_shop;
-            break;
+                achievement = __s_entered_a_shop;
+                break;
             case NHC.ACH_TMPL:
-            achievement = __s_entered_a_temple;
-            break;
+                achievement = __s_entered_a_temple;
+                break;
             case NHC.ACH_SOKO:
-            achievement = __s_entered_sokoban;
-            break;
+                achievement = __s_entered_sokoban;
+                break;
             case NHC.ACH_BGRM:
-            achievement = __s_entered_bigroom;
-            break;
+                achievement = __s_entered_bigroom;
+                break;
             case NHC.ACH_TUNE:
-            achievement = __s_learned_castle_drawbridge_tune;
-            break;
+                achievement = __s_learned_castle_drawbridge_tune;
+                break;
             case NHC.ACH_RNK1:
             case NHC.ACH_RNK2:
             case NHC.ACH_RNK3:
@@ -889,20 +892,20 @@ function encode_extended_achievements(buf) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(
-                cptr.decay(rnkbuf),
-                __s_attained_the_rank_of_s,
-                rank_of(
-                    rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0),
-                    Role_switch(),
-                    schar(((achidx < 0) ? 1 : 0))
-                )
-            );
-            strNsubst(cptr.decay(rnkbuf), __s_sp, __s_us, 0);  /* replace every ' ' with '_' */
-            achievement = lcase(cptr.decay(rnkbuf));
-            break;
+                void cptr.sprintf(
+                    cptr.decay(rnkbuf),
+                    __s_attained_the_rank_of_s,
+                    rank_of(
+                        rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0),
+                        Role_switch(),
+                        schar(((achidx < 0) ? 1 : 0))
+                    )
+                );
+                strNsubst(cptr.decay(rnkbuf), __s_sp, __s_us, 0);  /* replace every ' ' with '_' */
+                achievement = lcase(cptr.decay(rnkbuf));
+                break;
             default:
-            continue;
+                continue;
         }
         add_achieveX(buf, achievement, 1);
     }
@@ -1135,7 +1138,8 @@ export function topten(how, when) {
                     cptr.add(t1, $toptenentry_name),
                     cptr.add(t0, $toptenentry_name),
                     10n
-                ) == 0) &&
+                ) ==
+                    0) &&
                     !cptr.strncmp(
                         cptr.add(t1, $toptenentry_plrole),
                         cptr.add(t0, $toptenentry_plrole),
@@ -1236,7 +1240,9 @@ export function topten(how, when) {
                 if (rank == ((rank0 - cptr.ldI32o(flags, $flag_end_around)) | 0) &&
                         rank0 >
                             ((cptr.ldI32o(flags, $flag_end_top) +
-                                cptr.ldI32o(flags, $flag_end_around) + 1) | 0) &&
+                                cptr.ldI32o(flags, $flag_end_around) +
+                                1) |
+                                0) &&
                         !cptr.ld1so(flags, $flag_end_own))
                     topten_print(__s_empty);
 
@@ -1400,24 +1406,24 @@ function outentry(rank, t1, so) {
 
             switch (cptr.ldI32o(t1, $toptenentry_deathlev)) {
                 case -5:
-                fmt = __s_on_the_s_plane;
-                arg = __s_astral;
-                break;
+                    fmt = __s_on_the_s_plane;
+                    arg = __s_astral;
+                    break;
                 case -4:
-                arg = __s_water;
-                break;
+                    arg = __s_water;
+                    break;
                 case -3:
-                arg = __s_fire;
-                break;
+                    arg = __s_fire;
+                    break;
                 case -2:
-                arg = __s_air;
-                break;
+                    arg = __s_air;
+                    break;
                 case -1:
-                arg = __s_earth;
-                break;
+                    arg = __s_earth;
+                    break;
                 default:
-                arg = __s_void;
-                break;
+                    arg = __s_void;
+                    break;
             }
             void cptr.sprintf(eos(cptr.decay(linebuf)), fmt, arg);
         } else {
@@ -1674,7 +1680,8 @@ export function prscore(argc, argv) {
     if (cptr.ldI16o(
         (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)),
         $d_level_dlevel
-    ) == 0) {
+    ) ==
+            0) {
         ;
         init_dungeons();
         init_done = 1;
@@ -1764,7 +1771,8 @@ export function prscore(argc, argv) {
                 if (BigInt.asUintN(
                     64,
                     cptr.strlen(cptr.decay(pbuf)) + cptr.strlen(cptr.ldPtro(players, i, 8)) + 2n
-                ) >= 256n) {
+                ) >=
+                        256n) {
                     if (cptr.strlen(cptr.decay(pbuf)) < 252n)
                         void cptr.strcat(cptr.decay(pbuf), __s_dot3);
                     else

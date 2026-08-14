@@ -166,7 +166,8 @@ function setgemprobs(dlev) {
                 obj_descr,
                 cptr.ldI16((cptr.add(objects, first, $sizeof_objclass))),
                 $sizeof_objdescr
-            )) === null) {
+            )) ===
+                null) {
         raw_printf(__s_not_enough_gems_first_d_j_d_last_gem_d, first, j, NHC.LAST_REAL_GEM);
         wait_synch()();
     }
@@ -226,55 +227,55 @@ function randomize_gem_colors() {
     }
     switch (rn2(4)) {
         case 0:
-        break;
+            break;
         case 1:
-        cptr.stI16o2(
-            objects,
-            NHC.FLUORITE,
-            $sizeof_objclass,
-            $objclass_oc_descr_idx,
-            cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)
-        ),
-                cptr.st1o2(
-                    objects,
-                    NHC.FLUORITE,
-                    $sizeof_objclass,
-                    $objclass_oc_color,
-                    cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color)
-                );
-        break;
+            cptr.stI16o2(
+                objects,
+                NHC.FLUORITE,
+                $sizeof_objclass,
+                $objclass_oc_descr_idx,
+                cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)
+            ),
+                    cptr.st1o2(
+                        objects,
+                        NHC.FLUORITE,
+                        $sizeof_objclass,
+                        $objclass_oc_color,
+                        cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color)
+                    );
+            break;
         case 2:
-        cptr.stI16o2(
-            objects,
-            NHC.FLUORITE,
-            $sizeof_objclass,
-            $objclass_oc_descr_idx,
-            cptr.ldI16o2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_descr_idx)
-        ),
-                cptr.st1o2(
-                    objects,
-                    NHC.FLUORITE,
-                    $sizeof_objclass,
-                    $objclass_oc_color,
-                    cptr.ld1uo2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_color)
-                );
-        break;
+            cptr.stI16o2(
+                objects,
+                NHC.FLUORITE,
+                $sizeof_objclass,
+                $objclass_oc_descr_idx,
+                cptr.ldI16o2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_descr_idx)
+            ),
+                    cptr.st1o2(
+                        objects,
+                        NHC.FLUORITE,
+                        $sizeof_objclass,
+                        $objclass_oc_color,
+                        cptr.ld1uo2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_color)
+                    );
+            break;
         case 3:
-        cptr.stI16o2(
-            objects,
-            NHC.FLUORITE,
-            $sizeof_objclass,
-            $objclass_oc_descr_idx,
-            cptr.ldI16o2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_descr_idx)
-        ),
-                cptr.st1o2(
-                    objects,
-                    NHC.FLUORITE,
-                    $sizeof_objclass,
-                    $objclass_oc_color,
-                    cptr.ld1uo2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_color)
-                );
-        break;
+            cptr.stI16o2(
+                objects,
+                NHC.FLUORITE,
+                $sizeof_objclass,
+                $objclass_oc_descr_idx,
+                cptr.ldI16o2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_descr_idx)
+            ),
+                    cptr.st1o2(
+                        objects,
+                        NHC.FLUORITE,
+                        $sizeof_objclass,
+                        $objclass_oc_color,
+                        cptr.ld1uo2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_color)
+                    );
+            break;
     }
 }
 
@@ -434,20 +435,16 @@ export function init_objects() {
 
     /* check objects[].oc_name_known */
     for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-        let nmkn = ((cptr.ldI32o2(
-            objects,
-            i,
-            $sizeof_objclass,
-            $objclass_oc_name_known
-        ) & 1) | 0) !=
-                0;
+        let nmkn = ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) |
+                0) != 0;
 
         if (!(cptr.ldPtro2(
             obj_descr,
             cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx),
             $sizeof_objdescr,
             $objdescr_oc_descr
-        )) ^ nmkn) {
+        )) ^
+                nmkn) {
             if (cptr.ld1so(iflags, $instance_flags_sanity_check)) {
                 impossible(
                     __s_obj_d_s_name_is_s_despite_s_alternate,
@@ -539,45 +536,49 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
 
     switch (ocls) {
         case NHC.ARMOR_CLASS:
-        if (otyp >= NHC.HELMET && otyp <= NHC.HELM_OF_TELEPATHY)
-            cptr.stI32(lo_p, NHC.HELMET), cptr.stI32(hi_p, NHC.HELM_OF_TELEPATHY);
-        else if (otyp >= NHC.LEATHER_GLOVES && otyp <= NHC.GAUNTLETS_OF_DEXTERITY)
-            cptr.stI32(lo_p, NHC.LEATHER_GLOVES), cptr.stI32(hi_p, NHC.GAUNTLETS_OF_DEXTERITY);
-        else if (otyp >= NHC.CLOAK_OF_PROTECTION && otyp <= NHC.CLOAK_OF_DISPLACEMENT)
-            cptr.stI32(lo_p, NHC.CLOAK_OF_PROTECTION), cptr.stI32(hi_p, NHC.CLOAK_OF_DISPLACEMENT);
-        else if (otyp >= NHC.SPEED_BOOTS && otyp <= NHC.LEVITATION_BOOTS)
-            cptr.stI32(lo_p, NHC.SPEED_BOOTS), cptr.stI32(hi_p, NHC.LEVITATION_BOOTS);
-        break;
+            if (otyp >= NHC.HELMET && otyp <= NHC.HELM_OF_TELEPATHY)
+                cptr.stI32(lo_p, NHC.HELMET), cptr.stI32(hi_p, NHC.HELM_OF_TELEPATHY);
+            else if (otyp >= NHC.LEATHER_GLOVES && otyp <= NHC.GAUNTLETS_OF_DEXTERITY)
+                cptr.stI32(lo_p, NHC.LEATHER_GLOVES), cptr.stI32(hi_p, NHC.GAUNTLETS_OF_DEXTERITY);
+            else if (otyp >= NHC.CLOAK_OF_PROTECTION && otyp <= NHC.CLOAK_OF_DISPLACEMENT)
+                cptr.stI32(lo_p, NHC.CLOAK_OF_PROTECTION),
+                        cptr.stI32(hi_p, NHC.CLOAK_OF_DISPLACEMENT);
+            else if (otyp >= NHC.SPEED_BOOTS && otyp <= NHC.LEVITATION_BOOTS)
+                cptr.stI32(lo_p, NHC.SPEED_BOOTS), cptr.stI32(hi_p, NHC.LEVITATION_BOOTS);
+            break;
         case NHC.POTION_CLASS:
-        /* potion of water has the only fixed description */
-        cptr.stI32(lo_p, cptr.ldI32o2(svb, NHC.POTION_CLASS, 4, $instance_globals_saved_b_bases));
-        cptr.stI32(hi_p, ((NHC.POT_WATER - 1) | 0));
-        break;
+            /* potion of water has the only fixed description */
+            cptr.stI32(
+                lo_p,
+                cptr.ldI32o2(svb, NHC.POTION_CLASS, 4, $instance_globals_saved_b_bases)
+            );
+            cptr.stI32(hi_p, ((NHC.POT_WATER - 1) | 0));
+            break;
         case NHC.AMULET_CLASS:
         case NHC.SCROLL_CLASS:
         case NHC.SPBOOK_CLASS:
-        /* exclude non-magic types and also unique ones */
-        cptr.stI32(lo_p, cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases));
-        for (
-            i = cptr.ldI32(lo_p);
-            cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == ocls;
-            i++
-        )
-            if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 ||
-                    !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
-                break;
-        cptr.stI32(hi_p, (i - 1) | 0);
-        break;
+            /* exclude non-magic types and also unique ones */
+            cptr.stI32(lo_p, cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases));
+            for (
+                i = cptr.ldI32(lo_p);
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == ocls;
+                i++
+            )
+                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 ||
+                        !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
+                    break;
+            cptr.stI32(hi_p, (i - 1) | 0);
+            break;
         case NHC.RING_CLASS:
         case NHC.WAND_CLASS:
         case NHC.VENOM_CLASS:
-        /* entire class */
-        cptr.stI32(lo_p, cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases));
-        cptr.stI32(
-            hi_p,
-            (cptr.ldI32o2(svb, (ocls + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0
-        );
-        break;
+            /* entire class */
+            cptr.stI32(lo_p, cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases));
+            cptr.stI32(
+                hi_p,
+                (cptr.ldI32o2(svb, (ocls + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0
+            );
+            break;
     }
 
     /* artifact checking might ask about item which isn't part of any range
@@ -696,8 +697,8 @@ export function savenames(nhfp) {
                     cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname),
                     __s_savenames,
                     397
-                ) + 1) >>>
-                        0;
+                ) +
+                        1) >>> 0;
                 sfo_unsigned(nhfp, len, __s_names_len);
                 sfo_char(
                     nhfp,
@@ -1202,12 +1203,8 @@ export function dodiscovered() {
     for (i = (dis = 0); i < 4; i++) {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
         if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
-                ((cptr.ldI32o2(
-                    objects,
-                    uidx,
-                    $sizeof_objclass,
-                    $objclass_oc_encountered
-                ) & 1) | 0 &&
+                ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_encountered) & 1) |
+                    0 &&
                     uidx != NHC.AMULET_OF_YENDOR)) {
             if (!dis++)
                 putstr()(
@@ -1384,12 +1381,8 @@ export function doclassdisco() {
     for (i = 0; i < 4; i++) {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
         if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
-                ((cptr.ldI32o2(
-                    objects,
-                    uidx,
-                    $sizeof_objclass,
-                    $objclass_oc_encountered
-                ) & 1) | 0 &&
+                ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_encountered) & 1) |
+                    0 &&
                     uidx != NHC.AMULET_OF_YENDOR)) {
             void cptr.strcat(cptr.decay(discosyms), __s_u);
             if (!traditional) {
@@ -1537,123 +1530,132 @@ export function doclassdisco() {
     switch (c) {
         case 117:
         case 114:
-        putstr()(
-            tmpwin,
-            cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
-            upstart(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_doclassdisco_unique_items)))
-        );
-        for (i = 0; i < 4; i++) {
-            uidx = cptr.ldI16o(uniq_objs, i, 2);
-            if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
-                    ((cptr.ldI32o2(
-                        objects,
-                        uidx,
-                        $sizeof_objclass,
-                        $objclass_oc_encountered
-                    ) & 1) | 0 &&
-                        uidx != NHC.AMULET_OF_YENDOR)) {
-                ++ct;
-                disco_fmt_uniq(uidx, cptr.decay(buf));
-                putstr()(tmpwin, 0, cptr.decay(buf));
-            }
-        }
-        if (!ct)
-            You(
-                cptr.decay(__static_doclassdisco_havent_discovered_any),
-                cptr.decay(__static_doclassdisco_unique_items)
-            );
-        break;
-        case 97:
-        /* note: this will work all the time for menustyle traditional
-           but requires at least one artifact discovery for other styles
-           [could fix that by forcing the 'a' choice into the pick-class
-           menu when running in wizard mode] */
-        if (wizard() &&
-                yn_function(
-                    __s_dump_information_about_all_artifacts,
-                    cptr.decay(ynchars),
-                    110,
-                    1
-                ) == 121) {
-            dump_artifact_info(tmpwin);
-            ct = NHC.NROFARTIFACTS;  /* non-zero vs zero is what matters below */
-            break;
-        }
-        /* disp_artifact_discoveries() includes a header */
-        ct = disp_artifact_discoveries(tmpwin);
-        if (!ct)
-            You(
-                cptr.decay(__static_doclassdisco_havent_discovered_any),
-                cptr.decay(__static_doclassdisco_artifact_items)
-            );
-        break;
-        default:
-        oclass = schar(def_char_to_objclass(c));
-        /* this should never happen but has been observed via the fuzzer */
-        if (oclass == NHC.MAXOCLASSES)
-            impossible(__s_doclassdisco_invalid_object_class_s, visctrl(c));
-        void cptr.sprintf(
-            cptr.decay(buf),
-            __s_discovered_s_in_s,
-            let_to_name(oclass, 0, 0),
-            (cptr.ld1so(flags, $flag_discosort) == 111)
-                ? __s_order_of_discovery
-                : ((cptr.ld1so(flags, $flag_discosort) == 115)
-                    ? __s_sortloot_order
-                    : __s_alphabetical_order)
-        );
-        putstr()(tmpwin, 0, cptr.decay(buf));  /* skip iflags.menu_headings */
-        sorted_ct = 0;
-        for (
-            i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
-            i <=
-                ((cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0);
-            ++i
-        ) {
-            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 &&
-                    interesting_to_discover(dis)) {
-                ++ct;
-                void cptr.strcpy(
+            putstr()(
+                tmpwin,
+                cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
+                upstart(cptr.strcpy(
                     cptr.decay(buf),
-                    (cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0
-                        ? __s_sp2
-                        : __s_star_sp
-                );
-                if (lootsort)
-                    void sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1));
-                disco_append_typename(cptr.decay(buf), dis);
-
-                if (!alphabetized && !lootsort)
+                    cptr.decay(__static_doclassdisco_unique_items)
+                ))
+            );
+            for (i = 0; i < 4; i++) {
+                uidx = cptr.ldI16o(uniq_objs, i, 2);
+                if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) |
+                    0 ||
+                        ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_encountered) &
+                            1) |
+                            0 &&
+                            uidx != NHC.AMULET_OF_YENDOR)) {
+                    ++ct;
+                    disco_fmt_uniq(uidx, cptr.decay(buf));
                     putstr()(tmpwin, 0, cptr.decay(buf));
-                else
-                    cptr.stPtro(sorted_lines, sorted_ct++, dupstr(cptr.decay(buf)), 8);
-            }
-        }
-        if (!ct) {
-            You(
-                cptr.decay(__static_doclassdisco_havent_discovered_any),
-                oclass_to_name(oclass, cptr.decay(buf))
-            );
-        } else if (sorted_ct) {
-            nh_deterministic_qsort(
-                (sorted_lines),
-                BigInt.asUintN(64, BigInt((sorted_ct))),
-                8n,
-                (discovered_cmp)
-            );
-            for (i = 0; i < sorted_ct; ++i) {
-                let sl;
-
-                sl = cptr.ldPtro(sorted_lines, i, 8);
-                if (lootsort) {
-                    cptr.st1o(sl, 6, cptr.ld1so(sl, 0));  /* '*' or ' ' */
-                    sl = cptr.add(sl, 6);
                 }
-                putstr()(tmpwin, 0, sl);
-                cptr.free(cptr.ldPtro(sorted_lines, i, 8)), cptr.stPtro(sorted_lines, i, null, 8);
             }
-        }
-        break;
+            if (!ct)
+                You(
+                    cptr.decay(__static_doclassdisco_havent_discovered_any),
+                    cptr.decay(__static_doclassdisco_unique_items)
+                );
+            break;
+        case 97:
+            /* note: this will work all the time for menustyle traditional
+               but requires at least one artifact discovery for other styles
+               [could fix that by forcing the 'a' choice into the pick-class
+               menu when running in wizard mode] */
+            if (wizard() &&
+                    yn_function(
+                        __s_dump_information_about_all_artifacts,
+                        cptr.decay(ynchars),
+                        110,
+                        1
+                    ) ==
+                        121) {
+                dump_artifact_info(tmpwin);
+                ct = NHC.NROFARTIFACTS;  /* non-zero vs zero is what matters below */
+                break;
+            }
+            /* disp_artifact_discoveries() includes a header */
+            ct = disp_artifact_discoveries(tmpwin);
+            if (!ct)
+                You(
+                    cptr.decay(__static_doclassdisco_havent_discovered_any),
+                    cptr.decay(__static_doclassdisco_artifact_items)
+                );
+            break;
+        default:
+            oclass = schar(def_char_to_objclass(c));
+            /* this should never happen but has been observed via the fuzzer */
+            if (oclass == NHC.MAXOCLASSES)
+                impossible(__s_doclassdisco_invalid_object_class_s, visctrl(c));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_discovered_s_in_s,
+                let_to_name(oclass, 0, 0),
+                (cptr.ld1so(flags, $flag_discosort) == 111)
+                    ? __s_order_of_discovery
+                    : ((cptr.ld1so(flags, $flag_discosort) == 115)
+                        ? __s_sortloot_order
+                        : __s_alphabetical_order)
+            );
+            putstr()(tmpwin, 0, cptr.decay(buf));  /* skip iflags.menu_headings */
+            sorted_ct = 0;
+            for (
+                i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+                i <=
+                    ((cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases) -
+                        1) | 0);
+                ++i
+            ) {
+                if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 &&
+                        interesting_to_discover(dis)) {
+                    ++ct;
+                    void cptr.strcpy(
+                        cptr.decay(buf),
+                        (cptr.ldI32o2(
+                            objects,
+                            dis,
+                            $sizeof_objclass,
+                            $objclass_oc_encountered
+                        ) & 1) | 0
+                            ? __s_sp2
+                            : __s_star_sp
+                    );
+                    if (lootsort)
+                        void sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1));
+                    disco_append_typename(cptr.decay(buf), dis);
+
+                    if (!alphabetized && !lootsort)
+                        putstr()(tmpwin, 0, cptr.decay(buf));
+                    else
+                        cptr.stPtro(sorted_lines, sorted_ct++, dupstr(cptr.decay(buf)), 8);
+                }
+            }
+            if (!ct) {
+                You(
+                    cptr.decay(__static_doclassdisco_havent_discovered_any),
+                    oclass_to_name(oclass, cptr.decay(buf))
+                );
+            } else if (sorted_ct) {
+                nh_deterministic_qsort(
+                    (sorted_lines),
+                    BigInt.asUintN(64, BigInt((sorted_ct))),
+                    8n,
+                    (discovered_cmp)
+                );
+                for (i = 0; i < sorted_ct; ++i) {
+                    let sl;
+
+                    sl = cptr.ldPtro(sorted_lines, i, 8);
+                    if (lootsort) {
+                        cptr.st1o(sl, 6, cptr.ld1so(sl, 0));  /* '*' or ' ' */
+                        sl = cptr.add(sl, 6);
+                    }
+                    putstr()(tmpwin, 0, sl);
+                    cptr.free(cptr.ldPtro(sorted_lines, i, 8)),
+                            cptr.stPtro(sorted_lines, i, null, 8);
+                }
+            }
+            break;
     }
     if (ct)
         display_nhwindow()(tmpwin, 1);

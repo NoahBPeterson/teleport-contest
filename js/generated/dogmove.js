@@ -220,66 +220,66 @@ export function droppables(mon) {
     for (obj = cptr.ldPtro(mon, $monst_minvent); obj; obj = cptr.ldPtr(obj)) {
         switch (cptr.ldI16o(obj, $obj_otyp)) {
             case NHC.DWARVISH_MATTOCK:
-            /* reject mattock if couldn't wield it */
-            if (which_armor(mon, 8n))
-                break;
-            /* keep mattock in preference to pick unless pick is already
-               wielded or is an artifact and mattock isn't */
-            if (pickaxe &&
-                    cptr.ldI16o(pickaxe, $obj_otyp) == NHC.PICK_AXE &&
-                    !cptr.eq(pickaxe, wep) &&
-                    (!cptr.ld1so(pickaxe, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
-                return pickaxe;  /* drop the one we earlier decided to keep */
-            // @FallThrough
-            ;
+                /* reject mattock if couldn't wield it */
+                if (which_armor(mon, 8n))
+                    break;
+                /* keep mattock in preference to pick unless pick is already
+                   wielded or is an artifact and mattock isn't */
+                if (pickaxe &&
+                        cptr.ldI16o(pickaxe, $obj_otyp) == NHC.PICK_AXE &&
+                        !cptr.eq(pickaxe, wep) &&
+                        (!cptr.ld1so(pickaxe, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
+                    return pickaxe;  /* drop the one we earlier decided to keep */
+                // @FallThrough
+                ;
             case NHC.PICK_AXE:
-            if (!pickaxe ||
-                    (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(pickaxe, $obj_oartifact))) {
-                if (pickaxe)
-                    return pickaxe;
-                pickaxe = obj;  /* keep this digging tool */
-                continue;
-            }
-            break;
-            case NHC.UNICORN_HORN:
-            /* reject cursed unicorn horns */
-            if ((cptr.ldI32o(obj, $obj_cursed) & 1))
+                if (!pickaxe ||
+                        (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(pickaxe, $obj_oartifact))) {
+                    if (pickaxe)
+                        return pickaxe;
+                    pickaxe = obj;  /* keep this digging tool */
+                    continue;
+                }
                 break;
-            /* keep artifact unihorn in preference to ordinary one */
-            if (!unihorn ||
-                    (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(unihorn, $obj_oartifact))) {
-                if (unihorn)
-                    return unihorn;
-                unihorn = obj;  /* keep this unicorn horn */
-                continue;
-            }
-            break;
+            case NHC.UNICORN_HORN:
+                /* reject cursed unicorn horns */
+                if ((cptr.ldI32o(obj, $obj_cursed) & 1))
+                    break;
+                /* keep artifact unihorn in preference to ordinary one */
+                if (!unihorn ||
+                        (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(unihorn, $obj_oartifact))) {
+                    if (unihorn)
+                        return unihorn;
+                    unihorn = obj;  /* keep this unicorn horn */
+                    continue;
+                }
+                break;
             case NHC.SKELETON_KEY:
-            /* keep key in preference to lock-pick */
-            if (key &&
-                    cptr.ldI16o(key, $obj_otyp) == NHC.LOCK_PICK &&
-                    (!cptr.ld1so(key, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
-                return key;  /* drop the one we earlier decided to keep */
-            // @FallThrough
-            ;
+                /* keep key in preference to lock-pick */
+                if (key &&
+                        cptr.ldI16o(key, $obj_otyp) == NHC.LOCK_PICK &&
+                        (!cptr.ld1so(key, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
+                    return key;  /* drop the one we earlier decided to keep */
+                // @FallThrough
+                ;
             case NHC.LOCK_PICK:
-            /* keep lock-pick in preference to credit card */
-            if (key &&
-                    cptr.ldI16o(key, $obj_otyp) == NHC.CREDIT_CARD &&
-                    (!cptr.ld1so(key, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
-                return key;
-            // @FallThrough
-            ;
-            case NHC.CREDIT_CARD:
-            if (!key || (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(key, $obj_oartifact))) {
-                if (key)
+                /* keep lock-pick in preference to credit card */
+                if (key &&
+                        cptr.ldI16o(key, $obj_otyp) == NHC.CREDIT_CARD &&
+                        (!cptr.ld1so(key, $obj_oartifact) || cptr.ld1so(obj, $obj_oartifact)))
                     return key;
-                key = obj;  /* keep this unlocking tool */
-                continue;
-            }
-            break;
+                // @FallThrough
+                ;
+            case NHC.CREDIT_CARD:
+                if (!key || (cptr.ld1so(obj, $obj_oartifact) && !cptr.ld1so(key, $obj_oartifact))) {
+                    if (key)
+                        return key;
+                    key = obj;  /* keep this unlocking tool */
+                    continue;
+                }
+                break;
             default:
-            break;
+                break;
         }
 
         if (!cptr.ldI64o(obj, $obj_owornmask) && !cptr.eq(obj, wep))
@@ -330,7 +330,8 @@ export function dog_nutrition(mtmp, obj) {
                         cptr.ldI32o(obj, $obj_corpsenm),
                         $sizeof_permonst,
                         $permonst_cwt
-                    ) >>> 6)) >>> 0) | 0
+                    ) >>>
+                        6)) >>> 0) | 0
             );
             nutrit = cptr.ldU16o2(
                 mons,
@@ -358,24 +359,24 @@ export function dog_nutrition(mtmp, obj) {
         }
         switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize)) {
             case NHM.MZ_TINY:
-            nutrit = Math.imul(nutrit, 8);
-            break;
+                nutrit = Math.imul(nutrit, 8);
+                break;
             case NHM.MZ_SMALL:
-            nutrit = Math.imul(nutrit, 6);
-            break;
+                nutrit = Math.imul(nutrit, 6);
+                break;
             default:
             case NHM.MZ_MEDIUM:
-            nutrit = Math.imul(nutrit, 5);
-            break;
+                nutrit = Math.imul(nutrit, 5);
+                break;
             case NHM.MZ_LARGE:
-            nutrit = Math.imul(nutrit, 4);
-            break;
+                nutrit = Math.imul(nutrit, 4);
+                break;
             case NHM.MZ_HUGE:
-            nutrit = Math.imul(nutrit, 3);
-            break;
+                nutrit = Math.imul(nutrit, 3);
+                break;
             case NHM.MZ_GIGANTIC:
-            nutrit = Math.imul(nutrit, 2);
-            break;
+                nutrit = Math.imul(nutrit, 2);
+                break;
         }
         if (cptr.ldI32o(obj, $obj_oeaten)) {
             cptr.stI32o(mtmp, $monst_meating, eaten_stat(cptr.ldI32o(mtmp, $monst_meating), obj));
@@ -478,8 +479,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
             iflags,
             $instance_flags_suppress_price,
             cptr.ldI32o(iflags, $instance_flags_suppress_price) + 1
-        )) -
-                (1);
+        )) - (1);
     if (is_pool(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && !Underwater()) {
         /* Don't print obj */
         /* TODO: Reveal presence of sea monster (especially sharks) */
@@ -501,7 +501,8 @@ export function dog_eat(mtmp, obj, x, y, devour) {
             cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
             x
         ) &
-            NHM.IN_SIGHT) != 0) &&
+            NHM.IN_SIGHT) !=
+            0) &&
             mon_visible(mtmp)
                 ? 1
                 : 0));
@@ -536,8 +537,7 @@ export function dog_eat(mtmp, obj, x, y, devour) {
             iflags,
             $instance_flags_suppress_price,
             cptr.ldI32o(iflags, $instance_flags_suppress_price) + -1
-        )) -
-                (-1);
+        )) - (-1);
     }
     if (cptr.eq(
         cptr.ldPtro(mtmp, $monst_data),
@@ -632,10 +632,11 @@ function dog_starve(mtmp) {
 function dog_hunger(mtmp, edog) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >
             BigInt.asIntN(64, cptr.ldI64o(edog, $edog_hungrytime) + 500n)) {
-        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-            536870912n) != 0n) &&
+        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) !=
+            0n) &&
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    1073741824n) != 0n)) {
+                    1073741824n) !=
+                    0n)) {
             cptr.stI64o(
                 edog,
                 $edog_hungrytime,
@@ -742,7 +743,8 @@ function dog_invent(mtmp, edog, udist) {
             omy,
             8,
             $instance_globals_saved_l_level + $dlevel_t_objects
-        )) !== null &&
+        )) !==
+            null &&
                 !cptr.strchr(cptr.decay(nofetch), cptr.ld1so(obj, $obj_oclass)) &&
                 cptr.ldI16o(obj, $obj_otyp) != NHC.SCR_MAIL &&
                 !((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) ||
@@ -771,7 +773,8 @@ function dog_invent(mtmp, edog, udist) {
                             cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), omy, 8),
                             omx
                         ) &
-                                NHM.IN_SIGHT) != 0)) {
+                            NHM.IN_SIGHT) !=
+                                0)) {
                             /* call distant_name() for possible side-effects
                                even if the result won't be printed; should be
                                done before extract+pickup for distant_name()
@@ -907,7 +910,8 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                             omy,
                             $sizeof_rm,
                             $instance_globals_saved_l_level + $rm_lit
-                        ) & 1) ||
+                        ) &
+                            1) ||
                             (cptr.ldI32o3(
                                 svl,
                                 cptr.ldI16(u),
@@ -915,7 +919,9 @@ function dog_goal(mtmp, edog, after, udist, whappr) {
                                 cptr.ldI16o(u, $you_uy),
                                 $sizeof_rm,
                                 $instance_globals_saved_l_level + $rm_lit
-                            ) & 1) | 0) &&
+                            ) &
+                                1) |
+                                0) &&
                         (otyp == NHC.MANFOOD || m_cansee(mtmp, nx, ny)) &&
                         cptr.ldI32o(edog, $edog_apport) > rn2(8) &&
                         can_carry(mtmp, obj) > 0) {
@@ -1088,11 +1094,12 @@ function find_targ(mtmp, dx, dy, maxdist) {
             cury,
             8,
             $instance_globals_saved_l_level + $dlevel_t_monsters
-        ))) !== null) {
+        ))) !==
+                null) {
             /* Is the monster visible to the pet? */
             if ((!(cptr.ldI32o(targ, $monst_minvis) & 1) ||
-                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                    16777216n) != 0n)) &&
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) !=
+                    0n)) &&
                     !(cptr.ldI32o(targ, $monst_mundetected) & 1) &&
                     cptr.ldI16o(targ, $monst_mx) == curx &&
                     cptr.ldI16o(targ, $monst_my) == cury)
@@ -1253,7 +1260,8 @@ function score_targ(mtmp, mtarg) {
             cptr.ldI16o(mtmp, $monst_my),
             cptr.ldI16o(mtarg, $monst_mx),
             cptr.ldI16o(mtarg, $monst_my)
-        ) <= 1) {
+        ) <=
+                1) {
             score -= 3000n;
             return score;
         }
@@ -1449,7 +1457,8 @@ export function pet_ranged_attk(mtmp, forced) {
                  */
                 if ((cptr.ldI32o(mtarg, $monst_mcansee) & 1) | 0 &&
                         ((cptr.ldU64o((cptr.ldPtro(mtarg, $monst_data)), $permonst_mflags1) &
-                            4096n) == 0n)) {
+                            4096n) ==
+                            0n)) {
                     let mresp;
 
                     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mtmp, $monst_mx)),
@@ -1602,7 +1611,8 @@ export function dog_move(mtmp, after) {
                 ny,
                 8,
                 $instance_globals_saved_l_level + $dlevel_t_monsters
-            ) !== null) &&
+            ) !==
+                null) &&
                     !((cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n) ||
                         cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 4096n))
                 continue;
@@ -1654,7 +1664,8 @@ export function dog_move(mtmp, after) {
                             ny,
                             8,
                             $instance_globals_saved_l_level + $dlevel_t_monsters
-                        ) !== null)) {
+                        ) !==
+                            null)) {
                     let mstatus;
                     let mtmp2 = (cptr.ldPtro3(
                         svl,
@@ -1679,9 +1690,9 @@ export function dog_move(mtmp, after) {
                      * they are willing to attack; note the >= used when comparing it.
                      */
                     let balk = (cptr.ld1uo(mtmp, $monst_m_lev) +
-                        (((Math.imul(5, cptr.ldI32o(mtmp, $monst_mhp))) /
-                            cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) - 2) |
-                            0;
+                            (((Math.imul(5, cptr.ldI32o(mtmp, $monst_mhp))) /
+                                cptr.ldI32o(mtmp, $monst_mhpmax)) |
+                                0) - 2) | 0;
 
                     if (cptr.ld1uo(mtmp2, $monst_m_lev) >= balk ||
                             (cptr.ld1so(mtmp2, $monst_mtame) &&
@@ -1705,11 +1716,13 @@ export function dog_move(mtmp, after) {
                         rn2(10) &&
                         (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 &&
                         ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                            4096n) == 0n) &&
+                            4096n) ==
+                            0n) &&
                         (cptr.ldI32o(mtmp2, $monst_mcansee) & 1) | 0 &&
                         (!(cptr.ldI32o(mtmp2, $monst_minvis) & 1) ||
                             ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
-                                16777216n) != 0n)) &&
+                                16777216n) !=
+                                0n)) &&
                         !mon_reflects(mtmp, (null))) ||
                             (cptr.eq(
                                 cptr.ldPtro(mtmp2, $monst_data),
@@ -1724,7 +1737,8 @@ export function dog_move(mtmp, after) {
                             cptr.ldI16o(mtmp, $monst_my),
                             cptr.ldI16o(mtmp2, $monst_mx),
                             cptr.ldI16o(mtmp2, $monst_my)
-                        ) <= 2 ||
+                        ) <=
+                            2 ||
                                 !cptr.eq(best_target(mtmp, 0), mtmp2))
                             continue;
                         ranged_only = 1;
@@ -1787,7 +1801,8 @@ export function dog_move(mtmp, after) {
                             ny,
                             8,
                             $instance_globals_saved_l_level + $dlevel_t_monsters
-                        ) !== null) &&
+                        ) !==
+                            null) &&
                         better_with_displacing &&
                         !undesirable_disp(mtmp, nx, ny)) {
                     let mstatus;
@@ -1891,7 +1906,8 @@ export function dog_move(mtmp, after) {
                             cptr.ldI16o(mtmp, $monst_my),
                             cptr.ldI16(u),
                             cptr.ldI16o(u, $you_uy)
-                        ) > 5) {
+                        ) >
+                            5) {
                     k = edog ? uncursedcnt : cnt;
                     for (j = 0; j < NHM.MTSZ && j < ((k - 1) | 0); j++)
                         if (nx == cptr.ldI16o2(mtmp, j, $sizeof_coord, $monst_mtrack) &&
@@ -1983,7 +1999,9 @@ export function dog_move(mtmp, after) {
                 (cptr.ldI32o(
                     svl,
                     $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-                ) & 1) | 0 &&
+                ) &
+                    1) |
+                    0 &&
                 (((cptr.ldI32o3(
                     svl,
                     nix,
@@ -2332,15 +2350,11 @@ function can_reach_location(mon, mx, my, fx, fy) {
                 $instance_globals_saved_l_level + $rm_typ
             )) <
                 NHC.POOL) &&
-                    !((cptr.ldU64o(
-                        (cptr.ldPtro(mon, $monst_data)),
-                        $permonst_mflags1
-                    ) & 8n) != 0n) &&
+                    !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8n) !=
+                        0n) &&
                     (!may_dig(i16(i), i16(j)) ||
-                        !((cptr.ldU64o(
-                            (cptr.ldPtro(mon, $monst_data)),
-                            $permonst_mflags1
-                        ) & 32n) != 0n) ||
+                        !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 32n) !=
+                            0n) ||
                         (((cptr.ldI16o(
                             (cptr.add(
                                 svd,
@@ -2379,7 +2393,9 @@ function can_reach_location(mon, mx, my, fx, fy) {
                         j,
                         $sizeof_rm,
                         $instance_globals_saved_l_level + $rm_flags
-                    ) & 31) | 0) & 12))
+                    ) &
+                        31) |
+                        0) & 12))
                 continue;
             if (!could_reach_item(mon, i16(i), i16(j)))
                 continue;
@@ -2465,8 +2481,8 @@ export function finish_meating(mtmp) {
 function mnum_leashable(mnum) {
     return schar((((mnum >= NHC.LOW_PM && mnum <= NHC.HIGH_PM) &&
         mnum != NHC.PM_LONG_WORM &&
-        !((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &
-            1048576n) != 0n) &&
+        !((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 1048576n) !=
+            0n) &&
         (!((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 24576n) ==
             24576n) ||
             ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &

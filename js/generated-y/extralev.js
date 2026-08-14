@@ -103,8 +103,7 @@ function* roguecorr(x, y, dir) {
                 y,
                 $sizeof_rogueroom,
                 $instance_globals_r_r + $rogueroom_doortable
-            ) &
-                -3
+            ) & -3
         );
         if (!cptr.ld1so3(
             gr,
@@ -231,8 +230,7 @@ function* roguecorr(x, y, dir) {
                 y,
                 $sizeof_rogueroom,
                 $instance_globals_r_r + $rogueroom_doortable
-            ) &
-                -2
+            ) & -2
         );
         if (!cptr.ld1so3(
             gr,
@@ -284,7 +282,8 @@ function* roguecorr(x, y, dir) {
                 y,
                 $sizeof_rogueroom,
                 $instance_globals_r_r + $rogueroom_rly
-            ) - 1) | 0));
+            ) -
+                    1) | 0));
             tox = i16(tox + ((1 + Math.imul(26, x)) | 0));
             toy = i16(toy + Math.imul(7, y));
             if (!((cptr.ld1so3(
@@ -349,8 +348,7 @@ function* roguecorr(x, y, dir) {
                 y,
                 $sizeof_rogueroom,
                 $instance_globals_r_r + $rogueroom_doortable
-            ) &
-                -9
+            ) & -9
         );
         if (!cptr.ld1so3(
             gr,
@@ -477,8 +475,7 @@ function* roguecorr(x, y, dir) {
                 y,
                 $sizeof_rogueroom,
                 $instance_globals_r_r + $rogueroom_doortable
-            ) &
-                -5
+            ) & -5
         );
         if (!cptr.ld1so3(
             gr,
@@ -514,7 +511,8 @@ function* roguecorr(x, y, dir) {
                 y,
                 $sizeof_rogueroom,
                 $instance_globals_r_r
-            ) - 1) | 0));
+            ) -
+                    1) | 0));
             toy = i16(((cptr.ldI16o3(
                 gr,
                 x,
@@ -601,7 +599,8 @@ function miniwalk(x, y) {
                     y,
                     $sizeof_rogueroom,
                     $instance_globals_r_r + $rogueroom_doortable
-                )) & 4)) &&
+                )) &
+                    4)) &&
                 (!cptr.ld1uo3(
                     gr,
                     (x - 1) | 0,
@@ -620,7 +619,8 @@ function miniwalk(x, y) {
                     y,
                     $sizeof_rogueroom,
                     $instance_globals_r_r + $rogueroom_doortable
-                )) & 8)) &&
+                )) &
+                    8)) &&
                 (!cptr.ld1uo3(
                     gr,
                     (x + 1) | 0,
@@ -639,7 +639,8 @@ function miniwalk(x, y) {
                     y,
                     $sizeof_rogueroom,
                     $instance_globals_r_r + $rogueroom_doortable
-                )) & 1)) &&
+                )) &
+                    1)) &&
                 (!cptr.ld1uo3(
                     gr,
                     x,
@@ -658,7 +659,8 @@ function miniwalk(x, y) {
                     y,
                     $sizeof_rogueroom,
                     $instance_globals_r_r + $rogueroom_doortable
-                )) & 2)) &&
+                )) &
+                    2)) &&
                 (!cptr.ld1uo3(
                     gr,
                     x,
@@ -677,145 +679,145 @@ function miniwalk(x, y) {
         dir = cptr.ldI32o(dirs, rn2(q), 4);
         switch (dir) {
             case 0:
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 4
-            );
-            x--;
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 4
+                );
+                x--;
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 8
-            );
-            break;
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 8
+                );
+                break;
             case 1:
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 8
-            );
-            x++;
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 8
+                );
+                x++;
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 4
-            );
-            break;
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 4
+                );
+                break;
             case 2:
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 1
-            );
-            y--;
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 1
+                );
+                y--;
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 2
-            );
-            break;
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 2
+                );
+                break;
             case 3:
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 2
-            );
-            y++;
-            cptr.st1o3(
-                gr,
-                x,
-                $sizeof_rogueroom_x3,
-                y,
-                $sizeof_rogueroom,
-                $instance_globals_r_r + $rogueroom_doortable,
-                cptr.ld1uo3(
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 2
+                );
+                y++;
+                cptr.st1o3(
                     gr,
                     x,
                     $sizeof_rogueroom_x3,
                     y,
                     $sizeof_rogueroom,
-                    $instance_globals_r_r + $rogueroom_doortable
-                ) | 1
-            );
-            break;
+                    $instance_globals_r_r + $rogueroom_doortable,
+                    cptr.ld1uo3(
+                        gr,
+                        x,
+                        $sizeof_rogueroom_x3,
+                        y,
+                        $sizeof_rogueroom,
+                        $instance_globals_r_r + $rogueroom_doortable
+                    ) | 1
+                );
+                break;
         }
         miniwalk(x, y);
     }
@@ -899,7 +901,8 @@ export function* makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dx
-                        ) + 1) | 0))
+                        ) +
+                        1) | 0))
                 );
                 cptr.stI16o2(
                     cptr.add(gr, x, $sizeof_rogueroom_x3),
@@ -914,14 +917,14 @@ export function* makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dy
-                        ) + 1) | 0))
+                        ) +
+                        1) | 0))
                 );
                 (cptr.stI32o(
                     svn,
                     $instance_globals_saved_n_nroom,
                     cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + 1
-                )) -
-                        (1);
+                )) - (1);
             }
             cptr.st1o3(
                 gr,
@@ -1003,7 +1006,8 @@ export function* makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dx
-                        ) - 1) | 0));
+                        ) -
+                        1) | 0));
                 hiy = i16(((Math.imul(7, y) +
                         cptr.ldI16o3(
                             gr,
@@ -1020,7 +1024,8 @@ export function* makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dy
-                        ) - 1) | 0));
+                        ) -
+                        1) | 0));
                 /* Strictly speaking, it should be lit only if above
                  * level 10, but since Rogue rooms are only
                  * encountered below level 10, use !rn2(7).

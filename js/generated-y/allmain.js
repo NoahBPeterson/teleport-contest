@@ -372,21 +372,21 @@ function u_calc_moveamt(wtcap) {
 
     switch (wtcap) {
         case NHC.UNENCUMBERED:
-        break;
+            break;
         case NHC.SLT_ENCUMBER:
-        moveamt = (moveamt - ((moveamt / 4) | 0)) | 0;
-        break;
+            moveamt = (moveamt - ((moveamt / 4) | 0)) | 0;
+            break;
         case NHC.MOD_ENCUMBER:
-        moveamt = (moveamt - ((moveamt / 2) | 0)) | 0;
-        break;
+            moveamt = (moveamt - ((moveamt / 2) | 0)) | 0;
+            break;
         case NHC.HVY_ENCUMBER:
-        moveamt = (moveamt - (((Math.imul(moveamt, 3)) / 4) | 0)) | 0;
-        break;
+            moveamt = (moveamt - (((Math.imul(moveamt, 3)) / 4) | 0)) | 0;
+            break;
         case NHC.EXT_ENCUMBER:
-        moveamt = (moveamt - (((Math.imul(moveamt, 7)) / 8) | 0)) | 0;
-        break;
+            moveamt = (moveamt - (((Math.imul(moveamt, 7)) / 8) | 0)) | 0;
+            break;
         default:
-        break;
+            break;
     }
 
     cptr.stI16o(u, $you_umovement, cptr.ldI16o(u, $you_umovement) + moveamt);
@@ -489,8 +489,7 @@ export function* moveloop_core() {
                     svm,
                     $instance_globals_saved_m_moves,
                     cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1n
-                )) -
-                        (1n);
+                )) - (1n);
                 /*
                  * Never allow 'moves' to grow big enough to wrap.
                  * We don't care what the maximum possible 'long int'
@@ -608,7 +607,8 @@ export function* moveloop_core() {
                             $instance_globals_saved_l_level +
                                 $dlevel_t_flags +
                                 $levelflags_noautosearch
-                        ) & 1) &&
+                        ) &
+                            1) &&
                         cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
                     void (yield* dosearch0(1));
                 if (Warning())
@@ -694,7 +694,8 @@ export function* moveloop_core() {
                         gm,
                         $instance_globals_m_multi,
                         cptr.ldI64o(gm, $instance_globals_m_multi) + 1n
-                    ) == 0n) {
+                    ) ==
+                            0n) {
                         (yield* unmul(null));
                         /* if unmul caused a level change, take it now */
                         if (cptr.ld1uo(u, $you_utotype))
@@ -712,8 +713,7 @@ export function* moveloop_core() {
             gh,
             $instance_globals_h_hero_seq,
             cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 1n
-        )) -
-                (1n);  /* moves*8 + n for n == 1..7 */
+        )) - (1n);  /* moves*8 + n for n == 1..7 */
 
         /* although we checked for encumbrance above, we need to
            check again for message purposes, as the weight of
@@ -939,7 +939,9 @@ function* regen_pw(wtcap) {
                         ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
                             ? 3
                             : 4)
-                    ) / 6) | 0))))) ||
+                    ) /
+                        6) |
+                        0))))) ||
                 Energy_regeneration())) {
         let upper = ((((((acurr(NHC.A_WIS)) + (acurr(NHC.A_INT))) | 0) / 15) | 0) + 1) | 0;
 
@@ -1096,8 +1098,7 @@ export function* newgame() {
             a11y,
             $accessibility_data_mon_notices_blocked,
             cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
-        )) -
-                (1);
+        )) - (1);
     }
     cptr.st1o(disp, $display_hints_botlx, 1);
     cptr.stI32(svc, 2);  /* id 1 is reserved for gy.youmonst */
@@ -1186,8 +1187,7 @@ export function* newgame() {
         program_state,
         $sinfo_something_worth_saving,
         cptr.ldI32o(program_state, $sinfo_something_worth_saving) + 1
-    )) -
-            (1);  /* useful data now exists */
+    )) - (1);  /* useful data now exists */
 
     /* Success! */
     (yield* welcome(1));
@@ -1196,7 +1196,8 @@ export function* newgame() {
             a11y,
             $accessibility_data_mon_notices_blocked,
             cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1
-        ) < 0) {
+        ) <
+                0) {
             (yield* impossible(__s_mon_notices_blocked_0));  /* now we can notice monsters */
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
@@ -1255,8 +1256,7 @@ export function* welcome(new_game) {
      */
     if (new_game ||
             cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) !=
-                cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) ||
-            adrift)
+                cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) || adrift)
         void cptr.sprintf(
             eos(cptr.decay(buf)),
             __s_s_s,
@@ -1267,8 +1267,8 @@ export function* welcome(new_game) {
         );
     if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) &&
             (new_game
-                ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) ==
-                    12288
+                ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) &
+                    NHM.ROLE_GENDMASK) == 12288
                 : currentgend != cptr.ldI32o(flags, $flag_initgend)))
         void cptr.sprintf(
             eos(cptr.decay(buf)),

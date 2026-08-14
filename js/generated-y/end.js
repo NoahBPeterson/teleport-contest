@@ -456,8 +456,7 @@ export function* done2() {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
     }
     (yield* done(NHC.QUIT));
     return NHM.ECMD_OK;
@@ -471,8 +470,7 @@ function done_intr(sig_unused) {
         program_state,
         $sinfo_stopprint,
         cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-    )) -
-            (1);
+    )) - (1);
     void signal(2, 1);
     void signal(3, 1);
     return;
@@ -481,8 +479,11 @@ function done_intr(sig_unused) {
 /* signal() handler */
 /** C ref: end.c:170 — @param {CInt} sig */
 function done_hangup(sig) {
-    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) -
-            (1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_done_hup,
+        cptr.ldI32o(program_state, $sinfo_done_hup) + 1
+    )) - (1);
     sethanguphandler(1);
     done_intr(sig);
     return;
@@ -597,11 +598,13 @@ export function* done_in_by(mtmp, how) {
             cptr.cmp(
                 cptr.ldPtro(gm, $instance_globals_m_multi_reason),
                 cptr.add(gm, $instance_globals_m_multireasonbuf)
-            ) > 0 &&
+            ) >
+                0 &&
             cptr.cmp(
                 cptr.ldPtro(gm, $instance_globals_m_multi_reason),
                 cptr.add(cptr.add(cptr.add(gm, $instance_globals_m_multireasonbuf), 128n), -(1))
-            ) < 0) {
+            ) <
+                0) {
         let reasondummy = cptr.box(0);
         let p;
         let reasonmid = cptr.box(0);
@@ -627,7 +630,8 @@ export function* done_in_by(mtmp, how) {
             __s_u_c,
             reasonmid,
             reasondummy
-        ) == 2 &&
+        ) ==
+            2 &&
                 cptr.ldI32o(mtmp, $monst_m_id) == reasonmid.v) {
             if ((p = cptr.strchr(cptr.add(gm, $instance_globals_m_multireasonbuf), 32)) !== null)
                 cptr.st1(p, 0);
@@ -736,8 +740,7 @@ export function* panic(str, ...__va) {
             program_state,
             $sinfo_panicking,
             cptr.ldI32o(program_state, $sinfo_panicking) + 1
-        )) -
-                (1))
+        )) - (1))
             (yield* NH_abort(null));  /* avoid loops - this should never happen*/
 
         cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
@@ -875,8 +878,7 @@ function* disclose(how, taken) {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
     }
 
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
@@ -896,8 +898,7 @@ function* disclose(how, taken) {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
     }
 
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
@@ -930,8 +931,7 @@ function* disclose(how, taken) {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
     }
 
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
@@ -951,8 +951,7 @@ function* disclose(how, taken) {
                 program_state,
                 $sinfo_stopprint,
                 cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-            )) -
-                    (1);
+            )) - (1);
     }
 }
 
@@ -1067,8 +1066,7 @@ function get_valuables(list) {
             i = (((cptr.ldI16o(obj, $obj_otyp)) < ((NHC.LAST_REAL_GEM + 1) | 0)
                 ? (cptr.ldI16o(obj, $obj_otyp))
                 : ((NHC.LAST_REAL_GEM + 1) | 0)) -
-                NHC.FIRST_REAL_GEM) |
-                    0;
+                    NHC.FIRST_REAL_GEM) | 0;
             if (!cptr.ldI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems)) {
                 cptr.stI64o2(
                     gg,
@@ -1492,8 +1490,7 @@ function* really_done(how) {
             program_state,
             $sinfo_stopprint,
             cptr.ldI32o(program_state, $sinfo_stopprint) + 1
-        )) -
-                (1);
+        )) - (1);
     /* render vision subsystem inoperative */
     cptr.st1o(iflags, $instance_flags_vision_inited, 0);
 
@@ -1791,8 +1788,8 @@ function* really_done(how) {
     if (bones_ok) {
         if (!wizard() ||
                 (yield* paranoid_query(
-                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) &
-                        NHM.PARANOID_BONES) >>> 0) != 0)),
+                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_BONES) >>> 0) !=
+                        0)),
                     __s_save_bones
                 )))
             (yield* savebones(how, endtime, corpse));
@@ -2233,8 +2230,7 @@ export function* container_contents(list, identified, all_containers, reportempt
                         cptr.ld1so(flags, $flag_sortloot) == 102)
                         ? NHM.SORTLOOT_LOOT
                         : 0) |
-                        (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0)) >>>
-                            0;
+                            (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0)) >>> 0;
                     sortedcobj.v = (yield* sortloot(cptr.add(box, $obj_cobj), sortflags, 0, null));
                     for (
                         srtc = sortedcobj.v;
@@ -2436,27 +2432,27 @@ export function* build_english_list(in$) {
 
     switch (words) {
         case 0:
-        (yield* impossible(__s_no_words_in_list));
-        break;
+            (yield* impossible(__s_no_words_in_list));
+            break;
         case 1:
-        /* "single" */
-        (yield* bel_copy1(p, out));
-        break;
-        default:
-        if (words == 2) {
-            /* "first or second" */
+            /* "single" */
             (yield* bel_copy1(p, out));
-            void cptr.strcat(out, __s_sp);
-        } else {
-            /* "first, second, or third */
-            do {
+            break;
+        default:
+            if (words == 2) {
+                /* "first or second" */
                 (yield* bel_copy1(p, out));
-                void cptr.strcat(out, __s_comma_sp);
-            } while (--words > 1);
-        }
-        void cptr.strcat(out, __s_or);
-        (yield* bel_copy1(p, out));
-        break;
+                void cptr.strcat(out, __s_sp);
+            } else {
+                /* "first, second, or third */
+                do {
+                    (yield* bel_copy1(p, out));
+                    void cptr.strcat(out, __s_comma_sp);
+                } while (--words > 1);
+            }
+            void cptr.strcat(out, __s_or);
+            (yield* bel_copy1(p, out));
+            break;
     }
     return out;
 }

@@ -380,16 +380,16 @@ export function term_shutdown() {
 export function tty_number_pad(state) {
     switch (state) {
         case -1:
-        if (KS && cptr.ld1s(KS))
-            xputs(KS);
-        break;
+            if (KS && cptr.ld1s(KS))
+                xputs(KS);
+            break;
         case 1:
-        if (KE && cptr.ld1s(KE))
-            xputs(KE);
-        break;
+            if (KE && cptr.ld1s(KE))
+                xputs(KE);
+            break;
         case 0:
         default:
-        break;
+            break;
     }
 }
 
@@ -516,8 +516,7 @@ export function nocmov(x, y) {
                     ttyDisplay,
                     $DisplayDesc_cury,
                     cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + -1
-                )) -
-                        (-1);
+                )) - (-1);
             }
         } else if (cptr.ldPtr(tc_lcl_data)) {
             cmov(x, y);
@@ -533,8 +532,7 @@ export function nocmov(x, y) {
                     ttyDisplay,
                     $DisplayDesc_cury,
                     cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1
-                )) -
-                        (1);
+                )) - (1);
             }
         } else if (cptr.ldPtr(tc_lcl_data)) {
             cmov(x, y);
@@ -546,8 +544,7 @@ export function nocmov(x, y) {
                     ttyDisplay,
                     $DisplayDesc_cury,
                     cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1
-                )) -
-                        (1);
+                )) - (1);
             }
         }
     }
@@ -562,8 +559,7 @@ export function nocmov(x, y) {
                     ttyDisplay,
                     $DisplayDesc_curx,
                     cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
-                )) -
-                        (1);
+                )) - (1);
             }
         }
     } else if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > x) {
@@ -573,8 +569,7 @@ export function nocmov(x, y) {
                 ttyDisplay,
                 $DisplayDesc_curx,
                 cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
-            )) -
-                    (-1);
+            )) - (-1);
         }
     }
 }
@@ -797,14 +792,14 @@ export function nomux_putch(ch) {
 export function nomux_set_attr(attr) {
     switch (attr) {
         case NHM.ATR_INVERSE:
-        nomux_attr_cur = uchar(nomux_attr_cur | 1);
-        break;
+            nomux_attr_cur = uchar(nomux_attr_cur | 1);
+            break;
         case NHM.ATR_BOLD:
-        nomux_attr_cur = uchar(nomux_attr_cur | 2);
-        break;
+            nomux_attr_cur = uchar(nomux_attr_cur | 2);
+            break;
         case NHM.ATR_ULINE:
-        nomux_attr_cur = uchar(nomux_attr_cur | 4);
-        break;
+            nomux_attr_cur = uchar(nomux_attr_cur | 4);
+            break;
     }
 }
 
@@ -872,13 +867,10 @@ export function nomux_capture_screen() {
                     end,
                     $sizeof_nomux_cell,
                     $nomux_cell_attr
-                ) == 0 &&
-                (cptr.ld1uo2(
-                    cptr.decay(nomux_buf[row]),
-                    end,
-                    $sizeof_nomux_cell,
-                    $nomux_cell_fg
-                ) == 7 ||
+                ) ==
+                    0 &&
+                (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_fg) ==
+                    7 ||
                     cptr.ld1uo2(
                         cptr.decay(nomux_buf[row]),
                         end,
@@ -1487,35 +1479,35 @@ const nulstr = cptr.bytes("");
 function s_atr2str(n) {
     switch (n) {
         case NHM.ATR_ITALIC:
-        if (ZH && cptr.ld1s(ZH))
-            return ZH;
-        // @FallThrough
-        ;
+            if (ZH && cptr.ld1s(ZH))
+                return ZH;
+            // @FallThrough
+            ;
         case NHM.ATR_BLINK:
         case NHM.ATR_ULINE:
-        if (n == NHM.ATR_BLINK) {
-            if (MB && cptr.ld1s(MB))
-                return MB;  /* Underline */
-        } else {
-            if (nh_US())
-                return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US);
-        }
-        // @FallThrough
-        ;
+            if (n == NHM.ATR_BLINK) {
+                if (MB && cptr.ld1s(MB))
+                    return MB;  /* Underline */
+            } else {
+                if (nh_US())
+                    return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US);
+            }
+            // @FallThrough
+            ;
         case NHM.ATR_BOLD:
-        if (MD && cptr.ld1s(MD))
-            return MD;
-        if (nh_HI())
-            return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI);
-        break;
+            if (MD && cptr.ld1s(MD))
+                return MD;
+            if (nh_HI())
+                return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI);
+            break;
         case NHM.ATR_INVERSE:
-        if (MR && cptr.ld1s(MR))
-            return MR;
-        break;
+            if (MR && cptr.ld1s(MR))
+                return MR;
+            break;
         case NHM.ATR_DIM:
-        if (MH && cptr.ld1s(MH))
-            return MH;
-        break;
+            if (MH && cptr.ld1s(MH))
+                return MH;
+            break;
     }
 
     return cptr.decay(nulstr);
@@ -1525,27 +1517,27 @@ function s_atr2str(n) {
 function e_atr2str(n) {
     switch (n) {
         case NHM.ATR_ITALIC:
-        /* send ZR unless we didn't have ZH and substituted US */
-        if (ZR && cptr.ld1s(ZR) && ZH && cptr.ld1s(ZH))
-            return ZR;
-        // @FallThrough
-        ;
+            /* send ZR unless we didn't have ZH and substituted US */
+            if (ZR && cptr.ld1s(ZR) && ZH && cptr.ld1s(ZH))
+                return ZR;
+            // @FallThrough
+            ;
         case NHM.ATR_ULINE:
-        if (nh_UE())
-            return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_UE);
-        // @FallThrough
-        ;
+            if (nh_UE())
+                return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_UE);
+            // @FallThrough
+            ;
         case NHM.ATR_BOLD:
         case NHM.ATR_BLINK:
-        if (nh_HE())
-            return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE);
-        // @FallThrough
-        ;
+            if (nh_HE())
+                return cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE);
+            // @FallThrough
+            ;
         case NHM.ATR_DIM:
         case NHM.ATR_INVERSE:
-        if (ME && cptr.ld1s(ME))
-            return ME;
-        break;
+            if (ME && cptr.ld1s(ME))
+                return ME;
+            break;
     }
     return cptr.decay(nulstr);
 
