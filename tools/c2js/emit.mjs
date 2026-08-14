@@ -410,6 +410,10 @@ const DO_FLAT_STATS = { seen: 0, flattened: 0, refusedJump: 0, refusedSplicedJum
 //
 // C2JS_WRAPFOLD=0 restores the mask-at-every-node emission (the A/B baseline).
 const WRAPFOLD = process.env.C2JS_WRAPFOLD !== '0';
+// C2JS_WRAPFOLD2=0 restores the first leg's three refusals — strict key
+// equality, no bitwise/shift consumer, no `?:` offer — leaving the fold itself
+// on.  It is this leg's A/B baseline; C2JS_WRAPFOLD=0 still removes both.
+const WRAPFOLD2 = WRAPFOLD && process.env.C2JS_WRAPFOLD2 !== '0';
 const WRAPFOLD_VERIFY = process.env.C2JS_WRAPFOLD_VERIFY === '1';
 const WRAPFOLD_CHECK = process.env.C2JS_WRAPFOLD_CHECK === '1';
 const WRAPFOLD_STATS = {
@@ -418,6 +422,10 @@ const WRAPFOLD_STATS = {
   refused: new Map(),                          // reason -> count
   cases: 0,                                    // static differential cases run
   verified: 0,                                 // folds the differential cleared
+  bitConsumer: 0,   // masks dropped under a 32-bit `& | ^ << >>` consumer
+  pairKey: 0,       // ...of which the two masks differ in signedness (the pair rule)
+  ternaryArms: 0,   // arms hoisted out of a `?:` to the consumer's root mask
+  ternaryOffers: 0, // `?:` nodes that offered an un-masked form
 };
 const WRAP_ROOTS = []; // every chain that collapsed at least one interior mask
 // a fresh object per leaf: wrapLeaves() numbers them by identity
@@ -446,15 +454,46 @@ const WRAP_MASK = {
   u64: (v) => BigInt.asUintN(64, v),
 };
 const wrapIs32 = (key) => key === 'i32' || key === 'u32';
+const WRAP_WIDTH = { i32: 32, u32: 32, i64: 64, u64: 64 };
+
+// The bitwise and shift operators, which are reductions of their *own* operands
+// at 32 bits (JS applies ToInt32/ToUint32 to each) and are not reductions at all
+// at 64 bits (BigInt bitwise is arbitrary-precision two's complement, so
+// `asUintN(64, a + b) & m` and `(a + b) & m` differ).  32 only — see the note.
+const WRAP_BITOPS = new Set(['&', '|', '^', '<<', '>>']);
+
+/**
+ * A 32-bit JS bitwise/shift node, exactly as the emitter prints it.
+ *
+ * `&`/`|`/`^`/`<<` and signed `>>` take ToInt32 of both operands; unsigned `>>`
+ * is emitted as `>>>`, which takes ToUint32 of the left; the shift count is
+ * `& 31` in every case; and the unsigned result carries a `>>> 0`.  Every one
+ * of those is a function of the operand's residue mod 2^32 alone, which is why
+ * an operand's own mask is redundant here.
+ */
+function wrapBitApply(op, key, a, b) {
+  const ai = BigInt.asIntN(32, a), bi = BigInt.asIntN(32, b);
+  const sh = BigInt.asUintN(32, b) & 31n;
+  const r = op === '&' ? ai & bi
+    : op === '|' ? ai | bi
+      : op === '^' ? ai ^ bi
+        : op === '<<' ? ai << sh
+          : key === 'u32' ? BigInt.asUintN(32, ai) >> sh : ai >> sh;
+  return key === 'u32' ? BigInt.asUintN(32, r) : BigInt.asIntN(32, r);
+}
 // float64 holds every integer below 2^53 exactly; a 32-bit chain's un-masked
 // intermediate must stay inside that or the collapsed form loses low bits.
 const WRAP_EXACT = 9007199254740992n;
+
+/** the arithmetic of one chain node on already-reduced operands */
+function wrapRing(op, a, b) { return op === '+' ? a + b : op === '-' ? a - b : a * b; }
 
 /** every node of a chain tree, masked — the emission this leg replaces */
 function wrapEvalOld(node, vals) {
   if (node.leaf) return vals[node.id];
   const a = wrapEvalOld(node.l, vals), b = wrapEvalOld(node.r, vals);
-  return WRAP_MASK[node.key](node.op === '+' ? a + b : node.op === '-' ? a - b : a * b);
+  if (WRAP_BITOPS.has(node.op)) return wrapBitApply(node.op, node.key, a, b);
+  return WRAP_MASK[node.key](wrapRing(node.op, a, b));
 }
 
 /**
@@ -467,7 +506,10 @@ function wrapEvalOld(node, vals) {
 function wrapEvalNew(node, vals, isRoot) {
   if (node.leaf) return vals[node.id];
   const a = wrapEvalNew(node.l, vals, false), b = wrapEvalNew(node.r, vals, false);
-  const raw = node.op === '+' ? a + b : node.op === '-' ? a - b : a * b;
+  // a bitwise/shift consumer reduces its own operands, so it masks in both
+  // emissions and is always a root: nothing offers its result onward
+  if (WRAP_BITOPS.has(node.op)) return wrapBitApply(node.op, node.key, a, b);
+  const raw = wrapRing(node.op, a, b);
   const masks = isRoot || (node.op === '*' && wrapIs32(node.key));
   // the collapsed 32-bit form computes `raw` in float64: outside 2^53 the
   // algebra would still agree and the emitted code would not
@@ -483,7 +525,59 @@ function wrapLeaves(node, out = []) {
   return out;
 }
 
-function wrapDepth(node) { return node.leaf ? 1 : wrapDepth(node.l) + wrapDepth(node.r); }
+function wrapDepth(node) {
+  if (node.leaf) return 1;
+  if (node.sel) return Math.max(...node.arms.map(wrapDepth)); // one arm runs
+  return wrapDepth(node.l) + wrapDepth(node.r);
+}
+
+/**
+ * Credit the masks one committed offer removes, and mark them consumed.
+ *
+ * A plain chain node is one mask, counted under the kind that was *printed*
+ * there (which the pair rule lets differ from the consumer's kind).  A `?:`
+ * selection node prints no mask of its own: what it removes is its arms', so it
+ * recurses.  Returns the number of masks removed.
+ */
+function wrapCreditTree(tree, consumerKey) {
+  if (tree.leaf) return 0;
+  tree.consumed = true;
+  if (tree.sel) {
+    let n = 0;
+    for (const a of tree.arms) { const k = wrapCreditTree(a, consumerKey); WRAPFOLD_STATS.ternaryArms += k ? 1 : 0; n += k; }
+    return n;
+  }
+  WRAPFOLD_STATS.folded[tree.key]++;
+  if (tree.key !== consumerKey) WRAPFOLD_STATS.pairKey++;
+  return 1;
+}
+
+/**
+ * A `?:` whose arms were hoisted is a *selection* node: at run time the chain
+ * runs through exactly one arm, so it is verified as one chain per arm rather
+ * than as a binary node.  Expand a tree that contains selections into the
+ * sel-free trees it can actually be, and check every one of them.
+ *
+ * Interior nodes are rebuilt (the leaves are shared, and wrapLeaves() renumbers
+ * them per variant, which is why the variants are evaluated one at a time).
+ */
+function wrapVariants(node) {
+  if (node.leaf) return [node];
+  if (node.sel) return node.arms.flatMap(wrapVariants);
+  const ls = wrapVariants(node.l), rs = wrapVariants(node.r);
+  if (ls.length === 1 && rs.length === 1 && ls[0] === node.l && rs[0] === node.r) return [node];
+  const out = [];
+  for (const a of ls) for (const b of rs) out.push({ op: node.op, key: node.key, l: a, r: b });
+  return out;
+}
+
+/** every mask kind a (sel-free) tree names — all one width, by the pair rule */
+function wrapKeysOf(node, s = new Set()) {
+  if (node.leaf) return s;
+  s.add(node.key);
+  wrapKeysOf(node.l, s); wrapKeysOf(node.r, s);
+  return s;
+}
 
 // Boundary operand values per chain kind.  A leaf of a 32-bit chain is a
 // canonical int32/uint32 in the emitted code, but JS unary `-` does not wrap
@@ -512,6 +606,24 @@ function wrapRandVal(key) {
 }
 
 /**
+ * The boundary list for a tree: the union over every mask kind it names.
+ *
+ * A chain whose masks are all one kind gets exactly the list it always got.  A
+ * chain the pair rule admits — a `>>> 0` flowing into a `| 0`, or the reverse —
+ * gets *both* lists, so the vectors include the values whose two readings are
+ * furthest apart (`-1` as `| 0`, `4294967295` as `>>> 0`).  Those are precisely
+ * the cases the old key-equality rule refused on suspicion of, and the assertion
+ * is on the chain's final value, which is what the program keeps.
+ */
+function wrapEdgesFor(root) {
+  const keys = [...wrapKeysOf(root)];
+  if (keys.length === 1) return WRAP_EDGES[keys[0]];
+  const seen = new Set(), out = [];
+  for (const k of [root.key, ...keys]) for (const e of WRAP_EDGES[k]) if (!seen.has(e)) { seen.add(e); out.push(e); }
+  return out;
+}
+
+/**
  * Static differential for one candidate fold: does collapsing this chain's
  * interior masks compute the same value as keeping them, on every vector?
  *
@@ -521,12 +633,25 @@ function wrapRandVal(key) {
  * walks the boundary list across leaves out of step, and 64 random draws.  The
  * boundary lists reach one bit past canonical range on both sides, so vectors
  * that force the chain to wrap are the majority of them rather than a corner.
+ *
+ * A tree carrying hoisted `?:` arms is expanded into one sel-free tree per arm
+ * combination first, and *every* one of them must agree — a chain that runs
+ * through an arm is exactly the chain the program runs.
  */
+const WRAP_VARIANT_CAP = 64;
 function wrapVerify(root) {
+  const variants = wrapVariants(root);
+  if (variants.length > WRAP_VARIANT_CAP) return false; // refuse rather than sample
+  for (const v of variants) if (!wrapVerifyOne(v, root.key)) return false;
+  WRAPFOLD_STATS.verified++;
+  return true;
+}
+
+function wrapVerifyOne(root, rootKey) {
   const leaves = wrapLeaves(root);
   const n = leaves.length;
-  const key = root.key;
-  const edges = WRAP_EDGES[key];
+  const key = root.key || rootKey;
+  const edges = wrapEdgesFor(root);
   const vecs = [];
   const base = key[0] === 'i' ? 0n : 1n;
   for (let i = 0; i < n; i++) {
@@ -544,7 +669,6 @@ function wrapVerify(root) {
       throw e;
     }
   }
-  WRAPFOLD_STATS.verified++;
   return true;
 }
 
@@ -574,6 +698,8 @@ export function wrapFoldSummary() {
     depth: [...depth.entries()].sort((a, b) => a[0] - b[0]),
     refused: [...WRAPFOLD_STATS.refused.entries()].sort((a, b) => b[1] - a[1]),
     cases: WRAPFOLD_STATS.cases, verified: WRAPFOLD_STATS.verified,
+    bitConsumer: WRAPFOLD_STATS.bitConsumer, pairKey: WRAPFOLD_STATS.pairKey,
+    ternaryArms: WRAPFOLD_STATS.ternaryArms, ternaryOffers: WRAPFOLD_STATS.ternaryOffers,
     total: sum(folded), totalEmitted: sum(emitted), totalRoots: sum(roots),
   };
 }
@@ -1527,6 +1653,9 @@ function wrapFoldStatsLine() {
     + `${s.folded.i64}/${s.emitted.i64} asIntN(64), ${s.folded.u64}/${s.emitted.u64} asUintN(64)), collapsing `
     + `${s.totalRoots} maximal chains, longest ${s.maxTerms} terms; `
     + `refused ${[...s.refused].map(([k, v]) => `${v} ${k}`).join(', ') || '(none)'}\n`
+    + `wrap pairs:    ${s.bitConsumer} taken by a 32-bit bitwise/shift consumer, `
+    + `${s.pairKey} where the two masks differ in signedness, `
+    + `${s.ternaryArms} \`?:\` arms hoisted over ${s.ternaryOffers} offers\n`
     + (s.verify ? `wrap verify:   ${s.verified} folds cleared by ${s.cases} differential cases\n` : '');
 }
 
@@ -3807,18 +3936,28 @@ export class Emitter {
    */
   foldWrap(op, t, l, r) {
     const ring = op === '+' || op === '-' || op === '*';
-    const key = ring ? wrapKey(t) : null;
-    if (!WRAPFOLD || !key) {
-      if (WRAPFOLD && (l.wrapRaw || r.wrapRaw)) wrapRefuse(ring ? `type:${t.cls}${t.bits || ''}` : `op:${op}`);
+    const bit = WRAPFOLD2 && WRAP_BITOPS.has(op);
+    const key = ring || bit ? wrapKey(t) : null;
+    // 64-bit bitwise/shift is BigInt, which does *not* truncate: the operand's
+    // own asIntN/asUintN is the semantics there, not a redundancy (see the note)
+    if (!WRAPFOLD || !key || (bit && !wrapIs32(key))) {
+      if (WRAPFOLD && (l.wrapRaw || r.wrapRaw)) {
+        wrapRefuse(bit && key ? `op:${op}:64` : ring || bit ? `type:${t.cls}${t.bits || ''}` : `op:${op}`);
+      }
       return [l, r];
     }
     const lw = this.wrapCandidate(l, key), rw = this.wrapCandidate(r, key);
     if (!lw && !rw) return [l, r];
-    if (WRAPFOLD_VERIFY && !wrapVerify({ op, key, l: lw ? lw.tree : wrapLeaf(), r: rw ? rw.tree : wrapLeaf() })) {
+    const tree = { op, key, l: lw ? lw.tree : wrapLeaf(), r: rw ? rw.tree : wrapLeaf() };
+    if (WRAPFOLD_VERIFY && !wrapVerify(tree)) {
       wrapRefuse('verify');
       return [l, r];
     }
-    return [lw ? this.wrapCommit(lw, key) : l, rw ? this.wrapCommit(rw, key) : r];
+    const out = [lw ? this.wrapCommit(lw, key, bit) : l, rw ? this.wrapCommit(rw, key, bit) : r];
+    // a bitwise/shift node terminates the chain — `coerceArith` offers nothing
+    // onward from one — so this is the maximal root, and it records itself
+    if (bit) WRAP_ROOTS.push(tree);
+    return out;
   }
 
   /**
@@ -3847,15 +3986,28 @@ export class Emitter {
   wrapCandidate(d, key) {
     const w = d && d.wrapRaw;
     if (!w) return null;
-    if (w.key !== key) { wrapRefuse(`key:${w.key}->${key}`); return null; }
+    // The pair rule.  What matters is not that the two masks are the *same*
+    // mask but that they are both reductions of the same width: `| 0` and
+    // `>>> 0` (and `asIntN(64)`/`asUintN(64)`) compute the same residue and
+    // differ only in which representative they name, and the consumer's own
+    // mask is what names the representative that survives.  The consumer is a
+    // reduction by construction — `key` is non-null only where `coerceArith`
+    // masks at that width, or where a 32-bit bitwise/shift operator does its
+    // own ToInt32 — and nothing can sit between the two, because the offer is
+    // consumed by the operator it was emitted for and by no one else.
+    if (!WRAPFOLD2 && w.key !== key) { wrapRefuse(`key:${w.key}->${key}`); return null; }
+    if (WRAP_WIDTH[w.key] !== WRAP_WIDTH[key]) { wrapRefuse(`width:${w.key}->${key}`); return null; }
     if (w.code !== d.code) { wrapRefuse('stale'); return null; }
     return w;
   }
 
   /** take the offer: emit the chain un-masked, and record that it moved up */
-  wrapCommit(w, key) {
-    WRAPFOLD_STATS.folded[key]++;
-    w.tree.consumed = true; // this chain is not maximal: its parent extends it
+  wrapCommit(w, key, bit) {
+    // credit the masks this actually removes: one per interior chain node, and
+    // one per hoisted `?:` arm.  `w.tree.consumed` marks the chain non-maximal —
+    // its parent extends it — which is what wrapFoldSummary() counts roots by.
+    const n = wrapCreditTree(w.tree, key);
+    if (bit) WRAPFOLD_STATS.bitConsumer += n;
     // C2JS_WRAPFOLD_CHECK=1: assert at run time that the intermediate this
     // fold now defers is exactly representable (see the WRAPFOLD note).
     if (WRAPFOLD_CHECK && wrapIs32(key)) {
@@ -4056,7 +4208,40 @@ export class Emitter {
     // the condition position follows C's logical-OR-expression grammar: a
     // same-precedence (ternary/assignment) condition must be parenthesized —
     // 'right' side forces that for ?:, which is right-associative
-    return { code: `${operand(c, PREC.cond, 'right').code} ? ${a.code} : ${operand(b, PREC.cond, 'right').code}`, prec: PREC.cond, rep: a.rep };
+    const cCode = operand(c, PREC.cond, 'right').code;
+    const code = `${cCode} ? ${a.code} : ${operand(b, PREC.cond, 'right').code}`;
+    const w = this.foldWrapCond(n, cCode, code, a, b);
+    return w || { code, prec: PREC.cond, rep: a.rep };
+  }
+
+  /**
+   * A `?:` offers its arms' un-masked forms when a masking parent would make
+   * both masks redundant: `m(a + b) ? : m(c + d)` under an outer `m` is
+   * `m(cond ? a + b : c + d)`, because the conditional selects a value and does
+   * nothing to it — whichever arm runs, the parent's mask is a reduction of the
+   * same width applied to that arm's residue.
+   *
+   * The offer is a *selection* node, not a binary one, so the differential
+   * verifies each arm as its own chain (wrapVariants) rather than pretending
+   * both are evaluated.  An arm that offers nothing stays exactly as it is; the
+   * fold is per-arm, and one arm alone is enough to be worth taking.
+   */
+  foldWrapCond(n, cCode, code, a, b) {
+    if (!WRAPFOLD2) return null;
+    const key = wrapKey(nodeType(n));
+    if (!key) return null;
+    const arm = (d) => {
+      const w = d && d.wrapRaw;
+      if (!w || w.code !== d.code) return null;      // the boolRaw staleness guard
+      return WRAP_WIDTH[w.key] === WRAP_WIDTH[key] ? w : null;
+    };
+    const wa = arm(a), wb = arm(b);
+    if (!wa && !wb) return null;
+    const raw = `${cCode} ? ${wa ? wa.raw : a.code} : `
+      + `${operand(wb ? { code: wb.raw, prec: wb.prec } : b, PREC.cond, 'right').code}`;
+    const tree = { sel: true, key, arms: [wa ? wa.tree : wrapLeaf(), wb ? wb.tree : wrapLeaf()] };
+    WRAPFOLD_STATS.ternaryOffers++;
+    return { code, prec: PREC.cond, rep: a.rep, wrapRaw: { code, raw, prec: PREC.cond, key, tree } };
   }
 
   /**
