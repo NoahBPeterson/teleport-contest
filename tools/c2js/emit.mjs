@@ -337,6 +337,33 @@ const BOOL_STATS = { elided: 0, kept: 0 };
 const DEAD_CODE = process.env.C2JS_DEADCODE !== '0';
 const DEAD_STATS = { sm: 0, labelBreak: 0, inlineTail: 0, switchTail: 0, blockTail: 0 };
 
+// ------------------------------------------------- case-body indentation ----
+//
+// A `case`/`default` label is a label, and the statements it governs are its
+// body — NetHack's own C writes them a level in (botl.c:1841 has `case ANY_INT:`
+// at column 4 and `result = ...` at column 8), and so does every JS style guide
+// that has an opinion.  The emitter wrote both at the label's own column, so a
+// switch arm read as a flat run of statements with labels sprinkled through it:
+//
+//     case NHC.ANY_INT:
+//     result = ...;
+//     break;
+//     case NHC.ANY_LONG:
+//
+// This is pre-existing rather than something the formatter did: the same shape
+// is in the tree at 1fab203, before jsfmt existed.  A label opens a level; the
+// next label (or the end of the switch) closes it.  Two shapes must not each
+// open one:
+//
+//   * a fallthrough GROUP — `case A: case B: stmt` — is one label position
+//     written on several lines, so the chained label stays at its sibling's
+//     column and only the statement moves in;
+//   * the goto lowering's `__pc` dispatcher writes `case N: { ... }`, an
+//     explicitly braced state body, which gets the same level from its brace.
+//
+// C2JS_CASEINDENT=0 restores the flat emission (the A/B baseline).
+const CASE_INDENT = process.env.C2JS_CASEINDENT !== '0';
+
 // C2JS_FLATTEN_DO=0 keeps the literal `do { ... } while (0)` transcription.
 const DO_FLATTEN = process.env.C2JS_FLATTEN_DO !== '0';
 const DO_FLAT_STATS = { seen: 0, flattened: 0, refusedJump: 0, refusedSplicedJump: 0, disagreed: 0 };
@@ -5193,7 +5220,9 @@ export class Emitter {
   emitStateMachine(d, body) {
     const info = this.smCollect(d.name, body);
     this.sm = {
-      cases: [], cur: null, ind: '        ',
+      // a state is written `case N: { ... }` at column 8, so its body sits
+      // inside the braces at 12 — the same level a case label opens anywhere
+      cases: [], cur: null, ind: CASE_INDENT ? '            ' : '        ',
       nameToNum: info.nameToNum, declIdOf: info.declIdOf,
       synth: info.ordered.length + 1,
     };
@@ -6044,12 +6073,24 @@ export class Emitter {
         }
       }
     }
+    // Which body items a label governs, decided over the item list rather than
+    // by a running flag inside the callback: the label lowerings below may emit
+    // an item from a nested position, and an item's level is a property of where
+    // it sits in the switch, not of when the emitter reaches it.
+    const govern = new Map();
+    let open = false;
+    for (const it of items) {
+      const lab = it.kind === 'CaseStmt' || it.kind === 'DefaultStmt';
+      govern.set(it, !lab && open);
+      if (lab) open = true;
+    }
+    const swItem = (it, ind) => this.emitSwitchItem(it, CASE_INDENT && govern.get(it) ? ind + '    ' : ind);
     let lines = [];
     for (const h of hoisted) lines.push(`${indent}${h}`);
     lines.push(`${indent}switch (${this.emitExpr(cond).code}) {`);
     const bodyPlan = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir !== 'swloop');
     if (bodyPlan && bodyPlan.length) {
-      lines.push(...this.emitLabeledItems(items, indent + '    ', bodyPlan, (it, ind) => this.emitSwitchItem(it, ind)));
+      lines.push(...this.emitLabeledItems(items, indent + '    ', bodyPlan, swItem));
     } else {
       // A switch body is the one place where NetHack's *own* unreachable code
       // lives: `default: return optn_err; break;` (options.c:3230),
@@ -6059,8 +6100,7 @@ export class Emitter {
       // drop them silently and SpiderMonkey does not.  A `case`/`default` ends
       // the run (it is the dispatch's jump target) and so does a `LabelStmt`
       // (a `goto` target, which is why this path passes true).
-      lines.push(...this.emitDeadRun(items, indent + '    ',
-        (it, ind) => this.emitSwitchItem(it, ind), true, 'switchTail'));
+      lines.push(...this.emitDeadRun(items, indent + '    ', swItem, true, 'switchTail'));
     }
     lines.push(`${indent}}`);
     const swloops = (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir === 'swloop');
@@ -6078,17 +6118,18 @@ export class Emitter {
       const sub = (it.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
       return sub ? this.emitStmt(sub, indent) : [`${indent};`];
     }
-    if (it.kind === 'CaseStmt') {
+    if (it.kind === 'CaseStmt' || it.kind === 'DefaultStmt') {
+      // clang hangs the first statement of a case off the label node itself, so
+      // this is where a label's own body gets its level.  A label chained onto
+      // this one is a fallthrough group, not a body: it keeps this column.
       const kids = (it.inner || []).filter((c) => c && c.kind);
-      const val = this.emitExpr(kids[0]);
-      const lines = [`${indent}case ${val.code}:`];
-      if (kids.length > 1) lines.push(...this.emitSwitchItem(kids[1], indent));
-      return lines;
-    }
-    if (it.kind === 'DefaultStmt') {
-      const kids = (it.inner || []).filter((c) => c && c.kind);
-      const lines = [`${indent}default:`];
-      if (kids.length) lines.push(...this.emitSwitchItem(kids[0], indent));
+      const isCase = it.kind === 'CaseStmt';
+      const sub = isCase ? kids[1] : kids[0];
+      const lines = [`${indent}${isCase ? `case ${this.emitExpr(kids[0]).code}:` : 'default:'}`];
+      if (sub) {
+        const stacked = sub.kind === 'CaseStmt' || sub.kind === 'DefaultStmt';
+        lines.push(...this.emitSwitchItem(sub, stacked || !CASE_INDENT ? indent : indent + '    '));
+      }
       return lines;
     }
     if (it.kind === 'DeclStmt') {
