@@ -450,6 +450,7 @@ const WRAPFOLD_STATS = {
   cases: 0,                                    // static differential cases run
   verified: 0,                                 // folds the differential cleared
   bitConsumer: 0,   // masks dropped under a 32-bit `& | ^ << >>` consumer
+  castConsumer: 0,  // ...under a same-width signedness cast
   pairKey: 0,       // ...of which the two masks differ in signedness (the pair rule)
   ternaryArms: 0,   // arms hoisted out of a `?:` to the consumer's root mask
   ternaryOffers: 0, // `?:` nodes that offered an un-masked form
@@ -518,6 +519,7 @@ function wrapRing(op, a, b) { return op === '+' ? a + b : op === '-' ? a - b : a
 /** every node of a chain tree, masked — the emission this leg replaces */
 function wrapEvalOld(node, vals) {
   if (node.leaf) return vals[node.id];
+  if (node.op === 'cast') return WRAP_MASK[node.key](wrapEvalOld(node.l, vals));
   const a = wrapEvalOld(node.l, vals), b = wrapEvalOld(node.r, vals);
   if (WRAP_BITOPS.has(node.op)) return wrapBitApply(node.op, node.key, a, b);
   return WRAP_MASK[node.key](wrapRing(node.op, a, b));
@@ -532,6 +534,9 @@ function wrapEvalOld(node, vals) {
  */
 function wrapEvalNew(node, vals, isRoot) {
   if (node.leaf) return vals[node.id];
+  // a same-width cast is a reduction and nothing else: it masks in both
+  // emissions, and no offer leaves it, so it is always a root
+  if (node.op === 'cast') return WRAP_MASK[node.key](wrapEvalNew(node.l, vals, false));
   const a = wrapEvalNew(node.l, vals, false), b = wrapEvalNew(node.r, vals, false);
   // a bitwise/shift consumer reduces its own operands, so it masks in both
   // emissions and is always a root: nothing offers its result onward
@@ -548,14 +553,15 @@ class WrapInexact extends Error {}
 /** leaves of a chain tree, left to right, numbered for the value vectors */
 function wrapLeaves(node, out = []) {
   if (node.leaf) { node.id = out.length; out.push(node); return out; }
-  wrapLeaves(node.l, out); wrapLeaves(node.r, out);
+  wrapLeaves(node.l, out);
+  if (node.r) wrapLeaves(node.r, out);
   return out;
 }
 
 function wrapDepth(node) {
   if (node.leaf) return 1;
   if (node.sel) return Math.max(...node.arms.map(wrapDepth)); // one arm runs
-  return wrapDepth(node.l) + wrapDepth(node.r);
+  return wrapDepth(node.l) + (node.r ? wrapDepth(node.r) : 0);
 }
 
 /**
@@ -591,7 +597,7 @@ function wrapCreditTree(tree, consumerKey) {
 function wrapVariants(node) {
   if (node.leaf) return [node];
   if (node.sel) return node.arms.flatMap(wrapVariants);
-  const ls = wrapVariants(node.l), rs = wrapVariants(node.r);
+  const ls = wrapVariants(node.l), rs = node.r ? wrapVariants(node.r) : [null];
   if (ls.length === 1 && rs.length === 1 && ls[0] === node.l && rs[0] === node.r) return [node];
   const out = [];
   for (const a of ls) for (const b of rs) out.push({ op: node.op, key: node.key, l: a, r: b });
@@ -602,7 +608,8 @@ function wrapVariants(node) {
 function wrapKeysOf(node, s = new Set()) {
   if (node.leaf) return s;
   s.add(node.key);
-  wrapKeysOf(node.l, s); wrapKeysOf(node.r, s);
+  wrapKeysOf(node.l, s);
+  if (node.r) wrapKeysOf(node.r, s);
   return s;
 }
 
@@ -725,7 +732,8 @@ export function wrapFoldSummary() {
     depth: [...depth.entries()].sort((a, b) => a[0] - b[0]),
     refused: [...WRAPFOLD_STATS.refused.entries()].sort((a, b) => b[1] - a[1]),
     cases: WRAPFOLD_STATS.cases, verified: WRAPFOLD_STATS.verified,
-    bitConsumer: WRAPFOLD_STATS.bitConsumer, pairKey: WRAPFOLD_STATS.pairKey,
+    bitConsumer: WRAPFOLD_STATS.bitConsumer, castConsumer: WRAPFOLD_STATS.castConsumer,
+    pairKey: WRAPFOLD_STATS.pairKey,
     ternaryArms: WRAPFOLD_STATS.ternaryArms, ternaryOffers: WRAPFOLD_STATS.ternaryOffers,
     total: sum(folded), totalEmitted: sum(emitted), totalRoots: sum(roots),
   };
@@ -1680,7 +1688,7 @@ function wrapFoldStatsLine() {
     + `${s.folded.i64}/${s.emitted.i64} asIntN(64), ${s.folded.u64}/${s.emitted.u64} asUintN(64)), collapsing `
     + `${s.totalRoots} maximal chains, longest ${s.maxTerms} terms; `
     + `refused ${[...s.refused].map(([k, v]) => `${v} ${k}`).join(', ') || '(none)'}\n`
-    + `wrap pairs:    ${s.bitConsumer} taken by a 32-bit bitwise/shift consumer, `
+    + `wrap pairs:    ${s.castConsumer} taken by a same-width cast, ${s.bitConsumer} by a 32-bit bitwise/shift consumer, `
     + `${s.pairKey} where the two masks differ in signedness, `
     + `${s.ternaryArms} \`?:\` arms hoisted over ${s.ternaryOffers} offers\n`
     + (s.verify ? `wrap verify:   ${s.verified} folds cleared by ${s.cases} differential cases\n` : '');
@@ -2107,7 +2115,10 @@ export class Emitter {
       return { code: String(Number(v)), prec: Number(v) < 0 ? PREC.unary : PREC.atom, const: String(Number(v)), rep: 'val' };
     }
     if (to.bits === 64) {
-      if (from.bits === 64) return { code: `BigInt.as${to.signed ? 'Int' : 'Uint'}N(64, ${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
+      if (from.bits === 64) {
+        const f = this.foldWrapCast(e, to.signed ? 'i64' : 'u64');
+        return { code: `BigInt.as${to.signed ? 'Int' : 'Uint'}N(64, ${this.group(f, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
+      }
       if (from.signed && to.signed) return { code: `BigInt(${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
       if (from.signed && !to.signed) return { code: `BigInt.asUintN(64, BigInt(${this.group(e, PREC.atom)}))`, prec: PREC.atom, rep: 'val' };
       return { code: `BigInt(${this.group(e, PREC.atom)} >>> 0)`, prec: PREC.atom, rep: 'val' };
@@ -2116,7 +2127,14 @@ export class Emitter {
       return { code: `Number(BigInt.as${to.signed ? 'Int' : 'Uint'}N(${to.bits}, ${this.group(e, PREC.atom)}))`, prec: PREC.atom, rep: 'val' };
     }
     if (to.bits === 32 && from.bits === 32) {
-      return { code: `${this.group(e, PREC.postfix)} ${to.signed ? '| 0' : '>>> 0'}`, prec: to.signed ? PREC['|'] : PREC.shift, rep: 'val' };
+      // A same-width signedness cast is `| 0` / `>>> 0` — a reduction mod 2^32,
+      // exactly like the ring operators' own root mask, so an operand that is
+      // itself such a mask may hand back its raw form (the pair rule).  This is
+      // where `num = num * 10 + (*bufp - '0')` was spending a mask: the `- '0'`
+      // subexpression is `int`, the addition is `unsigned`, and the conversion
+      // between them consumed a `| 0` it immediately re-reduced.
+      const f = this.foldWrapCast(e, to.signed ? 'i32' : 'u32');
+      return { code: `${this.group(f, PREC.postfix)} ${to.signed ? '| 0' : '>>> 0'}`, prec: to.signed ? PREC['|'] : PREC.shift, rep: 'val' };
     }
     if (to.bits < from.bits || (to.bits === from.bits && !to.signed) || to.bits < 32) {
       const helper = to.signed ? { 8: 'schar', 16: 'i16', 32: null }[to.bits] : { 8: 'uchar', 16: 'u16', 32: 'u32' }[to.bits];
@@ -4001,6 +4019,22 @@ export class Emitter {
       return r0;
     }
     return this.wrapCommit(w, key);
+  }
+
+  /**
+   * The operand of a same-width cast, un-masked where the cast's own reduction
+   * makes its mask redundant.  A cast is a unary chain root: nothing leaves it.
+   */
+  foldWrapCast(e, key) {
+    if (!WRAPFOLD2) return e;
+    const w = this.wrapCandidate(e, key);
+    if (!w) return e;
+    const tree = { op: 'cast', key, l: w.tree };
+    if (WRAPFOLD_VERIFY && !wrapVerify(tree)) { wrapRefuse('verify'); return e; }
+    WRAPFOLD_STATS.castConsumer++;
+    const out = this.wrapCommit(w, key);
+    WRAP_ROOTS.push(tree);
+    return out;
   }
 
   /**
