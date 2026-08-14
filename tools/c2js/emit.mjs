@@ -3999,9 +3999,16 @@ export class Emitter {
       return [l, r];
     }
     const out = [lw ? this.wrapCommit(lw, key, bit) : l, rw ? this.wrapCommit(rw, key, bit) : r];
-    // a bitwise/shift node terminates the chain — `coerceArith` offers nothing
-    // onward from one — so this is the maximal root, and it records itself
-    if (bit) WRAP_ROOTS.push(tree);
+    if (bit) {
+      // Keep the parentheses the mask used to supply.  `+` binds tighter than
+      // `>>` and `&`, so `(Luck() + 6) >> 1` is *correct* as `Luck() + 6 >> 1`
+      // and reads like a bug; the C says `(Luck() + 6) >> 1` and so should this.
+      // The ring path needs no such rule — `a + b + c` is the point of it.
+      for (let i = 0; i < 2; i++) if ((i ? rw : lw)) out[i] = { ...out[i], code: `(${out[i].code})`, prec: PREC.atom };
+      // a bitwise/shift node terminates the chain — `coerceArith` offers nothing
+      // onward from one — so this is the maximal root, and it records itself
+      WRAP_ROOTS.push(tree);
+    }
     return out;
   }
 
