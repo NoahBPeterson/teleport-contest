@@ -1337,7 +1337,7 @@ function polyman(fmt, arg) {
         untwoweapon();
 
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);  /* time to escape resets */
+        set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
         set_itimeout(
@@ -2398,7 +2398,7 @@ export function polymon(mntmp) {
         void hideunder(cptr.add(gy, $instance_globals_y_youmonst));
 
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);  /* time to escape resets */
+        set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
         set_itimeout(

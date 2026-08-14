@@ -170,10 +170,7 @@ export function* luaM_realloc_(L, block, osize, nsize) {
         $global_State_GCdebt,
         BigInt.asIntN(
             64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) + nsize - osize
-            )
+            (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) + nsize - osize)
         )
     );
     return newblock;

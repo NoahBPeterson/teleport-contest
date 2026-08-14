@@ -95,7 +95,7 @@ export function ARM_BONUS(obj) {
 export function Align2amask(x) {
     return ((((x) == -128)
         ? NHM.AM_NONE
-        : (((x) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((x) + 2) | 0))) >>> 0);
+        : (((x) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (x) + 2)) >>> 0);
 }
 
 /** C: include/align.h — the `Amask2msa(x)` macro body */

@@ -92,7 +92,7 @@ function tablerehash(vect, osize, nsize) {
         cptr.stPtro(vect, i, null, 8);
         while (p) {
             let hnext = cptr.ldPtro(p, $TString_u);  /* save next */
-            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) |
+            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & ((nsize) - 1) >>> 0) >>> 0)) |
                     0)))) >>> 0;  /* new position */
             cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));  /* chain it into array */
             cptr.stPtro(vect, h, p, 8);
@@ -237,7 +237,7 @@ export function luaS_remove(L, ts) {
     let p = cptr.add(
         cptr.ldPtr(tb),
         ((((((((cptr.ldI32o(ts, $TString_hash)) &
-            (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>>
+            ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>>
             0)) |
             0)))),
         8
@@ -276,7 +276,7 @@ function* internshrstr(L, str, l) {
     let h = luaS_hash(str, l, cptr.ldI32o(g, $global_State_seed));
     let list = cptr.add(
         cptr.ldPtr(tb),
-        ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))),
+        ((((((((h) & ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>> 0)) | 0)))),
         8
     );
     (void 0);  /* otherwise 'memcmp'/'memcpy' are undefined */
@@ -296,7 +296,7 @@ function* internshrstr(L, str, l) {
         (yield* growstrtab(L, tb));
         list = cptr.add(
             cptr.ldPtr(tb),
-            ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))),
+            ((((((((h) & ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>> 0)) | 0)))),
             8
         );  /* rehash with new size */
     }

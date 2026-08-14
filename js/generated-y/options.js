@@ -17850,9 +17850,8 @@ export function* next_opt(datawin, str) {
             cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);  /* replace ending ", " with "." */
         i = NHM.COLNO;  /* (greater than COLNO - 2) */
     } else {
-        i = (((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
-                (yield* Strlen_(str, __s_next_opt, 9770)) +
-                2) >>> 0) | 0;
+        i = ((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
+                (yield* Strlen_(str, __s_next_opt, 9770)) + 2) | 0;
     }
 
     if (i > 78) {

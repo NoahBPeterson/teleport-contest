@@ -2456,11 +2456,7 @@ export function coyotename(mtmp, buf) {
             x_monnam(mtmp, NHM.ARTICLE_NONE, null, 0, 1),
             (cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0
                 ? cptr.ldPtro(coynames, (22 - 1) | 0, 8)
-                : cptr.ldPtro(
-                    coynames,
-                    u32mod(cptr.ldI32o(mtmp, $monst_m_id), ((22 - 1) | 0) >>> 0),
-                    8
-                )
+                : cptr.ldPtro(coynames, u32mod(cptr.ldI32o(mtmp, $monst_m_id), (22 - 1) >>> 0), 8)
         );
     }
     return buf;

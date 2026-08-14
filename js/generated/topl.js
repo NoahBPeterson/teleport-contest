@@ -803,10 +803,7 @@ function msghistory_snapshot(purge) {
 
     snapshot_mesgs = alloc(Number(BigInt.asUintN(
         32,
-        BigInt.asUintN(
-            64,
-            BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) + 1n))) * 8n
-        )
+        BigInt.asUintN(64, BigInt.asUintN(64, (cptr.ldI64o(cw, $WinDesc_rows) + 1n)) * 8n)
     )));
     outidx = 0;
     inidx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));

@@ -1264,7 +1264,7 @@ export function* scatter(sx, sy, blastforce, scflags, obj) {
             tmp = rn2(((NHC.N_DIRS_Z - 2) | 0));  /* get the direction */
             cptr.st1o(stmp, $scatter_chain_dx, cptr.ld1so(cptr.decay(xdir), tmp, 1));
             cptr.st1o(stmp, $scatter_chain_dy, cptr.ld1so(cptr.decay(ydir), tmp, 1));
-            tmp = (((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt), 40))) >>> 0) | 0;
+            tmp = ((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt), 40))) | 0;
             if (tmp < 1)
                 tmp = 1;
             cptr.stI32o(stmp, $scatter_chain_range, rnd(tmp));  /* anywhere up to that determ. by wt */

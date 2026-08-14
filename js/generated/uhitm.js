@@ -2642,7 +2642,7 @@ function hmon_hitmon_dmg_recalc(hmd, obj) {
  * @param {CPtr<struct obj>} obj
  */
 function hmon_hitmon_poison(hmd, mon, obj) {
-    let nopoison = ((10 - (u32div(cptr.ldI32o(obj, $obj_owt), 10))) >>> 0) | 0;
+    let nopoison = (10 - (u32div(cptr.ldI32o(obj, $obj_owt), 10))) | 0;
 
     if (nopoison < 2)
         nopoison = 2;
@@ -6998,7 +6998,7 @@ export function explum(mdef, mattk) {
                     mdef,
                     $monst_mblinded,
                     (((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0) < 127
-                        ? ((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0)
+                        ? ((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp
                         : 127) >>> 0
                 );
                 cptr.stI32o(mdef, $monst_mcansee, 0);
@@ -7226,7 +7226,7 @@ function gulpum(mdef, mattk) {
                     if (!(cptr.ldI32o((mdef), $monst_mhp) < 1)) {
                         You(__s_hurriedly_regurgitate_the_sizzling_in, body_part(NHC.STOMACH));
                     } else {
-                        tmp = ((1 + (cptr.ldI32o(pd, $permonst_cwt) >>> 8)) >>> 0) | 0;
+                        tmp = (1 + (cptr.ldI32o(pd, $permonst_cwt) >>> 8)) | 0;
                         if (corpse_chance(mdef, cptr.add(gy, $instance_globals_y_youmonst), 1) &&
                                 !(cptr.ld1uo2(
                                     svm,

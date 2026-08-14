@@ -221,7 +221,7 @@ function byteoffset(L) {
     let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
     let n = luaL_checkinteger(L, 2);
-    let posi = BigInt.asIntN(64, ((n >= 0n) ? 1n : BigInt.asUintN(64, len.v + 1n)));
+    let posi = BigInt.asIntN(64, ((n >= 0n) ? 1n : len.v + 1n));
     posi = u_posrelat(luaL_optinteger(L, 3, posi), len.v);
     (void ((__builtin_expect(
         BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)),
@@ -277,7 +277,7 @@ function iter_aux(L, strict) {
         let next = utf8_decode(cptr.add(s, n), code, strict);
         if (cptr.eq(next, (null)) || (((cptr.ld1s((next))) & 192) == 128))
             return luaL_error(L, __s_invalid_utf_8_code);
-        lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, n + 1n)));
+        lua_pushinteger(L, BigInt.asIntN(64, (n + 1n)));
         lua_pushinteger(L, BigInt(code.v >>> 0));
         return 2;
     }

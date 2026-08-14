@@ -2893,7 +2893,7 @@ function trapeffect_bear_trap(mtmp, trap, trflags) {
             );
             return NHC.Trap_Effect_Finished;
         }
-        set_utrap(((rn2(4) + 4) | 0) >>> 0, NHC.TT_BEARTRAP);
+        set_utrap((rn2(4) + 4) >>> 0, NHC.TT_BEARTRAP);
         if (cptr.ldPtro(u, $you_usteed)) {
             pline(
                 __s_s_bear_trap_closes_on_s_s,
@@ -3510,7 +3510,7 @@ function trapeffect_pit(mtmp, trap, trflags) {
          * show "you were trapped in a pit" during disclosure's display
          * of enlightenment, but hero is dying *before* becoming trapped.
          */
-        set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);
+        set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);
         if (!steedintrap(trap, null)) {
             if (relevant_spikes) {
                 let oldumort = cptr.ldI32o(u, $you_umortality);
@@ -4342,7 +4342,7 @@ function trapeffect_landmine(mtmp, trap, trflags) {
                 : 0));
         let tx = cptr.ldI16o(trap, $trap_tx);
         let ty = cptr.ldI16o(trap, $trap_ty);
-        if (rn2(((cptr.ldI32o(cptr.ldPtro(mtmp, $monst_data), $permonst_cwt) + 1) >>> 0) | 0) <
+        if (rn2((cptr.ldI32o(cptr.ldPtro(mtmp, $monst_data), $permonst_cwt) + 1) | 0) <
                 ((u32div(800, 2)) | 0))
             return NHC.Trap_Effect_Finished;
         if (m_in_air(mtmp)) {
@@ -10478,7 +10478,7 @@ export function lava_effects() {
             boil_away = schar((!Fire_resistance()));
             /* if not fire resistant, sink_into_lava() will quickly be fatal;
                hero needs to escape immediately */
-            set_utrap(((rn2(4) + 4 + ((boil_away ? 2 : rn2(4) + 12) << 8)) | 0) >>> 0, NHC.TT_LAVA);
+            set_utrap((rn2(4) + 4 + ((boil_away ? 2 : rn2(4) + 12) << 8)) >>> 0, NHC.TT_LAVA);
             You(
                 __s_sink_into_the_s_s,
                 waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)),

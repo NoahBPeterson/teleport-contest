@@ -8288,7 +8288,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
                                 You(__s_pass_through_the_now_solid_rock);
                                 reset_utrap(1);
                             } else {
-                                set_utrap(((rn2(50) + 20) | 0) >>> 0, NHC.TT_INFLOOR);
+                                set_utrap((rn2(50) + 20) >>> 0, NHC.TT_INFLOOR);
                                 You(__s_are_firmly_stuck_in_the_cooling_rock);
                             }
                         }

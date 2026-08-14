@@ -1384,10 +1384,7 @@ function* peffect_booze(otmp) {
     ));
     if (!(cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         /* booze hits harder if drinking on an empty stomach */
-        (yield* make_confused(
-            itimeout_incr(HConfusion(), d(((2 + cptr.ldI32o(u, $you_uhs)) >>> 0) | 0, 8)),
-            0
-        ));
+        (yield* make_confused(itimeout_incr(HConfusion(), d((2 + cptr.ldI32o(u, $you_uhs)) | 0, 8)), 0));
     }
     /* the whiskey makes us feel better */
     if (!(cptr.ldI32o(otmp, $obj_oeroded) & 3))

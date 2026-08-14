@@ -3309,7 +3309,7 @@ function traceback_handler(L) {
 
 /** C ref: nhlua.c:2254 — @param {CPtr<lua_State>} L @returns {*} */
 function nhl_getmeminuse(L) {
-    return ((Math.imul(lua_gc(L, 3), 1024) + lua_gc(L, 4)) | 0) >>> 0;
+    return (Math.imul(lua_gc(L, 3), 1024) + lua_gc(L, 4)) >>> 0;
 }
 
 /* lua_pcall with our traceback handler and memory and instruction step

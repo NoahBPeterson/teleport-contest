@@ -82,7 +82,7 @@ function* checktab(L, arg, what) {
 function* tinsert(L) {
     let pos;  /* where to insert new element */
     let e = ((yield* checktab(L, 1, 7)), (yield* luaL_len(L, 1)));
-    e = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (e)) + 1n))));  /* first empty element */
+    e = (BigInt.asIntN(64, (BigInt.asUintN(64, (e)) + 1n)));  /* first empty element */
     switch (lua_gettop(L)) {
         case 2:
             {

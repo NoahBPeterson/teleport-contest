@@ -3284,11 +3284,10 @@ function eatcorpse(otmp) {
     cptr.stI32o(
         svc,
         $context_info_victual + $victual_info_reqtime,
-        ((3 +
+        (3 +
             ((!glob
                 ? cptr.ldI32o2(mons, mnum, $sizeof_permonst, $permonst_cwt)
-                : cptr.ldI32o(otmp, $obj_owt)) >>>
-                6)) >>> 0) | 0
+                : cptr.ldI32o(otmp, $obj_owt)) >>> 6)) | 0
     );
 
     if (!tp &&

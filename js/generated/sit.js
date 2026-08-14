@@ -920,7 +920,7 @@ export function dosit() {
                     cptr.stI32o(
                         u,
                         $you_utrap,
-                        (cptr.ldI32o(u, $you_utrap) + (((rn2(10) + 5) | 0) >>> 0)) | 0
+                        (cptr.ldI32o(u, $you_utrap) + ((rn2(10) + 5) >>> 0)) | 0
                     );
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
                     /* Must have fire resistance or they'd be dead already */

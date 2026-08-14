@@ -137,7 +137,7 @@ function getbaseline(f, pc, basepc) {
         cptr.stI32(basepc, -1);  /* start from the beginning */
         return cptr.ldI32o(f, $Proto_linedefined);
     } else {
-        let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;  /* get an estimate */
+        let i = (u32div((((pc)) >>> 0), 128) - 1) | 0;  /* get an estimate */
         /* estimate must be a lower bound of the correct base */
         (void 0);
         while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) &&

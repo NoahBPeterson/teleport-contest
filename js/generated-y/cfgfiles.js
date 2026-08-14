@@ -479,7 +479,7 @@ function* get_uchars(bufp, list, modlist, size, name) {
             case 56:
             case 57:
                 havenum = 1;
-                num = ((Math.imul(num, 10) >>> 0) + (((cptr.ld1s(bufp) - 48) | 0) >>> 0)) >>> 0;
+                num = ((Math.imul(num, 10) >>> 0) + ((cptr.ld1s(bufp) - 48) >>> 0)) >>> 0;
                 bufp = cptr.add(bufp, 1);
                 break;
             case 92:

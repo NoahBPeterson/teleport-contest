@@ -4134,7 +4134,7 @@ export function* yobjnam(obj, verb) {
             !obj_is_pname(obj) ||
             cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = (yield* shk_your(nextobuf(), obj));
-        let space_left = ((255 - (yield* Strlen_(outbuf, __s_yobjnam, 2271))) >>> 0) | 0;
+        let space_left = (255 - (yield* Strlen_(outbuf, __s_yobjnam, 2271))) | 0;
 
         s = __builtin___strncat_chk(
             outbuf,
@@ -4253,7 +4253,7 @@ export function* yname(obj) {
             !obj_is_pname(obj) ||
             cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = (yield* shk_your(nextobuf(), obj));
-        let space_left = ((255 - (yield* Strlen_(outbuf, __s_yname, 2368))) >>> 0) | 0;
+        let space_left = (255 - (yield* Strlen_(outbuf, __s_yname, 2368))) | 0;
 
         s = __builtin___strncat_chk(
             outbuf,
@@ -4283,7 +4283,7 @@ export function* Yname2(obj) {
 export function* ysimple_name(obj) {
     let outbuf = nextobuf();
     let s = (yield* shk_your(outbuf, obj));  /* assert( s == outbuf ); */
-    let space_left = ((255 - (yield* Strlen_(s, __s_ysimple_name, 2395))) >>> 0) | 0;
+    let space_left = (255 - (yield* Strlen_(s, __s_ysimple_name, 2395))) | 0;
 
     return __builtin___strncat_chk(
         s,
@@ -8410,8 +8410,7 @@ export function* readobjnam(bp, no_wish) {
                         $obj_owt,
                         (cptr.ldI32o(cptr.ldPtr(d), $obj_owt) +
                             (Math.imul(
-                                ((5 + Math.imul(cptr.ldI32o(d, $_readobjnam_data_gsize) - 2, 10)) |
-                                    0) >>>
+                                (5 + Math.imul(cptr.ldI32o(d, $_readobjnam_data_gsize) - 2, 10)) >>>
                                     0,
                                 cptr.ldI32o(cptr.ldPtr(d), $obj_owt)
                             ) >>> 0)) | 0

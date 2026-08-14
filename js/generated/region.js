@@ -1487,19 +1487,13 @@ export function region_stats(hdrfmt, hdrbuf, count, size) {
             cptr.stI64(
                 size,
                 cptr.ldI64(size) +
-                    BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))
-                    )
+                    BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))
             );
         if (cptr.ldPtro(rg, $NhRegion_leave_msg))
             cptr.stI64(
                 size,
                 cptr.ldI64(size) +
-                    BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))
-                    )
+                    BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))
             );
         cptr.stI64(
             size,

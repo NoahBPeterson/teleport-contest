@@ -4573,8 +4573,7 @@ function* throw_gold(obj) {
         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
     } else {
         /* consistent with range for normal objects */
-        range = (((((((acurrstr())) / 2) | 0) >>> 0) -
-                u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) >>> 0) | 0;
+        range = ((((((acurrstr())) / 2) | 0) >>> 0) - u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) | 0;
 
         /* see if the gold has a place to move into */
         odx = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0;

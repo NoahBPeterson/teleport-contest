@@ -118,7 +118,7 @@ function mainpositionTV(t, key) {
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
                     (((((((((cptr.ldI32o((ts), $TString_hash))) &
-                        (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>>
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
                         0)) |
                         0)))),
                     $sizeof_Node
@@ -130,7 +130,7 @@ function mainpositionTV(t, key) {
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
                     (((((((((luaS_hashlongstr(ts))) &
-                        (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>>
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
                         0)) |
                         0)))),
                     $sizeof_Node
@@ -1002,7 +1002,7 @@ export function luaH_getshortstr(t, key) {
     let n = ((cptr.add(
         cptr.ldPtro((t), $Table_node),
         (((((((((cptr.ldI32o((key), $TString_hash))) &
-            (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>>
+            ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
             0)) |
             0)))),
         $sizeof_Node

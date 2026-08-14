@@ -2169,11 +2169,8 @@ export function lua_gc(L, what, ...__va) {
                     32,
                     (((BigInt.asUintN(
                         64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o((g), $global_State_totalbytes) +
-                                cptr.ldI64o((g), $global_State_GCdebt)
-                        ))
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
                     )) >> 10n))
                 )));
                 break;
@@ -2184,11 +2181,8 @@ export function lua_gc(L, what, ...__va) {
                     32,
                     (((BigInt.asUintN(
                         64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o((g), $global_State_totalbytes) +
-                                cptr.ldI64o((g), $global_State_GCdebt)
-                        ))
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
                     )) & 1023n))
                 )));
                 break;

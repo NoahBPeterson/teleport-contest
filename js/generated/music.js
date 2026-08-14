@@ -592,7 +592,7 @@ function do_pit(x, y, tu_pit) {
             /* no pit here previously, or you were
                not in it even if there was */
             You(__s_fall_into_a_chasm);
-            set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);
+            set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);
             losehp(
                 ((Half_physical_damage()) ? ((((rnd(6) + 1) | 0) / 2) | 0) : rnd(6)),
                 __s_fell_into_a_chasm,
@@ -610,7 +610,7 @@ function do_pit(x, y, tu_pit) {
                     : 0));
 
             You(__s_are_jostled_around_violently);
-            set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);
+            set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);
             losehp(
                 ((Half_physical_damage())
                     ? ((((rnd(keepfooting ? 2 : 4) + 1) | 0) / 2) | 0)

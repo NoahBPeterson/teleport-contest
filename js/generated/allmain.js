@@ -629,7 +629,7 @@ export function moveloop_core() {
                         (cptr.stI32o(u, $you_udg_cnt, cptr.ldI32o(u, $you_udg_cnt) + -1)) - (-1);
                     if (!cptr.ldI32o(u, $you_udg_cnt)) {
                         intervene();
-                        cptr.stI32o(u, $you_udg_cnt, ((rn2(200) + 50) | 0) >>> 0);
+                        cptr.stI32o(u, $you_udg_cnt, (rn2(200) + 50) >>> 0);
                     }
                 }
                 /* XXX This should be recoded to use something like regions - a list of

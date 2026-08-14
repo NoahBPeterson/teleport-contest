@@ -2202,15 +2202,7 @@ function misc_stats(win, total_count, total_size) {
             ++count.v;
             size.v += BigInt.asIntN(
                 64,
-                (BigInt.asUintN(
-                    64,
-                    cptr.strlen(cptr.ldPtro2(
-                        objects,
-                        idx,
-                        $sizeof_objclass,
-                        $objclass_oc_uname
-                    )) + 1n
-                ))
+                (cptr.strlen(cptr.ldPtro2(objects, idx, $sizeof_objclass, $objclass_oc_uname)) + 1n)
             );
         }
     if (count.v || size.v) {
@@ -2422,7 +2414,7 @@ function list_migrating_mons(nextlevl) {
                 ? here
                 : ((c == 110)
                     ? nxtlv
-                    : ((c == 111) ? other : ((c == 97) ? (here + nxtlv + other) | 0 : 0)))) >>> 0;
+                    : ((c == 111) ? other : ((c == 97) ? here + nxtlv + other : 0)))) >>> 0;
         if (n > 0) {
             win = create_nhwindow()(NHM.NHW_TEXT);
             switch (c) {

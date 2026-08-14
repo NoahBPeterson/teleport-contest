@@ -1200,7 +1200,7 @@ export function luaV_idiv(L, m, n) {
     ))) {
         if (n == 0n)
             luaG_runerror(L, __s_attempt_to_divide_by_zero);
-        return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (m)))))));  /* n==-1; avoid overflow with 0x80000...//-1 */
+        return (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (m))))));  /* n==-1; avoid overflow with 0x80000...//-1 */
     } else {
         let q = m / n;  /* perform C division */
         if ((m ^ n) < 0n && m % n != 0n)
@@ -2903,10 +2903,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm))))
-                            ))
+                            ((BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm)))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -2971,10 +2968,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -3050,10 +3044,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -3129,10 +3120,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -3715,10 +3703,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -3793,10 +3778,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -3871,10 +3853,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -4387,10 +4366,7 @@ export function luaV_execute(L, ci) {
                         ((io)),
                         (luaV_shiftl(
                             i1.v,
-                            (BigInt.asIntN(
-                                64,
-                                (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (i2.v)))))
-                            ))
+                            (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (i2.v))))))
                         ))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -4620,13 +4596,7 @@ export function luaV_execute(L, ci) {
                 ib.v = (cptr.ldI64(((rb))));
                 {
                     io = (((ra)));
-                    cptr.stI64(
-                        ((io)),
-                        ((BigInt.asIntN(
-                            64,
-                            (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (ib.v)))))
-                        )))
-                    );
+                    cptr.stI64(((io)), ((BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (ib.v))))))));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
@@ -5836,15 +5806,12 @@ export function luaV_execute(L, ci) {
                     {
                         io = (((cptr.add(ra, 1, 16))));  /* update counter */
                         (void 0);
-                        cptr.stI64(((io)), BigInt.asIntN(64, (BigInt.asUintN(64, count - 1n))));
+                        cptr.stI64(((io)), BigInt.asIntN(64, (count - 1n)));
                     }
                     ;
                     idx = (BigInt.asIntN(
                         64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step)))
-                        ))
+                        ((BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step))))
                     ));  /* add step to index */
                     {
                         io = (((ra)));  /* update internal index */

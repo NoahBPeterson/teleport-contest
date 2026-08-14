@@ -60,7 +60,7 @@ function math_abs(L) {
     if (lua_isinteger(L, 1)) {
         let n = lua_tointegerx(L, 1, null);
         if (n < 0n)
-            n = BigInt.asIntN(64, (BigInt.asUintN(64, 0n - BigInt.asUintN(64, n))));
+            n = BigInt.asIntN(64, (0n - BigInt.asUintN(64, n)));
         lua_pushinteger(L, n);
     } else
         lua_pushnumber(L, fabs(luaL_checknumber(L, 1)));
@@ -402,7 +402,7 @@ function math_random(L) {
         BigInt.asUintN(64, BigInt.asUintN(64, up) - BigInt.asUintN(64, low)),
         state
     );
-    lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, p + BigInt.asUintN(64, low))));
+    lua_pushinteger(L, BigInt.asIntN(64, (p + BigInt.asUintN(64, low))));
     return 1;
 }
 

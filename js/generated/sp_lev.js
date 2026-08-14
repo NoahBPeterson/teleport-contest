@@ -4587,8 +4587,8 @@ function sp_amask_to_amask(sp_amask) {
                 : (((noncoalignment(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))) ==
                     NHM.A_LAWFUL)
                     ? NHM.AM_LAWFUL
-                    : (((noncoalignment(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))) + 2) |
-                        0))) >>> 0);
+                    : (noncoalignment(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))) +
+                        2)) >>> 0);
     else if (sp_amask == NHM.AM_SPLEV_RANDOM)
         amask = induced_align(80);
     else
@@ -6238,12 +6238,11 @@ export function lspo_message(L) {
     msg = (luaL_checklstring(L, 1, null));
 
     old_n = (cptr.ldPtro(gl, $instance_globals_l_lev_message)
-            ? ((Strlen_(cptr.ldPtro(gl, $instance_globals_l_lev_message), __s_lspo_message, 3094) +
-                1) >>> 0)
+            ? Strlen_(cptr.ldPtro(gl, $instance_globals_l_lev_message), __s_lspo_message, 3094) + 1
             : 0) | 0;
     n = Strlen_(msg, __s_lspo_message, 3095) | 0;
 
-    levmsg = alloc(((old_n + n + 1) | 0) >>> 0);
+    levmsg = alloc((old_n + n + 1) >>> 0);
     if (old_n)
         cptr.st1o(levmsg, (old_n - 1) | 0, 10);
     if (cptr.ldPtro(gl, $instance_globals_l_lev_message))
@@ -9809,9 +9808,7 @@ function levregion_add(lregion) {
             32,
             BigInt.asUintN(
                 64,
-                32n *
-                    BigInt((((1 + cptr.ldI32o(gn, $instance_globals_n_num_lregions)) | 0) >>>
-                        0) >>> 0)
+                32n * BigInt(((1 + cptr.ldI32o(gn, $instance_globals_n_num_lregions)) >>> 0) >>> 0)
             )
         )));
 

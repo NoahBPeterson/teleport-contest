@@ -1000,7 +1000,7 @@ export function next_ident() {
        uses 16-bit 'int'), just live with that and hope no o_id conflicts
        between objects or m_id conflicts between monsters arise */
     if (!cptr.ldI32(svc))
-        cptr.stI32(svc, ((rnd(2) + 1) | 0) >>> 0);  /* id 1 is reserved */
+        cptr.stI32(svc, (rnd(2) + 1) >>> 0);  /* id 1 is reserved */
 
     return res;
 }
@@ -4951,7 +4951,7 @@ export function obj_absorb(obj1, obj2) {
             );
             cptr.stI32o(otmp1, $obj_owt, (cptr.ldI32o(otmp1, $obj_owt) + (o2wt >>> 0)) | 0);
             if (cptr.ldI32o(otmp1, $obj_oeaten) || cptr.ldI32o(otmp2, $obj_oeaten))
-                cptr.stI32o(otmp1, $obj_oeaten, ((o1wt + o2wt) | 0) >>> 0);
+                cptr.stI32o(otmp1, $obj_oeaten, (o1wt + o2wt) >>> 0);
             cptr.stI64o(otmp1, $obj_quan, 1n);
             if ((cptr.ldI32o(otmp1, $obj_globby) & 1) | 0 &&
                     (cptr.ldI32o(otmp2, $obj_globby) & 1) | 0) {

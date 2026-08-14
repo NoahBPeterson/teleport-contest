@@ -329,14 +329,13 @@ export function* dog_nutrition(mtmp, obj) {
             cptr.stI32o(
                 mtmp,
                 $monst_meating,
-                ((3 +
+                (3 +
                     (cptr.ldI32o2(
                         mons,
                         cptr.ldI32o(obj, $obj_corpsenm),
                         $sizeof_permonst,
                         $permonst_cwt
-                    ) >>>
-                        6)) >>> 0) | 0
+                    ) >>> 6)) | 0
             );
             nutrit = cptr.ldU16o2(
                 mons,
@@ -404,7 +403,7 @@ export function* dog_nutrition(mtmp, obj) {
          * nutrit made consistent with polymorphed player nutrit in
          * eat.c.  (This also applies to pets eating gold.)
          */
-        cptr.stI32o(mtmp, $monst_meating, ((u32div(cptr.ldI32o(obj, $obj_owt), 20) + 1) >>> 0) | 0);
+        cptr.stI32o(mtmp, $monst_meating, (u32div(cptr.ldI32o(obj, $obj_owt), 20) + 1) | 0);
         nutrit = Math.imul(
             5,
             cptr.ldU16o2(

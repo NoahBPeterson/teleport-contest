@@ -4478,7 +4478,7 @@ function* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) 
                     glyph = (((cptr.ldI32o(mtmp, $monst_mappearance)) == NHC.S_stone)
                             ? NHC.GLYPH_CMAP_STONE_OFF
                             : (((cptr.ldI32o(mtmp, $monst_mappearance)) <= NHC.S_trwall)
-                                ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                     NHC.S_vwall +
                                     ((In_mines(cptr.add(u, $you_uz))
                                         ? NHC.GLYPH_CMAP_MINES_OFF
@@ -4509,24 +4509,23 @@ function* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) 
                                                 : ((cptr.ldI16((cptr.add(u, $you_uz))) ==
                                                     sokoban_dnum())
                                                     ? NHC.GLYPH_CMAP_SOKO_OFF
-                                                    : NHC.GLYPH_CMAP_MAIN_OFF)))) >>>
-                                        0)) >>> 0)
+                                                    : NHC.GLYPH_CMAP_MAIN_OFF)))) >>> 0)
                                 : (((cptr.ldI32o(mtmp, $monst_mappearance)) < NHC.S_altar)
-                                    ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                    ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                         NHC.S_ndoor +
-                                        NHC.GLYPH_CMAP_A_OFF) >>> 0)
+                                        NHC.GLYPH_CMAP_A_OFF
                                     : (((cptr.ldI32o(mtmp, $monst_mappearance)) == NHC.S_altar)
-                                        ? ((((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)) >>> 0)
+                                        ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) >>> 0)
                                         : (((cptr.ldI32o(mtmp, $monst_mappearance)) <
-                                            (((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0) >>> 0))
-                                            ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) >>> 0))
+                                            ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                                 NHC.S_grave +
-                                                NHC.GLYPH_CMAP_B_OFF) >>> 0)
+                                                NHC.GLYPH_CMAP_B_OFF
                                             : (((cptr.ldI32o(mtmp, $monst_mappearance)) <=
                                                 NHC.S_goodpos)
-                                                ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                                ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                                     NHC.S_digbeam +
-                                                    NHC.GLYPH_CMAP_C_OFF) >>> 0)
+                                                    NHC.GLYPH_CMAP_C_OFF
                                                 : NHC.MAX_GLYPH)))))) | 0;
                 } else {
                     let save_spot = cptr.alloc(36);

@@ -4947,7 +4947,7 @@ export function recalc_mapseen() {
                     cptr.stI32o(
                         mptr,
                         $mapseen_feat + $mapseen_feat_shoptype,
-                        (((NHC.SHOPBASE - 1) | 0) >>> 0)
+                        ((NHC.SHOPBASE - 1) >>> 0)
                     );
                 else if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3))
                     cptr.stI32o(

@@ -1650,7 +1650,7 @@ function* migr_booty_item(otyp, gang) {
 
     otmp = (yield* mksobj_migr_to_species(otyp, NHM.M2_ORC, 1, 0));
     if (otmp && gang) {
-        (yield* new_oname(otmp, (((yield* Strlen_(gang, __s_migr_booty_item, 786)) + 1) >>> 0) | 0));  /* removes old name if present */
+        (yield* new_oname(otmp, ((yield* Strlen_(gang, __s_migr_booty_item, 786)) + 1) | 0));  /* removes old name if present */
         void cptr.strcpy((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))), gang);
         if (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS) {
             if (otyp == NHC.SLIME_MOLD)

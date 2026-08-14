@@ -6798,8 +6798,7 @@ export function let_to_name(let$, unpaid, showsym) {
         void cptr.strcpy(cptr.ldPtro(gi, $instance_globals_i_invbuf), class_name);
     if ((oclass != 0) && showsym) {
         let bp = eos(cptr.ldPtro(gi, $instance_globals_i_invbuf));
-        let mlen = (((invbuf_sympadding >>> 0) -
-                Strlen_(class_name, __s_let_to_name, 4830)) >>> 0) | 0;
+        let mlen = ((invbuf_sympadding >>> 0) - Strlen_(class_name, __s_let_to_name, 4830)) | 0;
         while (--mlen > 0) {
             cptr.st1(bp, 32);
             bp = cptr.add(bp, 1);

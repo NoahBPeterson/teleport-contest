@@ -210,7 +210,7 @@ export function* luaK_nil(fs, from, n) {
             (cptr.stI32(
                 previous,
                 (((((cptr.ldI32(previous)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) |
-                    (((((((l - from) | 0) >>> 0) << 16) >>> 0) &
+                    ((((((l - from) >>> 0) << 16) >>> 0) &
                         (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
                         0)) >>> 0)
             ));
@@ -252,7 +252,7 @@ function* fixjump(fs, pc, dest) {
     (cptr.stI32(
         jmp,
         (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) |
-            (((((((((((offset) + 16777215) | 0)) >>> 0))) << 7) >>> 0) &
+            (((((((((offset) + 16777215) >>> 0))) << 7) >>> 0) &
                 (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>>
                 0)) >>> 0)
     ));
@@ -660,7 +660,7 @@ export function* luaK_codeABx(fs, o, a, bc) {
  * @returns {CInt}
  */
 function* codeAsBx(fs, o, a, bc) {
-    let b = ((bc + 65535) | 0) >>> 0;
+    let b = (bc + 65535) >>> 0;
     (void 0);
     (void 0);
     return (yield* luaK_code(
@@ -681,7 +681,7 @@ function* codeAsBx(fs, o, a, bc) {
  * @returns {CInt}
  */
 function* codesJ(fs, o, sj, k) {
-    let j = ((sj + 16777215) | 0) >>> 0;
+    let j = (sj + 16777215) >>> 0;
     (void 0);
     (void 0);
     return (yield* luaK_code(
@@ -1081,7 +1081,7 @@ export function* luaK_setreturns(fs, e, nresults) {
         (cptr.stI32(
             pc,
             (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
-                (((((((nresults + 1) | 0) >>> 0) << 24) >>> 0) &
+                ((((((nresults + 1) >>> 0) << 24) >>> 0) &
                     (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
                     0)) >>> 0)
         ));
@@ -1090,7 +1090,7 @@ export function* luaK_setreturns(fs, e, nresults) {
         (cptr.stI32(
             pc,
             (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
-                (((((((nresults + 1) | 0) >>> 0) << 24) >>> 0) &
+                ((((((nresults + 1) >>> 0) << 24) >>> 0) &
                     (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
                     0)) >>> 0)
         ));
@@ -2180,7 +2180,7 @@ function* finishbinexpneg(fs, e1, e2, op, line, event) {
                 )) &
                     (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>>
                     0) |
-                    (((((((((v2) + 127) | 0)) >>> 0) << 16) >>> 0) &
+                    (((((((v2) + 127) >>> 0) << 16) >>> 0) &
                         (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
                         0)) >>>
                     0),
@@ -2380,7 +2380,7 @@ export function* luaK_prefix(fs, opr, e, line) {
     switch (opr) {
         case NHC.OPR_MINUS:
         case NHC.OPR_BNOT:
-            if ((yield* constfolding(fs, ((opr + 12) >>> 0) | 0, e, __static_luaK_prefix_ef)))
+            if ((yield* constfolding(fs, (opr + 12) | 0, e, __static_luaK_prefix_ef)))
                 break;
         case NHC.OPR_LEN:
             (yield* codeunexpval(fs, unopr2op(opr), e, line));
@@ -2490,8 +2490,7 @@ function* codeconcat(fs, e1, e2, line) {
         (cptr.stI32(
             ie2,
             (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) |
-                (((((((n + 1) | 0) >>> 0) << 16) >>> 0) &
-                    (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
+                ((((((n + 1) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
                     0)) >>> 0)
         ));  /* will concatenate one more element */
     } else {
@@ -2514,7 +2513,7 @@ function* codeconcat(fs, e1, e2, line) {
  */
 export function* luaK_posfix(fs, opr, e1, e2, line) {
     (yield* luaK_dischargevars(fs, e2));
-    if (((opr) <= NHC.OPR_SHR) && (yield* constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2)))
+    if (((opr) <= NHC.OPR_SHR) && (yield* constfolding(fs, (opr + 0) | 0, e1, e2)))
         return;  /* done by folding */
     switch (opr) {
         case NHC.OPR_AND:
@@ -2734,8 +2733,7 @@ export function* luaK_finish(fs) {
                             pc,
                             (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>>
                                 0) |
-                                (((((((cptr.ld1uo(p, $Proto_numparams) + 1) | 0) >>> 0) << 24) >>>
-                                    0) &
+                                ((((((cptr.ld1uo(p, $Proto_numparams) + 1) >>> 0) << 24) >>> 0) &
                                     (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
                                     0)) >>> 0)
                         ));  /* signal that it is vararg */

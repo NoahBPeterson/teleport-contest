@@ -1548,7 +1548,7 @@ export function* digactualhole(x, y, madeby, ttyp) {
 
         if (at_u) {
             if (!wont_fall) {
-                set_utrap(((rn2(4) + 2) | 0) >>> 0, NHC.TT_PIT);
+                set_utrap((rn2(4) + 2) >>> 0, NHC.TT_PIT);
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* vision limits change */
             } else
                 (yield* reset_utrap(1));
@@ -3252,7 +3252,7 @@ export function* bury_an_obj(otmp, dealloced) {
         cptr.st1(dealloced, 0);
     if (cptr.eq(otmp, uball.v)) {
         (yield* unpunish());
-        set_utrap(((rn2(50) + 20) | 0) >>> 0, NHC.TT_BURIEDBALL);
+        set_utrap((rn2(50) + 20) >>> 0, NHC.TT_BURIEDBALL);
         (yield* pline_The(__s_iron_ball_gets_buried));
     }
     /* after unpunish(), or might get deallocated chain */

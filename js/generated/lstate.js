@@ -133,10 +133,7 @@ export function luaE_setdebt(g, debt) {
         64,
         (BigInt.asUintN(
             64,
-            (BigInt.asIntN(
-                64,
-                cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt)
-            ))
+            (cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))
         ))
     );
     (void 0);

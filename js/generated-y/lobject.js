@@ -323,20 +323,11 @@ export function luaO_ceillog2(x) {
 function* intarith(L, op, v1, v2) {
     switch (op) {
         case 0:
-            return (BigInt.asIntN(
-                64,
-                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) + (BigInt.asUintN(64, (v2)))))
-            ));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) + (BigInt.asUintN(64, (v2))))));
         case 1:
-            return (BigInt.asIntN(
-                64,
-                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) - (BigInt.asUintN(64, (v2)))))
-            ));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) - (BigInt.asUintN(64, (v2))))));
         case 2:
-            return (BigInt.asIntN(
-                64,
-                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) * (BigInt.asUintN(64, (v2)))))
-            ));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) * (BigInt.asUintN(64, (v2))))));
         case 3:
             return (yield* luaV_mod(L, v1, v2));
         case 6:
@@ -350,12 +341,9 @@ function* intarith(L, op, v1, v2) {
         case 10:
             return luaV_shiftl(v1, v2);
         case 11:
-            return luaV_shiftl(
-                v1,
-                (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v2)))))))
-            );
+            return luaV_shiftl(v1, (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (v2)))))));
         case 12:
-            return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v1)))))));
+            return (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (v1))))));
         case 13:
             return (BigInt.asIntN(64, (18446744073709551615n ^ (BigInt.asUintN(64, (v1))))));
         default:
@@ -651,7 +639,7 @@ function* l_str2int(s, result) {
     if (empty || cptr.ld1s(s.v) != 0)
         return null;  /* something wrong in the numeral */
     else {
-        cptr.stI64(result, (BigInt.asIntN(64, ((neg) ? BigInt.asUintN(64, 0n - a) : a))));
+        cptr.stI64(result, (BigInt.asIntN(64, ((neg) ? 0n - a : a))));
         return s.v;
     }
 }
@@ -677,7 +665,7 @@ export function* luaO_str2num(s, o) {
         ;
     } else
         return 0n;  /* conversion failed */
-    return BigInt.asUintN(64, BigInt.asIntN(64, (cptr.diff(e, s)) + 1n));  /* success; return string size */
+    return BigInt.asUintN(64, ((cptr.diff(e, s)) + 1n));  /* success; return string size */
 }
 
 /** C ref: lobject.c:323 — @param {CPtr<char>} buff @param {CLongLong} x @returns {CInt} */

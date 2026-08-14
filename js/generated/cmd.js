@@ -4630,7 +4630,7 @@ export function bind_key(key, command, user) {
     }
 
     /* copy command to buf for modification */
-    len = BigInt.asIntN(64, BigInt.asUintN(64, cptr.strlen(command) + 1n));
+    len = BigInt.asIntN(64, (cptr.strlen(command) + 1n));
     buf = alloc(Number(BigInt.asUintN(32, len)));
     void __builtin___strncpy_chk(
         buf,

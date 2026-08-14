@@ -34883,7 +34883,7 @@ function* luaV_idiv(L, m, n) {
     ))) {
         if (n == 0n)
             (yield* luaG_runerror(L, __s_attempt_to_divide_by_zero));
-        return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (m)))))));  /* n==-1; avoid overflow with 0x80000...//-1 */
+        return (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (m))))));  /* n==-1; avoid overflow with 0x80000...//-1 */
     } else {
         let q = m / n;  /* perform C division */
         if ((m ^ n) < 0n && m % n != 0n)
@@ -36586,10 +36586,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm))))
-                            ))
+                            ((BigInt.asUintN(64, (iv1))) + (BigInt.asUintN(64, BigInt((imm)))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -36654,10 +36651,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -36733,10 +36727,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -36812,10 +36803,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -37398,10 +37386,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) + (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -37476,10 +37461,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) - (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -37554,10 +37536,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         ((BigInt.asIntN(
                             64,
-                            (BigInt.asUintN(
-                                64,
-                                (BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v)))
-                            ))
+                            ((BigInt.asUintN(64, (i1.v))) * (BigInt.asUintN(64, (i2.v))))
                         )))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -38070,10 +38049,7 @@ function* luaV_execute(L, ci) {
                         ((io)),
                         (luaV_shiftl(
                             i1.v,
-                            (BigInt.asIntN(
-                                64,
-                                (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (i2.v)))))
-                            ))
+                            (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (i2.v))))))
                         ))
                     );
                     (cptr.st1o((io), $TValue_tt_, 3));
@@ -38303,13 +38279,7 @@ function* luaV_execute(L, ci) {
                 ib.v = (cptr.ldI64(((rb))));
                 {
                     io = (((ra)));
-                    cptr.stI64(
-                        ((io)),
-                        ((BigInt.asIntN(
-                            64,
-                            (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (ib.v)))))
-                        )))
-                    );
+                    cptr.stI64(((io)), ((BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (ib.v))))))));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
@@ -39519,15 +39489,12 @@ function* luaV_execute(L, ci) {
                     {
                         io = (((cptr.add(ra, 1, 16))));  /* update counter */
                         (void 0);
-                        cptr.stI64(((io)), BigInt.asIntN(64, (BigInt.asUintN(64, count - 1n))));
+                        cptr.stI64(((io)), BigInt.asIntN(64, (count - 1n)));
                     }
                     ;
                     idx = (BigInt.asIntN(
                         64,
-                        (BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step)))
-                        ))
+                        ((BigInt.asUintN(64, (idx))) + (BigInt.asUintN(64, (step))))
                     ));  /* add step to index */
                     {
                         io = (((ra)));  /* update internal index */
@@ -40571,20 +40538,11 @@ function luaO_ceillog2(x) {
 function* intarith(L, op, v1, v2) {
     switch (op) {
         case 0:
-            return (BigInt.asIntN(
-                64,
-                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) + (BigInt.asUintN(64, (v2)))))
-            ));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) + (BigInt.asUintN(64, (v2))))));
         case 1:
-            return (BigInt.asIntN(
-                64,
-                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) - (BigInt.asUintN(64, (v2)))))
-            ));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) - (BigInt.asUintN(64, (v2))))));
         case 2:
-            return (BigInt.asIntN(
-                64,
-                (BigInt.asUintN(64, (BigInt.asUintN(64, (v1))) * (BigInt.asUintN(64, (v2)))))
-            ));
+            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (v1))) * (BigInt.asUintN(64, (v2))))));
         case 3:
             return (yield* luaV_mod(L, v1, v2));
         case 6:
@@ -40598,12 +40556,9 @@ function* intarith(L, op, v1, v2) {
         case 10:
             return luaV_shiftl(v1, v2);
         case 11:
-            return luaV_shiftl(
-                v1,
-                (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v2)))))))
-            );
+            return luaV_shiftl(v1, (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (v2)))))));
         case 12:
-            return (BigInt.asIntN(64, (BigInt.asUintN(64, 0n - (BigInt.asUintN(64, (v1)))))));
+            return (BigInt.asIntN(64, (0n - (BigInt.asUintN(64, (v1))))));
         case 13:
             return (BigInt.asIntN(64, (18446744073709551615n ^ (BigInt.asUintN(64, (v1))))));
         default:
@@ -40899,7 +40854,7 @@ function* l_str2int(s, result) {
     if (empty || cptr.ld1s(s.v) != 0)
         return null;  /* something wrong in the numeral */
     else {
-        cptr.stI64(result, (BigInt.asIntN(64, ((neg) ? BigInt.asUintN(64, 0n - a) : a))));
+        cptr.stI64(result, (BigInt.asIntN(64, ((neg) ? 0n - a : a))));
         return s.v;
     }
 }
@@ -40925,7 +40880,7 @@ function* luaO_str2num(s, o) {
         ;
     } else
         return 0n;  /* conversion failed */
-    return BigInt.asUintN(64, BigInt.asIntN(64, (cptr.diff(e, s)) + 1n));  /* success; return string size */
+    return BigInt.asUintN(64, ((cptr.diff(e, s)) + 1n));  /* success; return string size */
 }
 
 /** C ref: lobject.c:323 — @param {CPtr<char>} buff @param {CLongLong} x @returns {CInt} */
@@ -41416,7 +41371,7 @@ function mainpositionTV(t, key) {
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
                     (((((((((cptr.ldI32o((ts), $TString_hash))) &
-                        (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>>
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
                         0)) |
                         0)))),
                     $sizeof_Node
@@ -41428,7 +41383,7 @@ function mainpositionTV(t, key) {
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
                     (((((((((luaS_hashlongstr(ts))) &
-                        (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>>
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
                         0)) |
                         0)))),
                     $sizeof_Node
@@ -42300,7 +42255,7 @@ function luaH_getshortstr(t, key) {
     let n = ((cptr.add(
         cptr.ldPtro((t), $Table_node),
         (((((((((cptr.ldI32o((key), $TString_hash))) &
-            (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>>
+            ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) >>> 0) >>>
             0)) |
             0)))),
         $sizeof_Node
@@ -43875,10 +43830,7 @@ function* checkSizes(L, g) {
                 g,
                 $global_State_GCestimate,
                 cptr.ldU64o(g, $global_State_GCestimate) +
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)
-                    )
+                    BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
             );  /* correct estimate */
         }
     }
@@ -44159,18 +44111,11 @@ function setpause(g) {
             : 9223372036854775807n;  /* overflow; truncate to maximum */
     debt = BigInt.asIntN(
         64,
-        BigInt.asUintN(
+        ((BigInt.asUintN(
             64,
-            (BigInt.asUintN(
-                64,
-                (BigInt.asIntN(
-                    64,
-                    cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt)
-                ))
-            )) -
-                BigInt.asUintN(64, threshold)
-        )
+            (cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))
+        )) -
+            BigInt.asUintN(64, threshold))
     );
     if (debt > 0n)
         debt = 0n;
@@ -44491,10 +44436,7 @@ function* atomic2gen(L, g) {
         $global_State_GCestimate,
         (BigInt.asUintN(
             64,
-            (BigInt.asIntN(
-                64,
-                cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt)
-            ))
+            (cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))
         ))
     );  /* base for memory control */
     (yield* finishgencycle(L, g));
@@ -44514,11 +44456,8 @@ function setminordebt(g) {
                 64,
                 (((BigInt.asUintN(
                     64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
+                    (cptr.ldI64o((g), $global_State_totalbytes) +
+                        cptr.ldI64o((g), $global_State_GCdebt))
                 )) / 100n))
             )) *
                 BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0)
@@ -44630,11 +44569,8 @@ function* stepgenfull(L, g) {
             $global_State_GCestimate,
             (BigInt.asUintN(
                 64,
-                (BigInt.asIntN(
-                    64,
-                    cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt)
-                ))
+                (cptr.ldI64o((g), $global_State_totalbytes) +
+                    cptr.ldI64o((g), $global_State_GCdebt))
             ))
         );  /* first estimate */
         (yield* entersweep(L));
@@ -44680,21 +44616,15 @@ function* genstep(L, g) {
         if (cptr.ldI64o(g, $global_State_GCdebt) > 0n &&
                 (BigInt.asUintN(
                     64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
+                    (cptr.ldI64o((g), $global_State_totalbytes) +
+                        cptr.ldI64o((g), $global_State_GCdebt))
                 )) >
                     BigInt.asUintN(64, majorbase + majorinc)) {
             let numobjs = (yield* fullgen(L, g));  /* do a major collection */
             if ((BigInt.asUintN(
                 64,
-                (BigInt.asIntN(
-                    64,
-                    cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt)
-                ))
+                (cptr.ldI64o((g), $global_State_totalbytes) +
+                    cptr.ldI64o((g), $global_State_GCdebt))
             )) <
                     BigInt.asUintN(64, majorbase + (majorinc / 2n))) {
                 /* collected at least half of memory growth since last major
@@ -44859,10 +44789,7 @@ function* sweepstep(L, g, nextstate, nextlist) {
             g,
             $global_State_GCestimate,
             cptr.ldU64o(g, $global_State_GCestimate) +
-                BigInt.asUintN(
-                    64,
-                    BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)
-                )
+                BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
         );  /* update estimate */
         return count.v;
     } else {
@@ -44904,11 +44831,8 @@ function* singlestep(L) {
                     $global_State_GCestimate,
                     (BigInt.asUintN(
                         64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o((g), $global_State_totalbytes) +
-                                cptr.ldI64o((g), $global_State_GCdebt)
-                        ))
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
                     ))
                 );  /* first estimate */
                 break;
@@ -44984,21 +44908,14 @@ function* incstep(L, g) {
     let stepmul = ((Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4)) | 1);  /* avoid division by 0 */
     let debt = BigInt.asIntN(
         64,
-        BigInt.asUintN(
-            64,
-            (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) *
-                BigInt.asUintN(64, BigInt(stepmul))
-        )
+        ((BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) *
+            BigInt.asUintN(64, BigInt(stepmul)))
     );
     let stepsize = BigInt.asIntN(
         64,
         ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n)
-            ? BigInt.asUintN(
-                64,
-                (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) /
-                    16n) *
-                    BigInt.asUintN(64, BigInt(stepmul))
-            )
+            ? (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) / 16n) *
+                BigInt.asUintN(64, BigInt(stepmul))
             : 9223372036854775807n)
     );  /* overflow; keep maximum value */
     do {
@@ -45008,10 +44925,7 @@ function* incstep(L, g) {
     if (cptr.ld1uo(g, $global_State_gcstate) == 8)
         setpause(g);  /* pause until next cycle */
     else {
-        debt = BigInt.asIntN(
-            64,
-            BigInt.asUintN(64, BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n)
-        );  /* convert 'work units' to bytes */
+        debt = BigInt.asIntN(64, (BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n));  /* convert 'work units' to bytes */
         luaE_setdebt(g, debt);
     }
 }
@@ -45745,7 +45659,7 @@ function getbaseline(f, pc, basepc) {
         cptr.stI32(basepc, -1);  /* start from the beginning */
         return cptr.ldI32o(f, $Proto_linedefined);
     } else {
-        let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;  /* get an estimate */
+        let i = (u32div((((pc)) >>> 0), 128) - 1) | 0;  /* get an estimate */
         /* estimate must be a lower bound of the correct base */
         (void 0);
         while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) &&
@@ -47367,10 +47281,7 @@ function* luaM_realloc_(L, block, osize, nsize) {
         $global_State_GCdebt,
         BigInt.asIntN(
             64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) + nsize - osize
-            )
+            (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) + nsize - osize)
         )
     );
     return newblock;
@@ -47510,7 +47421,7 @@ function tablerehash(vect, osize, nsize) {
         cptr.stPtro(vect, i, null, 8);
         while (p) {
             let hnext = cptr.ldPtro(p, $TString_u);  /* save next */
-            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & (((nsize) - 1) | 0) >>> 0) >>> 0)) |
+            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & ((nsize) - 1) >>> 0) >>> 0)) |
                     0)))) >>> 0;  /* new position */
             cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));  /* chain it into array */
             cptr.stPtro(vect, h, p, 8);
@@ -47655,7 +47566,7 @@ function luaS_remove(L, ts) {
     let p = cptr.add(
         cptr.ldPtr(tb),
         ((((((((cptr.ldI32o(ts, $TString_hash)) &
-            (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>>
+            ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>>
             0)) |
             0)))),
         8
@@ -47694,7 +47605,7 @@ function* internshrstr(L, str, l) {
     let h = luaS_hash(str, l, cptr.ldI32o(g, $global_State_seed));
     let list = cptr.add(
         cptr.ldPtr(tb),
-        ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))),
+        ((((((((h) & ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>> 0)) | 0)))),
         8
     );
     (void 0);  /* otherwise 'memcmp'/'memcpy' are undefined */
@@ -47714,7 +47625,7 @@ function* internshrstr(L, str, l) {
         (yield* growstrtab(L, tb));
         list = cptr.add(
             cptr.ldPtr(tb),
-            ((((((((h) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))),
+            ((((((((h) & ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>> 0)) | 0)))),
             8
         );  /* rehash with new size */
     }
@@ -49511,10 +49422,7 @@ function luaE_setdebt(g, debt) {
         64,
         (BigInt.asUintN(
             64,
-            (BigInt.asIntN(
-                64,
-                cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt)
-            ))
+            (cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))
         ))
     );
     (void 0);
@@ -50756,7 +50664,7 @@ function* luaK_nil(fs, from, n) {
             (cptr.stI32(
                 previous,
                 (((((cptr.ldI32(previous)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) |
-                    (((((((l - from) | 0) >>> 0) << 16) >>> 0) &
+                    ((((((l - from) >>> 0) << 16) >>> 0) &
                         (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
                         0)) >>> 0)
             ));
@@ -50798,7 +50706,7 @@ function* fixjump(fs, pc, dest) {
     (cptr.stI32(
         jmp,
         (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) |
-            (((((((((((offset) + 16777215) | 0)) >>> 0))) << 7) >>> 0) &
+            (((((((((offset) + 16777215) >>> 0))) << 7) >>> 0) &
                 (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>>
                 0)) >>> 0)
     ));
@@ -51206,7 +51114,7 @@ function* luaK_codeABx(fs, o, a, bc) {
  * @returns {CInt}
  */
 function* codeAsBx(fs, o, a, bc) {
-    let b = ((bc + 65535) | 0) >>> 0;
+    let b = (bc + 65535) >>> 0;
     (void 0);
     (void 0);
     return (yield* luaK_code(
@@ -51227,7 +51135,7 @@ function* codeAsBx(fs, o, a, bc) {
  * @returns {CInt}
  */
 function* codesJ(fs, o, sj, k) {
-    let j = ((sj + 16777215) | 0) >>> 0;
+    let j = (sj + 16777215) >>> 0;
     (void 0);
     (void 0);
     return (yield* luaK_code(
@@ -51627,7 +51535,7 @@ function* luaK_setreturns(fs, e, nresults) {
         (cptr.stI32(
             pc,
             (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
-                (((((((nresults + 1) | 0) >>> 0) << 24) >>> 0) &
+                ((((((nresults + 1) >>> 0) << 24) >>> 0) &
                     (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
                     0)) >>> 0)
         ));
@@ -51636,7 +51544,7 @@ function* luaK_setreturns(fs, e, nresults) {
         (cptr.stI32(
             pc,
             (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
-                (((((((nresults + 1) | 0) >>> 0) << 24) >>> 0) &
+                ((((((nresults + 1) >>> 0) << 24) >>> 0) &
                     (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
                     0)) >>> 0)
         ));
@@ -52726,7 +52634,7 @@ function* finishbinexpneg(fs, e1, e2, op, line, event) {
                 )) &
                     (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>>
                     0) |
-                    (((((((((v2) + 127) | 0)) >>> 0) << 16) >>> 0) &
+                    (((((((v2) + 127) >>> 0) << 16) >>> 0) &
                         (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
                         0)) >>>
                     0),
@@ -52926,7 +52834,7 @@ function* luaK_prefix(fs, opr, e, line) {
     switch (opr) {
         case NHC.OPR_MINUS:
         case NHC.OPR_BNOT:
-            if ((yield* constfolding(fs, ((opr + 12) >>> 0) | 0, e, __static_luaK_prefix_ef)))
+            if ((yield* constfolding(fs, (opr + 12) | 0, e, __static_luaK_prefix_ef)))
                 break;
         case NHC.OPR_LEN:
             (yield* codeunexpval(fs, unopr2op(opr), e, line));
@@ -53036,8 +52944,7 @@ function* codeconcat(fs, e1, e2, line) {
         (cptr.stI32(
             ie2,
             (((((cptr.ldI32(ie2)) & (~(((~(((~0) << 8) >>> 0)) << 16) >>> 0))) >>> 0) |
-                (((((((n + 1) | 0) >>> 0) << 16) >>> 0) &
-                    (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
+                ((((((n + 1) >>> 0) << 16) >>> 0) & (((~(((~0) << 8) >>> 0)) << 16) >>> 0)) >>>
                     0)) >>> 0)
         ));  /* will concatenate one more element */
     } else {
@@ -53060,7 +52967,7 @@ function* codeconcat(fs, e1, e2, line) {
  */
 function* luaK_posfix(fs, opr, e1, e2, line) {
     (yield* luaK_dischargevars(fs, e2));
-    if (((opr) <= NHC.OPR_SHR) && (yield* constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2)))
+    if (((opr) <= NHC.OPR_SHR) && (yield* constfolding(fs, (opr + 0) | 0, e1, e2)))
         return;  /* done by folding */
     switch (opr) {
         case NHC.OPR_AND:
@@ -53280,8 +53187,7 @@ function* luaK_finish(fs) {
                             pc,
                             (((((cptr.ldI32(pc)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>>
                                 0) |
-                                (((((((cptr.ld1uo(p, $Proto_numparams) + 1) | 0) >>> 0) << 24) >>>
-                                    0) &
+                                ((((((cptr.ld1uo(p, $Proto_numparams) + 1) >>> 0) << 24) >>> 0) &
                                     (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>>
                                     0)) >>> 0)
                         ));  /* signal that it is vararg */
@@ -54374,7 +54280,7 @@ function* codeclosure(ls, v) {
     init_exp(
         v,
         NHC.VRELOC,
-        (yield* luaK_codeABx(fs, NHC.OP_CLOSURE, 0, ((cptr.ldI32o(fs, $FuncState_np) - 1) | 0) >>> 0))
+        (yield* luaK_codeABx(fs, NHC.OP_CLOSURE, 0, (cptr.ldI32o(fs, $FuncState_np) - 1) >>> 0))
     );
     (yield* luaK_exp2nextreg(fs, v));  /* fix it at the last register */
 }
@@ -59113,10 +59019,7 @@ function* msghistory_snapshot(purge) {
 
     snapshot_mesgs = (yield* alloc(Number(BigInt.asUintN(
         32,
-        BigInt.asUintN(
-            64,
-            BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_rows) + 1n))) * 8n
-        )
+        BigInt.asUintN(64, BigInt.asUintN(64, (cptr.ldI64o(cw, $WinDesc_rows) + 1n)) * 8n)
     ))));
     outidx = 0;
     inidx = Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_maxrow)));
@@ -61417,11 +61320,8 @@ function* lua_gc(L, what, ...__va) {
                     32,
                     (((BigInt.asUintN(
                         64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o((g), $global_State_totalbytes) +
-                                cptr.ldI64o((g), $global_State_GCdebt)
-                        ))
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
                     )) >> 10n))
                 )));
                 break;
@@ -61432,11 +61332,8 @@ function* lua_gc(L, what, ...__va) {
                     32,
                     (((BigInt.asUintN(
                         64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o((g), $global_State_totalbytes) +
-                                cptr.ldI64o((g), $global_State_GCdebt)
-                        ))
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
                     )) & 1023n))
                 )));
                 break;
@@ -85659,7 +85556,7 @@ function* get_uchars(bufp, list, modlist, size, name) {
             case 56:
             case 57:
                 havenum = 1;
-                num = ((Math.imul(num, 10) >>> 0) + (((cptr.ld1s(bufp) - 48) | 0) >>> 0)) >>> 0;
+                num = ((Math.imul(num, 10) >>> 0) + ((cptr.ld1s(bufp) - 48) >>> 0)) >>> 0;
                 bufp = cptr.add(bufp, 1);
                 break;
             case 92:
@@ -97137,7 +97034,7 @@ function* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) 
                     glyph = (((cptr.ldI32o(mtmp, $monst_mappearance)) == NHC.S_stone)
                             ? NHC.GLYPH_CMAP_STONE_OFF
                             : (((cptr.ldI32o(mtmp, $monst_mappearance)) <= NHC.S_trwall)
-                                ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                     NHC.S_vwall +
                                     ((In_mines(cptr.add(u, $you_uz))
                                         ? NHC.GLYPH_CMAP_MINES_OFF
@@ -97168,24 +97065,23 @@ function* reveal_terrain_getglyph(x, y, swallowed, default_glyph, which_subset) 
                                                 : ((cptr.ldI16((cptr.add(u, $you_uz))) ==
                                                     sokoban_dnum())
                                                     ? NHC.GLYPH_CMAP_SOKO_OFF
-                                                    : NHC.GLYPH_CMAP_MAIN_OFF)))) >>>
-                                        0)) >>> 0)
+                                                    : NHC.GLYPH_CMAP_MAIN_OFF)))) >>> 0)
                                 : (((cptr.ldI32o(mtmp, $monst_mappearance)) < NHC.S_altar)
-                                    ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                    ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                         NHC.S_ndoor +
-                                        NHC.GLYPH_CMAP_A_OFF) >>> 0)
+                                        NHC.GLYPH_CMAP_A_OFF
                                     : (((cptr.ldI32o(mtmp, $monst_mappearance)) == NHC.S_altar)
-                                        ? ((((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)) >>> 0)
+                                        ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) >>> 0)
                                         : (((cptr.ldI32o(mtmp, $monst_mappearance)) <
-                                            (((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0) >>> 0))
-                                            ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) >>> 0))
+                                            ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                                 NHC.S_grave +
-                                                NHC.GLYPH_CMAP_B_OFF) >>> 0)
+                                                NHC.GLYPH_CMAP_B_OFF
                                             : (((cptr.ldI32o(mtmp, $monst_mappearance)) <=
                                                 NHC.S_goodpos)
-                                                ? (((cptr.ldI32o(mtmp, $monst_mappearance)) -
+                                                ? (cptr.ldI32o(mtmp, $monst_mappearance)) -
                                                     NHC.S_digbeam +
-                                                    NHC.GLYPH_CMAP_C_OFF) >>> 0)
+                                                    NHC.GLYPH_CMAP_C_OFF
                                                 : NHC.MAX_GLYPH)))))) | 0;
                 } else {
                     let save_spot = cptr.alloc(36);
@@ -101304,14 +101200,13 @@ function* dog_nutrition(mtmp, obj) {
             cptr.stI32o(
                 mtmp,
                 $monst_meating,
-                ((3 +
+                (3 +
                     (cptr.ldI32o2(
                         mons,
                         cptr.ldI32o(obj, $obj_corpsenm),
                         $sizeof_permonst,
                         $permonst_cwt
-                    ) >>>
-                        6)) >>> 0) | 0
+                    ) >>> 6)) | 0
             );
             nutrit = cptr.ldU16o2(
                 mons,
@@ -101379,7 +101274,7 @@ function* dog_nutrition(mtmp, obj) {
          * nutrit made consistent with polymorphed player nutrit in
          * eat.c.  (This also applies to pets eating gold.)
          */
-        cptr.stI32o(mtmp, $monst_meating, ((u32div(cptr.ldI32o(obj, $obj_owt), 20) + 1) >>> 0) | 0);
+        cptr.stI32o(mtmp, $monst_meating, (u32div(cptr.ldI32o(obj, $obj_owt), 20) + 1) | 0);
         nutrit = Math.imul(
             5,
             cptr.ldU16o2(
@@ -115947,7 +115842,7 @@ function* doread() {
                     ? cptr.ldPtro(__static_doread_card_msgs, (14 - 1) | 0, 8)
                     : cptr.ldPtro(
                         __static_doread_card_msgs,
-                        u32mod(cptr.ldI32o(scroll, $obj_o_id), ((14 - 1) | 0) >>> 0),
+                        u32mod(cptr.ldI32o(scroll, $obj_o_id), (14 - 1) >>> 0),
                         8
                     )
             ));
@@ -116328,7 +116223,7 @@ function* recharge(obj, curse_bless) {
                 return;
             }
             /* didn't explode, so increment the recharge count */
-            cptr.stI32o(obj, $obj_recharged, ((n + 1) | 0) >>> 0);
+            cptr.stI32o(obj, $obj_recharged, (n + 1) >>> 0);
 
             /* now handle the actual recharging */
             if (is_cursed) {
@@ -121016,7 +120911,7 @@ function* scatter(sx, sy, blastforce, scflags, obj) {
             tmp = rn2(((NHC.N_DIRS_Z - 2) | 0));  /* get the direction */
             cptr.st1o(stmp, $scatter_chain_dx, cptr.ld1so(cptr.decay(xdir), tmp, 1));
             cptr.st1o(stmp, $scatter_chain_dy, cptr.ld1so(cptr.decay(ydir), tmp, 1));
-            tmp = (((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt), 40))) >>> 0) | 0;
+            tmp = ((blastforce >>> 0) - (u32div(cptr.ldI32o(otmp, $obj_owt), 40))) | 0;
             if (tmp < 1)
                 tmp = 1;
             cptr.stI32o(stmp, $scatter_chain_range, rnd(tmp));  /* anywhere up to that determ. by wt */
@@ -124202,7 +124097,7 @@ function* do_pit(x, y, tu_pit) {
             /* no pit here previously, or you were
                not in it even if there was */
             (yield* You(__s_fall_into_a_chasm));
-            set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);
+            set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);
             (yield* losehp(
                 ((Half_physical_damage()) ? ((((rnd(6) + 1) | 0) / 2) | 0) : rnd(6)),
                 __s_fell_into_a_chasm,
@@ -124220,7 +124115,7 @@ function* do_pit(x, y, tu_pit) {
                     : 0));
 
             (yield* You(__s_are_jostled_around_violently));
-            set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);
+            set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);
             (yield* losehp(
                 ((Half_physical_damage())
                     ? ((((rnd(keepfooting ? 2 : 4) + 1) | 0) / 2) | 0)
@@ -136949,7 +136844,7 @@ function* dosit() {
                     cptr.stI32o(
                         u,
                         $you_utrap,
-                        (cptr.ldI32o(u, $you_utrap) + (((rn2(10) + 5) | 0) >>> 0)) | 0
+                        (cptr.ldI32o(u, $you_utrap) + ((rn2(10) + 5) >>> 0)) | 0
                     );
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
                     /* Must have fire resistance or they'd be dead already */
@@ -141207,7 +141102,7 @@ function* hmon_hitmon_dmg_recalc(hmd, obj) {
  * @param {CPtr<struct obj>} obj
  */
 function* hmon_hitmon_poison(hmd, mon, obj) {
-    let nopoison = ((10 - (u32div(cptr.ldI32o(obj, $obj_owt), 10))) >>> 0) | 0;
+    let nopoison = (10 - (u32div(cptr.ldI32o(obj, $obj_owt), 10))) | 0;
 
     if (nopoison < 2)
         nopoison = 2;
@@ -145563,7 +145458,7 @@ function* explum(mdef, mattk) {
                     mdef,
                     $monst_mblinded,
                     (((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0) < 127
-                        ? ((((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp) | 0)
+                        ? ((cptr.ldI32o(mdef, $monst_mblinded) & 127) | 0) + tmp
                         : 127) >>> 0
                 );
                 cptr.stI32o(mdef, $monst_mcansee, 0);
@@ -145791,7 +145686,7 @@ function* gulpum(mdef, mattk) {
                     if (!(cptr.ldI32o((mdef), $monst_mhp) < 1)) {
                         (yield* You(__s_hurriedly_regurgitate_the_sizzling_in, (yield* body_part(NHC.STOMACH))));
                     } else {
-                        tmp = ((1 + (cptr.ldI32o(pd, $permonst_cwt) >>> 8)) >>> 0) | 0;
+                        tmp = (1 + (cptr.ldI32o(pd, $permonst_cwt) >>> 8)) | 0;
                         if ((yield* corpse_chance(mdef, cptr.add(gy, $instance_globals_y_youmonst), 1)) &&
                                 !(cptr.ld1uo2(
                                     svm,
@@ -149111,7 +149006,7 @@ function* use_towel(obj) {
                     cptr.stI32o(
                         u,
                         $you_ucreamed,
-                        (cptr.ldI32o(u, $you_ucreamed) + (((rn2(10) + 3) | 0) >>> 0)) | 0
+                        (cptr.ldI32o(u, $you_ucreamed) + ((rn2(10) + 3) >>> 0)) | 0
                     );
                     (yield* pline(
                         __s_yecch_your_s_s_gunk_on_it,
@@ -159844,8 +159739,7 @@ function* throw_gold(obj) {
         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
     } else {
         /* consistent with range for normal objects */
-        range = (((((((acurrstr())) / 2) | 0) >>> 0) -
-                u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) >>> 0) | 0;
+        range = ((((((acurrstr())) / 2) | 0) >>> 0) - u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) | 0;
 
         /* see if the gold has a place to move into */
         odx = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0;
@@ -163466,7 +163360,7 @@ function* migr_booty_item(otyp, gang) {
 
     otmp = (yield* mksobj_migr_to_species(otyp, NHM.M2_ORC, 1, 0));
     if (otmp && gang) {
-        (yield* new_oname(otmp, (((yield* Strlen_(gang, __s_migr_booty_item, 786)) + 1) >>> 0) | 0));  /* removes old name if present */
+        (yield* new_oname(otmp, ((yield* Strlen_(gang, __s_migr_booty_item, 786)) + 1) | 0));  /* removes old name if present */
         void cptr.strcpy((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))), gang);
         if (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS) {
             if (otyp == NHC.SLIME_MOLD)
@@ -176322,7 +176216,7 @@ function* digactualhole(x, y, madeby, ttyp) {
 
         if (at_u) {
             if (!wont_fall) {
-                set_utrap(((rn2(4) + 2) | 0) >>> 0, NHC.TT_PIT);
+                set_utrap((rn2(4) + 2) >>> 0, NHC.TT_PIT);
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* vision limits change */
             } else
                 (yield* reset_utrap(1));
@@ -178026,7 +177920,7 @@ function* bury_an_obj(otmp, dealloced) {
         cptr.st1(dealloced, 0);
     if (cptr.eq(otmp, uball.v)) {
         (yield* unpunish());
-        set_utrap(((rn2(50) + 20) | 0) >>> 0, NHC.TT_BURIEDBALL);
+        set_utrap((rn2(50) + 20) >>> 0, NHC.TT_BURIEDBALL);
         (yield* pline_The(__s_iron_ball_gets_buried));
     }
     /* after unpunish(), or might get deallocated chain */
@@ -187252,15 +187146,7 @@ function* misc_stats(win, total_count, total_size) {
             ++count.v;
             size.v += BigInt.asIntN(
                 64,
-                (BigInt.asUintN(
-                    64,
-                    cptr.strlen(cptr.ldPtro2(
-                        objects,
-                        idx,
-                        $sizeof_objclass,
-                        $objclass_oc_uname
-                    )) + 1n
-                ))
+                (cptr.strlen(cptr.ldPtro2(objects, idx, $sizeof_objclass, $objclass_oc_uname)) + 1n)
             );
         }
     if (count.v || size.v) {
@@ -187472,7 +187358,7 @@ function* list_migrating_mons(nextlevl) {
                 ? here
                 : ((c == 110)
                     ? nxtlv
-                    : ((c == 111) ? other : ((c == 97) ? (here + nxtlv + other) | 0 : 0)))) >>> 0;
+                    : ((c == 111) ? other : ((c == 97) ? here + nxtlv + other : 0)))) >>> 0;
         if (n > 0) {
             win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
             switch (c) {
@@ -211970,9 +211856,8 @@ function* next_opt(datawin, str) {
             cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);  /* replace ending ", " with "." */
         i = NHM.COLNO;  /* (greater than COLNO - 2) */
     } else {
-        i = (((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
-                (yield* Strlen_(str, __s_next_opt, 9770)) +
-                2) >>> 0) | 0;
+        i = ((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
+                (yield* Strlen_(str, __s_next_opt, 9770)) + 2) | 0;
     }
 
     if (i > 78) {
@@ -216099,7 +215984,7 @@ function* moveloop_core() {
                         (cptr.stI32o(u, $you_udg_cnt, cptr.ldI32o(u, $you_udg_cnt) + -1)) - (-1);
                     if (!cptr.ldI32o(u, $you_udg_cnt)) {
                         (yield* intervene());
-                        cptr.stI32o(u, $you_udg_cnt, ((rn2(200) + 50) | 0) >>> 0);
+                        cptr.stI32o(u, $you_udg_cnt, (rn2(200) + 50) >>> 0);
                     }
                 }
                 /* XXX This should be recoded to use something like regions - a list of
@@ -221827,7 +221712,7 @@ function wizdeadorgone() {
     )) - (-1);
     if (!(cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
-        cptr.stI32o(u, $you_udg_cnt, ((rn2(250) + 50) | 0) >>> 0);
+        cptr.stI32o(u, $you_udg_cnt, (rn2(250) + 50) >>> 0);
     }
 }
 
@@ -246812,11 +246697,10 @@ function* eatcorpse(otmp) {
     cptr.stI32o(
         svc,
         $context_info_victual + $victual_info_reqtime,
-        ((3 +
+        (3 +
             ((!glob
                 ? cptr.ldI32o2(mons, mnum, $sizeof_permonst, $permonst_cwt)
-                : cptr.ldI32o(otmp, $obj_owt)) >>>
-                6)) >>> 0) | 0
+                : cptr.ldI32o(otmp, $obj_owt)) >>> 6)) | 0
     );
 
     if (!tp &&
@@ -251024,10 +250908,7 @@ function* peffect_booze(otmp) {
     ));
     if (!(cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         /* booze hits harder if drinking on an empty stomach */
-        (yield* make_confused(
-            itimeout_incr(HConfusion(), d(((2 + cptr.ldI32o(u, $you_uhs)) >>> 0) | 0, 8)),
-            0
-        ));
+        (yield* make_confused(itimeout_incr(HConfusion(), d((2 + cptr.ldI32o(u, $you_uhs)) | 0, 8)), 0));
     }
     /* the whiskey makes us feel better */
     if (!(cptr.ldI32o(otmp, $obj_oeroded) & 3))
@@ -259828,7 +259709,7 @@ function* trapeffect_bear_trap(mtmp, trap, trflags) {
             ));
             return NHC.Trap_Effect_Finished;
         }
-        set_utrap(((rn2(4) + 4) | 0) >>> 0, NHC.TT_BEARTRAP);
+        set_utrap((rn2(4) + 4) >>> 0, NHC.TT_BEARTRAP);
         if (cptr.ldPtro(u, $you_usteed)) {
             (yield* pline(
                 __s_s_bear_trap_closes_on_s_s,
@@ -260445,7 +260326,7 @@ function* trapeffect_pit(mtmp, trap, trflags) {
          * show "you were trapped in a pit" during disclosure's display
          * of enlightenment, but hero is dying *before* becoming trapped.
          */
-        set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);
+        set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);
         if (!(yield* steedintrap(trap, null))) {
             if (relevant_spikes) {
                 let oldumort = cptr.ldI32o(u, $you_umortality);
@@ -261277,7 +261158,7 @@ function* trapeffect_landmine(mtmp, trap, trflags) {
                 : 0));
         let tx = cptr.ldI16o(trap, $trap_tx);
         let ty = cptr.ldI16o(trap, $trap_ty);
-        if (rn2(((cptr.ldI32o(cptr.ldPtro(mtmp, $monst_data), $permonst_cwt) + 1) >>> 0) | 0) <
+        if (rn2((cptr.ldI32o(cptr.ldPtro(mtmp, $monst_data), $permonst_cwt) + 1) | 0) <
                 ((u32div(800, 2)) | 0))
             return NHC.Trap_Effect_Finished;
         if (m_in_air(mtmp)) {
@@ -267413,7 +267294,7 @@ function* lava_effects() {
             boil_away = schar((!Fire_resistance()));
             /* if not fire resistant, sink_into_lava() will quickly be fatal;
                hero needs to escape immediately */
-            set_utrap(((rn2(4) + 4 + ((boil_away ? 2 : rn2(4) + 12) << 8)) | 0) >>> 0, NHC.TT_LAVA);
+            set_utrap((rn2(4) + 4 + ((boil_away ? 2 : rn2(4) + 12) << 8)) >>> 0, NHC.TT_LAVA);
             (yield* You(
                 __s_sink_into_the_s_s,
                 waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)),
@@ -286341,19 +286222,13 @@ function region_stats(hdrfmt, hdrbuf, count, size) {
             cptr.stI64(
                 size,
                 cptr.ldI64(size) +
-                    BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))
-                    )
+                    BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))
             );
         if (cptr.ldPtro(rg, $NhRegion_leave_msg))
             cptr.stI64(
                 size,
                 cptr.ldI64(size) +
-                    BigInt.asIntN(
-                        64,
-                        (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))
-                    )
+                    BigInt.asIntN(64, (cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))
             );
         cptr.stI64(
             size,
@@ -313529,7 +313404,7 @@ function* polyman(fmt, arg) {
         (yield* untwoweapon());
 
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);  /* time to escape resets */
+        set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
         set_itimeout(
@@ -314590,7 +314465,7 @@ function* polymon(mntmp) {
         void (yield* hideunder(cptr.add(gy, $instance_globals_y_youmonst)));
 
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-        set_utrap(((rn2(6) + 2) | 0) >>> 0, NHC.TT_PIT);  /* time to escape resets */
+        set_utrap((rn2(6) + 2) >>> 0, NHC.TT_PIT);  /* time to escape resets */
     }
     if (was_blind && !Blind()) {
         set_itimeout(
@@ -332440,11 +332315,7 @@ function* coyotename(mtmp, buf) {
             (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, 0, 1)),
             (cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0
                 ? cptr.ldPtro(coynames, (22 - 1) | 0, 8)
-                : cptr.ldPtro(
-                    coynames,
-                    u32mod(cptr.ldI32o(mtmp, $monst_m_id), ((22 - 1) | 0) >>> 0),
-                    8
-                )
+                : cptr.ldPtro(coynames, u32mod(cptr.ldI32o(mtmp, $monst_m_id), (22 - 1) >>> 0), 8)
         );
     }
     return buf;
@@ -334878,11 +334749,7 @@ function* meatmetal(mtmp) {
                         (yield* You_hear(__s_a_crunching_sound));
                     }
                 }
-                cptr.stI32o(
-                    mtmp,
-                    $monst_meating,
-                    ((u32div(cptr.ldI32o(otmp, $obj_owt), 2) + 1) >>> 0) | 0
-                );
+                cptr.stI32o(mtmp, $monst_meating, (u32div(cptr.ldI32o(otmp, $obj_owt), 2) + 1) | 0);
                 (yield* m_consume_obj(mtmp, otmp));
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     return 2;
@@ -342189,7 +342056,7 @@ function next_ident() {
        uses 16-bit 'int'), just live with that and hope no o_id conflicts
        between objects or m_id conflicts between monsters arise */
     if (!cptr.ldI32(svc))
-        cptr.stI32(svc, ((rnd(2) + 1) | 0) >>> 0);  /* id 1 is reserved */
+        cptr.stI32(svc, (rnd(2) + 1) >>> 0);  /* id 1 is reserved */
 
     return res;
 }
@@ -346140,7 +346007,7 @@ function* obj_absorb(obj1, obj2) {
             );
             cptr.stI32o(otmp1, $obj_owt, (cptr.ldI32o(otmp1, $obj_owt) + (o2wt >>> 0)) | 0);
             if (cptr.ldI32o(otmp1, $obj_oeaten) || cptr.ldI32o(otmp2, $obj_oeaten))
-                cptr.stI32o(otmp1, $obj_oeaten, ((o1wt + o2wt) | 0) >>> 0);
+                cptr.stI32o(otmp1, $obj_oeaten, (o1wt + o2wt) >>> 0);
             cptr.stI64o(otmp1, $obj_quan, 1n);
             if ((cptr.ldI32o(otmp1, $obj_globby) & 1) | 0 &&
                     (cptr.ldI32o(otmp2, $obj_globby) & 1) | 0) {
@@ -352295,7 +352162,7 @@ function* set_cost(obj, shkp) {
                         0) ==
                         NHC.GLASS) {
                 tmp = BigInt((u32mod(
-                    ((cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_REAL_GEM) | 0) >>> 0,
+                    (cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_REAL_GEM) >>> 0,
                     ((6 - u32mod(cptr.ldI32o(shkp, $monst_m_id), 3)) >>> 0)
                 )) >>> 0);
                 tmp = BigInt.asIntN(64, (tmp + 3n) * cptr.ldI64o(obj, $obj_quan));
@@ -364113,8 +363980,7 @@ function* let_to_name(let$, unpaid, showsym) {
         void cptr.strcpy(cptr.ldPtro(gi, $instance_globals_i_invbuf), class_name);
     if ((oclass != 0) && showsym) {
         let bp = eos(cptr.ldPtro(gi, $instance_globals_i_invbuf));
-        let mlen = (((invbuf_sympadding >>> 0) -
-                (yield* Strlen_(class_name, __s_let_to_name, 4830))) >>> 0) | 0;
+        let mlen = ((invbuf_sympadding >>> 0) - (yield* Strlen_(class_name, __s_let_to_name, 4830))) | 0;
         while (--mlen > 0) {
             cptr.st1(bp, 32);
             bp = cptr.add(bp, 1);
@@ -366201,7 +366067,7 @@ function remove_room(roomno) {
         cptr.memcpy(croom, maxroom, 224);
 
         /* since maxroom moved, update affected level roomno values */
-        oroomno = ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0) >>> 0;
+        oroomno = (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) >>> 0;
         roomno = (roomno + NHM.ROOMOFFSET) | 0;
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); ++x)
             for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); ++y) {
@@ -372945,8 +372811,8 @@ function sp_amask_to_amask(sp_amask) {
                 : (((noncoalignment(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))) ==
                     NHM.A_LAWFUL)
                     ? NHM.AM_LAWFUL
-                    : (((noncoalignment(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))) + 2) |
-                        0))) >>> 0);
+                    : (noncoalignment(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))) +
+                        2)) >>> 0);
     else if (sp_amask == NHM.AM_SPLEV_RANDOM)
         amask = induced_align(80);
     else
@@ -374596,12 +374462,11 @@ function* lspo_message(L) {
     msg = ((yield* luaL_checklstring(L, 1, null)));
 
     old_n = (cptr.ldPtro(gl, $instance_globals_l_lev_message)
-            ? (((yield* Strlen_(cptr.ldPtro(gl, $instance_globals_l_lev_message), __s_lspo_message, 3094)) +
-                1) >>> 0)
+            ? (yield* Strlen_(cptr.ldPtro(gl, $instance_globals_l_lev_message), __s_lspo_message, 3094)) + 1
             : 0) | 0;
     n = (yield* Strlen_(msg, __s_lspo_message, 3095)) | 0;
 
-    levmsg = (yield* alloc(((old_n + n + 1) | 0) >>> 0));
+    levmsg = (yield* alloc((old_n + n + 1) >>> 0));
     if (old_n)
         cptr.st1o(levmsg, (old_n - 1) | 0, 10);
     if (cptr.ldPtro(gl, $instance_globals_l_lev_message))
@@ -378167,9 +378032,7 @@ function* levregion_add(lregion) {
             32,
             BigInt.asUintN(
                 64,
-                32n *
-                    BigInt((((1 + cptr.ldI32o(gn, $instance_globals_n_num_lregions)) | 0) >>>
-                        0) >>> 0)
+                32n * BigInt(((1 + cptr.ldI32o(gn, $instance_globals_n_num_lregions)) >>> 0) >>> 0)
             )
         ))));
 
@@ -380280,7 +380143,7 @@ function b_str2int(s, base, pn) {
         s = cptr.add(s, 1);
     } while (isalnum(uchar(cptr.ld1s(s))));
     s = cptr.add(s, strspn(s, __s_sp_ff_nl_cr_tab_vt));  /* skip trailing spaces */
-    cptr.stI64(pn, BigInt.asIntN(64, ((neg) ? (BigInt.asUintN(64, 0n - n)) : n)));
+    cptr.stI64(pn, BigInt.asIntN(64, ((neg) ? 0n - n : n)));
     return s;
 }
 
@@ -380569,7 +380432,7 @@ function* luaB_pairs(L) {
 /** C ref: lbaselib.c:302 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* ipairsaux(L) {
     let i = (yield* luaL_checkinteger(L, 2));
-    i = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (i)) + 1n))));
+    i = (BigInt.asIntN(64, (BigInt.asUintN(64, (i)) + 1n)));
     (yield* lua_pushinteger(L, i));
     return ((yield* lua_geti(L, 1, i)) == 0) ? 1 : 2;
 }
@@ -381215,7 +381078,7 @@ function* checktab(L, arg, what) {
 function* tinsert(L) {
     let pos;  /* where to insert new element */
     let e = ((yield* checktab(L, 1, 7)), (yield* luaL_len(L, 1)));
-    e = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (e)) + 1n))));  /* first empty element */
+    e = (BigInt.asIntN(64, (BigInt.asUintN(64, (e)) + 1n)));  /* first empty element */
     switch (lua_gettop(L)) {
         case 2:
             {
@@ -382313,7 +382176,7 @@ function* str_rep(L) {
     else {
         let totallen = BigInt.asUintN(
             64,
-            BigInt.asUintN(64, n) * l.v + BigInt.asUintN(64, (BigInt.asIntN(64, n - 1n))) * lsep.v
+            BigInt.asUintN(64, n) * l.v + BigInt.asUintN(64, (n - 1n)) * lsep.v
         );
         let b = cptr.alloc(1056);
         let p = (yield* luaL_buffinitsize(L, b, totallen));
@@ -383253,10 +383116,7 @@ function* str_find_aux(L, find) {
         let s2 = lmemfind(cptr.add(s, init), BigInt.asUintN(64, ls.v - init), p, lp.v);
         if (s2) {
             (yield* lua_pushinteger(L, BigInt.asIntN(64, (cptr.diff(s2, s)) + 1n)));
-            (yield* lua_pushinteger(
-                L,
-                BigInt.asIntN(64, BigInt.asUintN(64, BigInt.asUintN(64, (cptr.diff(s2, s))) + lp.v))
-            ));
+            (yield* lua_pushinteger(L, BigInt.asIntN(64, (BigInt.asUintN(64, (cptr.diff(s2, s))) + lp.v))));
             return 2;
         }
     } else {
@@ -383451,7 +383311,7 @@ function* str_gsub(L) {
     let p = (yield* luaL_checklstring(L, 2, lp));  /* pattern */
     let lastmatch = null;  /* end of last match */
     let tr = lua_type(L, 3);  /* replacement type */
-    let max_s = (yield* luaL_optinteger(L, 4, BigInt.asIntN(64, BigInt.asUintN(64, srcl.v + 1n))));  /* max replacements */
+    let max_s = (yield* luaL_optinteger(L, 4, BigInt.asIntN(64, (srcl.v + 1n))));  /* max replacements */
     let anchor = (cptr.ld1s(p) == 94);
     let n = 0n;  /* replacement count */
     let changed = 0;  /* change flag */
@@ -384701,7 +384561,7 @@ function* str_unpack(L) {
         }
         pos += BigInt.asUintN(64, BigInt(size.v));
     }
-    (yield* lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, pos + 1n))));  /* next position */
+    (yield* lua_pushinteger(L, BigInt.asIntN(64, (pos + 1n))));  /* next position */
     return (n + 1) | 0;
 }
 
@@ -384851,7 +384711,7 @@ function* math_abs(L) {
     if (lua_isinteger(L, 1)) {
         let n = (yield* lua_tointegerx(L, 1, null));
         if (n < 0n)
-            n = BigInt.asIntN(64, (BigInt.asUintN(64, 0n - BigInt.asUintN(64, n))));
+            n = BigInt.asIntN(64, (0n - BigInt.asUintN(64, n)));
         (yield* lua_pushinteger(L, n));
     } else
         (yield* lua_pushnumber(L, fabs((yield* luaL_checknumber(L, 1)))));
@@ -385193,7 +385053,7 @@ function* math_random(L) {
         BigInt.asUintN(64, BigInt.asUintN(64, up) - BigInt.asUintN(64, low)),
         state
     );
-    (yield* lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, p + BigInt.asUintN(64, low)))));
+    (yield* lua_pushinteger(L, BigInt.asIntN(64, (p + BigInt.asUintN(64, low)))));
     return 1;
 }
 
@@ -385582,7 +385442,7 @@ function* byteoffset(L) {
     let len = cptr.box(0n);
     let s = (yield* luaL_checklstring(L, 1, len));
     let n = (yield* luaL_checkinteger(L, 2));
-    let posi = BigInt.asIntN(64, ((n >= 0n) ? 1n : BigInt.asUintN(64, len.v + 1n)));
+    let posi = BigInt.asIntN(64, ((n >= 0n) ? 1n : len.v + 1n));
     posi = u_posrelat((yield* luaL_optinteger(L, 3, posi)), len.v);
     (void ((__builtin_expect(
         BigInt(((1n <= posi && --posi <= BigInt.asIntN(64, len.v) ? 1 : 0) != 0)),
@@ -385638,7 +385498,7 @@ function* iter_aux(L, strict) {
         let next = utf8_decode(cptr.add(s, n), code, strict);
         if (cptr.eq(next, (null)) || (((cptr.ld1s((next))) & 192) == 128))
             return (yield* luaL_error(L, __s_invalid_utf_8_code));
-        (yield* lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, n + 1n))));
+        (yield* lua_pushinteger(L, BigInt.asIntN(64, (n + 1n))));
         (yield* lua_pushinteger(L, BigInt(code.v >>> 0)));
         return 2;
     }
@@ -389587,7 +389447,7 @@ function* traceback_handler(L) {
 
 /** C ref: nhlua.c:2254 — @param {CPtr<lua_State>} L @returns {*} */
 function* nhl_getmeminuse(L) {
-    return ((Math.imul((yield* lua_gc(L, 3)), 1024) + (yield* lua_gc(L, 4))) | 0) >>> 0;
+    return (Math.imul((yield* lua_gc(L, 3)), 1024) + (yield* lua_gc(L, 4))) >>> 0;
 }
 
 /* lua_pcall with our traceback handler and memory and instruction step
@@ -398873,7 +398733,7 @@ function* recalc_mapseen() {
                     cptr.stI32o(
                         mptr,
                         $mapseen_feat + $mapseen_feat_shoptype,
-                        (((NHC.SHOPBASE - 1) | 0) >>> 0)
+                        ((NHC.SHOPBASE - 1) >>> 0)
                     );
                 else if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3))
                     cptr.stI32o(
@@ -409669,7 +409529,7 @@ function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand_typ) 
                                 (yield* You(__s_pass_through_the_now_solid_rock));
                                 (yield* reset_utrap(1));
                             } else {
-                                set_utrap(((rn2(50) + 20) | 0) >>> 0, NHC.TT_INFLOOR);
+                                set_utrap((rn2(50) + 20) >>> 0, NHC.TT_INFLOOR);
                                 (yield* You(__s_are_firmly_stuck_in_the_cooling_rock));
                             }
                         }
@@ -415137,7 +414997,7 @@ function* yobjnam(obj, verb) {
             !obj_is_pname(obj) ||
             cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = (yield* shk_your(nextobuf(), obj));
-        let space_left = ((255 - (yield* Strlen_(outbuf, __s_yobjnam, 2271))) >>> 0) | 0;
+        let space_left = (255 - (yield* Strlen_(outbuf, __s_yobjnam, 2271))) | 0;
 
         s = __builtin___strncat_chk(
             outbuf,
@@ -415256,7 +415116,7 @@ function* yname(obj) {
             !obj_is_pname(obj) ||
             cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
         let outbuf = (yield* shk_your(nextobuf(), obj));
-        let space_left = ((255 - (yield* Strlen_(outbuf, __s_yname, 2368))) >>> 0) | 0;
+        let space_left = (255 - (yield* Strlen_(outbuf, __s_yname, 2368))) | 0;
 
         s = __builtin___strncat_chk(
             outbuf,
@@ -415286,7 +415146,7 @@ function* Yname2(obj) {
 function* ysimple_name(obj) {
     let outbuf = nextobuf();
     let s = (yield* shk_your(outbuf, obj));  /* assert( s == outbuf ); */
-    let space_left = ((255 - (yield* Strlen_(s, __s_ysimple_name, 2395))) >>> 0) | 0;
+    let space_left = (255 - (yield* Strlen_(s, __s_ysimple_name, 2395))) | 0;
 
     return __builtin___strncat_chk(
         s,
@@ -419413,8 +419273,7 @@ function* readobjnam(bp, no_wish) {
                         $obj_owt,
                         (cptr.ldI32o(cptr.ldPtr(d), $obj_owt) +
                             (Math.imul(
-                                ((5 + Math.imul(cptr.ldI32o(d, $_readobjnam_data_gsize) - 2, 10)) |
-                                    0) >>>
+                                (5 + Math.imul(cptr.ldI32o(d, $_readobjnam_data_gsize) - 2, 10)) >>>
                                     0,
                                 cptr.ldI32o(cptr.ldPtr(d), $obj_owt)
                             ) >>> 0)) | 0
@@ -429537,7 +429396,7 @@ function* bind_key(key, command, user) {
     }
 
     /* copy command to buf for modification */
-    len = BigInt.asIntN(64, BigInt.asUintN(64, cptr.strlen(command) + 1n));
+    len = BigInt.asIntN(64, (cptr.strlen(command) + 1n));
     buf = (yield* alloc(Number(BigInt.asUintN(32, len))));
     void __builtin___strncpy_chk(
         buf,
@@ -458810,8 +458669,7 @@ function* build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum, align
 
     void root_plselection_prompt(
         eos(cptr.decay(tmpbuf)),
-        (((buflen >>> 0) - (yield* Strlen_(cptr.decay(tmpbuf), __s_build_plselection_prompt, 1601))) >>> 0) |
-            0,
+        ((buflen >>> 0) - (yield* Strlen_(cptr.decay(tmpbuf), __s_build_plselection_prompt, 1601))) | 0,
         rolenum,
         racenum,
         gendnum,
@@ -465719,7 +465577,7 @@ function ARM_BONUS(obj) {
 function Align2amask(x) {
     return ((((x) == -128)
         ? NHM.AM_NONE
-        : (((x) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (((x) + 2) | 0))) >>> 0);
+        : (((x) == NHM.A_LAWFUL) ? NHM.AM_LAWFUL : (x) + 2)) >>> 0);
 }
 
 /** C: include/align.h — the `Amask2msa(x)` macro body */
@@ -470142,7 +470000,7 @@ function* build_english_list(in$) {
     /* +3: " or " - " "; +(words - 1): (N-1)*(", " - " ") */
     if (words > 1)
         len = (len + (3 + (words - 1))) | 0;
-    out = (yield* alloc(((len + 1) | 0) >>> 0));
+    out = (yield* alloc((len + 1) >>> 0));
     cptr.st1(out, 0);  /* bel_copy1() appends */
 
     switch (words) {

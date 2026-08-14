@@ -2410,11 +2410,7 @@ export function* meatmetal(mtmp) {
                         (yield* You_hear(__s_a_crunching_sound));
                     }
                 }
-                cptr.stI32o(
-                    mtmp,
-                    $monst_meating,
-                    ((u32div(cptr.ldI32o(otmp, $obj_owt), 2) + 1) >>> 0) | 0
-                );
+                cptr.stI32o(mtmp, $monst_meating, (u32div(cptr.ldI32o(otmp, $obj_owt), 2) + 1) | 0);
                 (yield* m_consume_obj(mtmp, otmp));
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     return 2;

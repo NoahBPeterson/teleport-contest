@@ -1101,7 +1101,7 @@ export function doread() {
                     ? cptr.ldPtro(__static_doread_card_msgs, (14 - 1) | 0, 8)
                     : cptr.ldPtro(
                         __static_doread_card_msgs,
-                        u32mod(cptr.ldI32o(scroll, $obj_o_id), ((14 - 1) | 0) >>> 0),
+                        u32mod(cptr.ldI32o(scroll, $obj_o_id), (14 - 1) >>> 0),
                         8
                     )
             );
@@ -1482,7 +1482,7 @@ export function recharge(obj, curse_bless) {
                 return;
             }
             /* didn't explode, so increment the recharge count */
-            cptr.stI32o(obj, $obj_recharged, ((n + 1) | 0) >>> 0);
+            cptr.stI32o(obj, $obj_recharged, (n + 1) >>> 0);
 
             /* now handle the actual recharging */
             if (is_cursed) {

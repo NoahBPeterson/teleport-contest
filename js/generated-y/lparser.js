@@ -1104,7 +1104,7 @@ function* codeclosure(ls, v) {
     init_exp(
         v,
         NHC.VRELOC,
-        (yield* luaK_codeABx(fs, NHC.OP_CLOSURE, 0, ((cptr.ldI32o(fs, $FuncState_np) - 1) | 0) >>> 0))
+        (yield* luaK_codeABx(fs, NHC.OP_CLOSURE, 0, (cptr.ldI32o(fs, $FuncState_np) - 1) >>> 0))
     );
     (yield* luaK_exp2nextreg(fs, v));  /* fix it at the last register */
 }

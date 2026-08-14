@@ -1305,10 +1305,7 @@ function* checkSizes(L, g) {
                 g,
                 $global_State_GCestimate,
                 cptr.ldU64o(g, $global_State_GCestimate) +
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)
-                    )
+                    BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
             );  /* correct estimate */
         }
     }
@@ -1589,18 +1586,11 @@ function setpause(g) {
             : 9223372036854775807n;  /* overflow; truncate to maximum */
     debt = BigInt.asIntN(
         64,
-        BigInt.asUintN(
+        ((BigInt.asUintN(
             64,
-            (BigInt.asUintN(
-                64,
-                (BigInt.asIntN(
-                    64,
-                    cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt)
-                ))
-            )) -
-                BigInt.asUintN(64, threshold)
-        )
+            (cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))
+        )) -
+            BigInt.asUintN(64, threshold))
     );
     if (debt > 0n)
         debt = 0n;
@@ -1921,10 +1911,7 @@ function* atomic2gen(L, g) {
         $global_State_GCestimate,
         (BigInt.asUintN(
             64,
-            (BigInt.asIntN(
-                64,
-                cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt)
-            ))
+            (cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))
         ))
     );  /* base for memory control */
     (yield* finishgencycle(L, g));
@@ -1944,11 +1931,8 @@ function setminordebt(g) {
                 64,
                 (((BigInt.asUintN(
                     64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
+                    (cptr.ldI64o((g), $global_State_totalbytes) +
+                        cptr.ldI64o((g), $global_State_GCdebt))
                 )) / 100n))
             )) *
                 BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0)
@@ -2060,11 +2044,8 @@ function* stepgenfull(L, g) {
             $global_State_GCestimate,
             (BigInt.asUintN(
                 64,
-                (BigInt.asIntN(
-                    64,
-                    cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt)
-                ))
+                (cptr.ldI64o((g), $global_State_totalbytes) +
+                    cptr.ldI64o((g), $global_State_GCdebt))
             ))
         );  /* first estimate */
         (yield* entersweep(L));
@@ -2110,21 +2091,15 @@ function* genstep(L, g) {
         if (cptr.ldI64o(g, $global_State_GCdebt) > 0n &&
                 (BigInt.asUintN(
                     64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o((g), $global_State_totalbytes) +
-                            cptr.ldI64o((g), $global_State_GCdebt)
-                    ))
+                    (cptr.ldI64o((g), $global_State_totalbytes) +
+                        cptr.ldI64o((g), $global_State_GCdebt))
                 )) >
                     BigInt.asUintN(64, majorbase + majorinc)) {
             let numobjs = (yield* fullgen(L, g));  /* do a major collection */
             if ((BigInt.asUintN(
                 64,
-                (BigInt.asIntN(
-                    64,
-                    cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt)
-                ))
+                (cptr.ldI64o((g), $global_State_totalbytes) +
+                    cptr.ldI64o((g), $global_State_GCdebt))
             )) <
                     BigInt.asUintN(64, majorbase + (majorinc / 2n))) {
                 /* collected at least half of memory growth since last major
@@ -2289,10 +2264,7 @@ function* sweepstep(L, g, nextstate, nextlist) {
             g,
             $global_State_GCestimate,
             cptr.ldU64o(g, $global_State_GCestimate) +
-                BigInt.asUintN(
-                    64,
-                    BigInt.asIntN(64, cptr.ldI64o(g, $global_State_GCdebt) - olddebt)
-                )
+                BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
         );  /* update estimate */
         return count.v;
     } else {
@@ -2334,11 +2306,8 @@ function* singlestep(L) {
                     $global_State_GCestimate,
                     (BigInt.asUintN(
                         64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o((g), $global_State_totalbytes) +
-                                cptr.ldI64o((g), $global_State_GCdebt)
-                        ))
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
                     ))
                 );  /* first estimate */
                 break;
@@ -2414,21 +2383,14 @@ function* incstep(L, g) {
     let stepmul = ((Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4)) | 1);  /* avoid division by 0 */
     let debt = BigInt.asIntN(
         64,
-        BigInt.asUintN(
-            64,
-            (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) *
-                BigInt.asUintN(64, BigInt(stepmul))
-        )
+        ((BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) *
+            BigInt.asUintN(64, BigInt(stepmul)))
     );
     let stepsize = BigInt.asIntN(
         64,
         ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n)
-            ? BigInt.asUintN(
-                64,
-                (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) /
-                    16n) *
-                    BigInt.asUintN(64, BigInt(stepmul))
-            )
+            ? (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) / 16n) *
+                BigInt.asUintN(64, BigInt(stepmul))
             : 9223372036854775807n)
     );  /* overflow; keep maximum value */
     do {
@@ -2438,10 +2400,7 @@ function* incstep(L, g) {
     if (cptr.ld1uo(g, $global_State_gcstate) == 8)
         setpause(g);  /* pause until next cycle */
     else {
-        debt = BigInt.asIntN(
-            64,
-            BigInt.asUintN(64, BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n)
-        );  /* convert 'work units' to bytes */
+        debt = BigInt.asIntN(64, (BigInt.asUintN(64, (debt / BigInt(stepmul))) * 16n));  /* convert 'work units' to bytes */
         luaE_setdebt(g, debt);
     }
 }

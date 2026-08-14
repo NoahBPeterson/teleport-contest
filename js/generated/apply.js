@@ -875,7 +875,7 @@ function use_towel(obj) {
                     cptr.stI32o(
                         u,
                         $you_ucreamed,
-                        (cptr.ldI32o(u, $you_ucreamed) + (((rn2(10) + 3) | 0) >>> 0)) | 0
+                        (cptr.ldI32o(u, $you_ucreamed) + ((rn2(10) + 3) >>> 0)) | 0
                     );
                     pline(
                         __s_yecch_your_s_s_gunk_on_it,

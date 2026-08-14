@@ -255,7 +255,7 @@ function* str_rep(L) {
     else {
         let totallen = BigInt.asUintN(
             64,
-            BigInt.asUintN(64, n) * l.v + BigInt.asUintN(64, (BigInt.asIntN(64, n - 1n))) * lsep.v
+            BigInt.asUintN(64, n) * l.v + BigInt.asUintN(64, (n - 1n)) * lsep.v
         );
         let b = cptr.alloc(1056);
         let p = (yield* luaL_buffinitsize(L, b, totallen));
@@ -1195,10 +1195,7 @@ function* str_find_aux(L, find) {
         let s2 = lmemfind(cptr.add(s, init), BigInt.asUintN(64, ls.v - init), p, lp.v);
         if (s2) {
             (yield* lua_pushinteger(L, BigInt.asIntN(64, (cptr.diff(s2, s)) + 1n)));
-            (yield* lua_pushinteger(
-                L,
-                BigInt.asIntN(64, BigInt.asUintN(64, BigInt.asUintN(64, (cptr.diff(s2, s))) + lp.v))
-            ));
+            (yield* lua_pushinteger(L, BigInt.asIntN(64, (BigInt.asUintN(64, (cptr.diff(s2, s))) + lp.v))));
             return 2;
         }
     } else {
@@ -1393,7 +1390,7 @@ function* str_gsub(L) {
     let p = (yield* luaL_checklstring(L, 2, lp));  /* pattern */
     let lastmatch = null;  /* end of last match */
     let tr = lua_type(L, 3);  /* replacement type */
-    let max_s = (yield* luaL_optinteger(L, 4, BigInt.asIntN(64, BigInt.asUintN(64, srcl.v + 1n))));  /* max replacements */
+    let max_s = (yield* luaL_optinteger(L, 4, BigInt.asIntN(64, (srcl.v + 1n))));  /* max replacements */
     let anchor = (cptr.ld1s(p) == 94);
     let n = 0n;  /* replacement count */
     let changed = 0;  /* change flag */
@@ -2643,7 +2640,7 @@ function* str_unpack(L) {
         }
         pos += BigInt.asUintN(64, BigInt(size.v));
     }
-    (yield* lua_pushinteger(L, BigInt.asIntN(64, BigInt.asUintN(64, pos + 1n))));  /* next position */
+    (yield* lua_pushinteger(L, BigInt.asIntN(64, (pos + 1n))));  /* next position */
     return (n + 1) | 0;
 }
 

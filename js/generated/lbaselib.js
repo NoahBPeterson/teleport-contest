@@ -145,7 +145,7 @@ function b_str2int(s, base, pn) {
         s = cptr.add(s, 1);
     } while (isalnum(uchar(cptr.ld1s(s))));
     s = cptr.add(s, strspn(s, __s_sp_ff_nl_cr_tab_vt));  /* skip trailing spaces */
-    cptr.stI64(pn, BigInt.asIntN(64, ((neg) ? (BigInt.asUintN(64, 0n - n)) : n)));
+    cptr.stI64(pn, BigInt.asIntN(64, ((neg) ? 0n - n : n)));
     return s;
 }
 
@@ -434,7 +434,7 @@ function luaB_pairs(L) {
 /** C ref: lbaselib.c:302 — @param {CPtr<lua_State>} L @returns {CInt} */
 function ipairsaux(L) {
     let i = luaL_checkinteger(L, 2);
-    i = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (i)) + 1n))));
+    i = (BigInt.asIntN(64, (BigInt.asUintN(64, (i)) + 1n)));
     lua_pushinteger(L, i);
     return (lua_geti(L, 1, i) == 0) ? 1 : 2;
 }

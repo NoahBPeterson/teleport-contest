@@ -4789,7 +4789,7 @@ function* set_cost(obj, shkp) {
                         0) ==
                         NHC.GLASS) {
                 tmp = BigInt((u32mod(
-                    ((cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_REAL_GEM) | 0) >>> 0,
+                    (cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_REAL_GEM) >>> 0,
                     ((6 - u32mod(cptr.ldI32o(shkp, $monst_m_id), 3)) >>> 0)
                 )) >>> 0);
                 tmp = BigInt.asIntN(64, (tmp + 3n) * cptr.ldI64o(obj, $obj_quan));

@@ -2824,8 +2824,7 @@ export function build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum,
 
     void root_plselection_prompt(
         eos(cptr.decay(tmpbuf)),
-        (((buflen >>> 0) - Strlen_(cptr.decay(tmpbuf), __s_build_plselection_prompt, 1601)) >>> 0) |
-            0,
+        ((buflen >>> 0) - Strlen_(cptr.decay(tmpbuf), __s_build_plselection_prompt, 1601)) | 0,
         rolenum,
         racenum,
         gendnum,

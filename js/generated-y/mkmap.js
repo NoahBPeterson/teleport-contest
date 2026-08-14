@@ -1094,7 +1094,7 @@ function remove_room(roomno) {
         cptr.memcpy(croom, maxroom, 224);
 
         /* since maxroom moved, update affected level roomno values */
-        oroomno = ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0) >>> 0;
+        oroomno = (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) >>> 0;
         roomno = (roomno + NHM.ROOMOFFSET) | 0;
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); ++x)
             for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); ++y) {

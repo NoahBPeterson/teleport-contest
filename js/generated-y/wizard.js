@@ -1158,7 +1158,7 @@ export function wizdeadorgone() {
     )) - (-1);
     if (!(cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_udemigod, 1);
-        cptr.stI32o(u, $you_udg_cnt, ((rn2(250) + 50) | 0) >>> 0);
+        cptr.stI32o(u, $you_udg_cnt, (rn2(250) + 50) >>> 0);
     }
 }
 
