@@ -1293,7 +1293,8 @@ function assertTreesHygienic() {
     console.log(`jsfmt: budget ${FMT_COLS} cols — ${FMT_STATS.linesWrapped} of ${FMT_STATS.linesSeen} statement lines wrapped `
       + `into ${FMT_STATS.linesEmitted}, ${FMT_STATS.docsWrapped} C-ref markers reflowed, `
       + `${FMT_STATS.trailingCarried} trailing comments carried to the last line; `
-      + `${FMT_STATS.unsplittable} lines over budget with no break point, ${FMT_STATS.auditFailed} failed the token audit`);
+      + `${FMT_STATS.unsplittable} lines over budget with no break point, ${FMT_STATS.auditFailed} failed the token audit; `
+      + `cost rule dropped ${FMT_STATS.strandedDropped} stranding split points and skipped ${FMT_STATS.strandedLevels} precedence levels outright`);
   }
 }
 

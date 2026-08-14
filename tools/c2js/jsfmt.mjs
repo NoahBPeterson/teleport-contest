@@ -81,7 +81,52 @@ const MAX_DEPTH = 60;
 export const FMT_STATS = {
   linesSeen: 0, linesWrapped: 0, linesEmitted: 0, unsplittable: 0,
   auditFailed: 0, skippedOddity: 0, trailingCarried: 0, docsWrapped: 0,
+  strandedDropped: 0, strandedLevels: 0,
 };
+
+// THE STRANDED TAIL, AND THE COST RULE THAT FORBIDS IT
+// ----------------------------------------------------
+// dart_style does not take the first split it can reach; it takes the one whose
+// layout costs least, and a split that buys a whole line for two characters of
+// remainder costs more than the over-budget line it was avoiding.  Without that
+// rule this formatter produced, in botl.js:
+//
+//     result = (u32div(
+//         (Math.imul(100, uval) >>> 0),
+//         (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))
+//     )) |
+//             0;
+//
+// It had already split inside the argument list, then split again at the `|`
+// and stranded `0;` on a line of its own at a deeper indent.  The `| 0` is the
+// int32 normalization — the least informative token pair in the tree — and it
+// belongs on the line it normalizes.
+//
+// TAIL_MIN is the budget below which a remainder does not earn a line: eight
+// characters, which is shorter than every field, enum and helper name the
+// vocabulary tiers produce (`$obj_otyp` is 10, `NHC.ROOM` is 8), so the rule
+// can only ever fire on punctuation and single short operands.  A candidate
+// whose line would carry less than that is dropped, and if that empties a
+// precedence level the splitter moves OUTWARD to the next one — which is the
+// cost preference, expressed as the thing it actually changes.
+//
+// Two shapes are short but not stranded and are exempt: a ternary arm (`? 1`,
+// `: 0`), which is one branch of a decision and is marked as such, and a line
+// that ends in an operator, comma or open bracket, which is visibly unfinished.
+//
+// `C2JS_FMT_TAILCOST=0` restores the old one-token-of-four-characters filter
+// (the A/B baseline), which is also what the last-resort pass uses.
+const TAIL_COST = process.env.C2JS_FMT_TAILCOST !== '0';
+const TAIL_MIN = 8;
+
+/** would this laid-out line be a stranded tail — a line that says nothing? */
+function stranded(line) {
+  const t = line.trim();
+  if (!t) return false;
+  if (/^[?:)\]}]/.test(t)) return false;              // ternary arm, or a closing bracket
+  if (/[-+*/%&|^<>=,([{]$/.test(t)) return false;     // ends unfinished: the split is doing work
+  return t.length < TAIL_MIN;
+}
 
 const ASSIGN_OPS = new Set(['=', '+=', '-=', '*=', '/=', '%=', '&=', '|=', '^=',
   '<<=', '>>=', '>>>=', '**=', '&&=', '||=', '??=']);
@@ -183,6 +228,9 @@ class Splitter {
       ?? this.splitTernary(a, b, ind, cont, pre, suf, depth, s)
       ?? this.splitBinary(a, b, ind, cont, pre, suf, depth, s)
       ?? this.splitGroup(a, b, ind, cont, pre, suf, depth, s)
+      // last resort: a binary split the cost rule would rather not take, but
+      // nothing else can break this line at all (see TAIL_MIN)
+      ?? this.splitBinary(a, b, ind, cont, pre, suf, depth, s, false)
       ?? [sp(ind) + flat];
   }
 
@@ -261,38 +309,53 @@ class Splitter {
     ];
   }
 
-  /** the lowest-precedence binary operator present at the top level wins */
-  splitBinary(a, b, ind, cont, pre, suf, depth, s) {
+  /**
+   * The lowest-precedence binary operator present at the top level wins — but
+   * only if splitting there is worth a line.  See TAIL_MIN above: a candidate
+   * whose continuation would carry less than that is dropped, and a level that
+   * loses every candidate is skipped in favour of the next one out.
+   *
+   * `strict` is the cost rule.  `lay()` asks for it first; if neither it nor
+   * the bracket split can lay the line out, it asks again without it, so a line
+   * that can *only* be split badly is still split rather than left whole — but
+   * a line that has a better split waiting one strategy over gets that instead.
+   */
+  splitBinary(a, b, ind, cont, pre, suf, depth, s, want = true) {
+    const strict = want && TAIL_COST;
     for (const ops of BIN_LEVELS) {
-      let at = this.tops(a, b, s, (t, i) => {
+      const all = this.tops(a, b, s, (t, i) => {
         if (t.t === 'id' ? !ops.includes(t.v) : (t.t !== 'punc' || !ops.includes(t.v))) return false;
         if (i === a || i === b) return false;              // nothing to split off
         return endsOperand(this.tok[i - 1]);               // binary, not unary
       });
-      // A split whose right operand is one tiny token buys nothing and costs a
-      // line. This is not a stylistic nicety: the emitter's int normalization
-      // writes `(expr) | 0` and `(expr) >>> 0` around a great many expressions,
-      // and `| 0` alone on a continuation line is the single least informative
-      // thing this formatter could produce. Dropping those candidates lets the
-      // next level down — the operator inside the parenthesis — do the split.
-      const useful = at.filter((p, k) => {
-        const to = k + 1 < at.length ? at[k + 1] - 1 : b;
-        return !(to === p + 1 && this.tok[p + 1].j - this.tok[p + 1].i <= 4);
+      // the text each candidate's continuation line would carry: its operand,
+      // plus the operator that ends it (a middle segment) or the peeled `;`/`)`
+      // suffix (the last one).  The `;` is inside the range, which is why the
+      // old one-token-of-four-characters test never saw the `| 0;` case at all.
+      const at = all.filter((p, k) => {
+        const to = k + 1 < all.length ? all[k + 1] - 1 : b;
+        if (!strict) return !(to === p + 1 && this.tok[p + 1].j - this.tok[p + 1].i <= 4);
+        return !stranded(this.txt(p + 1, to) + (k + 1 < all.length ? ` ${this.tok[all[k + 1]].v}` : suf));
       });
-      at = useful;
-      if (!at.length) continue;
-      const out = [];
-      let from = a;
-      for (let k = 0; k < at.length; k++) {
-        const p = at[k];
-        out.push(...this.lay(from, p - 1, k === 0 ? ind : cont, (k === 0 ? ind : cont) + UNIT,
-          k === 0 ? pre : '', ` ${this.tok[p].v}`, depth + 1));
-        from = p + 1;
-      }
-      out.push(...this.lay(from, b, cont, cont + UNIT, '', suf, depth + 1));
-      return out;
+      if (!at.length) { if (strict && all.length) FMT_STATS.strandedLevels++; continue; }
+      if (strict) FMT_STATS.strandedDropped += all.length - at.length;
+      return this.layBinary(a, b, ind, cont, pre, suf, depth, at);
     }
     return null;
+  }
+
+  /** lay [a..b] out broken at each of `at`, the operator ending its own line */
+  layBinary(a, b, ind, cont, pre, suf, depth, at) {
+    const out = [];
+    let from = a;
+    for (let k = 0; k < at.length; k++) {
+      const p = at[k];
+      out.push(...this.lay(from, p - 1, k === 0 ? ind : cont, (k === 0 ? ind : cont) + UNIT,
+        k === 0 ? pre : '', ` ${this.tok[p].v}`, depth + 1));
+      from = p + 1;
+    }
+    out.push(...this.lay(from, b, cont, cont + UNIT, '', suf, depth + 1));
+    return out;
   }
 
   /**
