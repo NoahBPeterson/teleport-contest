@@ -388,7 +388,7 @@ export function* Resists_Elem(mon, propindx) {
         case NHC.ACID_RES:
         case NHC.STONE_RES:
             damgtype = (propindx + 1) | 0;  /* valid for propindx 1..8, damgtype 2..9 */
-            rsstmask = 1 << propindx - 1;  /* valid for propindx 1..8 */
+            rsstmask = 1 << (propindx - 1);  /* valid for propindx 1..8 */
             u_resist = cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
                 cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops)
                     ? 1
@@ -2274,7 +2274,7 @@ export function give_u_to_m_resistances(mtmp) {
                 $monst_mintrinsics,
                 cptr.ldU16o(mtmp, $monst_mintrinsics) |
                     u16(((NHC.FIRE_RES <= (intr) && (intr) <= NHC.STONE_RES)
-                        ? uchar((1 << (intr) - 1))
+                        ? uchar((1 << ((intr) - 1)))
                         : 0))
             );
         }

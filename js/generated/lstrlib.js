@@ -2157,16 +2157,16 @@ function getdetails(h, totalsize, fmt, psize, ntoalign) {
     else {
         if (align.v > cptr.ldI32o(h, $Header_maxalign))
             align.v = cptr.ldI32o(h, $Header_maxalign);
-        if ((__builtin_expect(BigInt((((align.v & align.v - 1) != 0) != 0)), 0n)))
+        if ((__builtin_expect(BigInt((((align.v & (align.v - 1)) != 0) != 0)), 0n)))
             luaL_argerror(cptr.ldPtr(h), 1, __s_format_asks_for_alignment_not_power_of_2);
         cptr.stI32(
             ntoalign,
-            align.v -
+            (align.v -
                 Number(BigInt.asIntN(
                     32,
                     (totalsize & BigInt.asUintN(64, BigInt(((align.v - 1) | 0))))
-                )) &
-                align.v - 1
+                ))) &
+                (align.v - 1)
         );
     }
     return opt;

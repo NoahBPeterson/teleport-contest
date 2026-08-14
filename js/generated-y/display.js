@@ -5970,7 +5970,7 @@ function* swallow_to_glyph(mnum, loc) {
         (yield* impossible(__s_swallow_to_glyph_bad_swallow_location));
         loc = NHC.S_sw_br;
     }
-    return ((m_3 | loc - NHC.S_sw_tl) + NHC.GLYPH_SWALLOW_OFF) | 0;
+    return ((m_3 | (loc - NHC.S_sw_tl)) + NHC.GLYPH_SWALLOW_OFF) | 0;
 }
 
 /*

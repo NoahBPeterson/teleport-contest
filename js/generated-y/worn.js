@@ -900,7 +900,7 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
                             $monst_mextrinsics,
                             cptr.ldU16o(mon, $monst_mextrinsics) |
                                 u16(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
-                                    ? uchar((1 << (which) - 1))
+                                    ? uchar((1 << ((which) - 1)))
                                     : 0))
                         );
                         break;
@@ -941,7 +941,7 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
                          * alternate source for either of those two resistances.
                          */
                         mask = uchar(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
-                                ? uchar((1 << (which) - 1))
+                                ? uchar((1 << ((which) - 1)))
                                 : 0));
                         for (
                             otmp = cptr.ldPtro(mon, $monst_minvent);

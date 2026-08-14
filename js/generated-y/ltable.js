@@ -63,14 +63,17 @@ function hashint(t, i) {
         return ((cptr.add(
             cptr.ldPtro((t), $Table_node),
             (((Number(BigInt.asIntN(32, ((ui)))))) %
-                (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1)),
+                ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1)),
             $sizeof_Node
         )));
     else
         return ((cptr.add(
             cptr.ldPtro((t), $Table_node),
             ((ui) %
-                BigInt.asUintN(64, BigInt((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1)))),
+                BigInt.asUintN(
+                    64,
+                    BigInt(((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1))
+                )),
             $sizeof_Node
         )));
 }
@@ -108,7 +111,7 @@ function mainpositionTV(t, key) {
                 let n = (cptr.ldF64(((key))));
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
-                    ((l_hashfloat(n)) % (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1)),
+                    ((l_hashfloat(n)) % ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1)),
                     $sizeof_Node
                 )));
             }
@@ -139,13 +142,13 @@ function mainpositionTV(t, key) {
         case 1:
             return ((cptr.add(
                 cptr.ldPtro((t), $Table_node),
-                ((((((0 & (((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1)))))),
+                ((((((0 & ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1))))))),
                 $sizeof_Node
             )));
         case 17:
             return ((cptr.add(
                 cptr.ldPtro((t), $Table_node),
-                ((((((1 & (((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1)))))),
+                ((((((1 & ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1))))))),
                 $sizeof_Node
             )));
         case 2:
@@ -155,7 +158,7 @@ function mainpositionTV(t, key) {
                     cptr.ldPtro((t), $Table_node),
                     (u32mod(
                         ((Number(BigInt.asUintN(32, (cptr.addr((p)) & 4294967295n))))),
-                        (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1) >>> 0
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1) >>> 0
                     )),
                     $sizeof_Node
                 )));
@@ -167,7 +170,7 @@ function mainpositionTV(t, key) {
                     cptr.ldPtro((t), $Table_node),
                     (u32mod(
                         ((Number(BigInt.asUintN(32, (cptr.addr((f)) & 4294967295n))))),
-                        (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1) >>> 0
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1) >>> 0
                     )),
                     $sizeof_Node
                 )));
@@ -179,7 +182,7 @@ function mainpositionTV(t, key) {
                     cptr.ldPtro((t), $Table_node),
                     (u32mod(
                         ((Number(BigInt.asUintN(32, (cptr.addr((o)) & 4294967295n))))),
-                        (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1) >>> 0
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1) >>> 0
                     )),
                     $sizeof_Node
                 )));
@@ -269,7 +272,7 @@ function equalkey(k1, n2, deadok) {
 /** C ref: ltable.c:250 — @param {CPtr<Table>} t @returns {CUInt} */
 export function luaH_realasize(t) {
     if (((!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-            ((((cptr.ldI32o((t), $Table_alimit)) & (cptr.ldI32o((t), $Table_alimit)) - 1) >>>
+            ((((cptr.ldI32o((t), $Table_alimit)) & ((cptr.ldI32o((t), $Table_alimit)) - 1)) >>>
                 0) == 0)))
         return cptr.ldI32o(t, $Table_alimit);  /* this is the size */
     else {
@@ -294,7 +297,7 @@ export function luaH_realasize(t) {
 /** C ref: ltable.c:278 — @param {CPtr<Table>} t @returns {CInt} */
 function ispow2realasize(t) {
     return (!(!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-        ((((cptr.ldI32o(t, $Table_alimit)) & (cptr.ldI32o(t, $Table_alimit)) - 1) >>> 0) == 0)
+        ((((cptr.ldI32o(t, $Table_alimit)) & ((cptr.ldI32o(t, $Table_alimit)) - 1)) >>> 0) == 0)
             ? 1
             : 0);
 }
@@ -1259,7 +1262,7 @@ export function luaH_getn(t) {
                     15)) ==
                     0)) {
             /* 'limit - 1' is a boundary; can it be a new limit? */
-            if (ispow2realasize(t) && !(((limit - 1 & limit - 1 - 1) >>> 0) == 0)) {
+            if (ispow2realasize(t) && !((((limit - 1) & (limit - 1 - 1)) >>> 0) == 0)) {
                 cptr.stI32o(t, $Table_alimit, (limit - 1) >>> 0);
                 (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) | 128));  /* now 'alimit' is not the real size */
             }
@@ -1276,7 +1279,8 @@ export function luaH_getn(t) {
     }
     /* 'limit' is zero or present in table */
     if (!((!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-            ((((cptr.ldI32o((t), $Table_alimit)) & (cptr.ldI32o((t), $Table_alimit)) - 1) >>> 0) ==
+            ((((cptr.ldI32o((t), $Table_alimit)) & ((cptr.ldI32o((t), $Table_alimit)) - 1)) >>>
+                0) ==
                 0))) {
         /* 'limit' > 0 and array has more elements after 'limit' */
         if ((((((cptr.ld1uo(

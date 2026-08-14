@@ -2699,7 +2699,7 @@ export function mon_give_prop(mtmp, prop) {
             return;  /* can't give it */
     }
     intrinsic = u16(((NHC.FIRE_RES <= (prop) && (prop) <= NHC.STONE_RES)
-            ? uchar((1 << (prop) - 1))
+            ? uchar((1 << ((prop) - 1)))
             : 0));
 
     /* Don't give message if it already had this property intrinsically, but

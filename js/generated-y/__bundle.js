@@ -36435,7 +36435,7 @@ function* luaV_execute(L, ci) {
             b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* log2(hash size) + 1 */
             c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* array size */
             if (b > 0)
-                b = 1 << b - 1;  /* size is 2^(b - 1) */
+                b = 1 << (b - 1);  /* size is 2^(b - 1) */
             (void 0);
             if (((((((((i) & 32768) >>> 0))) | 0))))
                 c = (c +
@@ -41316,14 +41316,17 @@ function hashint(t, i) {
         return ((cptr.add(
             cptr.ldPtro((t), $Table_node),
             (((Number(BigInt.asIntN(32, ((ui)))))) %
-                (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1)),
+                ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1)),
             $sizeof_Node
         )));
     else
         return ((cptr.add(
             cptr.ldPtro((t), $Table_node),
             ((ui) %
-                BigInt.asUintN(64, BigInt((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1)))),
+                BigInt.asUintN(
+                    64,
+                    BigInt(((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1))
+                )),
             $sizeof_Node
         )));
 }
@@ -41361,7 +41364,7 @@ function mainpositionTV(t, key) {
                 let n = (cptr.ldF64(((key))));
                 return ((cptr.add(
                     cptr.ldPtro((t), $Table_node),
-                    ((l_hashfloat(n)) % (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1)),
+                    ((l_hashfloat(n)) % ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1)),
                     $sizeof_Node
                 )));
             }
@@ -41392,13 +41395,13 @@ function mainpositionTV(t, key) {
         case 1:
             return ((cptr.add(
                 cptr.ldPtro((t), $Table_node),
-                ((((((0 & (((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1)))))),
+                ((((((0 & ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1))))))),
                 $sizeof_Node
             )));
         case 17:
             return ((cptr.add(
                 cptr.ldPtro((t), $Table_node),
-                ((((((1 & (((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1)))))),
+                ((((((1 & ((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1))))))),
                 $sizeof_Node
             )));
         case 2:
@@ -41408,7 +41411,7 @@ function mainpositionTV(t, key) {
                     cptr.ldPtro((t), $Table_node),
                     (u32mod(
                         ((Number(BigInt.asUintN(32, (cptr.addr((p)) & 4294967295n))))),
-                        (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1) >>> 0
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1) >>> 0
                     )),
                     $sizeof_Node
                 )));
@@ -41420,7 +41423,7 @@ function mainpositionTV(t, key) {
                     cptr.ldPtro((t), $Table_node),
                     (u32mod(
                         ((Number(BigInt.asUintN(32, (cptr.addr((f)) & 4294967295n))))),
-                        (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1) >>> 0
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1) >>> 0
                     )),
                     $sizeof_Node
                 )));
@@ -41432,7 +41435,7 @@ function mainpositionTV(t, key) {
                     cptr.ldPtro((t), $Table_node),
                     (u32mod(
                         ((Number(BigInt.asUintN(32, (cptr.addr((o)) & 4294967295n))))),
-                        (((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1 | 1) >>> 0
+                        ((((1 << (cptr.ld1uo((t), $Table_lsizenode)))) - 1) | 1) >>> 0
                     )),
                     $sizeof_Node
                 )));
@@ -41522,7 +41525,7 @@ function equalkey(k1, n2, deadok) {
 /** C ref: ltable.c:250 — @param {CPtr<Table>} t @returns {CUInt} */
 function luaH_realasize(t) {
     if (((!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-            ((((cptr.ldI32o((t), $Table_alimit)) & (cptr.ldI32o((t), $Table_alimit)) - 1) >>>
+            ((((cptr.ldI32o((t), $Table_alimit)) & ((cptr.ldI32o((t), $Table_alimit)) - 1)) >>>
                 0) == 0)))
         return cptr.ldI32o(t, $Table_alimit);  /* this is the size */
     else {
@@ -41547,7 +41550,7 @@ function luaH_realasize(t) {
 /** C ref: ltable.c:278 — @param {CPtr<Table>} t @returns {CInt} */
 function ispow2realasize(t) {
     return (!(!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-        ((((cptr.ldI32o(t, $Table_alimit)) & (cptr.ldI32o(t, $Table_alimit)) - 1) >>> 0) == 0)
+        ((((cptr.ldI32o(t, $Table_alimit)) & ((cptr.ldI32o(t, $Table_alimit)) - 1)) >>> 0) == 0)
             ? 1
             : 0);
 }
@@ -42512,7 +42515,7 @@ function luaH_getn(t) {
                     15)) ==
                     0)) {
             /* 'limit - 1' is a boundary; can it be a new limit? */
-            if (ispow2realasize(t) && !(((limit - 1 & limit - 1 - 1) >>> 0) == 0)) {
+            if (ispow2realasize(t) && !((((limit - 1) & (limit - 1 - 1)) >>> 0) == 0)) {
                 cptr.stI32o(t, $Table_alimit, (limit - 1) >>> 0);
                 (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) | 128));  /* now 'alimit' is not the real size */
             }
@@ -42529,7 +42532,8 @@ function luaH_getn(t) {
     }
     /* 'limit' is zero or present in table */
     if (!((!(cptr.ld1uo((t), $Table_flags) & 128)) ||
-            ((((cptr.ldI32o((t), $Table_alimit)) & (cptr.ldI32o((t), $Table_alimit)) - 1) >>> 0) ==
+            ((((cptr.ldI32o((t), $Table_alimit)) & ((cptr.ldI32o((t), $Table_alimit)) - 1)) >>>
+                0) ==
                 0))) {
         /* 'limit' > 0 and array has more elements after 'limit' */
         if ((((((cptr.ld1uo(
@@ -180048,7 +180052,7 @@ function* pleased(g_align) {
        fixed or there were no troubles to begin with; hallucination
        won't be in effect so special handling for it is superfluous */
     if (pat_on_head)
-        switch (rn2(Luck() + 6 >> 1)) {
+        switch (rn2((Luck() + 6) >> 1)) {
             case 0:
                 break;
             case 1:
@@ -206721,7 +206725,7 @@ function* handler_autounlock(optidx) {
         let newflags = 0;
 
         for (i = 0; i < n; ++i)
-            newflags |= (1 << cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1) >>> 0;
+            newflags |= (1 << (cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1)) >>> 0;
         cptr.stI32o(flags, $flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
@@ -308776,7 +308780,7 @@ function* update_mon_extrinsics(mon, obj, on, silently) {
                             $monst_mextrinsics,
                             cptr.ldU16o(mon, $monst_mextrinsics) |
                                 u16(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
-                                    ? uchar((1 << (which) - 1))
+                                    ? uchar((1 << ((which) - 1)))
                                     : 0))
                         );
                         break;
@@ -308817,7 +308821,7 @@ function* update_mon_extrinsics(mon, obj, on, silently) {
                          * alternate source for either of those two resistances.
                          */
                         mask = uchar(((NHC.FIRE_RES <= (which) && (which) <= NHC.STONE_RES)
-                                ? uchar((1 << (which) - 1))
+                                ? uchar((1 << ((which) - 1)))
                                 : 0));
                         for (
                             otmp = cptr.ldPtro(mon, $monst_minvent);
@@ -310144,7 +310148,7 @@ function* Resists_Elem(mon, propindx) {
         case NHC.ACID_RES:
         case NHC.STONE_RES:
             damgtype = (propindx + 1) | 0;  /* valid for propindx 1..8, damgtype 2..9 */
-            rsstmask = 1 << propindx - 1;  /* valid for propindx 1..8 */
+            rsstmask = 1 << (propindx - 1);  /* valid for propindx 1..8 */
             u_resist = cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
                 cptr.ldI64o2(u, propindx, $sizeof_prop, $you_uprops)
                     ? 1
@@ -312030,7 +312034,7 @@ function give_u_to_m_resistances(mtmp) {
                 $monst_mintrinsics,
                 cptr.ldU16o(mtmp, $monst_mintrinsics) |
                     u16(((NHC.FIRE_RES <= (intr) && (intr) <= NHC.STONE_RES)
-                        ? uchar((1 << (intr) - 1))
+                        ? uchar((1 << ((intr) - 1)))
                         : 0))
             );
         }
@@ -328673,9 +328677,9 @@ function cmp_init_mongen_order(p1, p2) {
     let offset2 = 0;
 
     /* incorporate the mlet into the sort values for comparison */
-    let difficulty1 = (cptr.ld1uo2(mons, i1, $sizeof_permonst, $permonst_difficulty) + offset1 |
+    let difficulty1 = ((cptr.ld1uo2(mons, i1, $sizeof_permonst, $permonst_difficulty) + offset1) |
             (cptr.ld1so2(mons, i1, $sizeof_permonst, $permonst_mlet) << 8));
-    let difficulty2 = (cptr.ld1uo2(mons, i2, $sizeof_permonst, $permonst_difficulty) + offset2 |
+    let difficulty2 = ((cptr.ld1uo2(mons, i2, $sizeof_permonst, $permonst_difficulty) + offset2) |
             (cptr.ld1so2(mons, i2, $sizeof_permonst, $permonst_mlet) << 8));
     return (difficulty1 - difficulty2) | 0;
 }
@@ -335043,7 +335047,7 @@ function* mon_give_prop(mtmp, prop) {
             return;  /* can't give it */
     }
     intrinsic = u16(((NHC.FIRE_RES <= (prop) && (prop) <= NHC.STONE_RES)
-            ? uchar((1 << (prop) - 1))
+            ? uchar((1 << ((prop) - 1)))
             : 0));
 
     /* Don't give message if it already had this property intrinsically, but
@@ -343796,7 +343800,7 @@ function* weight(obj) {
     }
     return (wt
             ? Math.imul(wt, Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))))
-            : Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))) + 1 >> 1);
+            : (Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))) + 1) >> 1);
 }
 
 /** C ref: mkobj.c:1978 — int[5] */
@@ -384082,16 +384086,16 @@ function* getdetails(h, totalsize, fmt, psize, ntoalign) {
     else {
         if (align.v > cptr.ldI32o(h, $Header_maxalign))
             align.v = cptr.ldI32o(h, $Header_maxalign);
-        if ((__builtin_expect(BigInt((((align.v & align.v - 1) != 0) != 0)), 0n)))
+        if ((__builtin_expect(BigInt((((align.v & (align.v - 1)) != 0) != 0)), 0n)))
             (yield* luaL_argerror(cptr.ldPtr(h), 1, __s_format_asks_for_alignment_not_power_of_2));
         cptr.stI32(
             ntoalign,
-            align.v -
+            (align.v -
                 Number(BigInt.asIntN(
                     32,
                     (totalsize & BigInt.asUintN(64, BigInt(((align.v - 1) | 0))))
-                )) &
-                align.v - 1
+                ))) &
+                (align.v - 1)
         );
     }
     return opt;
@@ -441072,7 +441076,7 @@ function* swallow_to_glyph(mnum, loc) {
         (yield* impossible$pline(__s_swallow_to_glyph_bad_swallow_location));
         loc = NHC.S_sw_br;
     }
-    return ((m_3 | loc - NHC.S_sw_tl) + NHC.GLYPH_SWALLOW_OFF) | 0;
+    return ((m_3 | (loc - NHC.S_sw_tl)) + NHC.GLYPH_SWALLOW_OFF) | 0;
 }
 
 /*
@@ -466520,7 +466524,7 @@ function glyph_to_statue_corpsenm(glyph) {
 function glyph_to_swallow(glyph) {
     return (((glyph) >= NHC.GLYPH_SWALLOW_OFF &&
         (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0))
-        ? ((glyph) - NHC.GLYPH_SWALLOW_OFF & 7)
+        ? (((glyph) - NHC.GLYPH_SWALLOW_OFF) & 7)
         : 0);
 }
 

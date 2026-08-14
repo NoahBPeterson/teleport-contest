@@ -2666,9 +2666,9 @@ function cmp_init_mongen_order(p1, p2) {
     let offset2 = 0;
 
     /* incorporate the mlet into the sort values for comparison */
-    let difficulty1 = (cptr.ld1uo2(mons, i1, $sizeof_permonst, $permonst_difficulty) + offset1 |
+    let difficulty1 = ((cptr.ld1uo2(mons, i1, $sizeof_permonst, $permonst_difficulty) + offset1) |
             (cptr.ld1so2(mons, i1, $sizeof_permonst, $permonst_mlet) << 8));
-    let difficulty2 = (cptr.ld1uo2(mons, i2, $sizeof_permonst, $permonst_difficulty) + offset2 |
+    let difficulty2 = ((cptr.ld1uo2(mons, i2, $sizeof_permonst, $permonst_difficulty) + offset2) |
             (cptr.ld1so2(mons, i2, $sizeof_permonst, $permonst_mlet) << 8));
     return (difficulty1 - difficulty2) | 0;
 }

@@ -2740,7 +2740,7 @@ export function weight(obj) {
     }
     return (wt
             ? Math.imul(wt, Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))))
-            : Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))) + 1 >> 1);
+            : (Number(BigInt.asIntN(32, cptr.ldI64o(obj, $obj_quan))) + 1) >> 1);
 }
 
 /** C ref: mkobj.c:1978 — int[5] */

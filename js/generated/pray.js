@@ -1884,7 +1884,7 @@ function pleased(g_align) {
        fixed or there were no troubles to begin with; hallucination
        won't be in effect so special handling for it is superfluous */
     if (pat_on_head)
-        switch (rn2(Luck() + 6 >> 1)) {
+        switch (rn2((Luck() + 6) >> 1)) {
             case 0:
                 break;
             case 1:

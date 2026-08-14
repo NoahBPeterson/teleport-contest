@@ -1034,7 +1034,7 @@ export function glyph_to_statue_corpsenm(glyph) {
 export function glyph_to_swallow(glyph) {
     return (((glyph) >= NHC.GLYPH_SWALLOW_OFF &&
         (glyph) < (((NHC.NUMMONS << 3) + NHC.GLYPH_SWALLOW_OFF) | 0))
-        ? ((glyph) - NHC.GLYPH_SWALLOW_OFF & 7)
+        ? (((glyph) - NHC.GLYPH_SWALLOW_OFF) & 7)
         : 0);
 }
 

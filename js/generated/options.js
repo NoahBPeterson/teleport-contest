@@ -12710,7 +12710,7 @@ function handler_autounlock(optidx) {
         let newflags = 0;
 
         for (i = 0; i < n; ++i)
-            newflags |= (1 << cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1) >>> 0;
+            newflags |= (1 << (cptr.ldI32o(window_pick.v, i, $sizeof_menu_item) - 1)) >>> 0;
         cptr.stI32o(flags, $flag_autounlock, newflags);
         cptr.free(window_pick.v);
     } else if (n == 0) {
