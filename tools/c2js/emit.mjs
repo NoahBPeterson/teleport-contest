@@ -437,9 +437,10 @@ const DO_FLAT_STATS = { seen: 0, flattened: 0, refusedJump: 0, refusedSplicedJum
 //
 // C2JS_WRAPFOLD=0 restores the mask-at-every-node emission (the A/B baseline).
 const WRAPFOLD = process.env.C2JS_WRAPFOLD !== '0';
-// C2JS_WRAPFOLD2=0 restores the first leg's three refusals — strict key
-// equality, no bitwise/shift consumer, no `?:` offer — leaving the fold itself
-// on.  It is this leg's A/B baseline; C2JS_WRAPFOLD=0 still removes both.
+// C2JS_WRAPFOLD2=0 restores the first leg's refusals — strict key equality, no
+// bitwise/shift consumer, no same-width-cast consumer, no `?:` offer — leaving
+// the fold itself on.  It is this leg's A/B baseline; C2JS_WRAPFOLD=0 still
+// removes both.
 const WRAPFOLD2 = WRAPFOLD && process.env.C2JS_WRAPFOLD2 !== '0';
 const WRAPFOLD_VERIFY = process.env.C2JS_WRAPFOLD_VERIFY === '1';
 const WRAPFOLD_CHECK = process.env.C2JS_WRAPFOLD_CHECK === '1';
