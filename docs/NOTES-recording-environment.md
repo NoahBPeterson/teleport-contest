@@ -77,7 +77,7 @@ sound.
 Why this survived 44/44: `sessions/` contains winter datetimes (31 of them use
 `20000110090000`), but all at 09:00–12:00 local, where the correction moves
 the hour from 9 to 8 and nothing on screen notices. Every datetime that would
-have exposed it is in EDT. `sessions-calendar/` closes that hole — 12 fresh C
+have exposed it is in EDT. `sessions-extra/` closes that hole — 12 fresh C
 recordings that went 3/12 before the fix and 12/12 after.
 
 `g.localtime` was also cross-checked directly against Darwin `localtime()`
