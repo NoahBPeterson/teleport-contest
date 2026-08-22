@@ -118,7 +118,15 @@ export async function runBootGame(opts) {
 
   const tmpHome = VHOME;
   const ENV = {
-    TERM: 'ansi',
+    // The recorder ran under TERM=xterm-256color (upstream
+    // docs/recording-environment.md). Nothing downstream reads the string
+    // itself except three prefix tests that all miss for both this value and
+    // the old 'ansi' — termcap.c's "5620" check and options.c's "AT" / "vt"
+    // console probes — because tgetent() below is a stub that answers from a
+    // fixed capability table rather than a terminfo database. Pinned anyway so
+    // the environment matches the recording on paper as well as in effect; the
+    // one capability that *is* observable, Co=256, is set in TERMCAP_NUM.
+    TERM: 'xterm-256color',
     HOME: tmpHome,
     NETHACKDIR: HACKDIR,
     NETHACK_FIXED_DATETIME: datetime,
@@ -694,21 +702,74 @@ export async function runBootGame(opts) {
     else if (tloc && tloc.buf !== undefined) cptr.stU64(tloc, t);
     return t;
   };
-  g.localtime = (tp) => {
-    const t = Number(cptr.ldU64(tp));
-    const d = new Date((t + REC_UTC_OFFSET_SEC) * 1000);
-    // tm_yday must be real: hacklib.c's phase_of_the_moon() is
-    //   ((((tm_yday + epact) * 6) + 11) % 177) / 22) & 7
-    // so a hardcoded 0 silently shifts the moon phase, which decides
-    // whether the game opens with "Be careful!  New moon tonight." /
-    // "You are lucky!  Full moon tonight." — a pline whose --More--
-    // also shifts every following keystroke. Compute it from UTC
-    // midnights so a DST boundary inside the year can't skew the count.
-    const yday = Math.round((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
-      - Date.UTC(d.getUTCFullYear(), 0, 1)) / 86400000);
-    const tm = { sec: d.getUTCSeconds(), min: d.getUTCMinutes(), hour: d.getUTCHours(), mday: d.getUTCDate(), mon: d.getUTCMonth(), year: d.getUTCFullYear() - 1900, wday: d.getUTCDay(), yday, isdst: 0 };
-    return makeTm(tm);
-  };
+  // localtime(), unlike mktime() above, is NOT a constant offset. The recorder
+  // ran with TZ=America/New_York (docs/recording-environment.md upstream), so
+  // localtime() applies that zone's real rules to the time_t: EDT (-04:00) in
+  // summer, EST (-05:00) in winter. Reusing REC_UTC_OFFSET_SEC here — what this
+  // used to do — hands back a wall clock one hour late for every session whose
+  // *simulated* datetime falls outside DST, even though the time_t itself is
+  // right. That is visible in three separate places:
+  //   tm_hour  night() is `hour < 6 || hour > 21` and midnight() is `hour == 0`
+  //            (calendar.c), so an off-by-one hour flips "It is nighttime." on
+  //            the ^X attributes screen and the midnight undead bonus.
+  //   tm_yday  phase_of_the_moon() is
+  //              ((((tm_yday + epact) * 6) + 11) % 177) / 22) & 7
+  //            so when the -05:00 correction rolls the date back a day (any
+  //            datetime in the 00:00..00:59 hour), the moon phase changes and
+  //            the game opens with a different "Be careful!  New moon tonight."
+  //            / "You are lucky!  Full moon tonight." pline — a --More-- that
+  //            shifts every following keystroke.
+  //   tm_wday/tm_mday  friday_13th() is `tm_wday == 5 && tm_mday == 13`, and
+  //            yyyymmdd() feeds the tombstone/record-file date.
+  // Verified against the patched C recorder: probe sessions at 20261120220000
+  // and 20261225060000 (night() flip) and 20260101003000 (date rollback) all
+  // diverged with the fixed offset and match with the zone rules.
+  const REC_TZ = 'America/New_York';
+  // Both the formatter and the decoded fields hang off globalThis rather than
+  // this closure. Constructing an Intl.DateTimeFormat costs ~18 ms (it faults
+  // in ICU's zone tables) and js/boot/isolation.mjs re-instantiates this whole
+  // module graph per segment, so a closure-local one is paid per segment and
+  // shows up in the scored startup number. The zone is a fixed constant, so a
+  // process-wide cache is sound; and getlt() re-parses the same pinned datetime
+  // on every call (night(), midnight(), phase_of_the_moon(), friday_13th(),
+  // getyear() all route through it), so memoising by time_t matters too.
+  const __ltG = (globalThis.__c2jsLocaltime ||= { fmt: null, cache: new Map() });
+  function ltFields(sec) {
+    let f = __ltG.cache.get(sec);
+    if (f) return f;
+    __ltG.fmt ||= new Intl.DateTimeFormat('en-US', {
+      timeZone: REC_TZ, hourCycle: 'h23', era: 'short',
+      year: 'numeric', month: 'numeric', day: 'numeric',
+      hour: 'numeric', minute: 'numeric', second: 'numeric',
+    });
+    const parts = __ltG.fmt.formatToParts(new Date(sec * 1000));
+    const o = {};
+    for (const p of parts) if (p.type !== 'literal') o[p.type] = p.value;
+    let year = Number(o.year);
+    if (o.era === 'BC') year = 1 - year;  // 1 BC is astronomical year 0
+    const mon = Number(o.month) - 1, mday = Number(o.day);
+    const hour = Number(o.hour) % 24, min = Number(o.minute), s = Number(o.second);
+    // Date.UTC maps a two-digit year into 1900..1999, which none of these are
+    // (America/New_York time_t values land in 1883..9999), but be explicit.
+    const utc = (y, m, d, hh = 0, mm = 0, ss = 0) => {
+      const ms = Date.UTC(y, m, d, hh, mm, ss);
+      return (y >= 0 && y <= 99) ? new Date(ms).setUTCFullYear(y) : ms;
+    };
+    const localMs = utc(year, mon, mday, hour, min, s);
+    const dayMs = utc(year, mon, mday);
+    const janMs = utc(year, 0, 1);
+    const offsetSec = Math.round(localMs / 1000) - sec;
+    f = {
+      sec: s, min, hour, mday, mon, year: year - 1900,
+      wday: ((Math.floor(dayMs / 86400000) % 7) + 11) % 7,  // 1970-01-01 was a Thursday (4)
+      yday: Math.round((dayMs - janMs) / 86400000),
+      // EST is -05:00, EDT -04:00; anything else (pre-1883 LMT) is standard time.
+      isdst: offsetSec === -4 * 3600 ? 1 : 0,
+    };
+    __ltG.cache.set(sec, f);
+    return f;
+  }
+  g.localtime = (tp) => makeTm(ltFields(Number(cptr.ldU64(tp))));
   function makeTm(t) {
     const b = new Uint8Array(9 * 4 + 8 + 8);
     const p = { buf: b, off: 0 };
