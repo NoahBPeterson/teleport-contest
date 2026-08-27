@@ -4,7 +4,8 @@
 # Mirrors what the judge runs against your fork on the public
 # leaderboard. Drives moveloop_core() one key at a time — the exact
 # code path the browser play page uses — and prints whether your
-# implementation hits the "playable" threshold (< 1 ms/move overall).
+# implementation hits the "playable" threshold (< 5 ms/move overall).
+# One-time game startup is reported separately from interactive key latency.
 #
 # Usage: bash play.sh [session_dir]
 

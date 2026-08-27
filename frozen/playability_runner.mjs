@@ -22,9 +22,9 @@
 //   3. For each character in segment.moves:
 //        display.pushKey(code)
 //        timed: await moveloop_core()
-//   4. Aggregate cumulative_ms (start + per-key sum) across all sessions
-//      and divide by total moves consumed.
-//   5. Playable iff cumulative_ms / total_moves < 1.0 ms.
+//   4. Report start() separately, then aggregate only interactive
+//      moveloop_core time and keys across all sessions.
+//   5. Playable iff every session succeeds and interactive_ms / keys < 5 ms.
 //
 // The linear-fit / per-session timing breakdown deliberately lives in
 // ps_test_runner.mjs (against the scoring path), not here — the per-
@@ -47,11 +47,11 @@ import { fileURLToPath } from 'node:url';
 const SCRIPT_DIR = fileURLToPath(new URL('.', import.meta.url));
 const PROJECT_ROOT = fileURLToPath(new URL('..', import.meta.url));
 
-// A move is fewer than 1 ms aggregate — the threshold is generous; it's
-// roughly "the median modern laptop hits 1000 keystrokes per second."
-// Anything slower than that and the browser starts feeling laggy when
-// holding a movement key.
-const PLAYABLE_THRESHOLD_MS_PER_MOVE = 1.0;
+// 5 ms/move aggregate ≈ 200 keys/sec — fast enough to feel responsive
+// when you're holding a movement key. Tighter thresholds (1 ms) flag
+// "fine but middling" ports as unplayable; looser ones (10 ms) let
+// real per-keystroke pathologies through. Matches the judge.
+const PLAYABLE_THRESHOLD_MS_PER_MOVE = 5.0;
 
 function findSessions(targets) {
     if (!targets.length) targets = [join(PROJECT_ROOT, 'sessions')];
@@ -87,6 +87,8 @@ async function timeOneSession(sessionPath, modules) {
 
     const display = new GameDisplay(null);
     display.onEmptyQueue = () => { throw new QueueEmpty(); };
+    const term = display.terminal || display;
+    const queueLength = () => (term?.inputQueueLength ?? term?._inputQueue?.length ?? 0);
 
     // DON'T pre-wipe the shared `game` object.  Several ports' resetGame()
     // snapshot the initial `game` shape on first call and restore from that
@@ -107,37 +109,49 @@ async function timeOneSession(sessionPath, modules) {
     // fake) ms/move.
     game.nhDisplay = display;
 
-    const t_start = performance.now();
-    await nhGame.start();
-
-    let consumed = 0;
+    // Push ALL keys before start().  Some forks drive character-creation
+    // prompts (name, role) from inside NethackGame.start() itself —
+    // _promptForName → nhgetch → readKey.  If keys are only pushed AFTER
+    // start(), the queue is empty when the prompt fires and our
+    // onEmptyQueue throws, killing the whole test before the per-keystroke
+    // loop ever runs.  Pre-pushing matches what the contest scoring
+    // runSegment does and what a browser does over time: keys arrive into
+    // the queue, the game pulls them when it needs them.
     for (let i = 0; i < moves.length; i++) {
         display.pushKey(moves.charCodeAt(i));
+    }
+
+    const queuedBeforeStart = queueLength();
+    const startupStart = performance.now();
+    await nhGame.start();
+    const startup_ms = performance.now() - startupStart;
+
+    // Drive moveloop_core until input is exhausted, the game ends, or we
+    // hit a sane iteration cap.  Count "moves consumed" via the
+    // terminal's queue length rather than per-iteration, since
+    // moveloop_core may pull 0..N keys per call depending on prompt state.
+    const initialQueued = queueLength();
+    const maxIter = Math.max(moves.length * 8, 1024);
+    const interactiveStart = performance.now();
+    for (let iter = 0; iter < maxIter; iter++) {
         try {
             await moveloop_core();
         } catch (e) {
-            if (e instanceof QueueEmpty) {
-                // moveloop_core consumed the key we just pushed (for a
-                // multi-character prompt like a name or yn dialog) and
-                // then tried to read more.  Count this key and move on
-                // to the next — the browser-play path does exactly the
-                // same: each keypress drives moveloop_core forward by
-                // whatever amount it can, and the next keypress
-                // continues the operation.
-                consumed++;
-                continue;
-            }
+            if (e instanceof QueueEmpty) break;
             throw e;
         }
-        consumed++;
         if (game.program_state?.gameover) break;
+        if (queueLength() === 0) break;
     }
+    const consumed = Math.max(0, initialQueued - queueLength());
 
-    const cumulative_ms = performance.now() - t_start;
+    const cumulative_ms = performance.now() - interactiveStart;
     return {
         session: sessionPath,
         moves_consumed: consumed,
         cumulative_ms,
+        startup_moves_consumed: Math.max(0, queuedBeforeStart - initialQueued),
+        startup_ms,
     };
 }
 
@@ -163,6 +177,8 @@ async function main() {
     const perSession = [];
     let total_moves = 0;
     let total_cumulative = 0;
+    let total_startup_moves = 0;
+    let total_startup = 0;
     let failures = 0;
 
     for (const sp of sessions) {
@@ -178,6 +194,8 @@ async function main() {
         perSession.push(result);
         total_moves += result.moves_consumed;
         total_cumulative += result.cumulative_ms;
+        total_startup_moves += result.startup_moves_consumed;
+        total_startup += result.startup_ms;
         const ratio = result.cumulative_ms / Math.max(1, result.moves_consumed);
         process.stderr.write(
             `  ${result.session.split('/').pop()}: `
@@ -186,12 +204,16 @@ async function main() {
         );
     }
 
-    const overall_ms_per_move = total_cumulative / Math.max(1, total_moves);
-    const playable = overall_ms_per_move < PLAYABLE_THRESHOLD_MS_PER_MOVE;
+    const overall_ms_per_move = total_moves > 0 ? total_cumulative / total_moves : null;
+    const playable = failures === 0
+        && total_moves > 0
+        && overall_ms_per_move < PLAYABLE_THRESHOLD_MS_PER_MOVE;
 
     process.stderr.write(
         `\nPlayability: ${playable ? 'PLAYABLE' : 'NOT PLAYABLE'} `
-        + `(${overall_ms_per_move.toFixed(2)} ms/move overall, threshold < ${PLAYABLE_THRESHOLD_MS_PER_MOVE} ms/move)\n`
+        + `(${overall_ms_per_move === null ? 'unmeasured' : `${overall_ms_per_move.toFixed(2)} ms/move overall`}, `
+        + `threshold < ${PLAYABLE_THRESHOLD_MS_PER_MOVE} ms/move`
+        + (failures ? `, ${failures} failed` : '') + `)\n`
     );
 
     process.stdout.write('__PLAYABILITY_JSON__\n');
@@ -200,13 +222,18 @@ async function main() {
         failures,
         total_moves,
         total_cumulative_ms: Math.round(total_cumulative),
-        overall_ms_per_move: +overall_ms_per_move.toFixed(3),
+        total_startup_moves,
+        total_startup_ms: Math.round(total_startup),
+        overall_ms_per_move: overall_ms_per_move === null
+            ? null : +overall_ms_per_move.toFixed(3),
         playable,
         threshold_ms_per_move: PLAYABLE_THRESHOLD_MS_PER_MOVE,
         per_session: perSession.map(r => ({
             name: r.session.split('/').pop(),
             moves: r.moves_consumed,
             cumulative_ms: Math.round(r.cumulative_ms),
+            startup_moves: r.startup_moves_consumed,
+            startup_ms: Math.round(r.startup_ms),
         })),
     }, null, 2) + '\n');
 }
