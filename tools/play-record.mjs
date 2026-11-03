@@ -63,7 +63,7 @@ import fsSync from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
-import { recordingEnv } from '../scripts/recording-env.mjs';
+import { recordingEnv, recorderEnv, resolveMktimeNow } from '../scripts/recording-env.mjs';
 
 const TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(TOOLS_DIR, '..');
@@ -286,20 +286,15 @@ async function playAndRecord(cfg, ui) {
         await fs.symlink(cfg.installDir, envInstallDir).catch(() => {});
     }
 
-    const env = {
-        ...process.env,
-        NETHACKDIR: envInstallDir,
-        HACKDIR: envInstallDir,
-        HOME: homeDir,
-        TERM: 'xterm-256color',
-        TZ: cfg.tz,
-        NETHACK_NO_DELAY: '1',
-        NETHACK_SEED: String(cfg.seed),
-        NETHACK_FIXED_DATETIME: cfg.datetime,
-        NETHACK_RNGLOG: rngLogPath,
-        NOMUX_MARKERS: '1',
-        NETHACK_RAW_KEYS: '1',
-    };
+    const env = recorderEnv({
+        installDir: envInstallDir,
+        homeDir,
+        tz: cfg.tz,
+        seed: cfg.seed,
+        datetime: cfg.datetime,
+        rngLogPath,
+        mktimeNow: cfg.mktimeNow,
+    });
 
     const scripted = cfg.scriptedKeys != null;
     const interactive = !scripted && process.stdin.isTTY;
@@ -755,8 +750,9 @@ async function main() {
         seed, name, datetime, tz, nethackrc, outPath, binary, installDir,
         scratch, scriptedKeys, keepTmp: flag('--keep-tmp'), mirror: false,
     };
-    // Captured at launch: fixes the recorder's mktime() offset (recording-env.mjs).
-    const recEnv = await recordingEnv({ tz, binary, repoRoot: ROOT });
+    // Captured at launch; mktimeNow pins the recorder's mktime() offset (recording-env.mjs).
+    cfg.mktimeNow = resolveMktimeNow();
+    const recEnv = await recordingEnv({ tz, binary, repoRoot: ROOT, mktimeNow: cfg.mktimeNow });
 
     let ui;
     let modeNote;

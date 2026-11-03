@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { recordingEnv } from './recording-env.mjs';
+import { recordingEnv, recorderEnv, resolveMktimeNow } from './recording-env.mjs';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_ROOT = path.resolve(SCRIPT_DIR, '..');
@@ -409,6 +409,7 @@ async function recordSegment({
     stateDumpPath,
     homeDir,
     tz,
+    mktimeNow,
 }) {
     // Write nethackrc into homeDir
     await fs.mkdir(homeDir, { recursive: true });
@@ -424,20 +425,15 @@ async function recordSegment({
     const playerName = parseNethackrcName(seg.nethackrc) ?? '';
     const args = ['-u', playerName];
 
-    const env = {
-        ...process.env,
-        NETHACKDIR: envInstallDir || installDir,
-        HACKDIR: envInstallDir || installDir,
-        HOME: homeDir,
-        TERM: 'xterm-256color',
-        TZ: tz,
-        NETHACK_NO_DELAY: '1',
-        NETHACK_SEED: String(seg.seed ?? 0),
-        NETHACK_FIXED_DATETIME: seg.datetime || '20000110090000',
-        NETHACK_RNGLOG: rngLogPath,
-        NOMUX_MARKERS: '1',
-        NETHACK_RAW_KEYS: '1',
-    };
+    const env = recorderEnv({
+        installDir: envInstallDir || installDir,
+        homeDir,
+        tz,
+        seed: seg.seed ?? 0,
+        datetime: seg.datetime || '20000110090000',
+        rngLogPath,
+        mktimeNow,
+    });
     // Hidden-state oracle capture (patch 009): only when the caller
     // asked for it (TELEPORT_RECORD_STATE=1 → main passes a path).
     if (stateDumpPath) env.NETHACK_STATEDUMP = stateDumpPath;
@@ -738,7 +734,8 @@ async function main() {
 
     // Captured before the first segment launches: the recorder's mktime()
     // offset is fixed by the real clock at launch (see recording-env.mjs).
-    const recEnv = await recordingEnv({ tz, binary, repoRoot: TEMPLATE_ROOT });
+    const mktimeNow = resolveMktimeNow();
+    const recEnv = await recordingEnv({ tz, binary, repoRoot: TEMPLATE_ROOT, mktimeNow });
 
     try {
         const newSegments = [];
@@ -755,6 +752,7 @@ async function main() {
                 stateDumpPath,
                 homeDir,
                 tz,
+                mktimeNow,
             });
             const out = {
                 seed: seg.seed,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """gen-fuzz.py - monkey-test session *recipes* for scripts/record-session.mjs.
 
-Usage: gen-fuzz.py <outdir> <count> <first-seed> <actions-per-session> [wiz|play]
+Usage: gen-fuzz.py <outdir> <count> <first-seed> <actions-per-session> [wiz|play|deep]
 
 wiz  (default) playmode:debug: wishes, ^G monsters, #polyself, traps from
      wishes - dense coverage of rare code (blog topics: digging, scare
@@ -9,6 +9,10 @@ wiz  (default) playmode:debug: wishes, ^G monsters, #polyself, traps from
      riding, deaths while helpless).
 play normal game: no wizard commands, so deaths reach the tombstone and
      top-ten screens that debug mode skips.
+deep normal game in THREE segments joined by save/restore ('Sy' ends a
+     segment; the next one, same name, restores), each <actions> long, biased
+     toward travelling to the down stairs (_ > .) and descending, so the game
+     reaches deeper levels, later turns, and the restore path.
 
 Each action ends with ' ' + ESC so --More-- and prompts never wedge the run.
 Datetimes stay at 07:00-20:00 local: the recorder's mktime() inherits DST
@@ -33,10 +37,11 @@ def act(r, inv):
     k=r.random()
     L=lambda: r.choice(inv)
     d=lambda: r.choice(D+'<>.')
+    if MODE == 'deep' and r.random() < 0.08: return '_>.' + ' ' + ESC + '>' + ' ' + ESC
     if k<0.30: a = (str(r.randint(2,9)) if r.random()<0.3 else '') + r.choice(D)
     elif k<0.36: a = 'F'+r.choice(D)
     elif k<0.40: a = str(r.randint(2,20))+'s'
-    elif MODE == 'play' and k<0.57: a = r.choice(['s', '20s', ':', 'i', '\x18', '>', '<', ',', 'Fh', 'Fl'])
+    elif MODE in ('play', 'deep') and k<0.57: a = r.choice(['s', '20s', ':', 'i', '\x18', '>', '<', ',', 'Fh', 'Fl'])
     elif k<0.47: a = W + r.choice(ITEMS) + '\n'
     elif k<0.54: a = G + r.choice(MONS) + '\n'
     elif k<0.57: a = '#polyself\n' + r.choice(POLY) + '\n'
@@ -67,6 +72,15 @@ for i in range(N):
     rc = (f'OPTIONS=name:Fuzz,role:{role},race:{race},gender:{'female' if role=='Valkyrie' or i%2 else 'male'},align:{align}' + (',playmode:debug' if MODE == 'wiz' else '') + '\n'
           'OPTIONS=!autopickup,!legacy,!tutorial,suppress_alert:3.4.3\n')
     inv = list('abcdefghijklmnopqrstuvwxyz')[:20]
-    moves = ''.join(act(r, inv) for _ in range(NACT))
-    d={'version':5,'segments':[{'seed':seed,'datetime':'2026%02d%02d%02d%02d00'%(r.randint(1,12),r.randint(1,28),r.randint(7,20),r.randint(0,59)),'nethackrc':rc,'moves':moves}],'source':'c'}
-    json.dump(d, open(f'{OUT}/fz{seed}-{"wizfuzz" if MODE == "wiz" else "playfuzz"}-{role.lower()}.session.json','w'))
+    dt = '2026%02d%02d%02d%02d00' % (r.randint(1,12), r.randint(1,28), r.randint(7,20), r.randint(0,59))
+    if MODE == 'deep':
+        segs = []
+        for j in range(3):
+            moves = ''.join(act(r, inv) for _ in range(NACT))
+            if j < 2: moves += ESC + ESC + 'Sy' + ' '
+            segs.append({'seed': seed + 50000 * j, 'datetime': dt[:8] + '%02d' % (7 + 4 * j) + dt[10:], 'nethackrc': rc, 'moves': moves})
+        d = {'version': 5, 'segments': segs, 'source': 'c'}
+    else:
+        moves = ''.join(act(r, inv) for _ in range(NACT))
+        d={'version':5,'segments':[{'seed':seed,'datetime':dt,'nethackrc':rc,'moves':moves}],'source':'c'}
+    json.dump(d, open(f'{OUT}/fz{seed}-{ {"wiz": "wizfuzz", "play": "playfuzz", "deep": "deepfuzz"}[MODE] }-{role.lower()}.session.json','w'))

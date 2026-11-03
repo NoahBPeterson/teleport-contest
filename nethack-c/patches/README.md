@@ -1,6 +1,6 @@
 # NetHack 5.0 recorder patches
 
-Eight patches that turn upstream NetHack 5.0 into a deterministic,
+The patches that turn upstream NetHack 5.0 into a deterministic,
 reproducible "recorder" build whose run-to-run behavior is exactly
 what the JS port has to match.
 
@@ -14,6 +14,7 @@ what the JS port has to match.
 | 006 | `nomux-capture` | Replace `tty` curses output with a deterministic 24×80 frame capture | Need exact terminal contents at every input boundary |
 | 007 | `nomux-raw-print` | Route `raw_print` (early errors, banners) through nomux too | Otherwise startup banners aren't captured |
 | 008 | `nomux-deterministic-capture` | Snapshot the screen exactly when C blocks for the next key | Pins frame boundaries to `tty_nhgetch` calls |
+| 010 | `mktime-now` | Optional `NETHACK_MKTIME_NOW` (epoch) replaces the real clock that `time_from_yyyymmddhhmmss()` takes `tm_isdst` from; unset = unchanged | The recorder reads the session datetime at the record-time UTC offset, so local recordings made in EST differed from the official (EDT) ones. `scripts/recording-env.mjs` pins it to 2026-08-01 by default; with that, all 44 public sessions re-record identically (`scripts/verify-rerecord.mjs`) |
 
 ## Apply
 

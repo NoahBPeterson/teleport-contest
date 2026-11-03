@@ -1,0 +1,19 @@
+--- a/src/calendar.c	2026-11-02 20:14:13
++++ b/src/calendar.c	2026-11-02 20:14:13
+@@ -159,6 +159,16 @@
+         *p = '\0';
+         /* Avoid recursion when getnow() itself is using fixed datetime. */
+         (void) time((TIME_type) &now);
++        /* NETHACK_MKTIME_NOW (epoch seconds), when set, stands in for the
++         * real clock here. Only tm_isdst survives into mktime() below (every
++         * other field is overwritten), so this pins whether the datetime is
++         * read as DST or standard time. Unset, behavior is unchanged. */
++        {
++            const char *mk_now = nh_getenv("NETHACK_MKTIME_NOW");
++
++            if (mk_now && *mk_now)
++                now = (time_t) atol(mk_now);
++        }
+         lt = localtime((LOCALTIME_type) &now);
+         if (lt) {
+             t = *lt;

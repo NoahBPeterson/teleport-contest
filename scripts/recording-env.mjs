@@ -21,7 +21,13 @@
 //                          are not port bugs. See docs/NOTES-recording-environment.md.
 //   recorder_sha256        hash of the recorder binary (identifies the build)
 //   repo_commit            git HEAD of this checkout (null if unavailable)
+//   mktime_now             the epoch the recorder's mktime() took tm_isdst
+//                          from (NETHACK_MKTIME_NOW, patch 010), or null if
+//                          it used the real clock
 //   os, os_release, arch, node   platform facts (libc behavior is platform-specific)
+//
+// recorderEnv() is the ONE place the C recorder's process environment is
+// built; scripts/record-session.mjs and tools/play-record.mjs both use it.
 
 import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
@@ -61,19 +67,64 @@ function repoCommit(cwd) {
     } catch { return null; }
 }
 
+// The official recordings were made during EDT, so the recorder's mktime()
+// read every session datetime at -04:00 (the port's REC_UTC_OFFSET_SEC).
+// Pinning the clock mktime() consults to a summer instant reproduces that in
+// any season. RECORDER_MKTIME_NOW=<epoch> overrides; =real uses the real clock.
+export const DEFAULT_MKTIME_NOW = Math.floor(Date.UTC(2026, 7, 1, 16, 0, 0) / 1000); // 2026-08-01 12:00 EDT
+
+/** @returns {number|null} epoch seconds for NETHACK_MKTIME_NOW, or null for the real clock */
+export function resolveMktimeNow(env = process.env) {
+    const v = env.RECORDER_MKTIME_NOW;
+    if (v === 'real') return null;
+    if (v !== undefined && v !== '') {
+        const n = Number(v);
+        if (!Number.isInteger(n)) throw new Error(`RECORDER_MKTIME_NOW must be epoch seconds or "real", got ${v}`);
+        return n;
+    }
+    return DEFAULT_MKTIME_NOW;
+}
+
 /**
- * @param {{tz: string, binary: string, repoRoot: string, when?: Date}} o
+ * The recorder process's environment. Every recording tool builds it here.
+ * @param {{installDir: string, homeDir: string, tz: string, seed: number|string,
+ *          datetime: string, rngLogPath: string, mktimeNow: number|null}} o
  */
-export async function recordingEnv({ tz, binary, repoRoot, when = new Date() }) {
+export function recorderEnv({ installDir, homeDir, tz, seed, datetime, rngLogPath, mktimeNow }) {
+    const env = {
+        ...process.env,
+        NETHACKDIR: installDir,
+        HACKDIR: installDir,
+        HOME: homeDir,
+        TERM: 'xterm-256color',
+        TZ: tz,
+        NETHACK_NO_DELAY: '1',
+        NETHACK_SEED: String(seed ?? 0),
+        NETHACK_FIXED_DATETIME: datetime,
+        NETHACK_RNGLOG: rngLogPath,
+        NOMUX_MARKERS: '1',
+        NETHACK_RAW_KEYS: '1',
+    };
+    delete env.NETHACK_MKTIME_NOW;
+    if (mktimeNow != null) env.NETHACK_MKTIME_NOW = String(mktimeNow);
+    return env;
+}
+
+/**
+ * @param {{tz: string, binary: string, repoRoot: string, mktimeNow: number|null, when?: Date}} o
+ */
+export async function recordingEnv({ tz, binary, repoRoot, mktimeNow, when = new Date() }) {
     const off = zoneOffsetSec(tz, when);
+    const mkWhen = mktimeNow != null ? new Date(mktimeNow * 1000) : when;
     return {
         recorded_at: when.toISOString(),
         tz,
         tz_utc_offset_sec: off,
         tz_isdst: zoneIsDst(tz, when),
-        // tm_isdst is inherited from "now", so mktime() interprets every
-        // session datetime at the zone's current offset.
-        mktime_utc_offset_sec: off,
+        // mktime() takes tm_isdst from mktime_now (or the real clock), so it
+        // reads every session datetime at the zone's offset at that instant.
+        mktime_now: mktimeNow ?? null,
+        mktime_utc_offset_sec: zoneOffsetSec(tz, mkWhen),
         recorder_sha256: await sha256File(binary),
         repo_commit: repoCommit(repoRoot),
         os: process.platform,
