@@ -118,3 +118,25 @@ serialized as 23 newlines, so every screen of the following segment was
 compared one step late. js/jsmain.js now drops blank screens (and their
 cursors) the same way. fz7536 went 463/1772 -> 1772/1772; the batch 65/104 ->
 104/104. Use `tools/segdiff.mjs` to see mismatches past segment 0.
+
+## The `sc-*` family — scripted themed sessions
+
+35 hand-scripted sessions, written 2026-11-02 by four agents each driving a
+private copy of the recorder install, in the style of the public sessions:
+
+- `sc-shops-*` (9): Tourist surcharge, using/eating/burning unpaid items,
+  credit, buy-back, angry shopkeepers and appeasement, door/wall damage and
+  repair, robbing by teleport and the Keystone Kops across save/restore,
+  murdering the shopkeeper, a normal-mode shop visit.
+- `sc-speclev-*` (10): Sokoban (pushes, squeezes, luck penalty, save/restore),
+  the Oracle, Minetown temple donations and the watch, the castle drawbridge
+  and passtune, the Mines, the Elemental Planes and Astral, Medusa,
+  the Rogue level and Big Room.
+- `sc-quest-*` (8): prayer timeouts and troubles, sacrifice, altar conversion,
+  gifts and crowning, #turn, Knight caitiff, quest leaders and expulsion.
+- `sc-deaths-*` (8, normal mode): tombstones, a four-game top-ten, disclosure
+  option forms, save/restore with lamps/pits/partly eaten food, bones loaded
+  by a later character, punishment, shop debts, self-genocide.
+
+All 35 pass. They were recorded with the patch-010 clock pin
+(`mktime_utc_offset_sec: -14400` in `recording_env`).
