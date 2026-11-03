@@ -105,3 +105,16 @@ with the port's offset at -05:00: daytime datetimes, but recorded in EST, so
 the timestamp-derived shopkeeper names differ. Recording artifacts, not kept.
 The remaining 197 passed and are not committed (281 MB); regenerate with the
 commands above if needed.
+
+### `fz7536-deepfuzz-tourist` — blank end-of-game screens across segments
+
+From a 104-session batch (`gen-fuzz.py ... 52 7500 700 deep` and
+`... 52 7600 1500 play`, recorded with the patch-010 clock pin). 39 of the 52
+three-segment save/restore sessions failed with RNG 100% but thousands of
+screens off. When a game ends (death, then the disclosure prompts) the
+terminal clears and the recorder stores that step's screen as "". The scorer
+keeps a C screen only `if (step.screen)`, but took every JS screen, and ours
+serialized as 23 newlines, so every screen of the following segment was
+compared one step late. js/jsmain.js now drops blank screens (and their
+cursors) the same way. fz7536 went 463/1772 -> 1772/1772; the batch 65/104 ->
+104/104. Use `tools/segdiff.mjs` to see mismatches past segment 0.

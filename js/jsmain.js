@@ -94,9 +94,26 @@ let spawnFallback;
 class TranspiledGame {
     constructor(result) {
         this._result = result;
+        // The scorer keeps a recorded C step's screen only `if (step.screen)`,
+        // so a step whose screen is entirely blank ("") has no C counterpart.
+        // That happens on the last step of a game that ended (the terminal is
+        // cleared as NetHack exits): reported here, our blank screen would
+        // shift every screen of the NEXT segment by one against C. Drop blank
+        // screens, and the cursor at the same index, exactly as the scorer
+        // drops C's. Animation frames are per step on both sides; untouched.
+        // The recorder trims trailing empty rows, so its blank screen is ""
+        // while ours serializes as bare newlines: treat both as blank.
+        const screens = result.screens || [], cursors = result.cursors || [];
+        this._screens = [];
+        this._cursors = [];
+        for (let i = 0; i < screens.length; i++) {
+            if (!screens[i] || /^\n*$/.test(screens[i])) continue;
+            this._screens.push(screens[i]);
+            this._cursors.push(cursors[i]);
+        }
     }
-    getScreens() { return this._result.screens || []; }
-    getCursors() { return this._result.cursors || []; }
+    getScreens() { return this._screens; }
+    getCursors() { return this._cursors; }
     getRngLog() { return this._result.rngLog || []; }
     getAnimationFramesByStep() { return this._result.animFramesByStep || []; }
 }
