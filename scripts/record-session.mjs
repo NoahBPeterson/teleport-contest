@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { recordingEnv, recorderEnv, resolveMktimeNow } from './recording-env.mjs';
+import { recordingEnv, recorderEnv, recorderSpawn, resolveMktimeNow } from './recording-env.mjs';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_ROOT = path.resolve(SCRIPT_DIR, '..');
@@ -512,7 +512,11 @@ async function recordSegment({
         }, ms);
     };
 
-    const child = spawn(binary, args, {
+    const launch = recorderSpawn({
+        binary, args, installDir: envInstallDir || installDir,
+        tmpDir: path.dirname(homeDir), env,
+    });
+    const child = spawn(launch.cmd, launch.args, {
         env,
         stdio: ['pipe', 'pipe', 'inherit'],
     });

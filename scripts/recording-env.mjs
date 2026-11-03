@@ -27,12 +27,26 @@
 //   os, os_release, arch, node   platform facts (libc behavior is platform-specific)
 //
 // recorderEnv() is the ONE place the C recorder's process environment is
-// built; scripts/record-session.mjs and tools/play-record.mjs both use it.
+// built, and recorderSpawn() the one place its command line is; both
+// scripts/record-session.mjs and tools/play-record.mjs use them.
+//
+// Safety: recordings replay keys that may come from fuzzers or third-party
+// recipes, and NetHack's `!` runs $SHELL (dosh(), sys/unix/unixunix.c).
+// recorderEnv() sets SHELL=/usr/bin/false so `!` can never reach a real
+// shell, and recorderSpawn() runs the binary under scripts/recorder.sb
+// (macOS sandbox-exec: no network, writes only to the install/temp/profile
+// dirs, exec only itself and compress). RECORDER_SANDBOX=0 disables the
+// sandbox. Neither changes what the game prints except for `!` itself,
+// which no recordable session can use anyway. sysconf (SHELLERS=*) is left
+// alone on purpose: the port vendors it (js/data-nethackdir via
+// tools/vendor-data.mjs) and must keep matching the official recorder.
 
 import { createHash } from 'node:crypto';
-import { promises as fs } from 'node:fs';
+import { promises as fs, realpathSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /** UTC offset (seconds) of IANA zone `tz` at instant `date`. */
 export function zoneOffsetSec(tz, date) {
@@ -104,10 +118,37 @@ export function recorderEnv({ installDir, homeDir, tz, seed, datetime, rngLogPat
         NETHACK_RNGLOG: rngLogPath,
         NOMUX_MARKERS: '1',
         NETHACK_RAW_KEYS: '1',
+        // dosh() execs $SHELL: make `!` start a program that exits at once.
+        SHELL: '/usr/bin/false',
     };
     delete env.NETHACK_MKTIME_NOW;
     if (mktimeNow != null) env.NETHACK_MKTIME_NOW = String(mktimeNow);
     return env;
+}
+
+const SANDBOX_PROFILE = path.join(path.dirname(fileURLToPath(import.meta.url)), 'recorder.sb');
+
+/**
+ * The command that launches the recorder: under sandbox-exec on macOS
+ * (unless RECORDER_SANDBOX=0), otherwise the binary itself.
+ * @param {{binary: string, args: string[], installDir: string, tmpDir: string, env: object}} o
+ * @returns {{cmd: string, args: string[], sandboxed: boolean}}
+ */
+export function recorderSpawn({ binary, args, installDir, tmpDir, env }) {
+    if (process.platform !== 'darwin' || process.env.RECORDER_SANDBOX === '0') {
+        return { cmd: binary, args, sandboxed: false };
+    }
+    const real = (p) => realpathSync(p);
+    const bin = real(binary);
+    const prof = env && env.LLVM_PROFILE_FILE ? real(path.dirname(env.LLVM_PROFILE_FILE)) : real(tmpDir);
+    return {
+        cmd: '/usr/bin/sandbox-exec',
+        args: ['-f', SANDBOX_PROFILE,
+            '-D', `BIN=${bin}`, '-D', `INSTALL=${real(installDir)}`,
+            '-D', `TMP=${real(tmpDir)}`, '-D', `PROF=${prof}`,
+            bin, ...args],
+        sandboxed: true,
+    };
 }
 
 /**
@@ -125,6 +166,7 @@ export async function recordingEnv({ tz, binary, repoRoot, mktimeNow, when = new
         // reads every session datetime at the zone's offset at that instant.
         mktime_now: mktimeNow ?? null,
         mktime_utc_offset_sec: zoneOffsetSec(tz, mkWhen),
+        sandboxed: process.platform === 'darwin' && process.env.RECORDER_SANDBOX !== '0',
         recorder_sha256: await sha256File(binary),
         repo_commit: repoCommit(repoRoot),
         os: process.platform,

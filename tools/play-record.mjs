@@ -63,7 +63,7 @@ import fsSync from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
-import { recordingEnv, recorderEnv, resolveMktimeNow } from '../scripts/recording-env.mjs';
+import { recordingEnv, recorderEnv, recorderSpawn, resolveMktimeNow } from '../scripts/recording-env.mjs';
 
 const TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(TOOLS_DIR, '..');
@@ -313,7 +313,11 @@ async function playAndRecord(cfg, ui) {
 
     const playerName = parseNethackrcName(cfg.nethackrc) ?? '';
     const errFd = fsSync.openSync(errPath, 'a');
-    const child = spawn(cfg.binary, ['-u', playerName], {
+    const launch = recorderSpawn({
+        binary: cfg.binary, args: ['-u', playerName],
+        installDir: envInstallDir, tmpDir: scratch, env,
+    });
+    const child = spawn(launch.cmd, launch.args, {
         env, stdio: ['pipe', 'pipe', errFd],
     });
     child.stdin.on('error', () => {});

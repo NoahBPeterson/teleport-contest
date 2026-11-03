@@ -134,3 +134,32 @@ being treated as a port bug. That happened to five fuzz probes recorded
 
 The 25 `fz*` sessions committed that day were backfilled (`backfilled: true`)
 from their original files' mtimes.
+
+## Recorder safety: `SHELL=/usr/bin/false` and the sandbox (2026-11-03)
+
+NetHack's `!` runs `$SHELL` (`dosh()`, `sys/unix/unixunix.c`) when sysconf
+`SHELLERS` allows it, and ours says `SHELLERS=*`. Replaying third-party or
+fuzzed keystrokes, a stray `!` handed the following keys to a real shell
+(three recipes from another contestant's corpus did this; none had a newline
+after the `!`, and the shell started in the recorder's throwaway temp HOME,
+so nothing ran that we could find). Two guards now apply to every recording:
+
+- `recorderEnv()` sets `SHELL=/usr/bin/false`, so `!` starts a program that
+  exits at once and the game resumes.
+- `recorderSpawn()` runs the binary under `scripts/recorder.sb` via
+  `sandbox-exec` (macOS): no network; file writes only under the install dir,
+  the per-run temp dir and the coverage-profile dir (plus already-open
+  descriptors such as `/dev/stdout`, which `compress -c` uses); exec only the
+  recorder itself and `/usr/bin/compress`/`uncompress` (save and bones files).
+  `RECORDER_SANDBOX=0` disables it; `recording_env.sandboxed` records it.
+
+Neither changes what the game prints except for `!` itself. Verified: all 44
+public sessions re-record identically under the sandbox
+(`scripts/verify-rerecord.mjs`), as do the bones/save sessions
+`sc-deaths-bones`, `-bones2`, `-saverest`, `-shop`; a canary recipe that
+presses `!` and types `echo pwned > file` creates no file.
+
+sysconf is deliberately NOT changed: the port vendors it
+(`js/data-nethackdir/`, via `tools/vendor-data.mjs`) with `SHELLERS=*`, and
+must keep matching the official recorder. Scratch install copies used for
+fuzzing may set `SHELLERS=` as an extra guard; never vendor from those.

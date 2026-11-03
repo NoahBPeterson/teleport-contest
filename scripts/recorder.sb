@@ -1,0 +1,38 @@
+;; recorder.sb — macOS sandbox profile for the C recorder (sandbox-exec).
+;;
+;; Recording replays keystrokes that may come from fuzzers or other people's
+;; recipes. NetHack can start programs: `!` runs $SHELL (dosh, gated by
+;; sysconf SHELLERS), and save/bones files go through COMPRESS
+;; (/usr/bin/compress). A stray `!` in a recipe would hand the following keys
+;; to a real shell. This profile confines the recorder process:
+;;   - reads are allowed (game data, dylibs, locale, zoneinfo);
+;;   - no network;
+;;   - writes only under the install dir, the per-run temp dir (HOME, rng
+;;     log), and an optional coverage-profile dir;
+;;   - it may exec only the recorder binary itself and compress/uncompress.
+;; Parameters (sandbox-exec -D): BIN, INSTALL, TMP, PROF — real paths.
+;; Built by recorderSpawn() in scripts/recording-env.mjs.
+
+(version 1)
+(allow default)
+
+(deny network*)
+
+(deny file-write*)
+(allow file-write*
+    (subpath (param "INSTALL"))
+    (subpath (param "TMP"))
+    (subpath (param "PROF"))
+    (literal "/dev/null")
+    ;; already-open descriptors only (compress -c writes via /dev/stdout)
+    (literal "/dev/stdout")
+    (literal "/dev/stderr")
+    (regex #"^/dev/fd/[0-9]+$")
+    (literal "/dev/tty")
+    (regex #"^/dev/ttys[0-9]+$"))
+
+(deny process-exec*)
+(allow process-exec*
+    (literal (param "BIN"))
+    (literal "/usr/bin/compress")
+    (literal "/usr/bin/uncompress"))
