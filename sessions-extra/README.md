@@ -140,3 +140,20 @@ private copy of the recorder install, in the style of the public sessions:
 
 All 35 pass. They were recorded with the patch-010 clock pin
 (`mktime_utc_offset_sec: -14400` in `recording_env`).
+
+## `reg-*` — regression sessions for bugs found via richie3366's corpus
+
+Our own recipes (not derived from the third-party recipes, which stay
+local), each verified to PASS on the fixed port and FAIL on af73003:
+
+- `reg-panic-portal-to-nowhere`: wish for a magic portal (a portal "to
+  nowhere": trap->dst unset), step off it, wait; the pet steps on it and C
+  panics ("Oops..."). The port used to throw on abort() and score 0.
+- `reg-dense-screen-juiblex`: `^F` over Juiblex's swamp in DECgraphics +
+  colour, 14 screens over the old 6144-byte capture buffer. The port used
+  to throw "strlen runaway" and score 0. Recorded with the enlarged buffer.
+
+The two transpiler bugs (boolean `return` in int functions; goto-spliced
+`break` inside loops) are guarded at the emitter level by
+`node tools/c2js/test-control.mjs` (fixture `tools/c2js/fixtures/control_gate.c`),
+which fails on the old emitter with exactly the in-game symptoms.
