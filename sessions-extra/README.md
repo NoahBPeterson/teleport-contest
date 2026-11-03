@@ -88,3 +88,20 @@ offset at -05:00, so they are recording artifacts, not port bugs. The
 generator now keeps datetimes at 07:00-20:00 for that reason. Record
 serially: debug mode forces the name `wizard`, so parallel recordings collide
 on lock files.
+
+### `fz7332-playfuzz-priest` and the 208-session batch
+
+A second batch (`gen-fuzz.py ... 104 7100 500 wiz` and `... 104 7300 500
+play`, recorded serially 2026-11-02) went 202/208. `fz7332` (normal play)
+generated a melting ice room (themerms.lua "Ice room", 25% branch), and the
+port printed "Attempted to start duplicate melt_ice_away timer, aborted." at
+level creation: `cptr.eq()` treated any two integer-valued `anything`
+pointers (`long_to_any()`) as equal, so start_timer()'s duplicate scan
+rejected every ice square after the first. The extra --More-- shifted every
+later key (RNG 3511/23473). It is kept here as the regression.
+
+The other five failures (fz7129, fz7175, fz7199, fz7310, fz7323) all pass
+with the port's offset at -05:00: daytime datetimes, but recorded in EST, so
+the timestamp-derived shopkeeper names differ. Recording artifacts, not kept.
+The remaining 197 passed and are not committed (281 MB); regenerate with the
+commands above if needed.

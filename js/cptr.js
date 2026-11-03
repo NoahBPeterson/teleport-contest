@@ -142,6 +142,13 @@ export function cmp(a, b) { return a.off - b.off; }
 /** Pointer equality (null-safe): same buffer identity and same offset. @returns {boolean} */
 export function eq(a, b) {
   if (a === null || b === null) return a === b;
+  // An integer bit pattern loaded as a pointer (NetHack's `anything` union:
+  // long_to_any() for spot timers, light sources, ...) comes back from
+  // __intPtr() as {intBits, buf: undefined, off: 0}. Comparing buf/off alone
+  // made EVERY two such values equal, so start_timer()'s duplicate scan
+  // rejected the second melt_ice_away timer of an ice room with "Attempted to
+  // start duplicate melt_ice_away timer, aborted." Compare the bits.
+  if (a.intBits !== undefined || b.intBits !== undefined) return a.intBits === b.intBits;
   return a.buf === b.buf && a.off === b.off;
 }
 
