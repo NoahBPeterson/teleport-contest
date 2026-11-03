@@ -1458,12 +1458,12 @@ function changedline(p, oldpc, newpc) {
                 break;  /* cannot compute delta; fall through */
             delta = (delta + lineinfo) | 0;
             if (pc == newpc)
-                return (delta != 0);  /* delta computed successfully */
+                return (delta != 0) ? 1 : 0;  /* delta computed successfully */
         }
     }
     /* either instructions are too far apart or there is an absolute line
        info in the way; compute line difference explicitly */
-    return (luaG_getfuncline(p, oldpc) != luaG_getfuncline(p, newpc));
+    return (luaG_getfuncline(p, oldpc) != luaG_getfuncline(p, newpc)) ? 1 : 0;
 }
 
 /*

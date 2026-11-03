@@ -239,26 +239,30 @@ function equalkey(k1, n2, deadok) {
         case 17:
             return 1;
         case 3:
-            return ((cptr.ldI64(((k1)))) == (cptr.ldI64((cptr.add((n2), $NodeKey_key_val)))));
+            return ((cptr.ldI64(((k1)))) == (cptr.ldI64((cptr.add((n2), $NodeKey_key_val)))))
+                    ? 1
+                    : 0;
         case 19:
-            return (((cptr.ldF64(((k1))))) == ((cptr.ldF64(((cptr.add((n2), $NodeKey_key_val)))))));
+            return (((cptr.ldF64(((k1))))) == ((cptr.ldF64(((cptr.add((n2), $NodeKey_key_val)))))))
+                    ? 1
+                    : 0;
         case 2:
-            return cptr.eq(
-                (cptr.ldPtr(((k1)))),
-                (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))))
-            );
+            return cptr.eq((cptr.ldPtr(((k1)))), (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val))))))
+                    ? 1
+                    : 0;
         case 22:
-            return (cptr.ldPtr(((k1)))) === (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))));
+            return (cptr.ldPtr(((k1)))) === (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))))
+                    ? 1
+                    : 0;
         case 84:
             return luaS_eqlngstr(
                 ((((((cptr.ldPtr(((k1))))))))),
                 ((((((cptr.ldPtr((cptr.add((n2), $NodeKey_key_val)))))))))
             );
         default:
-            return cptr.eq(
-                (cptr.ldPtr(((k1)))),
-                (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))))
-            );
+            return cptr.eq((cptr.ldPtr(((k1)))), (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val))))))
+                    ? 1
+                    : 0;
     }
 }
 

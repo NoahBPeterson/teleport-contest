@@ -2551,7 +2551,7 @@ function spec_applies(weap, mtmp) {
     let yours;
 
     if (!(cptr.ldU64o(weap, $artifact_spfx) & 32505920n))
-        return (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS);
+        return (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS) ? 1 : 0;
 
     yours = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))));
     ptr = cptr.ldPtro(mtmp, $monst_data);
@@ -2564,12 +2564,18 @@ function spec_applies(weap, mtmp) {
                 Number(BigInt.asIntN(32, cptr.ldU64o(weap, $artifact_mtype))),
                 $sizeof_permonst
             )
-        ));
+        ))
+                ? 1
+                : 0;
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 2097152n) {
         return (cptr.ldU64o(weap, $artifact_mtype) ==
-                BigInt.asUintN(64, BigInt(cptr.ld1so(ptr, $permonst_mlet))));
+            BigInt.asUintN(64, BigInt(cptr.ld1so(ptr, $permonst_mlet))))
+                ? 1
+                : 0;
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 4194304n) {
-        return ((cptr.ldU64o(ptr, $permonst_mflags1) & cptr.ldU64o(weap, $artifact_mtype)) != 0n);
+        return ((cptr.ldU64o(ptr, $permonst_mflags1) & cptr.ldU64o(weap, $artifact_mtype)) != 0n)
+                ? 1
+                : 0;
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 8388608n) {
         return ((cptr.ldU64o(ptr, $permonst_mflags2) & cptr.ldU64o(weap, $artifact_mtype)) ||
             (yours &&
@@ -2597,20 +2603,20 @@ function spec_applies(weap, mtmp) {
 
         switch (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp)) {
             case NHM.AD_FIRE:
-                return !(yours ? Fire_resistance() : Resists_Elem(mtmp, NHC.FIRE_RES));
+                return !(yours ? Fire_resistance() : Resists_Elem(mtmp, NHC.FIRE_RES)) ? 1 : 0;
             case NHM.AD_COLD:
-                return !(yours ? Cold_resistance() : Resists_Elem(mtmp, NHC.COLD_RES));
+                return !(yours ? Cold_resistance() : Resists_Elem(mtmp, NHC.COLD_RES)) ? 1 : 0;
             case NHM.AD_ELEC:
-                return !(yours ? Shock_resistance() : Resists_Elem(mtmp, NHC.SHOCK_RES));
+                return !(yours ? Shock_resistance() : Resists_Elem(mtmp, NHC.SHOCK_RES)) ? 1 : 0;
             case NHM.AD_MAGM:
             case NHM.AD_STUN:
-                return !(yours ? Antimagic() : (rn2(100) < cptr.ld1so(ptr, $permonst_mr)));
+                return !(yours ? Antimagic() : (rn2(100) < cptr.ld1so(ptr, $permonst_mr))) ? 1 : 0;
             case NHM.AD_DRST:
-                return !(yours ? Poison_resistance() : Resists_Elem(mtmp, NHC.POISON_RES));
+                return !(yours ? Poison_resistance() : Resists_Elem(mtmp, NHC.POISON_RES)) ? 1 : 0;
             case NHM.AD_DRLI:
-                return !(yours ? Drain_resistance() : resists_drli(mtmp));
+                return !(yours ? Drain_resistance() : resists_drli(mtmp)) ? 1 : 0;
             case NHM.AD_STON:
-                return !(yours ? Stone_resistance() : Resists_Elem(mtmp, NHC.STONE_RES));
+                return !(yours ? Stone_resistance() : Resists_Elem(mtmp, NHC.STONE_RES)) ? 1 : 0;
             default:
                 impossible(__s_weird_weapon_special_attack);
         }

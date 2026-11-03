@@ -3120,7 +3120,7 @@ function* nh_qsort_idx_cmp(va, vb) {
         return c;
     if (cptr.ldU64(a) < cptr.ldU64(b))
         return -1;
-    return (cptr.ldU64(a) > cptr.ldU64(b));
+    return (cptr.ldU64(a) > cptr.ldU64(b)) ? 1 : 0;
 }
 
 /* Deterministic replacement for libc qsort(), preserving original order
@@ -3936,7 +3936,7 @@ function* strncmpi(s1, s2, n) {
 
     while (n--) {
         if (!cptr.ld1s(s2))
-            return (cptr.ld1s(s1) != 0);  /* s1 >= s2 */
+            return (cptr.ld1s(s1) != 0) ? 1 : 0;  /* s1 >= s2 */
         else if (!cptr.ld1s(s1))
             return -1;  /* s1  < s2 */
         t1 = lowc(cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })));
@@ -33523,8 +33523,9 @@ function* luaT_trybiniTM(L, p1, i2, flip, res, event) {
 function* luaT_callorderTM(L, p1, p2, event) {
     if ((yield* callbinTM(L, p1, p2, cptr.ldPtro(L, $lua_State_top), event)))
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) &
-                    15)) == 0));
+            (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) & 15)) == 0))
+                ? 1
+                : 0;
     (yield* luaG_ordererror(L, p1, p2));  /* no metamethod found */
     return 0;  /* to avoid warnings */
 }
@@ -33758,12 +33759,14 @@ function* l_strton(obj, result) {
     else {
         let st = ((((((cptr.ldPtr(((obj)))))))));
         return ((yield* luaO_str2num((cptr.add((st), $TString_contents)), result)) ==
-                BigInt.asUintN(
-                    64,
-                    (cptr.ld1uo((st), $TString_shrlen) != 255
-                        ? BigInt(cptr.ld1uo((st), $TString_shrlen) >>> 0)
-                        : cptr.ldU64o((st), $TString_u)) + 1n
-                ));
+            BigInt.asUintN(
+                64,
+                (cptr.ld1uo((st), $TString_shrlen) != 255
+                    ? BigInt(cptr.ld1uo((st), $TString_shrlen) >>> 0)
+                    : cptr.ldU64o((st), $TString_u)) + 1n
+            ))
+                ? 1
+                : 0;
     }
 }
 
@@ -34299,13 +34302,13 @@ function l_strcmp(ts1, ts2) {
 /** C ref: lvm.c:416 — @param {CLongLong} i @param {CDouble} f @returns {CInt} */
 function LTintfloat(i, f) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return (((Number(((i))))) < (f));  /* compare them as floats */
+        return (((Number(((i))))) < (f)) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Iceil))
-            return i < fi.v;  /* compare them as integers */
+            return i < fi.v ? 1 : 0;  /* compare them as integers */
         else
-            return f > 0;  /* greater? */
+            return f > 0 ? 1 : 0;  /* greater? */
     }
 }
 
@@ -34316,13 +34319,13 @@ function LTintfloat(i, f) {
 /** C ref: lvm.c:433 — @param {CLongLong} i @param {CDouble} f @returns {CInt} */
 function LEintfloat(i, f) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return (((Number(((i))))) <= (f));  /* compare them as floats */
+        return (((Number(((i))))) <= (f)) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Ifloor))
-            return i <= fi.v;  /* compare them as integers */
+            return i <= fi.v ? 1 : 0;  /* compare them as integers */
         else
-            return f > 0;  /* greater? */
+            return f > 0 ? 1 : 0;  /* greater? */
     }
 }
 
@@ -34333,13 +34336,13 @@ function LEintfloat(i, f) {
 /** C ref: lvm.c:450 — @param {CDouble} f @param {CLongLong} i @returns {CInt} */
 function LTfloatint(f, i) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return ((f) < ((Number(((i))))));  /* compare them as floats */
+        return ((f) < ((Number(((i)))))) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Ifloor))
-            return fi.v < i;  /* compare them as integers */
+            return fi.v < i ? 1 : 0;  /* compare them as integers */
         else
-            return f < 0;  /* less? */
+            return f < 0 ? 1 : 0;  /* less? */
     }
 }
 
@@ -34350,13 +34353,13 @@ function LTfloatint(f, i) {
 /** C ref: lvm.c:467 — @param {CDouble} f @param {CLongLong} i @returns {CInt} */
 function LEfloatint(f, i) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return ((f) <= ((Number(((i))))));  /* compare them as floats */
+        return ((f) <= ((Number(((i)))))) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Iceil))
-            return fi.v <= i;  /* compare them as integers */
+            return fi.v <= i ? 1 : 0;  /* compare them as integers */
         else
-            return f < 0;  /* less? */
+            return f < 0 ? 1 : 0;  /* less? */
     }
 }
 
@@ -34369,13 +34372,13 @@ function LTnum(l, r) {
     if (((cptr.ld1uo(((l)), $TValue_tt_)) == 3)) {
         let li = (cptr.ldI64(((l))));
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 3))
-            return li < (cptr.ldI64(((r))));  /* both are integers */
+            return li < (cptr.ldI64(((r)))) ? 1 : 0;  /* both are integers */
         else
             return LTintfloat(li, (cptr.ldF64(((r)))));  /* l < r ? */
     } else {
         let lf = (cptr.ldF64(((l))));  /* 'l' must be float */
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 19))
-            return ((lf) < ((cptr.ldF64(((r))))));  /* both are float */
+            return ((lf) < ((cptr.ldF64(((r)))))) ? 1 : 0;  /* both are float */
         else
             return LTfloatint(lf, (cptr.ldI64(((r)))));
     }
@@ -34390,13 +34393,13 @@ function LEnum(l, r) {
     if (((cptr.ld1uo(((l)), $TValue_tt_)) == 3)) {
         let li = (cptr.ldI64(((l))));
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 3))
-            return li <= (cptr.ldI64(((r))));  /* both are integers */
+            return li <= (cptr.ldI64(((r)))) ? 1 : 0;  /* both are integers */
         else
             return LEintfloat(li, (cptr.ldF64(((r)))));  /* l <= r ? */
     } else {
         let lf = (cptr.ldF64(((l))));  /* 'l' must be float */
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 19))
-            return ((lf) <= ((cptr.ldF64(((r))))));  /* both are float */
+            return ((lf) <= ((cptr.ldF64(((r)))))) ? 1 : 0;  /* both are float */
         else
             return LEfloatint(lf, (cptr.ldI64(((r)))));
     }
@@ -34416,7 +34419,7 @@ function* lessthanothers(L, l, r) {
     (void 0);
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 4) &&
             (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 4))
-        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) < 0;
+        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) < 0 ? 1 : 0;
     else
         return (yield* luaT_callorderTM(L, l, r, NHC.TM_LT));
 }
@@ -34453,7 +34456,7 @@ function* lessequalothers(L, l, r) {
     (void 0);
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 4) &&
             (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 4))
-        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) <= 0;
+        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) <= 0 ? 1 : 0;
     else
         return (yield* luaT_callorderTM(L, l, r, NHC.TM_LE));
 }
@@ -34514,15 +34517,17 @@ function* luaV_equalobj(L, t1, t2) {
         case 17:
             return 1;
         case 3:
-            return ((cptr.ldI64(((t1)))) == (cptr.ldI64(((t2)))));
+            return ((cptr.ldI64(((t1)))) == (cptr.ldI64(((t2))))) ? 1 : 0;
         case 19:
-            return (((cptr.ldF64(((t1))))) == ((cptr.ldF64(((t2))))));
+            return (((cptr.ldF64(((t1))))) == ((cptr.ldF64(((t2)))))) ? 1 : 0;
         case 2:
-            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
+            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2))))) ? 1 : 0;
         case 22:
-            return (cptr.ldPtr(((t1)))) === (cptr.ldPtr(((t2))));
+            return (cptr.ldPtr(((t1)))) === (cptr.ldPtr(((t2)))) ? 1 : 0;
         case 4:
-            return (cptr.eq((((((((cptr.ldPtr(((t1)))))))))), (((((((cptr.ldPtr(((t2))))))))))));
+            return (cptr.eq((((((((cptr.ldPtr(((t1)))))))))), (((((((cptr.ldPtr(((t2))))))))))))
+                    ? 1
+                    : 0;
         case 20:
             return luaS_eqlngstr(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2))))))))));
         case 7:
@@ -34628,15 +34633,16 @@ function* luaV_equalobj(L, t1, t2) {
                 break;  /* will try TM */
             }
         default:
-            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
+            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2))))) ? 1 : 0;
     }
     if (cptr.eq(tm, (null)))
         return 0;  /* objects are different */
     else {
         (yield* luaT_callTMres(L, tm, t1, t2, cptr.ldPtro(L, $lua_State_top)));  /* call TM */
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) &
-                    15)) == 0));
+            (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) & 15)) == 0))
+                ? 1
+                : 0;
     }
 }
 
@@ -41496,26 +41502,30 @@ function equalkey(k1, n2, deadok) {
         case 17:
             return 1;
         case 3:
-            return ((cptr.ldI64(((k1)))) == (cptr.ldI64((cptr.add((n2), $NodeKey_key_val)))));
+            return ((cptr.ldI64(((k1)))) == (cptr.ldI64((cptr.add((n2), $NodeKey_key_val)))))
+                    ? 1
+                    : 0;
         case 19:
-            return (((cptr.ldF64(((k1))))) == ((cptr.ldF64(((cptr.add((n2), $NodeKey_key_val)))))));
+            return (((cptr.ldF64(((k1))))) == ((cptr.ldF64(((cptr.add((n2), $NodeKey_key_val)))))))
+                    ? 1
+                    : 0;
         case 2:
-            return cptr.eq(
-                (cptr.ldPtr(((k1)))),
-                (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))))
-            );
+            return cptr.eq((cptr.ldPtr(((k1)))), (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val))))))
+                    ? 1
+                    : 0;
         case 22:
-            return (cptr.ldPtr(((k1)))) === (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))));
+            return (cptr.ldPtr(((k1)))) === (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))))
+                    ? 1
+                    : 0;
         case 84:
             return luaS_eqlngstr(
                 ((((((cptr.ldPtr(((k1))))))))),
                 ((((((cptr.ldPtr((cptr.add((n2), $NodeKey_key_val)))))))))
             );
         default:
-            return cptr.eq(
-                (cptr.ldPtr(((k1)))),
-                (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val)))))
-            );
+            return cptr.eq((cptr.ldPtr(((k1)))), (cptr.ldPtr(((cptr.add((n2), $NodeKey_key_val))))))
+                    ? 1
+                    : 0;
     }
 }
 
@@ -46988,12 +46998,12 @@ function changedline(p, oldpc, newpc) {
                 break;  /* cannot compute delta; fall through */
             delta = (delta + lineinfo) | 0;
             if (pc == newpc)
-                return (delta != 0);  /* delta computed successfully */
+                return (delta != 0) ? 1 : 0;  /* delta computed successfully */
         }
     }
     /* either instructions are too far apart or there is an absolute line
        info in the way; compute line difference explicitly */
-    return (luaG_getfuncline(p, oldpc) != luaG_getfuncline(p, newpc));
+    return (luaG_getfuncline(p, oldpc) != luaG_getfuncline(p, newpc)) ? 1 : 0;
 }
 
 /*
@@ -51462,7 +51472,7 @@ function* nilK(fs) {
 */
 /** C ref: lcode.c:660 — @param {CLongLong} i @returns {CInt} */
 function fitsC(i) {
-    return (BigInt.asUintN(64, (BigInt.asUintN(64, (i))) + 127n) <= 255n);
+    return (BigInt.asUintN(64, (BigInt.asUintN(64, (i))) + 127n) <= 255n) ? 1 : 0;
 }
 
 /*
@@ -52431,8 +52441,10 @@ function validop(op, v1, v2) {
         case 6:
         case 3:
             return (((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                    ? (Number((((cptr.ldI64(((v2))))))))
-                    : (cptr.ldF64(((v2)))))) != 0);
+                ? (Number((((cptr.ldI64(((v2))))))))
+                : (cptr.ldF64(((v2)))))) != 0)
+                    ? 1
+                    : 0;
         default:
             return 1;  /* everything else is valid */
     }
@@ -57384,7 +57396,7 @@ function* lua_resume(L, from, nargs, nresults) {
 
 /** C ref: ldo.c:877 — @param {CPtr<lua_State>} L @returns {CInt} */
 function lua_isyieldable(L) {
-    return (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0);
+    return (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0) ? 1 : 0;
 }
 
 /**
@@ -59593,7 +59605,7 @@ function lua_iscfunction(L, idx) {
 /** C ref: lapi.c:303 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 function lua_isinteger(L, idx) {
     let o = index2value(L, idx);
-    return ((cptr.ld1uo(((o)), $TValue_tt_)) == 3);
+    return ((cptr.ld1uo(((o)), $TValue_tt_)) == 3) ? 1 : 0;
 }
 
 /** C ref: lapi.c:309 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
@@ -59774,7 +59786,9 @@ function* lua_tointegerx(L, idx, pisnum) {
 function lua_toboolean(L, idx) {
     let o = index2value(L, idx);
     return !(((cptr.ld1uo(((o)), $TValue_tt_)) == 1) ||
-            (((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 0));
+        (((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 0))
+            ? 1
+            : 0;
 }
 
 /**
@@ -60238,7 +60252,9 @@ function* lua_pushthread(L) {
     }
     ;
     (void 0);
-    return (cptr.eq(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread), L));
+    return (cptr.eq(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread), L))
+            ? 1
+            : 0;
 }
 
 /*
@@ -93548,7 +93564,7 @@ function* food_detect(sobj) {
             } else
                 (yield* strange_feeling(sobj, cptr.decay(buf)));
         }
-        return !stale;
+        return !stale ? 1 : 0;
     } else if (!ct) {
         cptr.st1o(gk, $instance_globals_k_known, 1);
         (yield* You(__s_s_s_nearby, sobj ? __s_smell : __s_sense, what));
@@ -135923,7 +135939,9 @@ function cures_sliming(mon, obj) {
 
     /* potion of oil; will be set burning if not already */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL)
-        return !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n);
+        return !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n)
+                ? 1
+                : 0;
 
     /* non-empty wand or horn of fire;
        hero doesn't need hands or even limbs to zap, so mon doesn't either */
@@ -159434,7 +159452,9 @@ function* breakobj(obj, x, y, hero_caused, from_invent) {
     let explosion = 0;
 
     if (is_crackable(obj))
-        return ((yield* erode_obj(obj, (yield* armor_simple_name(obj)), NHM.ERODE_CRACK, 6)) == NHM.ER_DESTROYED);
+        return ((yield* erode_obj(obj, (yield* armor_simple_name(obj)), NHM.ERODE_CRACK, 6)) == NHM.ER_DESTROYED)
+                ? 1
+                : 0;
 
     switch (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS
             ? NHC.POT_WATER
@@ -163027,7 +163047,7 @@ function* fixup_special() {
         x++,
         r = cptr.add(r, 1, 32)
     ) {
-        switch (cptr.ldI16o(r, $lev_region_rtype)) {
+        __sw_1: switch (cptr.ldI16o(r, $lev_region_rtype)) {
             case NHC.LR_BRANCH:
                 added_branch = 1;
                 {
@@ -163043,7 +163063,7 @@ function* fixup_special() {
                         cptr.ldI16o(r, $lev_region_rtype),
                         lev
                     ));
-                    break;
+                    break __sw_1;
                 }
             case NHC.LR_PORTAL:
                 if (cptr.ld1s(cptr.ldPtro(r, $lev_region_rname)) >= 48 &&
@@ -167227,7 +167247,7 @@ function mkroom_cmp(vx, vy) {
     y = vy;
     if (cptr.ldI16(x) < cptr.ldI16(y))
         return -1;
-    return (cptr.ldI16(x) > cptr.ldI16(y));
+    return (cptr.ldI16(x) > cptr.ldI16(y)) ? 1 : 0;
 }
 
 /* is x,y a good location for a door into room? */
@@ -171974,7 +171994,7 @@ function* fill_zoo(sroom) {
     /* Note: This doesn't check needfill; it assumes the caller has already
        done that. */
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
-    switch (type) {
+    __sw_1: switch (type) {
         case NHC.COURT:
             if ((cptr.ldI32o(
                 svl,
@@ -171998,7 +172018,7 @@ function* fill_zoo(sroom) {
                                 NHC.THRONE))
                             {
                                 (yield* mk_zoo_thronemon(tx, ty));
-                                break;
+                                break __sw_1;
                             }
             }
             i = 100;
@@ -186616,7 +186636,7 @@ function* wiz_intrinsic() {
                     break;
             }
 
-            switch (p.v) {
+            __sw_1: switch (p.v) {
                 case NHC.BLINDED:
                     (yield* make_blinded(newtimeout, 1));
                     break;
@@ -186702,7 +186722,7 @@ function* wiz_intrinsic() {
                             oldtimeout ? __s_increased_by : __s_set_to,
                             amt
                         ));
-                        break;
+                        break __sw_1;
                     }
                 case NHC.GLIB:
                     /* slippery fingers might need a persistent inventory update
@@ -212552,7 +212572,7 @@ function __resetState$options(P) {
 // are generators; `yield*` marks every call that can reach a keystroke read.
 // Generated by tools/c2js — do not edit by hand
 // Input: nethack-c/recorder/src/calendar.c
-// Input sha256: 34cc75ee02286e8b92d58d58bb5e4a4a84030b616fb23f70a11d7fe754ff23fe
+// Input sha256: fc72c57015664444a89675b3180fba3777db5e763be4218c7b7dbeb7e80f55f9
 // Transpiler: tools/c2js c2js emit v1+batch
 
 
@@ -212570,6 +212590,7 @@ function __resetState$options(P) {
 const __s_nethack_fixed_datetime = cptr.lit("NETHACK_FIXED_DATETIME");
 const __s_yyyymmddhhmmss = cptr.lit("yyyymmddhhmmss");
 const __s_04ld_02d_02d_02d_02d_02d = cptr.lit("%04ld%02d%02d%02d%02d%02d");
+const __s_nethack_mktime_now = cptr.lit("NETHACK_MKTIME_NOW");
 
 /** C ref: calendar.c:32 @returns {*} */
 function* getnow() {
@@ -212739,6 +212760,16 @@ function* time_from_yyyymmddhhmmss(buf) {
         cptr.st1(p, 0);
         /* Avoid recursion when getnow() itself is using fixed datetime. */
         void time(now);
+        /* NETHACK_MKTIME_NOW (epoch seconds), when set, stands in for the
+         * real clock here. Only tm_isdst survives into mktime() below (every
+         * other field is overwritten), so this pins whether the datetime is
+         * read as DST or standard time. Unset, behavior is unchanged. */
+        {
+            let mk_now = nh_getenv(__s_nethack_mktime_now);
+
+            if (mk_now && cptr.ld1s(mk_now))
+                now.v = atol(mk_now);
+        }
         lt = localtime(now);
         if (lt) {
             cptr.memcpy(t, lt, 56);
@@ -212771,7 +212802,7 @@ function* time_from_yyyymmddhhmmss(buf) {
  * 177 ~= 8 reported phases * 22
  * + 11/22 for rounding
  */
-/** C ref: calendar.c:200 @returns {CInt} */
+/** C ref: calendar.c:210 @returns {CInt} */
 function* phase_of_the_moon() {
     let lt = (yield* getlt());
     let epact;
@@ -212787,7 +212818,7 @@ function* phase_of_the_moon() {
     return (((((((Math.imul(diy + epact, 6)) + 11) | 0) % 177) / 22) | 0) & 7);
 }
 
-/** C ref: calendar.c:215 @returns {CInt} */
+/** C ref: calendar.c:225 @returns {CInt} */
 function* friday_13th() {
     let lt = (yield* getlt());
 
@@ -212795,16 +212826,16 @@ function* friday_13th() {
     return schar((cptr.ldI32o(lt, $tm_tm_wday) == 5 && cptr.ldI32o(lt, $tm_tm_mday) == 13 ? 1 : 0));
 }
 
-/** C ref: calendar.c:224 @returns {CInt} */
+/** C ref: calendar.c:234 @returns {CInt} */
 function* night() {
     let hour = cptr.ldI32o((yield* getlt()), $tm_tm_hour);
 
     return (hour < 6 || hour > 21 ? 1 : 0);
 }
 
-/** C ref: calendar.c:232 @returns {CInt} */
+/** C ref: calendar.c:242 @returns {CInt} */
 function* midnight() {
-    return (cptr.ldI32o((yield* getlt()), $tm_tm_hour) == 0);
+    return (cptr.ldI32o((yield* getlt()), $tm_tm_hour) == 0) ? 1 : 0;
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
@@ -217866,7 +217897,7 @@ function* mattacku(mtmp) {
                         cptr.ldI16o(mtmp, $monst_my)
                     );
             cptr.st1o(gn, $instance_globals_n_notonhead, 0);
-            return !!((yield* mattackm(cptr.ldPtro(u, $you_usteed), mtmp)) & NHM.M_ATTK_DEF_DIED);
+            return !!((yield* mattackm(cptr.ldPtro(u, $you_usteed), mtmp)) & NHM.M_ATTK_DEF_DIED) ? 1 : 0;
         }
     }
 
@@ -218199,7 +218230,7 @@ function* mattacku(mtmp) {
         let offended = (yield* use_offensive(mtmp));
 
         if (offended != 0)
-            return (offended == 1);
+            return (offended == 1) ? 1 : 0;
     }
 
     cptr.st1o(gs, $instance_globals_s_skipdrin, 0);  /* [see mattackm(mhitm.c)] */
@@ -238958,7 +238989,7 @@ function* pickup(what) {
                             {
                                 cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
                                 add_valid_menu_class(0);  /* reset */
-                                return (n_tried > 0);
+                                return (n_tried > 0) ? 1 : 0;
                             }
                         if (selective.v)
                             traverse_how |= NHM.INVORDER_SORT;
@@ -239089,7 +239120,7 @@ function* pickup(what) {
     }
     cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
     add_valid_menu_class(0);
-    return (n_tried > 0);
+    return (n_tried > 0) ? 1 : 0;
 }
 
 /**
@@ -246960,7 +246991,7 @@ function* garlic_breath(mtmp) {
  */
 /** C ref: eat.c:2099 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* fprefx(otmp) {
-    switch (cptr.ldI16o(otmp, $obj_otyp)) {
+    __sw_1: switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.EGG:
             if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_PYROLISK) {
                 if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
@@ -246992,7 +247023,7 @@ function* fprefx(otmp) {
                                 ? __s_bland
                                 : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                     ));
-                    break;  /* default */
+                    break __sw_1;  /* default */
                 }
             break;
         case NHC.FOOD_RATION:
@@ -247084,7 +247115,7 @@ function* fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 ));
-                break;
+                break __sw_1;
             }
         case NHC.MEATBALL:
         case NHC.MEAT_STICK:
@@ -247102,7 +247133,7 @@ function* fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 ));
-                break;
+                break __sw_1;
             }
         case NHC.CLOVE_OF_GARLIC:
             if (((cptr.ldU64o(
@@ -269206,7 +269237,7 @@ function* dochug(mtmp) {
         (yield* cuss(mtmp));
 
     /* note: can't get here when monster is dead, so this always returns 0 */
-    return (status == NHM.MMOVE_DIED);
+    return (status == NHM.MMOVE_DIED) ? 1 : 0;
 }
 
 /** C ref: monmove.c:991 — char[5] */
@@ -274007,7 +274038,9 @@ function mon_in_room(mon, rmtyp) {
     ) &
             63) | 0;
     if (rno >= NHM.ROOMOFFSET)
-        return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == rmtyp;
+        return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == rmtyp
+                ? 1
+                : 0;
     return 0;
 }
 
@@ -298109,7 +298142,7 @@ function* trapmove(x, y, desttrap) {
      * Note: caller should call reset_utrap() when we set u.utrap to 0.
      */
 
-    switch (cptr.ldI32o(u, $you_utraptype)) {
+    __sw_1: switch (cptr.ldI32o(u, $you_utraptype)) {
         case NHC.TT_BEARTRAP:
             if (cptr.ld1so(flags, $flag_verbose)) {
                 predicament = __s_caught_in_a_bear_trap;
@@ -298133,7 +298166,7 @@ function* trapmove(x, y, desttrap) {
                         (yield* You(__s_finally_s_free, !anchored ? __s_wriggle : __s_wrench_the_ball));
                     if (anchored)
                         (yield* buried_ball_to_punishment());
-                    break;
+                    break __sw_1;
                 }
             break;
         case NHC.TT_PIT:
@@ -333579,7 +333612,7 @@ function* make_corpse(mtmp, corpseflags) {
     else if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         corpstatflags |= NHM.CORPSTAT_MALE;
 
-    switch (mndx) {
+    __sw_1: switch (mndx) {
         case NHC.PM_GRAY_DRAGON:
         case NHC.PM_GOLD_DRAGON:
         case NHC.PM_SILVER_DRAGON:
@@ -333639,7 +333672,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_WHITE_UNICORN:
         case NHC.PM_GRAY_UNICORN:
@@ -333693,7 +333726,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_LONG_WORM:
             void (yield* mksobj_at(NHC.WORM_TOOTH, x, y, 1, 0));
@@ -333734,7 +333767,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_VAMPIRE:
         case NHC.PM_VAMPIRE_LEADER:
@@ -346956,7 +346989,7 @@ function* steal(mtmp, objnambuf) {
             /* the fewer items you have, the less likely the thief
                is going to stick around to try again (0) instead of
                running away (1) */
-            return !rn2((((inv_cnt(0) / 5) | 0) + 2) | 0);
+            return !rn2((((inv_cnt(0) / 5) | 0) + 2) | 0) ? 1 : 0;
         }
         case 23: {
             __pc = 21;
@@ -349384,7 +349417,7 @@ function* inhishop(shkp) {
     if (!on_level(cptr.add(eshkp, $eshk_shoplevel), cptr.add(u, $you_uz)))
         return 0;
     shkrooms = (yield* in_rooms(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), NHC.SHOPBASE));
-    return (cptr.strchr(shkrooms, cptr.ld1so(eshkp, $eshk_shoproom)) !== null);
+    return (cptr.strchr(shkrooms, cptr.ld1so(eshkp, $eshk_shoproom)) !== null) ? 1 : 0;
 }
 
 /* return the shopkeeper for rooms[rmno-2]; returns Null if there isn't one */
@@ -376673,14 +376706,16 @@ let floodfillchk_match_under_typ = 0;
 /** C ref: sp_lev.c:4587 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function floodfillchk_match_under(x, y) {
     return (floodfillchk_match_under_typ ==
-            cptr.ld1so3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_typ
-            ));
+        cptr.ld1so3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        ))
+            ? 1
+            : 0;
 }
 
 /** C ref: sp_lev.c:4593 — @param {CInt} typ */
@@ -381057,7 +381092,7 @@ const __s_sort = cptr.lit("sort");
  */
 function* checkfield(L, key, n) {
     (yield* lua_pushstring(L, key));
-    return ((yield* lua_rawget(L, -n)) != 0);
+    return ((yield* lua_rawget(L, -n)) != 0) ? 1 : 0;
 }
 
 /*
@@ -382501,7 +382536,7 @@ function match_class(c, cl) {
             res = (c == 0);  /* deprecated option */
             break;
         default:
-            return (cl == c);
+            return (cl == c) ? 1 : 0;
     }
     return (islower(cl) ? res : !res);
 }
@@ -382531,7 +382566,7 @@ function* matchbracketclass(c, p, ec) {
         } else if ((uchar((cptr.ld1s(p)))) == c)
             return sig;
     }
-    return !sig;
+    return !sig ? 1 : 0;
 }
 
 /**
@@ -382555,7 +382590,7 @@ function* singlematch(ms, s, p, ep) {
             case 91:
                 return (yield* matchbracketclass(c, p, cptr.add(ep, -(1))));
             default:
-                return ((uchar((cptr.ld1s(p)))) == c);
+                return ((uchar((cptr.ld1s(p)))) == c) ? 1 : 0;
         }
     }
 }
@@ -392284,7 +392319,7 @@ function* delete_bonesfile(lev) {
     void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
     reslt = unlink(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
     (yield* delete_convertedfile(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0)));
-    return !(reslt < 0);
+    return !(reslt < 0) ? 1 : 0;
 }
 
 /* assume we're compressing the recently read or created bonesfile, so the
@@ -408535,12 +408570,12 @@ function zap_hit(ac, type) {
 
     /* small chance for naked target to avoid being hit */
     if (!chance)
-        return rnd(10) < ((ac + spell_bonus) | 0);
+        return rnd(10) < ((ac + spell_bonus) | 0) ? 1 : 0;
 
     /* very high armor protection does not achieve invulnerability */
     ac = ((ac) >= 0 ? (ac) : -rnd(-(ac)));
 
-    return (((3 - chance) | 0) < ((ac + spell_bonus) | 0));
+    return (((3 - chance) | 0) < ((ac + spell_bonus) | 0)) ? 1 : 0;
 }
 
 /**
@@ -409687,7 +409722,7 @@ function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand_typ) 
         let hear_txt = null;
 
         rangemod = -1000;
-        switch (damgtype) {
+        __sw_1: switch (damgtype) {
             case 1:
                 new_doormask = NHM.D_NODOOR;
                 see_txt = __s_the_door_is_consumed_in_flames;
@@ -409708,7 +409743,7 @@ function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand_typ) 
                                 new_doormask = NHM.D_BROKEN;
                                 see_txt = __s_the_door_crashes_open;
                                 sense_txt = __s_feel_a_burst_of_cool_air;
-                                break;
+                                break __sw_1;
                             }
                         }
                         if (see_it) {
@@ -409725,7 +409760,7 @@ function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand_typ) 
                                 ));
                         } else
                             (yield* You_feel(__s_vibrations));
-                        break;
+                        break __sw_1;
                     }
                 new_doormask = NHM.D_NODOOR;
                 see_txt = __s_the_door_disintegrates;
@@ -423257,7 +423292,7 @@ function* canwearobj(otmp, mask, noisy) {
             }
         }
      */
-    return !err;
+    return !err ? 1 : 0;
 }
 
 /** C ref: do_wear.c:2209 — @param {CPtr<struct obj>} obj @returns {CInt} */
@@ -425739,7 +425774,7 @@ function* timed_occupation() {
             $instance_globals_m_multi,
             cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
         )) - (-1n);
-    return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n;
+    return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n ? 1 : 0;
 }
 
 /* If you have moved since initially setting some occupations, they
@@ -431020,7 +431055,7 @@ function movecmd(sym, mode) {
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), d, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), d, 1));
         cptr.stI32o(u, $you_dz, cptr.ld1so(cptr.decay(zdir), d, 1));
-        return !cptr.ldI32o(u, $you_dz);
+        return !cptr.ldI32o(u, $you_dz) ? 1 : 0;
     }
     cptr.stI32o(u, $you_dz, 0);
     return 0;
@@ -431297,7 +431332,7 @@ function* getdir(s) {
             }
             if (cptr.ldI32o(iflags, $instance_flags_getdir_click))
                 cptr.stI32o(iflags, $instance_flags_getdir_click, mod);
-            return (pos >= 0);
+            return (pos >= 0) ? 1 : 0;
         }
         case 12: {
             if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) &&
@@ -442717,7 +442752,7 @@ function* wall_angle(lev) {
     let row;
     let col;
     let idx;
-    switch (cptr.ld1so(lev, $rm_typ)) {
+    __sw_1: switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
             row = cptr.decay(wall_matrix[2]);
             seenv = (((seenv >>> 4 | (seenv << 4) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
@@ -442783,7 +442818,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TLWALL:
             row = cptr.decay(wall_matrix[1]);
@@ -442848,7 +442883,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TRWALL:
             row = cptr.decay(wall_matrix[3]);
@@ -442913,7 +442948,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TDWALL:
             row = cptr.decay(wall_matrix[0]);
@@ -443002,7 +443037,7 @@ function* wall_angle(lev) {
                             idx = NHC.S_stone;
                             break;
                     }
-                    break;
+                    break __sw_1;
                 }
             // @FallThrough
             ;
@@ -443135,7 +443170,7 @@ function* wall_angle(lev) {
             ;
             break;
         case NHC.CROSSWALL:
-            switch (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK) {
+            __sw_2: switch (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK) {
                 case 0:
                     if (seenv == 1)
                         idx = NHC.S_brcorn;
@@ -443191,7 +443226,7 @@ function* wall_angle(lev) {
 
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_TR:
                     row = cptr.decay(cross_matrix[2]);
@@ -443227,7 +443262,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BL:
                     row = cptr.decay(cross_matrix[0]);
@@ -443263,7 +443298,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BR:
                     row = cptr.decay(cross_matrix[3]);
@@ -446015,7 +446050,7 @@ function __resetState$symbols(P) {
 // are generators; `yield*` marks every call that can reach a keystroke read.
 // Generated by tools/c2js — do not edit by hand
 // Input: nethack-c/recorder/win/tty/termcap.c
-// Input sha256: 0018d0f0b6a1be77480e705cf6c0a3eff68836aee931f2f362e123a55843f910
+// Input sha256: 6d4ba20f7422745bb5ffb8f70c57a86bd0df37c1a97cc527d6dbf6a4b14c67e7
 // Transpiler: tools/c2js c2js emit v1+batch
 
 
@@ -446832,8 +446867,8 @@ function nomux_sgr_fg(fg) {
 
 }
 
-/** C ref: termcap.c:803 — char[6144] */
-const nomux_out = new Uint8Array(6144);
+/** C ref: termcap.c:803 — char[24576] */
+const nomux_out = new Uint8Array(24576);
 
 /** C ref: termcap.c:804 @returns {CPtr<char>} */
 function* nomux_capture_screen() {
@@ -449600,7 +449635,7 @@ function* process_menu_window(window, cw) {
         else
             morc.v = map_menu_cmd(morc.v);
 
-        switch (morc.v) {
+        __sw_1: switch (morc.v) {
             case 48:
             case 49:
             case 50:
@@ -449621,7 +449656,7 @@ function* process_menu_window(window, cw) {
                         (yield* invert_all(window, page_start, page_end, morc.v, counting ? count : -1n));
                         if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE)
                             finished = 1;
-                        break;
+                        break __sw_1;
                     }
                 {
                     let dgt = BigInt(((morc.v - 48) | 0));
@@ -463097,7 +463132,7 @@ function* spec_applies(weap, mtmp) {
     let yours;
 
     if (!(cptr.ldU64o(weap, $artifact_spfx) & 32505920n))
-        return (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS);
+        return (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS) ? 1 : 0;
 
     yours = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))));
     ptr = cptr.ldPtro(mtmp, $monst_data);
@@ -463110,12 +463145,18 @@ function* spec_applies(weap, mtmp) {
                 Number(BigInt.asIntN(32, cptr.ldU64o(weap, $artifact_mtype))),
                 $sizeof_permonst
             )
-        ));
+        ))
+                ? 1
+                : 0;
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 2097152n) {
         return (cptr.ldU64o(weap, $artifact_mtype) ==
-                BigInt.asUintN(64, BigInt(cptr.ld1so(ptr, $permonst_mlet))));
+            BigInt.asUintN(64, BigInt(cptr.ld1so(ptr, $permonst_mlet))))
+                ? 1
+                : 0;
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 4194304n) {
-        return ((cptr.ldU64o(ptr, $permonst_mflags1) & cptr.ldU64o(weap, $artifact_mtype)) != 0n);
+        return ((cptr.ldU64o(ptr, $permonst_mflags1) & cptr.ldU64o(weap, $artifact_mtype)) != 0n)
+                ? 1
+                : 0;
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 8388608n) {
         return ((cptr.ldU64o(ptr, $permonst_mflags2) & cptr.ldU64o(weap, $artifact_mtype)) ||
             (yours &&
@@ -463143,20 +463184,20 @@ function* spec_applies(weap, mtmp) {
 
         switch (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp)) {
             case NHM.AD_FIRE:
-                return !(yours ? Fire_resistance() : (yield* Resists_Elem(mtmp, NHC.FIRE_RES)));
+                return !(yours ? Fire_resistance() : (yield* Resists_Elem(mtmp, NHC.FIRE_RES))) ? 1 : 0;
             case NHM.AD_COLD:
-                return !(yours ? Cold_resistance() : (yield* Resists_Elem(mtmp, NHC.COLD_RES)));
+                return !(yours ? Cold_resistance() : (yield* Resists_Elem(mtmp, NHC.COLD_RES))) ? 1 : 0;
             case NHM.AD_ELEC:
-                return !(yours ? Shock_resistance() : (yield* Resists_Elem(mtmp, NHC.SHOCK_RES)));
+                return !(yours ? Shock_resistance() : (yield* Resists_Elem(mtmp, NHC.SHOCK_RES))) ? 1 : 0;
             case NHM.AD_MAGM:
             case NHM.AD_STUN:
-                return !(yours ? Antimagic() : (rn2(100) < cptr.ld1so(ptr, $permonst_mr)));
+                return !(yours ? Antimagic() : (rn2(100) < cptr.ld1so(ptr, $permonst_mr))) ? 1 : 0;
             case NHM.AD_DRST:
-                return !(yours ? Poison_resistance() : (yield* Resists_Elem(mtmp, NHC.POISON_RES)));
+                return !(yours ? Poison_resistance() : (yield* Resists_Elem(mtmp, NHC.POISON_RES))) ? 1 : 0;
             case NHM.AD_DRLI:
-                return !(yours ? Drain_resistance() : (yield* resists_drli(mtmp)));
+                return !(yours ? Drain_resistance() : (yield* resists_drli(mtmp))) ? 1 : 0;
             case NHM.AD_STON:
-                return !(yours ? Stone_resistance() : (yield* Resists_Elem(mtmp, NHC.STONE_RES)));
+                return !(yours ? Stone_resistance() : (yield* Resists_Elem(mtmp, NHC.STONE_RES))) ? 1 : 0;
             default:
                 (yield* impossible$pline(__s_weird_weapon_special_attack));
         }

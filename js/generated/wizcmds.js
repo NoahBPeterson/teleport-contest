@@ -1668,7 +1668,7 @@ export function wiz_intrinsic() {
                     break;
             }
 
-            switch (p.v) {
+            __sw_1: switch (p.v) {
                 case NHC.BLINDED:
                     make_blinded(newtimeout, 1);
                     break;
@@ -1754,7 +1754,7 @@ export function wiz_intrinsic() {
                             oldtimeout ? __s_increased_by : __s_set_to,
                             amt
                         );
-                        break;
+                        break __sw_1;
                     }
                 case NHC.GLIB:
                     /* slippery fingers might need a persistent inventory update

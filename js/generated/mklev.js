@@ -248,7 +248,7 @@ function mkroom_cmp(vx, vy) {
     y = vy;
     if (cptr.ldI16(x) < cptr.ldI16(y))
         return -1;
-    return (cptr.ldI16(x) > cptr.ldI16(y));
+    return (cptr.ldI16(x) > cptr.ldI16(y)) ? 1 : 0;
 }
 
 /* is x,y a good location for a door into room? */

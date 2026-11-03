@@ -7295,12 +7295,12 @@ function zap_hit(ac, type) {
 
     /* small chance for naked target to avoid being hit */
     if (!chance)
-        return rnd(10) < ((ac + spell_bonus) | 0);
+        return rnd(10) < ((ac + spell_bonus) | 0) ? 1 : 0;
 
     /* very high armor protection does not achieve invulnerability */
     ac = ((ac) >= 0 ? (ac) : -rnd(-(ac)));
 
-    return (((3 - chance) | 0) < ((ac + spell_bonus) | 0));
+    return (((3 - chance) | 0) < ((ac + spell_bonus) | 0)) ? 1 : 0;
 }
 
 /**
@@ -8447,7 +8447,7 @@ export function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wan
         let hear_txt = null;
 
         rangemod = -1000;
-        switch (damgtype) {
+        __sw_1: switch (damgtype) {
             case 1:
                 new_doormask = NHM.D_NODOOR;
                 see_txt = __s_the_door_is_consumed_in_flames;
@@ -8468,7 +8468,7 @@ export function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wan
                                 new_doormask = NHM.D_BROKEN;
                                 see_txt = __s_the_door_crashes_open;
                                 sense_txt = __s_feel_a_burst_of_cool_air;
-                                break;
+                                break __sw_1;
                             }
                         }
                         if (see_it) {
@@ -8485,7 +8485,7 @@ export function* zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wan
                                 ));
                         } else
                             (yield* You_feel(__s_vibrations));
-                        break;
+                        break __sw_1;
                     }
                 new_doormask = NHM.D_NODOOR;
                 see_txt = __s_the_door_disintegrates;

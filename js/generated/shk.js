@@ -2002,7 +2002,7 @@ export function inhishop(shkp) {
     if (!on_level(cptr.add(eshkp, $eshk_shoplevel), cptr.add(u, $you_uz)))
         return 0;
     shkrooms = in_rooms(cptr.ldI16o(shkp, $monst_mx), cptr.ldI16o(shkp, $monst_my), NHC.SHOPBASE);
-    return (cptr.strchr(shkrooms, cptr.ld1so(eshkp, $eshk_shoproom)) !== null);
+    return (cptr.strchr(shkrooms, cptr.ld1so(eshkp, $eshk_shoproom)) !== null) ? 1 : 0;
 }
 
 /* return the shopkeeper for rooms[rmno-2]; returns Null if there isn't one */

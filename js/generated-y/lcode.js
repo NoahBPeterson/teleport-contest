@@ -1004,7 +1004,7 @@ function* nilK(fs) {
 */
 /** C ref: lcode.c:660 — @param {CLongLong} i @returns {CInt} */
 function fitsC(i) {
-    return (BigInt.asUintN(64, (BigInt.asUintN(64, (i))) + 127n) <= 255n);
+    return (BigInt.asUintN(64, (BigInt.asUintN(64, (i))) + 127n) <= 255n) ? 1 : 0;
 }
 
 /*
@@ -1973,8 +1973,10 @@ function validop(op, v1, v2) {
         case 6:
         case 3:
             return (((((cptr.ld1uo(((v2)), $TValue_tt_)) == 3)
-                    ? (Number((((cptr.ldI64(((v2))))))))
-                    : (cptr.ldF64(((v2)))))) != 0);
+                ? (Number((((cptr.ldI64(((v2))))))))
+                : (cptr.ldF64(((v2)))))) != 0)
+                    ? 1
+                    : 0;
         default:
             return 1;  /* everything else is valid */
     }

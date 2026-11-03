@@ -8445,14 +8445,16 @@ let floodfillchk_match_under_typ = 0;
 /** C ref: sp_lev.c:4587 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function floodfillchk_match_under(x, y) {
     return (floodfillchk_match_under_typ ==
-            cptr.ld1so3(
-                svl,
-                x,
-                $sizeof_rm_x21,
-                y,
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_typ
-            ));
+        cptr.ld1so3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        ))
+            ? 1
+            : 0;
 }
 
 /** C ref: sp_lev.c:4593 — @param {CInt} typ */

@@ -53,7 +53,7 @@ const __s_sort = cptr.lit("sort");
  */
 function checkfield(L, key, n) {
     lua_pushstring(L, key);
-    return (lua_rawget(L, -n) != 0);
+    return (lua_rawget(L, -n) != 0) ? 1 : 0;
 }
 
 /*

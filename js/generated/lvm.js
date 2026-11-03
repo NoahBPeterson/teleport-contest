@@ -75,12 +75,14 @@ function l_strton(obj, result) {
     else {
         let st = ((((((cptr.ldPtr(((obj)))))))));
         return (luaO_str2num((cptr.add((st), $TString_contents)), result) ==
-                BigInt.asUintN(
-                    64,
-                    (cptr.ld1uo((st), $TString_shrlen) != 255
-                        ? BigInt(cptr.ld1uo((st), $TString_shrlen) >>> 0)
-                        : cptr.ldU64o((st), $TString_u)) + 1n
-                ));
+            BigInt.asUintN(
+                64,
+                (cptr.ld1uo((st), $TString_shrlen) != 255
+                    ? BigInt(cptr.ld1uo((st), $TString_shrlen) >>> 0)
+                    : cptr.ldU64o((st), $TString_u)) + 1n
+            ))
+                ? 1
+                : 0;
     }
 }
 
@@ -616,13 +618,13 @@ function l_strcmp(ts1, ts2) {
 /** C ref: lvm.c:416 — @param {CLongLong} i @param {CDouble} f @returns {CInt} */
 function LTintfloat(i, f) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return (((Number(((i))))) < (f));  /* compare them as floats */
+        return (((Number(((i))))) < (f)) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Iceil))
-            return i < fi.v;  /* compare them as integers */
+            return i < fi.v ? 1 : 0;  /* compare them as integers */
         else
-            return f > 0;  /* greater? */
+            return f > 0 ? 1 : 0;  /* greater? */
     }
 }
 
@@ -633,13 +635,13 @@ function LTintfloat(i, f) {
 /** C ref: lvm.c:433 — @param {CLongLong} i @param {CDouble} f @returns {CInt} */
 function LEintfloat(i, f) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return (((Number(((i))))) <= (f));  /* compare them as floats */
+        return (((Number(((i))))) <= (f)) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Ifloor))
-            return i <= fi.v;  /* compare them as integers */
+            return i <= fi.v ? 1 : 0;  /* compare them as integers */
         else
-            return f > 0;  /* greater? */
+            return f > 0 ? 1 : 0;  /* greater? */
     }
 }
 
@@ -650,13 +652,13 @@ function LEintfloat(i, f) {
 /** C ref: lvm.c:450 — @param {CDouble} f @param {CLongLong} i @returns {CInt} */
 function LTfloatint(f, i) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return ((f) < ((Number(((i))))));  /* compare them as floats */
+        return ((f) < ((Number(((i)))))) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Ifloor))
-            return fi.v < i;  /* compare them as integers */
+            return fi.v < i ? 1 : 0;  /* compare them as integers */
         else
-            return f < 0;  /* less? */
+            return f < 0 ? 1 : 0;  /* less? */
     }
 }
 
@@ -667,13 +669,13 @@ function LTfloatint(f, i) {
 /** C ref: lvm.c:467 — @param {CDouble} f @param {CLongLong} i @returns {CInt} */
 function LEfloatint(f, i) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
-        return ((f) <= ((Number(((i))))));  /* compare them as floats */
+        return ((f) <= ((Number(((i)))))) ? 1 : 0;  /* compare them as floats */
     else {
         let fi = cptr.box(0n);
         if (luaV_flttointeger(f, fi, NHC.F2Iceil))
-            return fi.v <= i;  /* compare them as integers */
+            return fi.v <= i ? 1 : 0;  /* compare them as integers */
         else
-            return f < 0;  /* less? */
+            return f < 0 ? 1 : 0;  /* less? */
     }
 }
 
@@ -686,13 +688,13 @@ function LTnum(l, r) {
     if (((cptr.ld1uo(((l)), $TValue_tt_)) == 3)) {
         let li = (cptr.ldI64(((l))));
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 3))
-            return li < (cptr.ldI64(((r))));  /* both are integers */
+            return li < (cptr.ldI64(((r)))) ? 1 : 0;  /* both are integers */
         else
             return LTintfloat(li, (cptr.ldF64(((r)))));  /* l < r ? */
     } else {
         let lf = (cptr.ldF64(((l))));  /* 'l' must be float */
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 19))
-            return ((lf) < ((cptr.ldF64(((r))))));  /* both are float */
+            return ((lf) < ((cptr.ldF64(((r)))))) ? 1 : 0;  /* both are float */
         else
             return LTfloatint(lf, (cptr.ldI64(((r)))));
     }
@@ -707,13 +709,13 @@ function LEnum(l, r) {
     if (((cptr.ld1uo(((l)), $TValue_tt_)) == 3)) {
         let li = (cptr.ldI64(((l))));
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 3))
-            return li <= (cptr.ldI64(((r))));  /* both are integers */
+            return li <= (cptr.ldI64(((r)))) ? 1 : 0;  /* both are integers */
         else
             return LEintfloat(li, (cptr.ldF64(((r)))));  /* l <= r ? */
     } else {
         let lf = (cptr.ldF64(((l))));  /* 'l' must be float */
         if (((cptr.ld1uo(((r)), $TValue_tt_)) == 19))
-            return ((lf) <= ((cptr.ldF64(((r))))));  /* both are float */
+            return ((lf) <= ((cptr.ldF64(((r)))))) ? 1 : 0;  /* both are float */
         else
             return LEfloatint(lf, (cptr.ldI64(((r)))));
     }
@@ -733,7 +735,7 @@ function lessthanothers(L, l, r) {
     (void 0);
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 4) &&
             (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 4))
-        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) < 0;
+        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) < 0 ? 1 : 0;
     else
         return luaT_callorderTM(L, l, r, NHC.TM_LT);
 }
@@ -770,7 +772,7 @@ function lessequalothers(L, l, r) {
     (void 0);
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 4) &&
             (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 4))
-        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) <= 0;
+        return l_strcmp(((((((cptr.ldPtr(((l))))))))), ((((((cptr.ldPtr(((r)))))))))) <= 0 ? 1 : 0;
     else
         return luaT_callorderTM(L, l, r, NHC.TM_LE);
 }
@@ -831,15 +833,17 @@ export function luaV_equalobj(L, t1, t2) {
         case 17:
             return 1;
         case 3:
-            return ((cptr.ldI64(((t1)))) == (cptr.ldI64(((t2)))));
+            return ((cptr.ldI64(((t1)))) == (cptr.ldI64(((t2))))) ? 1 : 0;
         case 19:
-            return (((cptr.ldF64(((t1))))) == ((cptr.ldF64(((t2))))));
+            return (((cptr.ldF64(((t1))))) == ((cptr.ldF64(((t2)))))) ? 1 : 0;
         case 2:
-            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
+            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2))))) ? 1 : 0;
         case 22:
-            return (cptr.ldPtr(((t1)))) === (cptr.ldPtr(((t2))));
+            return (cptr.ldPtr(((t1)))) === (cptr.ldPtr(((t2)))) ? 1 : 0;
         case 4:
-            return (cptr.eq((((((((cptr.ldPtr(((t1)))))))))), (((((((cptr.ldPtr(((t2))))))))))));
+            return (cptr.eq((((((((cptr.ldPtr(((t1)))))))))), (((((((cptr.ldPtr(((t2))))))))))))
+                    ? 1
+                    : 0;
         case 20:
             return luaS_eqlngstr(((((((cptr.ldPtr(((t1))))))))), ((((((cptr.ldPtr(((t2))))))))));
         case 7:
@@ -945,15 +949,16 @@ export function luaV_equalobj(L, t1, t2) {
                 break;  /* will try TM */
             }
         default:
-            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2)))));
+            return cptr.eq((cptr.ldPtr(((t1)))), (cptr.ldPtr(((t2))))) ? 1 : 0;
     }
     if (cptr.eq(tm, (null)))
         return 0;  /* objects are different */
     else {
         luaT_callTMres(L, tm, t1, t2, cptr.ldPtro(L, $lua_State_top));  /* call TM */
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) &
-                    15)) == 0));
+            (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) & 15)) == 0))
+                ? 1
+                : 0;
     }
 }
 

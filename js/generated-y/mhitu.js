@@ -1123,7 +1123,7 @@ export function* mattacku(mtmp) {
                         cptr.ldI16o(mtmp, $monst_my)
                     );
             cptr.st1o(gn, $instance_globals_n_notonhead, 0);
-            return !!((yield* mattackm(cptr.ldPtro(u, $you_usteed), mtmp)) & NHM.M_ATTK_DEF_DIED);
+            return !!((yield* mattackm(cptr.ldPtro(u, $you_usteed), mtmp)) & NHM.M_ATTK_DEF_DIED) ? 1 : 0;
         }
     }
 
@@ -1456,7 +1456,7 @@ export function* mattacku(mtmp) {
         let offended = (yield* use_offensive(mtmp));
 
         if (offended != 0)
-            return (offended == 1);
+            return (offended == 1) ? 1 : 0;
     }
 
     cptr.st1o(gs, $instance_globals_s_skipdrin, 0);  /* [see mattackm(mhitm.c)] */

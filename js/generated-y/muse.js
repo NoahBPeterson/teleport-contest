@@ -5046,7 +5046,9 @@ function cures_sliming(mon, obj) {
 
     /* potion of oil; will be set burning if not already */
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL)
-        return !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n);
+        return !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n)
+                ? 1
+                : 0;
 
     /* non-empty wand or horn of fire;
        hero doesn't need hands or even limbs to zap, so mon doesn't either */

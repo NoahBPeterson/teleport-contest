@@ -4264,7 +4264,9 @@ export function* breakobj(obj, x, y, hero_caused, from_invent) {
     let explosion = 0;
 
     if (is_crackable(obj))
-        return ((yield* erode_obj(obj, (yield* armor_simple_name(obj)), NHM.ERODE_CRACK, 6)) == NHM.ER_DESTROYED);
+        return ((yield* erode_obj(obj, (yield* armor_simple_name(obj)), NHM.ERODE_CRACK, 6)) == NHM.ER_DESTROYED)
+                ? 1
+                : 0;
 
     switch (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS
             ? NHC.POT_WATER

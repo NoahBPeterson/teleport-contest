@@ -1386,7 +1386,7 @@ export function pickup(what) {
                             {
                                 cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
                                 add_valid_menu_class(0);  /* reset */
-                                return (n_tried > 0);
+                                return (n_tried > 0) ? 1 : 0;
                             }
                         if (selective.v)
                             traverse_how |= NHM.INVORDER_SORT;
@@ -1517,7 +1517,7 @@ export function pickup(what) {
     }
     cptr.stI32o(gp, $instance_globals_p_pickup_encumbrance, 0);
     add_valid_menu_class(0);
-    return (n_tried > 0);
+    return (n_tried > 0) ? 1 : 0;
 }
 
 /**

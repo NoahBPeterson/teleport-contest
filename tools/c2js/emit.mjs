@@ -5640,11 +5640,17 @@ export class Emitter {
       // `loptnotallowed:` and `loptrequired:` sit in one block, each ending in
       // `return NULL`, so a `goto loptbail` splices all three and only the
       // first can run.
-      return [
-        `${indent}{`,
-        ...this.emitDeadRun(plan.region, indent + '    ', (x, ind) => this.emitStmt(x, ind), false, 'inlineTail'),
-        `${indent}}`,
-      ];
+      const savedSplice = this.spliceBreak;
+      this.spliceBreak = this.inlineBreakLabel?.get(plan.name) || null; // see stmt_SwitchStmt
+      try {
+        return [
+          `${indent}{`,
+          ...this.emitDeadRun(plan.region, indent + '    ', (x, ind) => this.emitStmt(x, ind), false, 'inlineTail'),
+          `${indent}}`,
+        ];
+      } finally {
+        this.spliceBreak = savedSplice;
+      }
     }
     if (plan.dir === 'swlabel') {
       if (dir.index < plan.index) return [`${indent}break __fwd_${dir.label};`]; // forward to the switch
@@ -6010,11 +6016,17 @@ export class Emitter {
   }
 
   loopBody(head, body, indent) {
-    if (body.kind === 'CompoundStmt') {
-      const block = this.stmt_CompoundStmt(body, indent);
-      return [`${head} ${block[0].trimStart()}`, ...block.slice(1)];
+    const savedSplice = this.spliceBreak;
+    this.spliceBreak = null; // see stmt_SwitchStmt: a break in here is the loop's own
+    try {
+      if (body.kind === 'CompoundStmt') {
+        const block = this.stmt_CompoundStmt(body, indent);
+        return [`${head} ${block[0].trimStart()}`, ...block.slice(1)];
+      }
+      return [head, ...this.emitStmt(body, indent + '    ')];
+    } finally {
+      this.spliceBreak = savedSplice;
     }
-    return [head, ...this.emitStmt(body, indent + '    ')];
   }
 
   stmt_WhileStmt(n, indent) {
@@ -6024,6 +6036,16 @@ export class Emitter {
   }
 
   stmt_DoStmt(n, indent) {
+    const savedSplice = this.spliceBreak;
+    this.spliceBreak = null; // see stmt_SwitchStmt: a break in here is the loop's own
+    try {
+      return this.stmtDoStmtInner(n, indent);
+    } finally {
+      this.spliceBreak = savedSplice;
+    }
+  }
+
+  stmtDoStmtInner(n, indent) {
     const kids = (n.inner || []).filter((c) => c && c.kind);
     const [body, cond] = kids;
     if (body.kind === 'CompoundStmt') {
@@ -6076,7 +6098,12 @@ export class Emitter {
 
   stmt_ReturnStmt(n, indent) {
     const e = (n.inner || []).find((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
-    return [`${indent}return${e ? ' ' + this.emitExpr(e).code : ''};`];
+    if (!e) return [`${indent}return;`];
+    const d = this.emitExpr(e);
+    // a boolean-valued expression returned as a C int: 0/1, not false/true
+    // (see retIsInt in emitFunction()).
+    const code = d.bool && this.retIsInt ? `${this.group(d, PREC.cond)} ? 1 : 0` : d.code;
+    return [`${indent}return ${code};`];
   }
 
   stmt_SwitchStmt(n, indent) {
@@ -6129,7 +6156,25 @@ export class Emitter {
     const swItem = (it, ind) => this.emitSwitchItem(it, CASE_INDENT && govern.get(it) ? ind + '    ' : ind);
     let lines = [];
     for (const h of hoisted) lines.push(`${indent}${h}`);
-    lines.push(`${indent}switch (${this.emitExpr(cond).code}) {`);
+    // A switch-internal label whose region ends in `break` is spliced at each
+    // `goto` site ('inline' plan).  That `break` leaves the *switch* in C, but
+    // at a goto site nested in a loop inside the switch a plain JS `break`
+    // only leaves the loop.  mkroom.c fill_zoo(): `goto throne_placed` from
+    // the nested for-loops that look for a maze level's throne spliced
+    // `mk_zoo_thronemon(tx, ty); break;` into the inner loop, so the scan went
+    // on, fell into the random-spot loop and made a second throne monster
+    // (RNG desync on every maze-level court, e.g. Fort Ludios).  Label the
+    // switch and let the spliced copy break to it (stmt_GotoStmt/BreakStmt).
+    const splicedBreak = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(body) || [])
+      .filter((l) => l.dir === 'inline' && l.region?.length && l.region[l.region.length - 1].kind === 'BreakStmt');
+    let swLabel = null;
+    if (splicedBreak.length) {
+      swLabel = `__sw_${(this.swLabelSeq = (this.swLabelSeq || 0) + 1)}`;
+      for (const l of splicedBreak) this.inlineBreakLabel.set(l.name, swLabel);
+    }
+    lines.push(`${indent}${swLabel ? swLabel + ': ' : ''}switch (${this.emitExpr(cond).code}) {`);
+    const savedSplice = this.spliceBreak;
+    this.spliceBreak = null; // a break inside this switch's own items is its own
     const bodyPlan = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir !== 'swloop');
     if (bodyPlan && bodyPlan.length) {
       lines.push(...this.emitLabeledItems(items, indent + '    ', bodyPlan, swItem));
@@ -6145,6 +6190,7 @@ export class Emitter {
       lines.push(...this.emitDeadRun(items, indent + '    ', swItem, true, 'switchTail'));
     }
     lines.push(`${indent}}`);
+    this.spliceBreak = savedSplice;
     const swloops = (this.gotoPlan?.blockLabels.get(body) || []).filter((l) => l.dir === 'swloop');
     for (const l of swloops) {
       // while(true)+break, not do{}while(false): continue L on a do-while
@@ -6197,7 +6243,7 @@ export class Emitter {
     return lines;
   }
 
-  stmt_BreakStmt(n, indent) { return [`${indent}break;`]; }
+  stmt_BreakStmt(n, indent) { return [`${indent}break${this.spliceBreak ? ' ' + this.spliceBreak : ''};`]; }
   stmt_ContinueStmt(n, indent) { return [`${indent}continue;`]; }
   stmt_NullStmt(n, indent) { return [`${indent};`]; }
 
@@ -6341,6 +6387,17 @@ export class Emitter {
     const resetTrivia = () => { if (this._trivDone) for (const L of [...this._trivDone]) if (this.trivFnLines && L >= this.trivFnLines[0] && L <= this.trivFnLines[1]) this._trivDone.delete(L); };
     const params = (d.inner || []).filter((c) => c && c.kind === 'ParmVarDecl');
     const retQ = d.type.qualType.replace(/\s*\(.*$/, '');
+    // C returns an int for `!x` and comparisons; the emitted JS for those is a
+    // real boolean (descriptor .bool).  JS arithmetic coerces it the same way,
+    // but strict equality does not: steal()'s `return !rn2(n)` reached
+    // mhitm_ad_sitm()'s `switch (steal(...)) { case 0: ... }` as `false`,
+    // matched no case, and fell into default (flee + end the monster's
+    // attacks) where C saw 0 and kept attacking.  So a function whose
+    // declared return type is an integer type (NetHack's `boolean` is
+    // unsigned char) returns 0/1 like C.  See stmt_ReturnStmt().
+    this.retIsInt = !/[*\[]|^\s*(?:void|float|double|long double)\s*$|\b(?:struct|union)\b/.test(retQ);
+    this.inlineBreakLabel = new Map(); // switch-internal inline label -> JS label of its switch
+    this.spliceBreak = null;
     // static locals hoist to module scope (C lifetime), renamed to stay unique
     this.staticLocals = new Map();
     this.recordLocals = new Set();

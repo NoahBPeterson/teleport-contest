@@ -3071,7 +3071,7 @@ export function* canwearobj(otmp, mask, noisy) {
             }
         }
      */
-    return !err;
+    return !err ? 1 : 0;
 }
 
 /** C ref: do_wear.c:2209 — @param {CPtr<struct obj>} obj @returns {CInt} */

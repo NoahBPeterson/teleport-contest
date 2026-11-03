@@ -1645,7 +1645,7 @@ export function dochug(mtmp) {
         cuss(mtmp);
 
     /* note: can't get here when monster is dead, so this always returns 0 */
-    return (status == NHM.MMOVE_DIED);
+    return (status == NHM.MMOVE_DIED) ? 1 : 0;
 }
 
 /** C ref: monmove.c:991 — char[5] */

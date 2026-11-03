@@ -969,7 +969,7 @@ function timed_occupation() {
             $instance_globals_m_multi,
             cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
         )) - (-1n);
-    return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n;
+    return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n ? 1 : 0;
 }
 
 /* If you have moved since initially setting some occupations, they
@@ -6250,7 +6250,7 @@ export function movecmd(sym, mode) {
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), d, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), d, 1));
         cptr.stI32o(u, $you_dz, cptr.ld1so(cptr.decay(zdir), d, 1));
-        return !cptr.ldI32o(u, $you_dz);
+        return !cptr.ldI32o(u, $you_dz) ? 1 : 0;
     }
     cptr.stI32o(u, $you_dz, 0);
     return 0;
@@ -6527,7 +6527,7 @@ export function getdir(s) {
             }
             if (cptr.ldI32o(iflags, $instance_flags_getdir_click))
                 cptr.stI32o(iflags, $instance_flags_getdir_click, mod);
-            return (pos >= 0);
+            return (pos >= 0) ? 1 : 0;
         }
         case 12: {
             if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) &&

@@ -897,7 +897,7 @@ export function* delete_bonesfile(lev) {
     void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
     reslt = unlink(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0));
     (yield* delete_convertedfile(fqname(cptr.add(gb, $instance_globals_b_bones), NHM.BONESPREFIX, 0)));
-    return !(reslt < 0);
+    return !(reslt < 0) ? 1 : 0;
 }
 
 /* assume we're compressing the recently read or created bonesfile, so the

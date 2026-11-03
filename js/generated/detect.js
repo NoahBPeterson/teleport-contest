@@ -983,7 +983,7 @@ export function food_detect(sobj) {
             } else
                 strange_feeling(sobj, cptr.decay(buf));
         }
-        return !stale;
+        return !stale ? 1 : 0;
     } else if (!ct) {
         cptr.st1o(gk, $instance_globals_k_known, 1);
         You(__s_s_s_nearby, sobj ? __s_smell : __s_sense, what);

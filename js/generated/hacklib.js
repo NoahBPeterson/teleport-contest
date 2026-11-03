@@ -76,7 +76,7 @@ function nh_qsort_idx_cmp(va, vb) {
         return c;
     if (cptr.ldU64(a) < cptr.ldU64(b))
         return -1;
-    return (cptr.ldU64(a) > cptr.ldU64(b));
+    return (cptr.ldU64(a) > cptr.ldU64(b)) ? 1 : 0;
 }
 
 /* Deterministic replacement for libc qsort(), preserving original order
@@ -892,7 +892,7 @@ export function strncmpi(s1, s2, n) {
 
     while (n--) {
         if (!cptr.ld1s(s2))
-            return (cptr.ld1s(s1) != 0);  /* s1 >= s2 */
+            return (cptr.ld1s(s1) != 0) ? 1 : 0;  /* s1 >= s2 */
         else if (!cptr.ld1s(s1))
             return -1;  /* s1  < s2 */
         t1 = lowc(cptr.ld1s(cptr.postinc(() => s1, (v) => { s1 = v; })));

@@ -438,7 +438,7 @@ export function lua_iscfunction(L, idx) {
 /** C ref: lapi.c:303 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_isinteger(L, idx) {
     let o = index2value(L, idx);
-    return ((cptr.ld1uo(((o)), $TValue_tt_)) == 3);
+    return ((cptr.ld1uo(((o)), $TValue_tt_)) == 3) ? 1 : 0;
 }
 
 /** C ref: lapi.c:309 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
@@ -619,7 +619,9 @@ export function lua_tointegerx(L, idx, pisnum) {
 export function lua_toboolean(L, idx) {
     let o = index2value(L, idx);
     return !(((cptr.ld1uo(((o)), $TValue_tt_)) == 1) ||
-            (((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 0));
+        (((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 0))
+            ? 1
+            : 0;
 }
 
 /**
@@ -1083,7 +1085,9 @@ export function lua_pushthread(L) {
     }
     ;
     (void 0);
-    return (cptr.eq(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread), L));
+    return (cptr.eq(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread), L))
+            ? 1
+            : 0;
 }
 
 /*

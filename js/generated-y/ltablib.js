@@ -57,7 +57,7 @@ const __s_sort = cptr.lit("sort");
  */
 function* checkfield(L, key, n) {
     (yield* lua_pushstring(L, key));
-    return ((yield* lua_rawget(L, -n)) != 0);
+    return ((yield* lua_rawget(L, -n)) != 0) ? 1 : 0;
 }
 
 /*

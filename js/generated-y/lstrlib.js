@@ -576,7 +576,7 @@ function match_class(c, cl) {
             res = (c == 0);  /* deprecated option */
             break;
         default:
-            return (cl == c);
+            return (cl == c) ? 1 : 0;
     }
     return (islower(cl) ? res : !res);
 }
@@ -606,7 +606,7 @@ function* matchbracketclass(c, p, ec) {
         } else if ((uchar((cptr.ld1s(p)))) == c)
             return sig;
     }
-    return !sig;
+    return !sig ? 1 : 0;
 }
 
 /**
@@ -630,7 +630,7 @@ function* singlematch(ms, s, p, ep) {
             case 91:
                 return (yield* matchbracketclass(c, p, cptr.add(ep, -(1))));
             default:
-                return ((uchar((cptr.ld1s(p)))) == c);
+                return ((uchar((cptr.ld1s(p)))) == c) ? 1 : 0;
         }
     }
 }

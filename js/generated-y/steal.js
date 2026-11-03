@@ -794,7 +794,7 @@ export function* steal(mtmp, objnambuf) {
             /* the fewer items you have, the less likely the thief
                is going to stick around to try again (0) instead of
                running away (1) */
-            return !rn2((((inv_cnt(0) / 5) | 0) + 2) | 0);
+            return !rn2((((inv_cnt(0) / 5) | 0) + 2) | 0) ? 1 : 0;
         }
         case 23: {
             __pc = 21;

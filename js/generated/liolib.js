@@ -503,7 +503,7 @@ function test_eof(L, f) {
     let c = getc(f);
     ungetc(c, f);  /* no-op when c == EOF */
     lua_pushstring(L, __s_empty);
-    return (c != -1);
+    return (c != -1) ? 1 : 0;
 }
 
 /**
@@ -584,7 +584,7 @@ function read_chars(L, f, n) {
     nr = fread(p, 1n, n, f);  /* try to read 'n' chars */
     (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + (nr)));
     luaL_pushresult(b);  /* close buffer */
-    return (nr > 0n);  /* true iff read something */
+    return (nr > 0n) ? 1 : 0;  /* true iff read something */
 }
 
 /**

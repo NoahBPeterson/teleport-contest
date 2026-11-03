@@ -449,7 +449,9 @@ function mon_in_room(mon, rmtyp) {
     ) &
             63) | 0;
     if (rno >= NHM.ROOMOFFSET)
-        return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == rmtyp;
+        return cptr.ld1so2(svr, (rno - NHM.ROOMOFFSET) | 0, $sizeof_mkroom, $mkroom_rtype) == rmtyp
+                ? 1
+                : 0;
     return 0;
 }
 

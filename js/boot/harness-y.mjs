@@ -334,7 +334,14 @@ export async function runBootGame(opts) {
     return dst;
   };
   g.__assert_rtn = (fn, file, line, expr) => { throw new Error(`assert failed: ${cptr.cstr(expr)} @ ${cptr.cstr(file)}:${line} (${cptr.cstr(fn)})`); };
-  g.abort = () => { throw new Error('abort()'); };
+  // abort() ends the C process (SIGABRT). NetHack reaches it from panic()
+  // after "Oops...", wait_synch() and the error save -- e.g. a monster
+  // entering a wished "magic portal to nowhere" (trap->dst unset) panics in
+  // ledger_to_dnum(), in C as in the port. The recorder just stops capturing
+  // when the process dies, so end the game like exit() does (status 134 =
+  // 128 + SIGABRT) instead of throwing an Error: the scorer zeroes a whole
+  // session on an exception.
+  g.abort = () => { __trace('abort'); throw { __bootExit: 134 }; };
   g.backtrace = (buf, size) => 0;
   g.backtrace_symbols = (buf, size) => null;
   g.backtrace_symbols_fd = (buf, size, fd) => {};

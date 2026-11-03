@@ -1438,7 +1438,7 @@ export function lua_resume(L, from, nargs, nresults) {
 
 /** C ref: ldo.c:877 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_isyieldable(L) {
-    return (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0);
+    return (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0) ? 1 : 0;
 }
 
 /**

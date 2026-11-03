@@ -446,8 +446,9 @@ export function* luaT_trybiniTM(L, p1, i2, flip, res, event) {
 export function* luaT_callorderTM(L, p1, p2, event) {
     if ((yield* callbinTM(L, p1, p2, cptr.ldPtro(L, $lua_State_top), event)))
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) ||
-                (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) &
-                    15)) == 0));
+            (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) & 15)) == 0))
+                ? 1
+                : 0;
     (yield* luaG_ordererror(L, p1, p2));  /* no metamethod found */
     return 0;  /* to avoid warnings */
 }

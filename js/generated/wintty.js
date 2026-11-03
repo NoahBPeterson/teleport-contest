@@ -1812,7 +1812,7 @@ function process_menu_window(window, cw) {
         else
             morc.v = map_menu_cmd(morc.v);
 
-        switch (morc.v) {
+        __sw_1: switch (morc.v) {
             case 48:
             case 49:
             case 50:
@@ -1833,7 +1833,7 @@ function process_menu_window(window, cw) {
                         invert_all(window, page_start, page_end, morc.v, counting ? count : -1n);
                         if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE)
                             finished = 1;
-                        break;
+                        break __sw_1;
                     }
                 {
                     let dgt = BigInt(((morc.v - 48) | 0));
