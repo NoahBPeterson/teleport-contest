@@ -15,6 +15,7 @@ what the JS port has to match.
 | 007 | `nomux-raw-print` | Route `raw_print` (early errors, banners) through nomux too | Otherwise startup banners aren't captured |
 | 008 | `nomux-deterministic-capture` | Snapshot the screen exactly when C blocks for the next key | Pins frame boundaries to `tty_nhgetch` calls |
 | 010 | `mktime-now` | Optional `NETHACK_MKTIME_NOW` (epoch) replaces the real clock that `time_from_yyyymmddhhmmss()` takes `tm_isdst` from; unset = unchanged | The recorder reads the session datetime at the record-time UTC offset, so local recordings made in EST differed from the official (EDT) ones. `scripts/recording-env.mjs` pins it to 2026-08-01 by default; with that, all 44 public sessions re-record identically (`scripts/verify-rerecord.mjs`) |
+| 011 | `portal-nowhere-ledger` | One line in `ledger_no()`: when `dnum == -1`, read `svc.context.jingle`'s first 4 bytes as the ledger start, which is what upstream's out-of-bounds `svd.dungeons[-1].ledger_start` reads on the macOS build (`svc` sits right before `svd`; `sizeof (dungeon)` = 92, `ledger_start` at offset 84) | A wished magic portal "to nowhere" has `dst` = {-1,-1}. A monster entering it panics if no tune was ever improvised, and otherwise vanishes to wherever the garbage ledger decodes. The JS port's struct layout differs, so it read different garbage and panicked where C did not. Recorder behavior is unchanged: re-recording both cases reproduces the old sessions byte for byte. Line count unchanged |
 
 ## Apply
 

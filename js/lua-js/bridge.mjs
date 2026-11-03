@@ -58,7 +58,7 @@ import {
     lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushnumber,
     lua_pushstring, lua_pushvalue, lua_rawgeti, lua_rawseti, lua_rotate, lua_setfield,
     lua_setglobal, lua_settop, lua_toboolean, lua_tointegerx, lua_tolstring,
-    lua_tonumberx, lua_type,
+    lua_tonumberx, lua_type, lua_gc,
 } from '../generated/lapi.js';
 import { l_register_des } from '../generated/sp_lev.js';
 import { l_selection_register } from '../generated/nhlsel.js';
@@ -1395,7 +1395,21 @@ export const api = Object.freeze({
  * @param {(api: object) => void} body  the ported script
  */
 export function runPortedScript(name, body) {
-    runProtected(state(), name, () => body(api));
+    if (activeL !== null) { runProtected(activeL, name, () => body(api)); return; }
+    // A level script on the bridge's own state. In C every value the script
+    // made lives in the per-script state that load_lua() closes (nhl_done ->
+    // lua_close) the moment the chunk returns, before link_doors_rooms():
+    // lua_close runs l_obj_gc on each obj handle, newest first, while those
+    // objects are still where the script left them. The bridge's state is
+    // never closed, so without this the handles lingered until some later
+    // incremental GC step -- which could land anywhere, e.g. mid-Tutorial
+    // while the hero's stashed invent sits on gmst_invent as OBJ_FREE with
+    // nobj set, where l_obj_gc's dealloc_obj() panics ("dealloc_obj with
+    // nobj"). Release the script's references and collect now: a full
+    // collect finalizes the unreachable handles in the same finobj order.
+    const Lp = state();
+    withCallValues(() => runProtected(Lp, name, () => body(api)));
+    lua_gc(Lp, 2 /* LUA_GCCOLLECT */);
 }
 
 /**

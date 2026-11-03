@@ -1,0 +1,36 @@
+011-portal-nowhere-ledger: make ledger_no()'s out-of-bounds read explicit.
+
+A wished-for magic portal is a portal "to nowhere": maketrap() leaves
+trap->dst at {-1,-1}. A monster stepping on it reaches
+mlevel_tele_trap() -> migrate_to_level(mtmp, ledger_no(&tolevel), ...)
+with dnum -1, and upstream ledger_no() reads
+svd.dungeons[-1].ledger_start, out of bounds.
+
+On the macOS recorder build the read is deterministic. svc (704 bytes,
+one struct context_info) is laid out immediately before svd (both are
+__DATA,__common; `nm -n`: _svc 0x...8fb8, _svd 0x...9278). sizeof
+(dungeon) is 92 and ledger_start is at offset 84, so the read lands on
+svc + 696 = the first four bytes of svc.context.jingle, the last tune the
+hero improvised. If no tune was ever played, it reads 0 and the ledger is
+-1, and C panics ("level number out of range"). After a tune it is some
+large number, and the monster "disappears out of sight" to wherever that
+ledger decodes.
+
+This patch spells that read out, so the value no longer depends on the
+compiler's struct layout. The JS port, whose layout differs (its dungeon
+is 112 bytes), then computes the same thing. On the recorder build the
+value and the behavior are unchanged; re-recording reproduces the old
+sessions byte for byte. It is one line, so upstream line numbers (and
+the RNG log's @file:line tags) are unchanged.
+
+--- a/src/dungeon.c	2026-11-03 09:12:45
++++ b/src/dungeon.c	2026-11-03 09:12:45
+@@ -1375,7 +1375,7 @@
+ xint16
+ ledger_no(d_level *lev)
+ {
+-    return (xint16) (lev->dlevel + svd.dungeons[lev->dnum].ledger_start);
++    return (xint16) (lev->dlevel + ((lev->dnum == -1) ? *(int *) (genericptr_t) svc.context.jingle /* patch 011 */ : svd.dungeons[lev->dnum].ledger_start));
+ }
+ 
+ /*

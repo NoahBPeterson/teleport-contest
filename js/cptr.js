@@ -1233,15 +1233,108 @@ export function vsnprintf(str, n, fmt, ap) {
  * Byte-generic qsort: elements are `size`-byte runs in base's buffer.
  * compar receives CPtrs to COPY-backed elements (writes through them are
  * not visible; libc qsort comparators must not mutate anyway).
+ *
+ * This is NOT a generic stable sort: it replicates the Darwin libc qsort
+ * the reference recordings were made with (Apple Libc stdlib/FreeBSD/
+ * qsort.c: Bentley-McIlroy 3-way quicksort, insertion sort for n <= 7 and
+ * as a bounded fallback after a swap-free partition, heapsort past a
+ * 2*(fls(n)-1) depth limit) comparison for comparison.  That matters
+ * because some NetHack comparators are inconsistent: sortloot_cmp() tests
+ * oc_uses_known on obj1's type only, so cmp(a,b) and cmp(b,a) can disagree
+ * (bag of tricks vs plain bag), and the final order then depends on which
+ * pairs the algorithm happens to compare.  nh_deterministic_qsort()'s
+ * index tie-break does not remove that.  Verified against libc's exact
+ * comparator call sequence on ~1,200 arrays incl. random asymmetric
+ * comparators (tools/qsort-darwin-check/).
  * @param {CPtr} base @param {number|bigint} nmemb @param {number|bigint} size @param {(a: CPtr, b: CPtr) => number} compar
  */
 export function qsort(base, nmemb, size, compar) {
   nmemb = Number(nmemb); size = Number(size);
+  if (nmemb < 2) return;
   const elems = [];
   for (let i = 0; i < nmemb; i++) elems.push(base.buf.slice(base.off + i * size, base.off + (i + 1) * size));
-  // stable sort (Array.prototype.sort is stable in modern JS)
-  elems.sort((a, b) => Number(compar({ buf: a, off: 0 }, { buf: b, off: 0 })));
+  darwinQsort(elems, (a, b) => Number(compar({ buf: a, off: 0 }, { buf: b, off: 0 })));
   for (let i = 0; i < nmemb; i++) base.buf.set(elems[i], base.off + i * size);
+}
+
+/**
+ * Apple Libc qsort.c (+ FreeBSD heapsort.c) over a JS array of element
+ * values, in place.  Exported for tests.
+ * @template T @param {T[]} v @param {(a: T, b: T) => number} cmp
+ */
+export function darwinQsort(v, cmp) {
+  const fls = (n) => (n === 0 ? 0 : 32 - Math.clz32(n));
+  const swap = (i, j) => { const t = v[i]; v[i] = v[j]; v[j] = t; };
+  const vecswap = (i, j, n) => { for (let k = 0; k < n; k++) swap(i + k, j + k); };
+  const c = (i, j) => cmp(v[i], v[j]);
+  const med3 = (a, b, d) => c(a, b) < 0 ? (c(b, d) < 0 ? b : (c(a, d) < 0 ? d : a))
+                                        : (c(b, d) > 0 ? b : (c(a, d) < 0 ? a : d));
+  // _isort(): returns false when swap_limit (nonzero) is exceeded
+  const isort = (a, n, limit) => {
+    let cnt = 0;
+    for (let pm = a + 1; pm < a + n; pm++)
+      for (let pl = pm; pl > a && c(pl - 1, pl) > 0; pl--) { swap(pl, pl - 1); if (limit && ++cnt > limit) return false; }
+    return true;
+  };
+  // FreeBSD heapsort(): 1-based, CREATE then SELECT with a held-out key
+  const heapsort = (a, nmemb) => {
+    if (nmemb <= 1) return;
+    const B = (i) => a + i - 1;
+    for (let l = (nmemb >> 1) + 1; --l;) {
+      for (let pi = l, ci; (ci = pi * 2) <= nmemb; pi = ci) {
+        if (ci < nmemb && cmp(v[B(ci)], v[B(ci + 1)]) < 0) ci++;
+        if (cmp(v[B(ci)], v[B(pi)]) <= 0) break;
+        swap(B(pi), B(ci));
+      }
+    }
+    while (nmemb > 1) {
+      const k = v[B(1)];
+      v[B(1)] = v[B(nmemb)];
+      --nmemb;
+      let pi = 1, ci;
+      for (; (ci = pi * 2) <= nmemb; pi = ci) {
+        if (ci < nmemb && cmp(v[B(ci)], v[B(ci + 1)]) < 0) ci++;
+        v[B(pi)] = v[B(ci)];
+      }
+      for (;;) {
+        ci = pi; pi = ci >> 1;
+        if (ci === 1 || cmp(k, v[B(pi)]) < 0) { v[B(ci)] = k; break; }
+        v[B(ci)] = v[B(pi)];
+      }
+    }
+  };
+  const qs = (a, n, depth) => {
+    for (;;) {
+      let swapCnt = 0;
+      if (depth-- <= 0) { heapsort(a, n); return; }
+      if (n <= 7) { isort(a, n, 0); return; }
+      let pl = a, pm = a + (n >> 1), pn = a + n - 1;
+      if (n > 40) { const d = n >> 3; pl = med3(pl, pl + d, pl + 2 * d); pm = med3(pm - d, pm, pm + d); pn = med3(pn - 2 * d, pn - d, pn); }
+      pm = med3(pl, pm, pn);
+      swap(a, pm);
+      let pa = a + 1, pb = pa, pc = a + n - 1, pd = pc, r;
+      for (;;) {
+        while (pb <= pc && (r = c(pb, a)) <= 0) { if (r === 0) { swapCnt = 1; swap(pa, pb); pa++; } pb++; }
+        while (pb <= pc && (r = c(pc, a)) >= 0) { if (r === 0) { swapCnt = 1; swap(pc, pd); pd--; } pc--; }
+        if (pb > pc) break;
+        swap(pb, pc); swapCnt = 1; pb++; pc--;
+      }
+      pn = a + n;
+      let d1 = Math.min(pa - a, pb - pa); vecswap(a, pb - d1, d1);
+      d1 = Math.min(pd - pc, pn - pd - 1); vecswap(pb, pn - d1, d1);
+      if (swapCnt === 0 && isort(a, n, 1 + (n >> 2))) return;
+      d1 = pb - pa; const d2 = pd - pc;
+      if (d1 <= d2) {
+        if (d1 > 1) qs(a, d1, depth);
+        if (d2 > 1) { a = pn - d2; n = d2; continue; }
+      } else {
+        if (d2 > 1) qs(pn - d2, d2, depth);
+        if (d1 > 1) { n = d1; continue; }
+      }
+      return;
+    }
+  };
+  qs(0, v.length, 2 * (fls(v.length) - 1));
 }
 
 // ------------------------------------------------------- varargs ----
