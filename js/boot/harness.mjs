@@ -430,7 +430,10 @@ export async function runBootGame(opts) {
       if (spec === 'c') {
         const n = width || 1;
         if (si + n > s.length) return done();
-        for (let i = 0; i < n; i++) { if (!suppress) cptr.st1(cptr.add(arg, i), s.charCodeAt(si)); si++; }
+        // A boxed scalar (address-taken `char` local, e.g. done_in_by()'s
+        // reasondummy) has no buffer to offset into: store element 0 into
+        // the box itself.
+        for (let i = 0; i < n; i++) { if (!suppress) cptr.st1(i === 0 ? arg : cptr.add(arg, i), s.charCodeAt(si)); si++; }
         if (!suppress) { assigned++; argi++; }
         continue;
       }

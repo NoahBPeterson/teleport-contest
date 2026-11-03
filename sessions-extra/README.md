@@ -68,3 +68,23 @@ score list will not be checked"). `tz-s1`/`tz-s2` are cut from `seed0030` for
 that reason — they are the only way to reach a tombstone or a top-ten table.
 
     bash frozen/score.sh sessions-extra
+
+## The `fz*-wizfuzz-*` family
+
+24 monkey-test sessions from `tools/fuzz/gen-fuzz.py` (seeds 7000-7025, two
+dropped - see below), recorded 2026-11-02 after the held-out pool grew from 44
+to 56. Wizard mode, 400 random actions each: wishes, `^G` monsters,
+`#polyself`, traps from wishes, Elbereth, horns, digging, riding, kicking,
+looting. Each action ends with space+ESC so no prompt wedges the run.
+
+`fz7000` caught a crash that zeroed whole sessions: dying to a monster while
+helpless (`done_in_by()`, `end.c:310`, `sscanf("%u:%c")`) made the harness
+`%c` conversion index into a boxed `char` local and throw.
+
+fz7006 and fz7015 were dropped. They were recorded after DST ended, so the
+recorder's `mktime()` used -05:00 (see `docs/NOTES-recording-environment.md`),
+and their 00:00 datetimes make that visible. Both pass with the port's
+offset at -05:00, so they are recording artifacts, not port bugs. The
+generator now keeps datetimes at 07:00-20:00 for that reason. Record
+serially: debug mode forces the name `wizard`, so parallel recordings collide
+on lock files.
