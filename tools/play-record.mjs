@@ -63,6 +63,7 @@ import fsSync from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
+import { recordingEnv } from '../scripts/recording-env.mjs';
 
 const TOOLS_DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(TOOLS_DIR, '..');
@@ -754,6 +755,8 @@ async function main() {
         seed, name, datetime, tz, nethackrc, outPath, binary, installDir,
         scratch, scriptedKeys, keepTmp: flag('--keep-tmp'), mirror: false,
     };
+    // Captured at launch: fixes the recorder's mktime() offset (recording-env.mjs).
+    const recEnv = await recordingEnv({ tz, binary, repoRoot: ROOT });
 
     let ui;
     let modeNote;
@@ -804,6 +807,7 @@ async function main() {
             tool: 'tools/play-record.mjs',
             mode: scriptedKeys != null ? 'scripted' : 'interactive',
         },
+        recording_env: recEnv,
     };
     await fs.mkdir(path.dirname(cfg.outPath), { recursive: true });
     await fs.writeFile(cfg.outPath, JSON.stringify(doc));

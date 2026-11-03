@@ -113,3 +113,24 @@ seed0030 specifically because it is the only non-wizard death in the corpus.
 libc surface the page calls out is covered by `test/posix-ere.test.mjs` and
 `test/printf.test.mjs`; the tty input modes are the zeroed no-tty termios
 `js/boot/harness.mjs` already emulates.
+
+## `recording_env` — what each local recording now carries
+
+Since 2026-11-02, `scripts/record-session.mjs` and `tools/play-record.mjs`
+write a `recording_env` block into every session (built by
+`scripts/recording-env.mjs`): `recorded_at` (UTC), `tz`, the zone's offset and
+DST state at that moment, `mktime_utc_offset_sec`, the recorder binary's
+SHA-256, the repo commit, and OS/arch/Node versions. No hostname, username,
+`$HOME` or paths. The scorer ignores the field.
+
+`mktime_utc_offset_sec` is the one that matters. The recorder's mktime()
+inherits tm_isdst from the real clock, so the session `datetime` is read at
+the zone's offset *at record time*, whatever the simulated date: -14400 in
+EDT, -18000 in EST. The port assumes -14400 (the official recordings). A local
+recording made in EST that fails only on night()/moon/Friday-13th screens or
+shopkeeper names should be re-checked with `REC_UTC_OFFSET_SEC` at -5 before
+being treated as a port bug. That happened to five fuzz probes recorded
+2026-11-02 (sessions-extra/README.md).
+
+The 25 `fz*` sessions committed that day were backfilled (`backfilled: true`)
+from their original files' mtimes.

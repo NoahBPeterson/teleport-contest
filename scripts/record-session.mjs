@@ -25,6 +25,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { recordingEnv } from './recording-env.mjs';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE_ROOT = path.resolve(SCRIPT_DIR, '..');
@@ -735,6 +736,10 @@ async function main() {
         await fs.symlink(installDir, envInstallDir);
     }
 
+    // Captured before the first segment launches: the recorder's mktime()
+    // offset is fixed by the real clock at launch (see recording-env.mjs).
+    const recEnv = await recordingEnv({ tz, binary, repoRoot: TEMPLATE_ROOT });
+
     try {
         const newSegments = [];
         for (let i = 0; i < session.segments.length; i++) {
@@ -773,6 +778,8 @@ async function main() {
         for (const k of Object.keys(session)) {
             if (k !== 'version' && k !== 'segments') outDoc[k] = session[k];
         }
+        // Always this run's facts, never ones inherited from the input file.
+        outDoc.recording_env = recEnv;
 
         await fs.writeFile(outputPath, JSON.stringify(outDoc));
         console.error(`[ok] wrote ${outputPath}`);
