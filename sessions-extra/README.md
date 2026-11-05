@@ -157,3 +157,34 @@ The two transpiler bugs (boolean `return` in int functions; goto-spliced
 `break` inside loops) are guarded at the emitter level by
 `node tools/c2js/test-control.mjs` (fixture `tools/c2js/fixtures/control_gate.c`),
 which fails on the old emitter with exactly the in-game symptoms.
+
+## The `cov-*` family — coverage-targeted sessions
+
+27 sessions written 2026-11-03 to exercise C functions that no recording had
+ever executed. Targets came from a coverage-instrumented recorder run over
+every corpus we have (public + sessions-extra + fuzz + scripted + richie3366's
+recipes), and each session was checked with that recorder to confirm it
+reaches its targets. All 27 matched the port on the first try, so this family
+found no port bugs; it is here to keep those paths verified.
+
+- `cov-items-*` (11): figurine coming alive, royal jelly on eggs,
+  Schroedinger's box, eating rings and amulets as a xorn, `#tip`, gems to
+  unicorns, the `A` take-off menu, the Bell of Opening on locked boxes,
+  dipping worn items into polymorph, stoning cured by a lizard plus coin
+  flipping, and a bag of holding inside a bag of holding.
+- `cov-dungeon-*` (9): throne effects, falling onto a sink when levitation
+  ends, the vault guard collecting gold, the full invocation ritual, buying
+  a container with unpaid contents and the `Ix`/`Iu` bills, a partly eaten
+  stack splitting the bill, a monster curing sliming on a fire trap, a
+  monster eating a lizard while being stoned, and untrapping a land mine,
+  a trapped chest and a pit.
+- `cov-ui-*` (7): status highlight and condition menus, a config full of
+  `hilite_status`/`cond_`/`BIND`/menu-key options, `#optionsfull` with the
+  combination and partial menu styles, traditional menu style with class
+  prompts, `#herecmdmenu`, a bag of holding exploding, and wizard commands
+  tried in normal mode.
+
+Line coverage of NetHack's `src/` by the committed corpus went from 57.8%
+to 60.4% (76.4% counting richie3366's recipes). A 28th session that ran
+`#saveoptions` is not included: its prompt shows the recorder's `$HOME`, which
+is a random temp directory locally (see issue #16), so it can never match.

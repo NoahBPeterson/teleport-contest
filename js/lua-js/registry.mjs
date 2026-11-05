@@ -487,10 +487,10 @@ export function mode() { return portsEnabled() ? 'run' : 'trace'; }
  * @param {string} name
  * @param {string} globalName
  */
-function readbackState(name, globalName) {
+function readbackState(name, globalName, reloadOk = false) {
     const L = interpState();
     if (!L) throw new Error(`lua-port ${name}: interpreter lua_State not found`);
-    if (!stateIsFresh(L, globalName)) {
+    if (!reloadOk && !stateIsFresh(L, globalName)) {
         throw new Error(`lua-port ${name}: state already defines '${globalName}'`);
     }
     return L;
@@ -606,7 +606,11 @@ export function onClose(name) {
         // registered and nothing else having happened. The two align-shuffle
         // draws therefore land exactly where the interpreter's did.
         if (mode() === 'run') {
-            const L = readbackState(name, lib.global);
+            // A library chunk may legitimately run twice in one state: nhl_init()
+            // loads nhlib.lua into every state, and wizard-mode #wizloadlua
+            // nhlib.lua then loads it again into that same state (C re-runs the
+            // chunk: globals are redefined and shuffle(align) draws again).
+            const L = readbackState(name, lib.global, true);
             runProtected(L, name, () => lib.body(L));
             rec.rngTo = getRngLog().length;
             if (globalsDump()) recordGlobals(rec, L, lib);
