@@ -188,3 +188,13 @@ Line coverage of NetHack's `src/` by the committed corpus went from 57.8%
 to 60.4% (76.4% counting richie3366's recipes). A 28th session that ran
 `#saveoptions` is not included: its prompt shows the recorder's `$HOME`, which
 is a random temp directory locally (see issue #16), so it can never match.
+
+## The `cov2-*` family — agent-recorded coverage sessions
+
+226 sessions from two rounds of agents, each given a part of the source with low
+coverage and told to reach it by playing: `cov2-g*` and `cov2-h*` are the rounds and
+groups, and the rest of the name is the agent's own. They cover shops, vaults, every
+trap type, polymorphed combat, artifacts, deaths and the end of the game.
+
+Every one was recorded from the C build, and matches on `tools/segdiff.mjs` and
+`frozen/ps_test_runner.mjs`. No port bug turned up from these.

@@ -13,32 +13,32 @@ Status: OPEN, IN PROGRESS, DONE (with commit), or WONTFIX (with the reason).
 
 These are the most dangerous, because a build succeeds.
 
-### C2JS-001: pointer walking across rows of a 2-D array. DONE, pending commit (flat byte arrays)
+### C2JS-001: pointer walking across rows of a 2-D array. DONE (b768f36) (flat byte arrays)
 `int m[2][3] = {{1,2,3},{4,5,6}}; int *p = &m[0][0]; p[4]` is 5 in C and 0 in JS,
 with no error. The global form fails the same way. A 2-D array becomes nested JS
 arrays, so a pointer can't leave its row.
 
-### C2JS-002: pointer to array. DONE, pending commit (deref of pointer-to-array is a location)
+### C2JS-002: pointer to array. DONE (b768f36) (deref of pointer-to-array is a location)
 `int (*r)[3] = m; r++; r[0][1]` and `int a[3]; int (*q)[3] = &a; (*q)[1]` throw
 `TypeError`. Cause not yet found. NetHack's `char (*s)[QBUFSZ]` (botl.c) works.
 
-### C2JS-003: Csmith array programs crash or differ. DONE, pending commit (`csmith-test arrays`: 22 same, 2 skipped, 0 failed)
+### C2JS-003: Csmith array programs crash or differ. DONE (b768f36) (`csmith-test arrays`: 22 same, 2 skipped, 0 failed)
 Seeds 2000-2023 with `--no-volatiles --no-volatile-pointers --no-packed-struct
 --max-funcs 3 --max-block-depth 3 --no-unions --no-bitfields --no-structs
 --no-pointers`: 12 match, 2 time out in C, 4 throw `Cannot create property 'N' on
 number`, 3+ have silently different checksums. Cause not yet found.
 
-### C2JS-004: Csmith seed 106 checksum differs silently. DONE, pending commit (cause: C2JS-039)
+### C2JS-004: Csmith seed 106 checksum differs silently. DONE (b768f36) (cause: C2JS-039)
 Seed 106 with `--no-volatiles --no-volatile-pointers --no-packed-struct
 --no-unions --no-bitfields --no-structs --no-pointers --no-arrays`: C checksum
 5F9E5971, JS 4FEC8259, first differing global `g_78`.
 
-### C2JS-005: Csmith pointer programs crash. DONE, pending commit (`csmith-test pointers`: 23 same, 1 skipped, 0 failed; the cause was C2JS-020 and 021)
+### C2JS-005: Csmith pointer programs crash. DONE (b768f36) (`csmith-test pointers`: 23 same, 1 skipped, 0 failed; the cause was C2JS-020 and 021)
 Seeds 2300-2323 with `--no-unions --no-bitfields --no-structs --no-arrays`: 18
 refused (see C2JS-010), 3 crash with `Cannot read/set properties of undefined` or
 `Cannot create property 'v' on number`. Re-run after C2JS-010.
 
-### C2JS-006: `sizeof` of a struct with bit-fields. DONE, pending commit (real bit-field layout; the c-sizes files are gone)
+### C2JS-006: `sizeof` of a struct with bit-fields. DONE (b768f36) (real bit-field layout; the c-sizes files are gone)
 `struct { unsigned a:3; int b:3; unsigned c:1; unsigned char d; unsigned e:12;
 unsigned char f:1; }` is 4 bytes in C and 24 in JS, because the port gives each
 bit-field its own bytes. Every struct with bit-fields has the wrong size and
@@ -50,28 +50,28 @@ reads a struct's raw bytes through `char *` or a union also sees the wrong layou
 
 Safe, because nothing wrong can ship, but still C that doesn't transpile.
 
-### C2JS-007: Duff's device (case labels inside a nested loop). DONE, pending commit (unstructured switches lower to the state machine)
+### C2JS-007: Duff's device (case labels inside a nested loop). DONE (b768f36) (unstructured switches lower to the state machine)
 `switch (n % 4) { case 0: do { c++; case 3: c++; ... } while (--k > 0); }` fails
 with `duff-style nested case label`.
 
-### C2JS-008: compound literals. DONE, pending commit
+### C2JS-008: compound literals. DONE (b768f36)
 `((int[]){3, 4})[1]` fails with `unsupported node kind CompoundLiteralExpr`.
 
-### C2JS-009: anonymous structs and unions as local types. DONE, pending commit
+### C2JS-009: anonymous structs and unions as local types. DONE (b768f36)
 `struct { int x, y; } pt = { .y = 2 };` fails with `layout: unknown struct`. Same
 cause: `union {...} __u` in `<math.h>`'s inline functions.
 
-### C2JS-010: address of a global, in single-file builds and initializers. DONE, pending commit
+### C2JS-010: address of a global, in single-file builds and initializers. DONE (b768f36)
 `static int g; static int *gp = &g;` fails with `address-of var unsupported (v1)`.
 `static int g; int *p = &g; *p = 5;` throws at runtime. `symbols.mjs` computes the
 address-taken set only in `build --all`, and the single-file path gates use never
 gets it. Build single files with the same analysis, then check whether the
 file-scope initializer still fails.
 
-### C2JS-011: reversed subscript. DONE, pending commit
+### C2JS-011: reversed subscript. DONE (b768f36)
 `1[v]` and `1["abc"]` fail with `subscript on non-pointer/non-array`.
 
-### C2JS-012: `offsetof` written by hand. DONE, pending commit
+### C2JS-012: `offsetof` written by hand. DONE (b768f36)
 `(size_t) &((struct s *) 0)->f` fails with `MemberExpr .f on rep val unsupported`.
 The `offsetof()` macro works.
 
@@ -95,13 +95,13 @@ Still to try:
 - `sizeof`, `loadFrom`, `storeTo`, field types: any type still unsupported
 - the remaining goto throws, which should all reach the state machine now
 
-### C2JS-014: Csmith with its remaining features on. DONE, pending commit
+### C2JS-014: Csmith with its remaining features on. DONE (b768f36)
 Unions, volatiles, packed structs and full-size programs all pass, 0 failed. What they
 found became C2JS-020 to 039.
 
 ## Found by the Csmith run and hand-written stress programs
 
-All DONE, pending commit, each with a repro in `fixtures/lang/`. All but 029 and 030
+All DONE (b768f36), each with a repro in `fixtures/lang/`. All but 029 and 030
 were silently wrong or crashed at runtime. NetHack's sessions never showed them.
 
 ### C2JS-020: two different address-taken locals compared equal. `ptw.c`
@@ -236,7 +236,7 @@ This doesn't affect NetHack: its C calls none of these, and no Lua script it shi
 
 ## Test infrastructure
 
-### C2JS-017: assignment evaluated its sides in the wrong order. DONE, pending commit
+### C2JS-017: assignment evaluated its sides in the wrong order. DONE (b768f36)
 Clang evaluates a scalar assignment's right side first, then the left side's address
 and, for `op=`, its old value. JS goes left to right. So `g |= setg(8)` used the old
 `g`, `arr[i] = bump_i()` wrote the old slot, and `a[rn2(3)] = rn2(5)` would draw RNG
@@ -245,30 +245,30 @@ sides can affect each other. Repro: `fixtures/lang/evord.c`.
 
 The temporaries hold a product's operands, so `f += a * g()` still fuses (C2JS-035).
 
-### C2JS-018: a scalar's bytes depended on its value, not its C type. DONE, pending commit
+### C2JS-018: a scalar's bytes depended on its value, not its C type. DONE (b768f36)
 A boxed `float` holding 1.0 looked like the integer 1, so `memcpy(&u, &f, 4)` gave 1
 and `*(unsigned *)&f` gave 1. Boxes now carry their C type. Repros: `boxb.c`, `pun.c`.
 
-### C2JS-019: `puts`, `putchar`, `fputs` never reached stdout in a standalone program. DONE, pending commit
+### C2JS-019: `puts`, `putchar`, `fputs` never reached stdout in a standalone program. DONE (b768f36)
 They wrote to the game's screen capture, while `printf` wrote to stdout. The gates
 now pass a sink, so all of them compare. `printf` also wrote UTF-8 instead of bytes.
 
-### C2JS-015: `js/libc/printf.js` and `string.js` are dead code with tests. DONE, pending commit (the two modules are deleted; both tests now run against cptr.* and g.*, and found the strcmp bugs listed below)
+### C2JS-015: `js/libc/printf.js` and `string.js` are dead code with tests. DONE (b768f36) (the two modules are deleted; both tests now run against cptr.* and g.*, and found the strcmp bugs listed below)
 Nothing imports them, yet `test/printf.test.mjs` and `test/libc-string.test.mjs`
 look like they cover the game's libc. They don't. The real one is `g.*` in
 `js/boot/harness.mjs` plus `js/cptr.js`, now covered by `test/libc-real.test.mjs`.
 Delete the dead code and its tests, or wire them in.
 
-### C2JS-016: Csmith run as a repeatable test. DONE, pending commit
+### C2JS-016: Csmith run as a repeatable test. DONE (b768f36)
 `node tools/c2js/csmith-test.mjs` has fixed seed classes and reports why each program was
 skipped. Last run: 213 same, 25 skipped, 0 failed, and every skip was the native program
 timing out or hitting undefined behavior. Fresh seeds outside the fixed set (scalars
 7000-7029, pointers 7100-7139, unions 7200-7229, packed 7300-7329, full 3000-3039,
 7400-7439, 8000-8039) ran 218 programs, 0 failed, on the code as it stood at each run.
 
-## Fixed, pending commit
+## Fixed in b768f36
 
-These are in the working tree. None is committed yet.
+Smaller fixes from the same work.
 
 - `unsigned` loaded from memory stayed signed in JS, so comparisons, `/=` and `>>=`
   went wrong past 2^31
