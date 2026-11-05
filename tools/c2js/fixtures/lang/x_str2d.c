@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int a;char n[3];}; int main(void){ struct s a[2][2]={{{1,"x"},{2,"y"}},{{3,"z"},{.n="w"}}}; struct s *p=&a[1][0]; p[1].a=9; printf("%d %s %d %s\n",a[1][1].a,a[1][1].n,(int)(&a[1][1]-&a[0][0]),a[0][1].n); return 0; }

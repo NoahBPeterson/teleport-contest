@@ -272,10 +272,10 @@ export function stairs_description(sway, outbuf, stcase) {
         void cptr.sprintf(
             outbuf,
             __s_s_s_s_s,
-            !(cptr.ldI32o(u, $you_uhave) & 1) ? __s_empty : __s_branch,
+            !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) ? __s_empty : __s_branch,
             stairs,
             updown,
-            !(cptr.ldI32o(u, $you_uhave) & 1)
+            !cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)
                 ? __s_out_of_the_dungeon
                 : ((on_level(
                     tolev,

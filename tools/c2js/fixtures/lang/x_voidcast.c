@@ -1,0 +1,2 @@
+#include <stdio.h>
+static int n; int f(void){ return ++n; } int main(void){ (void)f(); (void)(f(),f()); n?(void)f():(void)0; printf("%d %zu %zu\n",n,sizeof(int[3]),sizeof(struct{char a;int b;})); return 0; }

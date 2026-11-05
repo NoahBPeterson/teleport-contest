@@ -1688,14 +1688,14 @@ function* knows_object(obj, override_pauper) {
    like all gems except the loadstone and luckstone. */
 /** C ref: u_init.c:586 — @param {CInt} sym */
 function* knows_class(sym) {
-    let odummy = cptr.alloc(216);
+    let odummy = cptr.alloc(112);
     let o;
     let ct;
 
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
         return;
 
-    cptr.memcpy(odummy, cg, 216);
+    cptr.memcpy(odummy, cg, 112);
     cptr.st1o(odummy, $obj_oclass, sym);
     o = odummy;  /* for use in various obj.h macros */
 
@@ -1741,7 +1741,12 @@ function* knows_class(sym) {
         }
 
         if (cptr.ld1so2(objects, ct, $sizeof_objclass, $objclass_oc_class) == sym &&
-                !(cptr.ldI32o2(objects, ct, $sizeof_objclass, $objclass_oc_magic) & 1))
+                !cptr.ldBits(
+                    cptr.add(cptr.add(objects, ct, $sizeof_objclass), $objclass_oc_magic),
+                    4,
+                    1,
+                    0
+                ))
             (yield* knows_object(ct, 0));
     }
 }
@@ -1759,15 +1764,79 @@ cptr.stPtro(__static_u_init_role_M_spell, 16, Confuse_monster_book); /** C ref: 
 /** C ref: u_init.c:637 */
 function* u_init_role() {
     let i;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
 
-    /* the program used to check moves<=1 && invent==NULL do decide whether
-       a new game has started, but due to the 'pauper' option/conduct, can't
-       rely on invent becoming non-Null anymore; instead, initialize moves
-       to 0 instead of 1, then set it to 1 here, where invent init occurs */
-    cptr.stI64o(svm, $instance_globals_saved_m_moves, 1n);
-
-    switch (Role_switch()) {
-        case NHC.PM_ARCHEOLOGIST:
+            /* the program used to check moves<=1 && invent==NULL do decide whether
+               a new game has started, but due to the 'pauper' option/conduct, can't
+               rely on invent becoming non-Null anymore; instead, initialize moves
+               to 0 instead of 1, then set it to 1 here, where invent init occurs */
+            cptr.stI64o(svm, $instance_globals_saved_m_moves, 1n);
+            let __sw17 = Role_switch();
+            if (__sw17 === (NHC.PM_ARCHEOLOGIST)) { __pc = 18; continue; }
+            if (__sw17 === (NHC.PM_BARBARIAN)) { __pc = 19; continue; }
+            if (__sw17 === (NHC.PM_CAVE_DWELLER)) { __pc = 20; continue; }
+            if (__sw17 === (NHC.PM_HEALER)) { __pc = 21; continue; }
+            if (__sw17 === (NHC.PM_KNIGHT)) { __pc = 22; continue; }
+            if (__sw17 === (NHC.PM_MONK)) { __pc = 23; continue; }
+            if (__sw17 === (NHC.PM_CLERIC)) { __pc = 24; continue; }
+            if (__sw17 === (NHC.PM_RANGER)) { __pc = 25; continue; }
+            if (__sw17 === (NHC.PM_ROGUE)) { __pc = 26; continue; }
+            if (__sw17 === (NHC.PM_SAMURAI)) { __pc = 27; continue; }
+            if (__sw17 === (NHC.PM_TOURIST)) { __pc = 28; continue; }
+            if (__sw17 === (NHC.PM_VALKYRIE)) { __pc = 29; continue; }
+            if (__sw17 === (NHC.PM_WIZARD)) { __pc = 30; continue; }
+            __pc = 31; continue;
+        }
+        case 18: {
+            { __pc = 1; continue; }
+        }
+        case 19: {
+            { __pc = 2; continue; }
+        }
+        case 20: {
+            { __pc = 3; continue; }
+        }
+        case 21: {
+            { __pc = 4; continue; }
+        }
+        case 22: {
+            { __pc = 5; continue; }
+        }
+        case 23: {
+            { __pc = 6; continue; }
+        }
+        case 24: {
+            { __pc = 7; continue; }
+        }
+        case 25: {
+            { __pc = 8; continue; }
+        }
+        case 26: {
+            { __pc = 9; continue; }
+        }
+        case 27: {
+            { __pc = 10; continue; }
+        }
+        case 28: {
+            { __pc = 11; continue; }
+        }
+        case 29: {
+            { __pc = 12; continue; }
+        }
+        case 30: {
+            { __pc = 13; continue; }
+        }
+        case 31: {
+            { __pc = 14; continue; }
+        }
+        case 16: {
+            __pc = 1;
+            continue;
+        }
+        case 1 /* duff_1_case_0: */: {
             (yield* ini_inv(Archeologist));
             if (!rn2(10))
                 (yield* ini_inv(Tinopener));
@@ -1777,8 +1846,9 @@ function* u_init_role() {
                 (yield* ini_inv(Magicmarker));
             (yield* knows_object(NHC.SACK, 0));
             (yield* knows_object(NHC.TOUCHSTONE, 0));
-            break;
-        case NHC.PM_BARBARIAN:
+            { __pc = 15; continue; }
+        }
+        case 2 /* duff_1_case_1: */: {
             if (rn2(100) >= 50) {
                 (yield* ini_inv(Barbarian_0));
             } else {
@@ -1788,18 +1858,21 @@ function* u_init_role() {
                 (yield* ini_inv(Lamp));
             (yield* knows_class(NHC.WEAPON_CLASS));  /* excluding polearms */
             (yield* knows_class(NHC.ARMOR_CLASS));
-            break;
-        case NHC.PM_CAVE_DWELLER:
+            { __pc = 15; continue; }
+        }
+        case 3 /* duff_1_case_2: */: {
             (yield* ini_inv(Cave_man));
-            break;
-        case NHC.PM_HEALER:
+            { __pc = 15; continue; }
+        }
+        case 4 /* duff_1_case_3: */: {
             cptr.stI64o(u, $you_umoney0, BigInt(((rn2(1000) + 1001) | 0)));
             (yield* ini_inv(Healer));
             if (!rn2(25))
                 (yield* ini_inv(Lamp));
             (yield* knows_object(NHC.POT_FULL_HEALING, 0));
-            break;
-        case NHC.PM_KNIGHT:
+            { __pc = 15; continue; }
+        }
+        case 5 /* duff_1_case_4: */: {
             (yield* ini_inv(Knight));
             (yield* knows_class(NHC.WEAPON_CLASS));  /* all weapons */
             (yield* knows_class(NHC.ARMOR_CLASS));
@@ -1812,49 +1885,45 @@ function* u_init_role() {
                 cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) |
                     67108864n
             );
-            break;
-        case NHC.PM_MONK:
-            {
+            { __pc = 15; continue; }
+        }
+        case 6 /* duff_1_case_5: */: {
 
-                (yield* ini_inv(Monk));
-                (yield* ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2(90) / 30) | 0, 8)));  /* [0..2] */
-                if (!rn2(4))
-                    (yield* ini_inv(Magicmarker));
-                else if (!rn2(10))
-                    (yield* ini_inv(Lamp));
-                (yield* knows_class(NHC.ARMOR_CLASS));
-                /* sufficiently martial-arts oriented item to ignore language issue */
-                (yield* knows_object(NHC.SHURIKEN, 0));
-                break;
-            }
-        case NHC.PM_CLERIC:
+            (yield* ini_inv(Monk));
+            (yield* ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2(90) / 30) | 0, 8)));  /* [0..2] */
+            if (!rn2(4))
+                (yield* ini_inv(Magicmarker));
+            else if (!rn2(10))
+                (yield* ini_inv(Lamp));
+            (yield* knows_class(NHC.ARMOR_CLASS));
+            /* sufficiently martial-arts oriented item to ignore language issue */
+            (yield* knows_object(NHC.SHURIKEN, 0));
+            { __pc = 15; continue; }
+        }
+        case 7 /* duff_1_case_6: */: {
             (yield* ini_inv(Priest));
             if (!rn2(5))
                 (yield* ini_inv(Magicmarker));
             else if (!rn2(10))
                 (yield* ini_inv(Lamp));
             (yield* knows_object(NHC.POT_WATER, 1));  /* override pauper */
-            /* KMH, conduct --
-             * Some may claim that this isn't agnostic, since they
-             * are literally "priests" and they have holy water.
-             * But we don't count it as such.  Purists can always
-             * avoid playing priests and/or confirm another player's
-             * role in their YAAP.
-             */
-            break;
-        case NHC.PM_RANGER:
+            { __pc = 15; continue; }
+        }
+        case 8 /* duff_1_case_7: */: {
             (yield* ini_inv(Ranger));
             (yield* knows_class(NHC.WEAPON_CLASS));  /* bows, arrows, spears only */
-            break;
-        case NHC.PM_ROGUE:
+            { __pc = 15; continue; }
+        }
+        case 9 /* duff_1_case_8: */: {
             cptr.stI64o(u, $you_umoney0, 0n);
             (yield* ini_inv(Rogue));
             if (!rn2(5))
                 (yield* ini_inv(Blindfold));
             (yield* knows_object(NHC.SACK, 0));
             (yield* knows_class(NHC.WEAPON_CLASS));  /* daggers only */
-            break;
-        case NHC.PM_SAMURAI:
+            { __pc = 15; continue; }
+        }
+        case 10 /* duff_1_case_9: */: {
             (yield* ini_inv(Samurai));
             if (!rn2(5))
                 (yield* ini_inv(Blindfold));
@@ -1863,15 +1932,21 @@ function* u_init_role() {
             /* in order to assist non-Japanese speakers, pre-discover items
                that switch to Japanese names when playing as a Samurai */
             for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
+                if (cptr.ldBits(
+                    cptr.add(cptr.add(objects, i, $sizeof_objclass), $objclass_oc_magic),
+                    4,
+                    1,
+                    0
+                ))
                     continue;
                 if (Japanese_item_name(i, null))
                     /* we don't override pauper here because that would give
                        samarai an advantage of knowing several items in advance */
                     (yield* knows_object(i, 0));
             }
-            break;
-        case NHC.PM_TOURIST:
+            { __pc = 15; continue; }
+        }
+        case 11 /* duff_1_case_10: */: {
             cptr.stI64o(u, $you_umoney0, BigInt(rnd(1000)));
             (yield* ini_inv(Tourist));
             if (!rn2(25))
@@ -1882,27 +1957,38 @@ function* u_init_role() {
                 (yield* ini_inv(Towel));
             else if (!rn2(20))
                 (yield* ini_inv(Magicmarker));
-            break;
-        case NHC.PM_VALKYRIE:
+            { __pc = 15; continue; }
+        }
+        case 12 /* duff_1_case_11: */: {
             (yield* ini_inv(Valkyrie));
             if (!rn2(6))
                 (yield* ini_inv(Lamp));
             (yield* knows_class(NHC.WEAPON_CLASS));  /* excludes polearms */
             (yield* knows_class(NHC.ARMOR_CLASS));
-            break;
-        case NHC.PM_WIZARD:
+            { __pc = 15; continue; }
+        }
+        case 13 /* duff_1_case_12: */: {
             (yield* ini_inv(Wizard));
             if (!rn2(5))
                 (yield* ini_inv(Blindfold));
-            break;
-        default:
-            break;
-    }
+            { __pc = 15; continue; }
+        }
+        case 14 /* duff_1_case_13: */: {
+            { __pc = 15; continue; }
+        }
+        case 15 /* duff_end_1: */: {
+            ;
 
-    cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.STRANGE_OBJECT);
-    cptr.stI16o(gn, $instance_globals_n_nocreate2, NHC.STRANGE_OBJECT);
-    cptr.stI16o(gn, $instance_globals_n_nocreate3, NHC.STRANGE_OBJECT);
-    cptr.stI16o(gn, $instance_globals_n_nocreate4, NHC.STRANGE_OBJECT);
+            cptr.stI16o(gn, $instance_globals_n_nocreate, NHC.STRANGE_OBJECT);
+            cptr.stI16o(gn, $instance_globals_n_nocreate2, NHC.STRANGE_OBJECT);
+            cptr.stI16o(gn, $instance_globals_n_nocreate3, NHC.STRANGE_OBJECT);
+            cptr.stI16o(gn, $instance_globals_n_nocreate4, NHC.STRANGE_OBJECT);
+            __pc = -1;
+            continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
+    }
 }
 
 /* race-specific initializations, same restrictions as u_init_role */
@@ -1916,11 +2002,45 @@ cptr.stI32o(__static_u_init_race_trotyp, 20, NHC.LEATHER_DRUM); /** C ref: u_ini
 
 /** C ref: u_init.c:792 */
 function* u_init_race() {
-    switch (Race_switch()) {
-        case NHC.PM_HUMAN:
-            /* Nothing special */
-            break;
-        case NHC.PM_ELF:
+    let Instrument;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+            let __sw9 = Race_switch();
+            if (__sw9 === (NHC.PM_HUMAN)) { __pc = 10; continue; }
+            if (__sw9 === (NHC.PM_ELF)) { __pc = 11; continue; }
+            if (__sw9 === (NHC.PM_DWARF)) { __pc = 12; continue; }
+            if (__sw9 === (NHC.PM_GNOME)) { __pc = 13; continue; }
+            if (__sw9 === (NHC.PM_ORC)) { __pc = 14; continue; }
+            __pc = 15; continue;
+        }
+        case 10: {
+            { __pc = 1; continue; }
+        }
+        case 11: {
+            { __pc = 2; continue; }
+        }
+        case 12: {
+            { __pc = 3; continue; }
+        }
+        case 13: {
+            { __pc = 4; continue; }
+        }
+        case 14: {
+            { __pc = 5; continue; }
+        }
+        case 15: {
+            { __pc = 6; continue; }
+        }
+        case 8: {
+            __pc = 1;
+            continue;
+        }
+        case 1 /* duff_1_case_0: */: {
+            { __pc = 7; continue; }
+        }
+        case 2 /* duff_1_case_1: */: {
             /*
              * Elves are people of music and song, or they are warriors.
              * Non-warriors get an instrument.  We use a kludge to
@@ -1928,7 +2048,7 @@ function* u_init_race() {
              */
             if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) ||
                     (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
-                let Instrument = cptr.alloc(2 * $sizeof_trobj);
+                Instrument = cptr.alloc(2 * $sizeof_trobj);
                 cptr.stI16o(
                     Instrument,
                     0,
@@ -1960,8 +2080,9 @@ function* u_init_race() {
             (yield* knows_object(NHC.ELVEN_SHIELD, 0));
             (yield* knows_object(NHC.ELVEN_BOOTS, 0));
             (yield* knows_object(NHC.ELVEN_CLOAK, 0));
-            break;
-        case NHC.PM_DWARF:
+            { __pc = 7; continue; }
+        }
+        case 3 /* duff_1_case_2: */: {
             /* Dwarves can recognize all dwarvish objects */
             (yield* knows_object(NHC.DWARVISH_SPEAR, 0));
             (yield* knows_object(NHC.DWARVISH_SHORT_SWORD, 0));
@@ -1970,10 +2091,12 @@ function* u_init_race() {
             (yield* knows_object(NHC.DWARVISH_MITHRIL_COAT, 0));
             (yield* knows_object(NHC.DWARVISH_CLOAK, 0));
             (yield* knows_object(NHC.DWARVISH_ROUNDSHIELD, 0));
-            break;
-        case NHC.PM_GNOME:
-            break;
-        case NHC.PM_ORC:
+            { __pc = 7; continue; }
+        }
+        case 4 /* duff_1_case_3: */: {
+            { __pc = 7; continue; }
+        }
+        case 5 /* duff_1_case_4: */: {
             /* compensate for generally inferior equipment */
             if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD))
                 (yield* ini_inv(Xtra_food));
@@ -1989,9 +2112,18 @@ function* u_init_race() {
             (yield* knows_object(NHC.ORCISH_SHIELD, 0));
             (yield* knows_object(NHC.URUK_HAI_SHIELD, 0));
             (yield* knows_object(NHC.ORCISH_CLOAK, 0));
-            break;
-        default:
-            break;
+            { __pc = 7; continue; }
+        }
+        case 6 /* duff_1_case_5: */: {
+            { __pc = 7; continue; }
+        }
+        case 7 /* duff_end_1: */: {
+            ;
+            __pc = -1;
+            continue;
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
 }
 
@@ -2073,6 +2205,7 @@ function* u_init_carry_attr_boost() {
 /* initialise u, except inventory, attributes, skills and discoveries */
 /** C ref: u_init.c:944 */
 export function* u_init_misc() {
+    let __r1, __r2;
     let i;
     let tmpuroleplay = cptr.alloc(24);
     cptr.memcpy(tmpuroleplay, cptr.add(u, $you_uroleplay), $sizeof_u_roleplay);  /* set by rcfile options */
@@ -2082,7 +2215,7 @@ export function* u_init_misc() {
 
     /* zero u, including pointer values --
      * necessary when aborting from a failed restore */
-    void __builtin___memset_chk(u, 0, 2864n, __builtin_object_size(u, 0));
+    void __builtin___memset_chk(u, 0, 2760n, __builtin_object_size(u, 0));
     cptr.stPtro(u, $you_ustuck, null);
     void __builtin___memset_chk(ubirthday, 0, 8n, __builtin_object_size(ubirthday, 0));
     void __builtin___memset_chk(urealtime, 0, 24n, __builtin_object_size(urealtime, 0));
@@ -2116,17 +2249,9 @@ export function* u_init_misc() {
     for (i = 0; i <= NHC.MAXSPELL; i++)
         cptr.stI16o(svs, i, NHM.NO_SPELL, $sizeof_spell);
     cptr.stI32o(u, $you_ublesscnt, 300);  /* no prayers just yet */
-    cptr.st1o2(
-        u,
-        NHM.A_CURRENT,
-        1,
-        $you_ualignbase,
-        cptr.st1o2(
-            u,
-            NHM.A_ORIGINAL,
-            1,
-            $you_ualignbase,
-            cptr.st1o(
+    (
+        __r2 = (
+            __r1 = cptr.st1o(
                 u,
                 $you_ualign,
                 cptr.ld1so2(
@@ -2135,8 +2260,10 @@ export function* u_init_misc() {
                     $sizeof_Align,
                     $Align_value
                 )
-            )
-        )
+            ),
+            cptr.st1o2(u, NHM.A_ORIGINAL, 1, $you_ualignbase, __r1)
+        ),
+        cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, __r2)
     );
 
     /* Route through getnow() so fixed datetime also controls ubirthday. */
@@ -2164,7 +2291,13 @@ export function* u_init_misc() {
         );  /* set PermaBlind */
 
     /* roughly based on distribution in human population */
-    cptr.stI32o(u, $you_uhandedness, (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
+    cptr.stBits(
+        cptr.add(u, $you_uhandedness),
+        7,
+        1,
+        0,
+        (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0
+    );
 
     max_rank_sz();  /* set max str size for class ranks */
 
@@ -2385,31 +2518,50 @@ function* ini_inv_obj_substitution(trop, obj) {
  * @returns {CInt}
  */
 function* ini_inv_adjust_obj(trop, obj) {
+    let __r3;
     let stop = 0;
     if (cptr.ld1so(trop, $trobj_trclass) == NHC.COIN_CLASS) {
         /* no "blessed" or "identified" money */
         cptr.stI64o(obj, $obj_quan, cptr.ldI64o(u, $you_umoney0));
     } else {
-        if ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(obj, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_uses_known
-        ) & 1))
-            cptr.stI32o(obj, $obj_known, 1);
+        if (cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_uses_known
+            ),
+            2,
+            1,
+            0
+        ))
+            cptr.stBits(cptr.add(obj, $obj_known), 0, 1, 0, 1);
         /* not observe_object during startup, that's handled later */
-        cptr.stI32o(
-            obj,
-            $obj_dknown,
-            cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
+        cptr.stBits(
+            cptr.add(obj, $obj_dknown),
+            1,
+            1,
+            0,
+            cptr.stBits(
+                cptr.add(obj, $obj_bknown),
+                2,
+                1,
+                0,
+                cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
+            )
         );
         if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
-            cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
-            cptr.stI32o(obj, $obj_otrapped, 0);
+            cptr.stBits(
+                cptr.add(obj, $obj_cknown),
+                4,
+                1,
+                0,
+                cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1)
+            );
+            cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
         }
-        cptr.stI32o(obj, $obj_cursed, 0);
-        if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && cptr.ld1so(u, $you_ualign) != -1)
-            cptr.stI32o(obj, $obj_otrapped, 0);
+        cptr.stBits(cptr.add(obj, $obj_cursed), 0, 1, 0, 0);
+        if (cptr.ldBits(cptr.add(obj, $obj_otrapped), 7, 1, 0) | 0 &&
+                cptr.ld1so(u, $you_ualign) != -1)
+            cptr.stBits(cptr.add(obj, $obj_otrapped), 7, 1, 0, 0);
         if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
                 cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             cptr.stI64o(obj, $obj_quan, trquan(trop));
@@ -2422,7 +2574,10 @@ function* ini_inv_adjust_obj(trop, obj) {
         if (cptr.ld1so(trop, $trobj_trspe) != 127) {
             cptr.st1o(obj, $obj_spe, cptr.ld1so(trop, $trobj_trspe));
             if (cptr.ldI16(trop) == NHC.MAGIC_MARKER && cptr.ld1so(obj, $obj_spe) < 96)
-                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + rn2(4));
+                (
+                    __r3 = rn2(4),
+                    cptr.st1o(obj, $obj_spe, schar((cptr.ld1so(obj, $obj_spe) + __r3)))
+                );
         } else {
             /* Don't start with +0 or negative rings */
             if (cptr.ld1so2(
@@ -2432,19 +2587,27 @@ function* ini_inv_adjust_obj(trop, obj) {
                 $objclass_oc_class
             ) ==
                 NHC.RING_CLASS &&
-                    (cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(obj, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_charged
-                    ) &
-                        1) |
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_charged
+                        ),
+                        5,
+                        1,
+                        0
+                    ) |
                         0 &&
                     cptr.ld1so(obj, $obj_spe) <= 0)
                 cptr.st1o(obj, $obj_spe, schar(rne(3)));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
-            cptr.stI32o(obj, $obj_blessed, cptr.ld1so(trop, $trobj_trbless));
+            cptr.stBits(
+                cptr.add(obj, $obj_blessed),
+                1,
+                1,
+                0,
+                cptr.ld1so(trop, $trobj_trbless) >>> 0
+            );
 
     }
     /* defined after setting otyp+quan + blessedness */
@@ -2465,7 +2628,7 @@ function* ini_inv_use_obj(obj) {
         $sizeof_objdescr,
         $objdescr_oc_descr
     )) &&
-            (cptr.ldI32o(obj, $obj_known) & 1) | 0)
+            cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0) | 0)
         (yield* discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0));
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP)
         (yield* discover_object(NHC.POT_OIL, 1, 1, 0));
@@ -2592,6 +2755,7 @@ function* ini_inv(trop) {
    previous runs */
 /** C ref: u_init.c:1370 */
 export function* u_init_inventory_attrs() {
+    let __r4;
     cptr.stI32o(gl, $instance_globals_l_lastinvnr, 51);
     while (cptr.ldPtro(gi, $instance_globals_i_invent))
         (yield* useupall(cptr.ldPtro(gi, $instance_globals_i_invent)));
@@ -2605,7 +2769,7 @@ export function* u_init_inventory_attrs() {
 
     if (cptr.ldI64o(u, $you_umoney0))
         (yield* ini_inv(Money));
-    cptr.stI64o(u, $you_umoney0, cptr.ldI64o(u, $you_umoney0) + hidden_gold(1));  /* in case sack has gold in it */
+    (__r4 = hidden_gold(1), cptr.stI64o(u, $you_umoney0, cptr.ldI64o(u, $you_umoney0) + __r4));  /* in case sack has gold in it */
 
     init_attr(75);  /* init attribute values */
     (yield* vary_init_attr());  /* minor variation to attrs */

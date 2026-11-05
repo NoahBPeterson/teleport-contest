@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ const char *u=u8"aé"; unsigned short s[]=u"xy"; unsigned l[]=U"z"; printf("%d %d %d %zu %d\n",(unsigned char)u[1],(unsigned char)u[2],s[1],sizeof s,l[0]); return 0; }

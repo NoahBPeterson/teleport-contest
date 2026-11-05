@@ -1,0 +1,2 @@
+#include <stdio.h>
+enum e{A=0xFFFFFFFFu,B=1}; enum f{C=0x100000000LL,D=-1}; int main(void){ enum e x=A; enum f y=C; printf("%zu %zu %u %lld %d %d\n",sizeof x,sizeof y,x,(long long)y,x>0,(int)D); return 0; }

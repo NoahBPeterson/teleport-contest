@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ int a[4]; int *p=a,*q=a+3; char *c=(char*)a; printf("%d %d %d %d %d %td %td\n",p<q,q>=p,(void*)p==(void*)a,c+12==(char*)q,!p,q-p,(char*)q-c); unsigned long x=(unsigned long)q-(unsigned long)p; printf("%lu\n",x); return 0; }

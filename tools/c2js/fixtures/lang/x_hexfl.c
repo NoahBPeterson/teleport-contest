@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ double a=0x1.8p1,b=1e400,c=1e-400; float f=0x1p-2f; printf("%f %f %f %f %d %d %d\n",a,b,c,f,0b101,0777,'\x41'); printf("%d %d %c\n",'ab',L'a',"\101\x42"[1]); return 0; }

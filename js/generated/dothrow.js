@@ -659,8 +659,9 @@ function throw_obj(obj, shotlimit) {
      */
     if (obj &&
             !cptr.eq(obj, uquiver.v) &&
-            (cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32(save_osplit) ||
-                cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(save_osplit, $obj_split_child_oid))) {
+            (cptr.ldI32o(obj, $obj_o_id) >>> 0 == cptr.ldI32(save_osplit) >>> 0 ||
+                cptr.ldI32o(obj, $obj_o_id) >>> 0 ==
+                    cptr.ldI32o(save_osplit, $obj_split_child_oid) >>> 0)) {
         /* futureproofing: objsplit will have been affected if partial stack
            was thrown; objects will have been split off stack to throw. */
         cptr.memcpy(cptr.add(svc, $context_info_objsplit), save_osplit, 8);
@@ -714,7 +715,7 @@ function throw_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
 
-    if ((cptr.ldI32o(obj, $obj_bknown) & 1) | 0 && welded(obj))
+    if (cptr.ldBits(cptr.add(obj, $obj_bknown), 2, 1, 0) | 0 && welded(obj))
         return NHC.GETOBJ_DOWNPLAY;
 
     if (((((cptr.ldI64o(obj, $obj_owornmask)) & 256n) != 0n &&
@@ -812,35 +813,41 @@ function autoquiver() {
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
         if (cptr.ldI64o(otmp, $obj_owornmask) ||
                 cptr.ld1so(otmp, $obj_oartifact) ||
-                !(cptr.ldI32o(otmp, $obj_dknown) & 1)) {
+                !cptr.ldBits(cptr.add(otmp, $obj_dknown), 1, 1, 0)) {
             ;  /* Skip it */
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.ROCK ||
                 (cptr.ldI16o(otmp, $obj_otyp) == NHC.FLINT &&
-                    (cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(otmp, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_name_known
-                    ) &
-                        1) |
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_name_known
+                        ),
+                        0,
+                        1,
+                        0
+                    ) |
                         0) ||
                 (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS &&
-                    ((cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(otmp, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_material
-                    ) &
-                        31) |
+                    (cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_material
+                        ),
+                        3,
+                        5,
+                        0
+                    ) |
                         0) ==
                         NHC.GLASS &&
-                    (cptr.ldI32o2(
-                        objects,
-                        cptr.ldI16o(otmp, $obj_otyp),
-                        $sizeof_objclass,
-                        $objclass_oc_name_known
-                    ) &
-                        1) |
+                    cptr.ldBits(
+                        cptr.add(
+                            cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass),
+                            $objclass_oc_name_known
+                        ),
+                        0,
+                        1,
+                        0
+                    ) |
                         0)) {
             if ((uwep.v &&
                     cptr.ld1so2(
@@ -916,10 +923,11 @@ function find_launcher(ammo) {
         otmp;
         otmp = cptr.ldPtr(otmp)
     ) {
-        if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)
+        if (cptr.ldBits(cptr.add(otmp, $obj_cursed), 0, 1, 0) | 0 &&
+                cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0) | 0)
             continue;  /* known to be cursed, so skip */
         if (ammo_and_launcher(ammo, otmp)) {
-            if ((cptr.ldI32o(otmp, $obj_bknown) & 1))
+            if (cptr.ldBits(cptr.add(otmp, $obj_bknown), 2, 1, 0))
                 return otmp;  /* known-B or known-U (known-C won't get here) */
             if (!oX)
                 oX = otmp;  /* unknown-BUC; used if no known-BU item found */
@@ -989,8 +997,8 @@ export function dofire() {
             } else if (cptr.ld1so(iflags, $instance_flags_fireassist) &&
                     uswapwep.v &&
                     is_pole(uswapwep.v) &&
-                    !((cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0 &&
-                        (cptr.ldI32o(uswapwep.v, $obj_bknown) & 1) | 0)) {
+                    !(cptr.ldBits(cptr.add(uswapwep.v, $obj_cursed), 0, 1, 0) | 0 &&
+                        cptr.ldBits(cptr.add(uswapwep.v, $obj_bknown), 2, 1, 0) | 0)) {
                 /* we have a known not-cursed polearm as swap weapon.
                    swap to it and retry */
                 cmdq_add_ec(NHC.CQ_CANNED, doswapweapon);
@@ -1132,8 +1140,8 @@ export function hitfloor(obj, verbosely) {
                 $instance_globals_saved_l_level + $rm_typ
             )) <=
                 NHC.DRAWBRIDGE_UP)) ||
-            (cptr.ldI32o(u, $you_uinwater) & 1) | 0 ||
-            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+            cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0) {
         dropy(obj);
         return;
     }
@@ -1154,8 +1162,8 @@ export function hitfloor(obj, verbosely) {
 
         /* describe something that might keep the object where it is
            or precede next message stating that it falls */
-        if (t && (cptr.ldI32o(t, $trap_tseen) & 1) | 0) {
-            switch ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) {
+        if (t && cptr.ldBits(cptr.add(t, $trap_tseen), 5, 1, 0) | 0) {
+            switch (cptr.ldBits(cptr.add(t, $trap_ttyp), 0, 5, 0) | 0) {
                 case NHC.TRAPDOOR:
                     surf = __s_trap_door;
                     break;
@@ -1230,19 +1238,19 @@ export function walk_path(src_cc, dest_cc, check_proc, arg) {
 
     if (dx < 0) {
         x_change = -1;
-        dx = i16((-dx));
+        dx = i16((-dx | 0));
     } else {
         x_change = 1;
     }
     if (dy < 0) {
         y_change = -1;
-        dy = i16((-dy));
+        dy = i16((-dy | 0));
     } else {
         y_change = 1;
     }
     i = i16((err = 0));
     if (dx < dy) {
-        while (i++ < dy) {
+        while (((old_) => (i = i16(old_ + 1), old_))(i) < dy) {
             prev_x = x;
             prev_y = y;
             y = i16(y + y_change);
@@ -1256,7 +1264,7 @@ export function walk_path(src_cc, dest_cc, check_proc, arg) {
                 break;
         }
     } else {
-        while (i++ < dx) {
+        while (((old_) => (i = i16(old_ + 1), old_))(i) < dx) {
             prev_x = x;
             prev_y = y;
             x = i16(x + x_change);
@@ -1323,7 +1331,7 @@ export function hurtle_jump(arg, x, y) {
 export function hurtle_step(arg, x, y) {
     let ox;
     let oy;
-    let range = arg;
+    let range = cptr.castView(arg, "i32");
     let obj;
     let mon;
     let may_pass = 1;
@@ -1358,7 +1366,7 @@ export function hurtle_step(arg, x, y) {
                 ? 1
                 : 0));
         let open_door = schar((((ltyp) == NHC.DOOR) &&
-            (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.D_ISOPEN) != 0
+            ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.D_ISOPEN) != 0
                 ? 1
                 : 0));
         let odoor_diag = schar((open_door && diagonal ? 1 : 0));
@@ -1447,7 +1455,7 @@ export function hurtle_step(arg, x, y) {
         let mnam;
         let glyph = glyph_at(x, y);
 
-        cptr.stI32o(mon, $monst_mundetected, 0);  /* wakeup() will handle mimic */
+        cptr.stBits(cptr.add(mon, $monst_mundetected), 6, 1, 0, 0);  /* wakeup() will handle mimic */
         /* after unhiding; combination of a_monnam() and some_mon_nam();
            yields "someone" or "something" instead of "it" for unseen mon */
         mnam = x_monnam(
@@ -1508,11 +1516,11 @@ export function hurtle_step(arg, x, y) {
        if ball is carried we might still need to drag the chain */
     if (Punished()) {
         let bc_control = cptr.box(0);
-        let ballx = cptr.box(0);
-        let bally = cptr.box(0);
-        let chainx = cptr.box(0);
-        let chainy = cptr.box(0);
-        let cause_delay = cptr.box(0);
+        let ballx = cptr.box(0, "i16");
+        let bally = cptr.box(0, "i16");
+        let chainx = cptr.box(0, "i16");
+        let chainy = cptr.box(0, "i16");
+        let cause_delay = cptr.box(0, "i8");
 
         if (drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_delay, 1))
             move_bc(0, bc_control.v, ballx.v, bally.v, chainx.v, chainy.v);
@@ -1542,7 +1550,7 @@ export function hurtle_step(arg, x, y) {
        has a first-time entry message, or leaving shop with unpaid goods */
     check_special_room(0);
 
-    if (is_pool(x, y) && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
+    if (is_pool(x, y) && !cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0)) {
         if (is_waterwall(x, y) ||
                 !(Levitation() ||
                     Flying() ||
@@ -1609,21 +1617,27 @@ export function hurtle_step(arg, x, y) {
     if ((ttmp = t_at(x, y)) !== null) {
         if (stopping_short) {
             ;  /* see the comment above hurtle_jump() */
-        } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL) {
+        } else if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.MAGIC_PORTAL) {
             dotrap(ttmp, NHM.NO_TRAP_FLAGS);
             return 0;
-        } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE) {
+        } else if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.VIBRATING_SQUARE) {
             pline(__s_the_ground_vibrates_as_you_pass_it);
             dotrap(ttmp, NHM.NO_TRAP_FLAGS);  /* doesn't print messages */
-        } else if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP) {
+        } else if ((cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0) == NHC.FIRE_TRAP) {
             dotrap(ttmp, NHM.NO_TRAP_FLAGS);
-        } else if ((is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) ||
-            is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))) &&
-                (cptr.ldI32o(
-                    svl,
-                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
-                ) &
-                    1) |
+        } else if ((is_pit(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0)) ||
+            is_hole(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0))) &&
+                cptr.ldBits(
+                    cptr.add(
+                        svl,
+                        $instance_globals_saved_l_level +
+                            $dlevel_t_flags +
+                            $levelflags_sokoban_rules
+                    ),
+                    7,
+                    1,
+                    0
+                ) |
                     0) {
             /* air currents overcome the recoil in Sokoban;
                when jumping, caller performs last step and enters trap */
@@ -1632,10 +1646,10 @@ export function hurtle_step(arg, x, y) {
             cptr.stI32(range, 0);
             return 1;
         } else {
-            if ((cptr.ldI32o(ttmp, $trap_tseen) & 1))
+            if (cptr.ldBits(cptr.add(ttmp, $trap_tseen), 5, 1, 0))
                 You(
                     __s_pass_right_over_s,
-                    an(trapname((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0, 0))
+                    an(trapname(cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0, 0))
                 );
         }
     }
@@ -1661,7 +1675,7 @@ export function will_hurtle(mon, x, y) {
     /* redundant when called by mhurtle() but needed for mhitm_knockback() */
     if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) >= NHM.MZ_HUGE ||
             cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) ||
-            (cptr.ldI32o(mon, $monst_mtrapped) & 1) | 0)
+            cptr.ldBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0) | 0)
         return 0;
     /*
      * TODO: Treat walls, doors, iron bars, etc. specially
@@ -1802,16 +1816,16 @@ export function hurtle(dx, dy, range, verbose) {
         You_feel(__s_a_tug_from_the_iron_ball);
         nomul(0);
         return;
-    } else if (cptr.ldI32o(u, $you_utrap)) {
+    } else if (cptr.ldI32o(u, $you_utrap) >>> 0) {
         You(
             __s_are_anchored_by_the_s,
-            (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB)
+            (cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_WEB)
                 ? __s_web
-                : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)
+                : ((cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_LAVA)
                     ? hliquid(__s_lava)
-                    : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR)
+                    : ((cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_INFLOOR)
                         ? surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
-                        : ((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL)
+                        : ((cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL)
                             ? __s_buried_ball
                             : __s_trap)))
         );
@@ -1826,7 +1840,7 @@ export function hurtle(dx, dy, range, verbose) {
     if (!range.v || (!dx && !dy) || cptr.ldPtro(u, $you_ustuck))
         return;  /* paranoia */
 
-    nomul(-range.v);
+    nomul(-range.v | 0);
     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_moving_through_the_air);
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);  /* it just happens */
     if (verbose)
@@ -1856,14 +1870,14 @@ export function mhurtle(mon, dx, dy, range) {
     wakeup(mon, schar((!cptr.ld1so(svc, $context_info_mon_moving))));
     /* At the very least, debilitate the monster */
     cptr.stI16o(mon, $monst_movement, 0);
-    cptr.stI32o(mon, $monst_mstun, 1);
+    cptr.stBits(cptr.add(mon, $monst_mstun), 7, 1, 0, 1);
 
     /* Is the monster stuck or too heavy to push?
      * (very large monsters have too much inertia, even floaters and flyers)
      */
     if (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) >= NHM.MZ_HUGE ||
             cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) ||
-            (cptr.ldI32o(mon, $monst_mtrapped) & 1) | 0) {
+            cptr.ldBits(cptr.add(mon, $monst_mtrapped), 2, 1, 0) | 0) {
         if (canseemon(mon))
             pline(__s_s_doesn_t_budge, Monnam(mon));
         return;
@@ -1881,8 +1895,8 @@ export function mhurtle(mon, dx, dy, range) {
         return;
 
     /* undetected monster can be moved by your strike */
-    if ((cptr.ldI32o(mon, $monst_mundetected) & 1)) {
-        cptr.stI32o(mon, $monst_mundetected, 0);
+    if (cptr.ldBits(cptr.add(mon, $monst_mundetected), 6, 1, 0)) {
+        cptr.stBits(cptr.add(mon, $monst_mundetected), 6, 1, 0, 0);
         newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my));
     }
     if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK))
@@ -1927,11 +1941,11 @@ function check_shop_obj(obj, x, y, broken) {
                 obj,
                 cptr.ldI16(u),
                 cptr.ldI16o(u, $you_uy),
-                schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1)),
+                schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0)),
                 0
             );
         if (broken)
-            cptr.stI32o(obj, $obj_no_charge, 1);
+            cptr.stBits(cptr.add(obj, $obj_no_charge), 3, 1, 0, 1);
     } else if (costly_xy) {
         let oshops = in_rooms(x, y, NHC.SHOPBASE);
 
@@ -1978,7 +1992,13 @@ export function harmless_missile(obj) {
         default:
             if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS)
                 return 1;
-            if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
+            if ((cptr.ldBits(
+                cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+                3,
+                5,
+                0
+            ) |
+                0) ==
                     NHC.CLOTH)
                 return 1;
             break;
@@ -1993,6 +2013,7 @@ export function harmless_missile(obj) {
  */
 /** C ref: dothrow.c:1256 — @param {CPtr<struct obj>} obj @param {CInt} hitsroof @returns {CInt} */
 function toss_up(obj, hitsroof) {
+    let __r1, __r2;
     let action;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let petrifier = schar(((otyp == NHC.EGG || otyp == NHC.CORPSE) &&
@@ -2086,7 +2107,7 @@ function toss_up(obj, hitsroof) {
                     cptr.stI32o(
                         u,
                         $you_ucreamed,
-                        (cptr.ldI32o(u, $you_ucreamed) + (blindinc >>> 0)) | 0
+                        ((cptr.ldI32o(u, $you_ucreamed) >>> 0) + (blindinc >>> 0)) >>> 0
                     );
                     make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(blindinc)), 0);
                     if (!Blind())
@@ -2109,8 +2130,12 @@ function toss_up(obj, hitsroof) {
         hitfloor(obj, 0);
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     } else {
-        let material = (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) &
-                31) | 0;
+        let material = cptr.ldBits(
+            cptr.add(cptr.add(objects, otyp, $sizeof_objclass), $objclass_oc_material),
+            3,
+            5,
+            0
+        ) | 0;
         let is_silver = schar((material == NHC.SILVER));
         let less_damage = schar((hard_helmet(uarmh.v) &&
             (!is_silver ||
@@ -2136,7 +2161,7 @@ function toss_up(obj, hitsroof) {
             );
 
         if (!dmg.v) {
-            dmg.v = ((((cptr.ldI32o(obj, $obj_owt) | 0) + ((NHC.WT_TO_DMG - 1) | 0)) | 0) /
+            dmg.v = (((((cptr.ldI32o(obj, $obj_owt) >>> 0) | 0) + ((NHC.WT_TO_DMG - 1) | 0)) | 0) /
                     NHC.WT_TO_DMG) | 0;
             dmg.v = (dmg.v <= 1) ? 1 : rnd(dmg.v);
             if (dmg.v > 6)
@@ -2153,13 +2178,13 @@ function toss_up(obj, hitsroof) {
             ) &&
                     !is_silver)
                 dmg.v = 0;
-            if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 &&
+            if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 &&
                     mon_hates_blessings(cptr.add(gy, $instance_globals_y_youmonst)))
-                dmg.v = (dmg.v + rnd(4)) | 0;
+                (__r1 = rnd(4), dmg.v = (dmg.v + __r1) | 0);
             if (is_silver &&
                     (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
                         hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-                dmg.v = (dmg.v + rnd(20)) | 0;
+                (__r2 = rnd(20), dmg.v = (dmg.v + __r2) | 0);
         }
         if (dmg.v > 1 && less_damage)
             dmg.v = 1;
@@ -2228,13 +2253,15 @@ export function throwing_weapon(obj) {
         is_spear(obj) ||
         (is_blade(obj) &&
             !is_sword(obj) &&
-            (((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_dir
-            ) &
-                7) |
+            ((cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_dir
+                ),
+                0,
+                3,
+                0
+            ) |
                 0) &
                 NHM.PIERCE)) ||
         cptr.ldI16o(obj, $obj_otyp) == NHC.WAR_HAMMER ||
@@ -2448,7 +2475,7 @@ export function throwit_mon_hit(obj, mon) {
     if (mon) {
         let obj_gone;
 
-        if ((cptr.ldI32o(mon, $monst_isshk) & 1) | 0 &&
+        if (cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 &&
                 cptr.ld1so(obj, $obj_where) == NHM.OBJ_MINVENT &&
                 cptr.eq(cptr.ldPtro(obj, $obj_v), mon)) {
             return 1;
@@ -2476,7 +2503,7 @@ export function throwit_mon_hit(obj, mon) {
 
         /* [perhaps this should be moved into thitmonst or hmon] */
         if (mon &&
-                (cptr.ldI32o(mon, $monst_isshk) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 &&
                 (!inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ||
                     !cptr.strchr(
                         in_rooms(
@@ -2503,6 +2530,7 @@ export function throwit_mon_hit(obj, mon) {
  * @param {CPtr<struct obj>} oldslot
  */
 export function throwit(obj, wep_mask, twoweap, oldslot) {
+    let __r3, __r4, __r5;
     obj = cptr.box(obj);
     let mon;
     let range;
@@ -2513,13 +2541,14 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
             ? 1
             : 0));
     let tethered_weapon = schar((arw &&
-        (cptr.ldI32o(arw, $throw_and_return_weapon_tethered) & 1) | 0 &&
+        cptr.ldBits(cptr.add(arw, $throw_and_return_weapon_tethered), 0, 1, 0) | 0 &&
         (wep_mask & 256n) != 0n
             ? 1
             : 0));
 
     cptr.st1o(gn, $instance_globals_n_notonhead, 0);  /* reset potentially stale value */
-    if (((cptr.ldI32o(obj.v, $obj_cursed) & 1) | 0 || (cptr.ldI32o(obj.v, $obj_greased) & 1) | 0) &&
+    if ((cptr.ldBits(cptr.add(obj.v, $obj_cursed), 0, 1, 0) | 0 ||
+        cptr.ldBits(cptr.add(obj.v, $obj_greased), 1, 1, 0) | 0) &&
             (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) &&
             !rn2(7)) {
         let slipok = 1;
@@ -2528,7 +2557,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
             pline(__s_pct_s_bang, Tobjnam(obj.v, __s_misfire));
         } else {
             /* only slip if it's greased or meant to be thrown */
-            if ((cptr.ldI32o(obj.v, $obj_greased) & 1) | 0 || throwing_weapon(obj.v))
+            if (cptr.ldBits(cptr.add(obj.v, $obj_greased), 1, 1, 0) | 0 || throwing_weapon(obj.v))
                 /* BUG: this message is grammatically incorrect if obj has
                    a plural name; greased gloves or boots for instance. */
                 pline(__s_s_as_you_throw_it, Tobjnam(obj.v, __s_slip));
@@ -2545,7 +2574,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
     }
 
     if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) || (cptr.ldI32o(u, $you_dz) < 1)) &&
-            calc_capacity(cptr.ldI32o(obj.v, $obj_owt) | 0) > NHC.SLT_ENCUMBER &&
+            calc_capacity((cptr.ldI32o(obj.v, $obj_owt) >>> 0) | 0) > NHC.SLT_ENCUMBER &&
             (Upolyd()
                 ? (cptr.ldI32o(u, $you_mh) < 5 &&
                     cptr.ldI32o(u, $you_mh) != cptr.ldI32o(u, $you_mhmax)
@@ -2555,7 +2584,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                     cptr.ldI32o(u, $you_uhp) != cptr.ldI32o(u, $you_uhpmax)
                     ? 1
                     : 0)) &&
-            cptr.ldI32o(obj.v, $obj_owt) >
+            cptr.ldI32o(obj.v, $obj_owt) >>> 0 >
                 (Math.imul((Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp)), 2)) >>>
                     0 &&
             !(((cptr.ldI16o(
@@ -2583,7 +2612,13 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
     }
 
     cptr.stPtro(gt, $instance_globals_t_thrownobj, obj.v);
-    cptr.stI32o(cptr.ldPtro(gt, $instance_globals_t_thrownobj), $obj_how_lost, NHM.LOST_THROWN);
+    cptr.stBits(
+        cptr.add(cptr.ldPtro(gt, $instance_globals_t_thrownobj), $obj_how_lost),
+        0,
+        3,
+        0,
+        NHM.LOST_THROWN
+    );
     cptr.stPtro(
         iflags,
         $instance_flags_returning_missile,
@@ -2599,10 +2634,16 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
     /* NOTE:  No early returns after this point or returning_missile
        will be left with a stale pointer. */
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         if (cptr.eq(obj.v, uball.v)) {
-            cptr.stI16o(uball.v, $obj_ox, cptr.stI16o(uchain.v, $obj_ox, cptr.ldI16(u)));
-            cptr.stI16o(uball.v, $obj_oy, cptr.stI16o(uchain.v, $obj_oy, cptr.ldI16o(u, $you_uy)));
+            (
+                __r3 = cptr.stI16o(uchain.v, $obj_ox, cptr.ldI16(u)),
+                cptr.stI16o(uball.v, $obj_ox, __r3)
+            );
+            (
+                __r4 = cptr.stI16o(uchain.v, $obj_oy, cptr.ldI16o(u, $you_uy)),
+                cptr.stI16o(uball.v, $obj_oy, __r4)
+            );
         }
         mon = cptr.ldPtro(u, $you_ustuck);
         cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(mon, $monst_mx));
@@ -2806,7 +2847,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                 )
             ))) ||
                 Levitation())
-            hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1);
+            hurtle(-cptr.ldI32o(u, $you_dx) | 0, -cptr.ldI32o(u, $you_dy) | 0, 1, 1);
         mon = boomhit(obj.v, cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy));
         cptr.stPtro(iflags, $instance_flags_returning_missile, null);  /* has returned or isn't going to */
         if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -2828,9 +2869,9 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
          * actually possible
          */
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.HEAVY_IRON_BALL)
-            range = (urange - ((u32div(cptr.ldI32o(obj.v, $obj_owt), 100)) | 0)) | 0;
+            range = (urange - ((u32div(cptr.ldI32o(obj.v, $obj_owt) >>> 0, 100)) | 0)) | 0;
         else
-            range = (urange - ((u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) | 0)) | 0;
+            range = (urange - ((u32div(cptr.ldI32o(obj.v, $obj_owt) >>> 0, 40)) | 0)) | 0;
         if (cptr.eq(obj.v, uball.v)) {
             if (cptr.ldPtro(u, $you_ustuck))
                 range = 1;
@@ -2891,8 +2932,8 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                length of the attached cord [implicit aspect of item] */
             range = min(range, isqrt(cptr.ldI32o(arw, $throw_and_return_weapon_range)));
         else if (cptr.eq(obj.v, uball.v) &&
-                cptr.ldI32o(u, $you_utrap) &&
-                cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR)
+                cptr.ldI32o(u, $you_utrap) >>> 0 &&
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_INFLOOR)
             range = 1;
 
         if (Underwater())
@@ -2926,7 +2967,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                 )
             ))) ||
                 Levitation())
-            hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), urange, 1);
+            hurtle(-cptr.ldI32o(u, $you_dx) | 0, -cptr.ldI32o(u, $you_dy) | 0, urange, 1);
 
         if (!obj.v) {
             /* bhit display cleanup was left with this caller
@@ -2948,7 +2989,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
         /* missile has already been handled */
         if (tethered_weapon)
             tmp_at(-7, 0);
-    } else if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
             !cptr.ldPtro(iflags, $instance_flags_returning_missile)) {
         swallowit(obj.v);
         return;
@@ -2998,7 +3039,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                             makeplural(body_part(NHC.FOOT))
                         );
                     } else {
-                        dmg.v = (dmg.v + rnd(3)) | 0;
+                        (__r5 = rnd(3), dmg.v = (dmg.v + __r5) | 0);
                         pline(
                             Blind() ? __s_s_your_s : __s_s_back_toward_you_hitting_your_s,
                             Tobjnam(obj.v, Blind() ? __s_hit : __s_fly),
@@ -3019,7 +3060,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                         );
                     }
 
-                    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+                    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
                         swallowit(obj.v);
                         return;
                     }
@@ -3040,7 +3081,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
                    capability back anyway, quivered or not shouldn't matter */
                 pline(__s_s_to_return, Tobjnam(obj.v, __s_fail));
 
-                if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+                if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
                     swallowit(obj.v);
                     return;
                 }
@@ -3296,7 +3337,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
             return;
         }
         obj_no_longer_held(obj.v);
-        if (mon && (cptr.ldI32o(mon, $monst_isshk) & 1) | 0 && is_pick(obj.v)) {
+        if (mon && cptr.ldBits(cptr.add(mon, $monst_isshk), 4, 1, 0) | 0 && is_pick(obj.v)) {
             if (((cptr.ld1uo(
                 cptr.ldPtro(
                     cptr.ldPtro(gv, $instance_globals_v_viz_array),
@@ -3307,7 +3348,8 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
             ) &
                     NHM.IN_SIGHT) != 0))
                 pline(__s_s_snatches_up_s, Monnam(mon), the(xname(obj.v)));
-            if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj.v, $obj_unpaid) & 1) | 0)
+            if (cptr.ld1so(u, $you_ushops) ||
+                    cptr.ldBits(cptr.add(obj.v, $obj_unpaid), 2, 1, 0) | 0)
                 check_shop_obj(
                     obj.v,
                     cptr.ldI16o(gb, $instance_globals_b_bhitpos),
@@ -3380,7 +3422,8 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
         }
         /* charge for items thrown out of shop;
            shk takes possession for items thrown into one */
-        if ((cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj.v, $obj_unpaid) & 1) | 0) &&
+        if ((cptr.ld1so(u, $you_ushops) ||
+            cptr.ldBits(cptr.add(obj.v, $obj_unpaid), 2, 1, 0) | 0) &&
                 !cptr.eq(obj.v, uball.v))
             check_shop_obj(
                 obj.v,
@@ -3432,9 +3475,9 @@ function return_throw_to_inv(obj, wep_mask, twoweap, oldslot) {
 
     /* if 'obj' is from a stack split, we can put it back by undoing split
        so there's no chance of merging with some other compatible stack */
-    if (cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit) ||
-            cptr.ldI32o(obj, $obj_o_id) ==
-                cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
+    if (cptr.ldI32o(obj, $obj_o_id) >>> 0 == cptr.ldI32o(svc, $context_info_objsplit) >>> 0 ||
+            cptr.ldI32o(obj, $obj_o_id) >>> 0 ==
+                cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid) >>> 0) {
         cptr.stPtr(obj, cptr.ldPtro(gi, $instance_globals_i_invent));
         cptr.stPtro(gi, $instance_globals_i_invent, obj);
         cptr.st1o(obj, $obj_where, NHM.OBJ_INVENT);
@@ -3453,9 +3496,9 @@ function return_throw_to_inv(obj, wep_mask, twoweap, oldslot) {
        don't merge with any other stack even if there is a compatible one
        (others with similar erosion?); can't use addinv_nomerge() here */
     if (!otmp) {
-        cptr.stI32o(obj, $obj_nomerge, 1);  /* redundant unless 'oldslot' somehow went away */
+        cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 1);  /* redundant unless 'oldslot' somehow went away */
         obj = addinv_before(obj, oldslot);
-        cptr.stI32o(obj, $obj_nomerge, 0);
+        cptr.stBits(cptr.add(obj, $obj_nomerge), 7, 1, 0, 0);
 
         /* in case addinv() autoquivered */
         if ((cptr.ldI64o(obj, $obj_owornmask) & 512n) != 0n &&
@@ -3493,16 +3536,16 @@ export function omon_adj(mon, obj, mon_notices) {
     /* size of target affects the chance of hitting */
     tmp = (tmp + (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) - NHM.MZ_MEDIUM)) | 0;  /* -2..+5 */
     /* sleeping target is more likely to be hit */
-    if ((cptr.ldI32o(mon, $monst_msleeping) & 1)) {
+    if (cptr.ldBits(cptr.add(mon, $monst_msleeping), 7, 1, 0)) {
         tmp = (tmp + 2) | 0;
     }
     /* ditto for immobilized target */
-    if (!(cptr.ldI32o(mon, $monst_mcanmove) & 1) ||
+    if (!cptr.ldBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0) ||
             !cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove)) {
         tmp = (tmp + 4) | 0;
         if (mon_notices && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) && !rn2(10)) {
-            cptr.stI32o(mon, $monst_mcanmove, 1);
-            cptr.stI32o(mon, $monst_mfrozen, 0);
+            cptr.stBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0, 1);
+            cptr.stBits(cptr.add(mon, $monst_mfrozen), 0, 7, 0, 0);
         }
     }
     /* some objects are more likely to hit than others */
@@ -3560,12 +3603,15 @@ export function should_mulch_missile(obj) {
     if (!obj ||
             !(is_ammo(obj) || is_missile(obj)) ||
             cptr.ldI16o(obj, $obj_otyp) == NHC.BOOMERANG ||
-            (cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_magic
-            ) & 1) | 0)
+            cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_magic
+                ),
+                4,
+                1,
+                0
+            ) | 0)
         return 0;
 
     /* we had been breaking 2/3 of everything unconditionally.  we still don't
@@ -3573,14 +3619,21 @@ export function should_mulch_missile(obj) {
        around longer on average. */
     chance = (3 + greatest_erosion(obj) - cptr.ld1so(obj, $obj_spe)) | 0;
     broken = schar((chance > 1 ? rn2(chance) : !rn2(4)));
-    if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 &&
+    if (cptr.ldBits(cptr.add(obj, $obj_blessed), 1, 1, 0) | 0 &&
             (cptr.ld1so(svc, $context_info_mon_moving) ? !rn2(3) : !rnl(4)))
         broken = 0;
 
     /* Flint and hard gems don't break easily */
     if (((cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
-        (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_tough) &
-            1) |
+        cptr.ldBits(
+            cptr.add(
+                cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                $objclass_oc_tough
+            ),
+            1,
+            1,
+            0
+        ) |
             0) ||
         cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT) &&
             !rn2(2))
@@ -3606,7 +3659,7 @@ export function thitmonst(mon, obj) {
     let disttmp;  /* distance modifier */
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let hmode;
-    let guaranteed_hit = schar(((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+    let guaranteed_hit = schar((cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
         (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mon)))
             ? 1
             : 0));
@@ -3710,13 +3763,15 @@ export function thitmonst(mon, obj) {
        and also treat gems or glass shot via sling as attacks */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
             is_unicorn(cptr.ldPtro(mon, $monst_data)) &&
-            ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) !=
                 NHC.MINERAL &&
             !(uwep.v &&
@@ -3744,44 +3799,49 @@ export function thitmonst(mon, obj) {
        occur if quest artifact polearm or grapnel ever gets added) */
     if (hmode != NHC.HMON_APPLIED &&
             ((is_quest_artifact(obj) ||
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_unique
-                ) &
-                    1) |
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_unique
+                    ),
+                    6,
+                    1,
+                    0
+                ) |
                     0 ||
                 (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
-                    !(cptr.ldI32o(obj, $obj_known) & 1))) &&
-                cptr.ldI32o(mon, $monst_m_id) == cptr.ldI32o(svq, $q_score_leader_m_id))) {
+                    !cptr.ldBits(cptr.add(obj, $obj_known), 0, 1, 0))) &&
+                cptr.ldI32o(mon, $monst_m_id) >>> 0 ==
+                    cptr.ldI32o(svq, $q_score_leader_m_id) >>> 0)) {
         /* AIS: changes to wakeup() means that it's now less inappropriate
            here than it used to be, but manual version works just as well */
-        cptr.stI32o(mon, $monst_msleeping, 0);
+        cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 0);
         cptr.stU64o(
             mon,
             $monst_mstrategy,
             cptr.ldU64o(mon, $monst_mstrategy) & 18446744072904245247n
         );
 
-        if ((cptr.ldI32o(mon, $monst_mcanmove) & 1)) {
+        if (cptr.ldBits(cptr.add(mon, $monst_mcanmove), 7, 1, 0)) {
             pline(__s_s_catches_s, Some_Monnam(mon), the(xname(obj)));
             /* leader will keep tossed invocation item after you've done the
                invocation and it's become unnecessary for completion.. */
-            if (((cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1) | 0 &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_unique
-                ) &
-                    1) |
+            if ((cptr.ldBits(cptr.add(u, $you_uevent + $u_event_invoked), 1, 1, 0) | 0 &&
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_unique
+                    ),
+                    6,
+                    1,
+                    0
+                ) |
                     0 &&
                 cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR) ||
-                    !(cptr.ldI32o(mon, $monst_mpeaceful) & 1)) {
+                    !cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0)) {
                 /* give an explanation for keeping the item only if leader is
                    not doing it out of anger */
-                if ((cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0 && !Deaf()) {
+                if (cptr.ldBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0) | 0 && !Deaf()) {
                     /* just in case, identify the object so its name will
                        appear in the message */
                     fully_identify_obj(obj);
@@ -3791,7 +3851,8 @@ export function thitmonst(mon, obj) {
                         align_gname(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))
                     );
                 }
-                if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
+                if (cptr.ld1so(u, $you_ushops) ||
+                        cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0)
                     check_shop_obj(
                         obj,
                         cptr.ldI16o(mon, $monst_mx),
@@ -3902,7 +3963,7 @@ export function thitmonst(mon, obj) {
                 )) - (1n);
             }
             if (hmon(mon, obj, hmode, dieroll)) {
-                if ((cptr.ldI32o(mon, $monst_wormno) & 31))
+                if (cptr.ldBits(cptr.add(mon, $monst_wormno), 1, 5, 0))
                     cutworm(
                         mon,
                         cptr.ldI16o(gb, $instance_globals_b_bhitpos),
@@ -3922,7 +3983,8 @@ export function thitmonst(mon, obj) {
                when thrown; projectiles aren't among the types of weapon
                that hmon() might have destroyed so obj is intact */
             if (should_mulch_missile(obj)) {
-                if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
+                if (cptr.ld1so(u, $you_ushops) ||
+                        cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0)
                     check_shop_obj(
                         obj,
                         cptr.ldI16o(gb, $instance_globals_b_bhitpos),
@@ -3946,7 +4008,9 @@ export function thitmonst(mon, obj) {
 
             exercise(NHC.A_DEX, 1);
             if (!hmon(mon, obj, hmode, dieroll)) {
-                if (was_swallowed && !(cptr.ldI32o(u, $you_uswallow) & 1) && cptr.eq(obj, uball.v))
+                if (was_swallowed &&
+                        !cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) &&
+                        cptr.eq(obj, uball.v))
                     return 1;  /* already did placebc() */
             }
         } else {
@@ -3981,7 +4045,7 @@ export function thitmonst(mon, obj) {
             return 1;  /* obj is gone */
         } else {
             tmiss(obj, mon, 0);
-            cptr.stI32o(mon, $monst_msleeping, 0);
+            cptr.stBits(cptr.add(mon, $monst_msleeping), 7, 1, 0, 0);
             cptr.stU64o(
                 mon,
                 $monst_mstrategy,
@@ -4004,7 +4068,7 @@ export function thitmonst(mon, obj) {
             if (((cptr.ldU64o((md), $permonst_mflags1) & 262144n) != 0n)) {
                 minstapetrify(cptr.ldPtro(u, $you_ustuck), 1);
                 /* Don't leave a cockatrice corpse available in a statue */
-                if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
+                if (!cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
                     delobj(obj);
                     return 1;
                 }
@@ -4043,31 +4107,35 @@ function gem_accept(mon, obj) {
     let buf = new Uint8Array(256);
     let is_buddy = schar((sgn(cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_maligntyp)) ==
             sgn(cptr.ld1so(u, $you_ualign))));
-    let is_gem = schar((((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-        31) |
+    let is_gem = schar(((cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) |
         0) ==
             NHC.GEMSTONE));
     let ret = 0;
     __lbl_nopick: {
 
         void cptr.strcpy(cptr.decay(buf), Monnam(mon));
-        cptr.stI32o(mon, $monst_mpeaceful, 1);
-        cptr.stI32o(mon, $monst_mavenge, 0);
+        cptr.stBits(cptr.add(mon, $monst_mpeaceful), 1, 1, 0, 1);
+        cptr.stBits(cptr.add(mon, $monst_mavenge), 6, 1, 0, 0);
 
         /* object properly identified */
-        if ((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
-                (cptr.ldI32o2(
-                    objects,
-                    cptr.ldI16o(obj, $obj_otyp),
-                    $sizeof_objclass,
-                    $objclass_oc_name_known
-                ) &
-                    1) |
+        if (cptr.ldBits(cptr.add(obj, $obj_dknown), 1, 1, 0) | 0 &&
+                cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_name_known
+                    ),
+                    0,
+                    1,
+                    0
+                ) |
                     0) {
             if (is_gem) {
                 if (is_buddy) {
@@ -4118,7 +4186,7 @@ function gem_accept(mon, obj) {
             }
         }
         void cptr.strcat(cptr.decay(buf), cptr.decay(__static_gem_accept_acceptgift));
-        if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
+        if (cptr.ld1so(u, $you_ushops) || cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0)
             check_shop_obj(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), 1);
         void mpickobj(mon, obj);  /* may merge and free obj */
         ret = 1;
@@ -4233,7 +4301,13 @@ export function release_camera_demon(obj, x, y) {
                 __s_s_is_released,
                 Hallucination() ? An(rndmonnam(null)) : __s_the_picture_painting_demon
             );
-        cptr.stI32o(mtmp, $monst_mpeaceful, (!(cptr.ldI32o(obj, $obj_cursed) & 1)) >>> 0);
+        cptr.stBits(
+            cptr.add(mtmp, $monst_mpeaceful),
+            1,
+            1,
+            0,
+            (!cptr.ldBits(cptr.add(obj, $obj_cursed), 0, 1, 0)) >>> 0
+        );
         set_malign(mtmp);
     }
 }
@@ -4271,9 +4345,9 @@ export function breakobj(obj, x, y, hero_caused, from_invent) {
                 change_luck(-2);
             break;
         case NHC.POT_WATER:
-            cptr.stI32o(obj, $obj_in_use, 1);  /* in case it's fatal */
+            cptr.stBits(cptr.add(obj, $obj_in_use), 2, 1, 0, 1);  /* in case it's fatal */
             if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL &&
-                    (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) {
+                    cptr.ldBits(cptr.add(obj, $obj_lamplit), 7, 1, 0) | 0) {
                 explode_oil(obj, x, y);
             } else if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) {
                 if (!((cptr.ldU64o(
@@ -4322,7 +4396,10 @@ export function breakobj(obj, x, y, hero_caused, from_invent) {
             if (hero_caused && cptr.ld1so(obj, $obj_spe) && ismnum(cptr.ldI32o(obj, $obj_corpsenm)))
                 change_luck(Number(BigInt.asIntN(
                     8,
-                    (-((cptr.ldI64o(obj, $obj_quan)) < 5n ? (cptr.ldI64o(obj, $obj_quan)) : 5n))
+                    BigInt.asIntN(
+                        64,
+                        -((cptr.ldI64o(obj, $obj_quan)) < 5n ? (cptr.ldI64o(obj, $obj_quan)) : 5n)
+                    )
                 )));
             if (cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_PYROLISK)
                 explosion = 1;
@@ -4338,10 +4415,10 @@ export function breakobj(obj, x, y, hero_caused, from_invent) {
     }
 
     if (hero_caused) {
-        if (from_invent || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0) {
-            if (cptr.ld1so(u, $you_ushops) || (cptr.ldI32o(obj, $obj_unpaid) & 1) | 0)
+        if (from_invent || cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0) {
+            if (cptr.ld1so(u, $you_ushops) || cptr.ldBits(cptr.add(obj, $obj_unpaid), 2, 1, 0) | 0)
                 check_shop_obj(obj, x, y, 1);
-        } else if (!(cptr.ldI32o(obj, $obj_no_charge) & 1) && costly_spot(x, y)) {
+        } else if (!cptr.ldBits(cptr.add(obj, $obj_no_charge), 3, 1, 0) && costly_spot(x, y)) {
             /* it is assumed that the obj is a floor-object */
             let o_shop = in_rooms(x, y, NHC.SHOPBASE);
             let shkp = shop_keeper(cptr.ld1s(o_shop));
@@ -4357,7 +4434,7 @@ export function breakobj(obj, x, y, hero_caused, from_invent) {
                     cptr.st1o(
                         eshkp,
                         $eshk_seq_peaceful,
-                        schar((cptr.ldI32o(shkp, $monst_mpeaceful) & 1))
+                        schar(cptr.ldBits(cptr.add(shkp, $monst_mpeaceful), 1, 1, 0))
                     );
                 if ((stolen_value(obj, x, y, cptr.ld1so(eshkp, $eshk_seq_peaceful), 0) > 0n) &&
                         (cptr.ld1s(o_shop) != cptr.ld1so2(u, 0, 1, $you_ushops) ||
@@ -4391,26 +4468,30 @@ export function breaktest(obj) {
        for now, it affects crystal plate mail and helm of brilliance;
        either of them will have to be cracked 4 times before breaking */
     if (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS &&
-            ((cptr.ldI32o2(
-                objects,
-                cptr.ldI16o(obj, $obj_otyp),
-                $sizeof_objclass,
-                $objclass_oc_material
-            ) &
-                31) |
+            (cptr.ldBits(
+                cptr.add(
+                    cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+                    $objclass_oc_material
+                ),
+                3,
+                5,
+                0
+            ) |
                 0) ==
                 NHC.GLASS)
         nonbreakchance = 90;
 
     if (obj_resists(obj, nonbreakchance, 99))
         return 0;
-    if (((cptr.ldI32o2(
-        objects,
-        cptr.ldI16o(obj, $obj_otyp),
-        $sizeof_objclass,
-        $objclass_oc_material
-    ) &
-        31) |
+    if ((cptr.ldBits(
+        cptr.add(
+            cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass),
+            $objclass_oc_material
+        ),
+        3,
+        5,
+        0
+    ) |
         0) ==
         NHC.GLASS &&
             !cptr.ld1so(obj, $obj_oartifact) &&
@@ -4496,14 +4577,14 @@ function throw_gold(obj) {
         You(__s_cannot_throw_gold_at_yourself);
         /* If we tried to throw part of a stack, force it to merge back
            together (same as in throw_obj).  Essential for gold. */
-        if (cptr.ldI32o(obj.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit) ||
-                cptr.ldI32o(obj.v, $obj_o_id) ==
-                    cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid))
+        if (cptr.ldI32o(obj.v, $obj_o_id) >>> 0 == cptr.ldI32o(svc, $context_info_objsplit) >>> 0 ||
+                cptr.ldI32o(obj.v, $obj_o_id) >>> 0 ==
+                    cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid) >>> 0)
             void unsplitobj(obj.v);
         return NHM.ECMD_CANCEL;
     }
     freeinv(obj.v);
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         let swallower = mon_nam(cptr.ldPtro(u, $you_ustuck));
 
         if ((dmgtype_fromattack(
@@ -4570,7 +4651,8 @@ function throw_gold(obj) {
         cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(u, $you_uy));
     } else {
         /* consistent with range for normal objects */
-        range = ((((((acurrstr())) / 2) | 0) >>> 0) - u32div(cptr.ldI32o(obj.v, $obj_owt), 40)) | 0;
+        range = ((((((acurrstr())) / 2) | 0) >>> 0) -
+                u32div(cptr.ldI32o(obj.v, $obj_owt) >>> 0, 40)) | 0;
 
         /* see if the gold has a place to move into */
         odx = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0;

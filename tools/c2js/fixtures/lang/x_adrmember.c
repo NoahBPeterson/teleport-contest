@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int a;int b[3];struct{int c;}d;}g; int main(void){ struct s l; int *p=&l.b[1],*q=&g.d.c,*r=&l.a; *p=3;*q=4;*r=5; printf("%d %d %d %d\n",l.b[1],g.d.c,l.a,(int)(p-&l.b[0])); return 0; }

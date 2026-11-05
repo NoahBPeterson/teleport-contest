@@ -1,0 +1,2 @@
+#include <stdio.h>
+enum e{A=1,B=2}; struct s{enum e k:3;_Bool b:1;unsigned long long l:40;signed char c:3;int:2;int z:5;}; int main(void){ struct s v={B,1,0xFFFFFFFFFFULL,-1,3}; struct s *p=&v; p->l++; p->c-=3; p->z<<=2; int o=p->z++; int r=--p->c; v.b=5; printf("%d %d %llu %d %d %d %d %zu\n",v.k,v.b,(unsigned long long)v.l,v.c,v.z,o,r,sizeof v); return 0; }

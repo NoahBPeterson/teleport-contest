@@ -92,13 +92,12 @@ const $Gender_him = FLD.Gender_him, $Role_mnum = FLD.Role_mnum,
       $sizeof_Gender = FLD.sizeof_Gender, $sizeof_objclass = FLD.sizeof_objclass,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
       $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_tseen = FLD.trap_tseen,
-      $trap_ttyp = FLD.trap_ttyp, $u_event_uheard_tune = FLD.u_event_uheard_tune,
-      $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx, $you_dy = FLD.you_dy,
-      $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent, $you_uinwater = FLD.you_uinwater,
-      $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum,
-      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops,
-      $you_uroleplay = FLD.you_uroleplay, $you_usteed = FLD.you_usteed,
-      $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+      $trap_ttyp = FLD.trap_ttyp, $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uevent = FLD.you_uevent,
+      $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
       $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
@@ -212,9 +211,9 @@ const __s_pct_s = cptr.lit("%s");
 /* wake up monster, possibly scare it */
 /** C ref: music.c:45 — @param {CPtr<struct monst>} mtmp @param {CInt} scary */
 function* awaken_scare(mtmp, scary) {
-    cptr.stI32o(mtmp, $monst_msleeping, 0);
-    cptr.stI32o(mtmp, $monst_mcanmove, 1);
-    cptr.stI32o(mtmp, $monst_mfrozen, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+    cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
+    cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0);
     /* may scare some monsters -- waiting monsters excluded */
     if (!((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0) &&
             (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
@@ -280,7 +279,7 @@ function* put_monsters_to_sleep(distance) {
         ) <
             distance &&
                 (yield* sleep_monst(mtmp, d(10, 10), NHC.TOOL_CLASS))) {
-            cptr.stI32o(mtmp, $monst_msleeping, 1);  /* 10d10 turns + wake_nearby to rouse */
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 1);  /* 10d10 turns + wake_nearby to rouse */
             (yield* slept_monst(mtmp));
         }
     }
@@ -304,7 +303,7 @@ function* charm_snakes(distance) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_SNAKE &&
-                (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0 &&
                 dist2(
                     (cptr.ldI16o((mtmp), $monst_mx)),
                     (cptr.ldI16o((mtmp), $monst_my)),
@@ -312,16 +311,16 @@ function* charm_snakes(distance) {
                     cptr.ldI16o(u, $you_uy)
                 ) <
                     distance) {
-            was_peaceful = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0;
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
-            cptr.stI32o(mtmp, $monst_mavenge, 0);
+            was_peaceful = cptr.ldBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0) | 0;
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mavenge), 6, 1, 0, 0);
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
                 cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
             );
             could_see_mon = canseemon(mtmp);
-            cptr.stI32o(mtmp, $monst_mundetected, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 0);
             (yield* newsym(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
             if (canseemon(mtmp)) {
                 if (!could_see_mon)
@@ -353,7 +352,7 @@ function* calm_nymphs(distance) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
         if (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH &&
-                (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0 &&
+                cptr.ldBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0) | 0 &&
                 dist2(
                     (cptr.ldI16o((mtmp), $monst_mx)),
                     (cptr.ldI16o((mtmp), $monst_my)),
@@ -361,9 +360,9 @@ function* calm_nymphs(distance) {
                     cptr.ldI16o(u, $you_uy)
                 ) <
                     distance) {
-            cptr.stI32o(mtmp, $monst_msleeping, 0);
-            cptr.stI32o(mtmp, $monst_mpeaceful, 1);
-            cptr.stI32o(mtmp, $monst_mavenge, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_msleeping), 7, 1, 0, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mavenge), 6, 1, 0, 0);
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
@@ -403,9 +402,15 @@ export function* awaken_soldiers(bugler) {
                     cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst)
                 )) {
             if (!cptr.ld1so(mtmp, $monst_mtame))
-                cptr.stI32o(mtmp, $monst_mpeaceful, 0);
-            cptr.stI32o(mtmp, $monst_msleeping, cptr.stI32o(mtmp, $monst_mfrozen, 0));
-            cptr.stI32o(mtmp, $monst_mcanmove, 1);
+                cptr.stBits(cptr.add(mtmp, $monst_mpeaceful), 1, 1, 0, 0);
+            cptr.stBits(
+                cptr.add(mtmp, $monst_msleeping),
+                7,
+                1,
+                0,
+                cptr.stBits(cptr.add(mtmp, $monst_mfrozen), 0, 7, 0, 0)
+            );
+            cptr.stBits(cptr.add(mtmp, $monst_mcanmove), 7, 1, 0, 1);
             cptr.stU64o(
                 mtmp,
                 $monst_mstrategy,
@@ -440,7 +445,7 @@ function* charm_monsters(distance) {
     let mtmp;
     let mtmp2;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1))
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0))
         distance = 0;
 
     for (
@@ -463,7 +468,7 @@ function* charm_monsters(distance) {
                one; do that even if mtmp resists in order to behave the same
                as a non-cursed scroll of taming or spell of charm monster */
             if (!(yield* resist(mtmp, NHC.TOOL_CLASS, 0, NHM.NOTELL)) ||
-                    (cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0)
+                    cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0)
                 void (yield* tamedog(mtmp, null, 1));
         }
     }
@@ -472,6 +477,7 @@ function* charm_monsters(distance) {
 /* Try to make a pit. */
 /** C ref: music.c:221 — @param {CInt} x @param {CInt} y @param {CUInt} tu_pit */
 function* do_pit(x, y, tu_pit) {
+    let __r1;
     let mtmp;
     let otmp;
     let chasm;
@@ -480,7 +486,7 @@ function* do_pit(x, y, tu_pit) {
     chasm = (yield* maketrap(x, y, NHC.PIT));
     if (!chasm)
         return;  /* no pit if portal at that location */
-    cptr.stI32o(chasm, $trap_tseen, 1);
+    cptr.stBits(cptr.add(chasm, $trap_tseen), 5, 1, 0, 1);
 
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));  /* (redundant?) */
     if ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null) {
@@ -491,7 +497,7 @@ function* do_pit(x, y, tu_pit) {
                 ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_below_you : __s_empty
             ));
         if (mtmp)
-            cptr.stI32o(mtmp, $monst_mtrapped, 0);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 0);
         (yield* obj_extract_self(otmp));
         void (yield* flooreffects(otmp, x, y, __s_empty));
         return;
@@ -514,9 +520,9 @@ function* do_pit(x, y, tu_pit) {
     if (mtmp) {
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n) &&
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16n) != 0n)) {
-            let m_already_trapped = schar((cptr.ldI32o(mtmp, $monst_mtrapped) & 1));
+            let m_already_trapped = schar(cptr.ldBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0));
 
-            cptr.stI32o(mtmp, $monst_mtrapped, 1);
+            cptr.stBits(cptr.add(mtmp, $monst_mtrapped), 2, 1, 0, 1);
             if (!m_already_trapped) {
                 if (((cptr.ld1uo(
                     cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
@@ -536,10 +542,9 @@ function* do_pit(x, y, tu_pit) {
                within a pit from jostling too */
             (yield* mselftouch(mtmp, __s_falling, 1));
             if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-                cptr.stI32o(
-                    mtmp,
-                    $monst_mhp,
-                    (cptr.ldI32o(mtmp, $monst_mhp) - rnd(m_already_trapped ? 4 : 6)) | 0
+                (
+                    __r1 = rnd(m_already_trapped ? 4 : 6),
+                    cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - __r1) | 0)
                 );
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                     if (!((cptr.ld1uo(
@@ -568,7 +573,8 @@ function* do_pit(x, y, tu_pit) {
             }
         }
     } else if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
-        if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
+        if (cptr.ldI32o(u, $you_utrap) >>> 0 &&
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL) {
             /* Note:  the chain should break if a pit gets
                created at the buried ball's location, which
                is not necessarily here.  But if we don't do
@@ -591,8 +597,8 @@ function* do_pit(x, y, tu_pit) {
                 (yield* You(__s_don_t_fall_in));
             }
         } else if (!tu_pit ||
-                !cptr.ldI32o(u, $you_utrap) ||
-                cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT) {
+                !(cptr.ldI32o(u, $you_utrap) >>> 0) ||
+                cptr.ldI32o(u, $you_utraptype) >>> 0 != NHC.TT_PIT) {
             /* no pit here previously, or you were
                not in it even if there was */
             (yield* You(__s_fall_into_a_chasm));
@@ -603,7 +609,8 @@ function* do_pit(x, y, tu_pit) {
                 NHM.NO_KILLER_PREFIX
             ));
             (yield* selftouch(__s_falling_you));
-        } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
+        } else if (cptr.ldI32o(u, $you_utrap) >>> 0 &&
+                cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_PIT) {
             let keepfooting = schar((!(Fumbling() && rn2(5)) &&
                 (!rnl((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
                     NHC.PM_ARCHEOLOGIST)
@@ -666,7 +673,7 @@ function* do_earthquake(force) {
     let tu_pit = 0;
 
     if (trap_at_u)
-        tu_pit = is_pit((cptr.ldI32o(trap_at_u, $trap_ttyp) & 31)) >>> 0;
+        tu_pit = is_pit(cptr.ldBits(cptr.add(trap_at_u, $trap_ttyp), 0, 5, 0)) >>> 0;
     if (force > 13)
         force = 13;
     start_x = (cptr.ldI16(u) - (Math.imul(force, 2))) | 0;
@@ -677,8 +684,8 @@ function* do_earthquake(force) {
     start_y = ((start_y) > 0 ? (start_y) : 0);
     end_x = ((end_x) < 79 ? (end_x) : 79);
     end_y = ((end_y) < 20 ? (end_y) : 20);
-    for (x = i16(start_x); x <= end_x; x++)
-        for (y = i16(start_y); y <= end_y; y++) {
+    for (x = i16(start_x); x <= end_x; x = i16(x + 1))
+        for (y = i16(start_y); y <= end_y; y = i16(y + 1)) {
             if ((mtmp = (cptr.ldPtro3(
                 svl,
                 x,
@@ -689,8 +696,8 @@ function* do_earthquake(force) {
             ))) !==
                     null) {
                 (yield* wakeup(mtmp, 1));  /* peaceful monster will become hostile */
-                if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1)) {
-                    cptr.stI32o(mtmp, $monst_mundetected, 0);
+                if (cptr.ldBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0)) {
+                    cptr.stBits(cptr.add(mtmp, $monst_mundetected), 6, 1, 0, 0);
                     (yield* newsym(x, y));
                     if (ceiling_hider(cptr.ldPtro(mtmp, $monst_data))) {
                         if (((cptr.ld1uo(
@@ -855,28 +862,45 @@ function* do_earthquake(force) {
                     ;
                 case NHC.DOOR:
                     /* if already doorless, treat like room or corridor */
-                    if (((cptr.ldI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags
-                    ) &
-                        31) |
+                    if ((cptr.ldBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0
+                    ) |
                         0) ==
                             NHM.D_NODOOR) {
                         (yield* do_pit(x, y, tu_pit));
                         break;
                     }
                     /* wasn't doorless, now it will be */
-                    cptr.stI32o3(
-                        svl,
-                        x,
-                        $sizeof_rm_x21,
-                        y,
-                        $sizeof_rm,
-                        $instance_globals_saved_l_level + $rm_flags,
+                    cptr.stBits(
+                        cptr.add(
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            ),
+                            $rm_flags
+                        ),
+                        0,
+                        5,
+                        0,
                         NHM.D_NODOOR
                     );
                     (yield* recalc_block_point(x, y));
@@ -961,85 +985,138 @@ let __static_do_improvisation_improvisation = cptr.decay(__static_do_improvisati
 
 /** C ref: music.c:503 — @param {CPtr<struct obj>} instr @returns {CInt} */
 function* do_improvisation(instr) {
-    let damage;
-    let mode;
-    let do_spec = !(HStun() || HConfusion());
-    let itmp = cptr.alloc(216);
-    let mundane = 0;
-    let same_old_song = cptr.box(0);
+    let damage, mode, do_spec, itmp, mundane, same_old_song = cptr.box(0, "i8"), buf, type;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+            do_spec = !(HStun() || HConfusion());
+            itmp = cptr.alloc(112);
+            mundane = 0;
+            same_old_song.v = 0;
 
-    cptr.memcpy(itmp, instr, 216);
-    cptr.stPtro(itmp, $obj_oextra, null);
+            cptr.memcpy(itmp, instr, 112);
+            cptr.stPtro(itmp, $obj_oextra, null);
 
-    /* if won't yield special effect, make sound of mundane counterpart */
-    if (!do_spec || cptr.ld1so(instr, $obj_spe) <= 0)
-        while ((cptr.ldI32o2(
-            objects,
-            cptr.ldI16o(itmp, $obj_otyp),
-            $sizeof_objclass,
-            $objclass_oc_magic
-        ) &
-                1)) {
-            cptr.stI16o(itmp, $obj_otyp, cptr.ldI16o(itmp, $obj_otyp) - 1);
-            mundane = 1;
+            /* if won't yield special effect, make sound of mundane counterpart */
+            if (!do_spec || cptr.ld1so(instr, $obj_spe) <= 0)
+                while (cptr.ldBits(
+                    cptr.add(
+                        cptr.add(objects, cptr.ldI16o(itmp, $obj_otyp), $sizeof_objclass),
+                        $objclass_oc_magic
+                    ),
+                    4,
+                    1,
+                    0
+                )) {
+                    cptr.stI16o(itmp, $obj_otyp, cptr.ldI16o(itmp, $obj_otyp) - 1);
+                    mundane = 1;
+                }
+            mode = 0;
+            if (HStun())
+                mode |= 1;
+            if (HConfusion())
+                mode |= 2;
+            if (Hallucination())
+                mode |= 4;
+
+            if (!rn2(2)) {
+                /*
+                 * TEMPORARY?  for multiple impairments, don't always
+                 * give the generic "it's far from music" message.
+                 */
+                /* remove if STUNNED+CONFUSED ever gets its own message below */
+                if (mode == 3)
+                    mode = !rn2(2) ? 1 : 2;
+                /* likewise for stunned and/or confused combined with hallucination */
+                if (mode & 4)
+                    mode = 4;
+            }
+
+            /* 3.6.3: most of these gave "You produce <blah>" and then many of
+               the instrument-specific messages below which immediately follow
+               also gave "You produce <something>."  That looked strange so we
+               now use a different verb here */
+            switch (mode) {
+                case 0:
+                    (yield* You(__s_start_playing_s, (yield* yname(instr))));
+                    break;
+                case 1:
+                    if (!Deaf())
+                        (yield* You(__s_radiate_an_obnoxious_droning_sound));
+                    else
+                        (yield* You_feel(__s_a_monotonous_vibration));
+                    break;
+                case 2:
+                    if (!Deaf())
+                        (yield* You(__s_generate_a_raucous_noise));
+                    else
+                        (yield* You_feel(__s_a_jarring_vibration));
+                    break;
+                case 4:
+                    (yield* You(__s_disseminate_a_kaleidoscopic_display_of));
+                    break;
+                case 3:
+                case 5:
+                case 6:
+                case 7:
+                default:
+                    (yield* pline(__s_what_you_perform_is_quite_far_from_music));
+                    break;
+            }
+
+            __static_do_improvisation_improvisation = improvised_notes(same_old_song);
+            let __sw14 = cptr.ldI16o(itmp, $obj_otyp);
+            if (__sw14 === (NHC.MAGIC_FLUTE)) { __pc = 15; continue; }
+            if (__sw14 === (NHC.WOODEN_FLUTE)) { __pc = 16; continue; }
+            if (__sw14 === (NHC.FIRE_HORN)) { __pc = 17; continue; }
+            if (__sw14 === (NHC.FROST_HORN)) { __pc = 18; continue; }
+            if (__sw14 === (NHC.TOOLED_HORN)) { __pc = 19; continue; }
+            if (__sw14 === (NHC.BUGLE)) { __pc = 20; continue; }
+            if (__sw14 === (NHC.MAGIC_HARP)) { __pc = 21; continue; }
+            if (__sw14 === (NHC.WOODEN_HARP)) { __pc = 22; continue; }
+            if (__sw14 === (NHC.DRUM_OF_EARTHQUAKE)) { __pc = 23; continue; }
+            if (__sw14 === (NHC.LEATHER_DRUM)) { __pc = 24; continue; }
+            __pc = 25; continue;
         }
-    mode = 0;
-    if (HStun())
-        mode |= 1;
-    if (HConfusion())
-        mode |= 2;
-    if (Hallucination())
-        mode |= 4;
-
-    if (!rn2(2)) {
-        /*
-         * TEMPORARY?  for multiple impairments, don't always
-         * give the generic "it's far from music" message.
-         */
-        /* remove if STUNNED+CONFUSED ever gets its own message below */
-        if (mode == 3)
-            mode = !rn2(2) ? 1 : 2;
-        /* likewise for stunned and/or confused combined with hallucination */
-        if (mode & 4)
-            mode = 4;
-    }
-
-    /* 3.6.3: most of these gave "You produce <blah>" and then many of
-       the instrument-specific messages below which immediately follow
-       also gave "You produce <something>."  That looked strange so we
-       now use a different verb here */
-    switch (mode) {
-        case 0:
-            (yield* You(__s_start_playing_s, (yield* yname(instr))));
-            break;
-        case 1:
-            if (!Deaf())
-                (yield* You(__s_radiate_an_obnoxious_droning_sound));
-            else
-                (yield* You_feel(__s_a_monotonous_vibration));
-            break;
-        case 2:
-            if (!Deaf())
-                (yield* You(__s_generate_a_raucous_noise));
-            else
-                (yield* You_feel(__s_a_jarring_vibration));
-            break;
-        case 4:
-            (yield* You(__s_disseminate_a_kaleidoscopic_display_of));
-            break;
-        case 3:
-        case 5:
-        case 6:
-        case 7:
-        default:
-            (yield* pline(__s_what_you_perform_is_quite_far_from_music));
-            break;
-    }
-
-    __static_do_improvisation_improvisation = improvised_notes(same_old_song);
-
-    switch (cptr.ldI16o(itmp, $obj_otyp)) {
-        case NHC.MAGIC_FLUTE:
+        case 15: {
+            { __pc = 1; continue; }
+        }
+        case 16: {
+            { __pc = 2; continue; }
+        }
+        case 17: {
+            { __pc = 3; continue; }
+        }
+        case 18: {
+            { __pc = 4; continue; }
+        }
+        case 19: {
+            { __pc = 5; continue; }
+        }
+        case 20: {
+            { __pc = 6; continue; }
+        }
+        case 21: {
+            { __pc = 7; continue; }
+        }
+        case 22: {
+            { __pc = 8; continue; }
+        }
+        case 23: {
+            { __pc = 9; continue; }
+        }
+        case 24: {
+            { __pc = 10; continue; }
+        }
+        case 25: {
+            { __pc = 11; continue; }
+        }
+        case 13: {
+            __pc = 1;
+            continue;
+        }
+        case 1 /* duff_1_case_0: */: {
             (yield* consume_obj_charge(instr, 1));
 
             (yield* You(
@@ -1051,8 +1128,9 @@ function* do_improvisation(instr) {
             ;
             (yield* put_monsters_to_sleep(Math.imul(cptr.ldI32o(u, $you_ulevel), 5)));
             (yield* exercise(NHC.A_DEX, 1));
-            break;
-        case NHC.WOODEN_FLUTE:
+            { __pc = 12; continue; }
+        }
+        case 2 /* duff_1_case_1: */: {
             do_spec &= (((rn2((acurr(NHC.A_DEX))) + cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
             if (!Deaf())
                 (yield* pline(
@@ -1066,19 +1144,25 @@ function* do_improvisation(instr) {
             if (do_spec)
                 (yield* charm_snakes(Math.imul(cptr.ldI32o(u, $you_ulevel), 3)));
             (yield* exercise(NHC.A_DEX, 1));
-            break;
-        case NHC.FIRE_HORN:
-        case NHC.FROST_HORN:
+            { __pc = 12; continue; }
+        }
+        case 3 /* duff_1_case_2: */: {
+            __pc = 4;
+            continue;
+        }
+        case 4 /* duff_1_case_3: */: {
             (yield* consume_obj_charge(instr, 1));
-
-            if (!(yield* getdir(null))) {
-                (yield* pline(__s_pct_s_dot, (yield* Tobjnam(instr, __s_vibrate))));
-                break;
-            } else if (!cptr.ldI32o(u, $you_dx) &&
-                    !cptr.ldI32o(u, $you_dy) &&
-                    !cptr.ldI32o(u, $you_dz)) {
+            if (!(yield* getdir(null))) { __pc = 27; continue; }
+            __pc = 28; continue;
+        }
+        case 27: {
+            (yield* pline(__s_pct_s_dot, (yield* Tobjnam(instr, __s_vibrate))));
+            { __pc = 12; continue; }
+        }
+        case 28: {
+            if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
                 if ((damage = (yield* zapyourself(instr, 1))) != 0) {
-                    let buf = new Uint8Array(256);
+                    buf = new Uint8Array(256);
 
                     void cptr.sprintf(
                         cptr.decay(buf),
@@ -1094,7 +1178,7 @@ function* do_improvisation(instr) {
                     (yield* losehp(damage, cptr.decay(buf), NHM.KILLED_BY));  /* fire or frost damage */
                 }
             } else {
-                let type = (Math.abs((((cptr.ldI16o(instr, $obj_otyp) == NHC.FROST_HORN)
+                type = (Math.abs((((cptr.ldI16o(instr, $obj_otyp) == NHC.FROST_HORN)
                     ? NHM.AD_COLD
                     : NHM.AD_FIRE) -
                     NHM.AD_MAGM) |
@@ -1107,9 +1191,14 @@ function* do_improvisation(instr) {
                 (yield* ubuzz(((0 + (type)) | 0), ((rn2(6) + 6) | 0)));
                 cptr.stPtro(gc, $instance_globals_c_current_wand, null);
             }
+            __pc = 26;
+            continue;
+        }
+        case 26: {
             (yield* discover_object((cptr.ldI16o(instr, $obj_otyp)), 1, 1, 1));
-            break;
-        case NHC.TOOLED_HORN:
+            { __pc = 12; continue; }
+        }
+        case 5 /* duff_1_case_4: */: {
             if (!Deaf())
                 (yield* You(
                     __s_produce_a_frightful_grave_s_sound,
@@ -1120,8 +1209,9 @@ function* do_improvisation(instr) {
             ;
             (yield* awaken_monsters(Math.imul(cptr.ldI32o(u, $you_ulevel), 30)));
             (yield* exercise(NHC.A_WIS, 0));
-            break;
-        case NHC.BUGLE:
+            { __pc = 12; continue; }
+        }
+        case 6 /* duff_1_case_5: */: {
             if (!Deaf())
                 (yield* You(
                     __s_extract_a_loud_s_noise_from_s,
@@ -1133,8 +1223,9 @@ function* do_improvisation(instr) {
             ;
             (yield* awaken_soldiers(cptr.add(gy, $instance_globals_y_youmonst)));
             (yield* exercise(NHC.A_WIS, 0));
-            break;
-        case NHC.MAGIC_HARP:
+            { __pc = 12; continue; }
+        }
+        case 7 /* duff_1_case_6: */: {
             (yield* consume_obj_charge(instr, 1));
 
             if (!Deaf())
@@ -1148,8 +1239,9 @@ function* do_improvisation(instr) {
             ;
             (yield* charm_monsters((((((cptr.ldI32o(u, $you_ulevel) - 1) | 0) / 3) | 0) + 1) | 0));
             (yield* exercise(NHC.A_DEX, 1));
-            break;
-        case NHC.WOODEN_HARP:
+            { __pc = 12; continue; }
+        }
+        case 8 /* duff_1_case_7: */: {
             do_spec &= (((rn2((acurr(NHC.A_DEX))) + cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
             if (!Deaf())
                 (yield* pline(
@@ -1167,8 +1259,9 @@ function* do_improvisation(instr) {
             if (do_spec)
                 (yield* calm_nymphs(Math.imul(cptr.ldI32o(u, $you_ulevel), 3)));
             (yield* exercise(NHC.A_DEX, 1));
-            break;
-        case NHC.DRUM_OF_EARTHQUAKE:
+            { __pc = 12; continue; }
+        }
+        case 9 /* duff_1_case_8: */: {
             /* a drum of earthquake does not cause deafness
                while still magically functional, nor afterwards
                when it invokes the LEATHER_DRUM case instead and
@@ -1182,8 +1275,9 @@ function* do_improvisation(instr) {
             /* shake up monsters in a much larger radius... */
             (yield* awaken_monsters(1680));
             (yield* discover_object(NHC.DRUM_OF_EARTHQUAKE, 1, 1, 1));
-            break;
-        case NHC.LEATHER_DRUM:
+            { __pc = 12; continue; }
+        }
+        case 10 /* duff_1_case_9: */: {
             if (!mundane) {
                 if (!Deaf()) {
                     (yield* You(__s_beat_a_sdeafening_row, same_old_song.v ? __s_familiar__2 : __s_empty));
@@ -1210,19 +1304,27 @@ function* do_improvisation(instr) {
             }
             (yield* awaken_monsters(Math.imul(cptr.ldI32o(u, $you_ulevel), (mundane ? 5 : 40))));
             cptr.st1(disp, 1);
-            break;
-        default:
+            { __pc = 12; continue; }
+        }
+        case 11 /* duff_1_case_10: */: {
             (yield* impossible(__s_what_a_weird_instrument_d, cptr.ldI16o(instr, $obj_otyp)));
             return 0;
+        }
+        case 12 /* duff_end_1: */: {
+            ;
+            (void (__static_do_improvisation_improvisation));
+            return 2;  /* That takes time */
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
-    (void (__static_do_improvisation_improvisation));
-    return 2;  /* That takes time */
 }
 
 const __static_improvised_notes_notes = [65, 66, 67, 68, 69, 70, 71]; /** C ref: music.c:735 — char[7] (function-static) */
 
 /** C ref: music.c:733 — @param {CPtr<boolean>} same_as_last_time @returns {CPtr<char>} */
 function improvised_notes(same_as_last_time) {
+    let __r2;
     /* target buffer has to be in svc.context, otherwise saving game
      * between improvised recitals would not be able to maintain
      * the same_as_last_time context. */
@@ -1233,16 +1335,13 @@ function improvised_notes(same_as_last_time) {
         let notecount = rnd((Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0);  /* 1 - 5 */
 
         for (i = 0; i < notecount; ++i) {
-            cptr.st1o2(
-                svc,
-                i,
-                1,
-                $context_info_jingle,
-                cptr.ld1so(
+            (
+                __r2 = cptr.ld1so(
                     cptr.decay(__static_improvised_notes_notes),
                     rn2(__static_improvised_notes_notes.length),
                     1
-                )
+                ),
+                cptr.st1o2(svc, i, 1, $context_info_jingle, __r2)
             );
         }
         cptr.st1o2(svc, notecount, 1, $context_info_jingle, 0);
@@ -1261,8 +1360,8 @@ export function* do_play_instrument(instr) {
     let buf = [0];
     let c = 121;
     let s;
-    let x = cptr.box(0);
-    let y = cptr.box(0);
+    let x = cptr.box(0, "i16");
+    let y = cptr.box(0, "i16");
     let ok;
     __lbl_nevermind: {
 
@@ -1290,7 +1389,7 @@ export function* do_play_instrument(instr) {
         if (c != 110)
             return (yield* do_improvisation(instr)) ? NHM.ECMD_TIME : NHM.ECMD_OK;
 
-        if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) == 2)
+        if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) == 2)
             c = (yield* yn_function(__s_play_the_passtune, cptr.decay(ynqchars), 113, 1));
         if (c == 113) {
             break __lbl_nevermind;
@@ -1344,18 +1443,18 @@ export function* do_play_instrument(instr) {
                 for (
                     y.v = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0));
                     y.v <= ((cptr.ldI16o(u, $you_uy) + 1) | 0);
-                    y.v++
+                    y.v = i16(y.v + 1)
                 )
                     for (
                         x.v = i16(((cptr.ldI16(u) - 1) | 0));
                         x.v <= ((cptr.ldI16(u) + 1) | 0);
-                        x.v++
+                        x.v = i16(x.v + 1)
                     ) {
                         if (!isok(x.v, y.v))
                             continue;
                         if (find_drawbridge(x, y)) {
                             /* tune now fully known */
-                            cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
+                            cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));
                             if (cptr.ld1so3(
                                 svl,
@@ -1373,8 +1472,8 @@ export function* do_play_instrument(instr) {
                         }
                     }
             } else if (!Deaf()) {
-                if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 1)
-                    cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 1);
+                if ((cptr.ldBits(cptr.add(u, $you_uevent), 6, 2, 0) | 0) < 1)
+                    cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 1);
                 /* Okay, it wasn't the right tune, but perhaps
                  * we can give the player some hints like in the
                  * Mastermind game */
@@ -1382,12 +1481,12 @@ export function* do_play_instrument(instr) {
                 for (
                     y.v = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0));
                     y.v <= ((cptr.ldI16o(u, $you_uy) + 1) | 0) && !ok;
-                    y.v++
+                    y.v = i16(y.v + 1)
                 )
                     for (
                         x.v = i16(((cptr.ldI16(u) - 1) | 0));
                         x.v <= ((cptr.ldI16(u) + 1) | 0) && !ok;
-                        x.v++
+                        x.v = i16(x.v + 1)
                     )
                         if (isok(x.v, y.v))
                             if (((cptr.ld1so3(
@@ -1416,20 +1515,20 @@ export function* do_play_instrument(instr) {
                     let matched = new Uint8Array(5);
 
                     tumblers = (gears = 0);
-                    for (x.v = 0; x.v < 5; x.v++)
+                    for (x.v = 0; x.v < 5; x.v = i16(x.v + 1))
                         cptr.st1o(cptr.decay(matched), x.v, 0, 1);
 
                     for (
                         x.v = 0;
                         x.v < Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(buf))));
-                        x.v++
+                        x.v = i16(x.v + 1)
                     )
                         if (x.v < 5) {
                             if (cptr.ld1so(cptr.decay(buf), x.v, 1) == cptr.ld1so(svt, x.v, 1)) {
                                 gears++;
                                 cptr.st1o(cptr.decay(matched), x.v, 1, 1);
                             } else {
-                                for (y.v = 0; y.v < 5; y.v++)
+                                for (y.v = 0; y.v < 5; y.v = i16(y.v + 1))
                                     if (!cptr.ld1so(cptr.decay(matched), y.v, 1) &&
                                             cptr.ld1so(cptr.decay(buf), x.v, 1) ==
                                                 cptr.ld1so(svt, y.v, 1) &&
@@ -1466,7 +1565,7 @@ export function* do_play_instrument(instr) {
                            correct notes followed by excess; otherwise,
                            tune would have matched above */
                         if (gears == 5) {
-                            cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, 2);
+                            cptr.stBits(cptr.add(u, $you_uevent), 6, 2, 0, 2);
                             (yield* record_achievement(NHC.ACH_TUNE));
                         }
                     }

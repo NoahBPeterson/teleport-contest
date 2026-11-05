@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int a;}; int main(void){ int x=5; char b[8]={0}; *(int*)b=x; ((struct s*)b)->a+=1; printf("%d %d\n",*(int*)b,b[0]); float f=1; *(int*)&f=0x40000000; printf("%f\n",f); return 0; }

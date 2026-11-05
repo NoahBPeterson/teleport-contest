@@ -300,10 +300,10 @@ const __static_luaO_ceillog2_log_2 = [
 /** C ref: lobject.c:35 — @param {CUInt} x @returns {CInt} */
 export function luaO_ceillog2(x) {
     let l = 0;
-    x--;
+    x = ((x + -1) >>> 0);
     while (x >= 256) {
         l = (l + 8) | 0;
-        x >>= 8;
+        x = x >>> 8;
     }
     return (l + cptr.ld1uo(cptr.decay(__static_luaO_ceillog2_log_2), x, 1)) | 0;
 }
@@ -398,8 +398,8 @@ export function luaO_rawarith(L, op, p1, p2, res) {
         case 11:
         case 13:
             {
-                let i1 = cptr.box(0n);
-                let i2 = cptr.box(0n);
+                let i1 = cptr.box(0n, "i64");
+                let i2 = cptr.box(0n, "i64");
                 if (((__builtin_expect(
                     BigInt(((((cptr.ld1uo(((p1)), $TValue_tt_)) == 3)) != 0)),
                     1n
@@ -571,10 +571,10 @@ function l_str2d(s, result) {
     if (mode == 110)
         return null;
     endptr = l_str2dloc(s, result, mode);  /* try to convert */
-    if (cptr.eq(endptr, (null))) {
+    if (cptr.eq(endptr, cptr.byteView((null)))) {
         let buff = new Uint8Array(201);
         let pdot = cptr.strchr(s, 46);
-        if (cptr.eq(pdot, (null)) || cptr.strlen(s) > 200n)
+        if (cptr.eq(pdot, cptr.byteView((null))) || cptr.strlen(s) > 200n)
             return null;  /* string too long or no dot; fail */
         cptr.strcpy(cptr.decay(buff), s);  /* copy string to buffer */
         cptr.st1o(
@@ -584,7 +584,7 @@ function l_str2d(s, result) {
             1
         );  /* correct decimal point */
         endptr = l_str2dloc(cptr.decay(buff), result, mode);  /* try again */
-        if (!cptr.eq(endptr, (null)))
+        if (!cptr.eq(endptr, cptr.byteView((null))))
             endptr = cptr.add(s, (cptr.diff(endptr, cptr.decay(buff))));  /* make relative to 's' */
     }
     return endptr;
@@ -642,17 +642,17 @@ function l_str2int(s, result) {
 
 /** C ref: lobject.c:308 — @param {CPtr<char>} s @param {CPtr<TValue>} o @returns {*} */
 export function luaO_str2num(s, o) {
-    let i = cptr.box(0n);
-    let n = cptr.box(0);
+    let i = cptr.box(0n, "i64");
+    let n = cptr.box(0, "f64");
     let e;
-    if (!cptr.eq((e = l_str2int(s, i)), (null))) {
+    if (!cptr.eq((e = l_str2int(s, i)), cptr.byteView((null)))) {
         {
             let io = (o);
             cptr.stI64(((io)), (i.v));
             (cptr.st1o((io), $TValue_tt_, 3));
         }
         ;
-    } else if (!cptr.eq((e = l_str2d(s, n)), (null))) {
+    } else if (!cptr.eq((e = l_str2d(s, n)), cptr.byteView((null)))) {
         {
             let io = (o);
             cptr.stF64(((io)), (n.v));
@@ -674,13 +674,13 @@ export function luaO_utf8esc(buff, x) {
         let mfb = 63;  /* maximum that fits in first byte */
         do {
             cptr.st1o(buff, (8 - (n++)) | 0, (Number(BigInt.asIntN(8, ((128n | (x & 63n)))))));
-            x >>= 6n;  /* remove added bits */
-            mfb >>= 1;  /* now there is one less bit available in first byte */
+            x = x >> 6n;  /* remove added bits */
+            mfb = mfb >>> 1;  /* now there is one less bit available in first byte */
         } while (x > BigInt(mfb >>> 0));  /* still needs continuation byte? */
         cptr.st1o(
             buff,
             (8 - n) | 0,
-            (Number(BigInt.asIntN(8, ((BigInt(((~mfb << 1) >>> 0) >>> 0) | x)))))
+            (Number(BigInt.asIntN(8, ((BigInt(((~mfb >>> 0 << 1) >>> 0) >>> 0) | x)))))
         );  /* add first byte */
     }
     return n;
@@ -836,113 +836,155 @@ function addnum2buff(buff, num) {
  * @returns {CPtr<char>}
  */
 export function luaO_pushvfstring(L, fmt, argp) {
-    let buff = cptr.alloc(216);  /* holds last part of the result */
-    let e;  /* points to next '%' */
-    cptr.stI32o(buff, $BuffFS_pushed, cptr.stI32o(buff, $BuffFS_blen, 0));
-    cptr.stPtr(buff, L);
-    while (!cptr.eq((e = cptr.strchr(fmt, 37)), (null))) {
-        addstr2buff(buff, fmt, BigInt.asUintN(64, cptr.diff(e, fmt)));  /* add 'fmt' up to '%' */
-        switch (cptr.ld1s((cptr.add(e, 1)))) {
-            case 115:
-                {
-                    let s = cptr.vaArg(argp, 'ptr');
-                    if (cptr.eq(s, (null)))
-                        s = __s_null;
-                    addstr2buff(buff, s, cptr.strlen(s));
-                    break;
-                }
-            case 99:
-                {
-                    let c = cptr.box(schar((uchar(((cptr.vaArg(argp, 'i32')))))));
-                    addstr2buff(buff, c, 1n);
-                    break;
-                }
-            case 100:
-                {
-                    let num = cptr.alloc(16);
-                    {
-                        let io = (num);
-                        cptr.stI64(((io)), BigInt((cptr.vaArg(argp, 'i32'))));
-                        (cptr.st1o((io), $TValue_tt_, 3));
-                    }
-                    ;
-                    addnum2buff(buff, num);
-                    break;
-                }
-            case 73:
-                {
-                    let num = cptr.alloc(16);
-                    {
-                        let io = (num);
-                        cptr.stI64(((io)), (((cptr.vaArg(argp, 'i64')))));
-                        (cptr.st1o((io), $TValue_tt_, 3));
-                    }
-                    ;
-                    addnum2buff(buff, num);
-                    break;
-                }
-            case 102:
-                {
-                    let num = cptr.alloc(16);
-                    {
-                        let io = (num);
-                        cptr.stF64(((io)), ((((cptr.vaArg(argp, 'f64'))))));
-                        (cptr.st1o((io), $TValue_tt_, 19));
-                    }
-                    ;
-                    addnum2buff(buff, num);
-                    break;
-                }
-            case 112:
-                {
-                    let sz = 32;  /* enough space for '%p' */
-                    let bf = getbuff(buff, sz);
-                    let p = cptr.vaArg(argp, 'ptr');
-                    let len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __s_pct_p, p);
-                    (cptr.stI32o(
-                        (buff),
-                        $BuffFS_blen,
-                        (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0
-                    ));
-                    break;
-                }
-            case 85:
-                {
-                    let bf = new Uint8Array(8);
-                    let len = luaO_utf8esc(
-                        cptr.decay(bf),
-                        BigInt.asUintN(64, cptr.vaArg(argp, 'i64'))
-                    );
-                    addstr2buff(
-                        buff,
-                        cptr.add(cptr.add(cptr.decay(bf), 8), -(len)),
-                        BigInt.asUintN(64, BigInt(len))
-                    );
-                    break;
-                }
-            case 37:
-                {
-                    addstr2buff(buff, __s_pct, 1n);
-                    break;
-                }
-            default:
-                {
-                    luaG_runerror(
-                        L,
-                        __s_invalid_option_c_to_lua_pushfstring,
-                        cptr.ld1s((cptr.add(e, 1)))
-                    );
-                }
+    let buff, e, s, c = cptr.box(0, "i8"), num, io, sz, bf, p, len;
+    let __pc = 0;
+    __dispatch: while (true) {
+        switch (__pc) {
+        case 0: {
+            buff = cptr.alloc(216);  /* holds last part of the result */
+            cptr.stI32o(buff, $BuffFS_pushed, cptr.stI32o(buff, $BuffFS_blen, 0));
+            cptr.stPtr(buff, L);
+            __pc = 12; continue;
         }
-        fmt = cptr.add(e, 2);  /* skip '%' and the specifier */
+        case 12: {
+            if (!(!cptr.eq(
+                (e = cptr.strchr(fmt, 37)),
+                cptr.byteView((null))
+            ))) { __pc = 11; continue; }
+            __pc = 13; continue;
+        }
+        case 13: {
+            addstr2buff(buff, fmt, BigInt.asUintN(64, cptr.diff(e, fmt)));  /* add 'fmt' up to '%' */
+            let __sw15 = cptr.ld1s((cptr.add(e, 1)));
+            if (__sw15 === (115)) { __pc = 16; continue; }
+            if (__sw15 === (99)) { __pc = 17; continue; }
+            if (__sw15 === (100)) { __pc = 18; continue; }
+            if (__sw15 === (73)) { __pc = 19; continue; }
+            if (__sw15 === (102)) { __pc = 20; continue; }
+            if (__sw15 === (112)) { __pc = 21; continue; }
+            if (__sw15 === (85)) { __pc = 22; continue; }
+            if (__sw15 === (37)) { __pc = 23; continue; }
+            __pc = 24; continue;
+        }
+        case 16: {
+            { __pc = 1; continue; }
+        }
+        case 17: {
+            { __pc = 2; continue; }
+        }
+        case 18: {
+            { __pc = 3; continue; }
+        }
+        case 19: {
+            { __pc = 4; continue; }
+        }
+        case 20: {
+            { __pc = 5; continue; }
+        }
+        case 21: {
+            { __pc = 6; continue; }
+        }
+        case 22: {
+            { __pc = 7; continue; }
+        }
+        case 23: {
+            { __pc = 8; continue; }
+        }
+        case 24: {
+            { __pc = 9; continue; }
+        }
+        case 14: {
+            __pc = 1;
+            continue;
+        }
+        case 1 /* duff_1_case_0: */: {
+            s = cptr.vaArg(argp, 'ptr');
+            if (cptr.eq(s, cptr.byteView((null))))
+                s = __s_null;
+            addstr2buff(buff, s, cptr.strlen(s));
+            { __pc = 10; continue; }
+        }
+        case 2 /* duff_1_case_1: */: {
+            c.v = schar((uchar(((cptr.vaArg(argp, 'i32'))))));
+            addstr2buff(buff, c, 1n);
+            { __pc = 10; continue; }
+        }
+        case 3 /* duff_1_case_2: */: {
+            num = cptr.alloc(16);
+            io = (num);
+            cptr.stI64(((io)), BigInt((cptr.vaArg(argp, 'i32'))));
+            (cptr.st1o((io), $TValue_tt_, 3));
+            ;
+            addnum2buff(buff, num);
+            { __pc = 10; continue; }
+        }
+        case 4 /* duff_1_case_3: */: {
+            num = cptr.alloc(16);
+            io = (num);
+            cptr.stI64(((io)), (((cptr.vaArg(argp, 'i64')))));
+            (cptr.st1o((io), $TValue_tt_, 3));
+            ;
+            addnum2buff(buff, num);
+            { __pc = 10; continue; }
+        }
+        case 5 /* duff_1_case_4: */: {
+            num = cptr.alloc(16);
+            io = (num);
+            cptr.stF64(((io)), ((((cptr.vaArg(argp, 'f64'))))));
+            (cptr.st1o((io), $TValue_tt_, 19));
+            ;
+            addnum2buff(buff, num);
+            { __pc = 10; continue; }
+        }
+        case 6 /* duff_1_case_5: */: {
+            sz = 32;  /* enough space for '%p' */
+            bf = getbuff(buff, sz);
+            p = cptr.vaArg(argp, 'ptr');
+            len = cptr.snprintf(bf, BigInt.asUintN(64, BigInt(sz)), __s_pct_p, p);
+            (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0));
+            { __pc = 10; continue; }
+        }
+        case 7 /* duff_1_case_6: */: {
+            bf = new Uint8Array(8);
+            len = luaO_utf8esc(cptr.decay(bf), BigInt.asUintN(64, cptr.vaArg(argp, 'i64')));
+            addstr2buff(
+                buff,
+                cptr.add(cptr.add(cptr.decay(bf), 8), -(len)),
+                BigInt.asUintN(64, BigInt(len))
+            );
+            { __pc = 10; continue; }
+        }
+        case 8 /* duff_1_case_7: */: {
+            addstr2buff(buff, __s_pct, 1n);
+            { __pc = 10; continue; }
+        }
+        case 9 /* duff_1_case_8: */: {
+            luaG_runerror(L, __s_invalid_option_c_to_lua_pushfstring, cptr.ld1s((cptr.add(e, 1))));
+            __pc = 10;
+            continue;
+        }
+        case 10 /* duff_end_1: */: {
+            ;
+            fmt = cptr.add(e, 2);  /* skip '%' and the specifier */
+            __pc = 12;
+            continue;
+        }
+        case 11: {
+            addstr2buff(buff, fmt, cptr.strlen(fmt));  /* rest of 'fmt' */
+            clearbuff(buff);  /* empty buffer into the stack */
+            (void 0);
+            return (cptr.add(
+                (((((((cptr.ldPtr(((((cptr.add(
+                    cptr.ldPtro(L, $lua_State_top),
+                    -(1),
+                    16
+                ))))))))))))),
+                $TString_contents
+            ));
+        }
+        }
+        if (__pc === -1) break __dispatch;
     }
-    addstr2buff(buff, fmt, cptr.strlen(fmt));  /* rest of 'fmt' */
-    clearbuff(buff);  /* empty buffer into the stack */
-    (void 0);
-    return (cptr.add(
-        (((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))))),
-        $TString_contents
-    ));
 }
 
 /**
@@ -986,7 +1028,7 @@ export function luaO_chunkid(out, source, srclen) {
                 cptr.memcpy(out, __s_dot3, BigInt.asUintN(64, (4n / 1n - 1n) * 1n)),
                 out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n))))
             );
-            bufflen -= (BigInt.asUintN(64, 4n / 1n - 1n));
+            bufflen = BigInt.asUintN(64, bufflen - (BigInt.asUintN(64, 4n / 1n - 1n)));
             cptr.memcpy(
                 out,
                 cptr.add(cptr.add(cptr.add(source, 1), srclen), -(bufflen)),
@@ -999,14 +1041,14 @@ export function luaO_chunkid(out, source, srclen) {
             cptr.memcpy(out, __s_string, BigInt.asUintN(64, (10n / 1n - 1n) * 1n)),
             out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n))))
         );  /* add prefix */
-        bufflen -= BigInt.asUintN(64, 15n / 1n - 1n + 1n);  /* save space for prefix+suffix+'\0' */
-        if (srclen < bufflen && cptr.eq(nl, (null))) {
+        bufflen = BigInt.asUintN(64, bufflen - BigInt.asUintN(64, 15n / 1n - 1n + 1n));  /* save space for prefix+suffix+'\0' */
+        if (srclen < bufflen && cptr.eq(nl, cptr.byteView((null)))) {
             (
                 cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)),
                 out = cptr.add(out, (srclen))
             );  /* keep it */
         } else {
-            if (!cptr.eq(nl, (null)))
+            if (!cptr.eq(nl, cptr.byteView((null))))
                 srclen = BigInt.asUintN(64, cptr.diff(nl, source));  /* stop at first newline */
             if (srclen > bufflen)
                 srclen = bufflen;

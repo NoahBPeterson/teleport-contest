@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct i{int x,y;}; struct o{struct i a;struct i b[2];int c;}; int main(void){ struct o v={.a.y=1,.b[1].x=2,.c=3}; struct o w={.b={[1]={.y=4}}}; int r[6]={[1 ... 3]=7,[5]=1}; struct i t[3]={[0].x=1,[2].y=2}; printf("%d %d %d %d %d %d %d %d\n",v.a.y,v.b[1].x,v.c,w.b[1].y,r[2],r[4],t[0].x,t[2].y); return 0; }

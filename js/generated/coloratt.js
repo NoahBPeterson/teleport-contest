@@ -1412,8 +1412,8 @@ export function colortable_to_int32(cte) {
     if (cptr.ldI32(cte) == NHC.rgb_color)
         clr = Number(BigInt.asIntN(
             32,
-            ((cptr.ldI64o(cte, $nethack_color_r) << 16n) |
-                (cptr.ldI64o(cte, $nethack_color_g) << 8n) |
+            ((BigInt.asIntN(64, cptr.ldI64o(cte, $nethack_color_r) << 16n)) |
+                (BigInt.asIntN(64, cptr.ldI64o(cte, $nethack_color_g) << 8n)) |
                 cptr.ldI64o(cte, $nethack_color_b))
         ));
     else if (cptr.ldI32(cte) == NHC.nh_color)
@@ -1989,10 +1989,10 @@ export function count_menucolors() {
  */
 /** C ref: coloratt.c:723 — @param {CPtr<char>} buf @returns {*} */
 export function check_enhanced_colors(buf) {
-    let xtra = cptr.box(0);  /* used to catch trailing junk after "#rrggbb" */
-    let r = cptr.box(0);
-    let g = cptr.box(0);
-    let b = cptr.box(0);
+    let xtra = cptr.box(0, "i8");  /* used to catch trailing junk after "#rrggbb" */
+    let r = cptr.box(0, "u32");
+    let g = cptr.box(0, "u32");
+    let b = cptr.box(0, "u32");
     let retcolor = -1;
     let color;
 
@@ -2188,8 +2188,8 @@ export function rgbstr_to_int32(rgbstr) {
 /** C ref: coloratt.c:868 — @param {CPtr<glyph_map>} gmap @param {CUInt} nhcolor @returns {CInt} */
 export function set_map_customcolor(gmap, nhcolor) {
     let tmpgm = gmap;
-    let closecolor = cptr.box(0);
-    let clridx = cptr.box(0);
+    let closecolor = cptr.box(0, "u32");
+    let clridx = cptr.box(0, "u16");
 
     if (!tmpgm)
         return 0;
@@ -2727,19 +2727,19 @@ export function closest_color(lcolor, closecolor, clridx) {
 
     for (i = 0; i < 240; i++) {
         /* look for an exact match */
-        if (lcolor == cptr.ldI32o2(color_256_definitions, i, 8, 4)) {
+        if (lcolor == cptr.ldI32o2(color_256_definitions, i, 8, 4) >>> 0) {
             color_index = i;
             break;
         }
         /* find a close color match */
-        current = color_distance(lcolor, cptr.ldI32o2(color_256_definitions, i, 8, 4));
+        current = color_distance(lcolor, cptr.ldI32o2(color_256_definitions, i, 8, 4) >>> 0);
         if (current < similar) {
             color_index = i;
             similar = current;
         }
     }
     if (closecolor && clridx && color_index >= 0) {
-        cptr.stI32(closecolor, cptr.ldI32o2(color_256_definitions, color_index, 8, 4));
+        cptr.stI32(closecolor, cptr.ldI32o2(color_256_definitions, color_index, 8, 4) >>> 0);
         cptr.stI16(clridx, u16(cptr.ldI32o(color_256_definitions, color_index, 8)));
         retbool = 1;
     }
@@ -2751,7 +2751,7 @@ export function get_nhcolor_from_256_index(idx) {
     let retcolor = 16777224;
 
     if (((idx) >= 0 && (idx) < 240))
-        retcolor = cptr.ldI32o2(color_256_definitions, idx, 8, 4);
+        retcolor = cptr.ldI32o2(color_256_definitions, idx, 8, 4) >>> 0;
     return retcolor;
 }
 

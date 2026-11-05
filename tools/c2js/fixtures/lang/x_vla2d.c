@@ -1,0 +1,2 @@
+#include <stdio.h>
+int sum(int n,int m,int a[n][m]){ int t=0; for(int i=0;i<n;i++) for(int j=0;j<m;j++) t+=a[i][j]; return t; } int main(void){ int n=2,m=3; int v[n][m]; for(int i=0;i<n;i++) for(int j=0;j<m;j++) v[i][j]=i+j; typedef int R[m]; R *p=v; printf("%d %zu %d\n",sum(n,m,v),sizeof v,p[1][2]); return 0; }

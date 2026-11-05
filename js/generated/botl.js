@@ -844,16 +844,16 @@ export function do_statusline2() {
     if (Strangled())
         void cptr.strcpy(nb = eos(nb), __s_strngl);
     if (Sick()) {
-        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
+        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_VOMITABLE)
             void cptr.strcpy(nb = eos(nb), __s_foodpois);
-        if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
+        if ((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) & NHM.SICK_NONVOMITABLE)
             void cptr.strcpy(nb = eos(nb), __s_termill);
     }
-    if (cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY)
+    if (cptr.ldI32o(u, $you_uhs) >>> 0 != NHC.NOT_HUNGRY)
         void cptr.sprintf(
             nb = eos(nb),
             __s_sp_pct_s,
-            cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8)
+            cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs) >>> 0, 8)
         );
     if ((cap = near_capacity()) > NHC.UNENCUMBERED)
         void cptr.sprintf(nb = eos(nb), __s_sp_pct_s, cptr.ldPtro(enc_stat, cap, 8));
@@ -1856,181 +1856,181 @@ export const conditions = cptr.alloc(30 * $sizeof_conditions_t);
 cptr.stI32o(conditions, 0, 20);
 cptr.stI64o(conditions, 0 + $conditions_t_mask, 1n);
 cptr.stI32o(conditions, 0 + $conditions_t_c, NHC.bl_bareh);
-cptr.stPtro(conditions, 0 + $conditions_t_text + 0, __s_bare);
+cptr.stPtro(conditions, 0 + $conditions_t_text, __s_bare);
 cptr.stPtro(conditions, 0 + $conditions_t_text + 8, __s_bar);
 cptr.stPtro(conditions, 0 + $conditions_t_text + 16, __s_bh);
 cptr.stI32o(conditions, 48, 10);
 cptr.stI64o(conditions, 48 + $conditions_t_mask, 2n);
 cptr.stI32o(conditions, 48 + $conditions_t_c, NHC.bl_blind);
-cptr.stPtro(conditions, 48 + $conditions_t_text + 0, __s_blind__2);
+cptr.stPtro(conditions, 48 + $conditions_t_text, __s_blind__2);
 cptr.stPtro(conditions, 48 + $conditions_t_text + 8, __s_blnd);
 cptr.stPtro(conditions, 48 + $conditions_t_text + 16, __s_bl);
 cptr.stI32o(conditions, 96, 20);
 cptr.stI64o(conditions, 96 + $conditions_t_mask, 4n);
 cptr.stI32o(conditions, 96 + $conditions_t_c, NHC.bl_busy);
-cptr.stPtro(conditions, 96 + $conditions_t_text + 0, __s_busy);
+cptr.stPtro(conditions, 96 + $conditions_t_text, __s_busy);
 cptr.stPtro(conditions, 96 + $conditions_t_text + 8, __s_bsy);
 cptr.stPtro(conditions, 96 + $conditions_t_text + 16, __s_by);
 cptr.stI32o(conditions, 144, 10);
 cptr.stI64o(conditions, 144 + $conditions_t_mask, 8n);
 cptr.stI32o(conditions, 144 + $conditions_t_c, NHC.bl_conf);
-cptr.stPtro(conditions, 144 + $conditions_t_text + 0, __s_conf__2);
+cptr.stPtro(conditions, 144 + $conditions_t_text, __s_conf__2);
 cptr.stPtro(conditions, 144 + $conditions_t_text + 8, __s_cnf);
 cptr.stPtro(conditions, 144 + $conditions_t_text + 16, __s_cf);
 cptr.stI32o(conditions, 192, 10);
 cptr.stI64o(conditions, 192 + $conditions_t_mask, 16n);
 cptr.stI32o(conditions, 192 + $conditions_t_c, NHC.bl_deaf);
-cptr.stPtro(conditions, 192 + $conditions_t_text + 0, __s_deaf__2);
+cptr.stPtro(conditions, 192 + $conditions_t_text, __s_deaf__2);
 cptr.stPtro(conditions, 192 + $conditions_t_text + 8, __s_def);
 cptr.stPtro(conditions, 192 + $conditions_t_text + 16, __s_df);
 cptr.stI32o(conditions, 240, 15);
 cptr.stI64o(conditions, 240 + $conditions_t_mask, 32n);
 cptr.stI32o(conditions, 240 + $conditions_t_c, NHC.bl_elf_iron);
-cptr.stPtro(conditions, 240 + $conditions_t_text + 0, __s_iron);
+cptr.stPtro(conditions, 240 + $conditions_t_text, __s_iron);
 cptr.stPtro(conditions, 240 + $conditions_t_text + 8, __s_irn);
 cptr.stPtro(conditions, 240 + $conditions_t_text + 16, __s_fe);
 cptr.stI32o(conditions, 288, 10);
 cptr.stI64o(conditions, 288 + $conditions_t_mask, 64n);
 cptr.stI32o(conditions, 288 + $conditions_t_c, NHC.bl_fly);
-cptr.stPtro(conditions, 288 + $conditions_t_text + 0, __s_fly__2);
+cptr.stPtro(conditions, 288 + $conditions_t_text, __s_fly__2);
 cptr.stPtro(conditions, 288 + $conditions_t_text + 8, __s_fly__2);
 cptr.stPtro(conditions, 288 + $conditions_t_text + 16, __s_fl);
 cptr.stI32o(conditions, 336, 6);
 cptr.stI64o(conditions, 336 + $conditions_t_mask, 128n);
 cptr.stI32o(conditions, 336 + $conditions_t_c, NHC.bl_foodpois);
-cptr.stPtro(conditions, 336 + $conditions_t_text + 0, __s_foodpois__2);
+cptr.stPtro(conditions, 336 + $conditions_t_text, __s_foodpois__2);
 cptr.stPtro(conditions, 336 + $conditions_t_text + 8, __s_fpois);
 cptr.stPtro(conditions, 336 + $conditions_t_text + 16, __s_poi);
 cptr.stI32o(conditions, 384, 20);
 cptr.stI64o(conditions, 384 + $conditions_t_mask, 256n);
 cptr.stI32o(conditions, 384 + $conditions_t_c, NHC.bl_glowhands);
-cptr.stPtro(conditions, 384 + $conditions_t_text + 0, __s_glow);
+cptr.stPtro(conditions, 384 + $conditions_t_text, __s_glow);
 cptr.stPtro(conditions, 384 + $conditions_t_text + 8, __s_glo);
 cptr.stPtro(conditions, 384 + $conditions_t_text + 16, __s_gl);
 cptr.stI32o(conditions, 432, 2);
 cptr.stI64o(conditions, 432 + $conditions_t_mask, 512n);
 cptr.stI32o(conditions, 432 + $conditions_t_c, NHC.bl_grab);
-cptr.stPtro(conditions, 432 + $conditions_t_text + 0, __s_grab);
+cptr.stPtro(conditions, 432 + $conditions_t_text, __s_grab);
 cptr.stPtro(conditions, 432 + $conditions_t_text + 8, __s_grb);
 cptr.stPtro(conditions, 432 + $conditions_t_text + 16, __s_gr);
 cptr.stI32o(conditions, 480, 10);
 cptr.stI64o(conditions, 480 + $conditions_t_mask, 1024n);
 cptr.stI32o(conditions, 480 + $conditions_t_c, NHC.bl_hallu);
-cptr.stPtro(conditions, 480 + $conditions_t_text + 0, __s_hallu__2);
+cptr.stPtro(conditions, 480 + $conditions_t_text, __s_hallu__2);
 cptr.stPtro(conditions, 480 + $conditions_t_text + 8, __s_hal);
 cptr.stPtro(conditions, 480 + $conditions_t_text + 16, __s_hl);
 cptr.stI32o(conditions, 528, 20);
 cptr.stI64o(conditions, 528 + $conditions_t_mask, 2048n);
 cptr.stI32o(conditions, 528 + $conditions_t_c, NHC.bl_held);
-cptr.stPtro(conditions, 528 + $conditions_t_text + 0, __s_held);
+cptr.stPtro(conditions, 528 + $conditions_t_text, __s_held);
 cptr.stPtro(conditions, 528 + $conditions_t_text + 8, __s_hld);
 cptr.stPtro(conditions, 528 + $conditions_t_text + 16, __s_hd__2);
 cptr.stI32o(conditions, 576, 20);
 cptr.stI64o(conditions, 576 + $conditions_t_mask, 4096n);
 cptr.stI32o(conditions, 576 + $conditions_t_c, NHC.bl_icy);
-cptr.stPtro(conditions, 576 + $conditions_t_text + 0, __s_icy);
+cptr.stPtro(conditions, 576 + $conditions_t_text, __s_icy);
 cptr.stPtro(conditions, 576 + $conditions_t_text + 8, __s_icy);
 cptr.stPtro(conditions, 576 + $conditions_t_text + 16, __s_ic);
 cptr.stI32o(conditions, 624, 8);
 cptr.stI64o(conditions, 624 + $conditions_t_mask, 8192n);
 cptr.stI32o(conditions, 624 + $conditions_t_c, NHC.bl_inlava);
-cptr.stPtro(conditions, 624 + $conditions_t_text + 0, __s_inlava);
+cptr.stPtro(conditions, 624 + $conditions_t_text, __s_inlava);
 cptr.stPtro(conditions, 624 + $conditions_t_text + 8, __s_lav);
 cptr.stPtro(conditions, 624 + $conditions_t_text + 16, __s_la);
 cptr.stI32o(conditions, 672, 10);
 cptr.stI64o(conditions, 672 + $conditions_t_mask, 16384n);
 cptr.stI32o(conditions, 672 + $conditions_t_c, NHC.bl_lev);
-cptr.stPtro(conditions, 672 + $conditions_t_text + 0, __s_lev__2);
+cptr.stPtro(conditions, 672 + $conditions_t_text, __s_lev__2);
 cptr.stPtro(conditions, 672 + $conditions_t_text + 8, __s_lev__2);
 cptr.stPtro(conditions, 672 + $conditions_t_text + 16, __s_lv);
 cptr.stI32o(conditions, 720, 20);
 cptr.stI64o(conditions, 720 + $conditions_t_mask, 32768n);
 cptr.stI32o(conditions, 720 + $conditions_t_c, NHC.bl_parlyz);
-cptr.stPtro(conditions, 720 + $conditions_t_text + 0, __s_parlyz);
+cptr.stPtro(conditions, 720 + $conditions_t_text, __s_parlyz);
 cptr.stPtro(conditions, 720 + $conditions_t_text + 8, __s_para);
 cptr.stPtro(conditions, 720 + $conditions_t_text + 16, __s_par);
 cptr.stI32o(conditions, 768, 10);
 cptr.stI64o(conditions, 768 + $conditions_t_mask, 65536n);
 cptr.stI32o(conditions, 768 + $conditions_t_c, NHC.bl_ride);
-cptr.stPtro(conditions, 768 + $conditions_t_text + 0, __s_ride__2);
+cptr.stPtro(conditions, 768 + $conditions_t_text, __s_ride__2);
 cptr.stPtro(conditions, 768 + $conditions_t_text + 8, __s_rid);
 cptr.stPtro(conditions, 768 + $conditions_t_text + 16, __s_rd);
 cptr.stI32o(conditions, 816, 20);
 cptr.stI64o(conditions, 816 + $conditions_t_mask, 131072n);
 cptr.stI32o(conditions, 816 + $conditions_t_c, NHC.bl_sleeping);
-cptr.stPtro(conditions, 816 + $conditions_t_text + 0, __s_zzz);
+cptr.stPtro(conditions, 816 + $conditions_t_text, __s_zzz);
 cptr.stPtro(conditions, 816 + $conditions_t_text + 8, __s_zzz);
 cptr.stPtro(conditions, 816 + $conditions_t_text + 16, __s_zz);
 cptr.stI32o(conditions, 864, 6);
 cptr.stI64o(conditions, 864 + $conditions_t_mask, 262144n);
 cptr.stI32o(conditions, 864 + $conditions_t_c, NHC.bl_slime);
-cptr.stPtro(conditions, 864 + $conditions_t_text + 0, __s_slime__2);
+cptr.stPtro(conditions, 864 + $conditions_t_text, __s_slime__2);
 cptr.stPtro(conditions, 864 + $conditions_t_text + 8, __s_slim);
 cptr.stPtro(conditions, 864 + $conditions_t_text + 16, __s_slm);
 cptr.stI32o(conditions, 912, 20);
 cptr.stI64o(conditions, 912 + $conditions_t_mask, 524288n);
 cptr.stI32o(conditions, 912 + $conditions_t_c, NHC.bl_slippery);
-cptr.stPtro(conditions, 912 + $conditions_t_text + 0, __s_slip);
+cptr.stPtro(conditions, 912 + $conditions_t_text, __s_slip);
 cptr.stPtro(conditions, 912 + $conditions_t_text + 8, __s_slp);
 cptr.stPtro(conditions, 912 + $conditions_t_text + 16, __s_sl);
 cptr.stI32o(conditions, 960, 6);
 cptr.stI64o(conditions, 960 + $conditions_t_mask, 1048576n);
 cptr.stI32o(conditions, 960 + $conditions_t_c, NHC.bl_stone);
-cptr.stPtro(conditions, 960 + $conditions_t_text + 0, __s_stone__2);
+cptr.stPtro(conditions, 960 + $conditions_t_text, __s_stone__2);
 cptr.stPtro(conditions, 960 + $conditions_t_text + 8, __s_ston);
 cptr.stPtro(conditions, 960 + $conditions_t_text + 16, __s_sto);
 cptr.stI32o(conditions, 1008, 4);
 cptr.stI64o(conditions, 1008 + $conditions_t_mask, 2097152n);
 cptr.stI32o(conditions, 1008 + $conditions_t_c, NHC.bl_strngl);
-cptr.stPtro(conditions, 1008 + $conditions_t_text + 0, __s_strngl__2);
+cptr.stPtro(conditions, 1008 + $conditions_t_text, __s_strngl__2);
 cptr.stPtro(conditions, 1008 + $conditions_t_text + 8, __s_stngl);
 cptr.stPtro(conditions, 1008 + $conditions_t_text + 16, __s_str);
 cptr.stI32o(conditions, 1056, 10);
 cptr.stI64o(conditions, 1056 + $conditions_t_mask, 4194304n);
 cptr.stI32o(conditions, 1056 + $conditions_t_c, NHC.bl_stun);
-cptr.stPtro(conditions, 1056 + $conditions_t_text + 0, __s_stun__2);
+cptr.stPtro(conditions, 1056 + $conditions_t_text, __s_stun__2);
 cptr.stPtro(conditions, 1056 + $conditions_t_text + 8, __s_stun__2);
 cptr.stPtro(conditions, 1056 + $conditions_t_text + 16, __s_st);
 cptr.stI32o(conditions, 1104, 15);
 cptr.stI64o(conditions, 1104 + $conditions_t_mask, 8388608n);
 cptr.stI32o(conditions, 1104 + $conditions_t_c, NHC.bl_submerged);
-cptr.stPtro(conditions, 1104 + $conditions_t_text + 0, __s_submrg);
+cptr.stPtro(conditions, 1104 + $conditions_t_text, __s_submrg);
 cptr.stPtro(conditions, 1104 + $conditions_t_text + 8, __s_subm);
 cptr.stPtro(conditions, 1104 + $conditions_t_text + 16, __s_sm);
 cptr.stI32o(conditions, 1152, 6);
 cptr.stI64o(conditions, 1152 + $conditions_t_mask, 16777216n);
 cptr.stI32o(conditions, 1152 + $conditions_t_c, NHC.bl_termill);
-cptr.stPtro(conditions, 1152 + $conditions_t_text + 0, __s_termill__2);
+cptr.stPtro(conditions, 1152 + $conditions_t_text, __s_termill__2);
 cptr.stPtro(conditions, 1152 + $conditions_t_text + 8, __s_ill);
 cptr.stPtro(conditions, 1152 + $conditions_t_text + 16, __s_ill);
 cptr.stI32o(conditions, 1200, 20);
 cptr.stI64o(conditions, 1200 + $conditions_t_mask, 33554432n);
 cptr.stI32o(conditions, 1200 + $conditions_t_c, NHC.bl_tethered);
-cptr.stPtro(conditions, 1200 + $conditions_t_text + 0, __s_teth);
+cptr.stPtro(conditions, 1200 + $conditions_t_text, __s_teth);
 cptr.stPtro(conditions, 1200 + $conditions_t_text + 8, __s_tth);
 cptr.stPtro(conditions, 1200 + $conditions_t_text + 16, __s_te);
 cptr.stI32o(conditions, 1248, 20);
 cptr.stI64o(conditions, 1248 + $conditions_t_mask, 67108864n);
 cptr.stI32o(conditions, 1248 + $conditions_t_c, NHC.bl_trapped);
-cptr.stPtro(conditions, 1248 + $conditions_t_text + 0, __s_trap);
+cptr.stPtro(conditions, 1248 + $conditions_t_text, __s_trap);
 cptr.stPtro(conditions, 1248 + $conditions_t_text + 8, __s_trp);
 cptr.stPtro(conditions, 1248 + $conditions_t_text + 16, __s_tr);
 cptr.stI32o(conditions, 1296, 20);
 cptr.stI64o(conditions, 1296 + $conditions_t_mask, 134217728n);
 cptr.stI32o(conditions, 1296 + $conditions_t_c, NHC.bl_unconsc);
-cptr.stPtro(conditions, 1296 + $conditions_t_text + 0, __s_out);
+cptr.stPtro(conditions, 1296 + $conditions_t_text, __s_out);
 cptr.stPtro(conditions, 1296 + $conditions_t_text + 8, __s_out);
 cptr.stPtro(conditions, 1296 + $conditions_t_text + 16, __s_ko);
 cptr.stI32o(conditions, 1344, 20);
 cptr.stI64o(conditions, 1344 + $conditions_t_mask, 268435456n);
 cptr.stI32o(conditions, 1344 + $conditions_t_c, NHC.bl_woundedl);
-cptr.stPtro(conditions, 1344 + $conditions_t_text + 0, __s_wlegs);
+cptr.stPtro(conditions, 1344 + $conditions_t_text, __s_wlegs);
 cptr.stPtro(conditions, 1344 + $conditions_t_text + 8, __s_leg);
 cptr.stPtro(conditions, 1344 + $conditions_t_text + 16, __s_lg);
 cptr.stI32o(conditions, 1392, 20);
 cptr.stI64o(conditions, 1392 + $conditions_t_mask, 536870912n);
 cptr.stI32o(conditions, 1392 + $conditions_t_c, NHC.bl_holding);
-cptr.stPtro(conditions, 1392 + $conditions_t_text + 0, __s_uhold);
+cptr.stPtro(conditions, 1392 + $conditions_t_text, __s_uhold);
 cptr.stPtro(conditions, 1392 + $conditions_t_text + 8, __s_uhld);
 cptr.stPtro(conditions, 1392 + $conditions_t_text + 16, __s_uhd);
 
@@ -2308,6 +2308,7 @@ let cache_multi_reason = null;
 
 /** C ref: botl.c:962 */
 function bot_via_windowport() {
+    let __r1, __r2, __r3, __r4, __r5, __r6;
     let buf = new Uint8Array(256);
     let titl;
     let nb;
@@ -2366,14 +2367,9 @@ function bot_via_windowport() {
     cptr.st1o(gv, NHC.BL_TITLE, 1, 1);  /* indicate val already set */
 
     /* Strength */
-    cptr.stI32o3(
-        gb,
-        idx,
-        $sizeof_istat_s_x27,
-        NHC.BL_STR,
-        $sizeof_istat_s,
-        $istat_s_a,
-        (acurr(NHC.A_STR))
+    (
+        __r1 = (acurr(NHC.A_STR)),
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_STR, $sizeof_istat_s, $istat_s_a, __r1)
     );
     void cptr.strcpy(
         cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_STR, $sizeof_istat_s, $istat_s_val),
@@ -2382,50 +2378,25 @@ function bot_via_windowport() {
     cptr.st1o(gv, NHC.BL_STR, 1, 1);  /* indicate val already set */
 
     /*  Dexterity, constitution, intelligence, wisdom, charisma. */
-    cptr.stI32o3(
-        gb,
-        idx,
-        $sizeof_istat_s_x27,
-        NHC.BL_DX,
-        $sizeof_istat_s,
-        $istat_s_a,
-        (acurr(NHC.A_DEX))
+    (
+        __r2 = (acurr(NHC.A_DEX)),
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_DX, $sizeof_istat_s, $istat_s_a, __r2)
     );
-    cptr.stI32o3(
-        gb,
-        idx,
-        $sizeof_istat_s_x27,
-        NHC.BL_CO,
-        $sizeof_istat_s,
-        $istat_s_a,
-        (acurr(NHC.A_CON))
+    (
+        __r3 = (acurr(NHC.A_CON)),
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_CO, $sizeof_istat_s, $istat_s_a, __r3)
     );
-    cptr.stI32o3(
-        gb,
-        idx,
-        $sizeof_istat_s_x27,
-        NHC.BL_IN,
-        $sizeof_istat_s,
-        $istat_s_a,
-        (acurr(NHC.A_INT))
+    (
+        __r4 = (acurr(NHC.A_INT)),
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_IN, $sizeof_istat_s, $istat_s_a, __r4)
     );
-    cptr.stI32o3(
-        gb,
-        idx,
-        $sizeof_istat_s_x27,
-        NHC.BL_WI,
-        $sizeof_istat_s,
-        $istat_s_a,
-        (acurr(NHC.A_WIS))
+    (
+        __r5 = (acurr(NHC.A_WIS)),
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_WI, $sizeof_istat_s, $istat_s_a, __r5)
     );
-    cptr.stI32o3(
-        gb,
-        idx,
-        $sizeof_istat_s_x27,
-        NHC.BL_CH,
-        $sizeof_istat_s,
-        $istat_s_a,
-        (acurr(NHC.A_CHA))
+    (
+        __r6 = (acurr(NHC.A_CHA)),
+        cptr.stI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_CH, $sizeof_istat_s, $istat_s_a, __r6)
     );
 
     /* Alignment */
@@ -2627,12 +2598,12 @@ function bot_via_windowport() {
         NHC.BL_HUNGER,
         $sizeof_istat_s,
         $istat_s_a,
-        cptr.ldI32o(u, $you_uhs) | 0
+        (cptr.ldI32o(u, $you_uhs) >>> 0) | 0
     );
     void cptr.strcpy(
         cptr.ldPtro3(gb, idx, $sizeof_istat_s_x27, NHC.BL_HUNGER, $sizeof_istat_s, $istat_s_val),
-        (cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY)
-            ? cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8)
+        (cptr.ldI32o(u, $you_uhs) >>> 0 != NHC.NOT_HUNGRY)
+            ? cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs) >>> 0, 8)
             : __s_empty
     );
     cptr.st1o(gv, NHC.BL_HUNGER, 1, 1);
@@ -2649,7 +2620,7 @@ function bot_via_windowport() {
     /* Version; unchanging unless player toggles 'showvers' option or
        modifies 'versinfo' option; toggling showvers off will clear it */
     if (cptr.ldI32o3(gb, idx, $sizeof_istat_s_x27, NHC.BL_VERS, $sizeof_istat_s, $istat_s_a) !=
-            (cptr.ldI32o(flags, $flag_versinfo) | 0)) {
+            ((cptr.ldI32o(flags, $flag_versinfo) >>> 0) | 0)) {
         cptr.stI32o3(
             gb,
             idx,
@@ -2657,7 +2628,7 @@ function bot_via_windowport() {
             NHC.BL_VERS,
             $sizeof_istat_s,
             $istat_s_a,
-            cptr.ldI32o(flags, $flag_versinfo) | 0
+            (cptr.ldI32o(flags, $flag_versinfo) >>> 0) | 0
         );
         cptr.st1o(gv, NHC.BL_VERS, 0, 1);
     }
@@ -2704,7 +2675,8 @@ function bot_via_windowport() {
                 NHC.bl_foodpois,
                 $sizeof_condtests_t,
                 $condtests_t_test,
-                schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE) != 0))
+                schar((((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
+                    NHM.SICK_VOMITABLE) != 0))
             );
         if (cptr.ld1so2(condtests, NHC.bl_termill, $sizeof_condtests_t, $condtests_t_enabled))
             cptr.st1o2(
@@ -2712,7 +2684,8 @@ function bot_via_windowport() {
                 NHC.bl_termill,
                 $sizeof_condtests_t,
                 $condtests_t_test,
-                schar(((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) != 0))
+                schar((((cptr.ldBits(cptr.add(u, $you_usick_type), 0, 2, 0) | 0) &
+                    NHM.SICK_NONVOMITABLE) != 0))
             );
     }
     cptr.st1o2(
@@ -2728,14 +2701,14 @@ function bot_via_windowport() {
             cptr.st1o2(condtests, NHC.bl_trapped, $sizeof_condtests_t, $condtests_t_test, 0)
         )
     );
-    if (cptr.ldI32o(u, $you_utrap)) {
+    if (cptr.ldI32o(u, $you_utrap) >>> 0) {
         if (cptr.ld1so2(condtests, NHC.bl_inlava, $sizeof_condtests_t, $condtests_t_enabled))
             cptr.st1o2(
                 condtests,
                 NHC.bl_inlava,
                 $sizeof_condtests_t,
                 $condtests_t_test,
-                schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA))
+                schar((cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_LAVA))
             );
         if (cptr.ld1so2(condtests, NHC.bl_tethered, $sizeof_condtests_t, $condtests_t_enabled))
             cptr.st1o2(
@@ -2743,7 +2716,7 @@ function bot_via_windowport() {
                 NHC.bl_tethered,
                 $sizeof_condtests_t,
                 $condtests_t_test,
-                schar((cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL))
+                schar((cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_BURIEDBALL))
             );
         if (cptr.ld1so2(condtests, NHC.bl_trapped, $sizeof_condtests_t, $condtests_t_enabled))
             /* if in-lava or tethered is disabled and the condition applies,
@@ -2782,7 +2755,7 @@ function bot_via_windowport() {
            so swallowed needs to be checked first; it is not possible for
            a hero in sticks() form to be held--sticky hero does the holding
            even if u.ustuck is also a holder */
-        if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             if (cptr.ld1so2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_enabled))
                 cptr.st1o2(condtests, NHC.bl_held, $sizeof_condtests_t, $condtests_t_test, 1);
         } else if (Upolyd() &&
@@ -2852,7 +2825,7 @@ function bot_via_windowport() {
         NHC.bl_glowhands,
         $sizeof_condtests_t,
         $condtests_t_test,
-        schar(((cptr.ldI32o(u, $you_umconf)) ? 1 : 0))
+        schar(((cptr.ldI32o(u, $you_umconf) >>> 0) ? 1 : 0))
     );
     cptr.st1o2(
         condtests,
@@ -3271,8 +3244,8 @@ export function condopt(idx, addr, negated) {
 /* qsort callback routine for sorting the condition index */
 /** C ref: botl.c:1333 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function cond_cmp(vptr1, vptr2) {
-    let indx1 = cptr.ldI32(vptr1);
-    let indx2 = cptr.ldI32(vptr2);
+    let indx1 = cptr.ldI32(cptr.castView(vptr1, "i32"));
+    let indx2 = cptr.ldI32(cptr.castView(vptr2, "i32"));
     let c1 = cptr.ldI32o(conditions, indx1, $sizeof_conditions_t);
     let c2 = cptr.ldI32o(conditions, indx2, $sizeof_conditions_t);
 
@@ -3289,8 +3262,8 @@ function cond_cmp(vptr1, vptr2) {
 /* qsort callback routine for alphabetical sorting of index */
 /** C ref: botl.c:1346 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function menualpha_cmp(vptr1, vptr2) {
-    let indx1 = cptr.ldI32(vptr1);
-    let indx2 = cptr.ldI32(vptr2);
+    let indx1 = cptr.ldI32(cptr.castView(vptr1, "i32"));
+    let indx2 = cptr.ldI32(cptr.castView(vptr2, "i32"));
 
     return strncmpi(
         (cptr.ldPtro2(condtests, indx1, $sizeof_condtests_t, $condtests_t_useroption)),
@@ -3776,6 +3749,7 @@ export function status_initialize(reassessment) {
 
 /** C ref: botl.c:1723 */
 export function status_finish() {
+    let __r7, __r8;
     let i;
 
     /* call the window port cleanup routine first */
@@ -3793,7 +3767,7 @@ export function status_finish() {
                         i,
                         $sizeof_istat_s,
                         $istat_s_val,
-                        (null)
+                        cptr.byteView((null))
                     );
         if (cptr.ldPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val))
             cptr.free(cptr.ldPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_val)),
@@ -3804,18 +3778,21 @@ export function status_finish() {
                         i,
                         $sizeof_istat_s,
                         $istat_s_val,
-                        (null)
+                        cptr.byteView((null))
                     );
         /* pointer to an entry in thresholds list; Null it out since
            that list is about to go away */
-        cptr.stPtro3(
-            gb,
-            0,
-            $sizeof_istat_s_x27,
-            i,
-            $sizeof_istat_s,
-            $istat_s_hilite_rule,
-            cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, null)
+        (
+            __r7 = cptr.stPtro3(
+                gb,
+                1,
+                $sizeof_istat_s_x27,
+                i,
+                $sizeof_istat_s,
+                $istat_s_hilite_rule,
+                null
+            ),
+            cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, __r7)
         );
         if (cptr.ldPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds)) {
             let temp;
@@ -3836,14 +3813,8 @@ export function status_finish() {
                 next = cptr.ldPtro(temp, $hilite_s_next);
                 cptr.free(temp);
             }
-            cptr.stPtro3(
-                gb,
-                0,
-                $sizeof_istat_s_x27,
-                i,
-                $sizeof_istat_s,
-                $istat_s_thresholds,
-                cptr.stPtro3(
+            (
+                __r8 = cptr.stPtro3(
                     gb,
                     1,
                     $sizeof_istat_s_x27,
@@ -3851,6 +3822,15 @@ export function status_finish() {
                     $sizeof_istat_s,
                     $istat_s_thresholds,
                     (null)
+                ),
+                cptr.stPtro3(
+                    gb,
+                    0,
+                    $sizeof_istat_s_x27,
+                    i,
+                    $sizeof_istat_s,
+                    $istat_s_thresholds,
+                    __r8
                 )
             );
         }
@@ -3861,6 +3841,7 @@ let __static_init_blstats_initalready = 0; /** C ref: botl.c:1761 — signed cha
 
 /** C ref: botl.c:1759 */
 function init_blstats() {
+    let __r9;
     let i;
     let j;
 
@@ -3893,21 +3874,17 @@ function init_blstats() {
                 8
             );
             if (cptr.ldI32o3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_valwidth)) {
-                cptr.stPtro3(
-                    gb,
-                    i,
-                    $sizeof_istat_s_x27,
-                    j,
-                    $sizeof_istat_s,
-                    $istat_s_val,
-                    alloc(cptr.ldI32o3(
+                (
+                    __r9 = cptr.byteView(alloc(cptr.ldI32o3(
                         gb,
                         i,
                         $sizeof_istat_s_x27,
                         j,
                         $sizeof_istat_s,
                         $istat_s_valwidth
-                    ) >>> 0)
+                    ) >>>
+                        0)),
+                    cptr.stPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_val, __r9)
                 );
                 cptr.st1o(
                     cptr.ldPtro3(gb, i, $sizeof_istat_s_x27, j, $sizeof_istat_s, $istat_s_val),
@@ -4016,14 +3993,16 @@ function compare_blstats(bl1, bl2) {
                     : ((cptr.ldI64(cptr.ldPtr(a1)) > cptr.ldI64(cptr.ldPtr(a2))) ? -1 : 0);
             break;
         case NHC.ANY_UINT:
-            result = (cptr.ldI32(a1) < cptr.ldI32(a2))
+            result = (cptr.ldI32(a1) >>> 0 < cptr.ldI32(a2) >>> 0)
                     ? 1
-                    : ((cptr.ldI32(a1) > cptr.ldI32(a2)) ? -1 : 0);
+                    : ((cptr.ldI32(a1) >>> 0 > cptr.ldI32(a2) >>> 0) ? -1 : 0);
             break;
         case NHC.ANY_UPTR:
-            result = (cptr.ldI32(cptr.ldPtr(a1)) < cptr.ldI32(cptr.ldPtr(a2)))
+            result = (cptr.ldI32(cptr.ldPtr(a1)) >>> 0 < cptr.ldI32(cptr.ldPtr(a2)) >>> 0)
                     ? 1
-                    : ((cptr.ldI32(cptr.ldPtr(a1)) > cptr.ldI32(cptr.ldPtr(a2))) ? -1 : 0);
+                    : ((cptr.ldI32(cptr.ldPtr(a1)) >>> 0 > cptr.ldI32(cptr.ldPtr(a2)) >>> 0)
+                        ? -1
+                        : 0);
             break;
         case NHC.ANY_ULONG:
             result = (cptr.ldU64(a1) < cptr.ldU64(a2))
@@ -4072,7 +4051,7 @@ function anything_to_s(buf, a, anytype) {
             void cptr.sprintf(buf, __s_pct_d, cptr.ldI32(a));
             break;
         case NHC.ANY_UINT:
-            void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(a));
+            void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(a) >>> 0);
             break;
         case NHC.ANY_IPTR:
             void cptr.sprintf(buf, __s_pct_d, cptr.ldI32(cptr.ldPtr(a)));
@@ -4084,7 +4063,7 @@ function anything_to_s(buf, a, anytype) {
             void cptr.sprintf(buf, __s_lu, cptr.ldU64(cptr.ldPtr(a)));
             break;
         case NHC.ANY_UPTR:
-            void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(cptr.ldPtr(a)));
+            void cptr.sprintf(buf, __s_pct_u, cptr.ldI32(cptr.ldPtr(a)) >>> 0);
             break;
         case NHC.ANY_STR:
             ;
@@ -4097,6 +4076,7 @@ function anything_to_s(buf, a, anytype) {
 
 /** C ref: botl.c:1930 — @param {CPtr<anything>} a @param {CPtr<char>} buf @param {CInt} anytype */
 function s_to_anything(a, buf, anytype) {
+    let __r10, __r11, __r12, __r13;
     if (!buf || !a)
         return;
 
@@ -4115,19 +4095,19 @@ function s_to_anything(a, buf, anytype) {
             break;
         case NHC.ANY_IPTR:
             if (cptr.ldPtr(a))
-                cptr.stI32(cptr.ldPtr(a), atoi(buf));
+                (__r10 = atoi(buf), cptr.stI32(cptr.ldPtr(a), __r10));
             break;
         case NHC.ANY_UPTR:
             if (cptr.ldPtr(a))
-                cptr.stI32(cptr.ldPtr(a), atoi(buf) >>> 0);
+                (__r11 = atoi(buf) >>> 0, cptr.stI32(cptr.ldPtr(a), __r11));
             break;
         case NHC.ANY_LPTR:
             if (cptr.ldPtr(a))
-                cptr.stI64(cptr.ldPtr(a), atol(buf));
+                (__r12 = atol(buf), cptr.stI64(cptr.ldPtr(a), __r12));
             break;
         case NHC.ANY_ULPTR:
             if (cptr.ldPtr(a))
-                cptr.stU64(cptr.ldPtr(a), BigInt.asUintN(64, atol(buf)));
+                (__r13 = BigInt.asUintN(64, atol(buf)), cptr.stU64(cptr.ldPtr(a), __r13));
             break;
         case NHC.ANY_MASK32:
             cptr.stU64(a, BigInt.asUintN(64, atol(buf)));
@@ -4186,8 +4166,11 @@ function percentage(bl, maxbl) {
                 ));
                 break;
             case NHC.ANY_UINT:
-                uval = cptr.ldI32o(bl, $istat_s_a);
-                result = (u32div((Math.imul(100, uval) >>> 0), cptr.ldI32o(maxbl, $istat_s_a))) | 0;
+                uval = cptr.ldI32o(bl, $istat_s_a) >>> 0;
+                result = (u32div(
+                    (Math.imul(100, uval) >>> 0),
+                    cptr.ldI32o(maxbl, $istat_s_a) >>> 0
+                )) | 0;
                 break;
             case NHC.ANY_ULONG:
                 ulval = cptr.ldU64o(bl, $istat_s_a);
@@ -4210,10 +4193,10 @@ function percentage(bl, maxbl) {
                 ));
                 break;
             case NHC.ANY_UPTR:
-                uval = cptr.ldI32(cptr.ldPtro(bl, $istat_s_a));
+                uval = cptr.ldI32(cptr.ldPtro(bl, $istat_s_a)) >>> 0;
                 result = (u32div(
                     (Math.imul(100, uval) >>> 0),
-                    (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)))
+                    (cptr.ldI32(cptr.ldPtro(maxbl, $istat_s_a)) >>> 0)
                 )) | 0;
                 break;
             case NHC.ANY_ULPTR:
@@ -4559,21 +4542,25 @@ export function status_eval_next_unhilite() {
 /* called by options handling when 'statushilites' value is changed */
 /** C ref: botl.c:2321 */
 export function reset_status_hilites() {
+    let __r14;
     if (cptr.ldI64o(iflags, $instance_flags_hilite_delta)) {
         let i;
 
         for (i = 0; i < NHC.MAXBLSTATS; ++i)
-            cptr.stI64o2(
-                cptr.add(gb, 0, $sizeof_istat_s_x27),
-                i,
-                $sizeof_istat_s,
-                $istat_s_time,
-                cptr.stI64o2(
+            (
+                __r14 = cptr.stI64o2(
                     cptr.add(gb, 1, $sizeof_istat_s_x27),
                     i,
                     $sizeof_istat_s,
                     $istat_s_time,
                     0n
+                ),
+                cptr.stI64o2(
+                    cptr.add(gb, 0, $sizeof_istat_s_x27),
+                    i,
+                    $sizeof_istat_s,
+                    $istat_s_time,
+                    __r14
                 )
             );
         cptr.st1(gu, 1);
@@ -4887,13 +4874,7 @@ function split_clridx(idx, coloridx, attrib) {
  */
 /** C ref: botl.c:2593 — @param {CPtr<char>} op @param {CInt} from_configfile @returns {CInt} */
 export function parse_status_hl1(op, from_configfile) {
-    let hsbuf = (function () {
-        const flat = new Uint8Array(21 * (128 * 1));
-        const a = [];
-        for (let r = 0; r < 21; r++) a.push(flat.subarray(r * (128 * 1), (r + 1) * (128 * 1)));
-        a.buf = flat;
-        return a;
-    })();
+    let hsbuf = cptr.alloc(21 * 128);
     let rslt;
     let badopt = 0;
     let i;
@@ -4903,27 +4884,27 @@ export function parse_status_hl1(op, from_configfile) {
 
     fldnum = 0;
     for (i = 0; i < 21; ++i) {
-        cptr.st1o(cptr.decay(hsbuf[i]), 0, 0, 1);
+        cptr.st1o3(hsbuf, i, 128, 0, 1, 0, 0);
     }
     while (cptr.ld1s(op) && fldnum < 21 && ccount < 126) {
         c = lowc(cptr.ld1s(op));
         if (c == 32) {
             if (fldnum >= 1) {
-                if (fldnum == 1 && strncmpi(cptr.decay((hsbuf[0])), (__s_title), -1) == 0) {
+                if (fldnum == 1 && strncmpi((cptr.add(hsbuf, 0, 128)), (__s_title), -1) == 0) {
                     /* spaces are allowed in title */
-                    cptr.st1o(cptr.decay(hsbuf[fldnum]), ccount++, c, 1);
-                    cptr.st1o(cptr.decay(hsbuf[fldnum]), ccount, 0, 1);
+                    cptr.st1o3(hsbuf, fldnum, 128, ccount++, 1, 0, c);
+                    cptr.st1o3(hsbuf, fldnum, 128, ccount, 1, 0, 0);
                     op = cptr.add(op, 1);
                     continue;
                 }
-                rslt = parse_status_hl2(cptr.decay(hsbuf), from_configfile);
+                rslt = parse_status_hl2(hsbuf, from_configfile);
                 if (!rslt) {
                     badopt = 1;
                     break;
                 }
             }
             for (i = 0; i < 21; ++i) {
-                cptr.st1o(cptr.decay(hsbuf[i]), 0, 0, 1);
+                cptr.st1o3(hsbuf, i, 128, 0, 1, 0, 0);
             }
             fldnum = 0;
             ccount = 0;
@@ -4931,13 +4912,13 @@ export function parse_status_hl1(op, from_configfile) {
             fldnum++;
             ccount = 0;
         } else {
-            cptr.st1o(cptr.decay(hsbuf[fldnum]), ccount++, c, 1);
-            cptr.st1o(cptr.decay(hsbuf[fldnum]), ccount, 0, 1);
+            cptr.st1o3(hsbuf, fldnum, 128, ccount++, 1, 0, c);
+            cptr.st1o3(hsbuf, fldnum, 128, ccount, 1, 0, 0);
         }
         op = cptr.add(op, 1);
     }
     if (fldnum >= 1 && !badopt) {
-        rslt = parse_status_hl2(cptr.decay(hsbuf), from_configfile);
+        rslt = parse_status_hl2(hsbuf, from_configfile);
         if (!rslt)
             badopt = 1;
     }
@@ -5562,7 +5543,7 @@ function query_conditions() {
     destroy_nhwindow()(tmpwin);
     if (res > 0) {
         for (i = 0; i < res; i++)
-            ret |= cptr.ldU64o(picks.v, i, $sizeof_menu_item);
+            ret = ret | cptr.ldU64o(picks.v, i, $sizeof_menu_item);
         cptr.free(picks.v);
     }
     return ret;
@@ -5621,10 +5602,11 @@ function match_str2conditionbitmask(str) {
                 __s_sp_dash_us,
                 1
             )) {
-                mask |= BigInt.asUintN(
-                    64,
-                    cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)
-                );
+                mask = mask |
+                        BigInt.asUintN(
+                            64,
+                            cptr.ldI64o2(conditions, i, $sizeof_conditions_t, $conditions_t_mask)
+                        );
                 nmatches++;
             }
 
@@ -5637,7 +5619,8 @@ function match_str2conditionbitmask(str) {
                     __s_sp_dash_us,
                     1
                 )) {
-                    mask |= cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask);
+                    mask = mask |
+                            cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask);
                     nmatches++;
                 }
         }
@@ -5648,7 +5631,8 @@ function match_str2conditionbitmask(str) {
 
             for (i = 0; i < 6; i++)
                 if (!strncmpi(str, cptr.ldPtro(condition_aliases, i, $sizeof_condmap), len)) {
-                    mask |= cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask);
+                    mask = mask |
+                            cptr.ldU64o2(condition_aliases, i, $sizeof_condmap, $condmap_bitmask);
                     nmatches++;
                 }
         }
@@ -5676,7 +5660,7 @@ function str2conditionbitmask(str) {
             config_error_add(__s_unknown_condition_s, cptr.ldPtro(subfields.v, i, 8));
             return 0n;
         }
-        conditions_bitmask |= bm;
+        conditions_bitmask = conditions_bitmask | bm;
     }
     return conditions_bitmask;
 }
@@ -5886,6 +5870,7 @@ function parse_condition(s, sidx) {
 
 /** C ref: botl.c:3351 */
 export function clear_status_hilites() {
+    let __r15, __r16;
     let i;
 
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
@@ -5907,24 +5892,38 @@ export function clear_status_hilites() {
             next = cptr.ldPtro(temp, $hilite_s_next);
             cptr.free(temp);
         }
-        cptr.stPtro3(
-            gb,
-            0,
-            $sizeof_istat_s_x27,
-            i,
-            $sizeof_istat_s,
-            $istat_s_thresholds,
-            cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds, null)
+        (
+            __r15 = cptr.stPtro3(
+                gb,
+                1,
+                $sizeof_istat_s_x27,
+                i,
+                $sizeof_istat_s,
+                $istat_s_thresholds,
+                null
+            ),
+            cptr.stPtro3(gb, 0, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_thresholds, __r15)
         );
         /* pointer into thresholds list, now stale */
-        cptr.stPtro3(
-            gb,
-            0,
-            $sizeof_istat_s_x27,
-            i,
-            $sizeof_istat_s,
-            $istat_s_hilite_rule,
-            cptr.stPtro3(gb, 1, $sizeof_istat_s_x27, i, $sizeof_istat_s, $istat_s_hilite_rule, null)
+        (
+            __r16 = cptr.stPtro3(
+                gb,
+                1,
+                $sizeof_istat_s_x27,
+                i,
+                $sizeof_istat_s,
+                $istat_s_hilite_rule,
+                null
+            ),
+            cptr.stPtro3(
+                gb,
+                0,
+                $sizeof_istat_s_x27,
+                i,
+                $sizeof_istat_s,
+                $istat_s_hilite_rule,
+                __r16
+            )
         );
     }
 }
@@ -6122,7 +6121,7 @@ function status_hilite_linestr_gather_conditions() {
             let added_condmap = 0;
 
             for (j = 0; j < 30; j++)
-                if (cptr.ldI32o2(cond_maps, j, $sizeof__cond_map, $_cond_map_clratr) == ca) {
+                if (cptr.ldI32o2(cond_maps, j, $sizeof__cond_map, $_cond_map_clratr) >>> 0 == ca) {
                     cptr.stU64o(
                         cond_maps,
                         j,
@@ -6171,7 +6170,7 @@ function status_hilite_linestr_gather_conditions() {
             let atr = cptr.box(NHC.HL_NONE);
 
             split_clridx(
-                cptr.ldI32o2(cond_maps, i, $sizeof__cond_map, $_cond_map_clratr) | 0,
+                (cptr.ldI32o2(cond_maps, i, $sizeof__cond_map, $_cond_map_clratr) >>> 0) | 0,
                 clr,
                 atr
             );
@@ -7406,6 +7405,7 @@ function status_hilite_menu_add(origfld) {
 
 /** C ref: botl.c:4305 — @param {CInt} id @returns {CInt} */
 function status_hilite_remove(id) {
+    let __r17, __r18;
     let hlstr = status_hilite_str;
 
     while (hlstr && cptr.ldI32(hlstr) != id) {
@@ -7534,14 +7534,8 @@ function status_hilite_remove(id) {
                     ),
                     hl
                 )) {
-                    cptr.stPtro3(
-                        gb,
-                        0,
-                        $sizeof_istat_s_x27,
-                        fld,
-                        $sizeof_istat_s,
-                        $istat_s_hilite_rule,
-                        cptr.stPtro3(
+                    (
+                        __r17 = cptr.stPtro3(
                             gb,
                             1,
                             $sizeof_istat_s_x27,
@@ -7549,19 +7543,31 @@ function status_hilite_remove(id) {
                             $sizeof_istat_s,
                             $istat_s_hilite_rule,
                             null
+                        ),
+                        cptr.stPtro3(
+                            gb,
+                            0,
+                            $sizeof_istat_s_x27,
+                            fld,
+                            $sizeof_istat_s,
+                            $istat_s_hilite_rule,
+                            __r17
                         )
                     );
-                    cptr.stI64o2(
-                        cptr.add(gb, 0, $sizeof_istat_s_x27),
-                        fld,
-                        $sizeof_istat_s,
-                        $istat_s_time,
-                        cptr.stI64o2(
+                    (
+                        __r18 = cptr.stI64o2(
                             cptr.add(gb, 1, $sizeof_istat_s_x27),
                             fld,
                             $sizeof_istat_s,
                             $istat_s_time,
                             0n
+                        ),
+                        cptr.stI64o2(
+                            cptr.add(gb, 0, $sizeof_istat_s_x27),
+                            fld,
+                            $sizeof_istat_s,
+                            $istat_s_time,
+                            __r18
                         )
                     );
                 }
@@ -7683,9 +7689,9 @@ function status_hilite_menu_fld(fld) {
         for (i = 0; i < res; i++) {
             idx = cptr.ldI32o(picks.v, i, $sizeof_menu_item);
             if (idx == -1)
-                mode |= 1;  /* delete selected hilites */
+                mode = (mode | 1) >>> 0;  /* delete selected hilites */
             else if (idx == -2)
-                mode |= 2;  /* create new hilites */
+                mode = (mode | 2) >>> 0;  /* create new hilites */
         }
         if ((mode & 1) >>> 0) {
             for (i = 0; i < res; i++) {

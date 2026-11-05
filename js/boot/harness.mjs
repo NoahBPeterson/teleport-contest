@@ -25,6 +25,8 @@
 // (baked game data is not hand-written port code — see tools/vendor-data.mjs).
 import { DIRS as VENDORED_DIRS, readVendored, statVendored } from '../data-nethackdir/index.mjs';
 import { ereCompile, regErrorText, REG_BADPAT, REG_NOMATCH } from './posix-ere.mjs';
+import { scanfCore, strtoCore } from '../libc/scanf.js';
+import { installExtraLibc } from '../libc/extra.js';
 
 // Mount point of the playground inside the VFS. nh_getenv() rejects values
 // longer than 128 chars, and the C code copies this into fixed-size buffers,
@@ -50,6 +52,14 @@ const HACKDIR = '/tmp/c2js-nethackdir';
 // (NHJS_RC_PATH, commit 1d90456) — derived independently here, cited per
 // project attribution policy.
 const VHOME = '/Users/davidbau/git/mazesofmenace/teleport/maud/test/comparison/c-harness/results';
+
+// Sessions recorded by our own scripts/record-session.mjs ran under a temp
+// $HOME and say so in a trailing rc comment; show that path on those. Official
+// sessions have no such line and keep VHOME.
+function recorderHomeOf(nethackrc) {
+  const m = /^# recorder-home: (\/.*)$/m.exec(nethackrc || '');
+  return m ? m[1] : VHOME;
+}
 
 let __segCounter = 0;
 
@@ -103,7 +113,7 @@ export async function runBootGame(opts) {
   const waitForKey = typeof opts.waitForKey === 'function' ? opts.waitForKey : null;
   const segId = ++__segCounter;
 
-  const tmpHome = VHOME;
+  const tmpHome = recorderHomeOf(opts.nethackrc);
   const ENV = {
     // The recorder ran under TERM=xterm-256color (upstream
     // docs/recording-environment.md). Nothing downstream reads the string
@@ -157,10 +167,10 @@ export async function runBootGame(opts) {
 
   const HACKDIR_PREFIX = HACKDIR + '/';
   const vendoredName = (p) => (p.startsWith(HACKDIR_PREFIX) ? p.slice(HACKDIR_PREFIX.length) : null);
-  const VFS_DIRS = new Set(['/', '/tmp', HACKDIR, VHOME, ...VENDORED_DIRS.map((d) => HACKDIR_PREFIX + d)]);
+  const VFS_DIRS = new Set(['/', '/tmp', HACKDIR, tmpHome, ...VENDORED_DIRS.map((d) => HACKDIR_PREFIX + d)]);
 
   const bootFiles = new Map();
-  if (opts.nethackrc) bootFiles.set(VHOME + '/.nethackrc', bytesOfString(opts.nethackrc));
+  if (opts.nethackrc) bootFiles.set(tmpHome + '/.nethackrc', bytesOfString(opts.nethackrc));
 
   // Lua->JS script ports (roadmap 1.10). Bound below, after the transpiled
   // module graph has been imported — js/lua-js/bridge.mjs pulls in lapi/sp_lev/
@@ -284,7 +294,12 @@ export async function runBootGame(opts) {
   g.__builtin_object_size = (p, t) => -1n;
   g.__builtin_huge_val = () => Infinity;
   function memsetAny(dst, val, n) {
-    if (dst && dst.isBox) { dst.v = 0; return dst; }
+    if (dst && dst.isBox) {
+      if (val === 0) { dst.v = typeof dst.v === 'bigint' ? 0n : 0; return dst; }
+      const view = cptr.byteView(dst);
+      for (let i = 0; i < n; i++) view.buf[i] = val & 0xFF;
+      return dst;
+    }
     if (dst && Array.isArray(dst.buf)) {
       const B = dst.buf;
       const nested = B.length === 0 || Array.isArray(B[0]) || B[0] instanceof Uint8Array;
@@ -393,9 +408,9 @@ export async function runBootGame(opts) {
   g.ispunct = (c) => (g.isprint(c) && !g.isalnum(c) && c !== 32) ? 1 : 0;
   g.iscntrl = (c) => (c < 32 || c === 127) ? 1 : 0;
   g.toupper = (c) => (c >= 97 && c <= 122) ? c - 32 : c;
-  g.strcmp = (a, b) => { const s = cptr.cstr(a), t = cptr.cstr(b); return s < t ? -1 : s > t ? 1 : 0; };
-  g.strcasecmp = (a, b) => { const s = cptr.cstr(a).toLowerCase(), t = cptr.cstr(b).toLowerCase(); return s < t ? -1 : s > t ? 1 : 0; };
-  g.strncasecmp = (a, b, n) => { const s = cptr.cstr(a).toLowerCase().slice(0, Number(n)), t = cptr.cstr(b).toLowerCase().slice(0, Number(n)); return s < t ? -1 : s > t ? 1 : 0; };
+  g.strcmp = (a, b) => cptr.bytesCmp(a, b, Infinity, false);
+  g.strcasecmp = (a, b) => cptr.bytesCmp(a, b, Infinity, true);
+  g.strncasecmp = (a, b, n) => cptr.bytesCmp(a, b, Number(n), true);
   g.memchr = (p, c, n) => { c = Number(c) & 0xFF; for (let i = 0; i < Number(n); i++) { if (p.buf[p.off + i] === c) return cptr.add(p, i); } return null; };
   g.memcmp = (a, b, n) => { n = Number(n); for (let i = 0; i < n; i++) { const d = (a.buf[a.off + i] ?? 0) - (b.buf[b.off + i] ?? 0); if (d) return d; } return 0; };
   g.memmove = (dst, src, n) => cptr.memcpy(dst, src, n);
@@ -403,87 +418,15 @@ export async function runBootGame(opts) {
   g.strcspn = (s, reject) => { const r = cptr.cstr(reject); const t = cptr.cstr(s); let i = 0; while (i < t.length && !r.includes(t[i])) i++; return BigInt(i); };
   g.strpbrk = (s, accept) => { const a = cptr.cstr(accept); const t = cptr.cstr(s); for (let i = 0; i < t.length; i++) if (a.includes(t[i])) return cptr.add(s, i); return null; };
   g.memset = (dst, val, n) => memsetAny(dst, val, Number(n));
-  g.atol = (p) => BigInt(g.atoi(p));
-  g.strtoul = (p, endptr, base) => {
-    base = Number(base) || 10;
-    const s = cptr.cstr(p).replace(/^\s+/, '');
-    const m = s.match(base === 16 ? /^[+-]?(0x)?[0-9a-fA-F]+/ : /^[+-]?\d+/);
-    if (!m) { if (endptr && endptr.buf !== undefined) cptr.stPtr(endptr, p); return 0n; }
-    const v = BigInt(base === 16 && !m[0].toLowerCase().startsWith('0x') && !/^[+-]?0x/i.test(m[0]) ? '0x' + m[0] : m[0]);
-    if (endptr && endptr.buf !== undefined) cptr.stPtr(endptr, cptr.add(p, cptr.cstr(p).indexOf(m[0]) + m[0].length));
-    return BigInt.asUintN(64, v);
+  g.atol = (p) => strtoCore(cptr.cstr(p), 10, true).value;
+  const strto = (p, endptr, base, signed) => {
+    const { value, end } = strtoCore(cptr.cstr(p), Number(base), signed);
+    if (endptr && endptr !== null) cptr.stPtr(endptr, cptr.add(p, end));
+    return value;
   };
-  g.strtol = (p, endptr, base) => BigInt.asIntN(64, g.strtoul(p, endptr, base));
-  // Shared scanf engine (sscanf/fscanf). Returns {assigned, consumed} so
-  // fscanf can advance the stream position by the characters it ate.
-  const scanfCore = (s, f, args) => {
-    let si = 0, fi = 0, assigned = 0, argi = 0;
-    const done = () => ({ assigned, consumed: si });
-    const skipWs = () => { while (si < s.length && /\s/.test(s[si])) si++; };
-    while (fi < f.length) {
-      const c = f[fi];
-      if (/\s/.test(c)) { skipWs(); fi++; continue; }
-      if (c !== '%') { if (s[si] !== c) return done(); si++; fi++; continue; }
-      fi++;
-      if (f[fi] === '%') { if (s[si] !== '%') return done(); si++; fi++; continue; }
-      let suppress = false;
-      if (f[fi] === '*') { suppress = true; fi++; }
-      let width = 0;
-      while (fi < f.length && f[fi] >= '0' && f[fi] <= '9') width = width * 10 + (f[fi++] | 0);
-      let lng = 0;
-      while (f[fi] === 'l') { lng++; fi++; }
-      const spec = f[fi++];
-      const arg = suppress ? null : args[argi];
-      if (spec === 'c') {
-        const n = width || 1;
-        if (si + n > s.length) return done();
-        // A boxed scalar (address-taken `char` local, e.g. done_in_by()'s
-        // reasondummy) has no buffer to offset into: store element 0 into
-        // the box itself.
-        for (let i = 0; i < n; i++) { if (!suppress) cptr.st1(i === 0 ? arg : cptr.add(arg, i), s.charCodeAt(si)); si++; }
-        if (!suppress) { assigned++; argi++; }
-        continue;
-      }
-      if (spec === 's') {
-        skipWs();
-        let out = '';
-        while (si < s.length && !/\s/.test(s[si]) && (!width || out.length < width)) out += s[si++];
-        if (!out) return done();
-        if (!suppress) { cptr.writeStr(arg, out); assigned++; argi++; }
-        continue;
-      }
-      if (spec === '[') {
-        let negate = false;
-        if (f[fi] === '^') { negate = true; fi++; }
-        let set = '';
-        if (f[fi] === ']') { set += ']'; fi++; }
-        while (fi < f.length && f[fi] !== ']') set += f[fi++];
-        fi++;
-        let out = '';
-        while (si < s.length && (set.includes(s[si]) !== negate) && (!width || out.length < width)) out += s[si++];
-        if (!out) return done();
-        if (!suppress) { cptr.writeStr(arg, out); assigned++; argi++; }
-        continue;
-      }
-      if (!'diux'.includes(spec)) return done();
-      skipWs();
-      const m = s.slice(si).match(spec === 'x' ? /^[+-]?(?:0[xX])?[0-9a-fA-F]+/ : /^[+-]?\d+/);
-      if (!m) return done();
-      si += m[0].length;
-      let t = m[0], neg = false;
-      if (t.startsWith('-')) { neg = true; t = t.slice(1); } else if (t.startsWith('+')) t = t.slice(1);
-      let v;
-      try { v = spec === 'x' ? BigInt('0x' + t.replace(/^0[xX]/, '')) : BigInt(t); } catch { return done(); }
-      if (neg) v = -v;
-      if (!suppress) {
-        if (lng >= 1) cptr.stU64(arg, BigInt.asUintN(64, v));
-        else cptr.stI32(arg, Number(BigInt.asIntN(32, v)));
-        assigned++; argi++;
-      }
-      continue;
-    }
-    return done();
-  };
+  g.strtoul = (p, endptr, base) => strto(p, endptr, base, false);
+  g.strtol = (p, endptr, base) => strto(p, endptr, base, true);
+  installExtraLibc(g);
   g.sscanf = (str, fmt, ...args) => scanfCore(cptr.cstr(str), cptr.cstr(fmt), args).assigned;
   g.fscanf = (f, fmt, ...args) => {
     const fd = fds.get(f.__fd);
@@ -768,7 +711,7 @@ export async function runBootGame(opts) {
   }
   g.localtime = (tp) => makeTm(ltFields(Number(cptr.ldU64(tp))));
   function makeTm(t) {
-    const b = new Uint8Array(9 * 4 + 8 + 8);
+    const b = new Uint8Array(56); // sizeof(struct tm)
     const p = { buf: b, off: 0 };
     const ints = [t.sec, t.min, t.hour, t.mday, t.mon, t.year, t.wday, t.yday, t.isdst];
     ints.forEach((v, i) => cptr.stI32(cptr.add(p, i * 4), v));
@@ -780,7 +723,6 @@ export async function runBootGame(opts) {
     return BigInt(Math.floor(ms / 1000) - REC_UTC_OFFSET_SEC);
   };
   g.difftime = (a, b) => Number(a) - Number(b);
-  g.strftime = (buf, max, fmt, tm) => { cptr.writeStr(buf, cptr.cstr(fmt)); return 0; };
   g.clock = () => 0;
   g.sleep = (s) => 0;
   g.usleep = (us) => 0;
@@ -891,6 +833,17 @@ export async function runBootGame(opts) {
   // iflags.cbreak/echo from the zeroed no-tty termios, like the recorder)
   g.fgetc = (f) => { const fd = fds.get(f.__fd); if (!fd || !fd.data || fd.pos >= fd.data.length) return -1; return fd.data[fd.pos++]; };
   g.getc = g.fgetc;
+  g.putc = (c, f) => g.fputc(c, f);
+  // a read that hits the end sets the stream's EOF flag, and a seek clears it
+  const noteEof = (name, hit) => { const f0 = g[name]; g[name] = (...a) => { const r = f0(...a); const f = a[a.length - 1]; if (hit(r, a)) { const fd = fds.get(f && f.__fd); if (fd) fd.eof = true; } return r; }; };
+  noteEof('fgets', (r) => r === null);
+  noteEof('fgetc', (r) => r === -1);
+  noteEof('getc', (r) => r === -1);
+  noteEof('fread', (r, a) => Number(r) < Number(a[2]));
+  for (const name of ['fseek', 'rewind']) { const f0 = g[name]; g[name] = (f, ...a) => { const fd = fds.get(f && f.__fd); if (fd) fd.eof = false; return f0(f, ...a); }; }
+  g.feof = (f) => (fds.get(f && f.__fd)?.eof ? 1 : 0);
+  g.ferror = () => 0;
+  g.clearerr = (f) => { const fd = fds.get(f && f.__fd); if (fd) fd.eof = false; };
   g.ungetc = (c, f) => { const fd = fds.get(f.__fd); if (fd && fd.pos > 0) { fd.pos--; fd.data[fd.pos] = c & 0xFF; } return c; };
   Error.stackTraceLimit = 50;
   g.getchar = () => {

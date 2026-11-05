@@ -919,7 +919,39 @@ function emitOneFile(name, srcFile, { prelude, crossImports } = {}) {
   const sha = crypto.createHash('sha256').update(source).digest('hex');
   const root = loadAst(astPathFor(srcFile));
   const { decls, lineOf } = mainFileDecls(root, srcFile, compileCwdFor(srcFile));
-  const emitter = new Emitter({ decls, lineOf, source, fileName: `${name}.c`, compileCwd: compileCwdFor(srcFile) });
+  // `typedef struct {...} div_t;` in a system header: with no symbol table in a
+  // single-file build, the record has to come along with the file's own decls
+  const mine = new Set(decls);
+  const byId = new Map(root.inner.filter((x) => x.kind === 'RecordDecl').map((x) => [x.id, x]));
+  const headerTypes = root.inner.filter((x) => x.kind === 'TypedefDecl' && !mine.has(x) && x.inner?.[0]?.ownedTagDecl && !x.inner[0].ownedTagDecl.name && byId.has(x.inner[0].ownedTagDecl.id));
+  decls.unshift(...headerTypes.flatMap((x) => [byId.get(x.inner[0].ownedTagDecl.id), x]));
+  // and so does every other record a system header defines (`struct tm`)
+  const added = new Set(decls);
+  decls.unshift(...root.inner.filter((x) => x.kind === 'RecordDecl' && x.completeDefinition && x.name && !added.has(x)));
+  // and <math.h>'s inline helpers (`__inline_isnanf`), when they're called. Other
+  // header inlines (<ctype.h> over the rune table) have their functions in the runtime.
+  const headerFns = new Map(root.inner.filter((x) => x.kind === 'FunctionDecl' && /^__inline_/.test(x.name) && !added.has(x) && x.inner?.some((c) => c.kind === 'CompoundStmt')).map((x) => [x.name, x]));
+  const pull = (n) => {
+    if (!n || typeof n !== 'object') return;
+    const f = n.kind === 'DeclRefExpr' && n.referencedDecl?.kind === 'FunctionDecl' && headerFns.get(n.referencedDecl.name);
+    if (f) { headerFns.delete(f.name); decls.push({ ...f, storageClass: 'static' }); pull(f); }
+    for (const c of n.inner || []) pull(c);
+  };
+  for (const d of [...decls]) pull(d);
+  // A single-file build is its own whole program, but `&global` still has to box
+  // the global, exactly as `build --all` does from the corpus-wide set.
+  const externBoxed = new Set();
+  (function walk(n) {
+    if (!n || typeof n !== 'object') return;
+    if (n.kind === 'UnaryOperator' && n.opcode === '&' && n.inner?.[0]?.kind === 'DeclRefExpr'
+        && n.inner[0].referencedDecl?.kind === 'VarDecl') {
+      const q = n.inner[0].type?.desugaredQualType || n.inner[0].type?.qualType || '';
+      const nm = n.inner[0].name || n.inner[0].referencedDecl?.name;
+      if (nm && !/\[/.test(q) && !/\(/.test(q) && !/^(struct|union)\b[^*]*$/.test(q.trim())) externBoxed.add(nm);
+    }
+    for (const c of n.inner || []) walk(c);
+  })(root);
+  const emitter = new Emitter({ decls, lineOf, source, fileName: `${name}.c`, compileCwd: compileCwdFor(srcFile), externBoxed });
   const chunks = emitter.emitModule();
   const srcRel = path.relative(repoRoot, srcFile);
   return assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports });

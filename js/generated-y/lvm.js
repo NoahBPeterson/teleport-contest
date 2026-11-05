@@ -132,7 +132,7 @@ export function luaV_flttointeger(n, p, mode) {
     }
     return ((f) >= Number((-9223372036854775808n)) &&
         (f) < -Number((-9223372036854775808n)) &&
-        (cptr.stI64((p), BigInt.asIntN(64, BigInt(Math.trunc((f))))), 1)
+        (cptr.stI64((p), cptr.ftoi64((f))), 1)
             ? 1
             : 0);
 }
@@ -204,7 +204,7 @@ export function* luaV_tointeger(obj, p, mode) {
 function* forlimit(L, init, lim, p, step) {
     if (!(yield* luaV_tointeger(lim, p, (step < 0n ? NHC.F2Iceil : NHC.F2Ifloor)))) {
         /* not coercible to in integer */
-        let flim = cptr.box(0);  /* try to convert to float */
+        let flim = cptr.box(0, "f64");  /* try to convert to float */
         if (!(((cptr.ld1uo(((lim)), $TValue_tt_)) == 19)
                 ? (cptr.stF64((flim), (cptr.ldF64(((lim))))), 1)
                 : (yield* luaV_tonumber_(lim, flim))))
@@ -239,9 +239,9 @@ function* forprep(L, ra) {
     let pstep = ((cptr.add(ra, 2, 16)));
     if (((cptr.ld1uo(((pinit)), $TValue_tt_)) == 3) &&
             ((cptr.ld1uo(((pstep)), $TValue_tt_)) == 3)) {
-        let init = cptr.box((cptr.ldI64(((pinit)))));
-        let step = cptr.box((cptr.ldI64(((pstep)))));
-        let limit = cptr.box(0n);
+        let init = cptr.box((cptr.ldI64(((pinit)))), "i64");
+        let step = cptr.box((cptr.ldI64(((pstep)))), "i64");
+        let limit = cptr.box(0n, "i64");
         if (step.v == 0n)
             (yield* luaG_runerror(L, __s_for_step_is_zero));
         {
@@ -260,17 +260,21 @@ function* forprep(L, ra) {
                     (BigInt.asUintN(64, (limit.v))) - (BigInt.asUintN(64, (init.v)))
                 );
                 if (step.v != 1n)
-                    count /= (BigInt.asUintN(64, (step.v)));
+                    count = count / (BigInt.asUintN(64, (step.v)));
             } else {
                 count = BigInt.asUintN(
                     64,
                     (BigInt.asUintN(64, (init.v))) - (BigInt.asUintN(64, (limit.v)))
                 );
                 /* 'step+1' avoids negating 'mininteger' */
-                count /= BigInt.asUintN(
-                    64,
-                    (BigInt.asUintN(64, (-(BigInt.asIntN(64, step.v + 1n))))) + 1n
-                );
+                count = count /
+                        BigInt.asUintN(
+                            64,
+                            (BigInt.asUintN(
+                                64,
+                                (BigInt.asIntN(64, -(BigInt.asIntN(64, step.v + 1n))))
+                            )) + 1n
+                        );
             }
             {
                 /* store the counter in place of the limit (which won't be
@@ -282,9 +286,9 @@ function* forprep(L, ra) {
             ;
         }
     } else {
-        let init = cptr.box(0);
-        let limit = cptr.box(0);
-        let step = cptr.box(0);
+        let init = cptr.box(0, "f64");
+        let limit = cptr.box(0, "f64");
+        let step = cptr.box(0, "f64");
         if ((__builtin_expect(
             BigInt(((!(((cptr.ld1uo(((plimit)), $TValue_tt_)) == 19)
                 ? (cptr.stF64((limit), (cptr.ldF64(((plimit))))), 1)
@@ -512,7 +516,8 @@ export function* luaV_finishset(L, t, key, val, slot) {
                 (cptr.st1o(
                     (h),
                     $Table_flags,
-                    cptr.ld1uo((h), $Table_flags) & ~(~((~0 << ((NHC.TM_EQ + 1) | 0)) >>> 0))
+                    uchar(((cptr.ld1uo((h), $Table_flags) &
+                        ~(~((~0 >>> 0 << ((NHC.TM_EQ + 1) | 0)) >>> 0) >>> 0) >>> 0) >>> 0))
                 ));
                 (((cptr.ld1uo((val), $TValue_tt_)) & 64)
                         ? ((((cptr.ld1uo((((((h))))), $GCObject_marked)) & 32) &&
@@ -598,12 +603,12 @@ function l_strcmp(ts1, ts2) {
             else if (zl1 == rl1)
                 return -1;  /* 's1' is less than 's2' ('s2' is not finished) */
             /* both strings longer than 'zl'; go on comparing after the '\0' */
-            zl1++;
-            zl2++;
+            zl1 = BigInt.asUintN(64, zl1 + 1n);
+            zl2 = BigInt.asUintN(64, zl2 + 1n);
             s1 = cptr.add(s1, zl1);
-            rl1 -= zl1;
+            rl1 = BigInt.asUintN(64, rl1 - zl1);
             s2 = cptr.add(s2, zl2);
-            rl2 -= zl2;
+            rl2 = BigInt.asUintN(64, rl2 - zl2);
         }
     }
 }
@@ -624,7 +629,7 @@ function LTintfloat(i, f) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
         return (((Number(((i))))) < (f)) ? 1 : 0;  /* compare them as floats */
     else {
-        let fi = cptr.box(0n);
+        let fi = cptr.box(0n, "i64");
         if (luaV_flttointeger(f, fi, NHC.F2Iceil))
             return i < fi.v ? 1 : 0;  /* compare them as integers */
         else
@@ -641,7 +646,7 @@ function LEintfloat(i, f) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
         return (((Number(((i))))) <= (f)) ? 1 : 0;  /* compare them as floats */
     else {
-        let fi = cptr.box(0n);
+        let fi = cptr.box(0n, "i64");
         if (luaV_flttointeger(f, fi, NHC.F2Ifloor))
             return i <= fi.v ? 1 : 0;  /* compare them as integers */
         else
@@ -658,7 +663,7 @@ function LTfloatint(f, i) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
         return ((f) < ((Number(((i)))))) ? 1 : 0;  /* compare them as floats */
     else {
-        let fi = cptr.box(0n);
+        let fi = cptr.box(0n, "i64");
         if (luaV_flttointeger(f, fi, NHC.F2Ifloor))
             return fi.v < i ? 1 : 0;  /* compare them as integers */
         else
@@ -675,7 +680,7 @@ function LEfloatint(f, i) {
     if (((BigInt.asUintN(64, 9007199254740992n + (BigInt.asUintN(64, (i))))) <= 18014398509481984n))
         return ((f) <= ((Number(((i)))))) ? 1 : 0;  /* compare them as floats */
     else {
-        let fi = cptr.box(0n);
+        let fi = cptr.box(0n, "i64");
         if (luaV_flttointeger(f, fi, NHC.F2Iceil))
             return fi.v <= i ? 1 : 0;  /* compare them as integers */
         else
@@ -821,8 +826,8 @@ export function* luaV_equalobj(L, t1, t2) {
             /* One of them is an integer. If the other does not have an
                integer value, they cannot be equal; otherwise, compare their
                integer values. */
-            let i1 = cptr.box(0n);
-            let i2 = cptr.box(0n);
+            let i1 = cptr.box(0n, "i64");
+            let i2 = cptr.box(0n, "i64");
             return (luaV_tointegerns(t1, i1, NHC.F2Ieq) &&
                 luaV_tointegerns(t2, i2, NHC.F2Ieq) &&
                 i1.v == i2.v
@@ -980,7 +985,7 @@ function copy2buff(top, n, buff) {
             (cptr.add((st), $TString_contents)),
             BigInt.asUintN(64, l * 1n)
         );
-        tl += l;
+        tl = BigInt.asUintN(64, tl + l);
     } while (--n > 0);
 }
 
@@ -1090,7 +1095,7 @@ export function* luaV_concat(L, total) {
                     cptr.stPtro(L, $lua_State_top, cptr.add(top, -(total), 16));  /* pop strings to avoid wasting stack */
                     (yield* luaG_runerror(L, __s_string_length_overflow));
                 }
-                tl += l;
+                tl = BigInt.asUintN(64, tl + l);
             }
             if (tl <= 40n) {
                 let buff = new Uint8Array(40);
@@ -1277,12 +1282,18 @@ export function luaV_shiftl(x, y) {
         if (y <= -64n)
             return 0n;
         else
-            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (x))) >> (BigInt.asUintN(64, (-y))))));
+            return (BigInt.asIntN(
+                64,
+                ((BigInt.asUintN(64, (x))) >> (BigInt.asUintN(64, (BigInt.asIntN(64, -y)))))
+            ));
     } else {
         if (y >= 64n)
             return 0n;
         else
-            return (BigInt.asIntN(64, ((BigInt.asUintN(64, (x))) << (BigInt.asUintN(64, (y))))));
+            return (BigInt.asIntN(
+                64,
+                (BigInt.asUintN(64, (BigInt.asUintN(64, (x))) << (BigInt.asUintN(64, (y)))))
+            ));
     }
 }
 
@@ -1299,6 +1310,7 @@ export function luaV_shiftl(x, y) {
  * @param {CPtr} ra
  */
 function* pushclosure(L, p, encup, base, ra) {
+    let __r1;
     let nup = cptr.ldI32o(p, $Proto_sizeupvalues);
     let uv = cptr.ldPtro(p, $Proto_upvalues);
     let i;
@@ -1314,15 +1326,12 @@ function* pushclosure(L, p, encup, base, ra) {
     ;
     for (i = 0; i < nup; i++) {
         if (cptr.ld1uo2(uv, i, $sizeof_Upvaldesc, $Upvaldesc_instack))
-            cptr.stPtro2(
-                ncl,
-                i,
-                8,
-                $LClosure_upvals,
-                (yield* luaF_findupval(
+            (
+                __r1 = (yield* luaF_findupval(
                     L,
                     cptr.add(base, cptr.ld1uo2(uv, i, $sizeof_Upvaldesc, $Upvaldesc_idx), 16)
-                ))
+                )),
+                cptr.stPtro2(ncl, i, 8, $LClosure_upvals, __r1)
             );
         else
             cptr.stPtro2(
@@ -1346,8 +1355,8 @@ function* pushclosure(L, p, encup, base, ra) {
 export function* luaV_finishOp(L) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
-    let inst = cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)));  /* interrupted instruction */
-    let op = ((((((inst) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)));
+    let inst = cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4))) >>> 0;  /* interrupted instruction */
+    let op = ((((((inst) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)));
     switch (op) {
         case NHC.OP_MMBIN:
         case NHC.OP_MMBINI:
@@ -1356,9 +1365,10 @@ export function* luaV_finishOp(L) {
                 {
                     let io1 = (((cptr.add(
                         base,
-                        (((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(2), 4)))) >>>
+                        (((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(2), 4))) >>>
+                            0) >>>
                             7) &
-                            (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>>
+                            (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
                             0)) |
                             0)),
                         16
@@ -1388,7 +1398,9 @@ export function* luaV_finishOp(L) {
                 {
                     let io1 = (((cptr.add(
                         base,
-                        (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                        (((((((inst) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)),
                         16
                     ))));
                     let io2 = (((cptr.predec(
@@ -1429,7 +1441,8 @@ export function* luaV_finishOp(L) {
                 );
                 (void 0);
                 if (res !=
-                        ((((((((inst) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>>
+                        ((((((((inst) >>> 15) &
+                            (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
                             0)) | 0))))
                     cptr.postinc(
                         () => cptr.ldPtro(ci, $CallInfo_u),
@@ -1441,7 +1454,8 @@ export function* luaV_finishOp(L) {
         case NHC.OP_CONCAT:
             {
                 let top = cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16);  /* top when 'luaT_tryconcatTM' was called */
-                let a = (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0));  /* first element to concatenate */
+                let a = (((((((inst) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0));  /* first element to concatenate */
                 let total = (Number(BigInt.asIntN(
                     32,
                     ((cptr.diff(cptr.add(top, -(1), 16), (cptr.add(base, a, 16))) / 16n))
@@ -1472,7 +1486,9 @@ export function* luaV_finishOp(L) {
             {
                 let ra = cptr.add(
                     base,
-                    (((((((inst) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    (((((((inst) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) |
+                        0)),
                     16
                 );
                 /* adjust top to signal correct number of returns, in case the
@@ -1609,12 +1625,12 @@ export function* luaV_execute(L, ci) {
             nb,
             fimm,
             v2,
-            i1 = cptr.box(0),
-            i2 = cptr.box(0),
+            i1 = cptr.box(0, "i64"),
+            i2 = cptr.box(0, "i64"),
             n1,
             n2,
             ic,
-            ib = cptr.box(0),
+            ib = cptr.box(0, "i64"),
             pi,
             tm,
             result,
@@ -1757,7 +1773,7 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             (void 0);
             (void 0);
@@ -1766,7 +1782,7 @@ export function* luaV_execute(L, ci) {
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1775,13 +1791,14 @@ export function* luaV_execute(L, ci) {
         case 3 /* L_OP_MOVE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             io1 = (((ra)));
             io2 = ((((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             )))));
             cptr.memcpy(io1, io2, 8);
@@ -1793,12 +1810,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1811,10 +1828,12 @@ export function* luaV_execute(L, ci) {
         case 4 /* L_OP_LOADI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = BigInt((((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+            b = BigInt((((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)) -
                     65535) | 0));
             io = (((ra)));
             cptr.stI64(((io)), (b));
@@ -1824,12 +1843,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1842,10 +1861,11 @@ export function* luaV_execute(L, ci) {
         case 5 /* L_OP_LOADF: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = (((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+            b = (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                0)) -
                     65535) | 0);
             io = (((ra)));
             cptr.stF64(((io)), ((((b)))));
@@ -1855,12 +1875,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1873,12 +1893,13 @@ export function* luaV_execute(L, ci) {
         case 6 /* L_OP_LOADK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = cptr.add(
                 k,
-                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             );
             io1 = (((ra)));
@@ -1892,12 +1913,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1910,12 +1931,14 @@ export function* luaV_execute(L, ci) {
         case 7 /* L_OP_LOADKX: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = cptr.add(
                 k,
-                ((((((((cptr.ldI32(pc)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                ((((((((cptr.ldI32(pc) >>> 0) >>> 7) &
+                    (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) |
                     0))),
                 16
             );
@@ -1931,12 +1954,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1949,7 +1972,7 @@ export function* luaV_execute(L, ci) {
         case 8 /* L_OP_LOADFALSE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             (cptr.st1o((((ra))), $TValue_tt_, 1));
@@ -1957,12 +1980,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -1975,7 +1998,7 @@ export function* luaV_execute(L, ci) {
         case 9 /* L_OP_LFALSESKIP: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             (cptr.st1o((((ra))), $TValue_tt_, 1));
@@ -1984,12 +2007,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2002,7 +2025,7 @@ export function* luaV_execute(L, ci) {
         case 10 /* L_OP_LOADTRUE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             (cptr.st1o((((ra))), $TValue_tt_, 17));
@@ -2010,12 +2033,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2028,10 +2051,11 @@ export function* luaV_execute(L, ci) {
         case 11 /* L_OP_LOADNIL: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             do {
                 (cptr.st1o((((cptr.postinc(() => ra, (v) => { ra = v; }, 16)))), $TValue_tt_, 0));
             } while (b--);
@@ -2039,12 +2063,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2057,10 +2081,11 @@ export function* luaV_execute(L, ci) {
         case 12 /* L_OP_GETUPVAL: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             io1 = (((ra)));
             io2 = (cptr.ldPtro(cptr.ldPtro2(cl, b, 8, $LClosure_upvals), $UpVal_v));
             cptr.memcpy(io1, io2, 8);
@@ -2072,12 +2097,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2090,12 +2115,13 @@ export function* luaV_execute(L, ci) {
         case 13 /* L_OP_SETUPVAL: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             uv = cptr.ldPtro2(
                 cl,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 8,
                 $LClosure_upvals
             );
@@ -2116,12 +2142,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2134,13 +2160,15 @@ export function* luaV_execute(L, ci) {
         case 14 /* L_OP_GETTABUP: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             upval = cptr.ldPtro(
                 cptr.ldPtro2(
                     cl,
-                    ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                    ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) |
+                        0))),
                     8,
                     $LClosure_upvals
                 ),
@@ -2148,7 +2176,8 @@ export function* luaV_execute(L, ci) {
             );
             rc = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a short string */
@@ -2180,12 +2209,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2198,17 +2227,19 @@ export function* luaV_execute(L, ci) {
         case 15 /* L_OP_GETTABLE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             rc = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((cptr.ld1uo(((rc)), $TValue_tt_)) == 3)
@@ -2218,10 +2249,11 @@ export function* luaV_execute(L, ci) {
                             ? (slot = null, 0)
                             : (
                                 slot = (BigInt.asUintN(64, ((n)) - 1n) <
-                                    BigInt(cptr.ldI32o(
+                                    BigInt((cptr.ldI32o(
                                         ((((((cptr.ldPtr(((rb))))))))),
                                         $Table_alimit
-                                    ) >>> 0))
+                                    ) >>>
+                                        0) >>> 0))
                                     ? cptr.add(
                                         cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array),
                                         BigInt.asUintN(64, n - 1n),
@@ -2262,12 +2294,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2280,23 +2312,23 @@ export function* luaV_execute(L, ci) {
         case 16 /* L_OP_GETI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
-            c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            c = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             if ((!((cptr.ld1uo(((rb)), $TValue_tt_)) == 69)
                     ? (slot = null, 0)
                     : (
                         slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) <
-                            BigInt(cptr.ldI32o(
-                                ((((((cptr.ldPtr(((rb))))))))),
-                                $Table_alimit
-                            ) >>> 0))
+                            BigInt((cptr.ldI32o(((((((cptr.ldPtr(((rb))))))))), $Table_alimit) >>>
+                                0) >>> 0))
                             ? cptr.add(
                                 cptr.ldPtro(((((((cptr.ldPtr(((rb))))))))), $Table_array),
                                 (c - 1) | 0,
@@ -2335,12 +2367,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2353,17 +2385,19 @@ export function* luaV_execute(L, ci) {
         case 17 /* L_OP_GETFIELD: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             rc = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a short string */
@@ -2395,12 +2429,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2414,7 +2448,8 @@ export function* luaV_execute(L, ci) {
             upval = cptr.ldPtro(
                 cptr.ldPtro2(
                     cl,
-                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                        0)),
                     8,
                     $LClosure_upvals
                 ),
@@ -2422,18 +2457,23 @@ export function* luaV_execute(L, ci) {
             );
             rb = (cptr.add(
                 k,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             rc = ((((((((((i) & 32768) >>> 0))) | 0))))
                     ? cptr.add(
                         k,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     )
                     : ((cptr.add(
                         base,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     ))));
             key = ((((((cptr.ldPtr(((rb)))))))));  /* key must be a short string */
@@ -2474,12 +2514,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2492,23 +2532,28 @@ export function* luaV_execute(L, ci) {
         case 19 /* L_OP_SETTABLE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));  /* key (table is in 'ra') */
             rc = ((((((((((i) & 32768) >>> 0))) | 0))))
                     ? cptr.add(
                         k,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     )
                     : ((cptr.add(
                         base,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     ))));  /* value */
             if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)
@@ -2518,10 +2563,11 @@ export function* luaV_execute(L, ci) {
                             ? (slot = null, 0)
                             : (
                                 slot = (BigInt.asUintN(64, ((n)) - 1n) <
-                                    BigInt(cptr.ldI32o(
+                                    BigInt((cptr.ldI32o(
                                         ((((((cptr.ldPtr(((((ra))))))))))),
                                         $Table_alimit
-                                    ) >>> 0))
+                                    ) >>>
+                                        0) >>> 0))
                                     ? cptr.add(
                                         cptr.ldPtro(
                                             ((((((cptr.ldPtr(((((ra))))))))))),
@@ -2574,12 +2620,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2592,29 +2638,35 @@ export function* luaV_execute(L, ci) {
         case 20 /* L_OP_SETI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            c = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            c = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             rc = ((((((((((i) & 32768) >>> 0))) | 0))))
                     ? cptr.add(
                         k,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     )
                     : ((cptr.add(
                         base,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     ))));
             if ((!((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 69)
                     ? (slot = null, 0)
                     : (
                         slot = (BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((c)))) - 1n) <
-                            BigInt(cptr.ldI32o(
+                            BigInt((cptr.ldI32o(
                                 ((((((cptr.ldPtr(((((ra))))))))))),
                                 $Table_alimit
-                            ) >>> 0))
+                            ) >>>
+                                0) >>> 0))
                             ? cptr.add(
                                 cptr.ldPtro(((((((cptr.ldPtr(((((ra))))))))))), $Table_array),
                                 (c - 1) | 0,
@@ -2662,12 +2714,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2680,23 +2732,28 @@ export function* luaV_execute(L, ci) {
         case 21 /* L_OP_SETFIELD: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (cptr.add(
                 k,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             rc = ((((((((((i) & 32768) >>> 0))) | 0))))
                     ? cptr.add(
                         k,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     )
                     : ((cptr.add(
                         base,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     ))));
             key = ((((((cptr.ldPtr(((rb)))))))));  /* key must be a short string */
@@ -2737,12 +2794,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2755,19 +2812,21 @@ export function* luaV_execute(L, ci) {
         case 22 /* L_OP_NEWTABLE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* log2(hash size) + 1 */
-            c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* array size */
+            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));  /* log2(hash size) + 1 */
+            c = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));  /* array size */
             if (b > 0)
                 b = 1 << (b - 1);  /* size is 2^(b - 1) */
             (void 0);
             if (((((((((i) & 32768) >>> 0))) | 0))))
                 c = (c +
                         Math.imul(
-                            ((((((((cptr.ldI32(pc)) >>> 7) &
-                                (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
+                            ((((((((cptr.ldI32(pc) >>> 0) >>> 7) &
+                                (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
                                 0)) |
                                 0))),
                             256
@@ -2802,12 +2861,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2820,23 +2879,28 @@ export function* luaV_execute(L, ci) {
         case 23 /* L_OP_SELF: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             rc = ((((((((((i) & 32768) >>> 0))) | 0))))
                     ? cptr.add(
                         k,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     )
                     : ((cptr.add(
                         base,
-                        ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     ))));
             key = ((((((cptr.ldPtr(((rc)))))))));  /* key must be a string */
@@ -2875,12 +2939,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2893,15 +2957,18 @@ export function* luaV_execute(L, ci) {
         case 24 /* L_OP_ADDI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
-            imm = (((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            imm = (((((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) {
                 iv1 = (cptr.ldI64(((v1))));
@@ -2934,12 +3001,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -2952,18 +3019,20 @@ export function* luaV_execute(L, ci) {
         case 25 /* L_OP_ADDK: */: {
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3010,12 +3079,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3028,18 +3097,20 @@ export function* luaV_execute(L, ci) {
         case 26 /* L_OP_SUBK: */: {
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3086,12 +3157,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3104,18 +3175,20 @@ export function* luaV_execute(L, ci) {
         case 27 /* L_OP_MULK: */: {
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3162,12 +3235,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3184,18 +3257,20 @@ export function* luaV_execute(L, ci) {
             );  /* in case of division by 0 */
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3236,12 +3311,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3254,17 +3329,19 @@ export function* luaV_execute(L, ci) {
         case 29 /* L_OP_POWK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
@@ -3292,12 +3369,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3310,17 +3387,19 @@ export function* luaV_execute(L, ci) {
         case 30 /* L_OP_DIVK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
@@ -3348,12 +3427,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3370,18 +3449,20 @@ export function* luaV_execute(L, ci) {
             );  /* in case of division by 0 */
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             (void 0);
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3422,12 +3503,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3440,17 +3521,19 @@ export function* luaV_execute(L, ci) {
         case 32 /* L_OP_BANDK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             i2.v = (cptr.ldI64(((v2))));
@@ -3476,12 +3559,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3494,17 +3577,19 @@ export function* luaV_execute(L, ci) {
         case 33 /* L_OP_BORK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             i2.v = (cptr.ldI64(((v2))));
@@ -3530,12 +3615,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3548,17 +3633,19 @@ export function* luaV_execute(L, ci) {
         case 34 /* L_OP_BXORK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (cptr.add(
                 k,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             i2.v = (cptr.ldI64(((v2))));
@@ -3584,12 +3671,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3602,15 +3689,18 @@ export function* luaV_execute(L, ci) {
         case 35 /* L_OP_SHRI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
-            ic = (((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            ic = (((((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
                     ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
@@ -3618,7 +3708,7 @@ export function* luaV_execute(L, ci) {
                 pc = cptr.add(pc, 1, 4);
                 {
                     io = (((ra)));
-                    cptr.stI64(((io)), (luaV_shiftl(ib.v, BigInt((-ic)))));
+                    cptr.stI64(((io)), (luaV_shiftl(ib.v, BigInt((-ic | 0)))));
                     (cptr.st1o((io), $TValue_tt_, 3));
                 }
                 ;
@@ -3627,12 +3717,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3645,15 +3735,18 @@ export function* luaV_execute(L, ci) {
         case 36 /* L_OP_SHLI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
-            ic = (((((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            ic = (((((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
                     ? (cptr.stI64((ib), (cptr.ldI64(((rb))))), 1)
@@ -3670,12 +3763,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3688,17 +3781,19 @@ export function* luaV_execute(L, ci) {
         case 37 /* L_OP_ADD: */: {
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3745,12 +3840,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3763,17 +3858,19 @@ export function* luaV_execute(L, ci) {
         case 38 /* L_OP_SUB: */: {
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3820,12 +3917,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3838,17 +3935,19 @@ export function* luaV_execute(L, ci) {
         case 39 /* L_OP_MUL: */: {
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3895,12 +3994,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3917,17 +4016,19 @@ export function* luaV_execute(L, ci) {
             );  /* in case of division by 0 */
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -3968,12 +4069,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -3986,17 +4087,19 @@ export function* luaV_execute(L, ci) {
         case 41 /* L_OP_POW: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
@@ -4023,12 +4126,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4041,17 +4144,19 @@ export function* luaV_execute(L, ci) {
         case 42 /* L_OP_DIV: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if ((((cptr.ld1uo(((v1)), $TValue_tt_)) == 19)
@@ -4078,12 +4183,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4100,17 +4205,19 @@ export function* luaV_execute(L, ci) {
             );  /* in case of division by 0 */
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((v1)), $TValue_tt_)) == 3) &&
@@ -4151,12 +4258,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4169,17 +4276,19 @@ export function* luaV_execute(L, ci) {
         case 44 /* L_OP_BAND: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
@@ -4210,12 +4319,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4228,17 +4337,19 @@ export function* luaV_execute(L, ci) {
         case 45 /* L_OP_BOR: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
@@ -4269,12 +4380,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4287,17 +4398,19 @@ export function* luaV_execute(L, ci) {
         case 46 /* L_OP_BXOR: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
@@ -4328,12 +4441,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4346,17 +4459,19 @@ export function* luaV_execute(L, ci) {
         case 47 /* L_OP_SHR: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
@@ -4387,12 +4502,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4405,17 +4520,19 @@ export function* luaV_execute(L, ci) {
         case 48 /* L_OP_SHL: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             v1 = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             v2 = (((cptr.add(
                 base,
-                ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((v1)), $TValue_tt_)) == 3)) != 0)), 1n))
@@ -4440,12 +4557,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4458,19 +4575,22 @@ export function* luaV_execute(L, ci) {
         case 49 /* L_OP_MMBIN: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
+            pi = cptr.ldI32((cptr.add(pc, -(2), 4))) >>> 0;  /* original arith. expression */
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
-            tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            tm = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             result = (cptr.add(
                 base,
-                (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((pi) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0)),
                 16
             ));
             (void 0);
@@ -4486,12 +4606,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4504,17 +4624,22 @@ export function* luaV_execute(L, ci) {
         case 50 /* L_OP_MMBINI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
-            imm = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            pi = cptr.ldI32((cptr.add(pc, -(2), 4))) >>> 0;  /* original arith. expression */
+            imm = (((((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
-            tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            flip = ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            tm = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
+            flip = ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             result = (cptr.add(
                 base,
-                (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((pi) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0)),
                 16
             ));
             (
@@ -4529,12 +4654,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4547,20 +4672,24 @@ export function* luaV_execute(L, ci) {
         case 51 /* L_OP_MMBINK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            pi = cptr.ldI32((cptr.add(pc, -(2), 4)));  /* original arith. expression */
+            pi = cptr.ldI32((cptr.add(pc, -(2), 4))) >>> 0;  /* original arith. expression */
             imm = (cptr.add(
                 k,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
-            tm = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            flip = ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            tm = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
+            flip = ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             result = (cptr.add(
                 base,
-                (((((((pi) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((pi) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0)),
                 16
             ));
             (
@@ -4575,12 +4704,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4593,12 +4722,13 @@ export function* luaV_execute(L, ci) {
         case 52 /* L_OP_UNM: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) {
@@ -4633,12 +4763,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4651,12 +4781,13 @@ export function* luaV_execute(L, ci) {
         case 53 /* L_OP_BNOT: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((__builtin_expect(BigInt(((((cptr.ld1uo(((rb)), $TValue_tt_)) == 3)) != 0)), 1n))
@@ -4687,12 +4818,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4705,12 +4836,13 @@ export function* luaV_execute(L, ci) {
         case 54 /* L_OP_NOT: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 1) ||
@@ -4722,12 +4854,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4740,7 +4872,7 @@ export function* luaV_execute(L, ci) {
         case 55 /* L_OP_LEN: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             (
@@ -4753,7 +4885,9 @@ export function* luaV_execute(L, ci) {
                     ra,
                     (((cptr.add(
                         base,
-                        ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         16
                     ))))
                 ))),
@@ -4763,12 +4897,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4781,10 +4915,11 @@ export function* luaV_execute(L, ci) {
         case 56 /* L_OP_CONCAT: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* number of elements to concatenate */
+            n = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));  /* number of elements to concatenate */
             cptr.stPtro(L, $lua_State_top, cptr.add(ra, n, 16));  /* mark the end of concat operands */
             (
                 (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -4810,12 +4945,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4828,7 +4963,7 @@ export function* luaV_execute(L, ci) {
         case 57 /* L_OP_CLOSE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             (
@@ -4843,12 +4978,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4861,7 +4996,7 @@ export function* luaV_execute(L, ci) {
         case 58 /* L_OP_TBC: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             /* create new to-be-closed upvalue */
@@ -4876,12 +5011,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4894,7 +5029,8 @@ export function* luaV_execute(L, ci) {
         case 59 /* L_OP_JMP: */: {
             pc = cptr.add(
                 pc,
-                ((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                ((((((((i) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0)) -
                     16777215 +
                     0) |
                     0,
@@ -4906,12 +5042,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4924,12 +5060,13 @@ export function* luaV_execute(L, ci) {
         case 60 /* L_OP_EQ: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             (
@@ -4940,14 +5077,18 @@ export function* luaV_execute(L, ci) {
                 (cond = (yield* luaV_equalobj(L, ((ra)), rb))),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -4963,12 +5104,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -4981,12 +5122,13 @@ export function* luaV_execute(L, ci) {
         case 61 /* L_OP_LT: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3) &&
@@ -5006,14 +5148,18 @@ export function* luaV_execute(L, ci) {
                     (cond = (yield* lessthanothers(L, ((ra)), rb))),
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5030,12 +5176,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5048,12 +5194,13 @@ export function* luaV_execute(L, ci) {
         case 62 /* L_OP_LE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3) &&
@@ -5073,14 +5220,18 @@ export function* luaV_execute(L, ci) {
                     (cond = (yield* lessequalothers(L, ((ra)), rb))),
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5097,12 +5248,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5115,24 +5266,29 @@ export function* luaV_execute(L, ci) {
         case 63 /* L_OP_EQK: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (cptr.add(
                 k,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ));
             /* basic types do not use '__eq'; we can use raw equality */
             cond = (yield* luaV_equalobj(null, ((ra)), rb));
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5148,12 +5304,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5166,10 +5322,12 @@ export function* luaV_execute(L, ci) {
         case 64 /* L_OP_EQI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            im = (((((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
                 cond = ((cptr.ldI64(((((ra)))))) == BigInt(im));
@@ -5177,14 +5335,18 @@ export function* luaV_execute(L, ci) {
                 cond = (((cptr.ldF64(((((ra))))))) == ((((im)))));
             else
                 cond = 0;  /* other types cannot be equal to a number */
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5200,12 +5362,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5218,10 +5380,12 @@ export function* luaV_execute(L, ci) {
         case 65 /* L_OP_LTI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            im = (((((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
                 cond = ((cptr.ldI64(((((ra)))))) < BigInt(im));
@@ -5230,7 +5394,8 @@ export function* luaV_execute(L, ci) {
                 fim = (((im)));
                 cond = ((fa) < (fim));
             } else {
-                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                isf = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0)));
                 (
                     (
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -5240,14 +5405,18 @@ export function* luaV_execute(L, ci) {
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5264,12 +5433,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5282,10 +5451,12 @@ export function* luaV_execute(L, ci) {
         case 66 /* L_OP_LEI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            im = (((((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
                 cond = ((cptr.ldI64(((((ra)))))) <= BigInt(im));
@@ -5294,7 +5465,8 @@ export function* luaV_execute(L, ci) {
                 fim = (((im)));
                 cond = ((fa) <= (fim));
             } else {
-                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                isf = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0)));
                 (
                     (
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -5304,14 +5476,18 @@ export function* luaV_execute(L, ci) {
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5328,12 +5504,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5346,10 +5522,12 @@ export function* luaV_execute(L, ci) {
         case 67 /* L_OP_GTI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            im = (((((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
                 cond = ((cptr.ldI64(((((ra)))))) > BigInt(im));
@@ -5358,7 +5536,8 @@ export function* luaV_execute(L, ci) {
                 fim = (((im)));
                 cond = ((fa) > (fim));
             } else {
-                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                isf = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0)));
                 (
                     (
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -5368,14 +5547,18 @@ export function* luaV_execute(L, ci) {
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5392,12 +5575,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5410,10 +5593,12 @@ export function* luaV_execute(L, ci) {
         case 68 /* L_OP_GEI: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            im = (((((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))) -
+            im = (((((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
+                0)))) -
                     127) | 0);
             if (((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 3))
                 cond = ((cptr.ldI64(((((ra)))))) >= BigInt(im));
@@ -5422,7 +5607,8 @@ export function* luaV_execute(L, ci) {
                 fim = (((im)));
                 cond = ((fa) >= (fim));
             } else {
-                isf = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+                isf = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0)));
                 (
                     (
                         (cptr.stPtro(ci, $CallInfo_u, pc)),
@@ -5432,14 +5618,18 @@ export function* luaV_execute(L, ci) {
                     (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
                 );
             }
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5456,12 +5646,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5474,19 +5664,23 @@ export function* luaV_execute(L, ci) {
         case 69 /* L_OP_TEST: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             cond = !(((cptr.ld1uo(((((ra)))), $TValue_tt_)) == 1) ||
                     (((((cptr.ld1uo(((((ra)))), $TValue_tt_))) & 15)) == 0));
-            if (cond != ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+            if (cond !=
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
-                ni = cptr.ldI32(pc);
+                ni = cptr.ldI32(pc) >>> 0;
                 {
                     pc = cptr.add(
                         pc,
-                        ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        ((((((((ni) >>> 7) & (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)) -
                             16777215 +
                             1) |
                             0,
@@ -5502,12 +5696,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5520,19 +5714,21 @@ export function* luaV_execute(L, ci) {
         case 70 /* L_OP_TESTSET: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             rb = (((cptr.add(
                 base,
-                ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 16
             ))));
             if ((((cptr.ld1uo(((rb)), $TValue_tt_)) == 1) ||
                 (((((cptr.ld1uo(((rb)), $TValue_tt_))) & 15)) == 0)
                 ? 1
                 : 0) ==
-                    ((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 1) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0))))
                 pc = cptr.add(pc, 1, 4);
             else {
                 {
@@ -5545,11 +5741,13 @@ export function* luaV_execute(L, ci) {
                 }
                 ;
                 {
-                    ni = cptr.ldI32(pc);
+                    ni = cptr.ldI32(pc) >>> 0;
                     {
                         pc = cptr.add(
                             pc,
-                            ((((((((ni) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) |
+                            ((((((((ni) >>> 7) &
+                                (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                                0)) |
                                 0)) -
                                 16777215 +
                                 1) |
@@ -5566,12 +5764,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5584,11 +5782,13 @@ export function* luaV_execute(L, ci) {
         case 71 /* L_OP_CALL: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            nresults = (((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) |
+            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
+            nresults = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                0)) |
                     0))) - 1) | 0;
             if (b != 0)
                 cptr.stPtro(L, $lua_State_top, cptr.add(ra, b, 16));  /* top signals number of arguments */
@@ -5611,12 +5811,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5629,11 +5829,13 @@ export function* luaV_execute(L, ci) {
         case 72 /* L_OP_TAILCALL: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            b = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* number of arguments + 1 (function) */
-            nparams1 = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            b = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));  /* number of arguments + 1 (function) */
+            nparams1 = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             /* delta is virtual 'func' - real 'func' (vararg functions) */
             delta = (nparams1) ? (cptr.ldI32o(ci, $CallInfo_u + 12) + nparams1) | 0 : 0;
             if (b != 0)
@@ -5668,12 +5870,13 @@ export function* luaV_execute(L, ci) {
         case 73 /* L_OP_RETURN: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = (((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) |
+            n = (((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
                     0))) - 1) | 0;  /* number of results */
-            nparams1 = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
+            nparams1 = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
             if (n < 0)
                 n = (Number(BigInt.asIntN(
                     32,
@@ -5691,7 +5894,10 @@ export function* luaV_execute(L, ci) {
                         (base = cptr.add(cptr.ldPtr(ci), 1, 16));
                         ra = (cptr.add(
                             base,
-                            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                            (((((((i) >>> 7) &
+                                (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                                0)) |
+                                0)),
                             16
                         ));
                     }
@@ -5712,7 +5918,8 @@ export function* luaV_execute(L, ci) {
             if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
                 ra = (cptr.add(
                     base,
-                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                        0)),
                     16
                 ));
                 cptr.stPtro(L, $lua_State_top, ra);
@@ -5743,7 +5950,8 @@ export function* luaV_execute(L, ci) {
             if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask)) != 0)), 0n))) {
                 ra = (cptr.add(
                     base,
-                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                        0)),
                     16
                 ));
                 cptr.stPtro(L, $lua_State_top, cptr.add(ra, 1, 16));
@@ -5758,7 +5966,9 @@ export function* luaV_execute(L, ci) {
                 else {
                     ra = (cptr.add(
                         base,
-                        (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                        (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0)),
                         16
                     ));
                     {
@@ -5804,7 +6014,7 @@ export function* luaV_execute(L, ci) {
         case 77 /* L_OP_FORLOOP: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (((cptr.ld1uo(((((cptr.add(ra, 2, 16))))), $TValue_tt_)) == 3)) {
@@ -5836,14 +6046,18 @@ export function* luaV_execute(L, ci) {
                     ;
                     pc = cptr.sub(
                         pc,
-                        ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                        ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                            0)) |
+                            0))),
                         4
                     );  /* jump back */
                 }
             } else if (floatforloop(ra))
                 pc = cptr.sub(
                     pc,
-                    ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) |
+                        0))),
                     4
                 );  /* jump back */
             (trap = cptr.ldI32o(ci, $CallInfo_u + 8));  /* allows a signal to break the loop */
@@ -5851,12 +6065,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5869,7 +6083,7 @@ export function* luaV_execute(L, ci) {
         case 78 /* L_OP_FORPREP: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             (
@@ -5879,7 +6093,9 @@ export function* luaV_execute(L, ci) {
             if ((yield* forprep(L, ra)))
                 pc = cptr.add(
                     pc,
-                    (((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) +
+                    (((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) |
+                        0))) +
                         1) |
                         0,
                     4
@@ -5888,12 +6104,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -5906,7 +6122,7 @@ export function* luaV_execute(L, ci) {
         case 79 /* L_OP_TFORPREP: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             /* create to-be-closed upvalue (if needed) */
@@ -5919,10 +6135,11 @@ export function* luaV_execute(L, ci) {
             );
             pc = cptr.add(
                 pc,
-                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 4
             );
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));  /* go to next instruction */
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;  /* go to next instruction */
             (void 0);
             { __pc = 81; continue; }
         }
@@ -5933,7 +6150,7 @@ export function* luaV_execute(L, ci) {
         case 81 /* l_tforcall: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             /* 'ra' has the iterator function, 'ra + 1' has the state,
@@ -5949,7 +6166,8 @@ export function* luaV_execute(L, ci) {
                 ((yield* luaD_call(
                     L,
                     cptr.add(ra, 4, 16),
-                    ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
+                    ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) | 0)))
                 ))),
                 (trap = cptr.ldI32o(ci, $CallInfo_u + 8))
             );  /* do the call */
@@ -5957,12 +6175,13 @@ export function* luaV_execute(L, ci) {
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));  /* stack may have changed */
                 ra = (cptr.add(
                     base,
-                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                        0)),
                     16
                 ));
             }
             ;
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));  /* go to next instruction */
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;  /* go to next instruction */
             (void 0);
             { __pc = 83; continue; }
         }
@@ -5973,7 +6192,7 @@ export function* luaV_execute(L, ci) {
         case 83 /* l_tforloop: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             if (!(((((cptr.ld1uo(((((cptr.add(ra, 4, 16))))), $TValue_tt_))) & 15)) == 0)) {
@@ -5988,7 +6207,9 @@ export function* luaV_execute(L, ci) {
                 ;
                 pc = cptr.sub(
                     pc,
-                    ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                    ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                        0)) |
+                        0))),
                     4
                 );  /* jump back */
             }
@@ -5996,12 +6217,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -6014,11 +6235,13 @@ export function* luaV_execute(L, ci) {
         case 84 /* L_OP_SETLIST: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
-            last = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) >>> 0;
+            n = ((((((((i) >>> 16) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>>
+                    0)) | 0)));
+            last = ((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))) >>> 0;
             h = ((((((cptr.ldPtr(((((ra)))))))))));
             if (n == 0)
                 n = ((Number(BigInt.asIntN(
@@ -6027,17 +6250,17 @@ export function* luaV_execute(L, ci) {
                 ))) - 1) | 0;  /* get up to the top */
             else
                 cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top in case of emergency GC */
-            last = (last + (n >>> 0)) | 0;
+            last = (last + (n >>> 0)) >>> 0;
             if (((((((((i) & 32768) >>> 0))) | 0)))) {
                 last = (last +
                         (Math.imul(
-                            ((((((((cptr.ldI32(pc)) >>> 7) &
-                                (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>>
+                            ((((((((cptr.ldI32(pc) >>> 0) >>> 7) &
+                                (((~(((~0 >>> 0) << 25) >>> 0) >>> 0) << 0) >>> 0)) >>>
                                 0)) |
                                 0))),
                             256
                         ) >>>
-                            0)) | 0;
+                            0)) >>> 0;
                 pc = cptr.add(pc, 1, 4);
             }
             if (last > luaH_realasize(h))
@@ -6057,7 +6280,7 @@ export function* luaV_execute(L, ci) {
                     (void 0);
                 }
                 ;
-                last--;
+                last = ((last + -1) >>> 0);
                 (((cptr.ld1uo((val), $TValue_tt_)) & 64)
                         ? ((((cptr.ld1uo((((((h))))), $GCObject_marked)) & 32) &&
                             ((cptr.ld1uo(((cptr.ldPtr(((val))))), $GCObject_marked)) & 24))
@@ -6069,12 +6292,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -6087,12 +6310,13 @@ export function* luaV_execute(L, ci) {
         case 85 /* L_OP_CLOSURE: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
             p = cptr.ldPtro(
                 cptr.ldPtro(cptr.ldPtro(cl, $LClosure_p), $Proto_p),
-                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                ((((((((i) >>> 15) & (((~(((~0 >>> 0) << 17) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                    0))),
                 8
             );
             (
@@ -6121,12 +6345,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -6139,10 +6363,10 @@ export function* luaV_execute(L, ci) {
         case 86 /* L_OP_VARARG: */: {
             ra = (cptr.add(
                 base,
-                (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) | 0)),
                 16
             ));
-            n = (((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) |
+            n = (((((((((i) >>> 24) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
                     0))) - 1) | 0;  /* required results */
             (
                 (
@@ -6156,12 +6380,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -6176,7 +6400,8 @@ export function* luaV_execute(L, ci) {
                 (cptr.stPtro(ci, $CallInfo_u, pc)),
                 ((yield* luaT_adjustvarargs(
                     L,
-                    (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+                    (((((((i) >>> 7) & (((~(((~0 >>> 0) << 8) >>> 0) >>> 0) << 0) >>> 0)) >>> 0)) |
+                        0)),
                     ci,
                     cptr.ldPtro(cl, $LClosure_p)
                 ))),
@@ -6191,12 +6416,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;
@@ -6212,12 +6437,12 @@ export function* luaV_execute(L, ci) {
                 trap = (yield* luaG_traceexec(L, pc));
                 (base = cptr.add(cptr.ldPtr(ci), 1, 16));
             }
-            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4)));
+            i = cptr.ldI32((cptr.postinc(() => pc, (v) => { pc = v; }, 4))) >>> 0;
             ;
             {
                 __pc = __smNums[cptr.ldPtro(
                     __static_luaV_execute_disptab,
-                    ((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+                    ((((((i) >>> 0) & (((~(((~0 >>> 0) << 7) >>> 0) >>> 0) << 0) >>> 0)) >>> 0))),
                     8
                 )];
                 continue;

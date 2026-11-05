@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{char n[4];int v[2];}; int main(void){ struct s a[2]={{"ab",{1,2}},{"cd",{3,4}}}; struct s b[2]; for(int i=0;i<2;i++) b[i]=a[i]; a[0].n[0]='z'; struct s *p=b; *p=p[1]; printf("%s %s %d %d\n",a[0].n,b[0].n,b[0].v[1],b[1].v[0]); return 0; }

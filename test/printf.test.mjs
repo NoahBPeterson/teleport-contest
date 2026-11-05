@@ -1,11 +1,11 @@
 /**
- * Test runner for js/libc/printf.js using a JSONL case file.
+ * Test runner for the printf the game runs (cptr.sprintfCore) using a JSONL case file.
  * Run from repo root: node test/printf.test.mjs
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { sprintf } from '../js/libc/printf.js';
+import { sprintfCore, lit } from '../js/cptr.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,7 +17,9 @@ const failures = [];
 
 for (const line of lines) {
   const { n, fmt, args, expected } = JSON.parse(line);
-  const got = sprintf(fmt, ...args);
+  // a string argument is a C string, except %p's, which is the address it spells
+  const cArgs = args.map((a) => (typeof a !== 'string' ? a : /^0x/.test(a) && /%p/.test(fmt) ? BigInt(a) : lit(a)));
+  const got = sprintfCore(lit(fmt), cArgs);
   if (got !== expected) {
     failures.push({ n, fmt, args, expected, got });
   } else {

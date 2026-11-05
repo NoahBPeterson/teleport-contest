@@ -418,7 +418,9 @@ export function* done2() {
 
     if (abandon_tutorial ||
             !(yield* paranoid_query(
-                schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)),
+                schar((((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_QUIT) >>>
+                    0) !=
+                    0)),
                 __s_really_quit_without_saving
             ))) {
         void signal(2, done1);
@@ -428,7 +430,7 @@ export function* done2() {
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
             nomul(0);
         if (cptr.ldI64o(gm, $instance_globals_m_multi) == 0n) {
-            cptr.stI32o(u, $you_uinvulnerable, 0);  /* avoid ctrl-C bug -dlc */
+            cptr.stBits(cptr.add(u, $you_uinvulnerable), 4, 1, 0, 0);  /* avoid ctrl-C bug -dlc */
             cptr.stI64o(u, $you_usleep, 0n);
         }
 
@@ -510,7 +512,7 @@ export function* done_in_by(mtmp, how) {
     if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 &&
             !(imitator && !mimicker) &&
             !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) &&
-                !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
+                !cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0))) {
         if (!((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -520,7 +522,7 @@ export function* done_in_by(mtmp, how) {
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     }
     void monhealthdescr(mtmp, 1, eos(cptr.decay(buf)));
-    if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_minvis), 1, 1, 0))
         void cptr.strcat(cptr.decay(buf), __s_invisible);
     if (distorted)
         void cptr.strcat(cptr.decay(buf), __s_hallucinogen_distorted);
@@ -534,7 +536,7 @@ export function* done_in_by(mtmp, how) {
         if (mimicker) {
             /* realnm is already correct because champtr==mptr;
                set up fake mptr for type_is_pname/the_unique_pm */
-            mptr = cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance), $sizeof_permonst);
+            mptr = cptr.add(mons, cptr.ldI32o(mtmp, $monst_mappearance) >>> 0, $sizeof_permonst);
             fakenm = pmname(mptr, Mgender(mtmp));
         } else if (alt && (yield* strstri(realnm, __s_vampire)) && !strcmp(fakenm, __s_vampire_bat)) {
             /* special case: use "vampire in bat form" in preference
@@ -566,16 +568,16 @@ export function* done_in_by(mtmp, how) {
                 __s_of_s,
                 (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))
             );
-    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0)) {
         let shknm = (yield* shkname(mtmp));
         let honorific = shkname_is_pname(mtmp)
                 ? __s_empty
-                : ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_ms : __s_mr);
+                : (cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0 ? __s_ms : __s_mr);
 
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_the_shopkeeper, honorific, shknm);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 ||
-            (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) {
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_isminion), 5, 1, 0) | 0) {
         /* m_monnam() suppresses "the" prefix plus "invisible", and
            it overrides the effect of Hallucination on priestname() */
         void cptr.strcat(cptr.decay(buf), (yield* m_monnam(mtmp)));
@@ -605,9 +607,9 @@ export function* done_in_by(mtmp, how) {
                 cptr.add(cptr.add(cptr.add(gm, $instance_globals_m_multireasonbuf), 128n), -(1))
             ) <
                 0) {
-        let reasondummy = cptr.box(0);
+        let reasondummy = cptr.box(0, "i8");
         let p;
-        let reasonmid = cptr.box(0);
+        let reasonmid = cptr.box(0, "u32");
 
         /*
          * multireasonbuf[] contains 'm_id:reason' and multi_reason
@@ -632,7 +634,7 @@ export function* done_in_by(mtmp, how) {
             reasondummy
         ) ==
             2 &&
-                cptr.ldI32o(mtmp, $monst_m_id) == reasonmid.v) {
+                cptr.ldI32o(mtmp, $monst_m_id) >>> 0 == reasonmid.v) {
             if ((p = cptr.strchr(cptr.add(gm, $instance_globals_m_multireasonbuf), 32)) !== null)
                 cptr.st1(p, 0);
         }
@@ -847,7 +849,7 @@ function dump_everything(how, when) {
 /** C ref: end.c:620 — @param {CInt} how @param {CInt} taken */
 function* disclose(how, taken) {
     let c = 0;
-    let defquery = cptr.box(0);
+    let defquery = cptr.box(0, "i8");
     let qbuf = new Uint8Array(128);
     let ask = 0;
 
@@ -995,7 +997,7 @@ function* savelife(how) {
             : __s_attempting_to_cheat_death
     );
 
-    if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)
+    if (cptr.ldI32o(u, $you_utrap) >>> 0 && cptr.ldI32o(u, $you_utraptype) >>> 0 == NHC.TT_LAVA)
         (yield* reset_utrap(0));
     cptr.st1(disp, 1);
     cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);
@@ -1003,7 +1005,7 @@ function* savelife(how) {
     (yield* curs_on_u());
     if (!cptr.ld1so(svc, $context_info_mon_moving))
         (yield* endmultishot(0));
-    if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
         /* might drop hero onto a trap that kills her all over again */
         (yield* expels(
             cptr.ldPtro(u, $you_ustuck),
@@ -1214,13 +1216,23 @@ function* artifact_score(list, counting, endwin) {
             } else {
                 (yield* discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0));
                 /* not observe_object; dead characters don't observe */
-                cptr.stI32o(
-                    otmp,
-                    $obj_known,
-                    cptr.stI32o(
-                        otmp,
-                        $obj_dknown,
-                        cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))
+                cptr.stBits(
+                    cptr.add(otmp, $obj_known),
+                    0,
+                    1,
+                    0,
+                    cptr.stBits(
+                        cptr.add(otmp, $obj_dknown),
+                        1,
+                        1,
+                        0,
+                        cptr.stBits(
+                            cptr.add(otmp, $obj_bknown),
+                            2,
+                            1,
+                            0,
+                            cptr.stBits(cptr.add(otmp, $obj_rknown), 3, 1, 0, 1)
+                        )
                     )
                 );
                 /* assumes artifacts don't have quan > 1 */
@@ -1448,7 +1460,8 @@ export function* done(how) {
                     (1n) ==
                     cptr.ldI64o(gh, $instance_globals_h_hero_seq)) &&
             !(yield* paranoid_query(
-                schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_DIE) >>> 0) != 0)),
+                schar((((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_DIE) >>> 0) !=
+                    0)),
                 __s_die__2
             ))) {
         (yield* pline(__s_ok_so_you_don_t_s, (how == NHC.CHOKING) ? __s_choke : __s_die__3));
@@ -1469,6 +1482,7 @@ export function* done(how) {
 /* separated from done() in order to specify the __noreturn__ attribute */
 /** C ref: end.c:1132 — @param {CInt} how */
 function* really_done(how) {
+    let __r1;
     let taken;
     let pbuf = new Uint8Array(256);
     let endwin = -1;
@@ -1505,10 +1519,9 @@ function* really_done(how) {
        topten figure it out separately and possibly getting different
        time or even day if player is slow responding to --More-- */
     cptr.stI64o(urealtime, $u_realtime_finish_time, endtime = (yield* getnow()));
-    cptr.stI64(
-        urealtime,
-        cptr.ldI64(urealtime) +
-            timet_delta(endtime, cptr.ldI64o(urealtime, $u_realtime_start_timing))
+    (
+        __r1 = timet_delta(endtime, cptr.ldI64o(urealtime, $u_realtime_start_timing)),
+        cptr.stI64(urealtime, cptr.ldI64(urealtime) + __r1)
     );
     /* collect these for end of game disclosure (not used during play) */
     cptr.stI32o(iflags, $instance_flags_at_night, (yield* night()));
@@ -1604,13 +1617,23 @@ function* really_done(how) {
             nextobj = cptr.ldPtr(obj);
             (yield* discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0));
             /* observe_object not necessary after discover_object */
-            cptr.stI32o(
-                obj,
-                $obj_known,
-                cptr.stI32o(
-                    obj,
-                    $obj_bknown,
-                    cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_rknown, 1))
+            cptr.stBits(
+                cptr.add(obj, $obj_known),
+                0,
+                1,
+                0,
+                cptr.stBits(
+                    cptr.add(obj, $obj_bknown),
+                    2,
+                    1,
+                    0,
+                    cptr.stBits(
+                        cptr.add(obj, $obj_dknown),
+                        1,
+                        1,
+                        0,
+                        cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
+                    )
                 )
             );
             set_cknown_lknown(obj);  /* set flags when applicable */
@@ -1712,13 +1735,22 @@ function* really_done(how) {
         )) ==
             NHC.GRAVE) &&
                 !was_already_grave)
-            cptr.stI32o3(
-                svl,
-                cptr.ldI16(u),
-                $sizeof_rm_x21,
-                cptr.ldI16o(u, $you_uy),
-                $sizeof_rm,
-                $instance_globals_saved_l_level + $rm_flags,
+            cptr.stBits(
+                cptr.add(
+                    cptr.add(
+                        cptr.add(
+                            cptr.add(svl, $instance_globals_saved_l_level),
+                            cptr.ldI16(u),
+                            $sizeof_rm_x21
+                        ),
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm
+                    ),
+                    $rm_flags
+                ),
+                0,
+                5,
+                0,
                 1
             );  /* corpse isn't buried */
     }
@@ -1788,7 +1820,8 @@ function* really_done(how) {
     if (bones_ok) {
         if (!wizard() ||
                 (yield* paranoid_query(
-                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_BONES) >>> 0) !=
+                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) >>> 0 & NHM.PARANOID_BONES) >>>
+                        0) !=
                         0)),
                     __s_save_bones
                 )))
@@ -1824,7 +1857,7 @@ function* really_done(how) {
             (yield* Y.icall(outrip()(endwin, how, endtime)));
     } else
         cptr.stI32o(program_state, $sinfo_stopprint, 1);  /* just avoid any more output */
-    if ((cptr.ldI32o(u, $you_uhave) & 1)) {
+    if (cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0)) {
         void cptr.strcat(cptr.add(svk, $kinfo_name), __s_with_the_amulet);
     } else if (how == NHC.ESCAPED) {
         if ((((cptr.ldI16o(
@@ -2019,9 +2052,9 @@ function* really_done(how) {
                         typ <= NHC.LAST_REAL_GEM) {
                     otmp = (yield* mksobj(typ, 0, 0));
                     (yield* discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0));
-                    cptr.stI32o(otmp, $obj_dknown, 1);  /* seen it (blindness fix) */
+                    cptr.stBits(cptr.add(otmp, $obj_dknown), 1, 1, 0, 1);  /* seen it (blindness fix) */
                     /* observe_object not necessary after discover_object */
-                    cptr.stI32o(otmp, $obj_known, 1);  /* for fake amulets */
+                    cptr.stBits(cptr.add(otmp, $obj_known), 0, 1, 0, 1);  /* for fake amulets */
                     if (has_oname(otmp))
                         free_oname(otmp);
                     cptr.stI64o(otmp, $obj_quan, count);
@@ -2197,11 +2230,11 @@ export function* container_contents(list, identified, all_containers, reportempt
 
     for (box = list; box; box = cptr.ldPtr(box)) {
         if (Is_container(box) || cptr.ldI16o(box, $obj_otyp) == NHC.STATUE) {
-            if (!(cptr.ldI32o(box, $obj_cknown) & 1) ||
-                    (identified && !(cptr.ldI32o(box, $obj_lknown) & 1))) {
-                cptr.stI32o(box, $obj_cknown, 1);  /* we're looking at the contents now */
+            if (!cptr.ldBits(cptr.add(box, $obj_cknown), 4, 1, 0) ||
+                    (identified && !cptr.ldBits(cptr.add(box, $obj_lknown), 5, 1, 0))) {
+                cptr.stBits(cptr.add(box, $obj_cknown), 4, 1, 0, 1);  /* we're looking at the contents now */
                 if (identified)
-                    cptr.stI32o(box, $obj_lknown, 1);
+                    cptr.stBits(cptr.add(box, $obj_lknown), 5, 1, 0, 1);
                 (yield* update_inventory());
             }
             if (cptr.ldI16o(box, $obj_otyp) == NHC.BAG_OF_TRICKS) {
@@ -2239,14 +2272,28 @@ export function* container_contents(list, identified, all_containers, reportempt
                     ) {
                         if (identified) {
                             (yield* discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0));
-                            cptr.stI32o(obj, $obj_dknown, 1);  /* observe_object unnecessary */
-                            cptr.stI32o(
-                                obj,
-                                $obj_known,
-                                cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
+                            cptr.stBits(cptr.add(obj, $obj_dknown), 1, 1, 0, 1);  /* observe_object unnecessary */
+                            cptr.stBits(
+                                cptr.add(obj, $obj_known),
+                                0,
+                                1,
+                                0,
+                                cptr.stBits(
+                                    cptr.add(obj, $obj_bknown),
+                                    2,
+                                    1,
+                                    0,
+                                    cptr.stBits(cptr.add(obj, $obj_rknown), 3, 1, 0, 1)
+                                )
                             );
                             if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
-                                cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
+                                cptr.stBits(
+                                    cptr.add(obj, $obj_cknown),
+                                    4,
+                                    1,
+                                    0,
+                                    cptr.stBits(cptr.add(obj, $obj_lknown), 5, 1, 0, 1)
+                                );
                         }
                         void cptr.strcpy(cptr.add(cptr.decay(buf), 2, 1), (yield* doname_with_price(obj)));
                         (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
@@ -2427,7 +2474,7 @@ export function* build_english_list(in$) {
     /* +3: " or " - " "; +(words - 1): (N-1)*(", " - " ") */
     if (words > 1)
         len = (len + (3 + (words - 1))) | 0;
-    out = (yield* alloc((len + 1) >>> 0));
+    out = cptr.byteView((yield* alloc((len + 1) >>> 0)));
     cptr.st1(out, 0);  /* bel_copy1() appends */
 
     switch (words) {

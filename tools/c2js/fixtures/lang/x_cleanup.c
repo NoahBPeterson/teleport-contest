@@ -1,0 +1,2 @@
+#include <stdio.h>
+static int n; static void c(int *p){ n+=*p; } static int f(void){ __attribute__((cleanup(c))) int v=5; { __attribute__((cleanup(c))) int w=2; if(v) return n; } return -1; } int main(void){ int r=f(); printf("%d %d\n",r,n); return 0; }

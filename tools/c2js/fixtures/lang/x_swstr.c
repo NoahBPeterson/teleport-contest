@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ const char c='b'; switch(c){ default: printf("d\n"); case 'a': printf("a\n"); break; case 'b': printf("b\n"); } switch(1) ; switch(1) case 1: printf("one\n"); return 0; }

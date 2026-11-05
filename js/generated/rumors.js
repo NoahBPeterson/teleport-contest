@@ -52,7 +52,6 @@ const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
       $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
       $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
       $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
-      $u_event_major_oracle = FLD.u_event_major_oracle,
       $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
       $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
       $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
@@ -159,7 +158,7 @@ const __static_init_rumors_rumors_header = cptr.bytes("%d,%ld,%lx;%d,%ld,%lx;0,0
 function init_rumors(fp) {
     let true_count = cptr.box(0);
     let false_count = cptr.box(0);  /* in file but not used here */
-    let eof_offset = cptr.box(0n);
+    let eof_offset = cptr.box(0n, "u64");
     let line = new Uint8Array(256);
 
     void fgets(cptr.decay(line), 256, fp);  /* skip "don't edit" comment */
@@ -679,7 +678,7 @@ function get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     /* decrypt line; make sure that our intermediate buffer is big enough */
     xbufp = (cptr.strlen(buf) <= 255n)
             ? cptr.add(cptr.decay(xbuf), 0, 1)
-            : alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0);
+            : cptr.byteView(alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0));
     void cptr.strcpy(buf, xcrypt(buf, xbufp));
     if (!cptr.eq(xbufp, cptr.add(cptr.decay(xbuf), 0, 1)))
         cptr.free(xbufp);
@@ -786,7 +785,13 @@ function init_oracles(fp) {
         cptr.stPtro(
             svo,
             $instance_globals_saved_o_oracle_loc,
-            alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n))))
+            cptr.castView(
+                alloc(Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n)
+                ))),
+                "u64"
+            )
         );
         for (i = 0; i < cnt.v; i++) {
             void fgets(cptr.decay(line), 256, fp);
@@ -806,8 +811,8 @@ export function save_oracles(nhfp) {
 
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         sfo_unsigned(nhfp, svo, __s_oracle_oracle_cnt);
-        if (cptr.ldI32(svo)) {
-            for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
+        if (cptr.ldI32(svo) >>> 0) {
+            for (i = 0; i >>> 0 < cptr.ldI32(svo) >>> 0; ++i) {
                 sfo_ulong(
                     nhfp,
                     cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8),
@@ -818,7 +823,7 @@ export function save_oracles(nhfp) {
         }
     }
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
-        if (cptr.ldI32(svo)) {
+        if (cptr.ldI32(svo) >>> 0) {
             cptr.stI32(svo, 0), cptr.stI32o(go, $instance_globals_o_oracle_flg, 0);
         }
         if (cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc)) {
@@ -834,16 +839,19 @@ export function restore_oracles(nhfp) {
 
     sfi_unsigned(nhfp, svo, __s_oracle_oracle_cnt);
     ;
-    if (cptr.ldI32(svo)) {
+    if (cptr.ldI32(svo) >>> 0) {
         cptr.stPtro(
             svo,
             $instance_globals_saved_o_oracle_loc,
-            alloc(Number(BigInt.asUintN(
-                32,
-                BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n)
-            )))
+            cptr.castView(
+                alloc(Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(64, BigInt((cptr.ldI32(svo) >>> 0) >>> 0) * 8n)
+                ))),
+                "u64"
+            )
         );
-        for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
+        for (i = 0; i >>> 0 < cptr.ldI32(svo) >>> 0; ++i) {
             sfi_ulong(
                 nhfp,
                 cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8),
@@ -857,6 +865,7 @@ export function restore_oracles(nhfp) {
 
 /** C ref: rumors.c:640 — @param {CInt} special @param {CInt} delphi */
 export function outoracle(special, delphi) {
+    let __r1;
     let tmpwin;
     let oracles;
     let oracle_idx;
@@ -867,7 +876,7 @@ export function outoracle(special, delphi) {
     /* early return if we couldn't open ORACLEFILE on previous attempt,
        or if all the oracularities are already exhausted */
     if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0 ||
-            (cptr.ldI32o(go, $instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
+            (cptr.ldI32o(go, $instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) >>> 0 == 0))
         return;
 
     oracles = fopen(__s_oracles, __s_r);
@@ -877,14 +886,14 @@ export function outoracle(special, delphi) {
             if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) == 0) {
                 init_oracles(oracles);
                 cptr.stI32o(go, $instance_globals_o_oracle_flg, 1);
-                if (cptr.ldI32(svo) == 0)
+                if (cptr.ldI32(svo) >>> 0 == 0)
                     break __lbl_close_oracles;
             }
             /* oracle_loc[0] is the special oracle;
                oracle_loc[1..oracle_cnt-1] are normal ones */
-            if (cptr.ldI32(svo) <= 1 && !special)
+            if (cptr.ldI32(svo) >>> 0 <= 1 && !special)
                 break __lbl_close_oracles;  /*(shouldn't happen)*/
-            oracle_idx = special ? 0 : rnd(((cptr.ldI32(svo) | 0) - 1) | 0);
+            oracle_idx = special ? 0 : rnd((((cptr.ldI32(svo) >>> 0) | 0) - 1) | 0);
             void fseek(
                 oracles,
                 BigInt.asIntN(
@@ -898,15 +907,18 @@ export function outoracle(special, delphi) {
                 0
             );
             if (!special)
-                cptr.stU64o(
-                    cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc),
-                    oracle_idx,
-                    cptr.ldU64o(
+                (
+                    __r1 = cptr.ldU64o(
                         cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc),
-                        cptr.stI32(svo, cptr.ldI32(svo) + -1),
+                        ((cptr.stI32(svo, (cptr.ldI32(svo) >>> 0) + -1)) >>> 0),
                         8
                     ),
-                    8
+                    cptr.stU64o(
+                        cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc),
+                        oracle_idx,
+                        __r1,
+                        8
+                    )
                 );
 
             tmpwin = create_nhwindow()(NHM.NHW_TEXT);
@@ -953,7 +965,7 @@ export function doconsult(oracl) {
     if (!oracl) {
         There(__s_is_no_one_here_to_consult);
         return NHM.ECMD_OK;
-    } else if (!(cptr.ldI32o(oracl, $monst_mpeaceful) & 1)) {
+    } else if (!cptr.ldBits(cptr.add(oracl, $monst_mpeaceful), 1, 1, 0)) {
         pline(__s_s_is_in_no_mood_for_consultations, Monnam(oracl));
         return NHM.ECMD_OK;
     } else if (!umoney) {
@@ -980,7 +992,8 @@ export function doconsult(oracl) {
             break;
         case 110:
             if (umoney <= BigInt(minor_cost) ||
-                    (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
+                    (cptr.ldI32(svo) >>> 0 == 1 ||
+                        cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
                 return NHM.ECMD_OK;
             void cptr.sprintf(
                 cptr.decay(qbuf),
@@ -995,25 +1008,24 @@ export function doconsult(oracl) {
     }
     money2mon(oracl, BigInt(u_pay));
     cptr.st1(disp, 1);
-    if (!(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) &&
-            !(cptr.ldI32o(u, $you_uevent) & 1))
+    if (!cptr.ldBits(cptr.add(u, $you_uevent), 1, 1, 0) &&
+            !cptr.ldBits(cptr.add(u, $you_uevent), 0, 1, 0))
         record_achievement(NHC.ACH_ORCL);
     add_xpts = 0;  /* first oracle of each type gives experience points */
     if (u_pay == minor_cost) {
         outrumor(1, NHM.BY_ORACLE);
-        if (!(cptr.ldI32o(u, $you_uevent) & 1))
-            add_xpts = (u_pay /
-                    ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
+        if (!cptr.ldBits(cptr.add(u, $you_uevent), 0, 1, 0))
+            add_xpts = (u_pay / (cptr.ldBits(cptr.add(u, $you_uevent), 1, 1, 0) | 0 ? 25 : 10)) | 0;
         /* 5 pts if very 1st, or 2 pts if major already done */
-        cptr.stI32o(u, $you_uevent, 1);
+        cptr.stBits(cptr.add(u, $you_uevent), 0, 1, 0, 1);
     } else {
         let cheapskate = schar((u_pay < major_cost));
 
         outoracle(cheapskate, 1);
-        if (!cheapskate && !(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32o(u, $you_uevent) & 1) | 0 ? 25 : 10)) | 0;
+        if (!cheapskate && !cptr.ldBits(cptr.add(u, $you_uevent), 1, 1, 0))
+            add_xpts = (u_pay / (cptr.ldBits(cptr.add(u, $you_uevent), 0, 1, 0) | 0 ? 25 : 10)) | 0;
         /* ~100 pts if very 1st, ~40 pts if minor already done */
-        cptr.stI32o(u, $you_uevent + $u_event_major_oracle, 1);
+        cptr.stBits(cptr.add(u, $you_uevent), 1, 1, 0, 1);
         exercise(NHC.A_WIS, schar((!cheapskate)));
     }
     if (add_xpts) {
@@ -1060,7 +1072,7 @@ export function CapitalMon(word) {
             : void 0);
 
     wln = Number(BigInt.asUintN(32, cptr.strlen(word)));
-    for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
+    for (i = 0; i < (CapMonSiz - 1) >>> 0; i = ((i + 1) >>> 0)) {
         nam = cptr.ldPtro(CapMons, i, 8);
         nln = Number(BigInt.asUintN(32, cptr.strlen(nam)));
         if (wln < nln)
@@ -1086,6 +1098,7 @@ export function CapitalMon(word) {
    hallucinatory monster names that fall into either of those categories */
 /** C ref: rumors.c:829 */
 function init_CapMons() {
+    let __r2;
     let pass;
     let bogonfile = fopen(__s_bogusmon, __s_r);
 
@@ -1094,7 +1107,7 @@ function init_CapMons() {
 
     /* first pass: count the number of relevant monster names, then
        allocate memory for CapMons[]; second pass: populate CapMons[] */
-    for (pass = 1; pass <= 2; ++pass) {
+    for (pass = 1; pass <= 2; pass = ((pass + 1) >>> 0)) {
         let mptr;
         let nam;
         let mndx;
@@ -1108,16 +1121,16 @@ function init_CapMons() {
         CapMonstCnt = (CapBogonCnt = 0);
 
         /* gather applicable actual monsters */
-        for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; ++mndx) {
+        for (mndx = NHC.LOW_PM; mndx < NHC.NUMMONS; mndx = ((mndx + 1) >>> 0)) {
             mptr = cptr.add(mons, mndx, $sizeof_permonst);
             if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !the_unique_pm(mptr))
                 continue;
-            for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; ++mgend) {
+            for (mgend = NHC.MALE; mgend < NHC.NUM_MGENDERS; mgend = ((mgend + 1) >>> 0)) {
                 nam = cptr.ldPtro(mptr, mgend, 8);
                 if (nam && cptr.ld1s(nam) != lowc(cptr.ld1s(nam))) {
                     if (pass == 2)
                         cptr.stPtro(CapMons, CapMonstCnt, nam, 8);
-                    ++CapMonstCnt;
+                    CapMonstCnt = ((CapMonstCnt + 1) >>> 0);
                 }
             }
         }
@@ -1154,8 +1167,11 @@ function init_CapMons() {
 
                 if (cptr.ld1s(startp) != lowc(cptr.ld1s(startp)) && !bogon_is_pname(code)) {
                     if (pass == 2)
-                        cptr.stPtro(CapMons, (CapMonstCnt + CapBogonCnt) >>> 0, dupstr(startp), 8);
-                    ++CapBogonCnt;
+                        (
+                            __r2 = dupstr(startp),
+                            cptr.stPtro(CapMons, (CapMonstCnt + CapBogonCnt) >>> 0, __r2, 8)
+                        );
+                    CapBogonCnt = ((CapBogonCnt + 1) >>> 0);
                 }
             }
         }
@@ -1189,7 +1205,7 @@ function init_CapMons() {
         let tmpwin = create_nhwindow()(NHM.NHW_TEXT);
 
         putstr()(tmpwin, 0, __s_capitalized_monster_type_names_normally);
-        for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
+        for (i = 0; i < (CapMonSiz - 1) >>> 0; i = ((i + 1) >>> 0)) {
             void cptr.sprintf(cptr.decay(buf), __s_77s, cptr.ldPtro(CapMons, i, 8));
             putstr()(tmpwin, 0, cptr.decay(buf));
         }
@@ -1209,7 +1225,7 @@ export function free_CapMons() {
         let idx;
 
         /* skip 0..MonstCnt-1, free MonstCnt..(MonstCnt+BogonCnt-1) */
-        for (idx = CapMonstCnt; idx < (CapMonSiz - 1) >>> 0; ++idx)
+        for (idx = CapMonstCnt; idx < (CapMonSiz - 1) >>> 0; idx = ((idx + 1) >>> 0))
             cptr.free(cptr.ldPtro(CapMons, idx, 8));  /* cast: discard 'const' */
         cptr.free(CapMons), CapMons = null;
     }

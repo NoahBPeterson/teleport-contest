@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int a;}; static int f(int x,struct s y,double d,char c,long long l){ int *p=&x; struct s *q=&y; double *r=&d; char *t=&c; long long *u=&l; *p+=1; q->a+=1; *r+=1; *t+=1; *u+=1; return x+y.a+(int)d+c+(int)l; } int main(void){ struct s v={1}; printf("%d %d\n",f(1,v,1.5,1,1),v.a); return 0; }

@@ -334,7 +334,7 @@ export function formatkiller(buf, siz, how, incl_helpless) {
                 __builtin_object_size(buf, 1)
             );
             l = Strlen_(buf, __s_formatkiller, 123);
-            buf = cptr.add(buf, l), siz = (siz - l) | 0;
+            buf = cptr.add(buf, l), siz = (siz - l) >>> 0;
             break;
     }
     /* Copy kname into buf[].
@@ -343,7 +343,7 @@ export function formatkiller(buf, siz, how, incl_helpless) {
      * so make sure that that text can't confuse field splitting when
      * record, logfile, or xlogfile is re-read at some later point.
      */
-    while (--siz > 0) {
+    while ((siz = ((siz + -1) >>> 0)) > 0) {
         c = cptr.ld1s(cptr.postinc(() => kname, (v) => { kname = v; }));
         if (!c)
             break;
@@ -409,6 +409,7 @@ const __static_readentry_fmt33 = cptr.bytes("%s %s %s %s %[^,],%[^\n]%*c"); /** 
 
 /** C ref: topten.c:220 — @param {CPtr<FILE>} rfile @param {CPtr<struct toptenentry>} tt */
 function readentry(rfile, tt) {
+    let __r1;
     let inbuf = new Uint8Array(129);
     let s1 = new Uint8Array(129);
     let s2 = new Uint8Array(129);
@@ -462,12 +463,9 @@ function readentry(rfile, tt) {
                 cptr.decay(s2)
             ) ==
                     4) {
-                cptr.st1o2(
-                    tt,
-                    1,
-                    1,
-                    $toptenentry_plrole,
-                    cptr.st1o2(tt, 1, 1, $toptenentry_plgend, 0)
+                (
+                    __r1 = cptr.st1o2(tt, 1, 1, $toptenentry_plgend, 0),
+                    cptr.st1o2(tt, 1, 1, $toptenentry_plrole, __r1)
                 );  /* read via %c */
                 copynchars(cptr.add(tt, $toptenentry_name), cptr.decay(s1), 10);
                 copynchars(cptr.add(tt, $toptenentry_death), cptr.decay(s2), 100);
@@ -787,7 +785,7 @@ function encodeachieve(secondlong) {
     for (i = 0; cptr.ld1so2(u, i, 1, $you_uachieved); ++i) {
         achidx = (cptr.ld1so2(u, i, 1, $you_uachieved) - offset) | 0;
         if (achidx > 0 && achidx < 32)
-            r |= 1n << BigInt(((achidx - 1) | 0));
+            r |= BigInt.asIntN(64, 1n << BigInt(((achidx - 1) | 0)));
     }
     return r;
 }
@@ -1903,9 +1901,9 @@ export function tt_doppel(mon) {
         ret = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
-            cptr.stI32o(mon, $monst_female, 1);
+            cptr.stBits(cptr.add(mon, $monst_female), 0, 1, 0, 1);
         else if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 77)
-            cptr.stI32o(mon, $monst_female, 0);
+            cptr.stBits(cptr.add(mon, $monst_female), 0, 1, 0, 0);
         ret = classmon(cptr.add(tt, $toptenentry_plrole));
         /* Only take on a name if the player can see
            the doppelganger, otherwise we end up with

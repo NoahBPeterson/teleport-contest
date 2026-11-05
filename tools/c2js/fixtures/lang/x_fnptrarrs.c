@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int (*f[2])(int);int n;}; int a1(int x){return x+1;} int a2(int x){return x*2;} int main(void){ struct s v={{a1,a2},3}; struct s *p=&v; printf("%d %d\n",p->f[1](v.n),(*v.f[0])(1)); return 0; }

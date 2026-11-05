@@ -716,9 +716,21 @@ async function main() {
     }
 
     const session = await loadSession(inputPath);
-    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'nh-rec-'));
+    // /tmp rather than os.tmpdir(): the path below ends up in the session file,
+    // and macOS's per-user temp dir is not something to publish.
+    const tmpDir = await fs.mkdtemp('/tmp/nh-rec-');
     const rngLogPath = path.join(tmpDir, 'rng.log');
     const homeDir = path.join(tmpDir, 'home');
+    // C prints $HOME on a few screens (the 'O' help page, config-file errors).
+    // Record it as a trailing rc comment, which C ignores, so the port can show
+    // the same path; see recorderHomeOf() in js/boot/harness.mjs. The frozen
+    // runners pass only seed/datetime/nethackrc/moves, so a separate session
+    // field would not reach the port.
+    for (const seg of session.segments) {
+        let rc = (seg.nethackrc || '').replace(/^# recorder-home: .*\n?/gm, '');
+        if (rc && !rc.endsWith('\n')) rc += '\n';
+        seg.nethackrc = `${rc}# recorder-home: ${homeDir}\n`;
+    }
     // TELEPORT_RECORD_STATE=1 → capture per-step hidden-state dumps
     // (patch 009 oracle) into steps[].state.
     const recordState = !!process.env.TELEPORT_RECORD_STATE

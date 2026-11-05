@@ -52,7 +52,7 @@ export const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)
  *  analysis can see whether any of them can itself reach a blocking point. */
 export const RUNTIME_MODULES = [
   'js/cptr.js', 'js/cmachine.js', 'js/cjmp.js', 'js/isaac64.js',
-  'js/libc/printf.js', 'js/libc/string.js',
+  'js/libc/scanf.js', 'js/libc/extra.js',
 ];
 
 // ---------------------------------------------------------------------------

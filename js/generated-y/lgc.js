@@ -127,7 +127,7 @@ function linkgclist_(o, pnext, list) {
     (void 0);  /* cannot be in a gray list */
     cptr.stPtr(pnext, cptr.ldPtr(list));
     cptr.stPtr(list, o);
-    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));  /* now it is */
+    (cptr.st1o(o, $GCObject_marked, uchar((cptr.ld1uo(o, $GCObject_marked) & 199))));  /* now it is */
 }
 
 /*
@@ -221,7 +221,7 @@ export function luaC_barrierback_(L, o) {
     (void 0);
     (void 0);
     if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 6)
-        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));  /* make it gray to become touched1 */
+        (cptr.st1o(o, $GCObject_marked, uchar((cptr.ld1uo(o, $GCObject_marked) & 199))));  /* make it gray to become touched1 */
     else
         linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));
     if (((cptr.ld1uo((o), $GCObject_marked) & 7) > 1))
@@ -236,7 +236,7 @@ export function luaC_barrierback_(L, o) {
 export function luaC_fix(L, o) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);  /* object must be 1st in 'allgc' list! */
-    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));  /* they will be gray forever */
+    (cptr.st1o(o, $GCObject_marked, uchar((cptr.ld1uo(o, $GCObject_marked) & 199))));  /* they will be gray forever */
     (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 4))))));  /* and old forever */
     cptr.stPtro(g, $global_State_allgc, cptr.ldPtr(o));  /* remove object from 'allgc' list */
     cptr.stPtr(o, cptr.ldPtro(g, $global_State_fixedgc));  /* link it to 'fixedgc' list */
@@ -257,7 +257,7 @@ export function luaC_fix(L, o) {
  */
 export function* luaC_newobjdt(L, tt, sz, offset) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
-    let p = ((((yield* luaM_malloc_(L, (sz), ((tt) & 15))))));
+    let p = (cptr.byteView((((yield* luaM_malloc_(L, (sz), ((tt) & 15)))))));
     let o = ((cptr.add(p, offset)));
     cptr.st1o(o, $GCObject_marked, (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24)))));
     cptr.st1o(o, $GCObject_tt, uchar(tt));
@@ -314,7 +314,7 @@ function reallymarkobject(g, o) {
             {
                 let uv = (((((o)))));
                 if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
-                    (cptr.st1o(uv, $UpVal_marked, cptr.ld1uo(uv, $UpVal_marked) & 199));  /* open upvalues are kept gray */
+                    (cptr.st1o(uv, $UpVal_marked, uchar((cptr.ld1uo(uv, $UpVal_marked) & 199))));  /* open upvalues are kept gray */
                 else
                     (cptr.st1o(
                         uv,
@@ -396,7 +396,7 @@ function markbeingfnz(g) {
     let o;
     let count = 0n;
     for (o = cptr.ldPtro(g, $global_State_tobefnz); !cptr.eq(o, (null)); o = cptr.ldPtr(o)) {
-        count++;
+        count = BigInt.asUintN(64, count + 1n);
         {
             if (((cptr.ld1uo((o), $GCObject_marked)) & 24))
                 reallymarkobject(g, ((((o)))));
@@ -516,7 +516,7 @@ function genlink(g, o) {
     if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 5) {
         linkgclist_(((((o)))), getgclist(o), cptr.add(g, $global_State_grayagain));  /* link it back in 'grayagain' */
     } else if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 6)
-        (cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) ^ 2));  /* advance age */
+        (cptr.st1o((o), $GCObject_marked, uchar((cptr.ld1uo((o), $GCObject_marked) ^ 2))));  /* advance age */
 }
 
 /*
@@ -535,7 +535,7 @@ function traverseweakvalue(g, h) {
     ));
     /* if there is array part, assume it may have white values (it is not
        worth traversing it now just to check) */
-    let hasclears = (cptr.ldI32o(h, $Table_alimit) > 0);
+    let hasclears = (cptr.ldI32o(h, $Table_alimit) >>> 0 > 0);
     for (
         n = (cptr.add(cptr.ldPtro((h), $Table_node), 0, $sizeof_Node));
         cptr.cmp(n, limit) < 0;
@@ -595,7 +595,7 @@ function traverseephemeron(g, h, inv) {
     let asize = luaH_realasize(h);
     let nsize = ((1 << (cptr.ld1uo((h), $Table_lsizenode)))) >>> 0;
     /* traverse array part */
-    for (i = 0; i < asize; i++) {
+    for (i = 0; i < asize; i = ((i + 1) >>> 0)) {
         if ((((cptr.ld1uo(
             (cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)),
             $TValue_tt_
@@ -615,7 +615,7 @@ function traverseephemeron(g, h, inv) {
     }
     /* traverse hash part; if 'inv', traverse descending
        (see 'convergeephemerons') */
-    for (i = 0; i < nsize; i++) {
+    for (i = 0; i < nsize; i = ((i + 1) >>> 0)) {
         let n = inv
                 ? (cptr.add(cptr.ldPtro((h), $Table_node), (nsize - 1 - i) >>> 0, $sizeof_Node))
                 : (cptr.add(cptr.ldPtro((h), $Table_node), i, $sizeof_Node));
@@ -659,7 +659,7 @@ function traversestrongtable(g, h) {
     ));
     let i;
     let asize = luaH_realasize(h);
-    for (i = 0; i < asize; i++) {
+    for (i = 0; i < asize; i = ((i + 1) >>> 0)) {
         (void cptr.ldPtro(g, $global_State_mainthread), (void 0));
         if ((((cptr.ld1uo(
             (cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue)),
@@ -750,7 +750,7 @@ function traversetable(g, h) {
     } else
         traversestrongtable(g, h);
     return BigInt(((1 +
-        cptr.ldI32o(h, $Table_alimit) +
+        (cptr.ldI32o(h, $Table_alimit) >>> 0) +
         (Math.imul(
             2,
             ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null)))
@@ -993,7 +993,7 @@ function* traversethread(g, th) {
 /** C ref: lgc.c:660 — @param {CPtr<global_State>} g @returns {*} */
 function* propagatemark(g) {
     let o = cptr.ldPtro(g, $global_State_gray);
-    ((cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) | 32)));
+    ((cptr.st1o((o), $GCObject_marked, uchar((cptr.ld1uo((o), $GCObject_marked) | 32)))));
     cptr.stPtro(g, $global_State_gray, cptr.ldPtr(getgclist(o)));  /* remove from 'gray' list */
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
@@ -1018,7 +1018,7 @@ function* propagatemark(g) {
 function* propagateall(g) {
     let tot = 0n;
     while (cptr.ldPtro(g, $global_State_gray))
-        tot += (yield* propagatemark(g));
+        tot = BigInt.asUintN(64, tot + (yield* propagatemark(g)));
     return tot;
 }
 
@@ -1041,7 +1041,7 @@ function* convergeephemerons(g) {
         while (!cptr.eq((w = next), (null))) {
             let h = (((((w)))));
             next = cptr.ldPtro(h, $Table_gclist);  /* list is rebuilt during loop */
-            ((cptr.st1o((h), $Table_marked, cptr.ld1uo((h), $Table_marked) | 32)));  /* out of the list (for now) */
+            ((cptr.st1o((h), $Table_marked, uchar((cptr.ld1uo((h), $Table_marked) | 32)))));  /* out of the list (for now) */
             if (traverseephemeron(g, h, dir)) {
                 (yield* propagateall(g));  /* propagate changes */
                 changed = 1;  /* will have to revisit all ephemeron tables */
@@ -1111,7 +1111,7 @@ function clearbyvalues(g, l, f) {
         ));
         let i;
         let asize = luaH_realasize(h);
-        for (i = 0; i < asize; i++) {
+        for (i = 0; i < asize; i = ((i + 1) >>> 0)) {
             let o = cptr.add(cptr.ldPtro(h, $Table_array), i, $sizeof_TValue);
             if (iscleared(g, (((cptr.ld1uo((o), $TValue_tt_)) & 64) ? (cptr.ldPtr(((o)))) : null)))
                 (cptr.st1o((o), $TValue_tt_, 16));  /* remove entry */
@@ -1304,8 +1304,11 @@ function* checkSizes(L, g) {
             cptr.stU64o(
                 g,
                 $global_State_GCestimate,
-                cptr.ldU64o(g, $global_State_GCestimate) +
-                    BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
+                BigInt.asUintN(
+                    64,
+                    cptr.ldU64o(g, $global_State_GCestimate) +
+                        BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
+                )
             );  /* correct estimate */
         }
     }
@@ -1322,7 +1325,7 @@ function udata2finalize(g) {
     cptr.stPtro(g, $global_State_tobefnz, cptr.ldPtr(o));  /* remove it from 'tobefnz' list */
     cptr.stPtr(o, cptr.ldPtro(g, $global_State_allgc));  /* return it to 'allgc' list */
     cptr.stPtro(g, $global_State_allgc, o);
-    (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 191));  /* object is "normal" again */
+    (cptr.st1o(o, $GCObject_marked, uchar((cptr.ld1uo(o, $GCObject_marked) & 191))));  /* object is "normal" again */
     if ((3 <= cptr.ld1uo((g), $global_State_gcstate) &&
             cptr.ld1uo((g), $global_State_gcstate) <= 6))
         (cptr.st1o(
@@ -1556,7 +1559,7 @@ export function* luaC_checkfinalizer(L, o, mt) {
         cptr.stPtr(p, cptr.ldPtr(o));  /* remove 'o' from 'allgc' list */
         cptr.stPtr(o, cptr.ldPtro(g, $global_State_finobj));  /* link it in 'finobj' list */
         cptr.stPtro(g, $global_State_finobj, o);
-        (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) | 64));  /* mark it as such */
+        (cptr.st1o(o, $GCObject_marked, uchar((cptr.ld1uo(o, $GCObject_marked) | 64))));  /* mark it as such */
     }
 }
 
@@ -1630,9 +1633,17 @@ function* sweep2old(L, p) {
                         cptr.ldPtro(((((((curr)))))), $UpVal_v),
                         cptr.add(((((((curr)))))), $UpVal_u)
                     )))
-                (cptr.st1o(curr, $GCObject_marked, cptr.ld1uo(curr, $GCObject_marked) & 199));  /* open upvalues are always gray */
+                (cptr.st1o(
+                    curr,
+                    $GCObject_marked,
+                    uchar((cptr.ld1uo(curr, $GCObject_marked) & 199))
+                ));  /* open upvalues are always gray */
             else
-                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));
+                ((cptr.st1o(
+                    (curr),
+                    $GCObject_marked,
+                    uchar((cptr.ld1uo((curr), $GCObject_marked) | 32))
+                )));
             p = curr;  /* go to next element */
         }
     }
@@ -1729,8 +1740,16 @@ function correctgraylist(p) {
                 break __lbl_remove;  /* remove all white objects */
             else if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 5) {
                 (void 0);
-                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));  /* make it black, for next barrier */
-                (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 3));
+                ((cptr.st1o(
+                    (curr),
+                    $GCObject_marked,
+                    uchar((cptr.ld1uo((curr), $GCObject_marked) | 32))
+                )));  /* make it black, for next barrier */
+                (cptr.st1o(
+                    (curr),
+                    $GCObject_marked,
+                    uchar((cptr.ld1uo((curr), $GCObject_marked) ^ 3))
+                ));
                 break __lbl_remain;  /* keep it in the list and go to next element */
             } else if (cptr.ld1uo(curr, $GCObject_tt) == 8) {
                 (void 0);
@@ -1738,8 +1757,16 @@ function correctgraylist(p) {
             } else {
                 (void 0);  /* young objects should be white here */
                 if ((cptr.ld1uo((curr), $GCObject_marked) & 7) == 6)
-                    (cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) ^ 2));  /* ... to OLD */
-                ((cptr.st1o((curr), $GCObject_marked, cptr.ld1uo((curr), $GCObject_marked) | 32)));  /* make object black (to be removed) */
+                    (cptr.st1o(
+                        (curr),
+                        $GCObject_marked,
+                        uchar((cptr.ld1uo((curr), $GCObject_marked) ^ 2))
+                    ));  /* ... to OLD */
+                ((cptr.st1o(
+                    (curr),
+                    $GCObject_marked,
+                    uchar((cptr.ld1uo((curr), $GCObject_marked) | 32))
+                )));  /* make object black (to be removed) */
                 break __lbl_remove;
             }
         }
@@ -1785,7 +1812,7 @@ function markold(g, from, to) {
     for (p = from; !cptr.eq(p, to); p = cptr.ldPtr(p)) {
         if ((cptr.ld1uo((p), $GCObject_marked) & 7) == 3) {
             (void 0);
-            (cptr.st1o((p), $GCObject_marked, cptr.ld1uo((p), $GCObject_marked) ^ 7));  /* now they are old */
+            (cptr.st1o((p), $GCObject_marked, uchar((cptr.ld1uo((p), $GCObject_marked) ^ 7))));  /* now they are old */
             if (((cptr.ld1uo((p), $GCObject_marked)) & 32))
                 reallymarkobject(g, p);
         }
@@ -1925,18 +1952,21 @@ function* atomic2gen(L, g) {
 function setminordebt(g) {
     luaE_setdebt(
         g,
-        -(BigInt.asIntN(
+        BigInt.asIntN(
             64,
-            (BigInt.asIntN(
+            -(BigInt.asIntN(
                 64,
-                (((BigInt.asUintN(
+                (BigInt.asIntN(
                     64,
-                    (cptr.ldI64o((g), $global_State_totalbytes) +
-                        cptr.ldI64o((g), $global_State_GCdebt))
-                )) / 100n))
-            )) *
-                BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0)
-        ))
+                    (((BigInt.asUintN(
+                        64,
+                        (cptr.ldI64o((g), $global_State_totalbytes) +
+                            cptr.ldI64o((g), $global_State_GCdebt))
+                    )) / 100n))
+                )) *
+                    BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0)
+            ))
+        )
     );
 }
 
@@ -2209,12 +2239,12 @@ function* atomic(L) {
     }
     ;
     markmt(g);  /* mark global metatables */
-    work += (yield* propagateall(g));  /* empties 'gray' list */
+    work = BigInt.asUintN(64, work + (yield* propagateall(g)));  /* empties 'gray' list */
     /* remark occasional upvalues of (maybe) dead threads */
-    work += BigInt.asUintN(64, BigInt(remarkupvals(g)));
-    work += (yield* propagateall(g));  /* propagate changes */
+    work = BigInt.asUintN(64, work + BigInt.asUintN(64, BigInt(remarkupvals(g))));
+    work = BigInt.asUintN(64, work + (yield* propagateall(g)));  /* propagate changes */
     cptr.stPtro(g, $global_State_gray, grayagain);
-    work += (yield* propagateall(g));  /* traverse 'grayagain' list */
+    work = BigInt.asUintN(64, work + (yield* propagateall(g)));  /* traverse 'grayagain' list */
     (yield* convergeephemerons(g));
     /* at this point, all strongly accessible objects are marked. */
     /* Clear values from weak tables, before checking finalizers */
@@ -2223,8 +2253,8 @@ function* atomic(L) {
     origweak = cptr.ldPtro(g, $global_State_weak);
     origall = cptr.ldPtro(g, $global_State_allweak);
     separatetobefnz(g, 0);  /* separate objects to be finalized */
-    work += markbeingfnz(g);  /* mark objects that will be finalized */
-    work += (yield* propagateall(g));  /* remark, to propagate 'resurrection' */
+    work = BigInt.asUintN(64, work + markbeingfnz(g));  /* mark objects that will be finalized */
+    work = BigInt.asUintN(64, work + (yield* propagateall(g)));  /* remark, to propagate 'resurrection' */
     (yield* convergeephemerons(g));
     /* at this point, all resurrected objects are marked. */
     /* remove dead objects from weak tables */
@@ -2263,8 +2293,11 @@ function* sweepstep(L, g, nextstate, nextlist) {
         cptr.stU64o(
             g,
             $global_State_GCestimate,
-            cptr.ldU64o(g, $global_State_GCestimate) +
-                BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
+            BigInt.asUintN(
+                64,
+                cptr.ldU64o(g, $global_State_GCestimate) +
+                    BigInt.asUintN(64, (cptr.ldI64o(g, $global_State_GCdebt) - olddebt))
+            )
         );  /* update estimate */
         return count.v;
     } else {
@@ -2389,14 +2422,18 @@ function* incstep(L, g) {
     let stepsize = BigInt.asIntN(
         64,
         ((BigInt(cptr.ld1uo(g, $global_State_gcstepsize) >>> 0) <= 62n)
-            ? (BigInt.asUintN(64, (1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize)))) / 16n) *
+            ? (BigInt.asUintN(
+                64,
+                (BigInt.asIntN(64, 1n << BigInt(cptr.ld1uo(g, $global_State_gcstepsize))))
+            ) /
+                16n) *
                 BigInt.asUintN(64, BigInt(stepmul))
             : 9223372036854775807n)
     );  /* overflow; keep maximum value */
     do {
         let work = (yield* singlestep(L));  /* perform one single step */
-        debt -= BigInt.asIntN(64, work);
-    } while (debt > -stepsize && cptr.ld1uo(g, $global_State_gcstate) != 8);
+        debt = BigInt.asIntN(64, BigInt.asUintN(64, BigInt.asUintN(64, debt) - work));
+    } while (debt > BigInt.asIntN(64, -stepsize) && cptr.ld1uo(g, $global_State_gcstate) != 8);
     if (cptr.ld1uo(g, $global_State_gcstate) == 8)
         setpause(g);  /* pause until next cycle */
     else {

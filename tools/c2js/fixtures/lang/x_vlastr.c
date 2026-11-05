@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int x;char y;}; int main(void){ int n=3; struct s v[n]; v[2].x=7; v[2].y='q'; struct s *p=v; p[1]=p[2]; char t[n+1]; t[0]='h'; t[1]=0; printf("%d %c %zu %s\n",v[1].x,v[1].y,sizeof v,t); double d[n*2]; d[5]=1.5; printf("%f\n",d[5]); return 0; }

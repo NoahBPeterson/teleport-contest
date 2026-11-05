@@ -105,9 +105,7 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum,
       $classic_representation_symidx = FLD.classic_representation_symidx,
       $const_globals_zeroany = FLD.const_globals_zeroany,
       $context_info_mon_moving = FLD.context_info_mon_moving,
-      $context_info_warntype = FLD.context_info_warntype, $d_flags_hellish = FLD.d_flags_hellish,
-      $d_flags_maze_like = FLD.d_flags_maze_like, $d_flags_rogue_like = FLD.d_flags_rogue_like,
-      $d_level_dlevel = FLD.d_level_dlevel,
+      $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.d_level_dlevel,
       $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
       $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
       $dgn_topology_d_mines_dnum = FLD.dgn_topology_d_mines_dnum,
@@ -471,11 +469,11 @@ function* makemap_unmakemon(mtmp, migratory) {
     /* vault is going away; get rid of guard who might be in play or
        be parked at <0,0>; for the latter, might already be flagged as
        dead but is being kept around because of the 'isgd' flag */
-    if ((cptr.ldI32o(mtmp, $monst_isgd) & 1)) {
-        cptr.stI32o(mtmp, $monst_isgd, 0);  /* after this, fall through to mongone() */
+    if (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0)) {
+        cptr.stBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0, 0);  /* after this, fall through to mongone() */
     } else if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
         return;  /* already set to be discarded */
-    } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
+    } else if (cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
             on_level(
                 cptr.add(u, $you_uz),
                 cptr.add(
@@ -533,7 +531,7 @@ export function* makemap_remove_mons() {
         (mtmp = cptr.ldPtr(mprev)) !== null;
     ) {
         if (cptr.ldPtro(mtmp, $monst_mextra) &&
-                (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 &&
+                ((cptr.ldBits(cptr.add(mtmp, $monst_isshk), 4, 1, 0) | 0 &&
                     on_level(
                         cptr.add(u, $you_uz),
                         cptr.add(
@@ -541,7 +539,7 @@ export function* makemap_remove_mons() {
                             $eshk_shoplevel
                         )
                     )) ||
-                    ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(mtmp, $monst_ispriest), 7, 1, 0) | 0 &&
                         on_level(
                             cptr.add(u, $you_uz),
                             cptr.add(
@@ -549,7 +547,7 @@ export function* makemap_remove_mons() {
                                 $epri_shrlevel
                             )
                         )) ||
-                    ((cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 &&
+                    (cptr.ldBits(cptr.add(mtmp, $monst_isgd), 6, 1, 0) | 0 &&
                         on_level(
                             cptr.add(u, $you_uz),
                             cptr.add(
@@ -597,6 +595,7 @@ export function* wiz_makemap() {
    and any traps or engravings on it */
 /** C ref: wizcmds.c:176 @returns {CInt} */
 export function* wiz_map() {
+    let __r1;
     if (wizard()) {
         let t;
         let ep;
@@ -610,15 +609,12 @@ export function* wiz_map() {
                 cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
             )) - (1);
         }
-        cptr.stI64o2(
-            u,
-            NHC.CONFUSION,
-            $sizeof_prop,
-            $you_uprops + $prop_intrinsic,
-            cptr.stI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n)
+        (
+            __r1 = cptr.stI64o2(u, NHC.HALLUC, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n),
+            cptr.stI64o2(u, NHC.CONFUSION, $sizeof_prop, $you_uprops + $prop_intrinsic, __r1)
         );
         for (t = cptr.ldPtr(gf); t !== null; t = cptr.ldPtr(t)) {
-            cptr.stI32o(t, $trap_tseen, 1);
+            cptr.stBits(cptr.add(t, $trap_tseen), 5, 1, 0, 1);
             (yield* map_trap(t, 1));
         }
         for (ep = head_engr.v; ep !== null; ep = cptr.ldPtr(ep)) {
@@ -742,7 +738,7 @@ export function* wiz_kill() {
                 }
                 break;
             }
-        } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
+        } else if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0)) {
             mtmp = (dist2(
                 ((cptr.ldI16(cc))),
                 ((cptr.ldI16o(cc, $nhcoord_y))),
@@ -774,7 +770,7 @@ export function* wiz_kill() {
                be referred to as "it" */
             let tame = !!cptr.ld1so(mtmp, $monst_mtame);
             let seen = (canspotmon(mtmp) ||
-                ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 &&
                     cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
                     ? 1
                     : 0);
@@ -927,7 +923,7 @@ export function* wiz_flip_level() {
 /** C ref: wizcmds.c:446 @returns {CInt} */
 export function* wiz_level_change() {
     let buf = new Uint8Array(256);
-    let dummy = cptr.box(0);
+    let dummy = cptr.box(0, "i8");
     let newlevel = cptr.box(0);
     let ret;
 
@@ -1075,10 +1071,10 @@ export function* wiz_show_seenv() {
     stopx = i16((((startx + 40) | 0) < NHM.COLNO ? ((startx + 40) | 0) : NHM.COLNO));
     /* can't have a line exactly 80 chars long */
     if (((stopx - startx) | 0) == 40)
-        startx++;
+        startx = i16(startx + 1);
 
-    for (y = 0; y < NHM.ROWNO; y++) {
-        for (x = startx, curx = 0; x < stopx; x++, curx = i16(curx + 2)) {
+    for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
+        for (x = startx, curx = 0; x < stopx; x = i16(x + 1), curx = i16(curx + 2)) {
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                 cptr.st1o(
                     cptr.decay(row),
@@ -1107,7 +1103,7 @@ export function* wiz_show_seenv() {
             }
         }
         /* remove trailing spaces */
-        for (x = i16(((curx - 1) | 0)); x >= 0; x--)
+        for (x = i16(((curx - 1) | 0)); x >= 0; x = i16(x + -1))
             if (cptr.ld1so(cptr.decay(row), x, 1) != 32)
                 break;
         cptr.st1o(cptr.decay(row), (x + 1) | 0, 0, 1);
@@ -1138,8 +1134,8 @@ export function* wiz_show_vision() {
     );
     (yield* Y.icall(putstr()(win, 0, cptr.decay(row))));
     (yield* Y.icall(putstr()(win, 0, __s_empty)));
-    for (y = 0; y < NHM.ROWNO; y++) {
-        for (x = 1; x < NHM.COLNO; x++) {
+    for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
+        for (x = 1; x < NHM.COLNO; x = i16(x + 1)) {
             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
                 cptr.st1o(cptr.decay(row), x, 64, 1);
             } else {
@@ -1151,7 +1147,7 @@ export function* wiz_show_vision() {
             }
         }
         /* remove trailing spaces */
-        for (x = 79; x >= 1; x--)
+        for (x = 79; x >= 1; x = i16(x + -1))
             if (cptr.ld1so(cptr.decay(row), x, 1) != 32)
                 break;
         cptr.st1o(cptr.decay(row), (x + 1) | 0, 0, 1);
@@ -1176,8 +1172,8 @@ export function* wiz_show_wmodes() {
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     if (istty)
         (yield* Y.icall(putstr()(win, 0, __s_empty)));  /* tty only: blank top line */
-    for (y = 0; y < NHM.ROWNO; y++) {
-        for (x = 0; x < NHM.COLNO; x++) {
+    for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
+        for (x = 0; x < NHM.COLNO; x = i16(x + 1)) {
             lev = cptr.add(
                 cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
                 y,
@@ -1189,7 +1185,9 @@ export function* wiz_show_wmodes() {
                 cptr.st1o(
                     cptr.decay(row),
                     x,
-                    schar(((48 + (((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK)) | 0)),
+                    schar(((48 +
+                        ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK)) |
+                        0)),
                     1
                 );
             else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR)
@@ -1223,10 +1221,10 @@ export function* wiz_map_levltyp() {
     /* map row 0, levl[][0], is drawn on the second line of tty screen */
     if (istty)
         (yield* Y.icall(putstr()(win, 0, __s_empty)));  /* tty only: blank top line */
-    for (y = 0; y < NHM.ROWNO; y++) {
+    for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
         /* map column 0, levl[0][], is off the left edge of the screen;
            it should always have terrain type "undiggable stone" */
-        for (x = 1; x < NHM.COLNO; x++) {
+        for (x = 1; x < NHM.COLNO; x = i16(x + 1)) {
             terrain = cptr.ld1so3(
                 svl,
                 x,
@@ -1247,7 +1245,7 @@ export function* wiz_map_levltyp() {
                 1
             );
         }
-        x--;
+        x = i16(x + -1);
         if (cptr.ld1so3(
             svl,
             0,
@@ -1258,7 +1256,7 @@ export function* wiz_map_levltyp() {
         ) !=
             NHC.STONE ||
                 may_dig(0, y))
-            cptr.st1o(cptr.decay(row), x++, 33, 1);
+            cptr.st1o(cptr.decay(row), (yield* Y.icall(((old_) => (x = i16(old_ + 1), old_))(x))), 33, 1);
         cptr.st1o(cptr.decay(row), x, 0, 1);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(row))));
     }
@@ -1283,13 +1281,13 @@ export function* wiz_map_levltyp() {
             );
             /* special level flags (note: dungeon.def doesn't set `maze'
                or `hell' for any specific levels so those never show up) */
-            if ((cptr.ldI32o(slev, $s_level_flags + $d_flags_maze_like) & 1))
+            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 2, 1, 0))
                 void cptr.strcat(cptr.decay(dsc), __s_mazelike);
-            if ((cptr.ldI32o(slev, $s_level_flags + $d_flags_hellish) & 1))
+            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 1, 1, 0))
                 void cptr.strcat(cptr.decay(dsc), __s_hellish);
-            if ((cptr.ldI32o(slev, $s_level_flags) & 1))
+            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 0, 1, 0))
                 void cptr.strcat(cptr.decay(dsc), __s_town);
-            if ((cptr.ldI32o(slev, $s_level_flags + $d_flags_rogue_like) & 1))
+            if (cptr.ldBits(cptr.add(slev, $s_level_flags), 3, 1, 0))
                 void cptr.strcat(cptr.decay(dsc), __s_roguelike);
             /* alignment currently omitted to save space */
         }
@@ -1311,96 +1309,174 @@ export function* wiz_map_levltyp() {
                     $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks
                 )
             );
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_vault
+            ),
+            1,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_vault);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop),
+            0,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_shop);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_temple
+            ),
+            7,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_temple);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_court
+            ),
+            3,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_throne);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_zoo),
+            2,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_zoo);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_morgue
+            ),
+            4,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_morgue);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_barracks
+            ),
+            6,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_barracks);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_beehive
+            ),
+            5,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_hive);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_swamp
+            ),
+            0,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_swamp);
         /* level flags */
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noteleport
+            ),
+            1,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_notport);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
+            ),
+            2,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_nodig);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap),
+            3,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_nommap);
-        if (!(cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
-        ) & 1))
+        if (!cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+            ),
+            4,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_nomem);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_shortsighted
+            ),
+            5,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_shortsight);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard
+            ),
+            6,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_graveyard);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev
+            ),
+            0,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_maze);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev
+            ),
+            1,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_cave);
-        if ((cptr.ldI32o(
-            svl,
-            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
-        ) & 1))
+        if (cptr.ldBits(
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal),
+            2,
+            1,
+            0
+        ))
             void cptr.strcat(cptr.decay(dsc), __s_tree);
         if (Sokoban())
             void cptr.strcat(cptr.decay(dsc), __s_sokoban_rules);
@@ -1673,7 +1749,7 @@ export function* wiz_intrinsic() {
                     break;
             }
 
-            __sw_1: switch (p.v) {
+            switch (p.v) {
                 case NHC.BLINDED:
                     (yield* make_blinded(newtimeout, 1));
                     break;
@@ -1759,7 +1835,7 @@ export function* wiz_intrinsic() {
                             oldtimeout ? __s_increased_by : __s_set_to,
                             amt
                         ));
-                        break __sw_1;
+                        break;
                     }
                 case NHC.GLIB:
                     /* slippery fingers might need a persistent inventory update
@@ -1792,7 +1868,7 @@ export function* wiz_intrinsic() {
             else if (p.v == NHC.PROT_FROM_SHAPE_CHANGERS)
                 (yield* rescham());
             if (p.v == NHC.WWALKING || p.v == NHC.LEVITATION || p.v == NHC.FLYING) {
-                if ((cptr.ldI32o(u, $you_uinwater) & 1))
+                if (cptr.ldBits(cptr.add(u, $you_uinwater), 1, 1, 0))
                     void (yield* pooleffects(0));
             }
         }
@@ -1826,7 +1902,7 @@ const stats_sep = cptr.bytes("---------------------------  ----- -------");
 
 /** C ref: wizcmds.c:1117 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function size_obj(otmp) {
-    let sz = 216;
+    let sz = 112;
 
     if (cptr.ldPtro(otmp, $obj_oextra)) {
         sz = (sz + 32) | 0;
@@ -1894,8 +1970,8 @@ function count_obj(chain, total_count, total_size, top, recurse) {
  */
 function* obj_chain(win, src, chain, force, total_count, total_size) {
     let buf = new Uint8Array(256);
-    let count = cptr.box(0n);
-    let size = cptr.box(0n);
+    let count = cptr.box(0n, "i64");
+    let size = cptr.box(0n, "i64");
 
     count_obj(chain, count, size, 1, 0);
 
@@ -1917,8 +1993,8 @@ function* obj_chain(win, src, chain, force, total_count, total_size) {
  */
 function* mon_invent_chain(win, src, chain, total_count, total_size) {
     let buf = new Uint8Array(256);
-    let count = cptr.box(0n);
-    let size = cptr.box(0n);
+    let count = cptr.box(0n, "i64");
+    let size = cptr.box(0n, "i64");
     let mon;
 
     for (mon = chain; mon; mon = cptr.ldPtr(mon))
@@ -1941,8 +2017,8 @@ function* mon_invent_chain(win, src, chain, total_count, total_size) {
  */
 function* contained_stats(win, src, total_count, total_size) {
     let buf = new Uint8Array(256);
-    let count = cptr.box(0n);
-    let size = cptr.box(0n);
+    let count = cptr.box(0n, "i64");
+    let size = cptr.box(0n, "i64");
     let mon;
 
     count_obj(cptr.ldPtro(gi, $instance_globals_i_invent), count, size, 0, 1);
@@ -1987,9 +2063,9 @@ function* contained_stats(win, src, total_count, total_size) {
  * @returns {CInt}
  */
 function size_monst(mtmp, incl_wsegs) {
-    let sz = 320;
+    let sz = 192;
 
-    if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && incl_wsegs)
+    if (cptr.ldBits(cptr.add(mtmp, $monst_wormno), 1, 5, 0) | 0 && incl_wsegs)
         sz = (sz + size_wseg(mtmp)) | 0;
 
     if (cptr.ldPtro(mtmp, $monst_mextra)) {
@@ -2002,7 +2078,7 @@ function size_monst(mtmp, incl_wsegs) {
                     )) +
                         1)) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)))
-            sz = (sz + 652) | 0;
+            sz = (sz + 640) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)))
             sz = (sz + 56) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))
@@ -2012,7 +2088,7 @@ function size_monst(mtmp, incl_wsegs) {
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)))
             sz = (sz + 64) | 0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)))
-            sz = (sz + 36) | 0;
+            sz = (sz + 28) | 0;
         /* mextra->mcorpsenm doesn't point to more memory */
     }
     return sz;
@@ -2055,10 +2131,11 @@ function* mon_chain(win, src, chain, force, total_count, total_size) {
  * @param {CPtr<long>} total_size
  */
 function* misc_stats(win, total_count, total_size) {
+    let __r2;
     let buf = new Uint8Array(256);
     let hdrbuf = new Uint8Array(128);
-    let count = cptr.box(0n);
-    let size = cptr.box(0n);
+    let count = cptr.box(0n, "i64");
+    let size = cptr.box(0n, "i64");
     let idx;
     let tt;
     let sd;  /* shop damage */
@@ -2071,11 +2148,11 @@ function* misc_stats(win, total_count, total_size) {
     count.v = (size.v = 0n);
     for (tt = cptr.ldPtr(gf); tt; tt = cptr.ldPtr(tt)) {
         ++count.v;
-        size.v += 40n;
+        size.v += 32n;
     }
     cptr.stI64(total_count, cptr.ldI64(total_count) + count.v);
     cptr.stI64(total_size, cptr.ldI64(total_size) + size.v);
-    void cptr.sprintf(cptr.decay(hdrbuf), __s_traps_size_ld, 40n);
+    void cptr.sprintf(cptr.decay(hdrbuf), __s_traps_size_ld, 32n);
     void cptr.sprintf(cptr.decay(buf), cptr.decay(template), cptr.decay(hdrbuf), count.v, size.v);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
 
@@ -2205,9 +2282,17 @@ function* misc_stats(win, total_count, total_size) {
     for (idx = 0; idx < NHC.NUM_OBJECTS; ++idx)
         if (cptr.ldPtro2(objects, idx, $sizeof_objclass, $objclass_oc_uname)) {
             ++count.v;
-            size.v += BigInt.asIntN(
-                64,
-                (cptr.strlen(cptr.ldPtro2(objects, idx, $sizeof_objclass, $objclass_oc_uname)) + 1n)
+            (
+                __r2 = BigInt.asIntN(
+                    64,
+                    (cptr.strlen(cptr.ldPtro2(
+                        objects,
+                        idx,
+                        $sizeof_objclass,
+                        $objclass_oc_uname
+                    )) + 1n)
+                ),
+                size.v += __r2
             );
         }
     if (count.v || size.v) {
@@ -2229,12 +2314,12 @@ function* misc_stats(win, total_count, total_size) {
 function* you_sanity_check() {
     let mtmp;
 
-    if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && !cptr.ldPtro(u, $you_ustuck)) {
+    if (cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0 && !cptr.ldPtro(u, $you_ustuck)) {
         /* this probably ought to be panic() */
         (yield* impossible(__s_sanity_check_swallowed_by_nothing));
         (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
         /* try to recover from whatever the problem is */
-        cptr.stI32o(u, $you_uswallow, 0);
+        cptr.stBits(cptr.add(u, $you_uswallow), 0, 1, 0, 0);
         cptr.stI32o(u, $you_uswldtim, 0);
         (yield* docrt());
     }
@@ -2290,8 +2375,8 @@ function* levl_sanity_check() {
     if (Underwater())
         return;  /* Underwater uses different vision */
 
-    for (y = 0; y < NHM.ROWNO; y++) {
-        for (x = 1; x < NHM.COLNO; x++) {
+    for (y = 0; y < NHM.ROWNO; y = i16(y + 1)) {
+        for (x = 1; x < NHM.COLNO; x = i16(x + 1)) {
             if (((yield* does_block(
                 x,
                 y,
@@ -2358,9 +2443,9 @@ function migrsort_cmp(vptr1, vptr2) {
         return (l1 - l2) | 0;
     /* same destination level:  use a tie-breaker to force stable sort;
        monst->m_id is unsigned so we need more than just simple subtraction */
-    return (cptr.ldI32o(m1, $monst_m_id) < cptr.ldI32o(m2, $monst_m_id))
+    return (cptr.ldI32o(m1, $monst_m_id) >>> 0 < cptr.ldI32o(m2, $monst_m_id) >>> 0)
             ? -1
-            : (cptr.ldI32o(m1, $monst_m_id) > cptr.ldI32o(m2, $monst_m_id));
+            : (cptr.ldI32o(m1, $monst_m_id) >>> 0 > cptr.ldI32o(m2, $monst_m_id) >>> 0);
 }
 
 /* called by #migratemons; displays count of migrating monsters, optionally
@@ -2467,12 +2552,12 @@ function* list_migrating_mons(nextlevl) {
                     showit = schar((c == 111));
 
                 if (showit)
-                    cptr.stPtro(marray, n++, mtmp, 8);
+                    cptr.stPtro(marray, (yield* Y.icall(((old_) => (n = ((old_ + 1) >>> 0), old_))(n))), mtmp, 8);
             }
             cptr.stPtro(marray, n, null, 8);  /* mark end for traversal loop */
             if (n > 1)
                 (yield* nh_deterministic_qsort((marray), (BigInt(n >>> 0)), 8n, (migrsort_cmp)));
-            for (n = 0; (mtmp = cptr.ldPtro(marray, n, 8)) !== null; ++n) {
+            for (n = 0; (mtmp = cptr.ldPtro(marray, n, 8)) !== null; n = ((n + 1) >>> 0)) {
                 void cptr.sprintf(cptr.decay(buf), __s_sp2_pct_s, minimal_monnam(mtmp, 0));
                 /* minimal_monnam() appends map coordinates; strip that */
                 void strsubst(cptr.decay(buf), __s_0_0, __s_empty);
@@ -2514,21 +2599,21 @@ function* list_migrating_mons(nextlevl) {
 export function* wiz_show_stats() {
     let buf = new Uint8Array(256);
     let win;
-    let total_obj_size = cptr.box(0n);
-    let total_obj_count = cptr.box(0n);
-    let total_mon_size = cptr.box(0n);
-    let total_mon_count = cptr.box(0n);
-    let total_ovr_size = cptr.box(0n);
-    let total_ovr_count = cptr.box(0n);
-    let total_misc_size = cptr.box(0n);
-    let total_misc_count = cptr.box(0n);
+    let total_obj_size = cptr.box(0n, "i64");
+    let total_obj_count = cptr.box(0n, "i64");
+    let total_mon_size = cptr.box(0n, "i64");
+    let total_mon_count = cptr.box(0n, "i64");
+    let total_ovr_size = cptr.box(0n, "i64");
+    let total_ovr_count = cptr.box(0n, "i64");
+    let total_misc_size = cptr.box(0n, "i64");
+    let total_misc_count = cptr.box(0n, "i64");
 
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     (yield* Y.icall(putstr()(win, 0, __s_current_memory_statistics)));
 
     total_obj_count.v = (total_obj_size.v = 0n);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(stats_hdr))));
-    void cptr.sprintf(cptr.decay(buf), __s_objects_base_size_ld, 216n);
+    void cptr.sprintf(cptr.decay(buf), __s_objects_base_size_ld, 112n);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     (yield* obj_chain(
         win,
@@ -2597,7 +2682,7 @@ export function* wiz_show_stats() {
 
     total_mon_count.v = (total_mon_size.v = 0n);
     (yield* Y.icall(putstr()(win, 0, __s_empty)));
-    void cptr.sprintf(cptr.decay(buf), __s_monsters_base_size_ld, 320n);
+    void cptr.sprintf(cptr.decay(buf), __s_monsters_base_size_ld, 192n);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     (yield* mon_chain(
         win,
@@ -2900,9 +2985,14 @@ export function* wiz_objprobs() {
             __s_4d_4d_6_2f_s,
             cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob),
             cptr.ldI32o(probsum, oclass, 4),
-            cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob) *
-                100 /
-                cptr.ldI32o(probsum, oclass, 4),
+            Math.fround(Math.fround(Math.fround(cptr.ldI16o2(
+                objects,
+                otyp,
+                $sizeof_objclass,
+                $objclass_oc_prob
+            )) *
+                100) /
+                Math.fround(cptr.ldI32o(probsum, oclass, 4))),
             (cptr.ldPtro(
                 obj_descr,
                 cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))),
@@ -3013,7 +3103,7 @@ export function* wiz_custom() {
             cptr.decay(bufa),
             __s_s_colorcount_ld_s,
             cptr.decay(__static_wiz_custom_wizcustom),
-            BigInt(cptr.ldI32o(iflags, $instance_flags_colorcount) >>> 0),
+            BigInt((cptr.ldI32o(iflags, $instance_flags_colorcount) >>> 0) >>> 0),
             cptr.ldPtro2(
                 gs,
                 NHC.PRIMARYSET,
@@ -3087,7 +3177,7 @@ export function* wizcustom_callback(win, glyphnum, id) {
 
     if (win && id) {
         cgm = cptr.add(glyphmap, glyphnum, $sizeof_glyph_map);
-        if (cptr.ldPtro(cgm, $glyph_map_u) || cptr.ldI32o(cgm, $glyph_map_customcolor) != 0) {
+        if (cptr.ldPtro(cgm, $glyph_map_u) || cptr.ldI32o(cgm, $glyph_map_customcolor) >>> 0 != 0) {
             void cptr.sprintf(cptr.decay(bufa), __s_04d_44s, glyphnum, id);
             void cptr.sprintf(
                 cptr.decay(bufb),
@@ -3103,7 +3193,7 @@ export function* wizcustom_callback(win, glyphnum, id) {
             void cptr.sprintf(
                 cptr.decay(bufc),
                 __s_011lx,
-                BigInt(cptr.ldI32o(cgm, $glyph_map_customcolor) >>> 0)
+                BigInt((cptr.ldI32o(cgm, $glyph_map_customcolor) >>> 0) >>> 0)
             );
             cptr.st1o(cptr.decay(bufu), 0, 0, 1);
             if (cptr.ldPtro(cgm, $glyph_map_u) &&
@@ -3111,7 +3201,7 @@ export function* wizcustom_callback(win, glyphnum, id) {
                 void cptr.sprintf(
                     cptr.decay(bufu),
                     __s_u_04lx,
-                    BigInt(cptr.ldI32(cptr.ldPtro(cgm, $glyph_map_u)) >>> 0)
+                    BigInt((cptr.ldI32(cptr.ldPtro(cgm, $glyph_map_u)) >>> 0) >>> 0)
                 );
                 cp = cptr.ldPtro(cptr.ldPtro(cgm, $glyph_map_u), $unicode_representation_utf8str);
                 while (cptr.ld1u(cp)) {

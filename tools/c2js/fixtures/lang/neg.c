@@ -1,0 +1,4 @@
+#include <stdio.h>
+int main(void){ unsigned u=1,z=0; unsigned long long q=1,qz=0; int i=0,m=5; long long l=0; unsigned short us=3; unsigned char uc=3; short s=0; _Bool b=1; double d=0;
+ printf("%d %d %d %d\n",~u>5,-u>5,-z>5,~z==0xFFFFFFFFu); printf("%d %d %d %d\n",-q>5,~q>5,-qz==0,(-q)%7==0); printf("%llu %llu %u %u\n",-q,-qz,-u,~u);
+ printf("%f %f %f %f %f\n",(double)-i,(double)-l,(double)-s,-d,(double)-(i*m)); printf("%d %d %d %d\n",-us<0,~us<0,-uc,~uc); printf("%u %d\n",(unsigned)-us,-b); printf("%lld %f %d\n",-(long long)u,(double)-u,(int)-u); unsigned a[2]={7,0}; unsigned *p=a; printf("%d %u %u %d\n",-*p>7,-p[1],~p[1],(~*p)/2>5); printf("%u %u\n",-u/2,(~u)>>28); printf("%llu\n",(unsigned long long)~u); printf("%llu\n",(unsigned long long)-u); printf("%lld\n",(long long)~i); return 0; }

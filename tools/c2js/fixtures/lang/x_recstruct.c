@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{int a[3];}; static struct s f(struct s v,int n){ if(!n) return v; v.a[n%3]+=n; return f(v,n-1); } int main(void){ struct s z={{0}}; struct s r=f(z,5); printf("%d %d %d %d\n",r.a[0],r.a[1],r.a[2],z.a[1]); return 0; }

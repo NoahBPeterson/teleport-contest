@@ -249,7 +249,7 @@ export function set_mon_data(mon, ptr) {
              */
             cptr.stI16(movement_p, cptr.ldI16(movement_p) * new_speed);
             if (old_speed > 0)
-                cptr.stI16(movement_p, cptr.ldI16(movement_p) / old_speed);
+                cptr.stI16(movement_p, (cptr.ldI16(movement_p) / old_speed) | 0);
         }
     }
     return;
@@ -323,7 +323,7 @@ export function poly_when_stoned(ptr) {
 /** C ref: mondata.c:91 — @param {CPtr<struct monst>} mon @param {CInt} adtyp @returns {CInt} */
 export function* defended(mon, adtyp) {
     let o;
-    let otemp = cptr.alloc(216);
+    let otemp = cptr.alloc(112);
     let mndx;
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
 
@@ -339,7 +339,7 @@ export function* defended(mon, adtyp) {
         /* a dragon is its own suit...  if mon is poly'd hero, we don't
            care about embedded scales (uskin) because being a dragon with
            embedded scales is no better than just being a dragon */
-        cptr.memcpy(otemp, cg, 216);
+        cptr.memcpy(otemp, cg, 112);
         cptr.st1o(otemp, $obj_oclass, NHC.ARMOR_CLASS);
         cptr.stI16o(
             otemp,
@@ -492,10 +492,10 @@ export function* resists_blnd(mon) {
                 (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted()))
                 ? 1
                 : 0)
-            : ((cptr.ldI32o(mon, $monst_mblinded) & 127) | 0 ||
-                !(cptr.ldI32o(mon, $monst_mcansee) & 1) ||
+            : (cptr.ldBits(cptr.add(mon, $monst_mblinded), 0, 7, 0) | 0 ||
+                !cptr.ldBits(cptr.add(mon, $monst_mcansee), 7, 1, 0) ||
                 !((cptr.ldU64o((ptr), $permonst_mflags1) & 4096n) == 0n) ||
-                (cptr.ldI32o(mon, $monst_msleeping) & 1) | 0
+                cptr.ldBits(cptr.add(mon, $monst_msleeping), 7, 1, 0) | 0
                 ? 1
                 : 0))
         return 1;
@@ -576,7 +576,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
         case NHM.AT_MAGC:
         case NHM.AT_BREA:
             /* light-based attacks may be cancelled or resisted */
-            if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
+            if (magr && cptr.ldBits(cptr.add(magr, $monst_mcan), 4, 1, 0) | 0)
                 return 0;
             return schar((!(yield* resists_blnd(mdef))));
         case NHM.AT_WEAP:
@@ -588,7 +588,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
                     return 0;
             } else if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.BLINDING_VENOM)) {
                 /* all ublindf, including LENSES, protect, cream-pies too */
-                if (is_you && (ublindf.v || cptr.ldI32o(u, $you_ucreamed)))
+                if (is_you && (ublindf.v || cptr.ldI32o(u, $you_ucreamed) >>> 0))
                     return 0;
                 check_visor = 1;
             } else if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_BLINDNESS)) {
@@ -596,7 +596,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
             } else
                 return 0;  /* other objects cannot cause blindness yet */
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             break;
         case NHM.AT_ENGL:
@@ -604,9 +604,9 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
                     (EBlinded() ||
                         (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n &&
                             (unconscious() || is_fainted())) ||
-                        cptr.ldI32o(u, $you_ucreamed)))
+                        cptr.ldI32o(u, $you_ucreamed) >>> 0))
                 return 0;
-            if (!is_you && (cptr.ldI32o(mdef, $monst_msleeping) & 1) | 0)
+            if (!is_you && cptr.ldBits(cptr.add(mdef, $monst_msleeping), 7, 1, 0) | 0)
                 return 0;
             break;
         case NHM.AT_CLAW:
@@ -614,14 +614,14 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
             if (is_you && ublindf.v)
                 return 0;
             if ((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) &&
-                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+                    cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
                 return 0;  /* can't affect eyes while inside monster */
             check_visor = 1;
             break;
         case NHM.AT_TUCH:
         case NHM.AT_STNG:
             /* some physical, blind-inducing attacks can be cancelled */
-            if (magr && (cptr.ldI32o(magr, $monst_mcan) & 1) | 0)
+            if (magr && cptr.ldBits(cptr.add(magr, $monst_mcan), 4, 1, 0) | 0)
                 return 0;
             break;
         default:
@@ -1613,7 +1613,7 @@ export function* name_to_monclass(in_str, mndx_p) {
                     $alt_spl_pm_val
                 );
                 if (i < 0)
-                    return -i;  /* class */
+                    return -i | 0;  /* class */
                 if (mndx_p)
                     cptr.stI32(mndx_p, i);  /* monster */
                 return cptr.ld1so2(mons, i, $sizeof_permonst, $permonst_mlet);
@@ -1644,7 +1644,7 @@ export function* name_to_monclass(in_str, mndx_p) {
 export function gender(mtmp) {
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         return 2;
-    return (cptr.ldI32o(mtmp, $monst_female) & 1) | 0;
+    return cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0;
 }
 
 /* Like gender(), but unseen humanoids are "it" rather than "he" or "she"
@@ -1669,7 +1669,7 @@ export function pronoun_gender(mtmp, pg_flags) {
     return (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) ||
         (cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ) ||
         ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 524288n) != 0n))
-            ? (cptr.ldI32o(mtmp, $monst_female) & 1) | 0
+            ? cptr.ldBits(cptr.add(mtmp, $monst_female), 0, 1, 0) | 0
             : 2;
 }
 
@@ -1680,173 +1680,168 @@ export function levl_follower(mtmp) {
         return 1;
 
     /* Wizard with Amulet won't bother trying to follow across levels */
-    if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && mon_has_amulet(mtmp))
+    if (cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 && mon_has_amulet(mtmp))
         return 0;
     /* some monsters will follow even while intending to flee from you */
     if (cptr.ld1so(mtmp, $monst_mtame) ||
-            (cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 ||
+            cptr.ldBits(cptr.add(mtmp, $monst_iswiz), 0, 1, 0) | 0 ||
             is_fshk(mtmp))
         return 1;
     /* stalking types follow, but won't when fleeing unless you hold
        the Amulet */
     return schar(((cptr.ldU64o(cptr.ldPtro(mtmp, $monst_data), $permonst_mflags2) & 16777216n) &&
-        (!(cptr.ldI32o(mtmp, $monst_mflee) & 1) || (cptr.ldI32o(u, $you_uhave) & 1) | 0)
+        (!cptr.ldBits(cptr.add(mtmp, $monst_mflee), 7, 1, 0) ||
+            cptr.ldBits(cptr.add(u, $you_uhave), 0, 1, 0) | 0)
             ? 1
             : 0));
 }
 
 /** C ref: mondata.c:1228 — short[68][2] */
-const grownups = (function () {
-    const flat = new Uint8Array(68 * 2 * 2);
-    const a = [];
-    for (let r = 0; r < 68; r++) a.push(flat.subarray(r * 2 * 2, (r + 1) * 2 * 2));
-    a.buf = flat;
-    return a;
-})();
-cptr.stI16o(cptr.decay(grownups[0]), 0, NHC.PM_CHICKATRICE);
-cptr.stI16o(cptr.decay(grownups[0]), 2, NHC.PM_COCKATRICE);
-cptr.stI16o(cptr.decay(grownups[1]), 0, NHC.PM_LITTLE_DOG);
-cptr.stI16o(cptr.decay(grownups[1]), 2, NHC.PM_DOG);
-cptr.stI16o(cptr.decay(grownups[2]), 0, NHC.PM_DOG);
-cptr.stI16o(cptr.decay(grownups[2]), 2, NHC.PM_LARGE_DOG);
-cptr.stI16o(cptr.decay(grownups[3]), 0, NHC.PM_HELL_HOUND_PUP);
-cptr.stI16o(cptr.decay(grownups[3]), 2, NHC.PM_HELL_HOUND);
-cptr.stI16o(cptr.decay(grownups[4]), 0, NHC.PM_WINTER_WOLF_CUB);
-cptr.stI16o(cptr.decay(grownups[4]), 2, NHC.PM_WINTER_WOLF);
-cptr.stI16o(cptr.decay(grownups[5]), 0, NHC.PM_KITTEN);
-cptr.stI16o(cptr.decay(grownups[5]), 2, NHC.PM_HOUSECAT);
-cptr.stI16o(cptr.decay(grownups[6]), 0, NHC.PM_HOUSECAT);
-cptr.stI16o(cptr.decay(grownups[6]), 2, NHC.PM_LARGE_CAT);
-cptr.stI16o(cptr.decay(grownups[7]), 0, NHC.PM_PONY);
-cptr.stI16o(cptr.decay(grownups[7]), 2, NHC.PM_HORSE);
-cptr.stI16o(cptr.decay(grownups[8]), 0, NHC.PM_HORSE);
-cptr.stI16o(cptr.decay(grownups[8]), 2, NHC.PM_WARHORSE);
-cptr.stI16o(cptr.decay(grownups[9]), 0, NHC.PM_KOBOLD);
-cptr.stI16o(cptr.decay(grownups[9]), 2, NHC.PM_LARGE_KOBOLD);
-cptr.stI16o(cptr.decay(grownups[10]), 0, NHC.PM_LARGE_KOBOLD);
-cptr.stI16o(cptr.decay(grownups[10]), 2, NHC.PM_KOBOLD_LEADER);
-cptr.stI16o(cptr.decay(grownups[11]), 0, NHC.PM_GNOME);
-cptr.stI16o(cptr.decay(grownups[11]), 2, NHC.PM_GNOME_LEADER);
-cptr.stI16o(cptr.decay(grownups[12]), 0, NHC.PM_GNOME_LEADER);
-cptr.stI16o(cptr.decay(grownups[12]), 2, NHC.PM_GNOME_RULER);
-cptr.stI16o(cptr.decay(grownups[13]), 0, NHC.PM_DWARF);
-cptr.stI16o(cptr.decay(grownups[13]), 2, NHC.PM_DWARF_LEADER);
-cptr.stI16o(cptr.decay(grownups[14]), 0, NHC.PM_DWARF_LEADER);
-cptr.stI16o(cptr.decay(grownups[14]), 2, NHC.PM_DWARF_RULER);
-cptr.stI16o(cptr.decay(grownups[15]), 0, NHC.PM_MIND_FLAYER);
-cptr.stI16o(cptr.decay(grownups[15]), 2, NHC.PM_MASTER_MIND_FLAYER);
-cptr.stI16o(cptr.decay(grownups[16]), 0, NHC.PM_ORC);
-cptr.stI16o(cptr.decay(grownups[16]), 2, NHC.PM_ORC_CAPTAIN);
-cptr.stI16o(cptr.decay(grownups[17]), 0, NHC.PM_HILL_ORC);
-cptr.stI16o(cptr.decay(grownups[17]), 2, NHC.PM_ORC_CAPTAIN);
-cptr.stI16o(cptr.decay(grownups[18]), 0, NHC.PM_MORDOR_ORC);
-cptr.stI16o(cptr.decay(grownups[18]), 2, NHC.PM_ORC_CAPTAIN);
-cptr.stI16o(cptr.decay(grownups[19]), 0, NHC.PM_URUK_HAI);
-cptr.stI16o(cptr.decay(grownups[19]), 2, NHC.PM_ORC_CAPTAIN);
-cptr.stI16o(cptr.decay(grownups[20]), 0, NHC.PM_SEWER_RAT);
-cptr.stI16o(cptr.decay(grownups[20]), 2, NHC.PM_GIANT_RAT);
-cptr.stI16o(cptr.decay(grownups[21]), 0, NHC.PM_CAVE_SPIDER);
-cptr.stI16o(cptr.decay(grownups[21]), 2, NHC.PM_GIANT_SPIDER);
-cptr.stI16o(cptr.decay(grownups[22]), 0, NHC.PM_OGRE);
-cptr.stI16o(cptr.decay(grownups[22]), 2, NHC.PM_OGRE_LEADER);
-cptr.stI16o(cptr.decay(grownups[23]), 0, NHC.PM_OGRE_LEADER);
-cptr.stI16o(cptr.decay(grownups[23]), 2, NHC.PM_OGRE_TYRANT);
-cptr.stI16o(cptr.decay(grownups[24]), 0, NHC.PM_ELF);
-cptr.stI16o(cptr.decay(grownups[24]), 2, NHC.PM_ELF_NOBLE);
-cptr.stI16o(cptr.decay(grownups[25]), 0, NHC.PM_WOODLAND_ELF);
-cptr.stI16o(cptr.decay(grownups[25]), 2, NHC.PM_ELF_NOBLE);
-cptr.stI16o(cptr.decay(grownups[26]), 0, NHC.PM_GREEN_ELF);
-cptr.stI16o(cptr.decay(grownups[26]), 2, NHC.PM_ELF_NOBLE);
-cptr.stI16o(cptr.decay(grownups[27]), 0, NHC.PM_GREY_ELF);
-cptr.stI16o(cptr.decay(grownups[27]), 2, NHC.PM_ELF_NOBLE);
-cptr.stI16o(cptr.decay(grownups[28]), 0, NHC.PM_ELF_NOBLE);
-cptr.stI16o(cptr.decay(grownups[28]), 2, NHC.PM_ELVEN_MONARCH);
-cptr.stI16o(cptr.decay(grownups[29]), 0, NHC.PM_LICH);
-cptr.stI16o(cptr.decay(grownups[29]), 2, NHC.PM_DEMILICH);
-cptr.stI16o(cptr.decay(grownups[30]), 0, NHC.PM_DEMILICH);
-cptr.stI16o(cptr.decay(grownups[30]), 2, NHC.PM_MASTER_LICH);
-cptr.stI16o(cptr.decay(grownups[31]), 0, NHC.PM_MASTER_LICH);
-cptr.stI16o(cptr.decay(grownups[31]), 2, NHC.PM_ARCH_LICH);
-cptr.stI16o(cptr.decay(grownups[32]), 0, NHC.PM_VAMPIRE);
-cptr.stI16o(cptr.decay(grownups[32]), 2, NHC.PM_VAMPIRE_LEADER);
-cptr.stI16o(cptr.decay(grownups[33]), 0, NHC.PM_BAT);
-cptr.stI16o(cptr.decay(grownups[33]), 2, NHC.PM_GIANT_BAT);
-cptr.stI16o(cptr.decay(grownups[34]), 0, NHC.PM_BABY_GRAY_DRAGON);
-cptr.stI16o(cptr.decay(grownups[34]), 2, NHC.PM_GRAY_DRAGON);
-cptr.stI16o(cptr.decay(grownups[35]), 0, NHC.PM_BABY_GOLD_DRAGON);
-cptr.stI16o(cptr.decay(grownups[35]), 2, NHC.PM_GOLD_DRAGON);
-cptr.stI16o(cptr.decay(grownups[36]), 0, NHC.PM_BABY_SILVER_DRAGON);
-cptr.stI16o(cptr.decay(grownups[36]), 2, NHC.PM_SILVER_DRAGON);
-cptr.stI16o(cptr.decay(grownups[37]), 0, NHC.PM_BABY_RED_DRAGON);
-cptr.stI16o(cptr.decay(grownups[37]), 2, NHC.PM_RED_DRAGON);
-cptr.stI16o(cptr.decay(grownups[38]), 0, NHC.PM_BABY_WHITE_DRAGON);
-cptr.stI16o(cptr.decay(grownups[38]), 2, NHC.PM_WHITE_DRAGON);
-cptr.stI16o(cptr.decay(grownups[39]), 0, NHC.PM_BABY_ORANGE_DRAGON);
-cptr.stI16o(cptr.decay(grownups[39]), 2, NHC.PM_ORANGE_DRAGON);
-cptr.stI16o(cptr.decay(grownups[40]), 0, NHC.PM_BABY_BLACK_DRAGON);
-cptr.stI16o(cptr.decay(grownups[40]), 2, NHC.PM_BLACK_DRAGON);
-cptr.stI16o(cptr.decay(grownups[41]), 0, NHC.PM_BABY_BLUE_DRAGON);
-cptr.stI16o(cptr.decay(grownups[41]), 2, NHC.PM_BLUE_DRAGON);
-cptr.stI16o(cptr.decay(grownups[42]), 0, NHC.PM_BABY_GREEN_DRAGON);
-cptr.stI16o(cptr.decay(grownups[42]), 2, NHC.PM_GREEN_DRAGON);
-cptr.stI16o(cptr.decay(grownups[43]), 0, NHC.PM_BABY_YELLOW_DRAGON);
-cptr.stI16o(cptr.decay(grownups[43]), 2, NHC.PM_YELLOW_DRAGON);
-cptr.stI16o(cptr.decay(grownups[44]), 0, NHC.PM_RED_NAGA_HATCHLING);
-cptr.stI16o(cptr.decay(grownups[44]), 2, NHC.PM_RED_NAGA);
-cptr.stI16o(cptr.decay(grownups[45]), 0, NHC.PM_BLACK_NAGA_HATCHLING);
-cptr.stI16o(cptr.decay(grownups[45]), 2, NHC.PM_BLACK_NAGA);
-cptr.stI16o(cptr.decay(grownups[46]), 0, NHC.PM_GOLDEN_NAGA_HATCHLING);
-cptr.stI16o(cptr.decay(grownups[46]), 2, NHC.PM_GOLDEN_NAGA);
-cptr.stI16o(cptr.decay(grownups[47]), 0, NHC.PM_GUARDIAN_NAGA_HATCHLING);
-cptr.stI16o(cptr.decay(grownups[47]), 2, NHC.PM_GUARDIAN_NAGA);
-cptr.stI16o(cptr.decay(grownups[48]), 0, NHC.PM_SMALL_MIMIC);
-cptr.stI16o(cptr.decay(grownups[48]), 2, NHC.PM_LARGE_MIMIC);
-cptr.stI16o(cptr.decay(grownups[49]), 0, NHC.PM_LARGE_MIMIC);
-cptr.stI16o(cptr.decay(grownups[49]), 2, NHC.PM_GIANT_MIMIC);
-cptr.stI16o(cptr.decay(grownups[50]), 0, NHC.PM_BABY_LONG_WORM);
-cptr.stI16o(cptr.decay(grownups[50]), 2, NHC.PM_LONG_WORM);
-cptr.stI16o(cptr.decay(grownups[51]), 0, NHC.PM_BABY_PURPLE_WORM);
-cptr.stI16o(cptr.decay(grownups[51]), 2, NHC.PM_PURPLE_WORM);
-cptr.stI16o(cptr.decay(grownups[52]), 0, NHC.PM_BABY_CROCODILE);
-cptr.stI16o(cptr.decay(grownups[52]), 2, NHC.PM_CROCODILE);
-cptr.stI16o(cptr.decay(grownups[53]), 0, NHC.PM_SOLDIER);
-cptr.stI16o(cptr.decay(grownups[53]), 2, NHC.PM_SERGEANT);
-cptr.stI16o(cptr.decay(grownups[54]), 0, NHC.PM_SERGEANT);
-cptr.stI16o(cptr.decay(grownups[54]), 2, NHC.PM_LIEUTENANT);
-cptr.stI16o(cptr.decay(grownups[55]), 0, NHC.PM_LIEUTENANT);
-cptr.stI16o(cptr.decay(grownups[55]), 2, NHC.PM_CAPTAIN);
-cptr.stI16o(cptr.decay(grownups[56]), 0, NHC.PM_WATCHMAN);
-cptr.stI16o(cptr.decay(grownups[56]), 2, NHC.PM_WATCH_CAPTAIN);
-cptr.stI16o(cptr.decay(grownups[57]), 0, NHC.PM_ALIGNED_CLERIC);
-cptr.stI16o(cptr.decay(grownups[57]), 2, NHC.PM_HIGH_CLERIC);
-cptr.stI16o(cptr.decay(grownups[58]), 0, NHC.PM_STUDENT);
-cptr.stI16o(cptr.decay(grownups[58]), 2, NHC.PM_ARCHEOLOGIST);
-cptr.stI16o(cptr.decay(grownups[59]), 0, NHC.PM_ATTENDANT);
-cptr.stI16o(cptr.decay(grownups[59]), 2, NHC.PM_HEALER);
-cptr.stI16o(cptr.decay(grownups[60]), 0, NHC.PM_PAGE);
-cptr.stI16o(cptr.decay(grownups[60]), 2, NHC.PM_KNIGHT);
-cptr.stI16o(cptr.decay(grownups[61]), 0, NHC.PM_ACOLYTE);
-cptr.stI16o(cptr.decay(grownups[61]), 2, NHC.PM_CLERIC);
-cptr.stI16o(cptr.decay(grownups[62]), 0, NHC.PM_APPRENTICE);
-cptr.stI16o(cptr.decay(grownups[62]), 2, NHC.PM_WIZARD);
-cptr.stI16o(cptr.decay(grownups[63]), 0, NHC.PM_MANES);
-cptr.stI16o(cptr.decay(grownups[63]), 2, NHC.PM_LEMURE);
-cptr.stI16o(cptr.decay(grownups[64]), 0, NHC.PM_KEYSTONE_KOP);
-cptr.stI16o(cptr.decay(grownups[64]), 2, NHC.PM_KOP_SERGEANT);
-cptr.stI16o(cptr.decay(grownups[65]), 0, NHC.PM_KOP_SERGEANT);
-cptr.stI16o(cptr.decay(grownups[65]), 2, NHC.PM_KOP_LIEUTENANT);
-cptr.stI16o(cptr.decay(grownups[66]), 0, NHC.PM_KOP_LIEUTENANT);
-cptr.stI16o(cptr.decay(grownups[66]), 2, NHC.PM_KOP_KAPTAIN);
-cptr.stI16o(cptr.decay(grownups[67]), 0, NHC.NON_PM);
-cptr.stI16o(cptr.decay(grownups[67]), 2, NHC.NON_PM);
+const grownups = cptr.alloc(68 * 4);
+cptr.stI16(grownups, NHC.PM_CHICKATRICE);
+cptr.stI16o(grownups, 2, NHC.PM_COCKATRICE);
+cptr.stI16o(grownups, 4, NHC.PM_LITTLE_DOG);
+cptr.stI16o(grownups, 6, NHC.PM_DOG);
+cptr.stI16o(grownups, 8, NHC.PM_DOG);
+cptr.stI16o(grownups, 10, NHC.PM_LARGE_DOG);
+cptr.stI16o(grownups, 12, NHC.PM_HELL_HOUND_PUP);
+cptr.stI16o(grownups, 14, NHC.PM_HELL_HOUND);
+cptr.stI16o(grownups, 16, NHC.PM_WINTER_WOLF_CUB);
+cptr.stI16o(grownups, 18, NHC.PM_WINTER_WOLF);
+cptr.stI16o(grownups, 20, NHC.PM_KITTEN);
+cptr.stI16o(grownups, 22, NHC.PM_HOUSECAT);
+cptr.stI16o(grownups, 24, NHC.PM_HOUSECAT);
+cptr.stI16o(grownups, 26, NHC.PM_LARGE_CAT);
+cptr.stI16o(grownups, 28, NHC.PM_PONY);
+cptr.stI16o(grownups, 30, NHC.PM_HORSE);
+cptr.stI16o(grownups, 32, NHC.PM_HORSE);
+cptr.stI16o(grownups, 34, NHC.PM_WARHORSE);
+cptr.stI16o(grownups, 36, NHC.PM_KOBOLD);
+cptr.stI16o(grownups, 38, NHC.PM_LARGE_KOBOLD);
+cptr.stI16o(grownups, 40, NHC.PM_LARGE_KOBOLD);
+cptr.stI16o(grownups, 42, NHC.PM_KOBOLD_LEADER);
+cptr.stI16o(grownups, 44, NHC.PM_GNOME);
+cptr.stI16o(grownups, 46, NHC.PM_GNOME_LEADER);
+cptr.stI16o(grownups, 48, NHC.PM_GNOME_LEADER);
+cptr.stI16o(grownups, 50, NHC.PM_GNOME_RULER);
+cptr.stI16o(grownups, 52, NHC.PM_DWARF);
+cptr.stI16o(grownups, 54, NHC.PM_DWARF_LEADER);
+cptr.stI16o(grownups, 56, NHC.PM_DWARF_LEADER);
+cptr.stI16o(grownups, 58, NHC.PM_DWARF_RULER);
+cptr.stI16o(grownups, 60, NHC.PM_MIND_FLAYER);
+cptr.stI16o(grownups, 62, NHC.PM_MASTER_MIND_FLAYER);
+cptr.stI16o(grownups, 64, NHC.PM_ORC);
+cptr.stI16o(grownups, 66, NHC.PM_ORC_CAPTAIN);
+cptr.stI16o(grownups, 68, NHC.PM_HILL_ORC);
+cptr.stI16o(grownups, 70, NHC.PM_ORC_CAPTAIN);
+cptr.stI16o(grownups, 72, NHC.PM_MORDOR_ORC);
+cptr.stI16o(grownups, 74, NHC.PM_ORC_CAPTAIN);
+cptr.stI16o(grownups, 76, NHC.PM_URUK_HAI);
+cptr.stI16o(grownups, 78, NHC.PM_ORC_CAPTAIN);
+cptr.stI16o(grownups, 80, NHC.PM_SEWER_RAT);
+cptr.stI16o(grownups, 82, NHC.PM_GIANT_RAT);
+cptr.stI16o(grownups, 84, NHC.PM_CAVE_SPIDER);
+cptr.stI16o(grownups, 86, NHC.PM_GIANT_SPIDER);
+cptr.stI16o(grownups, 88, NHC.PM_OGRE);
+cptr.stI16o(grownups, 90, NHC.PM_OGRE_LEADER);
+cptr.stI16o(grownups, 92, NHC.PM_OGRE_LEADER);
+cptr.stI16o(grownups, 94, NHC.PM_OGRE_TYRANT);
+cptr.stI16o(grownups, 96, NHC.PM_ELF);
+cptr.stI16o(grownups, 98, NHC.PM_ELF_NOBLE);
+cptr.stI16o(grownups, 100, NHC.PM_WOODLAND_ELF);
+cptr.stI16o(grownups, 102, NHC.PM_ELF_NOBLE);
+cptr.stI16o(grownups, 104, NHC.PM_GREEN_ELF);
+cptr.stI16o(grownups, 106, NHC.PM_ELF_NOBLE);
+cptr.stI16o(grownups, 108, NHC.PM_GREY_ELF);
+cptr.stI16o(grownups, 110, NHC.PM_ELF_NOBLE);
+cptr.stI16o(grownups, 112, NHC.PM_ELF_NOBLE);
+cptr.stI16o(grownups, 114, NHC.PM_ELVEN_MONARCH);
+cptr.stI16o(grownups, 116, NHC.PM_LICH);
+cptr.stI16o(grownups, 118, NHC.PM_DEMILICH);
+cptr.stI16o(grownups, 120, NHC.PM_DEMILICH);
+cptr.stI16o(grownups, 122, NHC.PM_MASTER_LICH);
+cptr.stI16o(grownups, 124, NHC.PM_MASTER_LICH);
+cptr.stI16o(grownups, 126, NHC.PM_ARCH_LICH);
+cptr.stI16o(grownups, 128, NHC.PM_VAMPIRE);
+cptr.stI16o(grownups, 130, NHC.PM_VAMPIRE_LEADER);
+cptr.stI16o(grownups, 132, NHC.PM_BAT);
+cptr.stI16o(grownups, 134, NHC.PM_GIANT_BAT);
+cptr.stI16o(grownups, 136, NHC.PM_BABY_GRAY_DRAGON);
+cptr.stI16o(grownups, 138, NHC.PM_GRAY_DRAGON);
+cptr.stI16o(grownups, 140, NHC.PM_BABY_GOLD_DRAGON);
+cptr.stI16o(grownups, 142, NHC.PM_GOLD_DRAGON);
+cptr.stI16o(grownups, 144, NHC.PM_BABY_SILVER_DRAGON);
+cptr.stI16o(grownups, 146, NHC.PM_SILVER_DRAGON);
+cptr.stI16o(grownups, 148, NHC.PM_BABY_RED_DRAGON);
+cptr.stI16o(grownups, 150, NHC.PM_RED_DRAGON);
+cptr.stI16o(grownups, 152, NHC.PM_BABY_WHITE_DRAGON);
+cptr.stI16o(grownups, 154, NHC.PM_WHITE_DRAGON);
+cptr.stI16o(grownups, 156, NHC.PM_BABY_ORANGE_DRAGON);
+cptr.stI16o(grownups, 158, NHC.PM_ORANGE_DRAGON);
+cptr.stI16o(grownups, 160, NHC.PM_BABY_BLACK_DRAGON);
+cptr.stI16o(grownups, 162, NHC.PM_BLACK_DRAGON);
+cptr.stI16o(grownups, 164, NHC.PM_BABY_BLUE_DRAGON);
+cptr.stI16o(grownups, 166, NHC.PM_BLUE_DRAGON);
+cptr.stI16o(grownups, 168, NHC.PM_BABY_GREEN_DRAGON);
+cptr.stI16o(grownups, 170, NHC.PM_GREEN_DRAGON);
+cptr.stI16o(grownups, 172, NHC.PM_BABY_YELLOW_DRAGON);
+cptr.stI16o(grownups, 174, NHC.PM_YELLOW_DRAGON);
+cptr.stI16o(grownups, 176, NHC.PM_RED_NAGA_HATCHLING);
+cptr.stI16o(grownups, 178, NHC.PM_RED_NAGA);
+cptr.stI16o(grownups, 180, NHC.PM_BLACK_NAGA_HATCHLING);
+cptr.stI16o(grownups, 182, NHC.PM_BLACK_NAGA);
+cptr.stI16o(grownups, 184, NHC.PM_GOLDEN_NAGA_HATCHLING);
+cptr.stI16o(grownups, 186, NHC.PM_GOLDEN_NAGA);
+cptr.stI16o(grownups, 188, NHC.PM_GUARDIAN_NAGA_HATCHLING);
+cptr.stI16o(grownups, 190, NHC.PM_GUARDIAN_NAGA);
+cptr.stI16o(grownups, 192, NHC.PM_SMALL_MIMIC);
+cptr.stI16o(grownups, 194, NHC.PM_LARGE_MIMIC);
+cptr.stI16o(grownups, 196, NHC.PM_LARGE_MIMIC);
+cptr.stI16o(grownups, 198, NHC.PM_GIANT_MIMIC);
+cptr.stI16o(grownups, 200, NHC.PM_BABY_LONG_WORM);
+cptr.stI16o(grownups, 202, NHC.PM_LONG_WORM);
+cptr.stI16o(grownups, 204, NHC.PM_BABY_PURPLE_WORM);
+cptr.stI16o(grownups, 206, NHC.PM_PURPLE_WORM);
+cptr.stI16o(grownups, 208, NHC.PM_BABY_CROCODILE);
+cptr.stI16o(grownups, 210, NHC.PM_CROCODILE);
+cptr.stI16o(grownups, 212, NHC.PM_SOLDIER);
+cptr.stI16o(grownups, 214, NHC.PM_SERGEANT);
+cptr.stI16o(grownups, 216, NHC.PM_SERGEANT);
+cptr.stI16o(grownups, 218, NHC.PM_LIEUTENANT);
+cptr.stI16o(grownups, 220, NHC.PM_LIEUTENANT);
+cptr.stI16o(grownups, 222, NHC.PM_CAPTAIN);
+cptr.stI16o(grownups, 224, NHC.PM_WATCHMAN);
+cptr.stI16o(grownups, 226, NHC.PM_WATCH_CAPTAIN);
+cptr.stI16o(grownups, 228, NHC.PM_ALIGNED_CLERIC);
+cptr.stI16o(grownups, 230, NHC.PM_HIGH_CLERIC);
+cptr.stI16o(grownups, 232, NHC.PM_STUDENT);
+cptr.stI16o(grownups, 234, NHC.PM_ARCHEOLOGIST);
+cptr.stI16o(grownups, 236, NHC.PM_ATTENDANT);
+cptr.stI16o(grownups, 238, NHC.PM_HEALER);
+cptr.stI16o(grownups, 240, NHC.PM_PAGE);
+cptr.stI16o(grownups, 242, NHC.PM_KNIGHT);
+cptr.stI16o(grownups, 244, NHC.PM_ACOLYTE);
+cptr.stI16o(grownups, 246, NHC.PM_CLERIC);
+cptr.stI16o(grownups, 248, NHC.PM_APPRENTICE);
+cptr.stI16o(grownups, 250, NHC.PM_WIZARD);
+cptr.stI16o(grownups, 252, NHC.PM_MANES);
+cptr.stI16o(grownups, 254, NHC.PM_LEMURE);
+cptr.stI16o(grownups, 256, NHC.PM_KEYSTONE_KOP);
+cptr.stI16o(grownups, 258, NHC.PM_KOP_SERGEANT);
+cptr.stI16o(grownups, 260, NHC.PM_KOP_SERGEANT);
+cptr.stI16o(grownups, 262, NHC.PM_KOP_LIEUTENANT);
+cptr.stI16o(grownups, 264, NHC.PM_KOP_LIEUTENANT);
+cptr.stI16o(grownups, 266, NHC.PM_KOP_KAPTAIN);
+cptr.stI16o(grownups, 268, NHC.NON_PM);
+cptr.stI16o(grownups, 270, NHC.NON_PM);
 
 /** C ref: mondata.c:1303 — @param {CInt} montype @returns {CInt} */
 export function little_to_big(montype) {
     let i;
 
-    for (i = 0; cptr.ldI16o(cptr.decay(grownups[i]), 0, 2) >= NHC.LOW_PM; i++)
-        if (montype == cptr.ldI16o(cptr.decay(grownups[i]), 0, 2)) {
-            montype = cptr.ldI16o(cptr.decay(grownups[i]), 1, 2);
+    for (i = 0; cptr.ldI16o3(grownups, i, 4, 0, 2, 0) >= NHC.LOW_PM; i++)
+        if (montype == cptr.ldI16o3(grownups, i, 4, 0, 2, 0)) {
+            montype = cptr.ldI16o3(grownups, i, 4, 1, 2, 0);
             break;
         }
     return montype;
@@ -1856,9 +1851,9 @@ export function little_to_big(montype) {
 export function big_to_little(montype) {
     let i;
 
-    for (i = 0; cptr.ldI16o(cptr.decay(grownups[i]), 0, 2) >= NHC.LOW_PM; i++)
-        if (montype == cptr.ldI16o(cptr.decay(grownups[i]), 1, 2)) {
-            montype = cptr.ldI16o(cptr.decay(grownups[i]), 0, 2);
+    for (i = 0; cptr.ldI16o3(grownups, i, 4, 0, 2, 0) >= NHC.LOW_PM; i++)
+        if (montype == cptr.ldI16o3(grownups, i, 4, 1, 2, 0)) {
+            montype = cptr.ldI16o3(grownups, i, 4, 0, 2, 0);
             break;
         }
     return montype;
@@ -2193,7 +2188,7 @@ export function cvt_prop_to_mseenres(prop) {
 export function monstseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
         return;
 
     for (
@@ -2228,7 +2223,7 @@ export function monstseesu(seenres) {
 export function monstunseesu(seenres) {
     let mtmp;
 
-    if (seenres == 0n || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+    if (seenres == 0n || cptr.ldBits(cptr.add(u, $you_uswallow), 0, 1, 0) | 0)
         return;
 
     for (
@@ -2309,7 +2304,7 @@ export function mon_knows_traps(mtmp, ttyp) {
         return schar((!Number(BigInt.asIntN(8, (cptr.ldI64o(mtmp, $monst_mtrapseen))))));
     else
         return schar(((cptr.ldI64o(mtmp, $monst_mtrapseen) &
-                (1n << BigInt(((ttyp - 1) | 0)))) != 0n));
+                (BigInt.asIntN(64, 1n << BigInt(((ttyp - 1) | 0))))) != 0n));
 }
 
 /* monster mtmp learns all traps of type ttyp */
@@ -2323,7 +2318,8 @@ export function mon_learns_traps(mtmp, ttyp) {
         cptr.stI64o(
             mtmp,
             $monst_mtrapseen,
-            cptr.ldI64o(mtmp, $monst_mtrapseen) | (1n << BigInt(((ttyp - 1) | 0)))
+            cptr.ldI64o(mtmp, $monst_mtrapseen) |
+                (BigInt.asIntN(64, 1n << BigInt(((ttyp - 1) | 0))))
         );
 }
 
@@ -2333,14 +2329,19 @@ export function mons_see_trap(ttmp) {
     let mtmp;
     let tx = cptr.ldI16o(ttmp, $trap_tx);
     let ty = cptr.ldI16o(ttmp, $trap_ty);
-    let maxdist = (cptr.ldI32o3(
-        svl,
-        tx,
-        $sizeof_rm_x21,
-        ty,
-        $sizeof_rm,
-        $instance_globals_saved_l_level + $rm_lit
-    ) & 1) | 0
+    let maxdist = cptr.ldBits(
+        cptr.add(
+            cptr.add(
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), tx, $sizeof_rm_x21),
+                ty,
+                $sizeof_rm
+            ),
+            $rm_lit
+        ),
+        6,
+        1,
+        0
+    ) | 0
             ? 49
             : 2;
 
@@ -2354,13 +2355,13 @@ export function mons_see_trap(ttmp) {
                     0n) ||
                 !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) ==
                     0n) ||
-                !(cptr.ldI32o(mtmp, $monst_mcansee) & 1))
+                !cptr.ldBits(cptr.add(mtmp, $monst_mcansee), 7, 1, 0))
             continue;
         if (dist2(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), tx, ty) > maxdist)
             continue;
         if (!m_cansee(mtmp, tx, ty))
             continue;
-        mon_learns_traps(mtmp, (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0);
+        mon_learns_traps(mtmp, cptr.ldBits(cptr.add(ttmp, $trap_ttyp), 0, 5, 0) | 0);
     }
 }
 

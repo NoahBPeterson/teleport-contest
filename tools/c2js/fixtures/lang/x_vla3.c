@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ int n=2,m=3,k=2; int a[n][m][k]; int (*p)[m][k]=a; int (*q)[k]=a[1]; for(int i=0;i<n;i++) for(int j=0;j<m;j++) for(int l=0;l<k;l++) a[i][j][l]=i*100+j*10+l; printf("%d %d %d %zu %zu %zu\n",a[1][2][1],p[1][1][0],q[2][1],sizeof a,sizeof a[0],sizeof *q); int (*r)[m]=(int(*)[m])a; r++; printf("%d %d\n",**r,(int)(r-(int(*)[m])a)); r--; printf("%d\n",r[0][1]); int b[3][m]; b[2][m-1]=5; int c[n][3]; c[1][2]=6; printf("%d %d %zu %zu\n",b[2][2],c[1][2],sizeof b,sizeof c); return 0; }

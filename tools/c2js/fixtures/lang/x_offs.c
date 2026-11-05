@@ -1,0 +1,3 @@
+#include <stdio.h>
+#include <stddef.h>
+struct in{char a;int b[3];}; struct o{char c;struct in i[2];double d;}; typedef struct{short s;long l;} T; int main(void){ printf("%zu %zu %zu %zu %zu\n",offsetof(struct o,i),offsetof(struct o,i[1].b[2]),offsetof(struct o,d),offsetof(T,l),__builtin_offsetof(struct in,b[1])); size_t z=sizeof(struct{char a;double b;})+offsetof(struct{char q;int r;},r); struct{int x;}*pp=(struct{int x;}*)0; printf("%zu %d\n",z,pp==0); return 0; }

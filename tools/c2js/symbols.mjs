@@ -221,7 +221,9 @@ export function collectFile(target) {
     const am = q.match(/^(.*)\[(\d*)\]$/);
     if (am) {
       const elem = am[1].trim();
-      if (elem.includes('[')) continue; // multi-dim arrays stay plain JS (emitter rule)
+      // multi-dim arrays are flat byte storage (emitBytePackedArray), so a pointer
+      // can walk across rows as in C
+      if (elem.includes('[')) { recordArrays.add(d.name); continue; }
       // mirrors emit.mjs emitBytePackedArray: pointer/enum/record/int-ish elems
       // get byte-packed cptr storage; 1-byte char/boolean elems stay Uint8Array
       if (elem.includes('*')) { recordArrays.add(d.name); continue; }

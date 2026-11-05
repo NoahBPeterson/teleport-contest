@@ -56,10 +56,12 @@ export function luaS_eqlngstr(a, b) {
  */
 export function luaS_hash(str, l, seed) {
     let h = (seed ^ (Number(BigInt.asUintN(32, ((l)))))) >>> 0;
-    for (; l > 0n; l--)
-        h ^= ((((h << 5) >>> 0) +
-                (h >>> 2) +
-                (uchar(((cptr.ld1so(str, BigInt.asUintN(64, l - 1n))))))) >>> 0);
+    for (; l > 0n; l = BigInt.asUintN(64, l + -1n))
+        h = (h ^
+                ((((h << 5) >>> 0) +
+                    (h >>> 2) +
+                    (uchar(((cptr.ld1so(str, BigInt.asUintN(64, l - 1n))))))) >>>
+                    0)) >>> 0;
     return h;
 }
 
@@ -71,11 +73,15 @@ export function luaS_hashlongstr(ts) {
         cptr.stI32o(
             ts,
             $TString_hash,
-            luaS_hash((cptr.add((ts), $TString_contents)), len, cptr.ldI32o(ts, $TString_hash))
+            luaS_hash(
+                (cptr.add((ts), $TString_contents)),
+                len,
+                cptr.ldI32o(ts, $TString_hash) >>> 0
+            )
         );
         cptr.st1o(ts, $TString_extra, 1);  /* now it has its hash */
     }
-    return cptr.ldI32o(ts, $TString_hash);
+    return cptr.ldI32o(ts, $TString_hash) >>> 0;
 }
 
 /** C ref: lstring.c:62 — @param {CPtr<TString *>} vect @param {CInt} osize @param {CInt} nsize */
@@ -88,7 +94,7 @@ function tablerehash(vect, osize, nsize) {
         cptr.stPtro(vect, i, null, 8);
         while (p) {
             let hnext = cptr.ldPtro(p, $TString_u);  /* save next */
-            let h = ((((((((cptr.ldI32o(p, $TString_hash)) & ((nsize) - 1) >>> 0) >>> 0)) |
+            let h = ((((((((cptr.ldI32o(p, $TString_hash) >>> 0) & ((nsize) - 1) >>> 0) >>> 0)) |
                     0)))) >>> 0;  /* new position */
             cptr.stPtro(p, $TString_u, cptr.ldPtro(vect, h, 8));  /* chain it into array */
             cptr.stPtro(vect, h, p, 8);
@@ -220,7 +226,7 @@ export function luaS_createlngstrobj(L, l) {
         L,
         l,
         20,
-        cptr.ldI32o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_seed)
+        cptr.ldI32o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_seed) >>> 0
     );
     cptr.stU64o(ts, $TString_u, l);
     cptr.st1o(ts, $TString_shrlen, 255);  /* signals that it is a long string */
@@ -232,7 +238,7 @@ export function luaS_remove(L, ts) {
     let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
     let p = cptr.add(
         cptr.ldPtr(tb),
-        ((((((((cptr.ldI32o(ts, $TString_hash)) &
+        ((((((((cptr.ldI32o(ts, $TString_hash) >>> 0) &
             ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>>
             0)) |
             0)))),
@@ -269,7 +275,7 @@ function internshrstr(L, str, l) {
     let ts;
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let tb = cptr.add(g, $global_State_strt);
-    let h = luaS_hash(str, l, cptr.ldI32o(g, $global_State_seed));
+    let h = luaS_hash(str, l, cptr.ldI32o(g, $global_State_seed) >>> 0);
     let list = cptr.add(
         cptr.ldPtr(tb),
         ((((((((h) & ((cptr.ldI32o(tb, $stringtable_size)) - 1) >>> 0) >>> 0)) | 0)))),
@@ -283,7 +289,7 @@ function internshrstr(L, str, l) {
             /* found! */
             if (((cptr.ld1uo((ts), $TString_marked)) &
                     ((cptr.ld1uo((g), $global_State_currentwhite) ^ 24))))
-                (cptr.st1o((ts), $TString_marked, cptr.ld1uo((ts), $TString_marked) ^ 24));  /* resurrect it */
+                (cptr.st1o((ts), $TString_marked, uchar((cptr.ld1uo((ts), $TString_marked) ^ 24))));  /* resurrect it */
             return ts;
         }
     }

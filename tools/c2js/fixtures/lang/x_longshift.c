@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ long long a=1; int s=33; unsigned u=1; printf("%lld %lld %u %d\n",a<<s,(a<<40)>>s,u<<31>>31,(int)(a<<s>>s)); short h=-1; printf("%d %d %d\n",h>>1,(unsigned short)h>>1,(h<<4)&0xFF); return 0; }

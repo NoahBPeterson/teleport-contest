@@ -1,0 +1,2 @@
+#include <stdio.h>
+static int n=1; __attribute__((constructor)) static void a(void){ n+=2; } __attribute__((destructor)) static void b(void){ printf("bye\n"); } int main(void){ printf("%d\n",n); return 0; }

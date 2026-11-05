@@ -1,0 +1,7 @@
+#include <stdio.h>
+static int n; static int f(void){ return n++; } static int arr[4]={1,2,3,4}; struct s { int a; short b; unsigned c:4; char t[3]; } g[3]; static struct s *sp(void){ n++; return g; } static int *ip(void){ n++; return arr; }
+int main(void){ int i=0; int v[4]={0,0,0,0}; int m[2][2]={{0,0},{0,0}}; char c[3]={1,2,3}; double d[2]={1,2}; int *p=v; struct s *q=g; long long ll[2]={1,2}; short sh[2]={1,2}; unsigned char uc[2]={250,251}; int *pa[2]={v,v+1}; 
+ v[i++]+=10; printf("%d %d %d\n",v[0],v[1],i); v[i++]++; printf("%d %d\n",v[1],i); ++v[i++]; printf("%d %d\n",v[2],i); i=0; arr[f()]+=5; printf("%d %d %d\n",arr[0],arr[1],n); arr[f()]--; printf("%d %d\n",arr[1],n);
+ sp()->a+=2; sp()->b++; sp()->c+=3; sp()->t[1]+=4; printf("%d %d %d %d %d\n",g[0].a,g[0].b,g[0].c,g[0].t[1],n); *ip()+=1; (*ip())++; ip()[1]*=3; printf("%d %d %d\n",arr[0],arr[1],n);
+ *p++ +=1; printf("%d %d\n",v[0],(int)(p-v)); (*p++)++; printf("%d %d\n",v[1],(int)(p-v)); i=0; m[i++][0]+=1; m[0][i++]+=2; m[i-1][i-1]++; printf("%d %d %d %d %d\n",m[0][0],m[0][1],m[1][0],m[1][1],i); i=0; c[i++]+=1; d[i++]*=2; ll[--i]+=1; sh[i--]<<=1; uc[++i]+=10; printf("%d %f %lld %d %d %d\n",c[0],d[1],ll[1],sh[1],uc[1],i);
+ q=g; (q++)->a+=1; (q++)->b+=1; printf("%d %d %d\n",g[0].a,g[1].b,(int)(q-g)); i=0; g[i++].a+=1; g[i++].c++; g[i--].t[i]+=1; printf("%d %d %d %d\n",g[0].a,g[1].c,g[2].t[1],i); i=0; *pa[i++]+=1; (*pa[i--])--; printf("%d %d %d\n",v[0],v[1],i); int **pp=pa; **pp++ +=1; printf("%d %d\n",v[0],(int)(pp-pa)); i=1; v[i=2]+=1; printf("%d %d\n",v[2],i); return 0; }

@@ -1,5 +1,6 @@
 /**
- * Differential parity harness for js/libc/string.js.
+ * Differential parity harness for the string functions the game runs: cptr.*
+ * and the g.* installed by js/boot/harness.mjs. Boots the port once to get g.*.
  *
  * 1. Compiles tools/c2js/fixtures/string_battery.c with clang and runs it:
  *    the C driver prints one block per case —
@@ -9,7 +10,7 @@
  *                            i:<v> (int arg)   n:<v> (size_t arg)
  *      RET int:<v> | RET size:<v> | RET ptr:<k>:<off> | RET null
  *      BUF0..2 <hex>   (full 64-byte buffer dumps, always)
- * 2. Replays every IN line through js/libc/string.js over Uint8Array buffers
+ * 2. Replays every IN line through each layer over Uint8Array buffers
  *    and diffs the RET/BUF lines byte-for-byte against the C transcript.
  *
  * Run from repo root: node test/libc-string.test.mjs
@@ -18,8 +19,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import * as S from '../js/libc/string.js';
 import * as CP from '../js/cptr.js';
+import { runBootGame } from '../js/boot/harness.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BUILD_DIR = path.join(repoRoot, '.cache/c2js/build');
@@ -77,44 +78,50 @@ const retPtr = (r) => {
 };
 
 const DISPATCH = {
-  strlen: ({ ptrs }, M = S) => [retSize(M.strlen(ptrs[0])), ...bufLines()],
-  strcpy: ({ ptrs }, M = S) => [retPtr(M.strcpy(ptrs[1], ptrs[0])), ...bufLines()],
-  strncpy: ({ ptrs, args }, M = S) => [retPtr(M.strncpy(ptrs[1], ptrs[0], args[0])), ...bufLines()],
-  strcat: ({ ptrs }, M = S) => [retPtr(M.strcat(ptrs[0], ptrs[1])), ...bufLines()],
-  strncat: ({ ptrs, args }, M = S) => [retPtr(M.strncat(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  strcmp: ({ ptrs }, M = S) => [retInt(M.strcmp(ptrs[0], ptrs[1])), ...bufLines()],
-  strncmp: ({ ptrs, args }, M = S) => [retInt(M.strncmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  strcasecmp: ({ ptrs }, M = S) => [retInt(M.strcasecmp(ptrs[0], ptrs[1])), ...bufLines()],
-  strncasecmp: ({ ptrs, args }, M = S) => [retInt(M.strncasecmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  strchr: ({ ptrs, args }, M = S) => [retPtr(M.strchr(ptrs[0], args[0])), ...bufLines()],
-  strrchr: ({ ptrs, args }, M = S) => [retPtr(M.strrchr(ptrs[0], args[0])), ...bufLines()],
-  strstr: ({ ptrs }, M = S) => [retPtr(M.strstr(ptrs[0], ptrs[1])), ...bufLines()],
-  strspn: ({ ptrs }, M = S) => [retSize(M.strspn(ptrs[0], ptrs[1])), ...bufLines()],
-  strcspn: ({ ptrs }, M = S) => [retSize(M.strcspn(ptrs[0], ptrs[1])), ...bufLines()],
-  strpbrk: ({ ptrs }, M = S) => [retPtr(M.strpbrk(ptrs[0], ptrs[1])), ...bufLines()],
-  memcpy: ({ ptrs, args }, M = S) => [retPtr(M.memcpy(ptrs[2], ptrs[0], args[0])), ...bufLines()],
-  memmove: ({ ptrs, args }, M = S) => {
+  strlen: ({ ptrs }, M) => [retSize(M.strlen(ptrs[0])), ...bufLines()],
+  strcpy: ({ ptrs }, M) => [retPtr(M.strcpy(ptrs[1], ptrs[0])), ...bufLines()],
+  strncpy: ({ ptrs, args }, M) => [retPtr(M.strncpy(ptrs[1], ptrs[0], args[0])), ...bufLines()],
+  strcat: ({ ptrs }, M) => [retPtr(M.strcat(ptrs[0], ptrs[1])), ...bufLines()],
+  strncat: ({ ptrs, args }, M) => [retPtr(M.strncat(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  strcmp: ({ ptrs }, M) => [retInt(M.strcmp(ptrs[0], ptrs[1])), ...bufLines()],
+  strncmp: ({ ptrs, args }, M) => [retInt(M.strncmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  strcasecmp: ({ ptrs }, M) => [retInt(M.strcasecmp(ptrs[0], ptrs[1])), ...bufLines()],
+  strncasecmp: ({ ptrs, args }, M) => [retInt(M.strncasecmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  strchr: ({ ptrs, args }, M) => [retPtr(M.strchr(ptrs[0], args[0])), ...bufLines()],
+  strrchr: ({ ptrs, args }, M) => [retPtr(M.strrchr(ptrs[0], args[0])), ...bufLines()],
+  strstr: ({ ptrs }, M) => [retPtr(M.strstr(ptrs[0], ptrs[1])), ...bufLines()],
+  strspn: ({ ptrs }, M) => [retSize(M.strspn(ptrs[0], ptrs[1])), ...bufLines()],
+  strcspn: ({ ptrs }, M) => [retSize(M.strcspn(ptrs[0], ptrs[1])), ...bufLines()],
+  strpbrk: ({ ptrs }, M) => [retPtr(M.strpbrk(ptrs[0], ptrs[1])), ...bufLines()],
+  memcpy: ({ ptrs, args }, M) => [retPtr(M.memcpy(ptrs[2], ptrs[0], args[0])), ...bufLines()],
+  memmove: ({ ptrs, args }, M) => {
     const [d, s, n] = args;
     return [retPtr(M.memmove({ buf: bufs[0], off: d }, { buf: bufs[0], off: s }, n)), ...bufLines()];
   },
-  memset: ({ ptrs, args }, M = S) => [retPtr(M.memset(ptrs[0], args[0], args[1])), ...bufLines()],
-  memcmp: ({ ptrs, args }, M = S) => [retInt(M.memcmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
-  memchr: ({ ptrs, args }, M = S) => [retPtr(M.memchr(ptrs[0], args[0], args[1])), ...bufLines()],
-  isalpha: ({ args }, M = S) => [retInt(M.isalpha(args[0])), ...bufLines()],
-  isdigit: ({ args }, M = S) => [retInt(M.isdigit(args[0])), ...bufLines()],
-  isalnum: ({ args }, M = S) => [retInt(M.isalnum(args[0])), ...bufLines()],
-  isspace: ({ args }, M = S) => [retInt(M.isspace(args[0])), ...bufLines()],
-  isupper: ({ args }, M = S) => [retInt(M.isupper(args[0])), ...bufLines()],
-  islower: ({ args }, M = S) => [retInt(M.islower(args[0])), ...bufLines()],
-  isxdigit: ({ args }, M = S) => [retInt(M.isxdigit(args[0])), ...bufLines()],
-  toupper: ({ args }, M = S) => [retInt(M.toupper(args[0])), ...bufLines()],
-  tolower: ({ args }, M = S) => [retInt(M.tolower(args[0])), ...bufLines()],
+  memset: ({ ptrs, args }, M) => [retPtr(M.memset(ptrs[0], args[0], args[1])), ...bufLines()],
+  memcmp: ({ ptrs, args }, M) => [retInt(M.memcmp(ptrs[0], ptrs[1], args[0])), ...bufLines()],
+  memchr: ({ ptrs, args }, M) => [retPtr(M.memchr(ptrs[0], args[0], args[1])), ...bufLines()],
+  isalpha: ({ args }, M) => [retInt(M.isalpha(args[0])), ...bufLines()],
+  isdigit: ({ args }, M) => [retInt(M.isdigit(args[0])), ...bufLines()],
+  isalnum: ({ args }, M) => [retInt(M.isalnum(args[0])), ...bufLines()],
+  isspace: ({ args }, M) => [retInt(M.isspace(args[0])), ...bufLines()],
+  isupper: ({ args }, M) => [retInt(M.isupper(args[0])), ...bufLines()],
+  islower: ({ args }, M) => [retInt(M.islower(args[0])), ...bufLines()],
+  isxdigit: ({ args }, M) => [retInt(M.isxdigit(args[0])), ...bufLines()],
+  toupper: ({ args }, M) => [retInt(M.toupper(args[0])), ...bufLines()],
+  tolower: ({ args }, M) => [retInt(M.tolower(args[0])), ...bufLines()],
 };
 
 // ---- parse transcript, replay, diff ----
 const lines = transcript.split('\n');
 let total = 0, pass = 0;
 const failures = [];
+
+const realWrite = process.stdout.write.bind(process.stdout);
+process.stdout.write = () => true;
+await runBootGame({ seed: 1, datetime: '20260715120000', moves: '',
+  nethackrc: 'OPTIONS=name:X,role:Valkyrie,race:human,gender:female,align:lawful\n' });
+process.stdout.write = realWrite;
 
 for (let li = 0; li < lines.length; li++) {
   const m = lines[li].match(/^# (\S+) (\d+)$/);
@@ -132,40 +139,27 @@ for (let li = 0; li < lines.length; li++) {
     li++;
   }
   li--;
-  total++;
-  resetBufs();
-  let got;
-  try {
-    got = DISPATCH[fn](decodeIn(tokens));
-  } catch (err) {
-    failures.push({ fn, idx, err: String(err.stack || err) });
-    continue;
-  }
-  if (got.join('\n') === expected.join('\n')) pass++;
-  else failures.push({ fn, idx, expected, got });
-
-  // second pass: js/cptr.js reimplements a subset of these (generated code
-  // calls cptr.strcat etc., NOT js/libc/string.js) — replay through cptr too,
-  // or divergences hide (cptr.strcat returned dst+len; caught 2026-08-05)
-  if (typeof CP[fn] === 'function') {
+  // generated code resolves a name in cptr first, then in g; test both when both exist
+  for (const [layer, M] of [['cptr', CP], ['g', globalThis]]) {
+    if (typeof M[fn] !== 'function') continue;
     total++;
     resetBufs();
-    let got2;
+    let got;
     try {
-      got2 = DISPATCH[fn](decodeIn(tokens), CP);
+      got = DISPATCH[fn](decodeIn(tokens), M);
     } catch (err) {
-      failures.push({ fn: `cptr.${fn}`, idx, err: String(err.stack || err) });
+      failures.push({ fn: `${layer}.${fn}`, idx, err: String(err.stack || err) });
       continue;
     }
-    if (got2.join('\n') === expected.join('\n')) pass++;
-    else failures.push({ fn: `cptr.${fn}`, idx, expected, got: got2 });
+    if (got.join('\n') === expected.join('\n')) pass++;
+    else failures.push({ fn: `${layer}.${fn}`, idx, expected, got });
   }
 }
 
 console.log(`string battery: ${pass}/${total} cases passed`);
 if (failures.length > 0) {
   console.error('Failures:');
-  for (const f of failures.slice(0, 12)) {
+  for (const f of failures.slice(0, 40)) {
     console.error(`--- ${f.fn} #${f.idx}`);
     if (f.err) console.error(`    error: ${f.err.split('\n')[0]}`);
     else {

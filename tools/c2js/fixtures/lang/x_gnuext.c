@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ int a=0,b=3; printf("%d %d\n",a?:b,b?:a); __auto_type c=5; typeof(c) d=c+1; __typeof__(d) e=d; printf("%d %d %zu %zu\n",e,__builtin_constant_p(1),__alignof__(double),_Alignof(short)); _Static_assert(1,"x"); printf("%d %d %d\n",__builtin_types_compatible_p(int,int),__builtin_choose_expr(1,3,4),(int)__builtin_offsetof(struct{char q;int r;},r)); return 0; }

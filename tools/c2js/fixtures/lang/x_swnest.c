@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ int t=0; for(int i=0;i<4;i++){ switch(i){ case 0: continue; case 1: { switch(i+1){ case 2: t+=1; break; default: t+=100; } t+=2; break; } case 2: if(i) break; t+=50; default: t+=4; } t+=10; } printf("%d\n",t); return 0; }

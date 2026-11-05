@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{char a[3];char b;}; static struct s g={"abc",'z'}; static char ga[3]="xyz"; int main(void){ struct s l={"def",'y'}; char la[2]="pq"; printf("%c%c%c%c %c%c%c%c %c%c%c\n",g.a[0],g.a[1],g.a[2],g.b,l.a[0],l.a[1],l.a[2],l.b,ga[2],la[1],la[0]); return 0; }
