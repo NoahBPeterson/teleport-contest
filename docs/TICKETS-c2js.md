@@ -317,12 +317,20 @@ matcher. No effect on NetHack.
 1:30), dates before 1901 (Darwin returns -1), and local mean time before 1883. The standalone
 `mktime` also hardcodes offsets of -5 and -4, so other zones are wrong. No effect on NetHack.
 
-### C2JS-060: RNG from bytes past the last recorded step. OPEN
-A multi-byte key makes the recorder stop capturing screens before the game has read all its input.
-C keeps consuming what was already written, so RNG from later keys can land in the recording.
-Scenario: `'      €   €€.i   '` matches on all 18 screens but is 4 RNG calls short. Re-recording
-gives the same result, but it depends on the recorder's timing. It needs non-ASCII keys in
-`moves`.
+### C2JS-060: RNG from bytes past the last recorded step. FIXED
+The recorder writes each key as UTF-8 and stops at `moves.length + 1` reads, so a multi-byte key
+leaves bytes unread at that point. They are already in the pipe, and C keeps running them until
+it is killed: their RNG and file writes land in the recording, their screens do not. The harness
+cut its input to `moves.length` bytes, so `'      €   €€.i   '` was 4 RNG calls short. It now reads
+every byte and reports at most `moves.length + 1` screens. Tests: `env-key-euro`,
+`env-key-euro-two-segments`. Interactive play is exempt from the screen limit.
+
+Two cases stay unreplayable, because they depend on when the kill lands:
+- The last keys' RNG can be cut off, and C differs between recordings: the same recipe gave 2512
+  and 2519 calls. Within a single segment the JS still passes, as the scorer ignores extra calls.
+  With a later segment, one that lost the race fails, as the calls shift it.
+- A save in the last keys is killed partway, leaving an empty file, so the next segment opens with
+  `Read 0 instead of 1 bytes`. The JS completes the save instead.
 
 ### C2JS-061: process and user functions are stubs or missing. OPEN
 No implementation: `popen`, `pclose`, `execl`, `execv`, `execve`, `waitpid`, `setuid`, `setgid`,
