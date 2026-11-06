@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{_BitInt(12) a;unsigned _BitInt(3) b;}; static _BitInt(20) g=-5; int main(void){ struct s v={100,7}; v.a*=30; v.b++; struct s *p=&v; p->b+=9; unsigned _BitInt(70) w=0; w-=1; _BitInt(9) n=255; n++; _BitInt(9) *q=&n; *q-=1; printf("%d %d %d %d %d %zu %zu %zu\n",(int)v.a,(int)p->b,(int)g,(int)(w>>60),(int)n,sizeof v,sizeof(_BitInt(9)),sizeof(_BitInt(100))); return 0; }

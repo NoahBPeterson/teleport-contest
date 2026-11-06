@@ -165742,7 +165742,7 @@ function* fixup_special() {
         x++,
         r = cptr.add(r, 1, 32)
     ) {
-        switch (cptr.ldI16o(r, $lev_region_rtype)) {
+        __sw_1: switch (cptr.ldI16o(r, $lev_region_rtype)) {
             case NHC.LR_BRANCH:
                 added_branch = 1;
                 {
@@ -165758,7 +165758,7 @@ function* fixup_special() {
                         cptr.ldI16o(r, $lev_region_rtype),
                         lev
                     ));
-                    break;
+                    break __sw_1;
                 }
             case NHC.LR_PORTAL:
                 if (cptr.ld1s(cptr.ldPtro(r, $lev_region_rname)) >= 48 &&
@@ -175393,7 +175393,7 @@ function* fill_zoo(sroom) {
     /* Note: This doesn't check needfill; it assumes the caller has already
        done that. */
     sh = cptr.ldI32o(sroom, $mkroom_fdoor);
-    switch (type) {
+    __sw_1: switch (type) {
         case NHC.COURT:
             if (cptr.ldBits(
                 cptr.add(
@@ -175421,7 +175421,7 @@ function* fill_zoo(sroom) {
                                 NHC.THRONE))
                             {
                                 (yield* mk_zoo_thronemon(tx, ty));
-                                break;
+                                break __sw_1;
                             }
             }
             i = 100;
@@ -191262,7 +191262,7 @@ function* wiz_intrinsic() {
                     break;
             }
 
-            switch (p.v) {
+            __sw_1: switch (p.v) {
                 case NHC.BLINDED:
                     (yield* make_blinded(newtimeout, 1));
                     break;
@@ -191348,7 +191348,7 @@ function* wiz_intrinsic() {
                             oldtimeout ? __s_increased_by : __s_set_to,
                             amt
                         ));
-                        break;
+                        break __sw_1;
                     }
                 case NHC.GLIB:
                     /* slippery fingers might need a persistent inventory update
@@ -252675,7 +252675,7 @@ function* garlic_breath(mtmp) {
  */
 /** C ref: eat.c:2099 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* fprefx(otmp) {
-    switch (cptr.ldI16o(otmp, $obj_otyp)) {
+    __sw_1: switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.EGG:
             if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_PYROLISK) {
                 if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
@@ -252707,7 +252707,7 @@ function* fprefx(otmp) {
                                 ? __s_bland
                                 : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                     ));
-                    break;  /* default */
+                    break __sw_1;  /* default */
                 }
             break;
         case NHC.FOOD_RATION:
@@ -252799,7 +252799,7 @@ function* fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 ));
-                break;
+                break __sw_1;
             }
         case NHC.MEATBALL:
         case NHC.MEAT_STICK:
@@ -252817,7 +252817,7 @@ function* fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 ));
-                break;
+                break __sw_1;
             }
         case NHC.CLOVE_OF_GARLIC:
             if (((cptr.ldU64o(
@@ -305283,7 +305283,7 @@ function* trapmove(x, y, desttrap) {
      * Note: caller should call reset_utrap() when we set u.utrap to 0.
      */
 
-    switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
+    __sw_1: switch (cptr.ldI32o(u, $you_utraptype) >>> 0) {
         case NHC.TT_BEARTRAP:
             if (cptr.ld1so(flags, $flag_verbose)) {
                 predicament = __s_caught_in_a_bear_trap;
@@ -305307,7 +305307,7 @@ function* trapmove(x, y, desttrap) {
                         (yield* You(__s_finally_s_free, !anchored ? __s_wriggle : __s_wrench_the_ball));
                     if (anchored)
                         (yield* buried_ball_to_punishment());
-                    break;
+                    break __sw_1;
                 }
             break;
         case NHC.TT_PIT:
@@ -341502,7 +341502,7 @@ function* make_corpse(mtmp, corpseflags) {
     else if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         corpstatflags = (corpstatflags | NHM.CORPSTAT_MALE) >>> 0;
 
-    switch (mndx) {
+    __sw_1: switch (mndx) {
         case NHC.PM_GRAY_DRAGON:
         case NHC.PM_GOLD_DRAGON:
         case NHC.PM_SILVER_DRAGON:
@@ -341565,7 +341565,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_WHITE_UNICORN:
         case NHC.PM_GRAY_UNICORN:
@@ -341619,7 +341619,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_LONG_WORM:
             void (yield* mksobj_at(NHC.WORM_TOOTH, x, y, 1, 0));
@@ -341660,7 +341660,7 @@ function* make_corpse(mtmp, corpseflags) {
                         return dealloc.v ? null : obj.v;
                     }
                 }
-                break;
+                break __sw_1;
             }
         case NHC.PM_VAMPIRE:
         case NHC.PM_VAMPIRE_LEADER:
@@ -454389,7 +454389,7 @@ function* wall_angle(lev) {
     let row;
     let col;
     let idx;
-    switch (cptr.ld1so(lev, $rm_typ)) {
+    __sw_1: switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
             row = cptr.add(wall_matrix, 2, 20);
             seenv = (((seenv >>> 4 | (seenv << 4) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
@@ -454455,7 +454455,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TLWALL:
             row = cptr.add(wall_matrix, 1, 20);
@@ -454520,7 +454520,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TRWALL:
             row = cptr.add(wall_matrix, 3, 20);
@@ -454585,7 +454585,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TDWALL:
             row = cptr.add(wall_matrix, 0, 20);
@@ -454674,7 +454674,7 @@ function* wall_angle(lev) {
                             idx = NHC.S_stone;
                             break;
                     }
-                    break;
+                    break __sw_1;
                 }
             // @FallThrough
             ;
@@ -454807,7 +454807,7 @@ function* wall_angle(lev) {
             ;
             break;
         case NHC.CROSSWALL:
-            switch ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK) {
+            __sw_2: switch ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK) {
                 case 0:
                     if (seenv == 1)
                         idx = NHC.S_brcorn;
@@ -454863,7 +454863,7 @@ function* wall_angle(lev) {
 
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_TR:
                     row = cptr.add(cross_matrix, 2, 24);
@@ -454899,7 +454899,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BL:
                     row = cptr.add(cross_matrix, 0, 24);
@@ -454935,7 +454935,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BR:
                     row = cptr.add(cross_matrix, 3, 24);

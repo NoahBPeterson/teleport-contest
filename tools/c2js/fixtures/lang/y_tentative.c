@@ -1,0 +1,2 @@
+#include <stdio.h>
+int g; int g=3; extern int h; int h=4; static int s; static int s=5; int a[]; int a[2]={7,8}; int main(void){ extern int g; printf("%d %d %d %d %zu\n",g,h,s,a[1],sizeof a); return 0; }

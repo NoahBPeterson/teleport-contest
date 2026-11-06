@@ -112,6 +112,22 @@ export function scanfCore(s, f, args) {
       continue;
     }
 
+    if ('feEgGaA'.includes(spec)) {
+      while (s[si] === ' ' || s[si] === '\t' || s[si] === '\n' || s[si] === '\r' || s[si] === '\f' || s[si] === '\v') si++;
+      if (si >= s.length) return inputFailure();
+      const limit = width ? s.slice(si, si + width) : s.slice(si);
+      const m = /^[-+]?(?:(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?|inf(?:inity)?|nan)/i.exec(limit);
+      if (!m) return matchFailure();
+      si += m[0].length;
+      if (!suppress) {
+        const t = m[0].toLowerCase().replace(/^\+/, '');
+        const v = /nan/.test(t) ? NaN : /inf/.test(t) ? (t[0] === '-' ? -Infinity : Infinity) : Number(t);
+        const arg = args[argi++];
+        if (l) cptr.stF64(arg, v); else cptr.stF32(arg, v);
+        assigned++;
+      }
+      continue;
+    }
     const baseOf = { d: 10, u: 10, i: 0, x: 16, X: 16, o: 8 }[spec];
     if (baseOf === undefined) return matchFailure();
     let base = baseOf;

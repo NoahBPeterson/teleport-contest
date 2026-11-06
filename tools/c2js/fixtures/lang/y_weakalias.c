@@ -1,0 +1,2 @@
+#include <stdio.h>
+int __attribute__((weak)) w(void){ return 1; } int r(void){ return 2; } __attribute__((section("__DATA,x"))) int sec=3; __attribute__((used,aligned(32))) static int ali=4; __attribute__((noinline,pure)) int pu(void){ return 5; } int main(void){ printf("%d %d %d %d %zu\n",w(),sec,ali,pu(),_Alignof(ali)); return 0; }

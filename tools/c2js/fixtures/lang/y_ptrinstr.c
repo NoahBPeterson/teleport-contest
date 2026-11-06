@@ -1,0 +1,2 @@
+#include <stdio.h>
+struct s{char *name;int (*op)(int);int *cells;struct s *self;}; static int d(int x){ return x*2; } int main(void){ int c[2]={1,2}; struct s v={"nm",d,c,0}; v.self=&v; struct s arr[2]; arr[0]=v; arr[1]=arr[0]; struct s *p=arr+1; printf("%s %d %d %d %s\n",p->name,p->op(2),p->cells[1],p->self==&v,p->self->self->name); return 0; }

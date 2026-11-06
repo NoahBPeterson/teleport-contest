@@ -1,0 +1,2 @@
+#include <stdio.h>
+int x=1; int main(void){ int x=2; { int x=3; { extern int y; x+=y; } printf("%d\n",x); } for(int x=9;x<10;x++){ int x=5; printf("%d\n",x); } if(x){ int x=7; printf("%d\n",x); } printf("%d\n",x); return 0; } int y=10;

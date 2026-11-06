@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ int a,b; char s[8],c; float f; double d; long l; unsigned u; short h; int n; int r=sscanf("12 0x1f abc Z 1.5 2.5e1 -7 40 9","%d %i %7s %c %f %lf %ld %u %hd%n",&a,&b,s,&c,&f,&d,&l,&u,&h,&n); printf("%d %d %d %s %c %f %f %ld %u %d %d\n",r,a,b,s,c,f,d,l,u,h,n); char t[8]; int m=sscanf("ab,cd","%[^,],%s",s,t); int z=sscanf("xyz","%*c%c",&c); printf("%d %s %s %d %c\n",m,s,t,z,c); return 0; }

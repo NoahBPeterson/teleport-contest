@@ -237,6 +237,12 @@ export function desugar(t) {
     .trim();
 }
 
+/** sizeof(_BitInt(n)) on arm64: the next power of two to 64 bits, then 128-bit steps. */
+const bitIntSize = (n) => (n <= 8 ? 1 : n <= 16 ? 2 : n <= 32 ? 4 : n <= 64 ? 8 : Math.ceil(n / 128) * 16);
+
+/** Is this integer type a BigInt in the port? 64 bits and more, and every _BitInt. */
+const isBig = (t) => !!t && (t.bits >= 64 || t.big === true);
+
 /** Has this array type a run-time bound at any level? */
 function hasVla(q) {
   for (let a = arrayParts(q); a; a = arrayParts(a.elem)) if (a.vlaExpr) return true;
@@ -278,6 +284,8 @@ export function parseType(qualType, desugared) {
   if (/\bdouble\b/.test(q)) return { cls: 'f64' };
   if (/\bfloat\b/.test(q)) return { cls: 'f64', single: true };
   if (/\b__u?int128(_t)?\b/.test(q)) return { cls: 'int', bits: 128, signed: !/\bunsigned\b|__uint128/.test(q) };
+  { const bi = /\b_BitInt\((\d+)\)/.exec(q); if (bi) return { cls: 'int', bits: Number(bi[1]), signed: !/\bunsigned\b/.test(q), big: true }; }
+  if (/\b(__fp16|_Float16)\b/.test(q)) return { cls: 'f64', half: true };
   if (/\blong\b/.test(q)) { // LP64: long and long long are both 64-bit
     return { cls: 'int', bits: 64, signed: !/\bunsigned\b/.test(q) };
   }
@@ -2083,6 +2091,8 @@ export class Emitter {
     if (/\bdouble\b/.test(q)) return { size: 8, align: 8 };
     if (/\bfloat\b/.test(q)) return { size: 4, align: 4 };
     if (/\b__u?int128(_t)?\b/.test(q)) return { size: 16, align: 16 };
+    if (/\b(__fp16|_Float16)\b/.test(q)) return { size: 2, align: 2 };
+    { const bi = /\b_BitInt\((\d+)\)/.exec(q); if (bi) { const size = bitIntSize(Number(bi[1])); return { size, align: Math.min(size, 16) }; } }
     if (/\blong\b/.test(q) || q === 'size_t') return { size: 8, align: 8 };
     if (/\bint\b/.test(q)) return { size: 4, align: 4 };
     if (/\bshort\b/.test(q)) return { size: 2, align: 2 };
@@ -2280,11 +2290,18 @@ export class Emitter {
 
   convert(e, from, to) {
     if (to.cls === 'void') return e;
+    if (to.big) {
+      // a _BitInt holds exactly its width, whatever came in
+      const w = `BigInt.as${to.signed ? 'Int' : 'Uint'}N(${to.bits}, `;
+      if (from.cls === 'f64') return { code: `${w}${this.cptrCall('ftoi64', e.code)})`, prec: PREC.atom, rep: 'val' };
+      return { code: `${w}${isBig(from) ? e.code : `BigInt(${e.code})`})`, prec: PREC.atom, rep: 'val' };
+    }
+    if (to.half) return { code: `Math.f16round(${from.cls === 'int' && isBig(from) ? `Number(${e.code})` : e.code})`, prec: PREC.atom, rep: 'val' };
     if (to.bool) return { code: `(${e.code}) ? 1 : 0`, prec: PREC.cond, rep: 'val' };
     if (to.cls === 'complex' || from.cls === 'complex') {
       if (to.cls === 'complex' && from.cls === 'complex') return to.single && !from.single ? { code: this.cptrCall('cround', e.code), prec: PREC.atom, rep: 'val' } : e;
       if (to.cls === 'complex') {
-        const re = from.bits >= 64 ? `Number(${e.code})` : e.code;
+        const re = isBig(from) ? `Number(${e.code})` : e.code;
         return { code: `{ re: ${to.single ? `Math.fround(${re})` : re}, im: 0 }`, prec: PREC.atom, rep: 'val' };
       }
       const re = { code: `${this.group(e, PREC.postfix)}.re`, prec: PREC.postfix, rep: 'val' };
@@ -2301,18 +2318,18 @@ export class Emitter {
     }
     if (from.cls === 'ptr' || to.cls === 'ptr' || from.cls === 'record' || to.cls === 'record') return e;
     if (to.cls === 'f64' && to.single && !(from.cls === 'f64' && from.single)) {
-      const v = from.cls === 'int' && from.bits >= 64 ? `Number(${this.group(e, PREC.atom)})` : e.code;
+      const v = from.cls === 'int' && isBig(from) ? `Number(${this.group(e, PREC.atom)})` : e.code;
       return { code: `Math.fround(${v})`, prec: PREC.atom, rep: 'val' };
     }
     if (from.cls === 'f64' || to.cls === 'f64') {
       // int <-> double conversions (C truncates toward zero)
       if (from.cls === 'f64' && to.cls === 'int') {
         const signed = to.signed !== false;
-        if (to.bits >= 64) return { code: this.cptrCall(signed ? 'ftoi64' : 'ftou64', e.code), prec: PREC.atom, rep: 'val' };
+        if (isBig(to)) return { code: this.cptrCall(signed ? 'ftoi64' : 'ftou64', e.code), prec: PREC.atom, rep: 'val' };
         const whole = { code: this.cptrCall(signed ? 'ftoi32' : 'ftou32', e.code), prec: PREC.atom, rep: 'val' };
         return to.bits === 32 ? whole : this.convert(whole, { cls: 'int', bits: 32, signed }, to);
       }
-      if (to.cls === 'f64' && from.cls === 'int' && from.bits >= 64) return { code: `Number(${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
+      if (to.cls === 'f64' && from.cls === 'int' && isBig(from)) return { code: `Number(${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
       return e; // int32 -> double: identity (JS number)
     }
     if (sameClass(from, to)) return e;
@@ -2320,11 +2337,11 @@ export class Emitter {
     if (e.const !== undefined && /^-?\d+$/.test(e.const)) {
       let v = BigInt(e.const);
       v = to.signed ? BigInt.asIntN(to.bits, v) : BigInt.asUintN(to.bits, v);
-      if (to.bits >= 64) return { code: `${v}n`, prec: PREC.atom, const: String(v), rep: 'val' };
+      if (isBig(to)) return { code: `${v}n`, prec: PREC.atom, const: String(v), rep: 'val' };
       return { code: String(Number(v)), prec: Number(v) < 0 ? PREC.unary : PREC.atom, const: String(Number(v)), rep: 'val' };
     }
-    if (to.bits >= 64) {
-      if (from.bits >= 64) {
+    if (isBig(to)) {
+      if (isBig(from)) {
         const f = this.foldWrapCast(e, to.signed ? 'i64' : 'u64');
         return { code: `BigInt.as${to.signed ? 'Int' : 'Uint'}N(${to.bits}, ${this.group(f, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
       }
@@ -2332,7 +2349,7 @@ export class Emitter {
       if (from.signed && !to.signed) return { code: `BigInt.asUintN(${to.bits}, BigInt(${this.group(e, PREC.atom)}))`, prec: PREC.atom, rep: 'val' };
       return { code: `BigInt(${this.group(e, PREC.atom)} >>> 0)`, prec: PREC.atom, rep: 'val' };
     }
-    if (from.bits >= 64) {
+    if (isBig(from)) {
       return { code: `Number(BigInt.as${to.signed ? 'Int' : 'Uint'}N(${to.bits}, ${this.group(e, PREC.atom)}))`, prec: PREC.atom, rep: 'val' };
     }
     if (to.bits === 32 && from.bits === 32) {
@@ -2410,7 +2427,7 @@ export class Emitter {
     if (this._foldMemo.has(n)) return this._foldMemo.get(n);
     let r = null;
     // the folder's arithmetic knows 64 bits at most
-    if (/__u?int128/.test(`${n.type?.qualType} ${n.type?.desugaredQualType}`)) { this._foldMemo.set(n, null); return null; }
+    if (/__u?int128|_BitInt/.test(`${n.type?.qualType} ${n.type?.desugaredQualType}`)) { this._foldMemo.set(n, null); return null; }
     try { r = this.foldConstUncached(n); } catch { r = null; }
     // invariant: a folded value is always in range for its own type
     if (r && !(typeof r.v === 'bigint' && r.t?.cls === 'int' && wrapTo(r.v, r.t) === r.v)) r = null;
@@ -2444,7 +2461,7 @@ export class Emitter {
         if (n.name && n.name !== 'sizeof') return null; // alignof/vec_step: not modelled
         const t = intType();
         if (!t) return null;
-        let arg = n.inner?.[0];
+        let arg = n.argType ? null : n.inner?.[0];
         while (arg && arg.kind === 'ParenExpr') arg = arg.inner[0];
         const q = arg ? desugar(arg.type) : desugar(n.argType);
         if (hasVla(q)) return null; // size known only at run time
@@ -2486,7 +2503,7 @@ export class Emitter {
             return wrapTo(v, t) === v ? { v, t } : null;
           }
           case '~': {
-            if (e.t.bits >= 64) { // the emitter masks 64-bit ~ to the operand width
+            if (isBig(e.t)) { // the emitter masks 64-bit ~ to the operand width
               const v = wrapTo(~e.v, e.t);
               return wrapTo(v, t) === v ? { v, t } : null;
             }
@@ -3326,7 +3343,7 @@ export class Emitter {
 
   expr_IntegerLiteral(n) {
     const t = nodeType(n);
-    if (t.cls === 'int' && t.bits >= 64) return { code: `${n.value}n`, prec: PREC.atom, const: n.value, rep: 'val' };
+    if (t.cls === 'int' && isBig(t)) return { code: `${n.value}n`, prec: PREC.atom, const: n.value, rep: 'val' };
     return { code: n.value, prec: n.value.startsWith('-') ? PREC.unary : PREC.atom, const: n.value, rep: 'val' };
   }
 
@@ -3429,15 +3446,17 @@ export class Emitter {
     const bf = typeQ?.match?.(BF_RE);
     if (bf) {
       const t = this.isEnumType(bf[3]) ? { bits: 32, signed: true } : parseType(bf[3]);
-      const big = t.bits >= 64;
+      const big = isBig(t);
       return { code: this.cptrCall(big ? 'ldBitsB' : 'ldBits', locCode, bf[1], bf[2], t.signed === false ? '0' : '1'), prec: PREC.atom, rep: 'val' };
     }
     const rn = this.recordNameOf(typeQ);
     if (/^enum\s/.test(typeQ || '') || (rn && this.records.get(rn)?.tag === 'enum')) return { code: this.cptrCall('ldI32', locCode), prec: PREC.atom, rep: 'val' };
     const t = parseType(typeQ);
     if (t.cls === 'int' && t.bits === 8) return { code: this.cptrCall(t.signed ? 'ld1s' : 'ld1u', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.big) return { code: this.cptrCall('ldBitInt', locCode, String(bitIntSize(t.bits)), String(t.bits), String(!!t.signed)), prec: PREC.atom, rep: 'val' };
+    if (t.half) return { code: this.cptrCall('ldF16', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'int' && t.bits === 128) return { code: this.cptrCall(t.signed ? 'ldI128' : 'ldU128', locCode), prec: PREC.atom, rep: 'val' };
-    if (t.cls === 'int' && t.bits >= 64) return { code: this.cptrCall(t.signed ? 'ldI64' : 'ldU64', locCode), prec: PREC.atom, rep: 'val' };
+    if (t.cls === 'int' && isBig(t)) return { code: this.cptrCall(t.signed ? 'ldI64' : 'ldU64', locCode), prec: PREC.atom, rep: 'val' };
     if (t.cls === 'int' && t.bits === 32) {
       // `unsigned` is a JS number in [0, 2^32): comparisons, / and >> depend on it
       if (t.signed === false) return { code: `${this.cptrCall('ldI32', locCode)} >>> 0`, prec: PREC.shift, rep: 'val' };
@@ -3454,15 +3473,17 @@ export class Emitter {
     const bf = typeQ?.match?.(BF_RE);
     if (bf) {
       const t = this.isEnumType(bf[3]) ? { bits: 32, signed: true } : parseType(bf[3]);
-      const big = t.bits >= 64;
+      const big = isBig(t);
       return this.cptrCall(big ? 'stBitsB' : 'stBits', locCode, bf[1], bf[2], t.signed === false ? '0' : '1', valueCode);
     }
     const rn = this.recordNameOf(typeQ);
     if (/^enum\s/.test(typeQ || '') || (rn && this.records.get(rn)?.tag === 'enum')) return this.cptrCall('stI32', locCode, valueCode);
     const t = parseType(typeQ);
     if (t.cls === 'int' && t.bits === 8) return this.cptrCall('st1', locCode, valueCode);
+    if (t.big) return this.cptrCall('stBitInt', locCode, String(bitIntSize(t.bits)), String(t.bits), String(!!t.signed), valueCode);
+    if (t.half) return this.cptrCall('stF16', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 128) return this.cptrCall('st128', locCode, valueCode);
-    if (t.cls === 'int' && t.bits >= 64) return this.cptrCall(t.signed ? 'stI64' : 'stU64', locCode, valueCode);
+    if (t.cls === 'int' && isBig(t)) return this.cptrCall(t.signed ? 'stI64' : 'stU64', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 32) return this.cptrCall('stI32', locCode, valueCode);
     if (t.cls === 'int' && t.bits === 16) return this.cptrCall('stI16', locCode, valueCode);
     if (t.cls === 'f64') return this.cptrCall(t.single ? 'stF32' : 'stF64', locCode, valueCode);
@@ -3901,7 +3922,7 @@ export class Emitter {
       const off = this.nullBasedOffset(n.inner[0]);
       if (off !== null) {
         const t = nodeType(n);
-        return { code: t.bits >= 64 ? `${off}n` : String(off), prec: PREC.atom, const: String(off), rep: 'val' };
+        return { code: isBig(t) ? `${off}n` : String(off), prec: PREC.atom, const: String(off), rep: 'val' };
       }
     }
     // NetHack SIZE(x) idiom: (int)(sizeof(arr) / sizeof(arr[0])) -> arr.length
@@ -4016,7 +4037,7 @@ export class Emitter {
       }
     }
     const t = nodeType(n);
-    return { code: t.bits >= 64 ? `${off}n` : String(off), prec: PREC.atom, const: String(off), rep: 'val' };
+    return { code: isBig(t) ? `${off}n` : String(off), prec: PREC.atom, const: String(off), rep: 'val' };
   }
 
   /** [type text, member path] of an offsetof call at the start of `at`, or null. */
@@ -4081,7 +4102,7 @@ export class Emitter {
     let tag = 'ptr';
     if (t.cls === 'f64') tag = 'f64';
     else if (t.cls === 'int') {
-      if (t.bits >= 64) tag = t.signed ? 'i64' : 'u64';
+      if (isBig(t)) tag = t.signed ? 'i64' : 'u64';
       else tag = t.signed ? 'i32' : 'u32'; // char/short promote to int
     }
     return { code: this.cptrCall('vaArg', ap, `'${tag}'`), prec: PREC.atom, rep: t.cls === 'ptr' ? 'cptr' : 'val' };
@@ -4099,24 +4120,113 @@ export class Emitter {
   }
 
   vlaSizeCode(expr) {
-    return expr.replace(/\b[A-Za-z_]\w*\b/g, (nm) => `Number(${this.boxedVars?.has(nm) ? `${jsName(nm)}.v` : jsName(nm)})`);
+    return expr.replace(/\b[A-Za-z_]\w*\b(\s*\()?/g, (nm, call) => {
+      if (call) return nm; // a function in the bound: only ever run once, where it's frozen
+      const boxed = this.boxedVars?.has(nm) || this.topBoxed?.has(nm) || (this.externBoxed.has(nm) && !this.localNames?.has(nm));
+      return `Number(${boxed ? `${jsName(nm)}.v` : jsName(nm)})`;
+    });
+  }
+
+  /**
+   * C fixes a VLA type's size when the type is declared. The emitter computes
+   * sizes from the bound's text, so a bound that can change later, or that has a
+   * call in it, is captured in a hidden variable at the declaration, and the types
+   * of expressions flowing from that declaration name the hidden variable.
+   */
+  freezeVlaBounds(body, params) {
+    const written = new Set();
+    (function w(n) {
+      if (!n || typeof n !== 'object') return;
+      const target = n.kind === 'CompoundAssignOperator' || (n.kind === 'BinaryOperator' && n.opcode === '=') ? n.inner[0]
+        : n.kind === 'UnaryOperator' && ['++', '--', '&'].includes(n.opcode) ? n.inner[0] : null;
+      const x = stripParensAndCasts(target);
+      if (x?.kind === 'DeclRefExpr') written.add(x.referencedDecl?.name);
+      (n.inner || []).forEach(w);
+    })(body);
+    const boundsOf = (q) => [...q.matchAll(/\[([^\]]*)\]/g)].map((m) => m[1]).filter((b) => !/^\d*$/.test(b));
+    const needs = (b) => b.includes('(') || [...b.matchAll(/\b[A-Za-z_]\w*\b/g)].some((m) => written.has(m[0]));
+    const swap = (q, map) => q?.replace(/\[([^\]]*)\]/g, (m, b) => (map.has(b) ? `[${map.get(b)}]` : m));
+    const retype = (n, map) => {
+      if (!n.type) return;
+      n.type = { ...n.type, qualType: swap(n.type.qualType, map), desugaredQualType: swap(n.type.desugaredQualType, map) };
+    };
+    const byDecl = new Map();
+    // a typedef's bound was fixed at the typedef, so anything named with it shares that
+    const typedefMaps = new Map();
+    const viaTypedef = (t) => { for (const m of (t?.qualType || '').matchAll(/\b[A-Za-z_]\w*\b/g)) if (typedefMaps.has(m[0])) return typedefMaps.get(m[0]); return null; };
+    const freeze = (d, q) => {
+      const map = new Map();
+      for (const b of boundsOf(q)) {
+        if (map.has(b) || !needs(b)) continue;
+        const tmp = `__vb${++this.uniq}`;
+        this.pendingTemps.push(tmp);
+        map.set(b, tmp);
+        (d._vbSets ||= []).push({ tmp, expr: b });
+      }
+      return map;
+    };
+    for (const p of params) {
+      const q = p.type?.desugaredQualType || p.type?.qualType || '';
+      if (!boundsOf(q).length) continue;
+      const map = freeze(p, q);
+      if (map.size) { retype(p, map); byDecl.set(p.id, map); }
+    }
+    // in order, so a bound's text is read where the declaration is
+    (function walk(n) {
+      if (!n || typeof n !== 'object') return null;
+      if (n.argType && viaTypedef(n.argType)) n.argType = { ...n.argType, desugaredQualType: swap(n.argType.desugaredQualType, viaTypedef(n.argType)) };
+      if (n.kind === 'VarDecl') {
+        const q = n.type?.desugaredQualType || n.type?.qualType || '';
+        if (boundsOf(q).length) {
+          const map = viaTypedef(n.type) ?? freeze(n, q);
+          if (map.size) { retype(n, map); byDecl.set(n.id, map); }
+        }
+      } else if (n.kind === 'TypedefDecl') {
+        const v = n.type?.desugaredQualType || n.type?.qualType || '';
+        if (boundsOf(v).length) {
+          const map = freeze(n, v);
+          if (map.size) { FILE_TYPEDEFS.set(n.name, swap(v.replace(/\bconst\b|\bvolatile\b/g, '').trim(), map)); typedefMaps.set(n.name, map); }
+        }
+      }
+      let map = n.kind === 'DeclRefExpr' ? byDecl.get(n.referencedDecl?.id) ?? null : null;
+      for (const c of n.inner || []) { const m = walk(c); if (m && !map) map = m; }
+      if (map && !/Decl$/.test(n.kind)) retype(n, map);
+      return map;
+    })(body);
+  }
+
+  findVarDecl(id) {
+    if (!id) return null;
+    if (!this._varDecls) {
+      this._varDecls = new Map();
+      const walk = (n) => { if (!n || typeof n !== 'object') return; if (n.kind === 'VarDecl') this._varDecls.set(n.id, n); (n.inner || []).forEach(walk); };
+      (this.decls || []).forEach(walk);
+    }
+    return this._varDecls.get(id);
   }
 
   expr_UnaryExprOrTypeTraitExpr(n) {
-    let arg = n.inner?.[0];
+    // the type form of a VLA also has its bound as a child, which isn't the operand
+    let arg = n.argType ? null : n.inner?.[0];
     while (arg && arg.kind === 'ParenExpr') arg = arg.inner[0];
     const q = arg ? desugar(arg.type) : desugar(n.argType); // expr form vs type form
     if (/align/i.test(n.name || '')) {
-      const a = this.sizeAlign(q).align;
-      return { code: nodeType(n).bits >= 64 ? `${a}n` : String(a), prec: PREC.atom, const: String(a), rep: 'val' };
+      let a = this.sizeAlign(q).align;
+      // `_Alignof(v)` sees v's own aligned attribute
+      if (arg?.kind === 'DeclRefExpr') {
+        const decl = this.findVarDecl?.(arg.referencedDecl?.id);
+        const attr = decl?.inner?.find((c) => c?.kind === 'AlignedAttr');
+        if (attr) a = Math.max(a, Number(attr.inner?.[0]?.value ?? 16));
+      }
+      return { code: isBig(nodeType(n)) ? `${a}n` : String(a), prec: PREC.atom, const: String(a), rep: 'val' };
     }
     if (hasVla(q)) {
       const size = arg?.kind === 'DeclRefExpr' ? `${jsName(arg.name || arg.referencedDecl?.name)}__vla` : `(${this.dynSize(q)})`;
-      return { code: nodeType(n).bits >= 64 ? `BigInt(${size})` : size, prec: PREC.atom, rep: 'val' };
+      return { code: isBig(nodeType(n)) ? `BigInt(${size})` : size, prec: PREC.atom, rep: 'val' };
     }
     const size = this.sizeofType(q);
     const t = nodeType(n); // size_t == unsigned long -> 64-bit class
-    const code = t.bits >= 64 ? `${size}n` : String(size);
+    const code = isBig(t) ? `${size}n` : String(size);
     return { code, prec: PREC.atom, const: String(size), rep: 'val' };
   }
 
@@ -4131,6 +4241,8 @@ export class Emitter {
     if (/\bdouble\b/.test(q)) return 8;
     if (/\bfloat\b/.test(q)) return 4;
     if (/\b__u?int128(_t)?\b/.test(q)) return 16;
+    if (/\b(__fp16|_Float16)\b/.test(q)) return 2;
+    { const bi = /\b_BitInt\((\d+)\)/.exec(q); if (bi) return bitIntSize(Number(bi[1])); }
     if (/\blong\b/.test(q) || q === 'size_t') return 8;
     if (/\bint\b/.test(q)) return 4;
     if (/\bshort\b/.test(q)) return 2;
@@ -4176,7 +4288,7 @@ export class Emitter {
         let subU = sub;
         while (subU.kind === 'ParenExpr') subU = subU.inner[0];
         const stT = this.isEnumType(desugar(sub.type)) ? { cls: 'int', bits: 32, signed: true } : subT;
-        const one = stT.bits >= 64 ? '1n' : '1';
+        const one = isBig(stT) ? '1n' : '1';
         const delta = n.opcode === '++' ? one : `-${one}`;
         const wrapTo = (code) => this.wrapScalar(code, stT);
         if (subU.kind === 'ArraySubscriptExpr' || subU.kind === 'UnaryOperator' || subU.kind === 'MemberExpr') {
@@ -4187,10 +4299,10 @@ export class Emitter {
             if (t.bits === 8 && n.isPostfix && n.opcode === '++' && t.signed !== false && !isBf) return { code: this.cptrCall('postinc1', loc.code), prec: PREC.atom, rep: 'val' };
             const ld = this.loadFrom(loc.code, loc.elemQ);
             if (isBf && n.isPostfix) {
-              const s2 = this.storeTo(loc.code, loc.elemQ, `old_ + ${t.bits >= 64 ? (n.opcode === '++' ? '1n' : '-1n') : delta}`);
+              const s2 = this.storeTo(loc.code, loc.elemQ, `old_ + ${isBig(t) ? (n.opcode === '++' ? '1n' : '-1n') : delta}`);
               return { code: `((old_) => (${s2}, old_))(${ld.code})`, prec: PREC.atom, rep: 'val' };
             }
-            const store = this.storeTo(loc.code, loc.elemQ, `${operand(ld, PREC.add, 'left').code} + ${t.bits >= 64 ? (n.opcode === '++' ? '1n' : '-1n') : delta}`);
+            const store = this.storeTo(loc.code, loc.elemQ, `${operand(ld, PREC.add, 'left').code} + ${isBig(t) ? (n.opcode === '++' ? '1n' : '-1n') : delta}`);
             // prefix: the store yields the unreduced new value; postfix: subtract
             // the signed delta back to recover the old value
             if (!n.isPostfix) {
@@ -4198,7 +4310,7 @@ export class Emitter {
               const wraps = !isBf && (t.bits < 32 || t.signed === false);
               return { code: wraps ? this.wrapScalar(store, t) : store, prec: PREC.atom, rep: 'val' };
             }
-            return { code: `(${store}) - (${t.bits >= 64 ? (n.opcode === '++' ? '1n' : '-1n') : delta})`, prec: PREC.add, rep: 'val' };
+            return { code: `(${store}) - (${isBig(t) ? (n.opcode === '++' ? '1n' : '-1n') : delta})`, prec: PREC.add, rep: 'val' };
           }
         }
         // a variable or plain-JS element. `int` and `long` cannot overflow in a
@@ -4228,11 +4340,11 @@ export class Emitter {
         const e = n.opcode === '!' ? this.condExpr(sub) : this.emitExpr(sub);
         // 64-bit ~: JS BigInt ~ is infinite-precision (~0n = -1n); C wraps to
         // the operand width — mask with the operand's signedness
-        if (n.opcode === '~' && subT.cls === 'int' && subT.bits >= 64) {
+        if (n.opcode === '~' && subT.cls === 'int' && isBig(subT)) {
           return { code: `BigInt.as${subT.signed === false ? 'Uint' : 'Int'}N(${subT.bits}, ~${this.group(e, PREC.atom)})`, prec: PREC.atom, rep: 'val' };
         }
         // C wraps: unsigned stays unsigned, and an int's -0 is 0
-        if (n.opcode === '-' && subT.cls === 'int' && subT.bits >= 64) {
+        if (n.opcode === '-' && subT.cls === 'int' && isBig(subT)) {
           return { code: `BigInt.as${subT.signed === false ? 'Uint' : 'Int'}N(${subT.bits}, -${this.group(e, PREC.unary)})`, prec: PREC.atom, rep: 'val' };
         }
         if (n.opcode !== '!' && subT.cls === 'int' && subT.signed === false && !subT.bool) {
@@ -4259,7 +4371,7 @@ export class Emitter {
           return { code: this.cptrCall('decay', nm), prec: PREC.atom, rep: 'cptr' };
         }
         // address of a function designator is the function pointer itself
-        if (sub.kind === 'DeclRefExpr' && /\(/.test(desugar(sub.type))) {
+        if (sub.kind === 'DeclRefExpr' && /\(/.test(desugar(sub.type).replace(/_BitInt\(\d+\)/g, 'int'))) {
           return { ...this.emitExpr(sub), rep: 'val' };
         }
         // boxed variable (local, static-local, or global): the box IS the address
@@ -4415,6 +4527,75 @@ export class Emitter {
    * and a body of labels. The goto machinery (ultimately its state machine) can
    * jump into any block, which a JS switch cannot.
    */
+  /**
+   * `cleanup` where the function also has labels: try/finally can't cross the state
+   * machine, so each way out of a scope gets its calls written in. Clang rejects a
+   * jump into a cleanup's scope, so a goto can only leave scopes.
+   */
+  explicitCleanups(body) {
+    const labelScope = new Map();
+    const declared = (st) => (st.kind === 'DeclStmt' ? st.inner.filter((d) => d.inner?.some((a) => a?.kind === 'CleanupAttr')) : []);
+    const entry = (d) => ({ id: d.id, name: d.name, isArray: !!arrayParts(desugar(d.type)), fn: d.inner.find((a) => a?.kind === 'CleanupAttr').cleanup_function.name });
+    // labels first: a goto can jump forward
+    (function scan(n, scope) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'LabelStmt') labelScope.set(n.declId, scope.map((e) => e.id));
+      if (n.kind === 'CompoundStmt') {
+        const local = [...scope];
+        for (const st of n.inner || []) { scan(st, local); for (const d of st ? declared(st) : []) local.push(entry(d)); }
+        return;
+      }
+      for (const c of n.inner || []) scan(c, scope);
+    })(body, []);
+    const calls = (list) => [...list].reverse().map((e) => ({ kind: 'CleanupCallStmt', fn: e.fn, name: e.name, isArray: e.isArray }));
+    const wrap = (list, st) => (list.length ? { kind: 'CompoundStmt', inner: [...calls(list), st] } : st);
+    const fix = (n, scope, ctx) => {
+      if (!n || typeof n !== 'object') return n;
+      switch (n.kind) {
+        case 'GotoStmt': {
+          const keep = labelScope.get(n.targetLabelDeclId) ?? [];
+          return wrap(scope.filter((e) => !keep.includes(e.id)), n);
+        }
+        case 'ReturnStmt': return scope.length ? { kind: 'CleanupReturnStmt', ret: n, list: calls(scope), inner: n.inner } : n;
+        case 'BreakStmt': return wrap(scope.slice(ctx.brk ?? scope.length), n);
+        case 'ContinueStmt': return wrap(scope.slice(ctx.cont ?? scope.length), n);
+        case 'CompoundStmt': {
+          const local = [...scope], out = [];
+          for (const st of n.inner || []) {
+            out.push(fix(st, local, ctx));
+            for (const d of st ? declared(st) : []) { local.push(entry(d)); d.inner = d.inner.map((a) => (a?.kind === 'CleanupAttr' ? { ...a, kind: 'CleanupBoxAttr' } : a)); }
+          }
+          const mine = local.slice(scope.length);
+          const last = out[out.length - 1];
+          if (mine.length && !['ReturnStmt', 'CleanupReturnStmt', 'GotoStmt', 'BreakStmt', 'ContinueStmt'].includes(last?.kind)) out.push(...calls(mine));
+          n.inner = out;
+          return n;
+        }
+        case 'ForStmt': case 'WhileStmt': case 'DoStmt': n.inner = n.inner.map((c) => fix(c, scope, { brk: scope.length, cont: scope.length })); return n;
+        case 'SwitchStmt': n.inner = n.inner.map((c) => fix(c, scope, { ...ctx, brk: scope.length })); return n;
+        default: if (/Expr$|Literal$|Operator$|^DeclStmt$/.test(n.kind)) return n; if (n.inner) n.inner = n.inner.map((c) => fix(c, scope, ctx)); return n;
+      }
+    };
+    fix(body, [], {});
+  }
+
+  stmt_CleanupCallStmt(n, indent) {
+    this.refs.set(n.fn, 'FunctionDecl');
+    return [`${indent}${jsName(n.fn)}(${n.isArray ? this.cptrCall('decay', jsName(n.name)) : jsName(n.name)});`];
+  }
+
+  /** The value is worked out first, then the cleanups run, then it returns. */
+  stmt_CleanupReturnStmt(n, indent) {
+    const lines = this.stmt_ReturnStmt(n.ret, `${indent}    `);
+    const after = n.list.flatMap((c) => this.stmt_CleanupCallStmt(c, `${indent}    `));
+    if (!n.ret.inner?.some((c) => c && c.kind)) return [`${indent}{`, ...after, ...lines, `${indent}}`];
+    const tmp = `__r${++this.uniq}`;
+    (this.fnTemps ||= []).push(tmp);
+    const at = lines.findIndex((l) => /^\s*return\b/.test(l));
+    lines[at] = lines[at].replace(/return\b/, `${tmp} =`);
+    return [`${indent}{`, ...lines, ...after, `${indent}    return ${tmp};`, `${indent}}`];
+  }
+
   /** An enum declared inside a function: its constants have no module binding, so they fold. */
   noteLocalEnums(n) {
     if (!n || typeof n !== 'object') return;
@@ -4521,7 +4702,7 @@ export class Emitter {
   /** `code` reduced to scalar type t. */
   wrapScalar(code, t) {
     if (t.bool) return `((${code}) ? 1 : 0)`;
-    if (t.bits >= 64) return `BigInt.as${t.signed === false ? 'Uint' : 'Int'}N(${t.bits}, ${code})`;
+    if (isBig(t)) return `BigInt.as${t.signed === false ? 'Uint' : 'Int'}N(${t.bits}, ${code})`;
     if (t.bits === 32) return t.signed === false ? `((${code}) >>> 0)` : `((${code}) | 0)`;
     const helper = t.bits === 8 ? (t.signed === false ? 'uchar' : 'schar') : (t.signed === false ? 'u16' : 'i16');
     this.cmachine.add(helper);
@@ -4880,8 +5061,8 @@ export class Emitter {
       return { code: `Math.fround(${raw})`, prec: PREC.atom, rep: 'val', ...(op === '*' ? { floatProductRaw: `(${raw})` } : {}) };
     }
     let r = r0;
-    if ((op === '<<' || op === '>>') && t.cls === 'int' && t.bits >= 64) r = this.convert(r0, nodeType(n.inner[1]), t);
-    else if ((op === '<<' || op === '>>') && t.cls === 'int' && nodeType(n.inner[1]).bits >= 64) r = { code: `Number(${r0.code})`, prec: PREC.atom, rep: 'val' };
+    if ((op === '<<' || op === '>>') && t.cls === 'int' && isBig(t)) r = this.convert(r0, nodeType(n.inner[1]), t);
+    else if ((op === '<<' || op === '>>') && t.cls === 'int' && isBig(nodeType(n.inner[1]))) r = { code: `Number(${r0.code})`, prec: PREC.atom, rep: 'val' };
     // wrap-mask folding (see the WRAPFOLD note): `+`, `-` and `*` are the ring
     // operations reduction mod 2^w commutes with, so an operand that is itself
     // a mask of this same width and signedness can hand back its un-masked
@@ -5037,7 +5218,7 @@ export class Emitter {
       const tree = this.wrapTreeFor(op, key, l, r);
       return { code, prec, rep: 'val', wrapRaw: { code, raw, prec: p, key, tree } };
     };
-    if (t.bits >= 64) {
+    if (isBig(t)) {
       // BigInt + - * do NOT wrap: C 64-bit arithmetic does (e.g. 0u-1 wraps to
       // 2^64-1 — without this, unsigned comparisons on the result misfire)
       if (op === '+' || op === '-' || op === '*' || op === '<<') {
@@ -5141,14 +5322,14 @@ export class Emitter {
     // _Bool: compute, then the result is whether it's nonzero
     if (lT.bool) {
       const ldE = lv.kind === 'cptr' ? this.loadFrom(lv.code, lv.elemQ).code : lv.code;
-      const r = rTc.bits >= 64 ? `Number(${r0.code})` : this.group(r0, PREC.atom);
+      const r = isBig(rTc) ? `Number(${r0.code})` : this.group(r0, PREC.atom);
       const v = rTc.cls === 'int' && base === '/' ? `((${ldE} / ${r}) | 0)` : `(${ldE} ${base} ${r})`;
       if (lv.kind === 'cptr') return { code: this.storeTo(lv.code, lv.elemQ, `${v} ? 1 : 0`), prec: PREC.atom, rep: 'val' };
       return { code: `${lv.code} = ${v} ? 1 : 0`, prec: PREC.assign, rep: 'val' };
     }
     // an integer with a floating side, or a floating with a 64-bit side: compute
     // floating, convert back (truncates) on store
-    if ((lT.cls === 'int' && rTc.cls === 'f64') || (lT.cls === 'f64' && rTc.cls === 'int' && rTc.bits >= 64)) {
+    if ((lT.cls === 'int' && rTc.cls === 'f64') || (lT.cls === 'f64' && rTc.cls === 'int' && isBig(rTc))) {
       const common = lT.cls === 'f64' ? lT : rTc;
       const ldE = lv.kind === 'cptr' ? this.loadFrom(lv.code, lv.elemQ) : { code: lv.code, prec: PREC.atom, rep: 'val' };
       const a = this.convert(ldE, lT, common), b = this.convert(r0, rTc, common);
@@ -5158,6 +5339,15 @@ export class Emitter {
       if (lv.kind === 'cptr') return { code: this.storeTo(lv.code, lv.elemQ, back.code), prec: PREC.atom, rep: 'val' };
       return { code: `${lv.code} = ${operand(back, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
     }
+    if (lT.big || (lT.cls === 'int' && rTc.big)) {
+      // no promotion for _BitInt: work in the wider of the two, store at this width
+      const wide = rTc.big && rTc.bits > lT.bits ? rTc : lT;
+      const ldE = lv.kind === 'cptr' ? this.loadFrom(lv.code, lv.elemQ) : { code: lv.code, prec: PREC.atom, rep: 'val' };
+      const a = this.convert(ldE, lT, wide), b = this.convert(r0, rTc, wide);
+      const back = this.convert({ code: `${this.group(a, PREC.atom)} ${base} ${this.group(b, PREC.atom)}`, prec: PREC.atom, rep: 'val' }, wide, lT);
+      if (lv.kind === 'cptr') return { code: this.storeTo(lv.code, lv.elemQ, back.code), prec: PREC.atom, rep: 'val' };
+      return { code: `${lv.code} = ${back.code}`, prec: PREC.assign, rep: 'val' };
+    }
     if (lT.cls === 'int' && rTc.cls === 'int') {
       const shift = base === '<<' || base === '>>';
       const lP = lT.bits < 32 ? { cls: 'int', bits: 32, signed: true } : lT;
@@ -5165,12 +5355,12 @@ export class Emitter {
       const common = shift ? lP
         : lP.bits !== rP.bits ? (lP.bits > rP.bits ? lP : rP)
         : { cls: 'int', bits: lP.bits, signed: lP.signed !== false && rP.signed !== false };
-      if (common.signed === false || (common.bits >= 64 && lT.signed !== rTc.signed && lT.bits >= 64 && rTc.bits >= 64)) {
+      if (common.signed === false || (isBig(common) && lT.signed !== rTc.signed && isBig(lT) && isBig(rTc))) {
         const ldE = lv.kind === 'cptr' ? this.loadFrom(lv.code, lv.elemQ) : { code: lv.code, prec: PREC.atom, rep: 'val' };
         const a = this.convert(ldE, lT, common);
         const b = shift
-          ? (rTc.bits >= 64 && common.bits < 64 ? { code: `Number(${r0.code})`, prec: PREC.atom, rep: 'val' }
-            : common.bits >= 64 ? this.convert(r0, rTc, common) : r0)
+          ? (isBig(rTc) && !isBig(common) ? { code: `Number(${r0.code})`, prec: PREC.atom, rep: 'val' }
+            : isBig(common) ? this.convert(r0, rTc, common) : r0)
           : this.convert(r0, rTc, common);
         const code = this.arithIn(base, common, a, b);
         const back = this.convert({ code: code.code, prec: code.prec, rep: 'val' }, common, lT);
@@ -5194,14 +5384,14 @@ export class Emitter {
         return st(esz === 1 ? this.cptrCall(helper, ld, r0.code) : this.cptrCall(helper, ld, r0.code, String(esz)));
       }
       if (eT.cls === 'f64') return st(eT.single ? `Math.fround(${ld} ${base} ${operand(r0, PREC.add, 'right').code})` : `${ld} ${base} ${operand(r0, PREC.add, 'right').code}`);
-      if (eT.bits < 64 && rT0.cls === 'int' && rT0.bits >= 64) {
+      if (!isBig(eT) && rT0.cls === 'int' && isBig(rT0)) {
         // narrow lvalue (8/16/32-bit), 64-bit RHS: clang's compound-assign AST
         // carries no operand casts — compute wide, narrow on store
         const lE = this.convert({ code: ld, prec: PREC.atom, rep: 'val' }, eT, rT0);
         const wide = `${this.group(lE, PREC.atom)} ${base} ${this.group(operand(r0, PREC.add, 'right'), PREC.atom)}`;
         return st(this.convert({ code: wide, prec: PREC.atom, rep: 'val' }, rT0, eT).code);
       }
-      if (eT.bits >= 64) {
+      if (isBig(eT)) {
         const r = this.convert(r0, rT0, eT);
         return st(`${ld} ${base} ${this.group(operand(r, PREC.add, 'right'), PREC.atom)}`);
       }
@@ -5237,7 +5427,7 @@ export class Emitter {
       if (t.single) return { code: `${lv.code} = Math.fround(${lv.code} ${base} ${operand(r0, PREC.add, 'right').code})`, prec: PREC.assign, rep: 'val' };
       return { code: `${lv.code} ${op} ${operand(r0, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
     }
-    if (t.cls === 'int' && t.bits >= 64) {
+    if (t.cls === 'int' && isBig(t)) {
       const r = this.convert(r0, nodeType(n.inner[1]), t);
       if (base === '<<') return { code: `${lv.code} = ${this.wrapScalar(`${lv.code} << ${operand(r, PREC.shift, 'right').code}`, t)}`, prec: PREC.assign, rep: 'val' };
       return { code: `${lv.code} ${op} ${operand(r, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
@@ -5246,7 +5436,7 @@ export class Emitter {
     // carries no operand casts, so apply usual arithmetic conversions here —
     // compute in the 64-bit common type, narrow on store
     const rT = nodeType(n.inner[1]);
-    if (t.cls === 'int' && t.bits <= 32 && rT.cls === 'int' && rT.bits >= 64) {
+    if (t.cls === 'int' && t.bits <= 32 && rT.cls === 'int' && isBig(rT)) {
       const lE = this.convert({ code: lv.code, prec: PREC.atom, rep: 'val' }, nodeType(n.inner[0]), rT);
       const wide = { code: `${this.group(lE, PREC.atom)} ${base} ${this.group(operand(r0, PREC.add, 'right'), PREC.atom)}`, prec: PREC.atom, rep: 'val' };
       const narrowed = this.convert(wide, rT, t);
@@ -6849,6 +7039,13 @@ export class Emitter {
     return fn.call(this, n, indent);
   }
 
+  /** Empty inline assembly does nothing. Real instructions can't run here, so they stop the build. */
+  stmt_GCCAsmStmt(n, indent) {
+    const text = (this.source || '').slice(n.range?.begin?.offset ?? 0, (n.range?.end?.offset ?? 0) + 1);
+    if (/asm[\w\s]*\(\s*""\s*(:\s*)*("[^"]*"\s*)?\)/.test(text)) return [];
+    throw new Error(`inline assembly with instructions can't run in JS (${this.cref(n)})`);
+  }
+
   stmt_CompoundStmt(n, indent) {
     const lines = [`${indent}{`];
     lines.push(...this.emitBlockItems((n.inner || []).filter((x) => x && x.kind), indent + '    ', n));
@@ -6912,7 +7109,7 @@ export class Emitter {
       return [
         ...this.emitBlockItems([...items.slice(0, cuIdx), { ...items[cuIdx], inner: items[cuIdx].inner.map((d) => (d === v ? { ...d, inner: d.inner.filter((a) => a?.kind !== 'CleanupAttr') } : d)) }], indent),
         `${indent}let ${ok} = true;`, `${indent}try {`, ...this.emitBlockItems(rest, `${indent}    `),
-        `${indent}} catch (__e) { ${ok} = false; throw __e; } finally { if (${ok}) ${jsName(fn)}(${jsName(v.name)}); }`,
+        `${indent}} catch (__e) { ${ok} = false; throw __e; } finally { if (${ok}) ${jsName(fn)}(${arrayParts(desugar(v.type)) ? this.cptrCall('decay', jsName(v.name)) : jsName(v.name)}); }`,
       ];
     }
     const sjIdx = items.findIndex((s) => s.kind === 'IfStmt' && this.hasSetjmp((s.inner || []).filter((c) => c && c.kind)[0]));
@@ -6974,6 +7171,7 @@ export class Emitter {
 
   stmt_DeclStmt(n, indent) {
     const lines = [];
+    for (const d of n.inner || []) for (const { tmp, expr } of d?._vbSets || []) lines.push(`${indent}${tmp} = ${this.vlaSizeCode(expr)};`);
     for (const d of (n.inner || []).filter((c) => c && c.kind === 'VarDecl')) {
       if (d.storageClass === 'static') continue; // hoisted by emitFunction
       if (d.storageClass === 'extern') continue; // declaration only — the definition lives elsewhere
@@ -7093,7 +7291,7 @@ export class Emitter {
     }
     if (this.boxedVars?.has(d._rawName || d.name)) {
       this.usesCptr = true;
-      return `let ${d.name} = cptr.box(${init ? this.convert(this.emitExpr(init), nodeType(init), t).code : t.bits >= 64 ? '0n' : 0}${this.boxKindArg(d.type?.desugaredQualType || d.type?.qualType)});`;
+      return `let ${d.name} = cptr.box(${init ? this.convert(this.emitExpr(init), nodeType(init), t).code : isBig(t) ? '0n' : 0}${this.boxKindArg(d.type?.desugaredQualType || d.type?.qualType)});`;
     }
     if (init) return `let ${d.name} = ${this.convert(this.emitExpr(init), nodeType(init), t).code};`;
     return `let ${d.name};`;
@@ -7279,8 +7477,15 @@ export class Emitter {
       for (const it of before) {
         if (it.kind === 'DeclStmt') scoped.push(...this.stmt_DeclStmt({ ...it, inner: it.inner.map((d) => (d.kind === 'VarDecl' ? { ...d, inner: (d.inner || []).filter((c) => c?.kind?.endsWith('Attr')) } : d)) }, `${indent}    `));
       }
-      items = firstLabel < 0 ? [] : items.slice(firstLabel);
-      body = { ...body, inner: items };
+      // The goto plan is keyed by the original body node, and its indexes count
+      // the items this drops. Keep both reachable: looking the plan up on the
+      // copy finds nothing, which silently loses every label in the switch and
+      // the labeled break that a spliced `goto` needs (fill_zoo's throne_placed).
+      const dropped = items.length - (firstLabel < 0 ? 0 : items.length - firstLabel);
+      if (dropped) {
+        items = firstLabel < 0 ? [] : items.slice(firstLabel);
+        body = { ...body, inner: items, planBody: body.planBody || body, planDropped: (body.planDropped || 0) + dropped };
+      }
     }
     if (scoped.length) {
       return [`${indent}{`, ...scoped, ...this.stmt_SwitchStmt({ ...n, inner: [cond, body] }, `${indent}    `), `${indent}}`];
@@ -7336,7 +7541,8 @@ export class Emitter {
     // on, fell into the random-spot loop and made a second throne monster
     // (RNG desync on every maze-level court, e.g. Fort Ludios).  Label the
     // switch and let the spliced copy break to it (stmt_GotoStmt/BreakStmt).
-    const splicedBreak = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(body) || [])
+    const planBody = body.planBody || body;
+    const splicedBreak = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(planBody) || [])
       .filter((l) => l.dir === 'inline' && l.region?.length && l.region[l.region.length - 1].kind === 'BreakStmt');
     let swLabel = null;
     if (splicedBreak.length) {
@@ -7346,7 +7552,8 @@ export class Emitter {
     lines.push(`${indent}${swLabel ? swLabel + ': ' : ''}switch (${this.emitExpr(cond).code}) {`);
     const savedSplice = this.spliceBreak;
     this.spliceBreak = null; // a break inside this switch's own items is its own
-    const bodyPlan = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(body) || []);
+    const bodyPlan = this.smMode ? [] : (this.gotoPlan?.blockLabels.get(planBody) || [])
+      .map((l) => (body.planDropped ? { ...l, index: l.index - body.planDropped } : l));
     if (bodyPlan && bodyPlan.length) {
       lines.push(...this.emitLabeledItems(items, indent + '    ', bodyPlan, swItem));
     } else {
@@ -7416,7 +7623,7 @@ export class Emitter {
 
   jsdocType(qualType, desugared) {
     const t = parseType(qualType, desugared);
-    if (t.cls === 'int') return t.bits >= 64 ? 'CLongLong' : t.signed ? 'CInt' : 'CUInt';
+    if (t.cls === 'int') return isBig(t) ? 'CLongLong' : t.signed ? 'CInt' : 'CUInt';
     if (t.cls === 'f64') return 'CDouble';
     if (t.cls === 'void') return 'void';
     if (t.cls === 'ptr') return this.ptrDocType(qualType, desugared);
@@ -7595,12 +7802,14 @@ export class Emitter {
         if (el.includes('*') || this.isEnumType(el) || /\b(?:int|short|long|double|float|__u?int128(?:_t)?)\b/.test(el) || this.recordNameForType(el)) this.cptrArrays.add(this.staticLocals.get(v.id));
       }
     }
-    // C2JS-041: the goto lowerings don't know a cleanup's scope, so refuse, not skip it
     if (this.hasLabelOrGoto(body) && (function has(x) { return !!x && typeof x === 'object' && (x.kind === 'CleanupAttr' || (x.inner || []).some(has)); })(body)) {
-      throw new Error(`cleanup attribute in a function with labels (${this.cref(d)})`);
+      this.explicitCleanups(body);
     }
+    const savedTypedefs = new Map(FILE_TYPEDEFS), savedEnums = new Map(this.enumValues);
+    this.pendingTemps = [];
     this.expandCaseRanges(body);
     this.noteLocalEnums(body);
+    this.freezeVlaBounds(body, params);
     this.lowerUnstructuredSwitches(body);
     // goto with setjmp only works flattened: a longjmp can land anywhere a goto can
     const setjmpWithGoto = this.hasSetjmp(body) && this.hasLabelOrGoto(body);
@@ -7627,7 +7836,7 @@ export class Emitter {
     (function walk(n, self) {
       if (!n || typeof n !== 'object') return;
       // cleanup(f) gets the variable's address
-      if (n.kind === 'VarDecl' && n.inner?.some((a) => a?.kind === 'CleanupAttr')) {
+      if (n.kind === 'VarDecl' && n.inner?.some((a) => a?.kind === 'CleanupAttr' || a?.kind === 'CleanupBoxAttr')) {
         const q = desugar(n.type);
         if (!arrayParts(q) && (q.includes('*') || parseType(q).cls !== 'record' || self.isEnumType(q))) { self.boxedVars.add(n.name); (self.boxQual ||= new Map()).set(n.name, q); }
       }
@@ -7637,7 +7846,7 @@ export class Emitter {
           // strip qualifiers before the record test ("const struct x" IS a record).
           // Resolve typedefs with the shared desugar — the slim IR often has only
           // the alias name (e.g. "terrain"), which the raw regex can't classify.
-          const q = desugar(sub.type).replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').replace(/\s+/g, ' ').trim();
+          const q = desugar(sub.type).replace(/\bconst\b|\brestrict\b|\bvolatile\b/g, '').replace(/_BitInt\(\d+\)/g, 'int').replace(/\s+/g, ' ').trim();
           const nm = sub.name || sub.referencedDecl?.name;
           const isRecordValue = /^(struct|union)\b[^*]*$/.test(q)
             || (!q.includes('*') && !q.includes('[') && !q.includes('(')
@@ -7663,7 +7872,8 @@ export class Emitter {
     if (d.variadic) paramNames.push('...__va');
     lines.push(`${isStatic ? '' : 'export '}function ${jsName(d.name)}(${paramNames.join(', ')}) {`);
     const tempsAt = lines.length;
-    this.fnTemps = [];
+    this.fnTemps = [...this.pendingTemps];
+    for (const p of params) for (const { tmp, expr } of p._vbSets || []) lines.push(`    ${tmp} = ${this.vlaSizeCode(expr)};`);
     for (const p of params) {
       if (this.boxedVars.has(p.name)) {
         this.usesCptr = true;
@@ -7720,6 +7930,10 @@ export class Emitter {
     if (this.fnTemps.length) lines.splice(tempsAt, 0, `    let ${this.fnTemps.join(', ')};`);
     if (statics.length) lines.unshift(...statics.map((s) => this.hoistStaticLocal(s)), '');
     this.trivFnLines = null;
+    // a function's own typedefs and enums end with it
+    FILE_TYPEDEFS = savedTypedefs;
+    this.enumValues = savedEnums;
+    this._constObj = null;
     return lines;
   }
 
@@ -7834,7 +8048,7 @@ export class Emitter {
     }
     const kw = 'let';
     const t0 = parseType(q);
-    const zero = q.includes('*') ? 'null' : t0.bits >= 64 ? '0n' : '0';
+    const zero = q.includes('*') ? 'null' : isBig(t0) ? '0n' : '0';
     if (this.topBoxed?.has(cName) || this.externBoxed.has(cName)) {
       this.usesCptr = true;
       lines.push(`${exp}let ${d.name} = cptr.box(${init ? this.convert(this.emitExpr(init), nodeType(init), t0).code : zero}${this.boxKindArg(q)});`);
@@ -7866,6 +8080,15 @@ export class Emitter {
   }
 
   emitModule() {
+    // `int g; int g = 3;` is one object: the initialized definition, else the last
+    const defs = new Map();
+    for (const d of this.decls) {
+      if (d.kind !== 'VarDecl' || d.storageClass === 'extern') continue;
+      const cur = defs.get(d.name);
+      const hasInit = (x) => (x?.inner || []).some((c) => c && c.kind && !c.kind.endsWith('Attr') && !c.kind.endsWith('Comment'));
+      if (!cur || !hasInit(cur) || hasInit(d)) defs.set(d.name, d);
+    }
+    this.decls = this.decls.filter((d) => d.kind !== 'VarDecl' || d.storageClass === 'extern' || defs.get(d.name) === d);
     for (const d of this.decls) {
       if (d.kind === 'FunctionDecl') {
         if ((d.inner || []).some((c) => c && c.kind === 'CompoundStmt')) this.declared.add(d.name);

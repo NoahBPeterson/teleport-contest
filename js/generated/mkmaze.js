@@ -1421,7 +1421,7 @@ export function fixup_special() {
         x++,
         r = cptr.add(r, 1, 32)
     ) {
-        switch (cptr.ldI16o(r, $lev_region_rtype)) {
+        __sw_1: switch (cptr.ldI16o(r, $lev_region_rtype)) {
             case NHC.LR_BRANCH:
                 added_branch = 1;
                 {
@@ -1437,7 +1437,7 @@ export function fixup_special() {
                         cptr.ldI16o(r, $lev_region_rtype),
                         lev
                     );
-                    break;
+                    break __sw_1;
                 }
             case NHC.LR_PORTAL:
                 if (cptr.ld1s(cptr.ldPtro(r, $lev_region_rname)) >= 48 &&

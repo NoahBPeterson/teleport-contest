@@ -3775,7 +3775,7 @@ function garlic_breath(mtmp) {
  */
 /** C ref: eat.c:2099 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function fprefx(otmp) {
-    switch (cptr.ldI16o(otmp, $obj_otyp)) {
+    __sw_1: switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.EGG:
             if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_PYROLISK) {
                 if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
@@ -3807,7 +3807,7 @@ function fprefx(otmp) {
                                 ? __s_bland
                                 : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                     );
-                    break;  /* default */
+                    break __sw_1;  /* default */
                 }
             break;
         case NHC.FOOD_RATION:
@@ -3899,7 +3899,7 @@ function fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 );
-                break;
+                break __sw_1;
             }
         case NHC.MEATBALL:
         case NHC.MEAT_STICK:
@@ -3917,7 +3917,7 @@ function fprefx(otmp) {
                             ? __s_bland
                             : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
                 );
-                break;
+                break __sw_1;
             }
         case NHC.CLOVE_OF_GARLIC:
             if (((cptr.ldU64o(

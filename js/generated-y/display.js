@@ -7791,7 +7791,7 @@ function* wall_angle(lev) {
     let row;
     let col;
     let idx;
-    switch (cptr.ld1so(lev, $rm_typ)) {
+    __sw_1: switch (cptr.ld1so(lev, $rm_typ)) {
         case NHC.TUWALL:
             row = cptr.add(wall_matrix, 2, 20);
             seenv = (((seenv >>> 4 | (seenv << 4) >>> 0) >>> 0) & 255) >>> 0;  /* rotate to tdwall */
@@ -7857,7 +7857,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TLWALL:
             row = cptr.add(wall_matrix, 1, 20);
@@ -7922,7 +7922,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TRWALL:
             row = cptr.add(wall_matrix, 3, 20);
@@ -7987,7 +7987,7 @@ function* wall_angle(lev) {
                         break;
                 }
                 idx = cptr.ldI32o(row, col, 4);
-                break;
+                break __sw_1;
             }
         case NHC.TDWALL:
             row = cptr.add(wall_matrix, 0, 20);
@@ -8076,7 +8076,7 @@ function* wall_angle(lev) {
                             idx = NHC.S_stone;
                             break;
                     }
-                    break;
+                    break __sw_1;
                 }
             // @FallThrough
             ;
@@ -8209,7 +8209,7 @@ function* wall_angle(lev) {
             ;
             break;
         case NHC.CROSSWALL:
-            switch ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK) {
+            __sw_2: switch ((cptr.ldBits(cptr.add(lev, $rm_flags), 0, 5, 0) | 0) & NHM.WM_MASK) {
                 case 0:
                     if (seenv == 1)
                         idx = NHC.S_brcorn;
@@ -8265,7 +8265,7 @@ function* wall_angle(lev) {
 
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_TR:
                     row = cptr.add(cross_matrix, 2, 24);
@@ -8301,7 +8301,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BL:
                     row = cptr.add(cross_matrix, 0, 24);
@@ -8337,7 +8337,7 @@ function* wall_angle(lev) {
                             }
                             idx = cptr.ldI32o(row, col, 4);
                         }
-                        break;
+                        break __sw_2;
                     }
                 case NHM.WM_X_BR:
                     row = cptr.add(cross_matrix, 3, 24);

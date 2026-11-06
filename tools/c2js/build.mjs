@@ -945,7 +945,7 @@ function emitOneFile(name, srcFile, { prelude, crossImports } = {}) {
     if (!n || typeof n !== 'object') return;
     if (n.kind === 'UnaryOperator' && n.opcode === '&' && n.inner?.[0]?.kind === 'DeclRefExpr'
         && n.inner[0].referencedDecl?.kind === 'VarDecl') {
-      const q = n.inner[0].type?.desugaredQualType || n.inner[0].type?.qualType || '';
+      const q = (n.inner[0].type?.desugaredQualType || n.inner[0].type?.qualType || '').replace(/_BitInt\(\d+\)/g, 'int');
       const nm = n.inner[0].name || n.inner[0].referencedDecl?.name;
       if (nm && !/\[/.test(q) && !/\(/.test(q) && !/^(struct|union)\b[^*]*$/.test(q.trim())) externBoxed.add(nm);
     }

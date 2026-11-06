@@ -1,0 +1,2 @@
+#include <stdio.h>
+typedef int (*F)(int); static int a(int x){ return x+1; } int main(void){ void (*v)(void)=(void(*)(void))a; F f=(F)v; void *p=(void*)a; F g=(F)p; union{F f;void *v;}u; u.f=a; printf("%d %d %d %d\n",f(1),g(2),((F)u.v)(3),p==(void*)a); return 0; }

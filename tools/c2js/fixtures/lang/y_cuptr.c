@@ -1,0 +1,3 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct s{int a;}; static int got; static void fp(void *p){ void **q=p; free(*q); got++; } static void fs(struct s *p){ got+=p->a; } static void fa(char (*p)[4]){ got+=(*p)[1]; } int main(void){ { __attribute__((cleanup(fp))) void *m=malloc(4); struct s v __attribute__((cleanup(fs)))={7}; char b[4] __attribute__((cleanup(fa)))={0,3}; (void)m;(void)v;(void)b; } printf("%d\n",got); return 0; }

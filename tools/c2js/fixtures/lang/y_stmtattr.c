@@ -1,0 +1,2 @@
+#include <stdio.h>
+int main(void){ int t=0; switch(1){ case 1: t=1; __attribute__((fallthrough)); case 2: t+=2; break; } __extension__ long long v=1; _Pragma("clang diagnostic ignored \"-Wall\"") t+=v; lbl: __attribute__((unused)) t++; if(t<5) goto lbl; printf("%d\n",t); return 0; }

@@ -1,0 +1,2 @@
+#include <stdio.h>
+static const char *const t[]={"a","bb"}; static const char *const *pt=t; static const char *u[2][1]={{"x"},{"y"}}; static char *gs="mut"; static char ga[]="arr"; int main(void){ char c[]="abc"; c[0]='z'; ga[0]='q'; printf("%s %s %s %zu %s %s %c\n",pt[1],u[1][0],c,sizeof t,ga,gs,gs[1]); return 0; }

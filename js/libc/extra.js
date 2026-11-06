@@ -176,6 +176,11 @@ export function installExtraLibc(g) {
   g.__builtin___strlcpy_chk = (d, s, n) => g.strlcpy(d, s, n);
   g.__builtin___strlcat_chk = (d, s, n) => g.strlcat(d, s, n);
   g.setlocale = () => cptr.lit('C');
+  g.alloca = g.__builtin_alloca = (n) => cptr.malloc(n);
+  g.__builtin_alloca_with_align = (n) => cptr.malloc(n);
+  // Darwin's messages
+  const ERRS = ['Undefined error: 0', 'Operation not permitted', 'No such file or directory', 'No such process', 'Interrupted system call', 'Input/output error', 'Device not configured', 'Argument list too long', 'Exec format error', 'Bad file descriptor', 'No child processes', 'Resource deadlock avoided', 'Cannot allocate memory', 'Permission denied', 'Bad address', 'Block device required', 'Resource busy', 'File exists', 'Cross-device link', 'Operation not supported by device', 'Not a directory', 'Is a directory', 'Invalid argument', 'Too many open files in system', 'Too many open files', 'Inappropriate ioctl for device', 'Text file busy', 'File too large', 'No space left on device', 'Illegal seek', 'Read-only file system', 'Too many links', 'Broken pipe', 'Numerical argument out of domain', 'Result too large'];
+  g.strerror = (e) => cptr.lit(ERRS[Number(e)] ?? `Unknown error: ${Number(e)}`);
   g.system = () => -1;
   const onExit = [];
   g.atexit = (f) => { onExit.push(f); return 0; };
@@ -199,9 +204,22 @@ export function installExtraLibc(g) {
   g.ctime = (tp) => g.asctime(g.localtime(tp));
   // A program's whole life, for a standalone C program: exit() and returning from
   // main both end in the atexit handlers, last registered first.
-  g.__standaloneMain = (main, ...args) => {
+  g.__standaloneMain = (main) => {
     let rc = 0;
-    try { rc = main(...args); } catch (e) { if (e && e.__bootExit !== undefined) rc = e.__bootExit; else throw e; }
+    // nothing to read: stdin is at its end
+    const isIn = (f) => f && f.__stdin;
+    const orig = { fgets: g.fgets, fgetc: g.fgetc, getc: g.getc, feof: g.feof };
+    let inEof = false;
+    g.getchar = () => { inEof = true; return -1; };
+    g.fgets = (b, n, f) => { if (isIn(f)) { inEof = true; return null; } return orig.fgets(b, n, f); };
+    g.fgetc = (f) => { if (isIn(f)) { inEof = true; return -1; } return orig.fgetc(f); };
+    g.getc = (f) => { if (isIn(f)) { inEof = true; return -1; } return orig.getc(f); };
+    g.feof = (f) => (isIn(f) ? (inEof ? 1 : 0) : orig.feof(f));
+    g.scanf = () => { inEof = true; return -1; };
+    // argc, argv, envp, as a real process sees them
+    const argv = cptr.malloc(16), envp = cptr.malloc(8);
+    cptr.stPtr(argv, cptr.lit('program'));
+    try { rc = main(1, argv, envp); } catch (e) { if (e && e.__bootExit !== undefined) rc = e.__bootExit; else throw e; }
     try { g.__runAtexit(); } catch (e) { if (!(e && e.__bootExit !== undefined)) throw e; }
     return rc;
   };

@@ -1,0 +1,2 @@
+#include <stdio.h>
+static inline int f(int x){ return x+1; } inline int k(int x){ return x+2; } extern inline int k(int x); __attribute__((always_inline)) static inline int m(int x){ return x*2; } int main(void){ printf("%d %d %d\n",f(1),k(1),m(2)); return 0; }

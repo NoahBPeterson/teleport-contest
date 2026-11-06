@@ -386,7 +386,6 @@ export async function runBootGame(opts) {
   g.regfree = (preg) => { __regexps.delete(preg.buf); };
   g.__errnoBuf = new Uint8Array(4);
   g.__error = () => cptr.decay(g.__errnoBuf);
-  g.strerror = (e) => cptr.lit(`error ${Number(e)}`);
   g.perror = (s) => {
     const e = g.__errnoBuf[0] | (g.__errnoBuf[1] << 8) | (g.__errnoBuf[2] << 16) | (g.__errnoBuf[3] << 24);
     err(`${s ? cptr.cstr(s) : ''}: error ${e}\n`);
@@ -545,6 +544,16 @@ export async function runBootGame(opts) {
     return n;
   };
   g.close = (fd) => { fdFlush(fd); fds.delete(fd); return 0; };
+  // the template's XXXXXX become a name no open file has
+  g.mkstemp = (t) => {
+    const name = cptr.cstr(t), base = name.slice(0, -6);
+    for (let i = 0; ; i++) {
+      const p = `${base}${String(i).padStart(6, '0')}`;
+      if (realRead(p)) continue;
+      cptr.writeStr(t, p);
+      return openFd(p, 'w');
+    }
+  };
   g.lseek = (fd, off, whence) => {
     const f = fds.get(fd);
     if (!f) return -1;
@@ -593,6 +602,7 @@ export async function runBootGame(opts) {
   };
   g.mkdir = (p, mode) => 0;
   g.link = (a, b) => 0;
+  g.remove = (p) => g.unlink(p);
   g.rename = (a, b) => { const d = realRead(cptr.cstr(a)); if (d) { realWrite(cptr.cstr(b), d); overlay.delete(cptr.cstr(a)); } return 0; };
   g.rmdir = (p) => 0;
   g.opendir = (p) => null;
@@ -730,6 +740,7 @@ export async function runBootGame(opts) {
   g.fopen = (p, mode) => {
     p = cptr.cstr(p); mode = cptr.cstr(mode); __trace('fopen', p, mode);
     if (mode.startsWith('w')) { const fd = openFd(p, 'w'); return fd < 0 ? null : { __fd: fd }; }
+    if (mode.startsWith('a')) { const fd = openFd(p, 'a'); return fd < 0 ? null : { __fd: fd }; }
     const data = realRead(p);
     if (!data) return null;
     const fd = openFd(p, 'r');

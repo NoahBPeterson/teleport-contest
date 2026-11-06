@@ -1,0 +1,2 @@
+#include <stdio.h>
+static int a=1+2; static int b[]={1<<3,sizeof(int),'a'}; static int *p=&b[1]; static int *q=b+2; static char *s="hi"+1; static long d=0; static double f=1/2.0; static unsigned u=-1; static short sh=70000; static char c=300; struct t{int x;int *y;}; static struct t tt={2,&a}; static struct t *tp=&tt; int *const cp=&a; static int (*arrp)[3]=&b; int main(void){ printf("%d %d %d %d %s %ld %f %u %d %d %d %d %d %d\n",a,b[0],*p,*q,s,d,f,u,sh,c,*tt.y,tp->x,*cp,(*arrp)[2]); return 0; }

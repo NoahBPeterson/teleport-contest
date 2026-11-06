@@ -1,0 +1,2 @@
+#include <stdio.h>
+static int *f(void){ static int a[3]={1,2,3}; static int *p=a+1; return p++; } static char *g(void){ static char b[4]="ab"; b[0]++; return b; } static int h(void){ static struct{int a;}s={5}; return s.a++; } int main(void){ f(); printf("%d %s %s %d %d\n",*f(),g(),g(),h(),h()); return 0; }

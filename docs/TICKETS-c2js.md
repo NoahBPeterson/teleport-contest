@@ -75,25 +75,10 @@ file-scope initializer still fails.
 `(size_t) &((struct s *) 0)->f` fails with `MemberExpr .f on rep val unsupported`.
 The `offsetof()` macro works.
 
-### C2JS-013: other constructs the emitter refuses. IN PROGRESS
-Each needs a one-line repro and either support or a reason. From `throw new Error`
-in `emit.mjs`.
-
-Done, each with a program in `fixtures/lang/`:
-- array declared inside a switch body; switch whose body isn't a compound statement
-- `for` with several declarations
-- `setjmp` region holding a `break` or `continue` of an enclosing loop
-- goto into a loop, and mixed label kinds (`gotomix.c`)
-- `_Complex`, VLAs, statement expressions, `_Generic`, `_Bool`, anonymous members,
-  `#pragma pack` and `aligned`, integer-to-pointer round trips
-- `long double`, which is `double` on arm64 Darwin (`ldbl.c`)
-- `setjmp` anywhere, including loop conditions, and `setjmp` with `goto` (C2JS-028)
-- `__int128` (C2JS-029) and C11 atomics (C2JS-030)
-
-Still to try:
-- `array storage for "..." unsupported`, `InitListExpr on "..." unsupported`
-- `sizeof`, `loadFrom`, `storeTo`, field types: any type still unsupported
-- the remaining goto throws, which should all reach the state machine now
+### C2JS-013: other constructs the emitter refuses. DONE
+Every refusal is now either handled, or filed with its reason: C2JS-044, C2JS-045, and
+inline assembly. Each construct has a program in `fixtures/lang/`. The emitter's remaining
+`throw`s are internal checks, or `unsupported` for a type or node none of these reach.
 
 ### C2JS-014: Csmith with its remaining features on. DONE (b768f36)
 Unions, volatiles, packed structs and full-size programs all pass, 0 failed. What they
@@ -204,35 +189,118 @@ One small program per construct, 61 in all. 20 of the first 56 failed at first:
 - a struct type spelled only inside an expression (`sizeof(struct {...})`)
 - `for (struct {...} s = ...;;)`, statements before a switch's first label, `switch (x);`
 
-### C2JS-041: `cleanup` in a function with goto labels. OPEN (safely refused)
-The goto lowerings don't know a cleanup's scope, so a jump out of it would skip the
-call. This now fails the build rather than skipping the cleanup silently.
+### C2JS-041: `cleanup` in a function with goto labels. DONE (`y_cugoto.c`)
+try/finally can't cross the state machine, so in these functions each way out of a scope
+gets its calls written in: a goto, return, break, continue, or the end of the block.
+Clang rejects a jump into a cleanup's scope, so a goto only ever leaves scopes.
 
-### C2JS-042: a VLA pointer's row size after its bound changes. OPEN (silently wrong)
-`int (*p)[n] = a; n = 5; p[1]` scales by 5, because the row size is recomputed from
-`n`. C fixes it when the type is declared. `sizeof` of a declared VLA is already fixed.
-Needs a hidden copy of the bound at each declaration of a VLA type.
+### C2JS-042: a VLA's size after its bound changes. DONE (`vb.c`, `vb2.c`)
+C fixes a VLA type's size when the type is declared. A bound that's written later, or has
+a call in it, is now captured in a hidden variable at the declaration, and the types of
+expressions flowing from that declaration name it. `sizeof(int[n])` also used the bound
+as its operand and returned 4. Bounds that never change emit what they did.
 
-## Can't be matched without a decision
+### C2JS-043: more found by a second probe batch. DONE (`fixtures/lang/y_*.c`)
+- pointers through bytes: `memcpy(&q, &p, 8)`, `union { int *p; long l; }`
+- `int g; int g = 3;`, and `int a[]; int a[2] = {...};`
+- `main(argc, argv, envp)` in a standalone program, and stdin at end of file
+- `scanf` `%f`, `%e`, `%g`; `printf` `%a`, `%n`, `%ls`, `%lc`, `%5%`. Darwin's `%a`
+  doesn't round to even: it rounds up past 8, or at 8 if the digit after that is odd
+- `alloca`, `mkstemp`, `remove`, `fopen` in append mode, and Darwin's `strerror` text
+- `_BitInt(N)`, `__fp16`, `_Float16`, `_Alignof` of a variable with `aligned`
+- `__asm__("")`, which does nothing
 
-### C2JS-036: `sin`, `cos`, `tan` and friends differ from Apple's libm in the last bit. OPEN
-Measured on 2,000 inputs each, bit for bit, JS `Math` against Apple's:
+### C2JS-044: GCC vector types. OPEN (safely refused)
+`typedef int v4 __attribute__((vector_size(16)));` fails with `InitListExpr ... unsupported`.
+Doable as an element-wise value type, but it's a new kind of value in the emitter.
+NetHack doesn't use them.
 
-| Differ | Functions |
-|---|---|
-| 0% | `sqrt`, `pow`, `fmod` |
-| under 2% | `log2` (0.3%) |
-| 3-10% | `log` 3.8, `sin` 5.0, `cos` 5.2, `atan` 5.1, `exp` 8.5, `asin` 8.4, `log10` 7.1, `acosh` 6.1, `asinh` 9.9, `log1p` 9.6, `expm1` 9.9 |
-| 10-25% | `cbrt` 10.6, `tanh` 11.4, `atanh` 14.6, `acos` 15.8, `atan2` 18.8, `cosh` 23.0 |
-| over 25% | `sinh` 27.4, `tan` 36.6, `hypot` 35.8 |
+### C2JS-045: Apple blocks. OPEN (safely refused)
+`^(int x) { return x + k; }` fails with `unsupported node kind BlockExpr`. Needs closures
+that copy their captures, with `__block` shared. NetHack doesn't use them.
 
-Against exact values, on 600 inputs, Apple's are correctly rounded this often: `log`
-and `sinh` 100%, `exp`, `log10`, `cosh` 99.8%, `sin` 96.5%, `cos` 95.8%, `cbrt` 94.8%,
-`tan` 61.7%. So correct rounding would get `exp`, `log` and the hyperbolics to about
-99.8%, but no further. An exact match needs Apple's algorithms.
+### WONTFIX: inline assembly with instructions
+`__asm__("nop")` fails the build. It's machine code for a CPU the JS isn't running on.
 
-This doesn't affect NetHack: its C calls none of these, and no Lua script it ships uses
-`math.sin`, `exp`, `log` or the like.
+### C2JS-046: a `goto` spliced into a loop inside a switch left only the loop. DONE
+Introduced by b768f36 and pushed. To support declarations before a switch's first `case`,
+`stmt_SwitchStmt` replaced the body with a copy, even when nothing was dropped. The goto
+plan is keyed by the original node, so every switch lost its plan, including the labeled
+break that a spliced `goto` needs. `fill_zoo`'s `goto throne_placed` then made a second
+throne monster on maze-level courts, as in Fort Ludios.
+
+The 171 sessions, the gates and Csmith all passed. Only the wider session set failed, with
+7 RNG divergences (knox, forced-arrival, level-reset). Now the copy is made only when items
+are dropped, and the plan is looked up on the original node with its indexes shifted.
+`fixtures/lang/switch_goto_splice.c` fails without the fix.
+
+## Where C itself depends on the platform
+
+### C2JS-036: arm64 and x86-64 C disagree. Documented; no effect on NetHack
+Measured three ways: Darwin arm64 natively, Darwin x86-64 under Rosetta, and Windows
+x86-64 (mingw) under Wine. The port matches arm64, where the official sessions come from.
+
+**NetHack, end to end.** The recorder built as x86-64 and run under Rosetta reproduces
+all 397 sessions in `sessions/` and `sessions-extra/`: every RNG call, screen and cursor.
+The one line that differs anywhere is the recorder's temporary `$HOME` on the `?g` help
+screen, which is a path, not a platform effect.
+
+**C language.** Of 162 test programs, 158 print the same on both. The others:
+
+| | arm64 | x86-64 |
+|---|---|---|
+| `a*b + c` | one rounding (`fmadd`) | two roundings (no FMA in the default target) |
+| `sizeof(long double)` | 8, same as `double` | 16, x87 80-bit |
+| floating to integer, out of range or NaN | saturates; NaN gives 0 | see below |
+
+Floating to integer is undefined behavior in C when the value doesn't fit, so these are
+what each compiler happened to produce, not guarantees:
+
+| Input, cast to `int` / `unsigned` / `long long` / `unsigned long long` / `signed char` / `unsigned char` | arm64 | x86-64 (Rosetta) |
+|---|---|---|
+| `1e20`, `1e30` | 2147483647 / 4294967295 / LLONG_MAX / ULLONG_MAX / -1 / 255 | INT_MIN / 0 / LLONG_MIN / 9223372036854775808 / 0 / 0 |
+| `-1e20` | INT_MIN / 0 / LLONG_MIN / 0 / 0 / 0 | INT_MIN / 0 / LLONG_MIN / 9223372036854775808 / 0 / 0 |
+| `3e9` | 2147483647 / 3000000000 / 3000000000 / 3000000000 / -1 / 0 | INT_MIN / 3000000000 / 3000000000 / 3000000000 / 0 / 0 |
+| `-1.5` | -1 / 0 / -1 / 0 / -1 / 0 | -1 / 4294967295 / -1 / 18446744073709551615 / -1 / 255 |
+| NaN | all 0 | INT_MIN / 0 / LLONG_MIN / 9223372036854775808 / 0 / 0 |
+| `300.7` | 300 / 300 / 300 / 300 / 44 / 44 | the same |
+
+On arm64 a cast to a narrow type saturates to 32 bits and then truncates, so `(signed char)1e20`
+is -1, not 127. Windows x86-64 under Wine matched the x86-64 column except for
+`(unsigned long long)` of `1e20` and `1e30`, which gave 0.
+
+**The one float in NetHack's logic.** `line_dist_coord` in `selvar.c` has
+`x = x1 + lu * px`. Over all 4,738,809,600 map coordinates, fused and unfused give a
+different point for 2,991,161 of them (0.06%). It's only reachable from Lua's
+`selection.gradient`, which none of the 141 shipped scripts call; only
+`test/test_sel.lua` does. So a custom script run with `#wizloadlua` could tell the
+platforms apart, and a normal game can't.
+
+**libm, last bit.** Disagreements out of 2,000 inputs per function:
+
+| Function | arm64 vs x86-64 | arm64 vs Windows | JS vs arm64 | JS vs x86-64 | JS vs Windows |
+|---|---|---|---|---|---|
+| `sin` | 409 | 90 | 95 | 352 | 27 |
+| `cos` | 405 | 88 | 99 | 346 | 29 |
+| `tan` | 146 | 749 | 750 | 763 | 31 |
+| `asin` | 22 | 171 | 167 | 167 | 26 |
+| `acos` | 16 | 320 | 315 | 317 | 15 |
+| `atan` | 10 | 101 | 97 | 93 | 4 |
+| `atan2` | 0 | 374 | 377 | 377 | 7 |
+| `exp` | 3 | 3 | 180 | 181 | 181 |
+| `log` | 0 | 2 | 67 | 67 | 69 |
+| `log10` | 0 | 10 | 153 | 153 | 151 |
+| `log2` | 0 | 0 | 3 | 3 | 3 |
+| `pow` | 2 | 4 | 0 | 2 | 4 |
+| `hypot` | 117 | 194 | 694 | 719 | 688 |
+| `cbrt` | 2 | 232 | 232 | 232 | 0 |
+| `sinh` | 3 | 539 | 539 | 538 | 2 |
+| `cosh` | 6 | 445 | 488 | 484 | 179 |
+| `tanh` | 8 | 187 | 238 | 236 | 159 |
+| `sqrt`, `fmod` | 0 | 0 | 0 | 0 | 0 |
+
+So C has no single answer here. NetHack's C calls none of these except through Lua's math
+library, and no shipped script uses them, so the port leaves JS `Math` as it is.
 
 ## Test infrastructure
 

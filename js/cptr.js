@@ -89,7 +89,8 @@ function __boxToBytes(p, dv) {
     case 'i8': case 'u8': case 'i16': case 'u16': case 'u32': dv.setInt32(0, Number(v ?? 0) | 0, true); return;
     case 'i32': dv.setInt32(0, (v ?? 0) | 0, true); return;
   }
-  if (typeof v === 'bigint') dv.setBigInt64(0, BigInt.asIntN(64, v), true);
+  if (v && typeof v === 'object') { const b = new Uint8Array(8); stPtr({ buf: b, off: 0 }, v); for (let i = 0; i < 8; i++) dv.setUint8(i, b[i]); }
+  else if (typeof v === 'bigint') dv.setBigInt64(0, BigInt.asIntN(64, v), true);
   else if (Number.isInteger(v ?? 0)) { dv.setInt32(0, (v ?? 0) | 0, true); dv.setInt32(4, (v ?? 0) < 0 ? -1 : 0, true); }
   else dv.setFloat64(0, v, true);
 }
@@ -108,6 +109,7 @@ function __bytesToBox(p, dv) {
     case 'i32': p.v = dv.getInt32(0, true); return;
   }
   const like = p.v;
+  if (like && typeof like === 'object') { const b = new Uint8Array(8); for (let i = 0; i < 8; i++) b[i] = dv.getUint8(i); p.v = ldPtr({ buf: b, off: 0 }); return; }
   if (typeof like === 'bigint') p.v = dv.getBigInt64(0, true);
   else if (Number.isInteger(like ?? 0)) p.v = dv.getInt32(0, true);
   else p.v = dv.getFloat64(0, true);
@@ -333,7 +335,11 @@ export function fromAddr(u) {
   const n = Number(u);
   const base = n - (n % (1 << 26));
   const key = __bufById.get(base);
-  if (key === undefined) return u;
+  if (key === undefined) {
+    // a pointer's bytes read as an integer (`union { int *p; long l; }`)
+    const r = n >= 2 ** 40 ? __ptrRegistry[n - 2 ** 40] : undefined;
+    return r !== undefined ? r : u;
+  }
   if (typeof key === 'function' || key.isBox) return key;
   return { buf: key, off: n - base };
 }
@@ -489,6 +495,32 @@ export function st128(p, v) {
   stU64(p, BigInt.asUintN(64, v));
   stU64(add(p, 8), BigInt.asUintN(64, v >> 64n));
   return v;
+}
+
+/** _BitInt: `size` little-endian bytes holding a `bits`-wide value. */
+export function ldBitInt(p, size, bits, signed) {
+  if (p.isBox) return BigInt(p.v);
+  let v = 0n;
+  for (let i = size - 1; i >= 0; i--) v = (v << 8n) | BigInt(p.buf[p.off + i] ?? 0);
+  return signed ? BigInt.asIntN(bits, v) : BigInt.asUintN(bits, v);
+}
+export function stBitInt(p, size, bits, signed, v) {
+  const x = signed ? BigInt.asIntN(bits, BigInt(v)) : BigInt.asUintN(bits, BigInt(v));
+  if (p.isBox) { p.v = x; return x; }
+  let u = BigInt.asUintN(size * 8, x);
+  for (let i = 0; i < size; i++) { p.buf[p.off + i] = Number(u & 0xFFn); u >>= 8n; }
+  return x;
+}
+/** __fp16 and _Float16. */
+export function ldF16(p) {
+  if (p.isBox) return p.v;
+  return new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 2).getFloat16(0, true);
+}
+export function stF16(p, v) {
+  const x = Math.f16round(v);
+  if (p.isBox) { p.v = x; return x; }
+  new DataView(p.buf.buffer, p.buf.byteOffset + p.off, 2).setFloat16(0, x, true);
+  return x;
 }
 
 /** 16-bit signed load (C short/int16_t), little-endian. @param {CPtr} p @returns {number} */
@@ -1348,7 +1380,8 @@ export function memcpy(dst, src, n) {
   if (src && src.isBox) {
     const tmp = new Uint8Array(n);
     const v = src.v;
-    if (v && v.buf !== undefined) { const id = __ptrRegistry.indexOf(v) + 1; let x = BigInt(id); for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
+    if (v === null || (v && typeof v === 'object')) stPtr({ buf: tmp, off: 0 }, v);
+    else if (v && v.buf !== undefined) { const id = __ptrRegistry.indexOf(v) + 1; let x = BigInt(id); for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
     else if (typeof v === 'bigint') { let x = v; for (let i = 0; i < n; i++) { tmp[i] = Number(x & 0xFFn); x >>= 8n; } }
     else { let x = Number(v) >>> 0; for (let i = 0; i < n; i++) { tmp[i] = x & 0xFF; x >>>= 8; } }
     src = { buf: tmp, off: 0 };
@@ -1356,7 +1389,8 @@ export function memcpy(dst, src, n) {
   if (dst && dst.isBox) {
     const tmp = alloc(n);
     const r = memcpy(tmp, src, n);
-    if (n <= 4) { let x = 0; for (let i = n - 1; i >= 0; i--) x = (x << 8) | tmp.buf[i]; dst.v = x; }
+    if (n === 8) dst.v = ldPtr(tmp); // an int box is 4 bytes and a long has a kind, so this is a pointer
+    else if (n <= 4) { let x = 0; for (let i = n - 1; i >= 0; i--) x = (x << 8) | tmp.buf[i]; dst.v = x; }
     else { let x = 0n; for (let i = Math.min(n, 8) - 1; i >= 0; i--) x = (x << 8n) | BigInt(tmp.buf[i]); dst.v = x; }
     return r;
   }
@@ -1406,7 +1440,7 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
 // Same pattern the old f.replace() used; compileFormat drives it with exec so
 // the match set is identical (a '%' that starts no valid conversion is left in
 // the literal text, exactly as replace() left it).
-const __FMT_RE = /%([-+ #0]*)(\*|\d*)(?:\.(\*|\d*))?(hh|h|ll|l|z|t|j|L)?([diouxXscfeEgGp%])/g;
+const __FMT_RE = /%([-+ #0]*)(\*|\d*)(?:\.(\*|\d*))?(hh|h|ll|l|z|t|j|L)?([diouxXscfeEgGp%aAn])/g;
 const __PREC_NONE = -1;   // no '.' at all, or a bare '.' ("%.d")
 const __PREC_STAR = -2;   // '.*' — read from an int argument at call time
 const __fmtCache = new Map();
@@ -1420,7 +1454,7 @@ function compileFormat(f) {
     if (m.index > last) parts.push(f.slice(last, m.index));
     last = m.index + m[0].length;
     const spec = m[5];
-    if (spec === '%') { parts.push('%'); continue; }
+    if (spec === '%' && !m[2]) { parts.push('%'); continue; }
     const flags = m[1], width = m[2], prec = m[3];
     parts.push({
       spec,
@@ -1437,7 +1471,8 @@ function compileFormat(f) {
       alt: flags.indexOf('#') >= 0,
       intSpec: 'diouxX'.indexOf(spec) >= 0,
       diSpec: spec === 'd' || spec === 'i',
-      floatSpec: 'feEgG'.indexOf(spec) >= 0,
+      floatSpec: 'feEgGaA'.indexOf(spec) >= 0,
+      wide: m[4] === 'l',
     });
   }
   if (last < f.length) parts.push(f.slice(last));
@@ -1478,7 +1513,41 @@ function __fmtExp(x, prec) {
 }
 
 /** %f %e %g and uppercase forms for a finite or non-finite double. */
+function __fmtHexFloat(x, prec, alt, upper) {
+  let r;
+  if (x !== x) r = 'nan';
+  else if (Math.abs(x) === Infinity) r = x < 0 ? '-inf' : 'inf';
+  else {
+    const sign = x < 0 || Object.is(x, -0) ? '-' : '';
+    const dv = new DataView(new ArrayBuffer(8));
+    dv.setFloat64(0, Math.abs(x));
+    const bits = dv.getBigUint64(0);
+    let e = Number(bits >> 52n), frac = bits & 0xFFFFFFFFFFFFFn, lead = 1n;
+    if (e === 0 && frac === 0n) { lead = 0n; e = 0; } else if (e === 0) {
+      // Darwin normalizes a subnormal
+      e = -1022;
+      while (!(frac & (1n << 52n))) { frac <<= 1n; e--; }
+      frac &= 0xFFFFFFFFFFFFFn;
+    } else e -= 1023;
+    let digits = frac.toString(16).padStart(13, '0');
+    if (prec !== __PREC_NONE && prec < 13) {
+      // Darwin's rule (hdtoa's dorounding): up if the next hex digit is over 8, or is
+      // 8 with an odd digit after it. It's not round-to-even.
+      const shift = BigInt((13 - prec) * 4), all0 = (lead << 52n) | frac;
+      const next = Number((all0 >> (shift - 4n)) & 0xFn), after = shift >= 8n ? Number((all0 >> (shift - 8n)) & 0xFn) : 0;
+      let all = all0 >> shift;
+      if (next > 8 || (next === 8 && (after & 1))) all += 1n;
+      lead = all >> BigInt(prec * 4);
+      digits = prec ? (all & ((1n << BigInt(prec * 4)) - 1n)).toString(16).padStart(prec, '0') : '';
+    } else if (prec !== __PREC_NONE) digits = digits.padEnd(prec, '0');
+    else digits = digits.replace(/0+$/, '');
+    r = `${sign}0x${lead}${digits || alt ? '.' : ''}${digits}p${e < 0 ? '-' : '+'}${Math.abs(e)}`;
+  }
+  return upper ? r.toUpperCase() : r;
+}
+
 function __fmtFloat(spec, x, prec, alt) {
+  if (spec === 'a' || spec === 'A') return __fmtHexFloat(x, prec, alt, spec === 'A');
   const upper = spec === 'E' || spec === 'G';
   let s;
   if (!Number.isFinite(x)) s = Number.isNaN(x) ? 'nan' : x < 0 ? '-inf' : 'inf';
@@ -1527,9 +1596,15 @@ export function sprintfCore(fmt, args) {
       const p = Number(args[ai++]) | 0;
       prec = p < 0 ? __PREC_NONE : p;      // negative precision == omitted
     }
-    const a = args[ai++];
+    const a = spec === '%' ? undefined : args[ai++];
     let s;
-    if (spec === 's') { s = cstr(a); if (prec !== __PREC_NONE) s = s.slice(0, prec); }
+    if (spec === 'n') { stI32(a, out.length); continue; }
+    if (spec === '%') s = '%';
+    else if (spec === 's' && it.wide) { // %ls: a wide string
+      s = '';
+      for (let i = 0; ; i += 4) { const c = ldI32(add(a, i)); if (c === 0 || (prec !== __PREC_NONE && s.length >= prec)) break; s += String.fromCharCode(c & 0xFF); }
+    }
+    else if (spec === 's') { s = cstr(a); if (prec !== __PREC_NONE) s = s.slice(0, prec); }
     else if (spec === 'p') s = a == null ? '0x0' : `0x${(typeof a === 'bigint' || typeof a === 'number' ? BigInt(a) : addr(a)).toString(16)}`;
     else if (spec === 'c') s = String.fromCharCode(Number(a) & 0xFF);
     else if (it.floatSpec) s = __fmtFloat(spec, Number(a), prec, it.alt);
