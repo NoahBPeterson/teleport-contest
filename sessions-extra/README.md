@@ -198,3 +198,28 @@ trap type, polymorphed combat, artifacts, deaths and the end of the game.
 
 Every one was recorded from the C build, and matches on `tools/segdiff.mjs` and
 `frozen/ps_test_runner.mjs`. No port bug turned up from these.
+
+## The `env-*` family — how the game is launched and fed input
+
+These pin what happens before and around play: the launch arguments, the
+saved-game menu, and how bytes reach the game. Each one fails on the code before
+the fix it guards (commit `5b37c5f`), which was confirmed by scoring it there.
+They come from recipes written for this repo, recorded from the C build.
+
+Their `nethackrc` ends with a `# recorder-home:` comment naming the recorder's
+throwaway home folder, which help and config-error screens print. It holds no
+username or machine name.
+
+| file | what it pins |
+|------|--------------|
+| `env-restore-menu-dismiss.session.json` | no name set, one save: the saved-game menu appears and is dismissed |
+| `env-restore-menu-pick.session.json` | no name set, one save: picking the save from the menu restores it |
+| `env-restore-menu-two-saves.session.json` | two saves: the menu lists both and the second is picked |
+| `env-rc-name-line.session.json` | launch is `nethack -u <name>`, and a `NAME=` config line is handled correctly alongside it |
+| `env-name-nonascii-restore.session.json` | a non-ASCII name is UTF-8 through config, save, menu and restore |
+| `env-key-latin1.session.json` | a 2-byte UTF-8 key (`é`) reaches the game as two reads |
+| `env-key-emoji.session.json` | a 4-byte UTF-8 key from a UTF-16 surrogate pair |
+| `env-seed-u64max.session.json` | seed 2^64-1 is parsed as C's `strtoul` parses it, not through a JS number |
+
+`key32`, a 3-byte key (`€`), is deliberately absent: it still misses 4 RNG calls
+(ticket C2JS-060).
