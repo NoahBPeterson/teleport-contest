@@ -5844,7 +5844,7 @@ function zap_map(x, y, obj) {
         /*
          * Probing, either up/down or lateral.
          */
-        let ltyp;
+        let ltyp__2;
         let oldtyp;
         let oldglyph;
 
@@ -5857,9 +5857,9 @@ function zap_map(x, y, obj) {
             /* TODO: ought to give some message */
             learn_it.v = 1;
         }
-        ltyp = schar(SURFACE_AT(x, y));
+        ltyp__2 = schar(SURFACE_AT(x, y));
         /* secret door gets revealed, converted into regular door */
-        if (ltyp == NHC.SDOOR) {
+        if (ltyp__2 == NHC.SDOOR) {
             cvt_sdoor_to_door(cptr.add(
                 cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
                 y,
@@ -5896,7 +5896,7 @@ function zap_map(x, y, obj) {
             /* secret corridor likewise, although only ones within view will
                still be secret; for the !cansee(x,y) case, show_map_spot()
                above has already converted the spot to regular corridor */
-        } else if (ltyp == NHC.SCORR) {
+        } else if (ltyp__2 == NHC.SCORR) {
             cptr.st1o3(
                 svl,
                 x,
@@ -5913,7 +5913,7 @@ function zap_map(x, y, obj) {
 
             /* if on or over ice, describe it ("solid ice", "thin ice", &c);
                likewise for furniture in case hero is levitating while blind */
-        } else if (ltyp == NHC.ICE || IS_FURNITURE(ltyp)) {
+        } else if (ltyp__2 == NHC.ICE || IS_FURNITURE(ltyp__2)) {
             if (cptr.ldI32o(u, $you_dz) > 0) {
                 force_decor(1);
                 learn_it.v = 1;

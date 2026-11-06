@@ -302,8 +302,8 @@ function init_registry(L, g) {
     {
         /* registry[LUA_RIDX_MAINTHREAD] = L */
         let io = (cptr.add(cptr.ldPtro(registry, $Table_array), 0, $sizeof_TValue));
-        let x_ = (L);
-        cptr.stPtr(((io)), ((((x_)))));
+        let x___2 = (L);
+        cptr.stPtr(((io)), ((((x___2)))));
         (cptr.st1o((io), $TValue_tt_, 72));
         (void L, (void 0));
     }

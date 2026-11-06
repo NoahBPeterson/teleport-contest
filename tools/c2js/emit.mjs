@@ -7239,11 +7239,25 @@ export class Emitter {
    * local ARRAY still needs its storage created at the decl site. Returns
    * true when the decl was array-typed and an assignment was emitted.
    */
+  /**
+   * `char x[32] = "ab"` has 32 bytes, not the literal's 3. Writes past the end of a
+   * typed array vanish silently, so a short allocation truncates later strcpy/strcat
+   * without any error. A literal longer than the array loses its tail (`char h[3] = "abc"`).
+   */
+  strArrayStorage(q, init) {
+    const lit = this.cStringToJs(init.value);
+    const n = Number(arrayParts(q)?.count);
+    // the literal's own bytes: clang types it as the array, whatever its length
+    const have = (0, eval)(lit).length + 1;
+    if (!Number.isInteger(n) || n <= 0 || have === n) return this.cptrCall('bytes', lit);
+    return this.cptrCall('bytesN', lit, String(n));
+  }
+
   emitHoistedArrayAssign(d, q, init, indent, lines) {
     if (!arrayParts(q)) return false;
     const nm = jsName(d.name);
     if (init && isNarrowStr(init)) {
-      lines.push(`${indent}${nm} = ${this.cptrCall('bytes', this.cStringToJs(init.value))};`);
+      lines.push(`${indent}${nm} = ${this.strArrayStorage(q, init)};`);
       return true;
     }
     const packed = this.emitBytePackedArray(nm, q, init, `${nm} = `);
@@ -7251,6 +7265,47 @@ export class Emitter {
     if (init) lines.push(`${indent}${nm} = ${this.emitExpr(init).code};`);
     else lines.push(`${indent}${nm} = ${this.arrayStorage(q)};`);
     return true;
+  }
+
+  /**
+   * The per-function tables (boxedVars, boxQual, recordLocals, cptrArrays) are keyed
+   * by name, so two locals in sibling blocks that share a name but not a type confuse
+   * them: `{ long x; f(&x); } { int x[4]; g(x); }` read the array through `x.v`.
+   * Give the later one its own name.
+   */
+  renameConflictingLocals(body, params) {
+    const seen = new Map(params.map((p) => [p.name, desugar(p.type)]));
+    const renamed = new Map();
+    const used = new Set(seen.keys());
+    (function names(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'VarDecl' && n.name) used.add(n.name);
+      for (const c of n.inner || []) names(c);
+    })(body);
+    (function decls(n) {
+      if (!n || typeof n !== 'object') return;
+      if (n.kind === 'VarDecl' && n.name && n.storageClass !== 'static' && n.storageClass !== 'extern') {
+        const q = desugar(n.type);
+        if (!seen.has(n.name)) seen.set(n.name, q);
+        else if (seen.get(n.name) !== q) {
+          let k = 2;
+          while (used.has(`${n.name}__${k}`)) k++;
+          const nn = `${n.name}__${k}`;
+          used.add(nn);
+          seen.set(nn, q);
+          renamed.set(n.id, nn);
+          n.name = nn;
+        }
+      }
+      for (const c of n.inner || []) decls(c);
+    })(body);
+    if (!renamed.size) return;
+    (function refs(n) {
+      if (!n || typeof n !== 'object') return;
+      const nn = n.referencedDecl?.id && renamed.get(n.referencedDecl.id);
+      if (nn) { n.referencedDecl.name = nn; if (n.name) n.name = nn; }
+      for (const c of n.inner || []) refs(c);
+    })(body);
   }
 
   localVarDecl(d) {
@@ -7268,7 +7323,7 @@ export class Emitter {
       // this local shadows any same-named array: its own storage decides below
       this.cptrArrays.delete(d.name);
       this.cptrArrays.delete(rawName);
-      if (init && isNarrowStr(init)) return `let ${d.name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))};`;
+      if (init && isNarrowStr(init)) return `let ${d.name} = ${this.strArrayStorage(q, init)};`;
       const packed = this.emitBytePackedArray(d.name, q, init, `let ${d.name} = `);
       if (packed) return packed.join(' ');
       if (init) return `let ${d.name} = ${this.emitExpr(init).code};`;
@@ -7749,7 +7804,7 @@ export class Emitter {
     }
     if (arrayParts(q)) {
       const arr = arrayParts(q);
-      if (init && isNarrowStr(init)) return `const ${name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
+      if (init && isNarrowStr(init)) return `const ${name} = ${this.strArrayStorage(q, init)}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
       const packed = this.emitBytePackedArray(name, q, init, `const ${name} = `);
       if (packed) return packed.join('\n') + ` /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
       if (init) return `const ${name} = ${this.emitExpr(init).code}; /** C ref: ${this.cref(d)} — ${this.typeNote(q)} (function-static) */`;
@@ -7807,6 +7862,7 @@ export class Emitter {
     }
     const savedTypedefs = new Map(FILE_TYPEDEFS), savedEnums = new Map(this.enumValues);
     this.pendingTemps = [];
+    this.renameConflictingLocals(body, params);
     this.expandCaseRanges(body);
     this.noteLocalEnums(body);
     this.freezeVlaBounds(body, params);
@@ -8037,7 +8093,7 @@ export class Emitter {
       const arr = arrayParts(q);
       if (init && isNarrowStr(init)) {
         // char arr[] = "...": modifiable byte storage like any other char array
-        lines.push(`${exp}const ${d.name} = ${this.cptrCall('bytes', this.cStringToJs(init.value))};`);
+        lines.push(`${exp}const ${d.name} = ${this.strArrayStorage(q, init)};`);
         return lines;
       }
       const packed = this.emitBytePackedArray(d.name, q, init, `${exp}const ${d.name} = `);

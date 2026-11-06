@@ -291,7 +291,7 @@ function classify(toks, moduleNames) {
     if (first.v === 'cptr' && txt(1) === '.') {
         const f = txt(2);
         if (f === 'alloc' || f === 'malloc') return { kind: KIND.ARENA, detail: f };
-        if (f === 'bytes') return { kind: KIND.BYTES, detail: f };
+        if (f === 'bytes' || f === 'bytesN') return { kind: KIND.BYTES, detail: f };
         if (f === 'lit') return { kind: KIND.LIT, detail: f };
         if (f === 'box' || f === 'boxProp') return { kind: KIND.BOX, detail: f };
         if (f === 'decay') return { kind: KIND.DECAY, detail: f };

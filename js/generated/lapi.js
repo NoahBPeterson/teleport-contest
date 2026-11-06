@@ -2513,17 +2513,17 @@ function aux_upvalue(fi, n, val, owner) {
             }
         case 6:
             {
-                let f = ((((((cptr.ldPtr(((fi)))))))));
+                let f__2 = ((((((cptr.ldPtr(((fi)))))))));
                 let name;
-                let p = cptr.ldPtro(f, $LClosure_p);
+                let p = cptr.ldPtro(f__2, $LClosure_p);
                 if (!(((((n)) >>> 0) - 1) >>> 0 < (((cptr.ldI32o(p, $Proto_sizeupvalues))) >>> 0)))
                     return null;  /* 'n' not in [1, p->sizeupvalues] */
                 cptr.stPtr(
                     val,
-                    cptr.ldPtro(cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v)
+                    cptr.ldPtro(cptr.ldPtro2(f__2, (n - 1) | 0, 8, $LClosure_upvals), $UpVal_v)
                 );
                 if (owner)
-                    cptr.stPtr(owner, ((((cptr.ldPtro2(f, (n - 1) | 0, 8, $LClosure_upvals))))));
+                    cptr.stPtr(owner, ((((cptr.ldPtro2(f__2, (n - 1) | 0, 8, $LClosure_upvals))))));
                 name = cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), (n - 1) | 0, $sizeof_Upvaldesc);
                 return (cptr.eq(name, (null)))
                         ? __s_no_name

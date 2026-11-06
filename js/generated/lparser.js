@@ -2738,8 +2738,8 @@ export function luaY_parser(L, z, buff, dyd, name, firstchar) {
     cptr.stPtro(lexstate, $LexState_h, luaH_new(L));  /* create table for scanner */
     {
         let io = (((cptr.ldPtro(L, $lua_State_top))));  /* anchor it */
-        let x_ = (cptr.ldPtro(lexstate, $LexState_h));
-        cptr.stPtr(((io)), ((((x_)))));
+        let x___2 = (cptr.ldPtro(lexstate, $LexState_h));
+        cptr.stPtr(((io)), ((((x___2)))));
         (cptr.st1o((io), $TValue_tt_, 69));
         (void L, (void 0));
     }

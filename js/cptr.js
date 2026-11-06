@@ -195,6 +195,8 @@ export function lit(s) {
 
 /** Encode a JS string as NUL-terminated bytes (char[] initializer). @param {string} s @returns {Uint8Array} */
 export function bytes(s) { return lit(s).buf; }
+/** A char array of a declared size, holding as much of the string as fits (zero-filled). */
+export function bytesN(s, n) { const b = new Uint8Array(n); b.set(lit(s).buf.subarray(0, n)); return b; }
 
 /**
  * Decode a C string to a JS string. Accepts CPtr | Uint8Array | string | null.
@@ -1440,7 +1442,7 @@ export function tolower(c) { return c >= 65 && c <= 90 ? c + 32 : c; }
 // Same pattern the old f.replace() used; compileFormat drives it with exec so
 // the match set is identical (a '%' that starts no valid conversion is left in
 // the literal text, exactly as replace() left it).
-const __FMT_RE = /%([-+ #0]*)(\*|\d*)(?:\.(\*|\d*))?(hh|h|ll|l|z|t|j|L)?([diouxXscfeEgGp%aAn])/g;
+const __FMT_RE = /%(?:(\d+)\$)?([-+ #0]*)(\*|\d*)(?:\.(\*|\d*))?(hh|h|ll|l|z|t|j|L)?([\s\S])/g;
 const __PREC_NONE = -1;   // no '.' at all, or a bare '.' ("%.d")
 const __PREC_STAR = -2;   // '.*' — read from an int argument at call time
 const __fmtCache = new Map();
@@ -1453,16 +1455,22 @@ function compileFormat(f) {
   while ((m = __FMT_RE.exec(f)) !== null) {
     if (m.index > last) parts.push(f.slice(last, m.index));
     last = m.index + m[0].length;
-    const spec = m[5];
-    if (spec === '%' && !m[2]) { parts.push('%'); continue; }
-    const flags = m[1], width = m[2], prec = m[3];
+    // BSD spellings of %ld %lu %lo; any other letter prints itself, taking no argument
+    const rawSpec = m[6], spec0 = { D: 'd', U: 'u', O: 'o' }[rawSpec] ?? rawSpec;
+    const known = 'diouxXscfFeEgGp%aAn'.indexOf(spec0) >= 0;
+    const spec = known ? spec0 : '%';
+    if (spec === '%' && known && !m[3]) { parts.push('%'); continue; }
+    const flags = m[2], width = m[3], prec = m[4];
     parts.push({
       spec,
-      isLong: m[4] === 'll' || m[4] === 'l' || m[4] === 'z' || m[4] === 't' || m[4] === 'j',
-      narrow: m[4] === 'hh' ? 8 : m[4] === 'h' ? 16 : 0,
+      literal: known ? '%' : rawSpec,
+      argPos: m[1] ? Number(m[1]) : 0,
+      isLong: spec0 !== rawSpec || m[5] === 'll' || m[5] === 'l' || m[5] === 'z' || m[5] === 't' || m[5] === 'j',
+      narrow: m[5] === 'hh' ? 8 : m[5] === 'h' ? 16 : 0,
       widthStar: width === '*',
       width: width === '*' ? 0 : Number(width || 0),
-      prec: prec === undefined || prec === '' ? __PREC_NONE
+      prec: prec === undefined ? __PREC_NONE
+          : prec === '' ? 0 // "%.f": a bare dot is precision 0
           : prec === '*' ? __PREC_STAR : Number(prec),
       plus: flags.indexOf('+') >= 0,
       minus: flags.indexOf('-') >= 0,
@@ -1471,8 +1479,8 @@ function compileFormat(f) {
       alt: flags.indexOf('#') >= 0,
       intSpec: 'diouxX'.indexOf(spec) >= 0,
       diSpec: spec === 'd' || spec === 'i',
-      floatSpec: 'feEgGaA'.indexOf(spec) >= 0,
-      wide: m[4] === 'l',
+      floatSpec: 'fFeEgGaA'.indexOf(spec) >= 0,
+      wide: m[5] === 'l',
     });
   }
   if (last < f.length) parts.push(f.slice(last));
@@ -1484,12 +1492,30 @@ function __narrowU(v, narrow) {
   return narrow === 8 ? v & 0xFF : narrow === 16 ? v & 0xFFFF : v >>> 0;
 }
 
+/** Exact decimal digits of a finite double, for what toFixed can't do: it writes
+ *  values from 1e21 up in exponent form and refuses precisions over 100. Exact ties
+ *  round to even, as C does. */
+function __fixedExact(x, prec) {
+  const dv = new DataView(new ArrayBuffer(8));
+  dv.setFloat64(0, Math.abs(x));
+  const bits = dv.getBigUint64(0);
+  const be = Number(bits >> 52n), fr = bits & 0xFFFFFFFFFFFFFn;
+  const m = be === 0 ? fr : fr | (1n << 52n), e = (be === 0 ? 1 : be) - 1075;
+  const num = (e > 0 ? m << BigInt(e) : m) * 10n ** BigInt(prec), den = e < 0 ? 1n << BigInt(-e) : 1n;
+  let q = num / den;
+  const r2 = (num % den) * 2n;
+  if (r2 > den || (r2 === den && (q & 1n))) q += 1n;
+  const d = q.toString().padStart(prec + 1, '0');
+  const neg = x < 0 || Object.is(x, -0) ? '-' : '';
+  return neg + (prec ? `${d.slice(0, -prec)}.${d.slice(-prec)}` : d);
+}
+
 /** toFixed rounds exact ties up; C rounds them to even. A double has few enough
  *  fractional digits to show a tie within toFixed's 100. */
 function __toFixedC(x, prec) {
+  if (Math.abs(x) >= 1e21 || prec > 99) return __fixedExact(x, prec);
   if (Object.is(x, -0)) return `-${(0).toFixed(prec)}`;
   const s = x.toFixed(prec);
-  if (Math.abs(x) >= 1e21 || prec >= 99) return s;
   const full = x.toFixed(100), dot = full.indexOf('.');
   const tail = full.slice(dot + 1 + prec);
   if (tail[0] !== '5' || /[1-9]/.test(tail.slice(1))) return s;
@@ -1497,8 +1523,26 @@ function __toFixedC(x, prec) {
   return (cut.charCodeAt(cut.length - 1) - 48) % 2 === 0 ? cut : s;
 }
 
+/** %e digits past toExponential's limit of 100, from the exact expansion. */
+function __expExact(x, prec) {
+  const neg = x < 0 || Object.is(x, -0) ? '-' : '';
+  if (x === 0) return `${neg}0${prec ? `.${'0'.repeat(prec)}` : ''}e+00`;
+  const full = __fixedExact(Math.abs(x), 1100), dot = full.indexOf('.');
+  const all = full.slice(0, dot) + full.slice(dot + 1);
+  const first = all.search(/[1-9]/), exp = dot - 1 - first;
+  const sig = all.slice(first), keep = BigInt(sig.slice(0, prec + 1).padEnd(prec + 1, '0'));
+  const rest = sig.slice(prec + 1);
+  const up = rest[0] > '5' || (rest[0] === '5' && (/[1-9]/.test(rest.slice(1)) || (keep & 1n)));
+  let d = (up ? keep + 1n : keep).toString(), ex = exp;
+  if (d.length > prec + 1) { d = d.slice(0, prec + 1); ex++; }
+  const a = Math.abs(ex);
+  return `${neg}${d[0]}${prec ? `.${d.slice(1)}` : ''}e${ex < 0 ? '-' : '+'}${a < 10 ? '0' : ''}${a}`;
+}
+
 function __fmtExp(x, prec) {
+  if (prec > 99) return __expExact(x, prec);
   let t = x.toExponential(prec);
+  if (Object.is(x, -0)) t = `-${t}`;
   if (x !== 0 && Number.isFinite(x) && prec < 99) {
     // same tie rule as __toFixedC, on the mantissa digits
     const full = x.toExponential(100), e = full.indexOf('e');
@@ -1548,21 +1592,23 @@ function __fmtHexFloat(x, prec, alt, upper) {
 
 function __fmtFloat(spec, x, prec, alt) {
   if (spec === 'a' || spec === 'A') return __fmtHexFloat(x, prec, alt, spec === 'A');
-  const upper = spec === 'E' || spec === 'G';
+  const upper = spec === 'E' || spec === 'G' || spec === 'F';
+  // '#' keeps the point that precision 0 drops, and %g's trailing zeros
+  const point = (t) => (!alt || t.includes('.') ? t : t.includes('e') ? t.replace('e', '.e') : `${t}.`);
   let s;
   if (!Number.isFinite(x)) s = Number.isNaN(x) ? 'nan' : x < 0 ? '-inf' : 'inf';
   else {
     const p = prec === __PREC_NONE ? 6 : prec;
-    if (spec === 'f') s = __toFixedC(x, p);
-    else if (spec === 'e' || spec === 'E') s = __fmtExp(x, p);
+    if (spec === 'f' || spec === 'F') s = point(__toFixedC(x, p));
+    else if (spec === 'e' || spec === 'E') s = point(__fmtExp(x, p));
     else {
       const P = p === 0 ? 1 : p;
-      const exp = x === 0 ? 0 : Number(x.toExponential(P - 1).split('e')[1]);
+      const exp = x === 0 ? 0 : Number(__fmtExp(x, P - 1).split('e')[1]);
       if (exp < -4 || exp >= P) {
-        s = __fmtExp(x, P - 1);
+        s = point(__fmtExp(x, P - 1));
         if (!alt) s = s.replace(/\.?0+e/, 'e');
       } else {
-        s = __toFixedC(x, P - 1 - exp);
+        s = point(__toFixedC(x, P - 1 - exp));
         if (!alt && s.indexOf('.') >= 0) s = s.replace(/\.?0+$/, '');
       }
     }
@@ -1596,10 +1642,10 @@ export function sprintfCore(fmt, args) {
       const p = Number(args[ai++]) | 0;
       prec = p < 0 ? __PREC_NONE : p;      // negative precision == omitted
     }
-    const a = spec === '%' ? undefined : args[ai++];
+    const a = spec === '%' ? undefined : it.argPos ? args[it.argPos - 1] : args[ai++];
     let s;
     if (spec === 'n') { stI32(a, out.length); continue; }
-    if (spec === '%') s = '%';
+    if (spec === '%') s = it.literal;
     else if (spec === 's' && it.wide) { // %ls: a wide string
       s = '';
       for (let i = 0; ; i += 4) { const c = ldI32(add(a, i)); if (c === 0 || (prec !== __PREC_NONE && s.length >= prec)) break; s += String.fromCharCode(c & 0xFF); }
@@ -1622,15 +1668,17 @@ export function sprintfCore(fmt, args) {
     let sign = '', prefix = '';
     if (it.diSpec || it.floatSpec) {
       if (s.charCodeAt(0) === 45) { sign = '-'; s = s.slice(1); }
+      else if (s === 'nan' || s === 'NAN') sign = ''; // Darwin gives NaN no '+' or ' '
       else if (it.plus) sign = '+';
       else if (it.space) sign = ' ';
     }
     if (it.intSpec) {
+      const isZero = s === '0';
       if (prec !== __PREC_NONE) {
-        if (prec === 0 && s === '0') s = '';
+        if (prec === 0 && s === '0') s = it.alt && spec === 'o' ? '0' : ''; // "%#.o" of 0 still prints the 0
         else s = s.padStart(prec, '0');
       }
-      if (it.alt && s !== '0' && s !== '') {
+      if (it.alt && !isZero) {
         if (spec === 'x') prefix = '0x';
         else if (spec === 'X') prefix = '0X';
         else if (spec === 'o' && s[0] !== '0') prefix = '0';
@@ -1640,7 +1688,7 @@ export function sprintfCore(fmt, args) {
     if (len < w) {
       if (minus) s = sign + prefix + s + ' '.repeat(w - len);
       // '0' pads between the sign and the digits; a precision turns it off for integers.
-      else if (it.zero && spec !== 's' && spec !== 'c' && !(it.intSpec && prec !== __PREC_NONE)) s = sign + prefix + '0'.repeat(w - len) + s;
+      else if (it.zero && !(it.intSpec && prec !== __PREC_NONE) && !(it.floatSpec && !Number.isFinite(Number(a)))) s = sign + prefix + '0'.repeat(w - len) + s;
       else s = ' '.repeat(w - len) + sign + prefix + s;
     } else s = sign + prefix + s;
     out += s;
@@ -1669,7 +1717,7 @@ export function sprintf(str, fmt, ...args) { return writeStr(str, sprintfCore(fm
 export function snprintf(str, n, fmt, ...args) {
   n = Number(n);
   const s = sprintfCore(fmt, args);
-  writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
+  if (n > 0) writeStr(str, s.length >= n ? s.slice(0, n - 1) : s); // size 0 writes nothing, not even the NUL
   return s.length;
 }
 
@@ -1678,7 +1726,7 @@ export function vsnprintf(str, n, fmt, ap) {
   n = Number(n);
   if (ap && Array.isArray(ap.args)) ap = ap.args.slice(ap.i); // va_list cursor
   const s = sprintfCore(fmt, ap);
-  writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
+  if (n > 0) writeStr(str, s.length >= n ? s.slice(0, n - 1) : s);
   return s.length;
 }
 
@@ -1743,8 +1791,8 @@ export function darwinQsort(v, cmp) {
       }
     }
     while (nmemb > 1) {
-      const k = v[B(1)];
-      v[B(1)] = v[B(nmemb)];
+      const k = v[B(nmemb)];
+      v[B(nmemb)] = v[B(1)];
       --nmemb;
       let pi = 1, ci;
       for (; (ci = pi * 2) <= nmemb; pi = ci) {

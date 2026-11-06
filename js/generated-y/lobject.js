@@ -840,7 +840,7 @@ function* addnum2buff(buff, num) {
  * @returns {CPtr<char>}
  */
 export function* luaO_pushvfstring(L, fmt, argp) {
-    let buff, e, s, c = cptr.box(0, "i8"), num, io, sz, bf, p, len;
+    let buff, e, s, c = cptr.box(0, "i8"), num, io, sz, bf, p, len, bf__2;
     let __pc = 0;
     __dispatch: while (true) {
         switch (__pc) {
@@ -949,11 +949,11 @@ export function* luaO_pushvfstring(L, fmt, argp) {
             { __pc = 10; continue; }
         }
         case 7 /* duff_1_case_6: */: {
-            bf = new Uint8Array(8);
-            len = luaO_utf8esc(cptr.decay(bf), BigInt.asUintN(64, cptr.vaArg(argp, 'i64')));
+            bf__2 = new Uint8Array(8);
+            len = luaO_utf8esc(cptr.decay(bf__2), BigInt.asUintN(64, cptr.vaArg(argp, 'i64')));
             (yield* addstr2buff(
                 buff,
-                cptr.add(cptr.add(cptr.decay(bf), 8), -(len)),
+                cptr.add(cptr.add(cptr.decay(bf__2), 8), -(len)),
                 BigInt.asUintN(64, BigInt(len))
             ));
             { __pc = 10; continue; }

@@ -66,7 +66,7 @@ export function scanfCore(s, f, args) {
     while (f[fi] >= '0' && f[fi] <= '9') width = width * 10 + (f.charCodeAt(fi++) - 48);
     while (f[fi] === 'h') { h++; fi++; }
     while (f[fi] === 'l') { l++; fi++; }
-    if (f[fi] === 'z' || f[fi] === 't' || f[fi] === 'j') { l = 1; fi++; }
+    if (f[fi] === 'z' || f[fi] === 't' || f[fi] === 'j' || f[fi] === 'L') { l = 1; fi++; } // long double is double here
     const spec = f[fi++];
 
     if (spec === '%') {
@@ -116,12 +116,11 @@ export function scanfCore(s, f, args) {
       while (s[si] === ' ' || s[si] === '\t' || s[si] === '\n' || s[si] === '\r' || s[si] === '\f' || s[si] === '\v') si++;
       if (si >= s.length) return inputFailure();
       const limit = width ? s.slice(si, si + width) : s.slice(si);
-      const m = /^[-+]?(?:(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?|inf(?:inity)?|nan)/i.exec(limit);
+      const m = /^[-+]?(?:0[xX](?:[0-9a-fA-F]+\.?[0-9a-fA-F]*|\.[0-9a-fA-F]+)(?:[pP][-+]?\d+)?|(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?|inf(?:inity)?|nan)/i.exec(limit);
       if (!m) return matchFailure();
       si += m[0].length;
       if (!suppress) {
-        const t = m[0].toLowerCase().replace(/^\+/, '');
-        const v = /nan/.test(t) ? NaN : /inf/.test(t) ? (t[0] === '-' ? -Infinity : Infinity) : Number(t);
+        const v = strtodCore(m[0]).value;
         const arg = args[argi++];
         if (l) cptr.stF64(arg, v); else cptr.stF32(arg, v);
         assigned++;
@@ -173,8 +172,30 @@ export function scanfCore(s, f, args) {
   return { assigned, consumed: si };
 }
 
+/** strtod core: {value, end, errno}, with hex floats and `nan(...)`. No conversion leaves end at 0. */
+export function strtodCore(str) {
+  const m = /^[ \t\n\v\f\r]*([-+]?)(?:(0[xX](?:[0-9a-fA-F]+\.?[0-9a-fA-F]*|\.[0-9a-fA-F]+)(?:[pP][-+]?\d+)?)|((?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)|(inf(?:inity)?)|(nan(?:\([0-9A-Za-z_]*\))?))/i.exec(str);
+  if (!m) return { value: 0, end: 0 };
+  const end = m[0].length, neg = m[1] === '-';
+  if (m[5]) return { value: NaN, end };
+  if (m[4]) return { value: neg ? -Infinity : Infinity, end };
+  let v;
+  if (m[2]) {
+    const h = /^0x([0-9a-f]*)\.?([0-9a-f]*)(?:p([-+]?\d+))?$/i.exec(m[2]);
+    const mant = BigInt(`0x${h[1]}${h[2]}`);
+    let ex = Number(h[3] || 0) - 4 * h[2].length;
+    v = Number(mant);
+    while (ex > 0 && v !== 0 && v !== Infinity) { const k = Math.min(ex, 1000); v *= 2 ** k; ex -= k; }
+    while (ex < 0 && v !== 0) { const k = Math.min(-ex, 1000); v /= 2 ** k; ex += k; }
+  } else v = Number(m[3]);
+  const nonzero = /[1-9a-f]/i.test((m[2] ? m[2].slice(2).replace(/p.*$/i, '') : m[3].replace(/e.*$/i, '')));
+  const errno = v === Infinity || (v === 0 && nonzero) ? 34 : undefined;
+  return { value: neg ? -v : v, end, errno };
+}
+
 /** strtol/strtoul core: {value (BigInt), end (offset)}. No conversion leaves end at 0. */
 export function strtoCore(str, base, signed) {
+  if (base < 0 || base === 1 || base > 36) return { value: 0n, end: 0, errno: 22 };
   let i = 0;
   while (i < str.length && isSpace(str[i])) i++;
   let neg = false;
@@ -185,11 +206,13 @@ export function strtoCore(str, base, signed) {
   const start = i, b = BigInt(base);
   let v = 0n;
   while (i < str.length && digitOf(str[i]) < base) { v = v * b + BigInt(digitOf(str[i])); i++; }
-  if (i === start) return { value: 0n, end: 0 };
+  if (i === start) return { value: 0n, end: 0, errno: 22 }; // Darwin reports no conversion as EINVAL
   if (signed) {
     if (neg) v = -v;
-    return { value: v > I64_MAX ? I64_MAX : v < I64_MIN ? I64_MIN : v, end: i };
+    if (v > I64_MAX) return { value: I64_MAX, end: i, errno: 34 };
+    if (v < I64_MIN) return { value: I64_MIN, end: i, errno: 34 };
+    return { value: v, end: i };
   }
-  if (v > U64_MAX) return { value: U64_MAX, end: i };
+  if (v > U64_MAX) return { value: U64_MAX, end: i, errno: 34 };
   return { value: BigInt.asUintN(64, neg ? -v : v), end: i };
 }

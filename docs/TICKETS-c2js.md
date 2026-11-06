@@ -234,6 +234,102 @@ The 171 sessions, the gates and Csmith all passed. Only the wider session set fa
 are dropped, and the plan is looked up on the original node with its indexes shifted.
 `fixtures/lang/switch_goto_splice.c` fails without the fix.
 
+## Found by comparing the runtime and startup with the recorder
+
+These came from testing `js/cptr.js`, `js/libc/` and the harness directly against Darwin libc
+with hostile inputs, and from recording scenarios that reach text from outside the game. The
+first four are reachable by a recorded session. "Uncommitted" means the fix is in the working
+tree and passes regression, but has no commit to name yet.
+
+### C2JS-047: the game started with no arguments; the recorder runs `nethack -u <name>`. DONE (uncommitted)
+`scripts/record-session.mjs` takes the first `name:` from an `OPTIONS` line and passes it with
+`-u`, which overrides whatever the game's own parse of the rc left in `plname`. An rc with
+`OPTIONS=name:Sw` and a later `NAME=Foo` greets Sw in C and Foo in JS, on every screen. The
+harness now passes the same arguments, using the same parsing rules. `yieldify.mjs` patches
+this line of the harness by its exact text, so it changed too.
+
+### C2JS-048: non-ASCII keys, rc text and names were truncated to one byte. DONE (uncommitted)
+The recorder writes each UTF-16 unit of `moves` as UTF-8, writes the rc as UTF-8, and passes the
+name as UTF-8. It takes one step per byte read, and stops after `moves.length + 1` reads. The
+harness masked every character with 0xFF. Keys like `é`, names like `été`, and rc text with
+high characters all diverged. The input queue now holds the same bytes, cut at the same point.
+
+### C2JS-049: `opendir`/`readdir`/`closedir` were stubs, so the restore menu never appeared. DONE (uncommitted)
+`selectsaved` is on by default, and `tty_askname` calls `restore_menu` when no name is set. So
+any session with a saved game and a later segment with no `name:` reaches `get_saved_games`,
+which lists `save/`. With `opendir` returning NULL the JS went straight to "Who are you?". All 6
+recorded restore-menu scenarios failed. They now read the VFS, with Darwin's `struct dirent`
+layout. `rewinddir`, `telldir` and `seekdir` were added as well.
+
+### C2JS-050: the seed was parsed with `BigInt`, not `strtoul`. DONE (uncommitted)
+`rnd-prelude.js` read `NETHACK_SEED` with `BigInt()`. A value past 2^64 saturates in C and did
+not in JS, which diverged on the first RNG call. The harness defaults for a missing seed and
+datetime now also match the recorder's (0 and `20000110090000`).
+
+### C2JS-051: same-named locals in sibling scopes shared one JS binding's type. DONE (uncommitted)
+Locals with the same name but different types in one function now get `name__N`. In NetHack this
+renames variables only (Lua files, `pickup.js`, `zap.js`).
+
+### C2JS-052: `char x[N] = "..."` took the literal's size, not N. DONE (uncommitted)
+Clang types the literal as the array, so comparing those sizes showed nothing. The check now
+uses the literal's own length, and `cptr.bytesN` builds the array at its declared size. NetHack
+has no such declaration, so its output is unchanged.
+`fixtures/lang/char_array_init_sizes.c`.
+
+### C2JS-053: the heapsort path of `darwinQsort` was wrong. DONE (uncommitted)
+Reached when quicksort's recursion budget runs out. Whether a real game gets there is unproven;
+`sortloot` with a long list is the likely route. `fixtures/lang/qsort_heapsort_path.c`,
+`fixtures/lang/rt_qsort.c`.
+
+### C2JS-054: `printf` gaps. DONE (uncommitted)
+Positional arguments, `%D %U %O %F`, unknown conversions, a bare `.` as precision 0, values of
+1e21 and up, precision over 99, `-0` in `%e`, `#` keeping the point, `%#.o` of 0, sign and zero
+padding of inf and NaN, `0` padding `%s` and `%c`, and `snprintf` with n=0. 84,911 output lines
+now match. `fixtures/lang/rt_fmt.c`.
+
+### C2JS-055: number parsing set no `errno` and missed forms. DONE (uncommitted)
+`strtol` family: EINVAL and ERANGE. `strtod`: hex floats, `nan(...)`, ERANGE. `scanf`: `%L` and
+hex floats. Also `atoi`, `atof`, `localeconv`, `pow`'s C99 special cases, `iscntrl(-1)`, and the
+full Darwin `strerror` table. `fixtures/lang/rt_scan.c`, `rt_str.c`, `rt_ctype.c`.
+
+### C2JS-056: files had separate read and write buffers. DONE (uncommitted)
+A write after `lseek` did not honor the position. Each open file now has one buffer. Also: ENOENT
+for a missing parent directory, EINVAL for a negative seek, return values and `errno` for
+`access`, `stat`, `unlink`, `rename`, and `fgets` setting EOF at the end of a file. Files are
+rewritten only when changed, because `check_recordfile` opens `record` read-write just to test it.
+
+### C2JS-057: `strftime`, `gmtime` and `localtime` gaps. DONE (uncommitted)
+`%g %G %V %s %v %+ %z %Z`, the `-_0` flags, unknown conversions, `tm_gmtoff`, `tm_zone`, one static
+`tm` buffer as in C, and a real `mktime` for standalone programs. The game's own `mktime` stays
+pinned to the recorder's offset. `C2JS-059` lists what is left.
+
+### C2JS-058: `regcomp`/`regexec` cover only NetHack's use. OPEN
+NetHack calls `regcomp(REG_EXTENDED|REG_NOSUB)` and `regexec(..., 0, 0, 0)`, and under those flags
+a 14,684-line comparison with Darwin's TRE shows no differences. Any other C program can hit
+these gaps: basic regexes (no `REG_EXTENDED`), `REG_ICASE`, `REG_NEWLINE`, `REG_NOTBOL`,
+`REG_NOTEOL`, `re_nsub` always 0, and `pmatch` never filled. Filling `pmatch` correctly needs
+POSIX leftmost-longest submatch rules, which a JS `RegExp` does not follow, so it needs a real
+matcher. No effect on NetHack.
+
+### C2JS-059: `mktime` edge cases in standalone programs. OPEN
+`rt_time.c` under `TZ=America/New_York` differs on 19 of 1,638 lines: a repeated hour at
+1:59:59 (Darwin's binary search lands on standard time there, and on daylight time at 1:00 and
+1:30), dates before 1901 (Darwin returns -1), and local mean time before 1883. The standalone
+`mktime` also hardcodes offsets of -5 and -4, so other zones are wrong. No effect on NetHack.
+
+### C2JS-060: RNG from bytes past the last recorded step. OPEN
+A multi-byte key makes the recorder stop capturing screens before the game has read all its input.
+C keeps consuming what was already written, so RNG from later keys can land in the recording.
+Scenario: `'      €   €€.i   '` matches on all 18 screens but is 4 RNG calls short. Re-recording
+gives the same result, but it depends on the recorder's timing. It needs non-ASCII keys in
+`moves`.
+
+### C2JS-061: process and user functions are stubs or missing. OPEN
+No implementation: `popen`, `pclose`, `execl`, `execv`, `execve`, `waitpid`, `setuid`, `setgid`,
+`environ`. Constant stubs: `system` (-1), `getlogin` and `getpwnam` (NULL), `fork` (42), `getpid`
+(4242). The game's recorded paths through these match. A standalone program using them gets
+wrong behavior, with no error.
+
 ## Where C itself depends on the platform
 
 ### C2JS-036: arm64 and x86-64 C disagree. Documented; no effect on NetHack

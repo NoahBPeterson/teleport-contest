@@ -1430,10 +1430,10 @@ export function* pickup(what) {
 
                     lcount = -1n;
                     if (!all_of_a_type.v) {
-                        let qbuf = new Uint8Array(256);
+                        let qbuf__2 = new Uint8Array(256);
 
                         void (yield* safe_qbuf(
-                            cptr.decay(qbuf),
+                            cptr.decay(qbuf__2),
                             __s_pick_up__2,
                             __s_query,
                             obj,
@@ -1442,8 +1442,13 @@ export function* pickup(what) {
                             cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
                         ));
                         switch ((cptr.ldI64o(obj, $obj_quan) < 2n)
-                                ? (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynaqchars), 121, 1))
-                                : (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynNaqchars), 121, 1))) {
+                                ? (yield* yn_function(cptr.decay(qbuf__2), cptr.decay(ynaqchars), 121, 1))
+                                : (yield* yn_function(
+                                    cptr.decay(qbuf__2),
+                                    cptr.decay(ynNaqchars),
+                                    121,
+                                    1
+                                ))) {
                             case 113:
                                 break __lbl_end_query;  /* out 2 levels */
                             case 110:

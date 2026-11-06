@@ -276,7 +276,7 @@ for (const [key, scan] of G.mods) {
     // suspended generator frames on the heap, so control may leave for the
     // event loop and come back. That is what a browser main thread needs.
     // During replay nextKey is never reached and the loop turns exactly once.
-    ['um.main(1, argv);', 'await Y.trampoline(um.main(1, argv), opts.residentKey || waitForKey);'],
+    ['um.main(3, argv);', 'await Y.trampoline(um.main(3, argv), opts.residentKey || waitForKey);'],
     // 3. getchar is the one blocking leaf; it becomes the one yielding leaf
     ['g.getchar = () => {', 'g.getchar = function* () {'],
     ['const c = waitForKey();', 'const c = yield Y.KEY_REQUEST;'],
